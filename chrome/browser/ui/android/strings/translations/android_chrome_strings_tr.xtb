@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Veriler bu siteler ve uygulamalardan da silinsin mi?</translation>
 <translation id="1034259925032978114">Pencere açık</translation>
 <translation id="1036348656032585052">Kapat</translation>
-<translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> ekleniyor...</translation>
 <translation id="1045899828449635435">Ayrıca veriler bu sitelerden de silinsin mi?</translation>
 <translation id="1049743911850919806">Gizli mod</translation>
 <translation id="10614374240317010">Hiç kaydedilmeyecekler</translation>
@@ -511,7 +510,6 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="3771694256347217732">Google Hizmet Şartları</translation>
 <translation id="3773856050682458546">Temel verilere ek olarak ziyaret ettiğiniz web siteleri ve kullandığınız uygulamalar ile ilgili bilgiler</translation>
 <translation id="3775705724665058594">Cihazlarınıza gönderin</translation>
-<translation id="3778956594442850293">Ana ekrana eklendi</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 sekme}other{# sekme}}</translation>
 <translation id="3803784507854318295">Otomatik oynatmayı yönet</translation>
 <translation id="3810838688059735925">Video</translation>

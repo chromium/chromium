@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">फाइलहरू</translation>
 <translation id="1294929383540927798">लक स्क्रिनको सूचनासम्बन्धी सेटिङहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">ब्लुटुथसम्बन्धी सेटिङहरू देखाउनुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">सिफारिस गरिएका एपहरू</translation>
 <translation id="1312604459020188865">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">सधैँ सेल्फ देखाउनुहोस्</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">आफ्ना एड्मिनलाई Google को एड्मिन कन्सोलमा यो डिभाइस सेटअप गरिदिन आग्रह गर्नुहोस्</translation>
 <translation id="1550523713251050646">थप विकल्पहरूका लागि क्लिक गर्नुहोस्</translation>
 <translation id="1555130319947370107">निलो</translation>
-<translation id="1570871743947603115">ब्लुटुथ टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">यो सत्रअन्तर्गतका आफ्ना सबै क्रियाकलापमाथि पहुँच राख्नुहोस्</translation>
 <translation id="1610778689852195798">"अन्डू गर"</translation>
 <translation id="1611993646327628135">अन छ</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">बढीमा <ph name="MAX_DESK_LIMIT" /> वटा डेस्क मात्र खोल्न मिल्छ। तपाईं नयाँ डेस्क खोल्न चाहनुहुन्छ भने कुनै डेस्क हटाउनुहोस्।</translation>
 <translation id="1756833229520115364">टेम्प्लेट सेभ गर्न सकिएन। अत्यन्त धेरै विन्डो वा ट्याबहरू सेभ गरिएका छन्।</translation>
 <translation id="1757857692711134412">सूर्यास्त नहुँदासम्म अफ रहने छ</translation>
-<translation id="1761222317188459878">नेटवर्क जडान टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पिरियड किबोर्ड सर्टकट परिवर्तन गरिएको छ। Insert की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace थिच्नुहोस्।</translation>
 <translation id="1770726142253415363">यो एप सारेर रो <ph name="ROW_NUMBER" />, कलम <ph name="COLUMN_NUMBER" /> मा लगिएको छ।</translation>
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
@@ -266,6 +263,7 @@
 <translation id="2405664212338326887">कनेक्ट गरिएको छैन</translation>
 <translation id="2408955596600435184">आफ्नो PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
+<translation id="2417486498593892439">नेटवर्कमा साइन इन गर्नुहोस्</translation>
 <translation id="2426051945783024481">क्यामेराको फ्रेम स्वतः बिच भागमा पारियो</translation>
 <translation id="2427507373259914951">बायाँ क्लिक गर्नुहोस्</translation>
 <translation id="2429753432712299108">ब्लुतुथ यन्त्र "<ph name="DEVICE_NAME" />" ले मेल गर्न अनुमति चाहन्छ। स्वीकार गर्नुअघि, कृपया पक्का गर्नुहोस् की यो पासकुञ्जी त्यो यन्त्रमा देखाइएको छ: <ph name="PASSKEY" /></translation>
@@ -356,7 +354,6 @@
 <translation id="2981684127883932071">सुझावहरू देखाउँदै</translation>
 <translation id="2985148236010982088">सबै एपहरू हेर्नुहोस्</translation>
 <translation id="2992327365391326550">डिभाइसको माइक्रोफोन बटन अफ गरिएको छ।</translation>
-<translation id="2995447421581609334">cast यन्त्रहरू देखाउनुहोस्।</translation>
 <translation id="2996462380875591307">डक गरिएको म्याग्निफायर सक्षम पारियो। यसलाई निष्क्रिय पार्न फेरि Ctrl+खोज+D कुञ्जी थिच्नुहोस्।</translation>
 <translation id="3000461861112256445">मोनो अडियो</translation>
 <translation id="3009178788565917040">निर्गत</translation>
@@ -423,6 +420,7 @@
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3371140690572404006">USB-C यन्त्र (दायाँ भागको अगाडिको पोर्ट)</translation>
 <translation id="3375634426936648815">कनेक्ट गरिएको छ</translation>
+<translation id="3378438761594387761">तपाईं यहाँ आफ्ना हालसालैका स्क्रिन क्याप्चर र डाउनलोड गरिएका सामग्री भेट्टाउनु हुने छ</translation>
 <translation id="3378442621503952303">प्रोफाइलमा कनेक्ट गरिँदै छ। केही मिनेट पर्खनुहोस्।</translation>
 <translation id="3386978599540877378">पूर्ण स्क्रिनको म्याग्निफायर</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -730,6 +728,7 @@
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
 <translation id="509790653408515442">तपाईंले आफ्नो फोनका एपहरू चलाउँदा ती एपहरू यहाँ देखिने छन्</translation>
 <translation id="5098537242461068432">डेस्क र विन्डोहरू फेरि खोलिए</translation>
+<translation id="5104236669533825617">स्क्रिनकास्ट बनाउन सकिएन</translation>
 <translation id="5107522548814527560">वेब</translation>
 <translation id="5117590920725113268">अर्को महिना देखाउनुहोस्</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
@@ -775,6 +774,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (दायाँ)</translation>
 <translation id="5352250171825660495">अँध्यारो थिम अन छ</translation>
 <translation id="5356963482258194581">अँध्यारो तथा उज्यालो थिम अदलबदल गर्नुहोस्। डेस्कटपमा दायाँ क्लिक गर्नुहोस् र "वालपेपर तथा शैली" चयन गर्नुहोस्।</translation>
+<translation id="536019650977002321">तपाईंका एड्मिनले अडियो क्याप्चर गर्ने अनुमति दिनुभएको छैन। तपाईं यस सम्बन्धमा थप जानकारी प्राप्त गर्न चाहनुहुन्छ भने आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> यो ट्याबमा जानुहोस्</translation>
 <translation id="5379115545237091094">अत्यधिक प्रयासहरू भए</translation>
 <translation id="5391307769715781764">सेभ गरिएको डेस्क बदल्ने हो?</translation>
@@ -1160,7 +1160,6 @@
 <translation id="7611213136657090146">क्यामेरा पुनः कनेक्ट गरियो।</translation>
 <translation id="761736749114493194">क्यामेरा फ्रेमिङ टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">नजिकैका डिभाइससँग सेयर गर्ने सुविधासम्बन्धी सेटिङ देखाउनुहोस्।</translation>
 <translation id="7634648064048557203">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो</translation>
 <translation id="7641938616688887143">रेकर्ड गर्नुहोस्</translation>
 <translation id="7642106959537987271">कलर इन्भर्सन मोड</translation>
@@ -1345,7 +1344,6 @@
 <translation id="8660331759611631213">७१ को वर्गमूल कति हो</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">आंशिक स्क्रिनसट खिच्न इन्टर थिच्नुहोस्</translation>
-<translation id="8664753092453405566">नेटवर्कको सूची देखाउनुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">तपाईं आफ्नो डिभाइस सेटअप गर्न चाहनुहुन्छ भने <ph name="NAME" /> खोल्नुहोस्</translation>
 <translation id="8676770494376880701">अल्प-पावर चार्जर जडित</translation>
 <translation id="8683506306463609433">प्रदर्शन ट्रेस सक्रिय छ</translation>
@@ -1355,7 +1353,6 @@
 <translation id="8724318433625452070">फुल स्क्रिन क्याप्चर</translation>
 <translation id="8734991477317290293">यसले तपाईंका किस्ट्रोकहरू चोर्न खोजिरहेको हुन सक्छ</translation>
 <translation id="8735678380411481005">किबोर्डको ब्याकलाइटको रङ</translation>
-<translation id="8735953464173050365">किबोर्डका सेटिङहरू देखाउनुहोस्। <ph name="KEYBOARD_NAME" /> चयन गरिएको छ</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">एप तथा वेबपेजहरूलाई यो डिभाइसमा कनेक्ट गरिएको क्यामेरा(हरू) प्रयोग गर्ने अनुमति प्राप्त होस् भन्नाका लागि क्यामेरा प्रयोग गर्ने अनुमति अन गर्नुहोस्।</translation>
@@ -1379,7 +1376,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">तपाईंको PIN वा पासवर्ड अझै पनि पुष्टि गर्न सकिएन। याद राख्नुहोस्: तपाईंले हालसालै आफ्नो पासवर्ड बदल्नुभएको छ भने आफ्नो पुरानो पासवर्ड प्रयोग गरी साइन इन गर्नुहोस्। तपाईं साइन आउट हुनेबित्तिकै तपाईंको नयाँ पासवर्डले काम गर्न थाल्ने छ।</translation>
 <translation id="8870509716567206129">अनुप्रयोगले विभाजित-स्क्रिनलाई समर्थन गर्दैन।</translation>
-<translation id="8871580645200179206">अँध्यारो थिम अन/अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">जडित छैन</translation>
 <translation id="8876661425082386199">आफ्नो यन्त्रको ब्लुटुथ वा Wi-Fi कनेक्सन जाँच्नुहोस्</translation>
 <translation id="8877788021141246043">कुनै रिमाइन्डर सेट गर्नुहोस्</translation>
@@ -1396,6 +1392,7 @@
 <translation id="8936501819958976551">निष्क्रिय पारियो</translation>
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>
 <translation id="8940956008527784070">ब्याटरी कम (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">कनेक्ट भयो, इन्टरनेट छैन</translation>
 <translation id="8951539504029375108">तपाईंको Chromebook मा स्वीकृत Thunderbolt यन्त्रहरू मात्र चल्छन्</translation>
 <translation id="8982906748181120328">नजिकैका यन्त्रमा फेला पर्ने</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1431,7 +1428,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> वा <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">संरक्षित सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="9161053988251441839">सिफारिस गरिएका एपहरू</translation>
-<translation id="9166331175924255663">नजिकैका डिभाइससँग सेयर गर्ने सुविधाको उच्च भिजिबिलिटी टगल गर्नुहोस्।</translation>
 <translation id="9168436347345867845">यो कार्य पछि गर्नुहोस्‌</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> सम्बन्धी १ परिणाम देखाउँदै</translation>
 <translation id="9179259655489829027">यस सुविधाले तपाईंलाई पासवर्ड प्रविष्ट नगरिकनै साइन इन भएका जुनसुकै प्रयोगकर्तामाथि द्रुत रूपमा पहुँच राख्न दिन्छ।आफूले विश्वास गर्ने खाताहरूमा मात्र यो सुविधाको प्रयोग गर्नुहोस्।</translation>

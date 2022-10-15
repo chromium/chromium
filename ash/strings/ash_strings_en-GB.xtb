@@ -74,7 +74,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294929383540927798">Change the lock-screen notification settings</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Show Bluetooth settings. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">RECOMMENDED APPS</translation>
 <translation id="1312604459020188865">Signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Always show shelf</translation>
@@ -119,7 +118,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1546930421365146760">Ask your administrator to set up this device in the Google Admin console</translation>
 <translation id="1550523713251050646">Click for more options</translation>
 <translation id="1555130319947370107">Blue</translation>
-<translation id="1570871743947603115">Toggle Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
 <translation id="1610778689852195798">'Undo'</translation>
 <translation id="1611993646327628135">On</translation>
@@ -150,7 +148,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1750088060796401187">Only <ph name="MAX_DESK_LIMIT" /> desks allowed. Remove a desk to open a new one.</translation>
 <translation id="1756833229520115364">Couldn’t save template. Too many windows or tabs.</translation>
 <translation id="1757857692711134412">Off until sunset</translation>
-<translation id="1761222317188459878">Toggle network connection. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">The <ph name="LAUNCHER_KEY_NAME" /> + full stop keyboard shortcut has changed. To use the insert key, press the <ph name="LAUNCHER_KEY_NAME" /> key + shift + backspace.</translation>
 <translation id="1770726142253415363">Moved to row <ph name="ROW_NUMBER" />, column <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Scroll right</translation>
@@ -357,7 +354,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2981684127883932071">Displaying suggestions</translation>
 <translation id="2985148236010982088">See all apps</translation>
 <translation id="2992327365391326550">Device's microphone button is turned off.</translation>
-<translation id="2995447421581609334">Show cast devices.</translation>
 <translation id="2996462380875591307">Docked Magnifier enabled. Press Ctrl+Search+D again to toggle it off.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -433,6 +429,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3413817803639110246">Nothing to see just yet</translation>
 <translation id="3428447136709161042">Disconnect from <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Swipe from the right to go back</translation>
+<translation id="3431517721463707585">Desk 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Edit reminder</translation>
 <translation id="3435967511775410570">Fingerprint recognised</translation>
@@ -673,6 +670,7 @@ Connect your device to power.</translation>
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
+<translation id="4735944890391795473">Desk 12</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4740516757091333363">Delete saved desk?</translation>
 <translation id="4752784485658729358">Only six saved desks allowed. Remove a desk to save a new one.</translation>
@@ -693,6 +691,7 @@ Connect your device to power.</translation>
 <translation id="4860284199500934869">Check your network connection to download <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Download will be attempted later. Speech will be sent to Google for processing until download is completed.</translation>
 <translation id="4864369630010738180">Signing in...</translation>
+<translation id="4864648187878336334">Desk 15</translation>
 <translation id="4868492592575313542">activated</translation>
 <translation id="4872237917498892622">Alt+Search or Shift</translation>
 <translation id="4881695831933465202">Open</translation>
@@ -719,6 +718,7 @@ Connect your device to power.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Desk 16</translation>
 <translation id="5003993274120026347">Next sentence</translation>
 <translation id="5016558321564993266">Toggle marker. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Time is up</translation>
@@ -734,6 +734,7 @@ Connect your device to power.</translation>
 <translation id="5098537242461068432">Desk and windows reopened</translation>
 <translation id="5104236669533825617">Can’t create screencast</translation>
 <translation id="5107522548814527560">Web</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Show next month</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
 <translation id="5147567197700016471">Unlocked</translation>
@@ -821,6 +822,7 @@ Connect your device to power.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requests your attention.</translation>
+<translation id="5662075790140998213">Desk 10</translation>
 <translation id="5662709761327382534">Record microphone <ph name="CURRENT_STATE" />, press enter to turn microphone recording <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activating</translation>
 <translation id="5673434351075758678">From '<ph name="FROM_LOCALE" />' to '<ph name="TO_LOCALE" />' after syncing your settings.</translation>
@@ -1020,6 +1022,8 @@ New install</translation>
 <translation id="6753390234084146956">tabs</translation>
 <translation id="6757237461819837179">No media playing</translation>
 <translation id="6777216307882431711">Powering connected USB-C devices</translation>
+<translation id="6781002679438061620">Desk 9</translation>
+<translation id="6782182743534150858">Desk 13</translation>
 <translation id="6786750046913594791">Close folder</translation>
 <translation id="6787595647772650851">Restore last session</translation>
 <translation id="6790428901817661496">Play</translation>
@@ -1081,6 +1085,7 @@ New install</translation>
 <translation id="7098053464892629930">Download the app for <ph name="NAME" /> on Google Play to see all available features</translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
 <translation id="7106330611027933926">Show deskbar</translation>
+<translation id="7116969082764510092">Desk 11</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7126996685418858413">Opened in the past week</translation>
 <translation id="7130207228079676353">MOST LIKELY</translation>
@@ -1164,7 +1169,6 @@ New install</translation>
 <translation id="7611213136657090146">Camera reconnected.</translation>
 <translation id="761736749114493194">Toggle camera framing. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Show Nearby Share settings.</translation>
 <translation id="7634648064048557203">Camera snapped to the bottom-right corner</translation>
 <translation id="7641938616688887143">Record</translation>
 <translation id="7642106959537987271">colour inversion mode</translation>
@@ -1179,6 +1183,7 @@ New install</translation>
 <translation id="7662283695561029522">Tap to configure</translation>
 <translation id="7670953955701272011">Open this date in Google Calendar</translation>
 <translation id="7671610481353807627">Apps are sorted by colour</translation>
+<translation id="7672095158465655885">Connected to <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Camera input set to <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Add new mobile network</translation>
@@ -1349,7 +1354,6 @@ New install</translation>
 <translation id="8660331759611631213">Square root of 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Press enter to capture partial screenshot</translation>
-<translation id="8664753092453405566">Show network list. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Open <ph name="NAME" /> to set up your device</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
 <translation id="8683506306463609433">Performance tracing active</translation>
@@ -1359,7 +1363,6 @@ New install</translation>
 <translation id="8724318433625452070">Full screen capture</translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
 <translation id="8735678380411481005">Keyboard backlight colour</translation>
-<translation id="8735953464173050365">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Turn on camera access to allow apps and web pages with the camera permission to use the camera(s) connected to this device.</translation>
@@ -1383,7 +1386,6 @@ New install</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you've signed out.</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
-<translation id="8871580645200179206">Toggle Dark theme. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Not connected</translation>
 <translation id="8876661425082386199">Check your connection</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
@@ -1436,7 +1438,6 @@ New install</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> or <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Can't record protected content</translation>
 <translation id="9161053988251441839">SUGGESTED APPS</translation>
-<translation id="9166331175924255663">Toggle Nearby Share high visibility.</translation>
 <translation id="9168436347345867845">Do it later</translation>
 <translation id="9178475906033259337">Displaying one result for <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">This feature allows you to quickly access any signed-in user without requiring a password. Only use this feature with accounts that you trust.</translation>
@@ -1464,5 +1465,6 @@ New install</translation>
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Landscape</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> closed.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Get the latest features and security improvements. Updates happen in the background.</translation>
 </translationbundle>

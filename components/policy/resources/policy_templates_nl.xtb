@@ -1248,7 +1248,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
       Als je het beleid instelt op True of niet instelt, wordt de netwerkstatus van het apparaat gerapporteerd.</translation>
 <translation id="2223393221350938149">Niet toestaan dat sites JavaScript JIT uitvoeren</translation>
-<translation id="2223582957891074498">Als je het beleid instelt op 'True', kunnen er geen screenshots worden gemaakt via sneltoetsen of extensie-API's. Als je het beleid instelt op 'False', zijn screenshots toegestaan.</translation>
 <translation id="2223598546285729819">Standaardinstelling voor meldingen</translation>
 <translation id="222673035924187991">ClientHallo met TLS-versleuteling aanzetten</translation>
 <translation id="2231726854197443389">Met dit beleid wordt bepaald of gebruikers de modus 'Alleen HTTPS' kunnen aanzetten in de instellingen. Met de modus 'Alleen HTTPS' worden alle navigaties naar HTTPS geüpgraded.
@@ -7073,6 +7072,8 @@ Als je dit beleid niet instelt, wordt het schermtoetsenbord getoond als de table
 <translation id="8244525275280476362">Maximum vertraging voor ophalen na ongeldigverklaring voor beleid</translation>
 <translation id="8245574649143980200">Als je dit beleid toepast of niet instelt, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> in het contextmenu zien en gebruiken. Als je dit beleid niet toepast, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet zien in het contextmenu als regio doorzoeken voor <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.</translation>
 <translation id="824818544897669723">Verwijdering van browser- en downloadgeschiedenis uitzetten</translation>
+<translation id="8250048892729838843">Dit beleid is beëindigd. Als je dit beleid toepast of niet instelt, kan het apparaat opties voor gedetailleerde rapportage krijgen.
+      Als je het beleid niet toepast, kunnen ingeschreven apparaten geen opties voor gedetailleerde rapportage krijgen.</translation>
 <translation id="82530263956734297">Extensie-ID's die zijn vrijgesteld van de blokkeringslijst</translation>
 <translation id="8256688113167012935">Hiermee wordt de weergave van de accountnaam in <ph name="PRODUCT_OS_NAME" /> op het aanmeldscherm beheerd voor het bijbehorende lokale account van het apparaat.
 

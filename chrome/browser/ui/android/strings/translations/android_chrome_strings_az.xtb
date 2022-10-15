@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Həmçinin bu saytlar və tətbiqlərdən data silinsin?</translation>
 <translation id="1034259925032978114">Pəncərə açıqdır</translation>
 <translation id="1036348656032585052">Deaktiv edin</translation>
-<translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> əlavə edilir...</translation>
 <translation id="1045899828449635435">Bu saytlardan da data silinsin?</translation>
 <translation id="1049743911850919806">Gizli Rejim</translation>
 <translation id="10614374240317010">Heç vaxt saxlanılmır</translation>
@@ -511,7 +510,6 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="3771694256347217732">Google Xidmət Şərtləri</translation>
 <translation id="3773856050682458546">Təməl data, üstəgəl ziyarət etdiyiniz vebsaytlar və istifadə etdiyiniz tətbiqlər haqqında məlumat</translation>
 <translation id="3775705724665058594">Cihazlara göndərin</translation>
-<translation id="3778956594442850293">Əsas səhifə ekranına əlavə edildi</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tab}}</translation>
 <translation id="3803784507854318295">Avto-oxutmanı idarə edin</translation>
 <translation id="3810838688059735925">Video</translation>

@@ -74,7 +74,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1293556467332435079">Tệp</translation>
 <translation id="1294929383540927798">Thay đổi các mục cài đặt thông báo trên màn hình khóa</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Hiển thị các tùy chọn cài đặt Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">ỨNG DỤNG ĐỀ XUẤT</translation>
 <translation id="1312604459020188865">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Luôn hiển thị giá</translation>
@@ -119,7 +118,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1546930421365146760">Hãy yêu cầu quản trị viên thiết lập thiết bị này trong Bảng điều khiển dành cho quản trị viên của Google</translation>
 <translation id="1550523713251050646">Nhấp để xem các tùy chọn khác</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
-<translation id="1570871743947603115">Bật/tắt Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
 <translation id="1610778689852195798">"Huỷ"</translation>
 <translation id="1611993646327628135">Bật</translation>
@@ -150,7 +148,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1750088060796401187">Bạn chỉ được mở tối đa <ph name="MAX_DESK_LIMIT" /> không gian làm việc. Hãy xoá một không gian làm việc để mở một không gian làm việc mới.</translation>
 <translation id="1756833229520115364">Không lưu được mẫu. Có quá nhiều cửa sổ hoặc thẻ.</translation>
 <translation id="1757857692711134412">Tắt cho đến hoàng hôn</translation>
-<translation id="1761222317188459878">Bật/tắt kết nối mạng. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Phím tắt <ph name="LAUNCHER_KEY_NAME" /> + Dấu chấm đã thay đổi. Để sử dụng phím Insert, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Đã di chuyển sang hàng <ph name="ROW_NUMBER" />, cột <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Cuộn sang phải</translation>
@@ -357,7 +354,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2981684127883932071">Đang hiển thị mục đề xuất</translation>
 <translation id="2985148236010982088">Xem tất cả ứng dụng</translation>
 <translation id="2992327365391326550">Nút micrô trên thiết bị đang tắt.</translation>
-<translation id="2995447421581609334">Hiển thị các thiết bị truyền.</translation>
 <translation id="2996462380875591307">Đã bật tính năng Phóng to ở vị trí cố định. Hãy nhấn lại tổ hợp phím Ctrl+Search+D để tắt tính năng này.</translation>
 <translation id="3000461861112256445">Đơn âm</translation>
 <translation id="3009178788565917040">Thiết bị ra</translation>
@@ -1164,7 +1160,6 @@ Mới cài đặt</translation>
 <translation id="7611213136657090146">Đã kết nối lại với máy ảnh.</translation>
 <translation id="761736749114493194">Bật/tắt tính năng lấy khung hình của máy ảnh. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
-<translation id="7633755430369750696">Hiện tùy chọn cài đặt Chia sẻ lân cận.</translation>
 <translation id="7634648064048557203">Máy ảnh đang bám theo góc dưới bên phải</translation>
 <translation id="7641938616688887143">Ghi hình</translation>
 <translation id="7642106959537987271">chế độ đảo màu</translation>
@@ -1349,7 +1344,6 @@ Mới cài đặt</translation>
 <translation id="8660331759611631213">Căn bậc hai của 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Nhấn phím Enter để chụp ảnh một phần màn hình</translation>
-<translation id="8664753092453405566">Hiển thị danh sách mạng. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Mở <ph name="NAME" /> để thiết lập thiết bị của bạn</translation>
 <translation id="8676770494376880701">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="8683506306463609433">Tính năng theo dõi hiệu suất đang hoạt động</translation>
@@ -1359,7 +1353,6 @@ Mới cài đặt</translation>
 <translation id="8724318433625452070">Chụp toàn màn hình</translation>
 <translation id="8734991477317290293">Bàn phím này có thể đang cố gắng đánh cắp thao tác nhấn phím của bạn</translation>
 <translation id="8735678380411481005">Màu đèn nền bàn phím</translation>
-<translation id="8735953464173050365">Hiển thị các tùy chọn cài đặt bàn phím. <ph name="KEYBOARD_NAME" /> được chọn</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Bật quyền truy cập vào máy ảnh để cho phép các ứng dụng và trang web có quyền này dùng (các) máy ảnh được kết nối với thiết bị.</translation>
@@ -1383,7 +1376,6 @@ Mới cài đặt</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hệ thống vẫn chưa xác minh được mã PIN hoặc mật khẩu của bạn. Lưu ý: Nếu bạn đổi mật khẩu gần đây, hãy dùng mật khẩu cũ. Bạn có thể dùng mật khẩu mới sau khi đăng xuất.</translation>
 <translation id="8870509716567206129">Ứng dụng không hỗ trợ chế độ chia đôi màn hình.</translation>
-<translation id="8871580645200179206">Bật/tắt Giao diện tối. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8876661425082386199">Kiểm tra kết nối của bạn</translation>
 <translation id="8877788021141246043">Đặt lời nhắc</translation>
@@ -1436,7 +1428,6 @@ Mới cài đặt</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> hoặc <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Không thể ghi nội dung được bảo vệ</translation>
 <translation id="9161053988251441839">ỨNG DỤNG ĐỀ XUẤT</translation>
-<translation id="9166331175924255663">Bật/tắt chế độ hiển thị ở mức cao cho tính năng Chia sẻ lân cận.</translation>
 <translation id="9168436347345867845">Thực hiện sau</translation>
 <translation id="9178475906033259337">Đang hiển thị 1 kết quả cho <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Tính năng này cho phép bạn truy cập nhanh vào bất kỳ người dùng đã đăng nhập nào mà không cần mật khẩu. Chỉ sử dụng tính năng này với các tài khoản mà bạn tin tưởng.</translation>

@@ -74,7 +74,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1294929383540927798">Ubah setelan notifikasi layar kunci</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Tampilkan setelan Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">APLIKASI YANG DIREKOMENDASIKAN</translation>
 <translation id="1312604459020188865">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Selalu tampilkan rak</translation>
@@ -119,7 +118,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1546930421365146760">Minta administrator Anda untuk menyiapkan perangkat ini di konsol Google Admin</translation>
 <translation id="1550523713251050646">Klik untuk opsi lainnya</translation>
 <translation id="1555130319947370107">Biru</translation>
-<translation id="1570871743947603115">Alihkan Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Akses semua aktivitas Anda di sesi ini</translation>
 <translation id="1610778689852195798">"Urungkan"</translation>
 <translation id="1611993646327628135">Aktif</translation>
@@ -150,7 +148,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1750088060796401187">Hanya <ph name="MAX_DESK_LIMIT" /> desktop yang diizinkan. Hapus satu desktop untuk membuka yang baru.</translation>
 <translation id="1756833229520115364">Tidak dapat menyimpan template. Terlalu banyak jendela atau tab.</translation>
 <translation id="1757857692711134412">Nonaktif sampai matahari terbenam</translation>
-<translation id="1761222317188459878">Alihkan koneksi jaringan. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Pintasan keyboard <ph name="LAUNCHER_KEY_NAME" /> + Titik telah diubah. Untuk menggunakan tombol Insert, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Dipindahkan ke baris <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Scroll ke kanan</translation>
@@ -357,7 +354,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2981684127883932071">Menampilkan saran</translation>
 <translation id="2985148236010982088">Lihat semua aplikasi</translation>
 <translation id="2992327365391326550">Tombol mikrofon perangkat dinonaktifkan.</translation>
-<translation id="2995447421581609334">Tampilkan perangkat transmisi.</translation>
 <translation id="2996462380875591307">Kaca Pembesar Tersemat diaktifkan. Tekan Ctrl+Search+D lagi untuk menonaktifkannya.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Keluaran</translation>
@@ -1164,7 +1160,6 @@ Baru diinstal</translation>
 <translation id="7611213136657090146">Kamera dihubungkan kembali.</translation>
 <translation id="761736749114493194">Aktifkan/nonaktifkan framing kamera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Tampilkan setelan Berbagi Langsung.</translation>
 <translation id="7634648064048557203">Kamera dipaskan ke pojok kanan bawah</translation>
 <translation id="7641938616688887143">Rekam</translation>
 <translation id="7642106959537987271">mode inversi warna</translation>
@@ -1349,7 +1344,6 @@ Baru diinstal</translation>
 <translation id="8660331759611631213">Akar pangkat dua dari 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tekan Enter untuk mengambil screenshot sebagian</translation>
-<translation id="8664753092453405566">Tampilkan daftar jaringan. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Buka <ph name="NAME" /> untuk menyiapkan perangkat Anda</translation>
 <translation id="8676770494376880701">Pengisi daya rendah terpasang</translation>
 <translation id="8683506306463609433">Pelacakan performa aktif</translation>
@@ -1359,7 +1353,6 @@ Baru diinstal</translation>
 <translation id="8724318433625452070">Tangkapan layar penuh</translation>
 <translation id="8734991477317290293">Keyboard mungkin mencoba mencuri ketukan tombol Anda</translation>
 <translation id="8735678380411481005">Warna lampu latar keyboard</translation>
-<translation id="8735953464173050365">Tampilkan setelan keyboard. <ph name="KEYBOARD_NAME" /> dipilih</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Aktifkan akses kamera untuk mengizinkan aplikasi dan halaman web yang memiliki izin kamera untuk menggunakan kamera yang terhubung ke perangkat ini.</translation>
@@ -1383,7 +1376,6 @@ Baru diinstal</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN atau sandi Anda belum dapat diverifikasi. Catatan: Jika Anda baru-baru ini mengubah sandi, gunakan sandi lama Anda. Sandi baru akan diterapkan setelah Anda logout.</translation>
 <translation id="8870509716567206129">Aplikasi tidak mendukung layar terpisah.</translation>
-<translation id="8871580645200179206">Tombol Tema gelap. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Tak terhubung</translation>
 <translation id="8876661425082386199">Periksa koneksi Anda</translation>
 <translation id="8877788021141246043">Setel pengingat</translation>
@@ -1436,7 +1428,6 @@ Baru diinstal</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> atau <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Tidak dapat merekam konten yang dilindungi</translation>
 <translation id="9161053988251441839">APLIKASI YANG DISARANKAN</translation>
-<translation id="9166331175924255663">Tombol visibilitas tinggi Berbagi Langsung.</translation>
 <translation id="9168436347345867845">Nanti saja</translation>
 <translation id="9178475906033259337">Menampilkan 1 hasil untuk <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Dengan fitur ini, Anda dapat dengan cepat mengakses setiap pengguna yang sudah login, tanpa perlu menggunakan sandi. Hanya gunakan fitur ini dengan akun yang Anda percayai.</translation>

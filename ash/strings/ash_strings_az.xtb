@@ -74,7 +74,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1294929383540927798">Kilid ekranının bildiriş ayarını dəyişin</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Bluetooth ayarlarını göstərin. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">TÖVSİYƏ EDİLƏN TƏTBİQLƏR</translation>
 <translation id="1312604459020188865">Siqnal Gücü <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Hər zaman rəfi göstərin</translation>
@@ -119,7 +118,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1546930421365146760">Admindən bu cihazı Google Admin konsolunda ayarlamasını istəyin</translation>
 <translation id="1550523713251050646">Əlavə seçimlər üçün klikləyin</translation>
 <translation id="1555130319947370107">Mavi</translation>
-<translation id="1570871743947603115">Bluetooth'u aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Sessiyadakı bütün fəaliyyətlərə daxil olun</translation>
 <translation id="1610778689852195798">"Ləğv edin"</translation>
 <translation id="1611993646327628135">Aktiv</translation>
@@ -150,7 +148,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1750088060796401187">Yalnız <ph name="MAX_DESK_LIMIT" /> masaya icazə verilir. Yenisini açmaq üçün masanı silin.</translation>
 <translation id="1756833229520115364">Şablonu yadda saxlamaq mümkün olmadı. Həddindən çox pəncərə və ya tab.</translation>
 <translation id="1757857692711134412">Gün batanadək deaktiv olacaq</translation>
-<translation id="1761222317188459878">Şəbəkə bağlantısını aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nöqtə klaviatura qısayolu dəyişib. "Daxil et" düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Shift + Geri düyməsini basın.</translation>
 <translation id="1770726142253415363">Bura köçürülüb: sıra <ph name="ROW_NUMBER" />, sütun <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Sağa sürüşdürün</translation>
@@ -357,7 +354,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2981684127883932071">Təkliflərin göstərilməsi</translation>
 <translation id="2985148236010982088">Bütün tətbiqlərə baxın</translation>
 <translation id="2992327365391326550">Cihazın mikrofon düyməsi deaktivdir.</translation>
-<translation id="2995447421581609334">Yayım cihazlarını göstərin.</translation>
 <translation id="2996462380875591307">Yüksək Kontrast Rejimi aktiv edildi. Rejimi deaktiv etmək üçün Ctrl+Search+D düymələrini basın.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Çıxış</translation>
@@ -1164,7 +1160,6 @@ Yeni quraşdırma</translation>
 <translation id="7611213136657090146">Kamera yenidən qoşuldu.</translation>
 <translation id="761736749114493194">Kamera çərçivəsini keçirin. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Yaxındakılarla Paylaşma ayarlarını göstərin.</translation>
 <translation id="7634648064048557203">Kamera aşağı sağ küncə çəkildi</translation>
 <translation id="7641938616688887143">Çəkin</translation>
 <translation id="7642106959537987271">rəng inversiyası rejimi</translation>
@@ -1349,7 +1344,6 @@ Yeni quraşdırma</translation>
 <translation id="8660331759611631213">71-in kvadrat kökü</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Qismən skrinşot çəkmək üçün enter düyməsini basın</translation>
-<translation id="8664753092453405566">Şəbəkə siyahısını göstərin. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Cihazınızı ayarlamaq üçün <ph name="NAME" /> tətbiqini açın</translation>
 <translation id="8676770494376880701">Enerjiyə qənaət edən şarjer qoşuldu</translation>
 <translation id="8683506306463609433">Performansın izlənməsi aktivdir</translation>
@@ -1359,7 +1353,6 @@ Yeni quraşdırma</translation>
 <translation id="8724318433625452070">Tam ekran çəkimi</translation>
 <translation id="8734991477317290293">Bu düymələrininızı oğurlamağa cəhd edə bilər</translation>
 <translation id="8735678380411481005">Klaviatura arxa işığı rəngi</translation>
-<translation id="8735953464173050365">Klaviatura ayarlarını göstərin. <ph name="KEYBOARD_NAME" /> seçilib</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Kamera icazəsi olan tətbiqlərə və veb səhifələrə bu cihaza qoşulmuş kameralardan istifadə etməyə icazə vermək üçün kameraya girişi aktiv edin.</translation>
@@ -1383,7 +1376,6 @@ Yeni quraşdırma</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN və ya parolunuzu yenə doğrulamaq mümkün olmadı. Qeyd: Bu yaxınlarda parolunuzu dəyişmisinizsə, köhnə parolunuzu istifadə edin. Çıxdıqdan sonra yeni parolunuz tətbiq ediləcək.</translation>
 <translation id="8870509716567206129">Tətbiq ekran bölünməsini dəstəkləmir.</translation>
-<translation id="8871580645200179206">Tünd temanı dəyişdirin. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Qoşulmayıb</translation>
 <translation id="8876661425082386199">Bağlantını yoxlayın</translation>
 <translation id="8877788021141246043">Xatırlatma ayarlayın</translation>
@@ -1436,7 +1428,6 @@ Yeni quraşdırma</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> və ya <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Qorunan məzmunu yazmaq olmur</translation>
 <translation id="9161053988251441839">MƏSLƏHƏTLİ TƏTBİQLƏR</translation>
-<translation id="9166331175924255663">Yaxındakılarla Paylaşmanın yüksək görünmə dərəcəsini dəyişdirin.</translation>
 <translation id="9168436347345867845">Daha sonra edin</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> üzrə 1 nəticə göstərilir</translation>
 <translation id="9179259655489829027">Bu funksiya parol tələb etmədən hesaba daxil olmuş istənilən istifadəçiyə sürətli girişə imkan verir. Bu funksiyanı yalnız güvəndiyiniz hesablarla işlədin.</translation>

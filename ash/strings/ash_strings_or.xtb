@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294929383540927798">ଲକ୍‌-ସ୍କ୍ରିନ୍‌ ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍‌କୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">ବ୍ଲୁଟୁଥ୍‍ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">ସୁପାରିଶ୍ କରାଯାଇଥିବା ଆପ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="1312604459020188865">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ସର୍ବଦା ସେଲ୍ଫ ଦେଖାନ୍ତୁ</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">Google Admin କନସୋଲରେ ଏହି ଡିଭାଇସକୁ ସେଟ ଅପ କରିବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ କୁହନ୍ତୁ</translation>
 <translation id="1550523713251050646">ଅଧିକ ବିକଳ୍ପଗୁଡ଼ିକ ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
-<translation id="1570871743947603115">ବ୍ଲୁଟୁଥ୍‌ ଟୋଗଲ୍‌ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ଏହି ଅବଧିରେ ଆପଣଙ୍କର ସମସ୍ତ କାର୍ଯ୍ୟକଳାପ ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
 <translation id="1610778689852195798">"ପୂର୍ବବତ୍ କରନ୍ତୁ"</translation>
 <translation id="1611993646327628135">ଚାଲୁ ଅଛି</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">କେବଳ <ph name="MAX_DESK_LIMIT" />ଟି ଡେସ୍କକୁ ଅନୁମତି ଦିଆଯାଇଛି। ଏକ ନୂଆ ଡେସ୍କ ଖୋଲିବାକୁ ଗୋଟିଏ ଡେସ୍କକୁ କାଢ଼ନ୍ତୁ।</translation>
 <translation id="1756833229520115364">ଟେମ୍ପଲେଟକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଅନେକଗୁଡ଼ିଏ ୱିଣ୍ଡୋ କିମ୍ବା ଟାବ।</translation>
 <translation id="1757857692711134412">ସୂର୍ଯ୍ୟାସ୍ତ ପର୍ଯ୍ୟନ୍ତ ବନ୍ଦ ଅଛି</translation>
-<translation id="1761222317188459878">ନେଟ୍‌ୱର୍କ ସଂଯୋଗ ଟୋଗଲ୍‌ କରନ୍ତୁ।<ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। Insert କୀକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + Shift + Backspace ଦବାନ୍ତୁ।</translation>
 <translation id="1770726142253415363">ଧାଡ଼ି <ph name="ROW_NUMBER" />, ସ୍ତମ୍ଭ <ph name="COLUMN_NUMBER" />କୁ ମୁଭ କରାଯାଇଛି।</translation>
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">ପ୍ରସ୍ତାବଗୁଡ଼ିକ ଡିସପ୍ଲେ ହେଉଛି</translation>
 <translation id="2985148236010982088">ସମସ୍ତ ଆପ ଦେଖନ୍ତୁ</translation>
 <translation id="2992327365391326550">ଡିଭାଇସର ମାଇକ୍ରୋଫୋନ୍ ବଟନ୍ ବନ୍ଦ କରାଯାଇଛି।</translation>
-<translation id="2995447421581609334">କାଷ୍ଟ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ଦେଖନ୍ତୁ।</translation>
 <translation id="2996462380875591307">ଡକ୍‌ ହୋଇଥିବା ମ୍ୟାଗ୍ନିଫାୟର୍‌କୁ ସକ୍ଷମ କରାଯାଇଛି। ଏହାକୁ ବନ୍ଦରେ ଟଗଲ୍‌ କରିବାକୁ Ctrl+Search+D ଦବାନ୍ତୁ</translation>
 <translation id="3000461861112256445">ମୋନୋ ଅଡିଓ</translation>
 <translation id="3009178788565917040">ଆଉଟ୍‌ପୁଟ୍</translation>
@@ -1163,7 +1159,6 @@
 <translation id="7611213136657090146">କ୍ୟାମେରା ପୁଣି କନେକ୍ଟ ହୋଇଛି।</translation>
 <translation id="761736749114493194">କେମେରା ଫ୍ରେମିଂକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ଫାରେନହାଇଟ୍</translation>
-<translation id="7633755430369750696">Nearby Share ସେଟିଂସ୍ ଦେଖାନ୍ତୁ।</translation>
 <translation id="7634648064048557203">କ୍ୟାମେରାକୁ ନିମ୍ନ ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="7641938616688887143">ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7642106959537987271">କଲର ଇନଭର୍ସନ ମୋଡ</translation>
@@ -1348,7 +1343,6 @@
 <translation id="8660331759611631213">71ର ବର୍ଗମୂଳ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ଆଂଶିକ ସ୍କ୍ରିନସଟ କ୍ୟାପଚର କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
-<translation id="8664753092453405566">ନେଟ୍‌ୱାର୍କ ତାଲିକା ଦେଖାନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">ଆପଣଙ୍କ ଡିଭାଇସକୁ ସେଟଅପ କରିବା ପାଇଁ <ph name="NAME" />କୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8676770494376880701">ନିମ୍ନ-ଶକ୍ତିର ଚାର୍ଜର୍ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="8683506306463609433">କାର୍ଯ୍ୟଦକ୍ଷତା ଟ୍ରେସିଂ ସକ୍ରିୟ ଅଛି</translation>
@@ -1358,7 +1352,6 @@
 <translation id="8724318433625452070">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍</translation>
 <translation id="8734991477317290293">ଆପଣଙ୍କ କୀ'ଷ୍ଟ୍ରୋକ୍‌କୁ ଚୋରି କରିବାକୁ ଏହା ଏକ ପ୍ରୟାସ ହୋଇପାରେ</translation>
 <translation id="8735678380411481005">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ ରଙ୍ଗ</translation>
-<translation id="8735953464173050365">କୀ'ବୋର୍ଡ ସେଟିଂ‌ସ୍ ଦେଖାନ୍ତୁ। <ph name="KEYBOARD_NAME" />କୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">ଏହି ଡିଭାଇସ ସହ କନେକ୍ଟ ହୋଇଥିବା କେମେରା(ଗୁଡ଼ିକ) ବ୍ୟବହାର କରିବାକୁ କେମେରା ଅନୁମତି ସହିତ ଆପ୍ସ ଏବଂ ୱେବପୃଷ୍ଠାଗୁଡ଼ିକୁ ଅନୁମତି ଦେବା ପାଇଁ କେମେରା ଆକ୍ସେସ ଚାଲୁ କରନ୍ତୁ।</translation>
@@ -1382,7 +1375,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ଆପଣଙ୍କ PIN କିମ୍ବା ପାସୱାର୍ଡକୁ ଏବେ ବି ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ଧ୍ୟାନ ଦିଅନ୍ତୁ: ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ବର୍ତ୍ତମାନ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି, ତେବେ ପୁରୁଣା ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିବା ପରେ ଆପଣଙ୍କ ନୂଆ ପାସୱାର୍ଡ ଲାଗୁ ହେବ।</translation>
 <translation id="8870509716567206129">ଆପ୍‍ ସ୍ପ୍ଲିଟ୍‍-ସ୍କ୍ରୀନକୁ ସମର୍ଥନ କରେନାହିଁ।</translation>
-<translation id="8871580645200179206">ଗାଢ଼ ଥିମ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">ସଂଯୁକ୍ତ ନାହିଁ</translation>
 <translation id="8876661425082386199">ଆପଣଙ୍କର ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8877788021141246043">ଗୋଟିଏ ରିମାଇଣ୍ଡର୍‌କୁ ସେଟ୍ କରନ୍ତୁ</translation>
@@ -1435,7 +1427,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> କିମ୍ବା <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ରେକର୍ଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9161053988251441839">ପ୍ରସ୍ତାବିତ ଆପ୍ସ</translation>
-<translation id="9166331175924255663">Nearby Shareର ଉଚ୍ଚ ଭିଜିବିଲିଟୀକୁ ଟୋଗଲ୍ କରନ୍ତୁ।</translation>
 <translation id="9168436347345867845">ଏହାକୁ ପରେ କରନ୍ତୁ</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> ପାଇଁ 1ଟି ଫଳାଫଳ ଡିସ୍‌ପ୍ଲେ ହେଉଛି</translation>
 <translation id="9179259655489829027">ଏହି ବୈଶିଷ୍ଟ୍ୟ ଯେକୌଣସି ସାଇନ୍ ଇନ୍ କରିଥିବା ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ବିନା ପାସ୍‌ୱାର୍ଡରେ ଶୀଘ୍ର ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଅନୁମତି ଦିଏ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଆକାଉଣ୍ଟଗୁଡ଼ିକରେ ଏହି ବୈଶିଷ୍ଟ୍ୟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>

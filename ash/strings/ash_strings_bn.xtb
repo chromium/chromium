@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294929383540927798">লক-স্ক্রিন বিজ্ঞপ্তির সেটিংস পরিবর্তন করুন</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">ব্লুটুথ সেটিংস দেখান। <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">প্রস্তাবিত অ্যাপ</translation>
 <translation id="1312604459020188865">সিগন্যাল: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">সবসময় শেল্ফ দেখান</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">আপনার প্রশাসককে Google অ্যাডমিন কনসোলে এই ডিভাইসটি সেট-আপ করতে বলুন</translation>
 <translation id="1550523713251050646">আরও বিকল্পের জন্য ক্লিক করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
-<translation id="1570871743947603115">ব্লুটুথ টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
 <translation id="1610778689852195798">"আগের অবস্থায় ফিরুন"</translation>
 <translation id="1611993646327628135">চালু আছে</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">শুধুমাত্র <ph name="MAX_DESK_LIMIT" />টি ডেস্কের অনুমতি দেওয়া হয়েছে। নতুন একটি খোলার জন্য ডেস্ক সরান।</translation>
 <translation id="1756833229520115364">টেমপ্লেট সেভ করা যাচ্ছে না। অনেক বেশি উইন্ডো বা ট্যাব।</translation>
 <translation id="1757857692711134412">সূর্যাস্ত পর্যন্ত বন্ধ আছে</translation>
-<translation id="1761222317188459878">নেটওয়ার্ক কানেকশন টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + পিরিয়ড কীবোর্ড শর্টকাট পরিবর্তিত হয়েছে। Insert বোতাম ব্যবহার করার জন্য, <ph name="LAUNCHER_KEY_NAME" /> বোতাম + Shift + Backspace প্রেস করুন।</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" /> নম্বর সারির <ph name="COLUMN_NUMBER" /> নম্বর কলামে সরানো হয়েছে।</translation>
 <translation id="1771761307086386028">ডান দিকে স্ক্রল করুন</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">সাজেশন দেখানো হচ্ছে</translation>
 <translation id="2985148236010982088">সব অ্যাপ দেখুন</translation>
 <translation id="2992327365391326550">ডিভাইসের মাইক্রোফোন বোতাম বন্ধ আছে।</translation>
-<translation id="2995447421581609334">কাস্ট ডিভাইসগুলি দেখান।</translation>
 <translation id="2996462380875591307">ডক করা ম্যাগনিফায়ার চালু আছে। আবার Ctrl+Search+D প্রেস করে সেটিকে বন্ধ করুন।</translation>
 <translation id="3000461861112256445">মোনো অডিও</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
@@ -1164,7 +1160,6 @@
 <translation id="7611213136657090146">ক্যামেরা আবার কানেক্ট করা হয়েছে।</translation>
 <translation id="761736749114493194">ক্যামেরা ফ্রেমিং টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ফারেনহাইট</translation>
-<translation id="7633755430369750696">'নিয়ারবাই শেয়ার' সেটিংস দেখুন।</translation>
 <translation id="7634648064048557203">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
 <translation id="7641938616688887143">রেকর্ড করুন</translation>
 <translation id="7642106959537987271">কালার ইনভার্সন মোড</translation>
@@ -1349,7 +1344,6 @@
 <translation id="8660331759611631213">৭১-এর বর্গমূল</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">আংশিক স্ক্রিনশট ক্যাপচার Enter প্রেস করুন</translation>
-<translation id="8664753092453405566">নেটওয়ার্ক তালিকা দেখান। <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">আপনার ডিভাইস সেট-আপ করার জন্য <ph name="NAME" /> খুলুন</translation>
 <translation id="8676770494376880701">নিম্ন শক্তির চার্জার সংযুক্ত করা হয়েছে</translation>
 <translation id="8683506306463609433">পারফরম্যান্স ট্রেস করার বিকল্প চালু আছে</translation>
@@ -1359,7 +1353,6 @@
 <translation id="8724318433625452070">ফুল-স্ক্রিন ক্যাপচার</translation>
 <translation id="8734991477317290293">এটি আপনার পাসওয়ার্ড চুরি করার চেষ্টা করতে পারে</translation>
 <translation id="8735678380411481005">কীবোর্ড ব্যাকলাইটের রঙ</translation>
-<translation id="8735953464173050365">কীবোর্ড সেটিংস দেখান। <ph name="KEYBOARD_NAME" /> বেছে নেওয়া হয়েছে</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">এই ডিভাইসের সাথে সংযুক্ত ক্যামেরা ব্যবহার করার জন্য ক্যামেরার অনুমতি সহ অ্যাপ এবং ওয়েবপেজে অনুমতি দিতে ক্যামেরা অ্যাক্সেস চালু করুন।</translation>
@@ -1383,7 +1376,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">আপনার পিন বা পাসওয়ার্ড এখনও যাচাই করা যায়নি। মনে রাখবেন: আপনি সম্প্রতি পাসওয়ার্ড পরিবর্তন করে থাকলে, পুরনো পাসওয়ার্ড ব্যবহার করুন। আপনি সাইন-আউট করলে নতুন পাসওয়ার্ড প্রয়োগ করা হবে।</translation>
 <translation id="8870509716567206129">অ্যাপ্লিকেশনটি বিভক্ত-স্ক্রিন সমর্থন করে না৷</translation>
-<translation id="8871580645200179206">ডার্ক থিম টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">সংযুক্ত নয়</translation>
 <translation id="8876661425082386199">আপনার ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
@@ -1436,7 +1428,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> বা <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">সুরক্ষিত কন্টেন্ট রেকর্ড করা যাবে না</translation>
 <translation id="9161053988251441839">প্রস্তাবিত অ্যাপ</translation>
-<translation id="9166331175924255663">'নিয়ারবাই শেয়ার হাই ভিজিবিলিটি' মোড টগল করুন।</translation>
 <translation id="9168436347345867845">এটি পরে করুন</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />-এর জন্য ১টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="9179259655489829027">এই বৈশিষ্ট্যের মাধ্যমে আপনি কোনও পাসওয়ার্ড ছাড়াই সাইন-ইন করা যেকোনও ব্যবহারকারীকে দ্রুত অ্যাক্সেস করতে পারেন। এটি শুধুমাত্র বিশ্বস্ত অ্যাকাউন্টেই ব্যবহার করুন।</translation>

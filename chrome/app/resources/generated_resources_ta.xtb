@@ -1894,6 +1894,7 @@
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">மேற்பார்வையிடப்படும் பயனர்களை உங்கள் நிர்வாகி முடக்கியுள்ளார்.</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" /> கடந்ததும் சாதனம் ஷட் டவுன் ஆகும். சாதனத்தை மீண்டும் ஆன் செய்யும் முன்பு USBயை அகற்றவும். இதன் பிறகு <ph name="DEVICE_OS" /> ஐப் பயன்படுத்தலாம்.</translation>
+<translation id="2722547199758472013">ஐடி: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">WebRTC பதிவுகள்</translation>
 <translation id="272488616838512378">அலகு மாற்றம்</translation>
 <translation id="2725200716980197196">நெட்வொர்க் இணைப்பு மீட்டெடுக்கப்பட்டது</translation>
@@ -3056,6 +3057,7 @@
 <translation id="3828029223314399057">புக்மார்க்குகளைத் தேடுதல்</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />Play சேவை விதிமுறைகள்<ph name="END_LINK3" /> ஆகியவற்றைப் படித்துவிட்டேன், அவற்றை ஏற்கிறேன்.</translation>
 <translation id="3829765597456725595">SMB ஃபைல் பகிர்வு</translation>
+<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" /> இல்</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{தீங்கிழைக்கச் சாத்தியமுள்ள 1 நீட்டிப்பை உங்கள் நிர்வாகி மீண்டும் இயக்கியுள்ளார்}other{தீங்கிழைக்கச் சாத்தியமுள்ள {NUM_EXTENSIONS} நீட்டிப்புகளை உங்கள் நிர்வாகி மீண்டும் இயக்கியுள்ளார்}}</translation>
 <translation id="3831436149286513437">Google இயக்ககத் தேடல் பரிந்துரைகள்</translation>
 <translation id="3834728400518755610">மைக்ரோஃபோன் அமைப்பில் செய்த மாற்றத்தைச் செயல்படுத்த Linuxஸை ஷட்-டவுன் செய்ய வேண்டும். தொடர, Linuxஸை ஷட்-டவுன் செய்யவும்.</translation>
@@ -3944,6 +3946,7 @@
 <translation id="4677772697204437347">GPU நினைவகம்</translation>
 <translation id="467823995058589466">கேமரா முடக்கப்பட்டது</translation>
 <translation id="4680105648806843642">இந்தப் பக்கத்தில் ஒலி முடக்கப்பட்டுள்ளது</translation>
+<translation id="4680112532510845139">படத்தை இங்கே இழுத்துவிடவும்</translation>
 <translation id="4681453295291708042">’அருகிலுள்ளவற்றுடன் பகிர்தல்’ அம்சத்தை முடக்கு</translation>
 <translation id="4681512854288453141">மூலக் கொள்கை</translation>
 <translation id="4681930562518940301">அசல் &amp;படத்தைப் புதிய தாவலில் திற</translation>
@@ -4906,6 +4909,7 @@
 <translation id="5620568081365989559"><ph name="FOLDER_PATH" />க்கான முழு அணுகலை DevTools கோருகிறது.
 நீங்கள் பாதுகாக்கப்பட வேண்டிய தகவல் எதையும் வெளிப்படுத்தவில்லை என்பதை உறுதிப்படுத்தவும்.</translation>
 <translation id="5620612546311710611">பயன்பாட்டுப் புள்ளிவிவரங்கள்</translation>
+<translation id="562250930904332809">&amp;உடனடி வசனத்தை முடக்கு</translation>
 <translation id="5623282979409330487">இந்தத் தளம் உங்கள் மோஷன் சென்சார்களைப் பயன்படுத்துகிறது.</translation>
 <translation id="5623842676595125836">பதிவு</translation>
 <translation id="5624120631404540903">கடவுச்சொற்களை நிர்வகி</translation>
@@ -5174,6 +5178,7 @@
 <translation id="5884474295213649357">இந்தத் தாவல் USB சாதனத்துடன் இணைக்கப்பட்டுள்ளது.</translation>
 <translation id="5885314688092915589">இந்தச் சுயவிவரத்தை உங்கள் நிறுவனம் நிர்வகிக்கும்</translation>
 <translation id="5886009770935151472">விரல் 1</translation>
+<translation id="5886112770923972514">அருகிலுள்ள துரித இணைப்புச் சாதனங்களை இணைத்து விரைவாக அமைக்கலாம்</translation>
 <translation id="5886384907280980632">இப்போதே ஆஃப் செய்</translation>
 <translation id="5889282057229379085">அதிகபட்ச எண்ணிக்கையிலான இடைப்பட்ட CAகள்: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">விருப்பமான வைஃபை நெட்வொர்க்குகள்</translation>
@@ -7749,6 +7754,7 @@
 <translation id="8338952601723052325">டெவெலப்பர் இணையதளம்</translation>
 <translation id="833986336429795709">இந்த இணைப்பைத் திறக்க, ஆப்ஸைத் தேர்வுசெய்யும்</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> சாதனத்திற்கான கூடுதல் செயல்கள்</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{சமீபத்தில் அதிகமான அறிவிப்புகளை அனுப்பிய <ph name="BEGIN_BOLD" />1 தளத்தைப்<ph name="END_BOLD" /> பாருங்கள்}other{சமீபத்தில் அதிகமான அறிவிப்புகளை அனுப்பிய <ph name="BEGIN_BOLD" />{NUM_SITES} தளங்களைப்<ph name="END_BOLD" /> பாருங்கள்}}</translation>
 <translation id="8342221978608739536">பயன்படுத்திப் பார்க்கவில்லை</translation>
 <translation id="8342861492835240085">தொகுப்பைத் தேர்ந்தெடு</translation>
 <translation id="8345848587667658367">இப்போது, உங்கள் மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள், ஆப்ஸ் ஆகியவற்றைப் பார்க்கலாம்</translation>
@@ -8390,6 +8396,7 @@
 <translation id="8970887620466824814">ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Google சேவையகங்களிலிருந்து பதிவிறக்குவதை ஃபயர்வால் தடுக்கவில்லை என்பதை உங்கள் நெட்வொர்க் நிர்வாகியிடம் கேட்டு உறுதிப்படுத்திக்கொள்ளவும்.</translation>
+<translation id="8973263196882835828">&amp;உடனடி வசனத்தை இயக்கு</translation>
 <translation id="8973557916016709913">அளவை மாற்றுவதற்கான நிலையை அகற்றும்</translation>
 <translation id="8973596347849323817">உங்கள் தேவைகளுக்கேற்ப இந்தச் சாதனத்தைத் தனிப்பயனாக்கலாம். இந்த அணுகல்தன்மை அம்சங்களை, அமைப்புகளுக்குச் சென்று பின்னர் மாற்றிக்கொள்ளலாம்.</translation>
 <translation id="897414447285476047">இணைப்பில் ஏற்பட்ட சிக்கலின் காரணமாக, இலக்கு ஃபைலின் பதிவிறக்கம் முழுமையடையவில்லை.</translation>
@@ -8733,6 +8740,7 @@
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">பாதுகாப்பான இணைப்பை உருவாக்குகிறது...</translation>
 <translation id="996803490569799917">உங்களுக்குப் பிடித்தவர்களுடனான நினைவுகளையும் மற்றும் பலவற்றையும் பாருங்கள்</translation>
+<translation id="997143476478634194">நீங்கள் தளங்களைப் பார்வையிடும்போது அவை தானாகவே இந்த அமைப்பின்படி செயல்படும். வழக்கமாக, முக்கியச் செய்திகள் அல்லது அரட்டை மெசேஜ்கள் குறித்து உங்களுக்குத் தெரியப்படுத்த அறிவிப்புகளைத் தளங்கள் அனுப்பும்.</translation>
 <translation id="99731366405731005">வைஃபை ஒத்திசைவைப் பயன்படுத்த <ph name="LINK1_BEGIN" />Chrome ஒத்திசைவை<ph name="LINK1_END" /> இயக்கவும். <ph name="LINK2_BEGIN" />மேலும் அறிக<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">க&amp;ண்காணி</translation>
 </translationbundle>

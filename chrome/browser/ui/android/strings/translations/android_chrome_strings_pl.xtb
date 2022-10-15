@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Wyczyścić też dane z tych stron i aplikacji?</translation>
 <translation id="1034259925032978114">Okno jest otwarte</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
-<translation id="1036727731225946849">Dodaję aplikację <ph name="WEBAPK_NAME" />…</translation>
 <translation id="1045899828449635435">Wyczyścić też dane z tych stron?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="10614374240317010">Nigdy nie zapisane</translation>
@@ -511,7 +510,6 @@ Jeśli usuniesz swoją historię przeglądania – całą lub dotyczącą okre�
 <translation id="3771694256347217732">Warunki korzystania z usług Google</translation>
 <translation id="3773856050682458546">Podstawowe dane oraz informacje na temat odwiedzanych stron i używanych aplikacji</translation>
 <translation id="3775705724665058594">Wyślij na swoje urządzenia</translation>
-<translation id="3778956594442850293">Dodano do ekranu głównego</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
 <translation id="3803784507854318295">Zarządzanie autoodtwarzaniem</translation>
 <translation id="3810838688059735925">Wideo</translation>

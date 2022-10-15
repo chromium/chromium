@@ -3925,6 +3925,7 @@
 <translation id="4677772697204437347">GPU жады</translation>
 <translation id="467823995058589466">Камера өшірілген.</translation>
 <translation id="4680105648806843642">Бұл бетте дыбыс өшірілген</translation>
+<translation id="4680112532510845139">Суретті осы жерге әкеліңіз.</translation>
 <translation id="4681453295291708042">Nearby Share функциясын өшіру</translation>
 <translation id="4681512854288453141">Бастапқы саясат</translation>
 <translation id="4681930562518940301">Түпнұсқа &amp;кескінді жаңа қойындыда ашу</translation>
@@ -4883,6 +4884,7 @@
 <translation id="5620540760831960151">Бұл тізімге <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> және <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> әсер етеді.</translation>
 <translation id="5620568081365989559">Әзірлеуші құралдары <ph name="FOLDER_PATH" /> қалтасына толық кіру құқығын сұрайды. Құпия ақпаратты әшкерелемеңіз.</translation>
 <translation id="5620612546311710611">қолданыс статистикасы</translation>
+<translation id="562250930904332809">Live Caption функциясын өшіру</translation>
 <translation id="5623282979409330487">Бұл сайт қозғалыс датчиктерін пайдаланып жатыр.</translation>
 <translation id="5623842676595125836">Журнал</translation>
 <translation id="5624120631404540903">Құпия сөздерді басқару</translation>
@@ -8365,6 +8367,7 @@
 <translation id="8970887620466824814">Бірдеңе дұрыс болмады.</translation>
 <translation id="89720367119469899">Шығу</translation>
 <translation id="8972513834460200407">Әкімшіге хабарласып, брандмауэр Google серверлерінен келген жүктеулерді бөгемейтінін тексеріңіз.</translation>
+<translation id="8973263196882835828">Live Caption функциясын қосу</translation>
 <translation id="8973557916016709913">Масштабтау деңгейін өшіру</translation>
 <translation id="8973596347849323817">Бұл құрылғыны қажеттіліктерге сай реттей аласыз. Бұл арнайы мүмкіндіктерді кейінірек "Параметрлер" тармағында өзгертуге болады.</translation>
 <translation id="897414447285476047">Байланыстағы ақауға қарай мақсатты файл аяқталмады.</translation>

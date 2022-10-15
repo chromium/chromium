@@ -74,7 +74,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1293556467332435079">Failid</translation>
 <translation id="1294929383540927798">Lukustuskuva märguandeseadete muutmine</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Kuvab Bluetoothi seaded. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">SOOVITATUD RAKENDUSED</translation>
 <translation id="1312604459020188865">Signaalitugevus: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Kuva alati riiul</translation>
@@ -119,7 +118,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1546930421365146760">Paluge administraatoril see seade Google Admini konsoolil seadistada</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
 <translation id="1555130319947370107">Sinine</translation>
-<translation id="1570871743947603115">Lülitab Bluetoothi sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Juurdepääs kõigile teie tegevustele selle seansi ajal</translation>
 <translation id="1610778689852195798">„Võta tagasi“</translation>
 <translation id="1611993646327628135">Sees</translation>
@@ -150,7 +148,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1750088060796401187">Lubatud on ainult <ph name="MAX_DESK_LIMIT" /> töölauda. Uue töölaua avamiseks eemaldage mõni olemasolev töölaud.</translation>
 <translation id="1756833229520115364">Malli ei saanud salvestada. Liiga palju aknaid või vahelehti.</translation>
 <translation id="1757857692711134412">Päikeseloojanguni välja lülitatud</translation>
-<translation id="1761222317188459878">Lülitab võrguühenduse sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Klaviatuuri otseteed <ph name="LAUNCHER_KEY_NAME" /> + punktiklahv on muudetud. Lisamisklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + tõstuklahvi + tagasilükkeklahvi.</translation>
 <translation id="1770726142253415363">Teisaldati <ph name="ROW_NUMBER" />. reale, <ph name="COLUMN_NUMBER" />. veergu.</translation>
 <translation id="1771761307086386028">Keri paremale</translation>
@@ -357,7 +354,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2981684127883932071">Soovitused on kuvatud</translation>
 <translation id="2985148236010982088">Vaadake kõiki rakendusi</translation>
 <translation id="2992327365391326550">Seadme mikrofoninupp on välja lülitatud.</translation>
-<translation id="2995447421581609334">Kuvab ülekandeseadmed.</translation>
 <translation id="2996462380875591307">Dokitud luup on lubatud. Vajutage selle väljalülitamiseks klahvikombinatsiooni Ctrl + otsinguklahv + D.</translation>
 <translation id="3000461861112256445">Monoheli</translation>
 <translation id="3009178788565917040">Väljund</translation>
@@ -1165,7 +1161,6 @@ Uus installimine</translation>
 <translation id="7611213136657090146">Kaamera ühendati uuesti.</translation>
 <translation id="761736749114493194">Kaamera kadreerimise lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Läheduses jagamise seadete kuvamine.</translation>
 <translation id="7634648064048557203">Kaamera kinnitati paremasse alanurka</translation>
 <translation id="7641938616688887143">Salvesta</translation>
 <translation id="7642106959537987271">värvide ümberpööramise režiim</translation>
@@ -1350,7 +1345,6 @@ Uus installimine</translation>
 <translation id="8660331759611631213">Ruutjuur 71-st</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Vajutage osalise ekraanipildi jäädvustamiseks sisestusklahvi</translation>
-<translation id="8664753092453405566">Kuvab võrkude loendi. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Avage <ph name="NAME" />, et oma seade seadistada</translation>
 <translation id="8676770494376880701">Väikese energiakuluga laadija on ühendatud</translation>
 <translation id="8683506306463609433">Toimivuse jälgimine on aktiivne</translation>
@@ -1360,7 +1354,6 @@ Uus installimine</translation>
 <translation id="8724318433625452070">Täisekraani jäädvustamine</translation>
 <translation id="8734991477317290293">See võib üritada varastada teie klahvivajutusi</translation>
 <translation id="8735678380411481005">Klaviatuuri taustavalguse värv</translation>
-<translation id="8735953464173050365">Kuvab klaviatuuriseaded. Valitud on <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Lülitage sisse juurdepääs kaamerale, et kaameraloaga rakendused ja veebilehed saaksid selle seadmega ühendatud kaameraid kasutada.</translation>
@@ -1384,7 +1377,6 @@ Uus installimine</translation>
 <translation id="8850991929411075241">Otsing + ESC</translation>
 <translation id="8853703225951107899">Teie PIN-koodi või parooli ei saanud ikka kinnitada. Märkus. Kui muutsite hiljuti parooli, siis kasutage vana parooli. Uus parool rakendatakse väljalogimisel.</translation>
 <translation id="8870509716567206129">Rakendus ei toeta jagatud ekraani.</translation>
-<translation id="8871580645200179206">Vahetage tumeda teema olekut. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ühendus puudub</translation>
 <translation id="8876661425082386199">Kontrollige ühendust</translation>
 <translation id="8877788021141246043">Määra meeldetuletus</translation>
@@ -1437,7 +1429,6 @@ Uus installimine</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> või <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Kaitstud sisu ei saa salvestada</translation>
 <translation id="9161053988251441839">SOOVITATUD RAKENDUSED</translation>
-<translation id="9166331175924255663">Läheduses jagamise hea nähtavuse muutmine.</translation>
 <translation id="9168436347345867845">Teen seda hiljem</translation>
 <translation id="9178475906033259337">Kuvatud on 1 tulemus päringule <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">See funktsioon võimaldab teil parooli sisestamata pääseda kiirelt juurde kõigile sisselogitud kasutajatele. Kasutage seda funktsiooni vaid kontode puhul, mida usaldate.</translation>

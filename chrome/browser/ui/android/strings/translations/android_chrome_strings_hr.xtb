@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Izbrisati i podatke s ovih web-lokacija i aplikacija?</translation>
 <translation id="1034259925032978114">Prozor je otvoren</translation>
 <translation id="1036348656032585052">Isključi</translation>
-<translation id="1036727731225946849">Dodavanje stavke <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">Izbrisati i podatke s ovih web-lokacija?</translation>
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="10614374240317010">Zaporke se nikad ne spremaju</translation>
@@ -511,7 +510,6 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="3771694256347217732">Googleovi uvjeti pružanja usluge</translation>
 <translation id="3773856050682458546">Osnovni podaci i podaci o web-lokacijama koje posjećujete i aplikacijama koje upotrebljavate</translation>
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
-<translation id="3778956594442850293">Dodano na početni zaslon</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="3803784507854318295">Upravljanje automatskom reprodukcijom</translation>
 <translation id="3810838688059735925">Video</translation>

@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Đồng thời xóa dữ liệu khỏi các trang web và ứng dụng này?</translation>
 <translation id="1034259925032978114">Cửa sổ đang mở</translation>
 <translation id="1036348656032585052">Tắt</translation>
-<translation id="1036727731225946849">Đang thêm <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">Đồng thời xóa dữ liệu khỏi các trang web này?</translation>
 <translation id="1049743911850919806">Ẩn danh</translation>
 <translation id="10614374240317010">Không bao giờ lưu</translation>
@@ -511,7 +510,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="3771694256347217732">Điều khoản dịch vụ của Google</translation>
 <translation id="3773856050682458546">Dữ liệu cơ bản cùng với thông tin về những trang web bạn truy cập và các ứng dụng bạn dùng</translation>
 <translation id="3775705724665058594">Gửi đến các thiết bị của bạn</translation>
-<translation id="3778956594442850293">Đã thêm vào màn hình chính</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 thẻ}other{# thẻ}}</translation>
 <translation id="3803784507854318295">Quản lý chế độ tự động phát</translation>
 <translation id="3810838688059735925">Video</translation>

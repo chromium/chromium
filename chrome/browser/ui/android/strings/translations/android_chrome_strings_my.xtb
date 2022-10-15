@@ -6,7 +6,6 @@
 <translation id="103269572468856066">ဒေတာများ ရှင်းထုတ်မလား။</translation>
 <translation id="1034259925032978114">ဝင်းဒိုးပွင့်နေသည်</translation>
 <translation id="1036348656032585052">ပိတ်ရန်</translation>
-<translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> ကို ထည့်နေသည်...</translation>
 <translation id="1045899828449635435">ဒေတာများ ရှင်းထုတ်မလား။</translation>
 <translation id="1049743911850919806">ရုပ်ဖျက်</translation>
 <translation id="10614374240317010">ဘယ်တော့မှ မသိမ်းဆည်းရန်</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">Google ဝန်ဆောင်မှု စည်းမျဉ်းများ</translation>
 <translation id="3773856050682458546">အခြေခံဒေတာအပြင် သင်ဝင်ကြည့်သောဝဘ်ဆိုက်များနှင့် အသုံးပြုသောအက်ပ်များအကြောင်း အချက်အလက်များ</translation>
 <translation id="3775705724665058594">သင့်ကိရိယာများသို့ ပို့ပါ</translation>
-<translation id="3778956594442850293">ပင်မစာမျက်နှာသို့ ထည့်ပြီးပါပြီ</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{တဘ် ၁ ခု}other{တဘ် # ခု}}</translation>
 <translation id="3803784507854318295">အလိုအလျောက်ဖွင့်ခြင်းကို စီမံရန်</translation>
 <translation id="3810838688059735925">ဗီဒီယို</translation>
@@ -1174,7 +1172,7 @@
 <translation id="7339898014177206373">ဝင်ဒိုး အသစ်</translation>
 <translation id="7340958967809483333">Discover အတွက် ရွေးစရာများ</translation>
 <translation id="7352339641508007922">ဖန်သားပြင်ဓာတ်ပုံအရှည် ရိုက်ရန် ဖိဆွဲပါ</translation>
-<translation id="7352651011704765696">တစ်ခုခု မှားနေပြီ</translation>
+<translation id="7352651011704765696">တစ်ခုခု မှားသွားသည်</translation>
 <translation id="7352939065658542140">ဗီဒီယို</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{ရွေးချယ်ထားသည့် အကြောင်းအရာ ၁ ခုကို မျှဝေရန်}other{ရွေးချယ်ထားသည့် အကြောင်းအရာ # ခုကို မျှဝေရန်}}</translation>
 <translation id="7359002509206457351">ငွေပေးချေနည်းလမ်းများ ကြည့်ခွင့်</translation>

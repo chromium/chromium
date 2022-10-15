@@ -74,7 +74,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1294929383540927798">Alterar as definições de notificação do ecrã de bloqueio</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Mostrar definições de Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">APLICAÇÕES RECOMENDADAS</translation>
 <translation id="1312604459020188865">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mostrar sempre a prateleira</translation>
@@ -119,7 +118,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1546930421365146760">Peça ao administrador para configurar este dispositivo na consola do administrador Google</translation>
 <translation id="1550523713251050646">Clicar para obter mais opções</translation>
 <translation id="1555130319947370107">Azul</translation>
-<translation id="1570871743947603115">Ativar/desativar Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Aceda a toda a sua atividade nesta sessão.</translation>
 <translation id="1610778689852195798">"Anular"</translation>
 <translation id="1611993646327628135">Ativado</translation>
@@ -150,7 +148,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1750088060796401187">Apenas são permitidos <ph name="MAX_DESK_LIMIT" /> espaços de trabalho. Remova um espaço de trabalho para abrir um novo.</translation>
 <translation id="1756833229520115364">Não foi possível guardar o modelo. Existem demasiadas janelas ou separadores.</translation>
 <translation id="1757857692711134412">Desativada até ao nascer do sol</translation>
-<translation id="1761222317188459878">Ativar/desativar ligação de rede. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + ponto final foi alterado. Para utilizar a tecla Inserir, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + Shift + retrocesso.</translation>
 <translation id="1770726142253415363">A app foi movida para a linha <ph name="ROW_NUMBER" />, coluna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Deslocar para a direita</translation>
@@ -357,7 +354,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2981684127883932071">A apresentar sugestões</translation>
 <translation id="2985148236010982088">Ver todas as apps</translation>
 <translation id="2992327365391326550">O botão do microfone do dispositivo está desativado.</translation>
-<translation id="2995447421581609334">Mostrar dispositivos de transmissão.</translation>
 <translation id="2996462380875591307">Lupa ancorada ativada. Prima Ctrl + Pesquisa + D novamente para a desativar.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
@@ -1164,7 +1160,6 @@ Nova instalação</translation>
 <translation id="7611213136657090146">A câmara restabeleceu a ligação.</translation>
 <translation id="761736749114493194">Ative/desative o enquadramento da câmara. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Mostre as definições da funcionalidade Partilhar na proximidade.</translation>
 <translation id="7634648064048557203">Câmara ajustada ao canto inferior direito</translation>
 <translation id="7641938616688887143">Gravar</translation>
 <translation id="7642106959537987271">modo de inversão de cores</translation>
@@ -1349,7 +1344,6 @@ Nova instalação</translation>
 <translation id="8660331759611631213">Raiz quadrada de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Prima Enter para fazer uma captura de ecrã parcial</translation>
-<translation id="8664753092453405566">Mostrar lista de redes. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Abra <ph name="NAME" /> para configurar o dispositivo</translation>
 <translation id="8676770494376880701">Carregador de baixo consumo ligado</translation>
 <translation id="8683506306463609433">O rastreio do desempenho está ativo.</translation>
@@ -1359,7 +1353,6 @@ Nova instalação</translation>
 <translation id="8724318433625452070">Captura de ecrã total</translation>
 <translation id="8734991477317290293">É possível que esteja a tentar roubar os seus toques de teclas.</translation>
 <translation id="8735678380411481005">Cor da retroiluminação do teclado</translation>
-<translation id="8735953464173050365">Mostrar definições do teclado. <ph name="KEYBOARD_NAME" /> está selecionado</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Ative o acesso à câmara para permitir que as apps e as páginas Web com autorização de acesso à câmara usem as câmaras associadas a este dispositivo.</translation>
@@ -1383,7 +1376,6 @@ Nova instalação</translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível validar o seu PIN ou palavra-passe. Nota: se alterou a sua palavra-passe recentemente, utilize a palavra-passe antiga. A nova palavra-passe será aplicada quando terminar sessão.</translation>
 <translation id="8870509716567206129">A aplicação não é compatível com o ecrã dividido.</translation>
-<translation id="8871580645200179206">Ative/desative o tema escuro. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Sem ligação</translation>
 <translation id="8876661425082386199">Verifique a sua ligação</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
@@ -1436,7 +1428,6 @@ Nova instalação</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9161053988251441839">APLICAÇÕES SUGERIDAS</translation>
-<translation id="9166331175924255663">Ative/desative a alta visibilidade da funcionalidade Partilhar na proximidade.</translation>
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
 <translation id="9178475906033259337">A apresentar 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta funcionalidade permite-lhe aceder rapidamente a qualquer utilizador com a sessão iniciada sem ser necessária uma palavra-passe. Utilize esta funcionalidade apenas com contas fidedignas.</translation>

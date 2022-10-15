@@ -276,6 +276,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1244303850296295656">Extension error</translation>
 <translation id="1245628370644070008">Local data recovery</translation>
 <translation id="1246863218384630739">Couldn't install <ph name="VM_NAME" />: Image URL returned a <ph name="HTTP_ERROR" /> error code. Please contact your administrator.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{Notifications not allowed for 1 site}other{Notifications not allowed for {NUM_SITES} sites}}</translation>
 <translation id="1251366534849411931">Expected opening curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">This will clear <ph name="TOTAL_USAGE" /> of data stored by sites and installed apps</translation>
 <translation id="1251578593170406502">Scanning for mobile data networks…</translation>
@@ -1656,6 +1657,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2476974672882258506">Shut down Windows to uninstall <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Since you set up multiple switches, auto-scan has been turned off.</translation>
 <translation id="2478176599153288112">Media-File Permissions for "<ph name="EXTENSION" />"</translation>
+<translation id="24786041351753425">Enable data recovery service.</translation>
 <translation id="2480868415629598489">Modify data that you copy and paste</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2482895651873876648">Tab moved into group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -2271,6 +2273,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3024374909719388945">Use 24-hour clock</translation>
 <translation id="3027296729579831126">Turn on Nearby Share</translation>
 <translation id="3029466929721441205">Show stylus tools in shelf</translation>
+<translation id="3029808567601324798">Time to lock</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to download an update today. The update will download automatically when you connect to the Internet.}other{<ph name="MANAGER" /> requires you to download an update before the deadline. The update will download automatically when you connect to the Internet.}}</translation>
 <translation id="3030967311408872958">Sunset to sunrise</translation>
 <translation id="3031417829280473749">Agent X</translation>
@@ -3727,7 +3730,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4444304522807523469">Access document scanners attached via USB or on the local network</translation>
 <translation id="4444512841222467874">If space isn’t made available, users and data may be automatically removed.</translation>
 <translation id="4446933390699670756">Mirrored</translation>
-<translation id="4448036230435816747">These sites are in a group defined by <ph name="FPS_OWNER" />. Sites in a group can see your activity in the group. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4448914100439890108">Hide password for <ph name="USERNAME" /> on <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Your username belongs to your organisation's enterprise account. To enrol devices to the account, first verify domain ownership in the Admin console. You will need administrative privileges on the account to verify.</translation>
 <translation id="4449996769074858870">This tab is playing audio.</translation>
@@ -4220,6 +4222,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4901154724271753917">Expand recently closed</translation>
 <translation id="4901309472892185668">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment.</translation>
 <translation id="49027928311173603">The policy downloaded from the server is invalid: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">This extends battery power by limiting background activity and visual effects like smooth scrolling.</translation>
 <translation id="4906490889887219338">Set up or manage network file shares. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Choose when this extension can read and change your site data</translation>
 <translation id="4907161631261076876">This file is not commonly downloaded and may be dangerous.</translation>
@@ -5326,6 +5329,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5971037678316050792">Control Bluetooth adaptor state and pairing</translation>
 <translation id="597235323114979258">See more destinations</translation>
 <translation id="5972543790327947908">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> or <ph name="APP_NAME_3" />.</translation>
+<translation id="5972559880616357748">More actions for <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">No-op Service</translation>
 <translation id="5972708806901999743">Move to the top</translation>
 <translation id="5972826969634861500">Start <ph name="PRODUCT_NAME" /></translation>
@@ -8511,6 +8515,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8987927404178983737">Month</translation>
 <translation id="8989359959810288806">Refresh tethering status</translation>
 <translation id="8991520179165052608">Site can use your microphone</translation>
+<translation id="8993059306046735527">If you forget your <ph name="DEVICE_TYPE" /> password, you can still restore your local data. You'll need to sign in to your Google Account or use account recovery.</translation>
 <translation id="899384117894244799">Remove restricted user</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
 <translation id="899657321862108550">Your Chrome, Everywhere</translation>
@@ -8610,6 +8615,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9078316009970372699">Disable Instant Tethering</translation>
 <translation id="9078842827190780028">See more search results in side panel</translation>
 <translation id="9079267182985899251">Soon this option will no longer be supported. To present a tab, use <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080175821499742274">Memory Saver frees up memory from inactive tabs so that it can be used by active tabs and other apps.</translation>
 <translation id="9080971985541434310">estimates your interests – Chrome can estimate your interests</translation>
 <translation id="9081543426177426948">Sites that you visit aren’t saved in Incognito</translation>
 <translation id="9084064520949870008">Open as a Window</translation>
@@ -8799,6 +8805,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="964790508619473209">Screen arrangement</translation>
 <translation id="965211523698323809">Send and receive text messages from your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Report an issue with Google Cast</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Review 1 site that recently sent a lot of notifications}other{Review {NUM_SITES} sites that recently sent a lot of notifications}}</translation>
 <translation id="967398046773905967">Do not allow any sites to access HID devices</translation>
 <translation id="967624055006145463">Data stored</translation>
 <translation id="96774243435178359">Managed printers</translation>

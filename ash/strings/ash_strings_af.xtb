@@ -74,7 +74,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1293556467332435079">Lêers</translation>
 <translation id="1294929383540927798">Verander die sluitskerm-kennisgewinginstellings</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Wys Bluetooth-instellings. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">AANBEVEELDE PROGRAMME</translation>
 <translation id="1312604459020188865">Seinsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Wys altyd rak</translation>
@@ -119,7 +118,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1546930421365146760">Vra jou administrateur om hierdie toestel in die Google Admin-konsole op te stel</translation>
 <translation id="1550523713251050646">Klik vir meer opsies</translation>
 <translation id="1555130319947370107">Blou</translation>
-<translation id="1570871743947603115">Wissel Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Kry toegang tot al jou aktiwiteit in hierdie sessie</translation>
 <translation id="1610778689852195798">"Ontdoen"</translation>
 <translation id="1611993646327628135">Aan</translation>
@@ -150,7 +148,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1750088060796401187">Net <ph name="MAX_DESK_LIMIT" /> lessenaars word toegelaat. Verwyder 'n lessenaar om 'n nuwe een oop te maak.</translation>
 <translation id="1756833229520115364">Kon nie templaat stoor nie. Te veel vensters of oortjies.</translation>
 <translation id="1757857692711134412">Af tot sonsondergang</translation>
-<translation id="1761222317188459878">Wissel netwerkverbinding. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Die kortpadsleutel <ph name="LAUNCHER_KEY_NAME" /> + punt het verander. Om die Insert-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + Shift + Backspace druk.</translation>
 <translation id="1770726142253415363">Geskuif na ry <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Rollees regs</translation>
@@ -357,7 +354,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2981684127883932071">Wys tans voorstelle</translation>
 <translation id="2985148236010982088">Sien alle programme</translation>
 <translation id="2992327365391326550">Toestel se mikrofoonknoppie is afgeskakel.</translation>
-<translation id="2995447421581609334">Wys uitsaaitoestelle.</translation>
 <translation id="2996462380875591307">Gedokte vergrootglas is geaktiveer. Druk weer Ctrl+Search+D om dit af te skakel.</translation>
 <translation id="3000461861112256445">Mono-oudio</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
@@ -1165,7 +1161,6 @@ Nuwe installasie</translation>
 <translation id="7611213136657090146">Kamera is herkoppel.</translation>
 <translation id="761736749114493194">Kamera se raamfunksie. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Wys Nabydeling-instellings.</translation>
 <translation id="7634648064048557203">Kamera is geglip na hoek onder regs</translation>
 <translation id="7641938616688887143">Neem op</translation>
 <translation id="7642106959537987271">kleuromkeringmodus</translation>
@@ -1350,7 +1345,6 @@ Nuwe installasie</translation>
 <translation id="8660331759611631213">Vierkantswortel van 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Druk Enter om gedeeltelike skermskoot vas te vang</translation>
-<translation id="8664753092453405566">Wys netwerklys. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Maak <ph name="NAME" /> oop om jou toestel op te stel</translation>
 <translation id="8676770494376880701">Laekraglaaier gekoppel</translation>
 <translation id="8683506306463609433">Werkverrigtingnasporing is aktief</translation>
@@ -1360,7 +1354,6 @@ Nuwe installasie</translation>
 <translation id="8724318433625452070">Volskermskoot</translation>
 <translation id="8734991477317290293">Dit kan dalk probeer om jou sleuteldrukke te steel</translation>
 <translation id="8735678380411481005">Kleur van sleutelbord se agterlig</translation>
-<translation id="8735953464173050365">Wys sleutelbordinstellings. <ph name="KEYBOARD_NAME" /> is gekies</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Skakel kameratoegang aan om programme en webbladsye wat die kameratoestemming het, toe te laat om die kamera(s) te gebruik wat aan hierdie toestel gekoppel is.</translation>
@@ -1384,7 +1377,6 @@ Nuwe installasie</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Jou PIN of wagwoord kon steeds nie geverifieer word nie. Let wel: As jy jou wagwoord onlangs verander het, moet jy jou ou wagwoord gebruik. Jou nuwe wagwoord sal van toepassing wees sodra jy afmeld.</translation>
 <translation id="8870509716567206129">Program steun nie verdeelde skerm nie.</translation>
-<translation id="8871580645200179206">Wissel Donkertema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nie gekoppel nie</translation>
 <translation id="8876661425082386199">Gaan jou verbinding na</translation>
 <translation id="8877788021141246043">Stel 'n onthounota</translation>
@@ -1437,7 +1429,6 @@ Nuwe installasie</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> of <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Kan nie beskermde inhoud opneem nie</translation>
 <translation id="9161053988251441839">VOORGESTELDE PROGRAMME</translation>
-<translation id="9166331175924255663">Wissel hoë sigbaarheid van Nabydeling.</translation>
 <translation id="9168436347345867845">Doen dit later</translation>
 <translation id="9178475906033259337">Wys tans 1 resultaat vir <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Met hierdie kenmerk kan jy vinnig toegang tot enige aangemelde gebruiker kry sonder dat 'n wagwoord nodig is. Gebruik hierdie kenmerk net met rekeninge wat jy vertrou.</translation>

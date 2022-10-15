@@ -1898,6 +1898,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Administratoren din har slått av administrerte brukere.</translation>
 <translation id="2722540561488096675">Enheten slår seg av om <ph name="TIME_LEFT" />. Fjern USB-enheten før du slår enheten på igjen. Deretter kan du begynne å bruke <ph name="DEVICE_OS" />.</translation>
+<translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">WebRTC-logger</translation>
 <translation id="272488616838512378">Enhetskonvertering</translation>
 <translation id="2725200716980197196">Nettverkstilkoblingen er gjenopprettet</translation>
@@ -3069,6 +3070,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3828029223314399057">Søk i bokmerker</translation>
 <translation id="3828953470056652895">Jeg har lest og samtykker i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Chrome og ChromeOS<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />vilkårene for bruk av Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">SMB-fildeling</translation>
+<translation id="3830268140528557982">på <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Administratoren din har slått på igjen én potensielt skadelig utvidelse}other{Administratoren din har slått på igjen {NUM_EXTENSIONS} potensielt skadelige utvidelser}}</translation>
 <translation id="3831436149286513437">Søkeforslag fra Google Disk</translation>
 <translation id="3834728400518755610">Endringen i mikrofoninnstillingen krever at Linux avsluttes. Avslutt Linux for å fortsette.</translation>
@@ -5196,6 +5198,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5884474295213649357">Denne fanen er koblet til en USB-enhet.</translation>
 <translation id="5885314688092915589">Organisasjonen din kommer til å administrere denne profilen</translation>
 <translation id="5886009770935151472">Finger 1</translation>
+<translation id="5886112770923972514">Koble til og konfigurer raskt enheter i nærheten med Rask sammenkobling</translation>
 <translation id="5886384907280980632">Slå av nå</translation>
 <translation id="5889282057229379085">Maksimalt antall mellomliggende sertifiseringsinstanser: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Foretrukne Wifi-nettverk</translation>
@@ -7787,6 +7790,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8338952601723052325">Utviklernettsted</translation>
 <translation id="833986336429795709">For å åpne denne linken, velg en app</translation>
 <translation id="8340547030807793004">Flere handlinger for <ph name="DEVICE" /></translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Gjennomgå <ph name="BEGIN_BOLD" />1 nettsted<ph name="END_BOLD" /> som nylig har sendt mange varsler}other{Gjennomgå <ph name="BEGIN_BOLD" />{NUM_SITES} nettsteder<ph name="END_BOLD" /> som nylig har sendt mange varsler}}</translation>
 <translation id="8342221978608739536">Prøvde ikke</translation>
 <translation id="8342861492835240085">Velg en samling</translation>
 <translation id="8345848587667658367">Nå kan du se telefonens nylige bilder, medier, varsler og apper</translation>
@@ -8782,6 +8786,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Etablerer sikker tilkobling ...</translation>
 <translation id="996803490569799917">Se minner av favorittpersonene dine med mer</translation>
+<translation id="997143476478634194">Nettsteder følger automatisk denne innstillingen når du besøker dem. Nettsteder sender vanligvis varsler for å informere deg om siste nytt eller chatmeldinger.</translation>
 <translation id="99731366405731005">Slå på <ph name="LINK1_BEGIN" />Chrome-synkronisering<ph name="LINK1_END" /> for å bruke wifi-synkronisering. <ph name="LINK2_BEGIN" />Finn ut mer<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">I&amp;nspiser</translation>
 </translationbundle>

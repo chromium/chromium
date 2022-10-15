@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294929383540927798">বন্ধ স্ক্ৰীনৰ জাননী ছেটিংসমূহ সলনি কৰক</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">ব্লুটুথ ছেটিংসমূহ দেখুৱাওক। <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">চুপাৰিছ কৰা এপ্‌</translation>
 <translation id="1312604459020188865">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">সদায় শ্বেল্ফ দেখুৱাওক</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">আপোনাৰ প্ৰশাসকক Google প্ৰশাসকৰ কনছ’লত এই ডিভাইচটো ছেট আপ কৰিবলৈ কওক</translation>
 <translation id="1550523713251050646">অধিক বিকল্পৰ বাবে ক্লিক কৰক</translation>
 <translation id="1555130319947370107">নীলা</translation>
-<translation id="1570871743947603115">ব্লুটুথ ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">এই ছেশ্বনত আপোনাৰ সকলো কার্যকলাপ এক্সেছ কৰে</translation>
 <translation id="1610778689852195798">"আনডু কৰক"</translation>
 <translation id="1611993646327628135">অন আছে</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">কেৱল <ph name="MAX_DESK_LIMIT" /> খন ডেস্কৰ অনুমতি আছে। নতুন এখন খুলিবলৈ এখন ডেস্ক আঁতৰাওক।</translation>
 <translation id="1756833229520115364">টেমপ্লে’ট ছেভ কৰিব পৰা নগ’ল। বহুসংখ্যক ৱিণ্ড’ অথবা টেব।</translation>
 <translation id="1757857692711134412">সূৰ্যাস্ত পৰ্যন্ত অফ কৰি ৰাখক</translation>
-<translation id="1761222317188459878">নেটৱৰ্ক সংযোগ ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">কীব’ৰ্ডৰ শ্বৰ্টকাট <ph name="LAUNCHER_KEY_NAME" /> + পিৰিয়ডটো সলনি হৈছে। ইনছাৰ্ট কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + শ্বিফ্ট + বেকস্পেচ টিপক।</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />তম শাৰী, <ph name="COLUMN_NUMBER" />তম স্তম্ভলৈ নিয়া হৈছে।</translation>
 <translation id="1771761307086386028">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
@@ -356,7 +353,6 @@
 <translation id="2981684127883932071">পৰামৰ্শ দেখুৱাই থকা হৈছে</translation>
 <translation id="2985148236010982088">আটাইবোৰ এপ্‌ চাওক</translation>
 <translation id="2992327365391326550">ডিভাইচটোৰ মাইক্ৰ’ফ’নৰ বুটামটো অফ কৰা হ’ল।</translation>
-<translation id="2995447421581609334">কাষ্ট ডিভাইচবোৰ দেখুৱাওক।</translation>
 <translation id="2996462380875591307">ড'ক কৰা বিৱৰ্ধক সক্ষম কৰা হ'ল। ইয়াক ট’গল অফ কৰিবলৈ আকৌ Ctrl+Search+D টিপক।</translation>
 <translation id="3000461861112256445">ম’ন’ অডিঅ’</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
@@ -1160,7 +1156,6 @@
 <translation id="7611213136657090146">কেমেৰা পুনৰ সংযুক্ত হৈছে।</translation>
 <translation id="761736749114493194">কেমেৰা ফ্ৰে’মিং ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Nearby Shareৰ ছেটিং দেখুৱাওক।</translation>
 <translation id="7634648064048557203">কেমেৰা তলৰ সোঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>
 <translation id="7641938616688887143">ৰেকৰ্ড কৰক</translation>
 <translation id="7642106959537987271">ৰং বিপৰীতকৰণ ম'ড</translation>
@@ -1345,7 +1340,6 @@
 <translation id="8660331759611631213">৭১ৰ বৰ্গমূল</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">আংশিক স্ক্ৰীনশ্বট ল’বলৈ এণ্টাৰ টিপক</translation>
-<translation id="8664753092453405566">নেটৱর্ক সূচী দেখুওৱাক। <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">আপোনাৰ ডিভাইচটো ছেট আপ কৰিবলৈ <ph name="NAME" /> খোলক</translation>
 <translation id="8676770494376880701">কম শক্তিযুক্ত চ্চাৰ্জাৰ সংযোগ কৰা হৈছে</translation>
 <translation id="8683506306463609433">কার্যদক্ষতা ট্ৰে’চ কৰাটো সক্ৰিয় অৱস্থাত আছে</translation>
@@ -1355,7 +1349,6 @@
 <translation id="8724318433625452070">সম্পূৰ্ণ স্ক্ৰীন কেপচাৰ</translation>
 <translation id="8734991477317290293">এইটোৱে আপোনাৰ কীষ্ট্র’ক চুৰ কৰিব চেষ্টা কৰি থাকিব পাৰে</translation>
 <translation id="8735678380411481005">কীব’ৰ্ডৰ বেকলাইটৰ ৰং</translation>
-<translation id="8735953464173050365">কীব'ৰ্ডৰ ছেটিংসমূহ দেখুৱাওক। <ph name="KEYBOARD_NAME" /> বাছনি কৰা হৈছে।</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">কেমেৰাৰ অনুমতি থকা এপ্‌ আৰু ৱেবপৃষ্ঠাসমূহক এই ডিভাইচটোৰ সৈতে সংযুক্ত কেমেৰা(সমূহ) ব্যৱহাৰ কৰাৰ অনুমতি দিবলৈ কেমেৰাৰ এক্সেছ অন কৰক।</translation>
@@ -1379,7 +1372,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">আপোনাৰ পিন অথবা পাছৱৰ্ডটো তথাপি সত্যাপন কৰিব পৰা নগ’ল। টোকা: আপুনি যদি শেহতীয়াকৈ আপোনাৰ পাছৱৰ্ড সলনি কৰিছে, আপোনাৰ পুৰণি পাছৱৰ্ডটো ব্যৱহাৰ কৰক। আপুনি ছাইন আউট কৰিলে আপোনাৰ নতুন পাছৱৰ্ডটো প্ৰযোজ্য হ'ব।</translation>
 <translation id="8870509716567206129">এপটোৱে বিভাজিত স্ক্ৰীন সমৰ্থন নকৰে।</translation>
-<translation id="8871580645200179206">গাঢ় ৰঙৰ ম’ড ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">সংযোগ হোৱা নাই</translation>
 <translation id="8876661425082386199">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="8877788021141246043">ৰিমাইণ্ডাৰ ছেট কৰক</translation>
@@ -1431,7 +1423,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> অথবা <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">সুৰক্ষিত সমল ৰেকৰ্ড কৰিব নোৱাৰি</translation>
 <translation id="9161053988251441839">পৰামর্শ হিচাপে পোৱা এপ্</translation>
-<translation id="9166331175924255663">নিকটৱৰ্তী শ্বেয়াৰৰ উচ্চ দৃশ্যমানতা ট’গল কৰক।</translation>
 <translation id="9168436347345867845">এইটো পাছত কৰিব</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />ৰ বাবে ১ টা ফলাফল দেখুৱাই থকা হৈছে</translation>
 <translation id="9179259655489829027">এই সুবিধাটোৱে আপোনাক যিকোনো ছাইন ইন হৈ থকা ব্যৱহাৰকাৰীৰ প্ৰ’ফাইললৈ পাছৱর্ডৰ অবিহনেই এক্সেছ কৰিবলৈ দিয়ে। আপুনি বিশ্বাস কৰা একাউণ্টসমূহৰ ক্ষেত্ৰতহে কেৱল এই সুবিধা ব্যৱহাৰ কৰক।</translation>

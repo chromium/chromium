@@ -80,6 +80,7 @@
 <translation id="753732157349120914">የትር መቀያየሪያ</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ግምገማ ከGoogle}one{<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች ከGoogle}other{<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች ከGoogle}}</translation>
 <translation id="7559245342362162951">የቡድን ትሮች በሙሉ ማያ ፍርግርግ አሳይ</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን አጋራ}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ትርን አጋራ}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን አጋራ}}</translation>
 <translation id="7792771145871471484">ጥቆማ ሐሳቦችን ይገምግሙ።</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ትር ቦድን}one{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ቦድን}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ቦድን}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣ <ph name="REVIEWS_COUNT_ONE" /> ግምገማ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}}</translation>

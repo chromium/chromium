@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294929383540927798">లాక్-స్క్రీన్ నోటిఫికేషన్ సెట్టింగ్‌లను మార్చండి</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">బ్లూటూత్ సెట్టింగ్‌లను చూపుతుంది. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">సిఫార్సు చేసిన యాప్‌లు</translation>
 <translation id="1312604459020188865">సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ఎల్లప్పుడూ అరను చూపించు</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">Google అడ్మిన్ కన్సోల్‌లో ఈ పరికరాన్ని సెటప్ చేయమని మీ అడ్మినిస్ట్రేటర్‌ను అడగండి</translation>
 <translation id="1550523713251050646">మరిన్ని ఎంపికల కోసం క్లిక్ చేయండి</translation>
 <translation id="1555130319947370107">నీలం</translation>
-<translation id="1570871743947603115">బ్లూటూత్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ఈ సెషన్‌లో మీ మొత్తం యాక్టివిటీని యాక్సెస్ చేయండి</translation>
 <translation id="1610778689852195798">"చర్య రద్దు చేయండి"</translation>
 <translation id="1611993646327628135">ఆన్</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">కేవలం <ph name="MAX_DESK_LIMIT" /> డెస్క్‌లు మాత్రమే అనుమతించబడతాయి. కొత్త డెస్క్‌ను తెరవడానికి పాత దానిని తీసివేయండి.</translation>
 <translation id="1756833229520115364">టెంప్లేట్‌ను సేవ్ చేయడం సాధ్యపడలేదు. చాలా ఎక్కువ విండోలు లేదా ట్యాబ్‌లు ఉన్నాయి.</translation>
 <translation id="1757857692711134412">సూర్యాస్తమయం వరకు ఆఫ్‌లో ఉంటుంది</translation>
-<translation id="1761222317188459878">నెట్‌వర్క్ కనెక్షన్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + పీరియడ్ కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. ఇన్‌సర్ట్ కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ + షిఫ్ట్ + బ్యాక్‌స్పేస్ కీలను నొక్కండి.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />వ అడ్డు వరుస, <ph name="COLUMN_NUMBER" />వ నిలువు వరుసకు తరలించబడింది.</translation>
 <translation id="1771761307086386028">కుడికి స్క్రోల్ చేయి</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">సూచనలను ప్రదర్శిస్తోంది</translation>
 <translation id="2985148236010982088">అన్ని యాప్‌లను చూడండి</translation>
 <translation id="2992327365391326550">పరికర మైక్రోఫోన్ బటన్ ఆఫ్ చేయబడింది.</translation>
-<translation id="2995447421581609334">ప్రసార పరికరాలను చూపుతుంది.</translation>
 <translation id="2996462380875591307">డాక్ చేయబడిన మాగ్నిఫైయర్ ప్రారంభించబడింది. దాన్ని టోగుల్ ఆఫ్ చేయడానికి మళ్లీ Ctrl+Search+Dని నొక్కండి.</translation>
 <translation id="3000461861112256445">మోనో ఆడియో</translation>
 <translation id="3009178788565917040">అవుట్‌పుట్</translation>
@@ -1165,7 +1161,6 @@
 <translation id="7611213136657090146">కెమెరా తిరిగి కనెక్ట్ చేయబడింది.</translation>
 <translation id="761736749114493194">కెమెరా ఫ్రేమింగ్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">సమీప షేరింగ్ సెట్టింగ్‌లను చూపించు.</translation>
 <translation id="7634648064048557203">కెమెరా దిగువ కుడి మూలకు స్నాప్ చేయబడింది</translation>
 <translation id="7641938616688887143">రికార్డ్</translation>
 <translation id="7642106959537987271">కలర్ మార్పిడి మోడ్</translation>
@@ -1350,7 +1345,6 @@
 <translation id="8660331759611631213">71 వర్గమూలం</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">పాక్షిక స్క్రీన్‌షాట్‌ను క్యాప్చర్ చేయడానికి enterను నొక్కండి</translation>
-<translation id="8664753092453405566">నెట్‌వర్క్ లిస్ట్‌ను చూపుతుంది. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727"><ph name="NAME" />ను తెరిచి మీ పరికరాన్ని సెటప్ చేయండి</translation>
 <translation id="8676770494376880701">తక్కువ-పవర్ గల ఛార్జర్ కనెక్ట్ చేయబడింది</translation>
 <translation id="8683506306463609433">పనితీరు స్థితిగతి కనుగొనడం యాక్టివ్‌గా ఉంది</translation>
@@ -1360,7 +1354,6 @@
 <translation id="8724318433625452070">ఫుల్ స్క్రీన్ క్యాప్చర్</translation>
 <translation id="8734991477317290293">మీ కీస్ట్రోక్‌లను దొంగిలించడానికి ఇది ప్రయత్నిస్తుండవచ్చు</translation>
 <translation id="8735678380411481005">కీబోర్డ్ బ్యాక్‌లైట్ రంగు</translation>
-<translation id="8735953464173050365">కీబోర్డ్ సెట్టింగ్‌లను చూపుతుంది. <ph name="KEYBOARD_NAME" /> ఎంపిక చేయబడింది</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">కెమెరా యాక్సెస్‌ను ఆన్ చేయండి, తద్వారా కెమెరా అనుమతి ఉన్న యాప్‌లు, వెబ్‌పేజీలు ఈ పరికరానికి కనెక్ట్ చేయబడిన కెమెరా(ల)ను ఉపయోగించగలవు.</translation>
@@ -1384,7 +1377,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">మీ పిన్ లేదా పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. గమనిక: మీరు ఇటీవలే మీ పాస్‌వర్డ్‌ను మార్చి ఉంటే, మీ పాత పాస్‌వర్డ్‌ను ఉపయోగించండి. మీరు ఖాతా నుంచి సైన్ అవుట్ చేసిన తర్వాత మీ కొత్త పాస్‌వర్డ్ వర్తిస్తుంది.</translation>
 <translation id="8870509716567206129">యాప్‌లో విభజన స్క్రీన్‌కు మద్దతు లేదు.</translation>
-<translation id="8871580645200179206">ముదురు రంగు రూపాన్ని టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">కనెక్ట్ కాలేదు</translation>
 <translation id="8876661425082386199">మీ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="8877788021141246043">రిమైండర్‌ సెట్ చేయి</translation>
@@ -1437,7 +1429,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> లేదా <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">రక్షిత కంటెంట్‌ను రికార్డ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="9161053988251441839">సూచించబడిన యాప్‌లు</translation>
-<translation id="9166331175924255663">సమీప షేరింగ్ అధిక విజిబిలిటీ మోడ్‌ను టోగుల్ చేయండి.</translation>
 <translation id="9168436347345867845">దీనిని తర్వాత చేయి</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> కోసం 1 ఫలితాన్ని ప్రదర్శిస్తోంది</translation>
 <translation id="9179259655489829027">ఈ ఫీచర్ ద్వారా పాస్‌వర్డ్ అవసరం లేకుండానే మీరు సైన్ ఇన్ చేసిన ఏ వినియోగదారునైనా త్వరగా యాక్సెస్ చేయగలుగుతారు. ఈ ఫీచర్‌ను మీరు విశ్వసించే ఖాతాలతో మాత్రమే ఉపయోగించండి.</translation>

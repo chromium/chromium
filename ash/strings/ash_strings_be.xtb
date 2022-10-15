@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1294929383540927798">Змяніць налады апавяшчэнняў экрана блакіроўкі</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Паказаць налады Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">РЭКАМЕНДАВАНЫЯ ПРАГРАМЫ</translation>
 <translation id="1312604459020188865">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Заўсёды паказваць паліцу</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">Папрасіце адміністратара наладзіць гэту прыладу ў кансолі адміністратара Google</translation>
 <translation id="1550523713251050646">Націсніце, каб убачыць дадатковыя параметры</translation>
 <translation id="1555130319947370107">Сіні</translation>
-<translation id="1570871743947603115">Уключыць або выключыць Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Атрымліваць доступ да ўсіх вашых дзеянняў у гэтым сеансе</translation>
 <translation id="1610778689852195798">"Адрабіць"</translation>
 <translation id="1611993646327628135">Уключана</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">Дазволеная колькасць сталоў – <ph name="MAX_DESK_LIMIT" />. Каб адкрыць новы стол, выдаліце адзін з папярэдніх.</translation>
 <translation id="1756833229520115364">Не ўдалося захаваць шаблон: акон або ўкладак занадта шмат.</translation>
 <translation id="1757857692711134412">Выключана да захаду сонца</translation>
-<translation id="1761222317188459878">Уключыць або выключыць падключэнне да сеткі. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Змянілася прызначэнне спалучэння клавіш <ph name="LAUNCHER_KEY_NAME" /> + кропка. Каб выканаць дзеянне клавішы Insert, націсніце <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Перамешчана на радок <ph name="ROW_NUMBER" />, у слупок <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Прагартаць управа</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">Паказваюцца прапановы</translation>
 <translation id="2985148236010982088">Паказаць усе праграмы</translation>
 <translation id="2992327365391326550">Стан кнопкі мікрафона прылады – "выключана".</translation>
-<translation id="2995447421581609334">Паказаць прылады для трансляцыі.</translation>
 <translation id="2996462380875591307">Прыстыкаваная лупа ўключана. Каб выключыць яе, зноў націсніце Ctrl + Пошук + D.</translation>
 <translation id="3000461861112256445">Монафанія</translation>
 <translation id="3009178788565917040">Выхад</translation>
@@ -1164,7 +1160,6 @@
 <translation id="7611213136657090146">Камера зноў падключана.</translation>
 <translation id="761736749114493194">Уключыць/выключыць кадраванне. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Паказаць налады функцыі "Абагульванне паблізу".</translation>
 <translation id="7634648064048557203">Акно перадпрагляду камеры прывязана да правага ніжняга вугла</translation>
 <translation id="7641938616688887143">Запісаць</translation>
 <translation id="7642106959537987271">рэжым інверсіі колераў</translation>
@@ -1349,7 +1344,6 @@
 <translation id="8660331759611631213">Квадратны корань з 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Каб зрабіць здымак часткі экрана, націсніце Увод</translation>
-<translation id="8664753092453405566">Паказаць спіс сетак. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Каб наладзіць прыладу, адкрыйце <ph name="NAME" /></translation>
 <translation id="8676770494376880701">Падключана зарадная прылада малой магутнасці</translation>
 <translation id="8683506306463609433">Ажыццяўляецца трасіроўка прадукцыйнасці</translation>
@@ -1359,7 +1353,6 @@
 <translation id="8724318433625452070">Здыманне ўсяго экрана</translation>
 <translation id="8734991477317290293">Клавіятура можа спрабаваць адсочваць і перадаваць націсканні клавіш</translation>
 <translation id="8735678380411481005">Колер падсветкі клавіятуры</translation>
-<translation id="8735953464173050365">Паказаць налады клавіятуры. Выбрана: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Дайце доступ да камеры, каб праграмы і вэб-старонкі з адпаведным дазволам маглі выкарыстоўваць камеру ці камеры, падключаныя да гэтай прылады.</translation>
@@ -1383,7 +1376,6 @@
 <translation id="8850991929411075241">Клавіша пошуку + Esc</translation>
 <translation id="8853703225951107899">Пароль або PIN-код спраўдзіць зноў не ўдалося. Заўвага: калі вы нядаўна змянілі пароль, то выкарыстайце тут стары пароль. Новы пароль будзе прыменены пасля выхаду.</translation>
 <translation id="8870509716567206129">Праграма не падтрымлівае рэжым падзеленага экрана.</translation>
-<translation id="8871580645200179206">Уключыць або выключыць цёмную тэму. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Не падключана</translation>
 <translation id="8876661425082386199">Праверце падключэнне</translation>
 <translation id="8877788021141246043">Задайце напамін</translation>
@@ -1436,7 +1428,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Запіс немагчымы з-за наяўнасці на экране абароненага змесціва</translation>
 <translation id="9161053988251441839">ПРАПАНАВАНЫЯ ПРАГРАМЫ</translation>
-<translation id="9166331175924255663">Уключыць або выключыць рэжым высокай бачнасці для функцыі "Абагульванне паблізу".</translation>
 <translation id="9168436347345867845">Пазней</translation>
 <translation id="9178475906033259337">Паказваецца 1 вынік па запыце "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Гэта функцыя дазваляе хутка атрымліваць доступ да карыстальнікаў, якія выканалі ўваход, – без уводу пароля. Выкарыстоўвайце гэту функцыю толькі на ўліковых запісах, якім давяраеце.</translation>

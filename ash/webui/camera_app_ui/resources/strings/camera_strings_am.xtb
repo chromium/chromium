@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
+<translation id="1057925581724305206">ሙሉ ኤችዲ (1080p)</translation>
 <translation id="1113173431709655881">የካሜራ ሁነታ</translation>
 <translation id="1153190633558910465">ፍርግርግ ጠፍቷል</translation>
 <translation id="1175958423215084756">አገናኝ ተገኝቷል። <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">መደበኛ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">ኤችዲ (720p)</translation>
 <translation id="1664224225747386870">ምንም አልተቀረጸም</translation>
 <translation id="1838104802459806957">ወደ ላይ አጋድል</translation>
 <translation id="1843105061469674856">ተጨማሪ ገጽ ቃኝ</translation>
@@ -86,13 +88,14 @@
 <translation id="4445542136948522167">ፎቶን ማንሳት አቁም</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> ሜጋ ፒክሴል</translation>
 <translation id="4570032796877367747">የፊት ካሜራ</translation>
-<translation id="4620818268515773682">የማይክሮፎን ድምጸ-ከል መቀያየሪያ ድምጽ-ከል ጠፍቷል</translation>
+<translation id="4620818268515773682">የማይክሮፎን ድምጸ-ከል መቀያየሪያ ድምፅ-ከል ጠፍቷል</translation>
 <translation id="4628948037717959914">ፎቶ</translation>
 <translation id="4649291346448517080">ፋይሉን ማስቀመጥ አልተሳካም</translation>
 <translation id="4695379108709712600">ወደ ላይ አቅጣጫ በመንቀሳቀስ ላይ</translation>
 <translation id="4705093842003735294">ሙሉ ጥራት</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">ባለ-ብዙ ዥረት ቪዲዮ ቀረፃ</translation>
+<translation id="4984613436295737187">ኳድ ኤችዲ (1440p)</translation>
 <translation id="5034763830503483128">የፎቶ ምጥጥነ ገፅታ</translation>
 <translation id="5057360777601936059">የእርስዎ ካሜራ በአሁኑ ጊዜ አይገኝም።
         ካሜራው በትክክል ተገናኝቶ ከሆነ እባክዎ ይፈትሹ።</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">የሰነድ ከላይ-ግራ ጥግ</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5320594929574852403">ወደ ግራ አቅጣጫ በመንቀሳቀስ ላይ</translation>
+<translation id="5374917190292010970">4ኪ (2160p)</translation>
 <translation id="5444515100983837161">የሰነዱን ሁሉንም ጠርዞች በክፈፉ ውስጥ ያስቀምጡ። ሰነዱ እና ዳራ የተለያዩ ቀለሞች ከሆኑ ቅኝት በተሻለ ሁኔታ ይሠራል።</translation>
 <translation id="5662366948659129155">ገጽ <ph name="COUNT" />ን በመቃኘት ላይ</translation>
 <translation id="5671277269877808209">ካሬ</translation>

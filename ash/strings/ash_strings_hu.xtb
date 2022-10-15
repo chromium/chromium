@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Fájlok</translation>
 <translation id="1294929383540927798">A lezárási képernyő értesítési beállításainak módosítása</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Bluetooth-beállítások megjelenítése. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">AJÁNLOTT ALKALMAZÁSOK</translation>
 <translation id="1312604459020188865">Jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mindig látsszon a polc</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">Kérje meg a rendszergazdát, hogy állítsa be ezt az eszközt a Google Felügyeleti Konzolban</translation>
 <translation id="1550523713251050646">Kattintson további lehetőségekért</translation>
 <translation id="1555130319947370107">Kék</translation>
-<translation id="1570871743947603115">Bluetooth ki- és bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
 <translation id="1610778689852195798">„Undo” (Visszavonás)</translation>
 <translation id="1611993646327628135">Be</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">Csak <ph name="MAX_DESK_LIMIT" /> asztal engedélyezett. Távolítsa el valamelyik asztalt, ha újat kíván nyitni.</translation>
 <translation id="1756833229520115364">Nem sikerült a sablon mentése. Túl sok ablak vagy lap van megnyitva.</translation>
 <translation id="1757857692711134412">Kikapcsolva napnyugtáig</translation>
-<translation id="1761222317188459878">Hálózati kapcsolat ki- és bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">A(z) <ph name="LAUNCHER_KEY_NAME" /> + pont billentyűkombináció módosult. A Beillesztés billentyű használatához nyomja le a(z) <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace billentyűkombinációt.</translation>
 <translation id="1770726142253415363">Áthelyezve ide: <ph name="ROW_NUMBER" />. sor, <ph name="COLUMN_NUMBER" />. oszlop.</translation>
 <translation id="1771761307086386028">Görgetés jobbra</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">Javaslatok megjelenítve</translation>
 <translation id="2985148236010982088">Összes alkalmazás megjelenítése</translation>
 <translation id="2992327365391326550">Az eszköz mikrofongombját kikapcsolták.</translation>
-<translation id="2995447421581609334">Cast-eszközök megjelenítése.</translation>
 <translation id="2996462380875591307">Dokkolt nagyító bekapcsolva. A kikapcsoláshoz nyomja le ismét a Ctrl+Keresés+D billentyűparancsot.</translation>
 <translation id="3000461861112256445">Monó hang</translation>
 <translation id="3009178788565917040">Kimenet</translation>
@@ -1165,7 +1161,6 @@ Frissen telepítve</translation>
 <translation id="7611213136657090146">Helyreállt a kapcsolat a kamerával.</translation>
 <translation id="761736749114493194">A keretezés be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
-<translation id="7633755430369750696">A Közeli megosztás funkció beállításainak megjelenítése.</translation>
 <translation id="7634648064048557203">Kamera a jobb alsó sarokhoz igazítva</translation>
 <translation id="7641938616688887143">Rögzítés</translation>
 <translation id="7642106959537987271">színinvertálás mód</translation>
@@ -1350,7 +1345,6 @@ Frissen telepítve</translation>
 <translation id="8660331759611631213">71 négyzetgyöke</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Nyomja le az Entert részleges képernyőkép rögzítéséhez</translation>
-<translation id="8664753092453405566">A hálózatok listájának megjelenítése. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Nyissa meg a(z) <ph name="NAME" /> alkalmazást az eszköz beállításához</translation>
 <translation id="8676770494376880701">Kis teljesítményű töltő csatlakoztatva</translation>
 <translation id="8683506306463609433">A teljesítménykövetés aktív</translation>
@@ -1360,7 +1354,6 @@ Frissen telepítve</translation>
 <translation id="8724318433625452070">Felvétel készítése a teljes képernyőről</translation>
 <translation id="8734991477317290293">Előfordulhat, hogy így kísérlik meg a billentyűleütések rögzítését</translation>
 <translation id="8735678380411481005">Billentyűzet háttérvilágításának színe</translation>
-<translation id="8735953464173050365">A billentyűzet beállításainak megjelenítése. <ph name="KEYBOARD_NAME" /> van kiválasztva</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Kapcsolja be a kamerához való hozzáférést, ha engedélyezni szeretné a kamerahasználati engedéllyel rendelkező alkalmazások és weboldalak számára az eszközhöz csatlakoztatott kamera vagy kamerák használatát.</translation>
@@ -1384,7 +1377,6 @@ Frissen telepítve</translation>
 <translation id="8850991929411075241">Keresés+Esc</translation>
 <translation id="8853703225951107899">PIN-kódjának vagy jelszavának ellenőrzése még mindig nem sikerült. Megjegyzés: Ha nemrég módosította jelszavát, akkor használja a régit. Az új jelszó beállítása a kijelentkezés után lép érvénybe.</translation>
 <translation id="8870509716567206129">Az alkalmazás nem támogatja az osztott képernyős nézetet.</translation>
-<translation id="8871580645200179206">Sötét téma be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>
 <translation id="8876661425082386199">Ellenőrizze az internetkapcsolatot</translation>
 <translation id="8877788021141246043">Emlékeztető beállítása</translation>
@@ -1437,7 +1429,6 @@ Frissen telepítve</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> vagy <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Nem lehet rögzíteni védett tartalmakat</translation>
 <translation id="9161053988251441839">JAVASOLT ALKALMAZÁSOK</translation>
-<translation id="9166331175924255663">A Közeli megosztás funkció nagyfokú láthatóságának be- vagy kikapcsolása.</translation>
 <translation id="9168436347345867845">Később</translation>
 <translation id="9178475906033259337">1 találat megjelenítése a következő lekérdezésre: <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ez a funkció lehetővé teszi a bejelentkezett felhasználók gyors, jelszó nélküli elérését. Kizárólag olyan fiókok esetében használja a funkciót, amelyekben megbízik.</translation>

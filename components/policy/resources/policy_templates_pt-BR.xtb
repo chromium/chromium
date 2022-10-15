@@ -1249,7 +1249,6 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
       Se a política for definida como falsa, as informações não serão enviadas.
       Se for definida como verdadeira ou deixada sem definição, o status de rede do dispositivo será enviado.</translation>
 <translation id="2223393221350938149">Não permitir que sites executem o JIT do JavaScript</translation>
-<translation id="2223582957891074498">Se a política for definida como verdadeira, não será permitido fazer capturas de tela com os atalhos do teclado ou APIs de extensão. Se ela for definida como falsa, as capturas de tela serão permitidas.</translation>
 <translation id="2223598546285729819">Configuração padrão de notificações</translation>
 <translation id="222673035924187991">Ativar Encrypted ClientHello do TLS</translation>
 <translation id="2231726854197443389">Esta política controla se os usuários podem ativar o HTTPS-Only Mode nas Configurações. O HTTPS-Only Mode faz upgrade de todas as navegações para HTTPS.

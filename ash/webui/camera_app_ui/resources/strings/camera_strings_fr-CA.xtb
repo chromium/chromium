@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1076394037877376434">Supprimer la page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mode Caméra</translation>
 <translation id="1153190633558910465">Grille désactivée</translation>
 <translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> supprimée</translation>
 <translation id="1258009455399840361">Faire pivoter de 90 degrés dans le sens des aiguilles d'une montre</translation>
 <translation id="1276998909102132017">Galerie d'images</translation>
 <translation id="1300209025925956156">Numériser votre document</translation>

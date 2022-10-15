@@ -3929,6 +3929,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4677772697204437347">Mémoire du processeur graphique</translation>
 <translation id="467823995058589466">La caméra est désactivée</translation>
 <translation id="4680105648806843642">Le son a été désactivé sur cette page</translation>
+<translation id="4680112532510845139">Déposez une image ici</translation>
 <translation id="4681453295291708042">Désactiver le Partage à proximité</translation>
 <translation id="4681512854288453141">Règlement source</translation>
 <translation id="4681930562518940301">Ouvrir l'image originale dans un nouvel onglet</translation>
@@ -4891,6 +4892,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5620568081365989559">Un accès complet à <ph name="FOLDER_PATH" /> est requis pour DevTools.
 Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5620612546311710611">statistiques d'utilisation</translation>
+<translation id="562250930904332809">&amp;Désactiver les Sous-titres instantanés</translation>
 <translation id="5623282979409330487">Ce site accède à vos capteurs de mouvement.</translation>
 <translation id="5623842676595125836">Journal</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>
@@ -8378,6 +8380,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8970887620466824814">Un problème est survenu</translation>
 <translation id="89720367119469899">Échap</translation>
 <translation id="8972513834460200407">Vérifiez auprès de votre administrateur réseau que le pare-feu ne bloque pas les téléchargements effectués depuis les serveurs Google.</translation>
+<translation id="8973263196882835828">&amp;Activer les Sous-titres instantanés</translation>
 <translation id="8973557916016709913">Supprimer le niveau de zoom</translation>
 <translation id="8973596347849323817">Vous pouvez personnaliser cet appareil en fonction de vos besoins. Il est possible de modifier ces fonctionnalités d'accessibilité ultérieurement dans les paramètres.</translation>
 <translation id="897414447285476047">Le fichier de destination est incomplet en raison d'un problème de connexion.</translation>

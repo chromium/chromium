@@ -6,7 +6,6 @@
 <translation id="103269572468856066">इन साइटों और ऐप से जुड़ा डेटा मिटाना है?</translation>
 <translation id="1034259925032978114">विंडो खुली हुई है</translation>
 <translation id="1036348656032585052">बंद करें</translation>
-<translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> जोड़ा जा रहा है...</translation>
 <translation id="1045899828449635435">इन साइटों से जुड़ा डेटा मिटाना है?</translation>
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="10614374240317010">कभी नहीं सेव किया गया</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">Google की सेवा की शर्तें</translation>
 <translation id="3773856050682458546">इसमें बुनियादी डेटा और उन वेबसाइटों की जानकारी शामिल है जिन पर आप जाते हैं. इसमें आपके इस्तेमाल किए गए ऐप्लिकेशन की जानकारी भी शामिल है</translation>
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
-<translation id="3778956594442850293">होम स्‍क्रीन में जोड़ा गया</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="3803784507854318295">अपने-आप चलने की सुविधा मैनेज करें</translation>
 <translation id="3810838688059735925">वीडियो</translation>

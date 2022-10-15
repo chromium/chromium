@@ -2,14 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1057925581724305206">फुल एचडी (१०८० पिक्सेल)</translation>
+<translation id="1076394037877376434">पेज <ph name="PAGE_NUMBER" /> मेटाउनुहोस्</translation>
 <translation id="1113173431709655881">क्यामेरा मोड</translation>
 <translation id="1153190633558910465">ग्रिड अफ गर्नुहोस्</translation>
 <translation id="1175958423215084756">लिंक भेट्टियो। <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">पेज <ph name="PAGE_NUMBER" /> मेटाइयो</translation>
 <translation id="1258009455399840361">घडी घुम्ने दिशामा ९० डिग्री घुमाउनुहोस्</translation>
 <translation id="1276998909102132017">ग्यालेरीका फोटो</translation>
 <translation id="1300209025925956156">डकुमेन्ट स्क्यान गर्नुहोस्</translation>
 <translation id="1309250603447638106">डकुमेन्ट स्क्यान गर्ने सुविधासम्बम्धी अपडेटहरू डाउनलोड गरिँदै छ</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। प्रयोग गर्न खोज बटन + लेफ्ट एरो थिच्नुहोस्।</translation>
+<translation id="1417314334557041815">पेज <ph name="INDEX" /> सम्पादन गर्नुहोस्</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> निकालिएको छ।</translation>
 <translation id="1473110567575736769">३ सेकेन्डको टाइमर</translation>
@@ -22,6 +25,7 @@
 <translation id="1644345013557678440">एचडी (७२० पिक्सेल)</translation>
 <translation id="1664224225747386870">केही पनि रेकर्ड गरिएन</translation>
 <translation id="1838104802459806957">माथितिर ढल्काइयोस्</translation>
+<translation id="1843105061469674856">अतिरिक्त पेज स्क्यान गर्नुहोस्</translation>
 <translation id="1851169887664797861">क्यामेरासम्बन्धी थप कन्ट्रोलहरू उपलब्ध छन्</translation>
 <translation id="1851616744363735765">रोकियो</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> निर्यात गर्न सकिएन</translation>
@@ -79,6 +83,7 @@
 <translation id="414641094616694804">यो क्यामेरामा रिजोल्युसन बदल्न मिल्दैन</translation>
 <translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
 <translation id="4281620174117014503">मध्यम रिजोल्युसन</translation>
+<translation id="428234092390943511">पेजको थम्बनेल</translation>
 <translation id="4329152592498422850">वर्गाकार तस्बिर खिच्न थाल्नुहोस्</translation>
 <translation id="4340659173795395806">तपाईं अब एकभन्दा बढी पेज भएको PDF बनाउन सक्नुहुन्छ</translation>
 <translation id="4383571725254449280">प्रिन्ट सम्पादनका लगहरू</translation>

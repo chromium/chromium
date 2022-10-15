@@ -3963,6 +3963,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4677772697204437347">GPU මතකය</translation>
 <translation id="467823995058589466">කැමරාව ක්‍රියා විරහිත කර ඇත</translation>
 <translation id="4680105648806843642">මෙම පිටුවෙහි ශබ්දය නිහඬ කර ඇත</translation>
+<translation id="4680112532510845139">රූපයක් මෙතැනට අදින්න</translation>
 <translation id="4681453295291708042">ළඟ බෙදා ගැනීම අබල කරන්න</translation>
 <translation id="4681512854288453141">මූලාශ්‍ර ප්‍රතිපත්තිය</translation>
 <translation id="4681930562518940301">මුල් පින්තූරය නව පටිත්තක විවෘත කරන්න</translation>
@@ -4931,6 +4932,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5620568081365989559"><ph name="FOLDER_PATH" /> වෙත සම්පූර්ණ ප්‍රවේශය DevTools ඉල්ලා සිටී.
 ඔබ කිසිදු සංවේදී තොරතුක් හෙළිදරව් නොකරන බවට වග බලා ගන්න.</translation>
 <translation id="5620612546311710611">භාවිත දත්ත</translation>
+<translation id="562250930904332809">&amp;සජීවී සිරස්තල අබල කරන්න</translation>
 <translation id="5623282979409330487">මෙම වෙබ් අඩවිය ඔබේ චලන සංවේදක වෙත ප්‍රවේශ වෙයි.</translation>
 <translation id="5623842676595125836">වාර්තාව</translation>
 <translation id="5624120631404540903">මුරපද පාලනය</translation>
@@ -8452,6 +8454,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8970887620466824814">යම් දෙයක් වැරදිණි</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">ඔබේ ගිණිපවුර විසින් Google සේවාදායක වෙතින් බාගැනීම බාධා කර නොමැතිදැයි ජාල පරිපාලකගෙන් විමසන්න.</translation>
+<translation id="8973263196882835828">&amp;සජීවී සිරස්තල සබල කරන්න</translation>
 <translation id="8973557916016709913">විශාලන මට්ටම ඉවත් කරන්න</translation>
 <translation id="8973596347849323817">ඔබට ඔබේ අවශ්‍යතාවන්ට ගැළපෙන පරිදි මෙම උපාංගය අභිරුචිකරණය කළ හැකිය. මෙම ප්‍රවේශ්‍යතා විශේෂාංග සැකසීම්වල පසුව වෙනස් කළ හැකිය.</translation>
 <translation id="897414447285476047">ගමනාන්ත ගොනුව සබැඳුමේ ගැටලුවක් හේතුවෙන් අසම්පූර්ණයි.</translation>

@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">I-delete ang page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Camera mode</translation>
 <translation id="1153190633558910465">Naka-off ang Grid</translation>
 <translation id="1175958423215084756">Na-detect na link. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Na-delete ang page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">I-rotate nang 90 degree clockwise</translation>
 <translation id="1276998909102132017">Mga larawan sa gallery</translation>
 <translation id="1300209025925956156">I-scan ang iyong dokumento</translation>

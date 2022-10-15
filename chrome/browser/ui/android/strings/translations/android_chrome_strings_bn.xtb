@@ -6,7 +6,6 @@
 <translation id="103269572468856066">এই সাইট ও অ্যাপের ডেটাও মুছে ফেলতে চান?</translation>
 <translation id="1034259925032978114">উইন্ডো খোলা রয়েছে</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
-<translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> যোগ করা হচ্ছে...</translation>
 <translation id="1045899828449635435">এই সাইটগুলির ডেটাও কি মুছে ফলতে চান?</translation>
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="10614374240317010">কখনও সংরক্ষিত হয়নি</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">Google পরিষেবার শর্তাবলী</translation>
 <translation id="3773856050682458546">এখানে প্রাথমিক ডেটা ছাড়াও আপনি যে ওয়েবসাইটে যান ও অ্যাপগুলি ব্যবহার করেন, তার তথ্য রয়েছে</translation>
 <translation id="3775705724665058594">আপনার ডিভাইসে পাঠান</translation>
-<translation id="3778956594442850293">হোম স্ক্রিনে যোগ করা হয়েছে</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{১টি ট্যাব}one{# টি ট্যাব}other{# টি ট্যাব}}</translation>
 <translation id="3803784507854318295">অটোপ্লে ম্যানেজ করুন</translation>
 <translation id="3810838688059735925">ভিডিও</translation>

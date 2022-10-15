@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Supprimer aussi les données de ces sites et de ces applis?</translation>
 <translation id="1034259925032978114">La fenêtre est ouverte</translation>
 <translation id="1036348656032585052">Désactiver</translation>
-<translation id="1036727731225946849">Ajout de <ph name="WEBAPK_NAME" /> en cours…</translation>
 <translation id="1045899828449635435">Supprimer aussi les données de ces sites?</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="10614374240317010">Jamais enregistré</translation>
@@ -511,7 +510,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="3771694256347217732">Conditions d'utilisation de Google</translation>
 <translation id="3773856050682458546">Des données de base et de l'information sur les sites Web que vous visitez et les applications que vous utilisez</translation>
 <translation id="3775705724665058594">Envoyer à vos appareils</translation>
-<translation id="3778956594442850293">Ajouté à l'écran d'accueil</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="3803784507854318295">Gérer la lecture automatique</translation>
 <translation id="3810838688059735925">Vidéo</translation>

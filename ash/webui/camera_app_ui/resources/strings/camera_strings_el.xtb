@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Διαγραφή σελίδας <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Λειτουργία κάμερας</translation>
 <translation id="1153190633558910465">Πλέγμα ανενεργό</translation>
 <translation id="1175958423215084756">Εντοπίστηκε σύνδεσμος. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Η σελίδα <ph name="PAGE_NUMBER" /> διαγράφηκε</translation>
 <translation id="1258009455399840361">Περιστροφή 90 μοιρών δεξιόστροφα</translation>
 <translation id="1276998909102132017">Εικόνες gallery</translation>
 <translation id="1300209025925956156">Σάρωση του εγγράφου σας</translation>

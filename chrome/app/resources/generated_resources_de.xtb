@@ -3946,6 +3946,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4677772697204437347">GPU-Speicher</translation>
 <translation id="467823995058589466">Kamera ist deaktiviert</translation>
 <translation id="4680105648806843642">Der Ton wurde für diese Seite stummgeschaltet</translation>
+<translation id="4680112532510845139">Bild hierher ziehen</translation>
 <translation id="4681453295291708042">Nearby Share deaktivieren</translation>
 <translation id="4681512854288453141">Richtlinien mit XML-Quelle</translation>
 <translation id="4681930562518940301">&amp;Original in neuem Tab öffnen</translation>
@@ -4910,6 +4911,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5620540760831960151">Die Richtlinien <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> und <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> wirken sich auf diese Liste aus</translation>
 <translation id="5620568081365989559">DevTools erfordert Vollzugriff auf <ph name="FOLDER_PATH" />. Achte darauf, dass dadurch keine vertraulichen Informationen offengelegt werden.</translation>
 <translation id="5620612546311710611">Nutzungsstatistiken</translation>
+<translation id="562250930904332809">Automatische Untertitel &amp;deaktivieren</translation>
 <translation id="5623282979409330487">Diese Website greift auf deine Bewegungssensoren zu.</translation>
 <translation id="5623842676595125836">Protokoll</translation>
 <translation id="5624120631404540903">Passwörter verwalten</translation>
@@ -8420,6 +8422,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8970887620466824814">Es gab ein Problem.</translation>
 <translation id="89720367119469899">Esc-Taste</translation>
 <translation id="8972513834460200407">Bitte deinen Netzwerkadministrator, zu überprüfen, ob Downloads von Google-Servern von der Firewall blockiert werden.</translation>
+<translation id="8973263196882835828">Automatische Untertitel aktivi&amp;eren</translation>
 <translation id="8973557916016709913">Zoomstufe entfernen</translation>
 <translation id="8973596347849323817">Du kannst dieses Gerät an deine Bedürfnisse anpassen. Diese Funktionen der Bedienungshilfen lassen sich später in den Einstellungen ändern.</translation>
 <translation id="897414447285476047">Die Zieldatei wurde aufgrund eines Verbindungsproblems nicht vollständig herunterladen.</translation>

@@ -320,6 +320,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1717218214683051432">Senzori pokreta</translation>
 <translation id="1717494416764505390">Poštansko sanduče 3</translation>
 <translation id="1718029547804390981">Dokument je prevelik da bi se obilježio</translation>
+<translation id="1719434663396780149">Obavještenja o padu cijene su uključena. Ovo možete promijeniti u odjeljku <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Zatvaranje vodiča</translation>
 <translation id="1721424275792716183">* Obavezno polje</translation>
 <translation id="1725591448053514783">Koverta You 6</translation>
@@ -979,6 +980,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3550112004925580947">Ugostiteljstvo</translation>
 <translation id="3552297013052089404">Font Sans-serif</translation>
 <translation id="3558573058928565255">Dan</translation>
+<translation id="3560824484345057728">Pogledajte srodne web lokacije</translation>
 <translation id="3566021033012934673">Vaša veza nije privatna</translation>
 <translation id="3567778190852720481">Nije se moguće prijaviti s računom preduzeća (račun preduzeća ne ispunjava uslove).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4542971377163063093">Ladica 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Pokušajte onemogućiti ekstenzije.</translation>
+<translation id="4559134504959026834">Ova web lokacija je u grupi koju definira <ph name="SET_OWNER" /> koji može vidjeti vašu aktivnost</translation>
 <translation id="4559332380232738994">10 x 11</translation>
 <translation id="4566017918361049074">Na otvorenom</translation>
 <translation id="4567686777917670400">Vaš administrator može promijeniti postavke preglednika daljinskim putem. Aktivnostima na ovom uređaju se može upravljati i van Chromiuma. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -2670,6 +2673,7 @@ Dodatni detalji:
 <translation id="7995512525968007366">Nije navedeno</translation>
 <translation id="7998269595945679889">Dugme Otvori anonimnu karticu, pritisnite Enter da otvorite novu anonimnu karticu i da privatno pregledate</translation>
 <translation id="800218591365569300">Pokušajte zatvoriti druge kartice ili programe da oslobodite memoriju.</translation>
+<translation id="8002230960325005199">Pogledajte srodne web lokacije na novoj kartici</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8009225694047762179">Upravljaj lozinkama</translation>
@@ -2773,6 +2777,7 @@ Dodatni detalji:
 <translation id="8270242299912238708">PDF dokumenti</translation>
 <translation id="8275952078857499577">Nemoj nuditi prevođenje ove web lokacije</translation>
 <translation id="8277900682056760511">Stranica obrađivača uplate je otvorena</translation>
+<translation id="8279611986089885641">Obavještenja Chromea moraju biti uključena. Možete ih uključiti u odjeljku <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Ladica 11</translation>
 <translation id="8281084378435768645">Velika fotografija</translation>
 <translation id="8281886186245836920">Preskoči</translation>

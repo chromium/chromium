@@ -1907,6 +1907,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Skrbnik je onemogočil zaščitene uporabnike.</translation>
 <translation id="2722540561488096675">Naprava se bo izklopila čez <ph name="TIME_LEFT" />. Odstranite USB, preden znova vklopite napravo. Nato lahko začnete uporabljati <ph name="DEVICE_OS" />.</translation>
+<translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">Dnevniki za WebRTC</translation>
 <translation id="272488616838512378">Pretvorba enot</translation>
 <translation id="2725200716980197196">Omrežna povezava je znova vzpostavljena</translation>
@@ -3078,6 +3079,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3828029223314399057">Išči po zaznamkih</translation>
 <translation id="3828953470056652895">Prebral(-a) sem <ph name="BEGIN_LINK1" />Googlove pogoje storitve<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />dodatne pogoje storitve za Chrome in Chrome OS<ph name="END_LINK2" /> in <ph name="BEGIN_LINK3" />pogoje storitve za Google Play<ph name="END_LINK3" /> ter se strinjam z njimi.</translation>
 <translation id="3829765597456725595">Datotečno sredstvo v skupni rabi za SMB</translation>
+<translation id="3830268140528557982">na <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Skrbnik je znova vklopil eno morebiti škodljivo razširitev}one{Skrbnik je znova vklopil {NUM_EXTENSIONS} morebiti škodljivo razširitev}two{Skrbnik je znova vklopil {NUM_EXTENSIONS} morebiti škodljivi razširitvi}few{Skrbnik je znova vklopil {NUM_EXTENSIONS} morebiti škodljive razširitve}other{Skrbnik je znova vklopil {NUM_EXTENSIONS} morebiti škodljivih razširitev}}</translation>
 <translation id="3831436149286513437">Predlogi za iskanje v Googlu Drive</translation>
 <translation id="3834728400518755610">Sprememba nastavitve mikrofona terja zaustavitev Linuxa. Zaustavite Linux, če želite nadaljevati.</translation>
@@ -5211,6 +5213,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5884474295213649357">Ta zavihek je povezan z napravo USB.</translation>
 <translation id="5885314688092915589">Ta profil bo upravljala vaša organizacija</translation>
 <translation id="5886009770935151472">Prst 1</translation>
+<translation id="5886112770923972514">Povežite in hitro nastavite naprave za hitro seznanitev v bližini</translation>
 <translation id="5886384907280980632">Izklopi</translation>
 <translation id="5889282057229379085">Največje število posrednih overiteljev potrdil: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Prednostna omrežja Wi-Fi</translation>
@@ -7808,6 +7811,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8338952601723052325">Spletno mesto za razvijalce</translation>
 <translation id="833986336429795709">Če želite odpreti to povezavo, izberite aplikacijo</translation>
 <translation id="8340547030807793004">Več dejanj za <ph name="DEVICE" /></translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Preglejte <ph name="BEGIN_BOLD" />1 spletno mesto<ph name="END_BOLD" />, ki je v zadnjem času poslalo veliko obvestil}one{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletno mesto<ph name="END_BOLD" />, ki je v zadnjem času poslalo veliko obvestil}two{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletni mesti<ph name="END_BOLD" />, ki sta v zadnjem času poslali veliko obvestil}few{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletna mesta<ph name="END_BOLD" />, ki so v zadnjem času poslala veliko obvestil}other{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletnih mest<ph name="END_BOLD" />, ki so v zadnjem času poslala veliko obvestil}}</translation>
 <translation id="8342221978608739536">Nisem poskusil(-a)</translation>
 <translation id="8342861492835240085">Izberi zbirko</translation>
 <translation id="8345848587667658367">Zdaj si lahko ogledate nedavne fotografije, predstavnost, obvestila in aplikacije telefona</translation>
@@ -8806,6 +8810,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Vzpostavljanje varne povezave ...</translation>
 <translation id="996803490569799917">Ogled spominov bližnjih in drugega</translation>
+<translation id="997143476478634194">Spletna mesta ob vašem obisku samodejno upoštevajo to nastavitev. Spletna mesta običajno pošiljajo obvestila, da vas obvestijo glede zadnjih novic ali sporočil v klepetih.</translation>
 <translation id="99731366405731005">Vklopite <ph name="LINK1_BEGIN" />sinhronizacijo za Chrome<ph name="LINK1_END" />, če želite uporabljati sinhronizacijo poverilnic za Wi-Fi. <ph name="LINK2_BEGIN" />Več o tem<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Preglej</translation>
 </translationbundle>

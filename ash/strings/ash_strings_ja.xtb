@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1294929383540927798">ロック画面の通知設定を変更</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Bluetooth の設定を表示します。<ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">おすすめのアプリ</translation>
 <translation id="1312604459020188865">信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">シェルフを常に表示</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">管理者に Google 管理コンソールでこのデバイスをセットアップするよう依頼してください</translation>
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>
 <translation id="1555130319947370107">青</translation>
-<translation id="1570871743947603115">Bluetooth を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">このセッションのすべてのアクティビティにアクセスする</translation>
 <translation id="1610778689852195798">"元に戻す"</translation>
 <translation id="1611993646327628135">オン</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">表示できるデスクは最大 <ph name="MAX_DESK_LIMIT" /> 件です。新しいデスクを開くには、デスクを削除してください。</translation>
 <translation id="1756833229520115364">テンプレートを保存できませんでした。ウィンドウまたはタブの数が多すぎます。</translation>
 <translation id="1757857692711134412">日の入りまでオフ</translation>
-<translation id="1761222317188459878">ネットワーク接続を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">キーボード ショートカット「<ph name="LAUNCHER_KEY_NAME" />+ピリオド」が変更されました。Insert キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Shift+Backspace キーを押してください。</translation>
 <translation id="1770726142253415363">行 <ph name="ROW_NUMBER" />、列 <ph name="COLUMN_NUMBER" /> に移動しました。</translation>
 <translation id="1771761307086386028">右にスクロール</translation>
@@ -356,7 +353,6 @@
 <translation id="2981684127883932071">候補を表示しています</translation>
 <translation id="2985148236010982088">アプリをすべて表示</translation>
 <translation id="2992327365391326550">デバイスのマイクボタンはオフになっています。</translation>
-<translation id="2995447421581609334">キャスト デバイスを表示します。</translation>
 <translation id="2996462380875591307">ドッキング拡大鏡がオンになっています。オフにするには Ctrl+検索+D キーをもう一度押します。</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3009178788565917040">出力</translation>
@@ -1161,7 +1157,6 @@
 <translation id="7611213136657090146">カメラが再接続されました。</translation>
 <translation id="761736749114493194">カメラのフレーミングを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" /> 度</translation>
-<translation id="7633755430369750696">ニアバイシェア設定を表示します。</translation>
 <translation id="7634648064048557203">カメラは右下にスナップされています</translation>
 <translation id="7641938616688887143">録画</translation>
 <translation id="7642106959537987271">色反転モード</translation>
@@ -1346,7 +1341,6 @@
 <translation id="8660331759611631213">71 の平方根は</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">部分的なスクリーンショットを撮影するには Enter キーを押してください</translation>
-<translation id="8664753092453405566">ネットワーク リストを表示します。<ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727"><ph name="NAME" /> を開いてデバイスを設定してください</translation>
 <translation id="8676770494376880701">低電力の充電器に接続されています</translation>
 <translation id="8683506306463609433">パフォーマンス追跡機能が有効</translation>
@@ -1356,7 +1350,6 @@
 <translation id="8724318433625452070">全画面キャプチャ</translation>
 <translation id="8734991477317290293">キー入力が読み取られる可能性があります</translation>
 <translation id="8735678380411481005">キーボードのバックライトの色</translation>
-<translation id="8735953464173050365">キーボード設定を表示します。<ph name="KEYBOARD_NAME" /> が選択されています</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />、<ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">カメラへのアクセスを有効にすれば、カメラへのアクセス権限を持つアプリやウェブページが、デバイスに接続されているカメラを使用できるようになります。</translation>
 <translation id="8755498163081687682">本人確認: <ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
@@ -1379,7 +1372,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
-<translation id="8871580645200179206">ダークモードを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8876661425082386199">接続を確認してください</translation>
 <translation id="8877788021141246043">リマインダーを設定して</translation>
@@ -1431,7 +1423,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> または <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">保護されたコンテンツは録画できません</translation>
 <translation id="9161053988251441839">おすすめのアプリ</translation>
-<translation id="9166331175924255663">ニアバイシェアで付近のデバイスに表示されるモードのオン/オフを切り替えます。</translation>
 <translation id="9168436347345867845">後で行う</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> の結果 1 件を表示しています</translation>
 <translation id="9179259655489829027">この機能を使用すると、パスワードを入力せずにログイン ユーザーにすばやくアクセスできます。この機能は信頼できるアカウントにのみ使用してください。</translation>

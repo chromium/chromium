@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Файлове</translation>
 <translation id="1294929383540927798">Промяна на настройките за известия на заключения екран</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Показване на настройките за Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">ПРЕПОРЪЧАНИ ПРИЛОЖЕНИЯ</translation>
 <translation id="1312604459020188865">Сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Лавицата да се показва винаги</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">Помолете администратора си да настрои това устройство в Google Admin Console</translation>
 <translation id="1550523713251050646">Кликнете за още опции</translation>
 <translation id="1555130319947370107">синьо</translation>
-<translation id="1570871743947603115">Превключване на Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">да осъществява достъп до цялата ви активност в тази сесия;</translation>
 <translation id="1610778689852195798">„Undo“</translation>
 <translation id="1611993646327628135">Вкл.</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">Допускат се до <ph name="MAX_DESK_LIMIT" /> работни къта. Премахнете някой от съществуващите, за да създадете нов.</translation>
 <translation id="1756833229520115364">Шаблонът не бе запазен. Твърде много прозорци или раздели.</translation>
 <translation id="1757857692711134412">Изключено до залез</translation>
-<translation id="1761222317188459878">Превключване на връзката с мрежа. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Клавишната комбинация <ph name="LAUNCHER_KEY_NAME" /> + точка се промени. За да използвате клавиша Insert, натиснете клавиша <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Преместено на ред <ph name="ROW_NUMBER" />, колона <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Превъртане надясно</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">Показани са предложения</translation>
 <translation id="2985148236010982088">Вижте всички приложения</translation>
 <translation id="2992327365391326550">Бутонът за микрофона на устройството е изключен.</translation>
-<translation id="2995447421581609334">Показване на устройствата за предаване.</translation>
 <translation id="2996462380875591307">Лупата в прикрепен режим е активирана. За да я изключите, натиснете отново Ctrl + клавиш „Търсене“ + D.</translation>
 <translation id="3000461861112256445">Монозвук</translation>
 <translation id="3009178788565917040">Изход</translation>
@@ -1164,7 +1160,6 @@
 <translation id="7611213136657090146">Връзката с камерата е възстановена.</translation>
 <translation id="761736749114493194">Превключване на функцията за центриране на камерата. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Показване на настройките на „Споделяне наблизо“.</translation>
 <translation id="7634648064048557203">Картината от камерата е прилепена към долния десен ъгъл</translation>
 <translation id="7641938616688887143">Записване</translation>
 <translation id="7642106959537987271">режим на инвертиране на цветовете</translation>
@@ -1349,7 +1344,6 @@
 <translation id="8660331759611631213">Square root of 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Натиснете Enter за създаване на частична екранна снимка</translation>
-<translation id="8664753092453405566">Показване на списъка с мрежи. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">За да настроите устройството си, отворете <ph name="NAME" /></translation>
 <translation id="8676770494376880701">Свързано е зарядно устройство с малка мощност</translation>
 <translation id="8683506306463609433">Проследяването на ефективността е активно</translation>
@@ -1359,7 +1353,6 @@
 <translation id="8724318433625452070">Заснемане на целия екран</translation>
 <translation id="8734991477317290293">Тя може да се опитва да записва кои клавиши натискате</translation>
 <translation id="8735678380411481005">Цвят на фоновото осветление на клавиатурата</translation>
-<translation id="8735953464173050365">Показване на настройките на клавиатурата. Избран метод на въвеждане: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Разрешете достъпа до камерата, за да могат приложенията и уеб страниците със съответните разрешения да използват камерите, свързани с това устройство.</translation>
@@ -1383,7 +1376,6 @@
 <translation id="8850991929411075241">търсене + Esc</translation>
 <translation id="8853703225951107899">ПИН кодът или паролата ви пак не бяха потвърдени. Забележка: Ако наскоро сте променили паролата си, използвайте старата. Новата ще бъде приложена, щом излезете от профила си.</translation>
 <translation id="8870509716567206129">Приложението не поддържа разделен екран.</translation>
-<translation id="8871580645200179206">Превключване на тъмната тема. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Няма връзка</translation>
 <translation id="8876661425082386199">Проверка на връзката ви</translation>
 <translation id="8877788021141246043">„Set a reminder“ („Задай напомняне“)</translation>
@@ -1436,7 +1428,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Не е възможно записване на защитено съдържание</translation>
 <translation id="9161053988251441839">ПРЕДЛОЖЕНИ ПРИЛОЖЕНИЯ</translation>
-<translation id="9166331175924255663">Превключване на увеличената видимост на „Споделяне наблизо“.</translation>
 <translation id="9168436347345867845">По-късно</translation>
 <translation id="9178475906033259337">Показан е 1 резултат за „<ph name="QUERY" />“</translation>
 <translation id="9179259655489829027">С тази функция получавате бърз достъп без парола до всеки влязъл потребител. Използвайте я само с надеждни профили.</translation>

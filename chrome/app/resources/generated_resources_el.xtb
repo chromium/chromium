@@ -1909,6 +1909,7 @@
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Οι εποπτευόμενοι χρήστες έχουν απενεργοποιηθεί από τον διαχειριστή σας.</translation>
 <translation id="2722540561488096675">Η συσκευή σας θα απενεργοποιηθεί σε <ph name="TIME_LEFT" />. Αφαιρέστε το USB προτού ενεργοποιήσετε ξανά τη συσκευή σας. Στη συνέχεια, θα μπορείτε να ξεκινήσετε τη χρήση του <ph name="DEVICE_OS" />.</translation>
+<translation id="2722547199758472013">Αναγνωριστικό: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">Αρχεία καταγραφής WebRTC</translation>
 <translation id="272488616838512378">Μετατροπή μονάδων</translation>
 <translation id="2725200716980197196">Αποκαταστάθηκε η συνδεσιμότητα δικτύου</translation>
@@ -3082,6 +3083,7 @@
 <translation id="3828029223314399057">Αναζήτηση σελιδοδεικτών</translation>
 <translation id="3828953470056652895">Έχω διαβάσει και αποδεχτεί τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" />, τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Chrome και του ChromeOS<ph name="END_LINK2" /> και τους <ph name="BEGIN_LINK3" />Όρους Παροχής Υπηρεσιών του Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Κοινή χρήση αρχείου SMB</translation>
+<translation id="3830268140528557982">στο <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Ο διαχειριστής σας ενεργοποίησε ξανά 1 δυνητικά επιβλαβή επέκταση.}other{Ο διαχειριστής σας ενεργοποίησε ξανά {NUM_EXTENSIONS} δυνητικά επιβλαβείς επεκτάσεις.}}</translation>
 <translation id="3831436149286513437">Προτάσεις αναζήτησης Google Drive</translation>
 <translation id="3834728400518755610">Η αλλαγή στη ρύθμιση μικροφώνου απαιτεί τον τερματισμό του Linux. Τερματίστε το Linux, για να συνεχίσετε.</translation>
@@ -5219,6 +5221,7 @@
 <translation id="5884474295213649357">Αυτή η καρτέλα είναι συνδεδεμένη σε μια συσκευή USB.</translation>
 <translation id="5885314688092915589">Ο οργανισμός σας θα διαχειρίζεται αυτό το προφίλ</translation>
 <translation id="5886009770935151472">Δάκτυλο 1</translation>
+<translation id="5886112770923972514">Συνδεθείτε και ρυθμίστε γρήγορα κοντινές συσκευές Γρήγορης σύζευξης</translation>
 <translation id="5886384907280980632">Απενεργοποίηση τώρα</translation>
 <translation id="5889282057229379085">Μέγιστος αριθμός ενδιάμεσων CA: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Προτιμώμενα δίκτυα Wi-Fi</translation>
@@ -7818,6 +7821,7 @@
 <translation id="8338952601723052325">Ιστότοπος προγραμματιστή</translation>
 <translation id="833986336429795709">Για να ανοίξετε αυτόν τον σύνδεσμο, επιλέξτε μια εφαρμογή</translation>
 <translation id="8340547030807793004">Περισσότερες ενέργειες για <ph name="DEVICE" /></translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Έλεγχος <ph name="BEGIN_BOLD" />1 ιστοτόπου<ph name="END_BOLD" /> που έστειλε πρόσφατα πολλές ειδοποιήσεις}other{Έλεγχος <ph name="BEGIN_BOLD" />{NUM_SITES} ιστοτόπων<ph name="END_BOLD" /> που έστειλαν πρόσφατα πολλές ειδοποιήσεις}}</translation>
 <translation id="8342221978608739536">Δεν το δοκίμασα</translation>
 <translation id="8342861492835240085">Επιλέξτε μια συλλογή</translation>
 <translation id="8345848587667658367">Μπορείτε πλέον να βλέπετε τις πρόσφατες φωτογραφίες, τα μέσα, τις ειδοποιήσεις και τις εφαρμογές του τηλεφώνου σας.</translation>
@@ -8813,6 +8817,7 @@
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Δημιουργία ασφαλούς σύνδεσης...</translation>
 <translation id="996803490569799917">Δείτε αναμνήσεις με τα αγαπημένα σας πρόσωπα και άλλα</translation>
+<translation id="997143476478634194">Οι ιστότοποι θα εφαρμόζουν αυτόματα αυτήν τη ρύθμιση όταν τους επισκέπτεστε. Οι ιστότοποι συνήθως στέλνουν ειδοποιήσεις για να σας ενημερώσουν σχετικά με έκτακτες ειδήσεις ή μηνύματα συζήτησης.</translation>
 <translation id="99731366405731005">Ενεργοποιήστε τον <ph name="LINK1_BEGIN" />Συγχρονισμό Chrome<ph name="LINK1_END" /> για να χρησιμοποιήσετε τον Συγχρονισμό Wi-Fi. <ph name="LINK2_BEGIN" />Μάθετε περισσότερα<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Έ&amp;λεγχος</translation>
 </translationbundle>

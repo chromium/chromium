@@ -6,7 +6,6 @@
 <translation id="103269572468856066">ລຶບຂໍ້ມູນຈາກເວັບໄຊ ແລະ ແອັບເຫຼົ່ານີ້ນຳບໍ?</translation>
 <translation id="1034259925032978114">ໜ້າຈໍເປີດຢູ່</translation>
 <translation id="1036348656032585052">ປິດ</translation>
-<translation id="1036727731225946849">ກຳລັງເພີ່ມ <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">ລຶບຂໍ້ມູນອອກຈາກເວັບໄຊເຫຼົ່ານີ້ນຳບໍ?</translation>
 <translation id="1049743911850919806">ບໍ່​ເຜີຍ​ຕົວຕົນ</translation>
 <translation id="10614374240317010">ຢ່າ​ບັນທຶກ</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">ຂໍ້ກຳນົດການບໍລິການຂອງ Google</translation>
 <translation id="3773856050682458546">ຂໍ້ມູນພື້ນຖານພ້ອມກັບຂໍ້ມູນກ່ຽວກັບເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ ແລະ ແອັບທີ່ທ່ານໃຊ້</translation>
 <translation id="3775705724665058594">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
-<translation id="3778956594442850293">ເພີ່ມໃສ່ໜ້າຈໍຫຼັກແລ້ວ</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ແຖບ}other{# ແຖບ}}</translation>
 <translation id="3803784507854318295">ຈັດການການຫຼິ້ນອັດຕະໂນມັດ</translation>
 <translation id="3810838688059735925">ວິ​ດີ​ໂອ</translation>

@@ -74,7 +74,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1293556467332435079">Dosyalar</translation>
 <translation id="1294929383540927798">Kilit ekranı bildirim ayarlarını değiştir</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Bluetooth ayarlarını göster. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">ÖNERİLEN UYGULAMALAR</translation>
 <translation id="1312604459020188865"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü</translation>
 <translation id="1316069254387866896">Rafı her zaman göster</translation>
@@ -119,7 +118,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1546930421365146760">Yöneticinizden bu cihazı Google Yönetici Konsolu'nda kurmasını isteyin</translation>
 <translation id="1550523713251050646">Daha fazla seçenek için tıklayın</translation>
 <translation id="1555130319947370107">Mavi</translation>
-<translation id="1570871743947603115">Bluetooth'u aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Bu oturumdaki tüm etkinliğinize erişme</translation>
 <translation id="1610778689852195798">"Geri al"</translation>
 <translation id="1611993646327628135">Açık</translation>
@@ -150,7 +148,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1750088060796401187">Yalnızca <ph name="MAX_DESK_LIMIT" /> masaya izin verilir. Yenisini açmak için bir masayı kaldırın.</translation>
 <translation id="1756833229520115364">Şablon kaydedilemedi. Çok fazla pencere veya sekme var.</translation>
 <translation id="1757857692711134412">Gün batımına kadar kapalı</translation>
-<translation id="1761222317188459878">Ağ bağlantısını aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nokta klavye kısayolu değişti. Insert tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> tuşu + Üst Karakter + Geri Tuşu'na basın.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />. satır, <ph name="COLUMN_NUMBER" />. sütuna taşındı.</translation>
 <translation id="1771761307086386028">Sağa kaydır</translation>
@@ -357,7 +354,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2981684127883932071">Öneriler gösteriliyor</translation>
 <translation id="2985148236010982088">Tüm uygulamaları göster</translation>
 <translation id="2992327365391326550">Cihazın mikrofon düğmesi kapalı.</translation>
-<translation id="2995447421581609334">Yayın cihazlarını göster.</translation>
 <translation id="2996462380875591307">Yerleştirilmiş Büyüteç etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+H tuşlarına basın.</translation>
 <translation id="3000461861112256445">Mono ses</translation>
 <translation id="3009178788565917040">Çıkış</translation>
@@ -1164,7 +1160,6 @@ Yeni yüklenmiş</translation>
 <translation id="7611213136657090146">Kamera yeniden bağlandı.</translation>
 <translation id="761736749114493194">Kamera çerçevelemesini açın/kapatın. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Yakındakilerle Paylaşım ayarlarını gösterir.</translation>
 <translation id="7634648064048557203">Kamera sağ alt köşeye tutturuldu</translation>
 <translation id="7641938616688887143">Kaydet</translation>
 <translation id="7642106959537987271">rengi ters çevirme modu</translation>
@@ -1349,7 +1344,6 @@ Yeni yüklenmiş</translation>
 <translation id="8660331759611631213">71'in karekökü</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü</translation>
 <translation id="8664282223139913403">Kısmi ekran görüntüsü almak için enter tuşuna basın</translation>
-<translation id="8664753092453405566">Ağ listesini göster. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Cihazınızı kurmak için <ph name="NAME" /> uygulamasını açın</translation>
 <translation id="8676770494376880701">Düşük güçlü şarj cihazı bağlandı</translation>
 <translation id="8683506306463609433">Performans izleme etkin</translation>
@@ -1359,7 +1353,6 @@ Yeni yüklenmiş</translation>
 <translation id="8724318433625452070">Tam ekran görüntüsü alma</translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>
 <translation id="8735678380411481005">Klavye arka ışığı rengi</translation>
-<translation id="8735953464173050365">Klavye ayarlarını göster. <ph name="KEYBOARD_NAME" /> seçildi</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Kamera izni olan uygulamaların ve web sayfalarının bu cihaza bağlı kameraları kullanmasına izin vermek için kamera erişimini açın.</translation>
@@ -1383,7 +1376,6 @@ Yeni yüklenmiş</translation>
 <translation id="8850991929411075241">Ara+Esc</translation>
 <translation id="8853703225951107899">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz eski şifrenizi kullanın. Yeni şifreniz, oturumunuzu kapattıktan sonra geçerli olacaktır.</translation>
 <translation id="8870509716567206129">Uygulama bölünmüş ekranı desteklemiyor.</translation>
-<translation id="8871580645200179206">Koyu temayı aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Bağlı değil</translation>
 <translation id="8876661425082386199">Bağlantınızı denetleyin</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
@@ -1436,7 +1428,6 @@ Yeni yüklenmiş</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> veya <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Korunan içerik kaydedilemez</translation>
 <translation id="9161053988251441839">ÖNERİLEN UYGULAMALAR</translation>
-<translation id="9166331175924255663">Yakındakilerle Paylaş özelliğinin yüksek görünürlüğünü açar/kapatır.</translation>
 <translation id="9168436347345867845">Daha sonra yap</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> için 1 sonuç gösteriliyor</translation>
 <translation id="9179259655489829027">Bu özellik oturum açmış tüm kullanıcılara şifre gerektirmeden hızlı bir şekilde erişmenize olanak verir. Bu özelliği sadece güvendiğiniz hesaplarda kullanın.</translation>

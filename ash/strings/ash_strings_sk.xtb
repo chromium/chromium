@@ -74,7 +74,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1293556467332435079">Súbory</translation>
 <translation id="1294929383540927798">Zmeňte nastavenia upozornení na uzamknutej obrazovke</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Zobraziť nastavenia Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">ODPORÚČANÉ APLIKÁCIE</translation>
 <translation id="1312604459020188865">Sila signálu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vždy zobrazovať poličku</translation>
@@ -119,7 +118,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1546930421365146760">Požiadajte správcu, aby toto zariadenie nastavil v správcovskej konzole Google</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte ďalšie možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
-<translation id="1570871743947603115">Prepnúť Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Získajte prístup k všetkej svojej aktivite v tejto relácii</translation>
 <translation id="1610778689852195798">Späť</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
@@ -150,7 +148,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1750088060796401187">Povolený je iba tento počet plôch: <ph name="MAX_DESK_LIMIT" />. Ak chcete otvoriť novú plochu, odstráňte jednu z nich.</translation>
 <translation id="1756833229520115364">Šablónu sa nepodarilo uložiť. Príliš veľa okien alebo kariet.</translation>
 <translation id="1757857692711134412">Vypnutý do západu slnka</translation>
-<translation id="1761222317188459878">Prepnúť sieťové pripojenie. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Klávesová skratka <ph name="LAUNCHER_KEY_NAME" /> + bodka bola zmenená. Ak chcete použiť kláves Insert, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + Shift + backspace.</translation>
 <translation id="1770726142253415363">Presunuté do <ph name="ROW_NUMBER" />. riadka a <ph name="COLUMN_NUMBER" />. stĺpca.</translation>
 <translation id="1771761307086386028">Posunúť doprava</translation>
@@ -357,7 +354,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2981684127883932071">Zobrazujú sa návrhy</translation>
 <translation id="2985148236010982088">Zobraziť všetky aplikácie</translation>
 <translation id="2992327365391326550">Tlačidlo mikrofónu zariadenia je vypnuté.</translation>
-<translation id="2995447421581609334">Zobraziť zariadenia na prenos</translation>
 <translation id="2996462380875591307">Bola zapnutá ukotvená lupa. Vypnete ju opätovným stlačením kombinácie klávesov Ctrl+Hľadať+D.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3009178788565917040">Výstup</translation>
@@ -1164,7 +1160,6 @@ Nová inštalácia</translation>
 <translation id="7611213136657090146">Kamera bola odpojená</translation>
 <translation id="761736749114493194">Prepnúť centrovanie kamery. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Zobraziť nastavenia Zdieľania nablízku</translation>
 <translation id="7634648064048557203">Kamera bola prichytená do pravého dolného rohu</translation>
 <translation id="7641938616688887143">Nahrať</translation>
 <translation id="7642106959537987271">režim inverzie farieb</translation>
@@ -1349,7 +1344,6 @@ Nová inštalácia</translation>
 <translation id="8660331759611631213">Druhá odmocnina zo 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Čiastočnú snímku obrazovky vytvoríte stlačením klávesa Enter</translation>
-<translation id="8664753092453405566">Zobraziť zoznam sietí. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Otvorte <ph name="NAME" /> a nastavte svoje zariadenie</translation>
 <translation id="8676770494376880701">Pripojila sa nabíjačka s nízkym výkonom</translation>
 <translation id="8683506306463609433">Trasovanie výkonnosti je aktívne</translation>
@@ -1359,7 +1353,6 @@ Nová inštalácia</translation>
 <translation id="8724318433625452070">Záznam celej obrazovky</translation>
 <translation id="8734991477317290293">Je možné, že sa pokúša ukradnúť vaše stlačenia klávesov</translation>
 <translation id="8735678380411481005">Farba podsvietenia klávesnice</translation>
-<translation id="8735953464173050365">Zobraziť nastavenia klávesnice. Vybraná klávesnica: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Zapnite prístup ku kamere a povoľte tak aplikáciám a webovým stránkam s príslušným povolením používať kamery pripojené k tomuto zariadeniu.</translation>
 <translation id="8755498163081687682">Overte svoju totožnosť: <ph name="ORIGIN_NAME" /> chce potvrdiť, že ste to vy</translation>
@@ -1382,7 +1375,6 @@ Nová inštalácia</translation>
 <translation id="8850991929411075241">Hľadať+Esc</translation>
 <translation id="8853703225951107899">Váš kód PIN alebo heslo sa stále nepodarilo overiť. Poznámka: Ak ste nedávno zmenili svoje heslo, použite predchádzajúce. Nové heslo bude uplatnené až po odhlásení.</translation>
 <translation id="8870509716567206129">Aplikácia nepodporuje rozdelenú obrazovku.</translation>
-<translation id="8871580645200179206">Prepnúť tmavý motív. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nepripojené</translation>
 <translation id="8876661425082386199">Skontrolujte pripojenie</translation>
 <translation id="8877788021141246043">Nastaviť pripomenutie</translation>
@@ -1435,7 +1427,6 @@ Nová inštalácia</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> alebo <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Nie je možné nahrať chránený obsah</translation>
 <translation id="9161053988251441839">ODPORÚČANÉ APLIKÁCIE</translation>
-<translation id="9166331175924255663">Prepnúť vysokú viditeľnosť Zdieľania nablízku</translation>
 <translation id="9168436347345867845">Neskôr</translation>
 <translation id="9178475906033259337">Zobrazuje sa jeden výsledok pre <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Táto funkcia vám umožní rýchly prístup k ľubovoľnému prihlásenému používateľovi bez hesla. Používajte ju iba s dôveryhodnými účtami.</translation>

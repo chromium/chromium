@@ -1912,6 +1912,7 @@
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Ваш адміністратор вимкнув контрольованих користувачів.</translation>
 <translation id="2722540561488096675">Пристрій завершить роботу через <ph name="TIME_LEFT" />. Перш ніж знову ввімкнути пристрій, вийміть носій USB. Тоді ви зможете почати користуватися <ph name="DEVICE_OS" />.</translation>
+<translation id="2722547199758472013">Ідентифікатор: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">Журнали WebRTC</translation>
 <translation id="272488616838512378">Конвертування одиниць</translation>
 <translation id="2725200716980197196">З’єднання з мережею відновлено</translation>
@@ -3085,6 +3086,7 @@
 <translation id="3828029223314399057">Пошук закладок</translation>
 <translation id="3828953470056652895">Я приймаю <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Додаткові умови використання Chrome і ОС Chrome<ph name="END_LINK2" />, а також <ph name="BEGIN_LINK3" />Умови використання Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Файлообмінник SMB</translation>
+<translation id="3830268140528557982">Домен: <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Адміністратор знову ввімкнув 1 потенційно шкідливе розширення}one{Адміністратор знову ввімкнув {NUM_EXTENSIONS} потенційно шкідливе розширення}few{Адміністратор знову ввімкнув {NUM_EXTENSIONS} потенційно шкідливі розширення}many{Адміністратор знову ввімкнув {NUM_EXTENSIONS} потенційно шкідливих розширень}other{Адміністратор знову ввімкнув {NUM_EXTENSIONS} потенційно шкідливого розширення}}</translation>
 <translation id="3831436149286513437">Пропозиції щодо пошуку на Google Диску</translation>
 <translation id="3834728400518755610">Щоб зміни в доступах до мікрофона почали діяти, потрібно завершити роботу Linux. Зробіть це, щоб продовжити.</translation>
@@ -5219,6 +5221,7 @@
 <translation id="5884474295213649357">Цю вкладку під’єднано до пристрою USB.</translation>
 <translation id="5885314688092915589">Цим профілем керуватиме ваша організація</translation>
 <translation id="5886009770935151472">Палець 1</translation>
+<translation id="5886112770923972514">Підключайтеся до пристроїв поруч і налаштовуйте для них швидку пару</translation>
 <translation id="5886384907280980632">Вимкнути</translation>
 <translation id="5889282057229379085">Максимальна кількість проміжних ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Основні мережі Wi-Fi</translation>
@@ -7823,6 +7826,7 @@
 <translation id="8338952601723052325">Веб-сайт розробника</translation>
 <translation id="833986336429795709">Виберіть додаток, щоб відкрити посилання</translation>
 <translation id="8340547030807793004">Інші дії для пристрою "<ph name="DEVICE" />"</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Перегляньте <ph name="BEGIN_BOLD" />1 сайт<ph name="END_BOLD" />, який останнім часом надсилав багато сповіщень}one{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайт<ph name="END_BOLD" />, який останнім часом надсилав багато сповіщень}few{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайти<ph name="END_BOLD" />, які останнім часом надсилали багато сповіщень}many{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайтів<ph name="END_BOLD" />, які останнім часом надсилали багато сповіщень}other{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайту<ph name="END_BOLD" />, які останнім часом надсилали багато сповіщень}}</translation>
 <translation id="8342221978608739536">Не доводилося перевіряти</translation>
 <translation id="8342861492835240085">Виберіть колекцію</translation>
 <translation id="8345848587667658367">Тепер ви можете переглядати нещодавні фотографії, медіафайли, сповіщення й додатки з телефона</translation>
@@ -8823,6 +8827,7 @@
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Встановлення безпечного з'єднання...</translation>
 <translation id="996803490569799917">Переглядайте спогади про вибраних людей тощо</translation>
+<translation id="997143476478634194">Коли ви відвідуєте сайти, вони автоматично дотримуються цього налаштування. Зазвичай сайти надсилають сповіщення, щоб інформувати про важливі новини або повідомлення в чаті.</translation>
 <translation id="99731366405731005">Щоб користуватися синхронізацією Wi-Fi, потрібно ввімкнути <ph name="LINK1_BEGIN" />Синхронізацію Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Докладніше<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Перевірити</translation>
 </translationbundle>

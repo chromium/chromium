@@ -455,6 +455,7 @@
 <translation id="4900532980794411603">ແບ່ງປັນກັບ Parallels Desktop</translation>
 <translation id="4902546322522096650">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="4906580650526544301">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ລາຍລະອຽດ</translation>
+<translation id="4929673617759421391">ການວາງໄຟລ໌ນີ້ຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="4935975195727477204">ດອກ​ກາ​ຊາ​ເນຍ</translation>
 <translation id="4943368462779413526">ບານເຕະ</translation>
 <translation id="4961158930123534723">ແບ່ງປັນ 1 ໂຟນເດີກັບ Parallels Desktop ແລ້ວ</translation>
@@ -511,6 +512,7 @@
 <translation id="5278111733643988471">ເພື່ອກູ້ຄືນລາຍການນີ້, ກະລຸນາລາກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ. ໂຟນເດີເດີມ "<ph name="PARENT_FOLDER_NAME" />" ສຳລັບລາຍການນີ້ຖືກລຶບແລ້ວ.</translation>
 <translation id="5286194356314741248">ກຳລັງສະແກນ</translation>
 <translation id="5288441970121584418">ເບີເກີ</translation>
+<translation id="5293615890992542006">ການຍ້າຍໄຟລ໌ນີ້ຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="5305688511332277257">ບໍ່ອັນໃດຖືກ​ຕິດ​ຕັ້ງ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318819489018851358">ແບ່ງປັນກັບ Linux</translation>
@@ -712,6 +714,7 @@
 <translation id="6993826899923627728">ລາຍການເຫຼົ່ານີ້ແມ່ນຢູ່ໃນຖັງຂີ້ເຫຍື້ອຂອງທ່ານ</translation>
 <translation id="6998711733709403587">ເລືອກໂຟນເດີ <ph name="SELCTED_FOLDERS_COUNT" /> ແລ້ວ</translation>
 <translation id="7008426324576352165">ອົງກອນຂອງທ່ານຕ້ອງການບ່ອນຈັດເກັບຂໍ້ມູນເພີ່ມເຕີມເພື່ອສຳເລັດການອັບໂຫຼດ.</translation>
+<translation id="7009985720488544166">ການຍ້າຍໄຟລ໌ <ph name="COUNT" /> ໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ການ​ຕິດ​ຕັ້ງ​ບໍ່ສໍາເລັດ.</translation>
 <translation id="7031639531908619281">ພາສາເທີກິສ</translation>
@@ -971,6 +974,7 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">ພາສາຄາຊັກ</translation>
 <translation id="9200427192836333033">ແຕກໄຟລ໌ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
+<translation id="9210751050717126865">ການວາງໄຟລ໌ <ph name="COUNT" /> ລາຍການຖືກບລັອກໂດຍນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="9213073329713032541">ເລີ່ມການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>
 <translation id="9219103736887031265">ຮູບ</translation>
 <translation id="9219908252191632183">ພາບພື້ນຜິວດວງເດືອນ</translation>

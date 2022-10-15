@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Датотеке</translation>
 <translation id="1294929383540927798">Промените подешавања обавештења на закључаном екрану</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Прегледајте Bluetooth подешавања. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">ПРЕПОРУЧЕНЕ АПЛИКАЦИЈЕ</translation>
 <translation id="1312604459020188865">Јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Увек приказуј полицу</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">Затражите од администратора да подеси овај уређај у Google администраторској конзоли</translation>
 <translation id="1550523713251050646">Кликните за више опција</translation>
 <translation id="1555130319947370107">Плава</translation>
-<translation id="1570871743947603115">Укључите/искључите Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Приступите свим активностима у овој сесији</translation>
 <translation id="1610778689852195798">„Опозови радњу“</translation>
 <translation id="1611993646327628135">Укључено</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">Максимални број радних површина је <ph name="MAX_DESK_LIMIT" />. Уклоните радну површину да бисте отворили нову.</translation>
 <translation id="1756833229520115364">Чување шаблона није успело. Има превише прозора или картица.</translation>
 <translation id="1757857692711134412">Искључено до сумрака</translation>
-<translation id="1761222317188459878">Укључите/искључите мрежну везу. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Тастерска пречица <ph name="LAUNCHER_KEY_NAME" /> + тачка је промењена. Да бисте користили тастер за уметање, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Премештено је у <ph name="ROW_NUMBER" />. ред, <ph name="COLUMN_NUMBER" />. колона.</translation>
 <translation id="1771761307086386028">Помери надесно</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">Приказују се предлози</translation>
 <translation id="2985148236010982088">Прикажи све апликације</translation>
 <translation id="2992327365391326550">Дугме за микрофон на уређају је искључено.</translation>
-<translation id="2995447421581609334">Прегледајте уређаје за пребацивање.</translation>
 <translation id="2996462380875591307">Монтирана лупа екрана је омогућена. Притисните Ctrl + тастер за претрагу + D поново да бисте је искључили.</translation>
 <translation id="3000461861112256445">Моно звук</translation>
 <translation id="3009178788565917040">Излаз</translation>
@@ -1165,7 +1161,6 @@
 <translation id="7611213136657090146">Камера је поново повезана.</translation>
 <translation id="761736749114493194">Укључите уоквиривање камере. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Прикажите подешавања Дељења у близини.</translation>
 <translation id="7634648064048557203">Камера је уклопљена у доњи леви угао</translation>
 <translation id="7641938616688887143">Снимај</translation>
 <translation id="7642106959537987271">режим инверзије боја</translation>
@@ -1350,7 +1345,6 @@
 <translation id="8660331759611631213">Квадратни корен броја 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Притисните Enter да бисте направили делимичан снимак екрана</translation>
-<translation id="8664753092453405566">Прегледајте листу мрежа. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Отворите <ph name="NAME" /> да бисте подесили уређај</translation>
 <translation id="8676770494376880701">Повезан је пуњач мале снаге</translation>
 <translation id="8683506306463609433">Праћење учинка је активно</translation>
@@ -1360,7 +1354,6 @@
 <translation id="8724318433625452070">Снимање целог екрана</translation>
 <translation id="8734991477317290293">Можда покушава да украде вашу комбинацију тастера</translation>
 <translation id="8735678380411481005">Боја позадинског осветљења тастатуре</translation>
-<translation id="8735953464173050365">Прегледајте подешавања тастатуре. Изабрана је <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Укључите приступ камери да бисте дозволили апликацијама и веб-страницама са дозволом за камеру да користе камере повезане са овим уређајем.</translation>
@@ -1384,7 +1377,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Верификација PIN-а или лозинке још увек није успела. Напомена: Ако сте недавно променили лозинку, користите стару. Нова лозинка ће бити примењена када се одјавите.</translation>
 <translation id="8870509716567206129">Апликација не подржава подељени екран.</translation>
-<translation id="8871580645200179206">Укључите/искључите тамну тему. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Није повезано</translation>
 <translation id="8876661425082386199">Проверите везу</translation>
 <translation id="8877788021141246043">Подеси подсетник</translation>
@@ -1437,7 +1429,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Снимање заштићеног садржаја није успело</translation>
 <translation id="9161053988251441839">ПРЕДЛОЖЕНЕ АПЛИКАЦИЈЕ</translation>
-<translation id="9166331175924255663">Укључите или искључите велику видљивост Дељења у близини.</translation>
 <translation id="9168436347345867845">Урадићу то касније</translation>
 <translation id="9178475906033259337">Приказује се један резултат за: <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ова функција вам омогућава да брзо приступите било ком пријављеном кориснику без лозинке. Користите ову функцију само са налозима у које имате поверења.</translation>

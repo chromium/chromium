@@ -74,7 +74,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1293556467332435079">Fișiere</translation>
 <translation id="1294929383540927798">Modifică setările pentru notificările de pe ecranul de blocare</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Afișează setările Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">APLICAȚII RECOMANDATE</translation>
 <translation id="1312604459020188865">Puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Afișează întotdeauna raftul</translation>
@@ -119,7 +118,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1546930421365146760">Solicită-i administratorului să configureze acest dispozitiv în consola de administrare Google</translation>
 <translation id="1550523713251050646">Dă clic pentru mai multe opțiuni</translation>
 <translation id="1555130319947370107">Albastru</translation>
-<translation id="1570871743947603115">Comută Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">să acceseze toată activitatea din această sesiune;</translation>
 <translation id="1610778689852195798">Anulează</translation>
 <translation id="1611993646327628135">Activat</translation>
@@ -150,7 +148,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1750088060796401187">Doar <ph name="MAX_DESK_LIMIT" /> desktopuri permise. Elimină un desktop ca să deschizi unul nou.</translation>
 <translation id="1756833229520115364">Nu s-a putut salva șablonul. Prea multe ferestre sau file.</translation>
 <translation id="1757857692711134412">Dezactivată până la apus</translation>
-<translation id="1761222317188459878">Comută conexiunea la rețea. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Comanda rapidă de la tastatură <ph name="LAUNCHER_KEY_NAME" /> + punct s-a schimbat. Pentru a folosi tasta Insert, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">S-a mutat pe rândul <ph name="ROW_NUMBER" />, în coloana <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Derulează la dreapta</translation>
@@ -357,7 +354,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2981684127883932071">Se afișează sugestiile</translation>
 <translation id="2985148236010982088">Vezi toate aplicațiile</translation>
 <translation id="2992327365391326550">Butonul pentru microfonul dispozitivului este dezactivat.</translation>
-<translation id="2995447421581609334">Afișează dispozitivele de proiecție.</translation>
 <translation id="2996462380875591307">Lupa andocată este activată. Apasă din nou pe Ctrl + tasta de căutare + D pentru a o dezactiva.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Ieșiri</translation>
@@ -1164,7 +1160,6 @@ Instalare nouă</translation>
 <translation id="7611213136657090146">Camera foto a fost reconectată.</translation>
 <translation id="761736749114493194">Comută încadrarea camerei. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Afișează setările Trimiterii în apropiere.</translation>
 <translation id="7634648064048557203">Camera foto este aliniată cu colțul din dreapta jos</translation>
 <translation id="7641938616688887143">Înregistrează</translation>
 <translation id="7642106959537987271">modul de inversare a culorilor</translation>
@@ -1349,7 +1344,6 @@ Instalare nouă</translation>
 <translation id="8660331759611631213">Rădăcina pătrată a numărului 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Apasă pe Enter pentru a realiza o captură de ecran parțială</translation>
-<translation id="8664753092453405566">Afișează lista de rețele. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Deschide <ph name="NAME" /> pentru a configura dispozitivul</translation>
 <translation id="8676770494376880701">A fost conectat un încărcător de putere joasă</translation>
 <translation id="8683506306463609433">Urmărirea performanțelor este activă</translation>
@@ -1359,7 +1353,6 @@ Instalare nouă</translation>
 <translation id="8724318433625452070">Captură pe ecran complet</translation>
 <translation id="8734991477317290293">Aceasta ar putea încerca să înregistreze ce taste apeși</translation>
 <translation id="8735678380411481005">Culoarea retroiluminării tastaturii</translation>
-<translation id="8735953464173050365">Afișează setările pentru tastatură. Este selectată <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Activează accesul la camera foto pentru a permite aplicațiilor și paginilor web cu permisiunea pentru cameră să utilizeze camerele foto conectate la acest dispozitiv.</translation>
@@ -1383,7 +1376,6 @@ Instalare nouă</translation>
 <translation id="8850991929411075241">Tasta de căutare + Esc</translation>
 <translation id="8853703225951107899">Codul PIN sau parola tot nu au putut fi confirmate. Notă: dacă ai schimbat parola recent, folosește vechea parolă. Noua parolă se va aplica după ce te deconectezi.</translation>
 <translation id="8870509716567206129">Aplicația nu acceptă ecranul împărțit.</translation>
-<translation id="8871580645200179206">Activează/dezactivează Tema întunecată. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Neconectat</translation>
 <translation id="8876661425082386199">Verifică-ți conexiunea</translation>
 <translation id="8877788021141246043">Setează un memento</translation>
@@ -1436,7 +1428,6 @@ Instalare nouă</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> sau <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Nu se poate înregistra conținut protejat</translation>
 <translation id="9161053988251441839">APLICAȚII SUGERATE</translation>
-<translation id="9166331175924255663">Activează/dezactivează vizibilitatea crescută pentru Trimiterea în apropiere.</translation>
 <translation id="9168436347345867845">Mai târziu</translation>
 <translation id="9178475906033259337">Se afișează un rezultat pentru <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Cu această funcție poți să accesezi rapid orice utilizator conectat fără solicitarea parolei. Folosește funcția numai pentru conturile în care ai încredere.</translation>

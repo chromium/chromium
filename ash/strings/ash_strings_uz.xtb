@@ -74,7 +74,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1294929383540927798">Qulflangan ekranda chiqadigan bildirishnomalar sozlamalarini o‘zgartirish</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Bluetooth sozlamalarini ochish. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">TAVSIYA ETILGAN ILOVALAR</translation>
 <translation id="1312604459020188865">Signal darajasi: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Javon doim chiqib tursin</translation>
@@ -119,7 +118,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1546930421365146760">Administratoringizdan ushbu qurilmani Google administrator konsolida sozlashni soʻrang</translation>
 <translation id="1550523713251050646">Qo‘shimcha parametrlarni ko‘rish</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
-<translation id="1570871743947603115">Bluetooth qurilmasini yoqish/o‘chirish <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Bu seansdagi barcha harakatlaringizga ruxsat</translation>
 <translation id="1610778689852195798">“Qaytarish”</translation>
 <translation id="1611993646327628135">Yoniq</translation>
@@ -150,7 +148,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1750088060796401187">Faqat <ph name="MAX_DESK_LIMIT" /> ta ish stolini ochish mumkin. Yangisini ochish uchun birorta ish stolini olib tashlang.</translation>
 <translation id="1756833229520115364">Andoza saqlanmadi. Haddan ziyod oynalar yoki varaqlar ochilgan.</translation>
 <translation id="1757857692711134412">Quyosh botishigacha oʻchiq</translation>
-<translation id="1761222317188459878">Tarmoq aloqasini yoqish/o‘chirish. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nuqta tezkor tugmasi oʻzgardi. Insert tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Shift + Backspace tugmalarini bosing.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-qator, <ph name="COLUMN_NUMBER" />-ustunga oʻtdi.</translation>
 <translation id="1771761307086386028">Oʻngga aylantirish</translation>
@@ -357,7 +354,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2981684127883932071">Takliflar chiqarildi</translation>
 <translation id="2985148236010982088">Barcha ilovalar</translation>
 <translation id="2992327365391326550">Qurilmaning mikrofon tugmasi faolsizlantirildi.</translation>
-<translation id="2995447421581609334">Translatsiya qurilmalarini ochish.</translation>
 <translation id="2996462380875591307">Mahkamlangan lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+D tugmalarini bosing.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Chiqarish</translation>
@@ -1164,7 +1160,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7611213136657090146">Kamera qayta ulandi.</translation>
 <translation id="761736749114493194">Kamerani freymlash tugmasi. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Nearby Share sozlamalarini ochish.</translation>
 <translation id="7634648064048557203">Kamera pastki oʻng burchakka joylandi</translation>
 <translation id="7641938616688887143">Yozib olish</translation>
 <translation id="7642106959537987271">ranglarni akslantirish usuli</translation>
@@ -1349,7 +1344,6 @@ yangi oʻrnatilgan</translation>
 <translation id="8660331759611631213">71 sonining kvadrat ildizi</translation>
 <translation id="8663756353922886599">Himoya: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Qismni rasmga olish uchun Enter tugmasini bosing</translation>
-<translation id="8664753092453405566">Tarmoq ro‘yxatini ochish. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Qurilmani sozlash uchun <ph name="NAME" /> ilovasini oching</translation>
 <translation id="8676770494376880701">Kam quvvatli zaryadlash vositasi</translation>
 <translation id="8683506306463609433">Unumdorlik kuzatilmoqda</translation>
@@ -1359,7 +1353,6 @@ yangi oʻrnatilgan</translation>
 <translation id="8724318433625452070">Butun ekranni tasvirga olish</translation>
 <translation id="8734991477317290293">Bu bosilayotgan tugmalarni kuzatish urinishi bo‘lishi mumkin.</translation>
 <translation id="8735678380411481005">Klaviatura orqa chirogʻi rangi</translation>
-<translation id="8735953464173050365">Klaviatura sozlamalarini ochish. <ph name="KEYBOARD_NAME" /> tanlandi</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Ilova va saytlar bu qurilmaga ulangan kameradan foydalanishi uchun kamera ruxsatini yoqing.</translation>
@@ -1383,7 +1376,6 @@ yangi oʻrnatilgan</translation>
 <translation id="8850991929411075241">Search + Esc</translation>
 <translation id="8853703225951107899">PIN kod yoki parolingiz haligacha tekshirilmadi. Eslatma: Parol yaqinda almashtirilgan boʻlsa, eskisini kiriting. Yangi parolingiz hisobdan chiqqaningizda kuchga kiradi.</translation>
 <translation id="8870509716567206129">Bu dastur ekranni bo‘lish xususiyatini qo‘llab-quvvatlamaydi.</translation>
-<translation id="8871580645200179206">Tungi mavzu tugmasi. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ulanmagan</translation>
 <translation id="8876661425082386199">Aloqani tekshiring</translation>
 <translation id="8877788021141246043">Eslatma belgilash</translation>
@@ -1436,7 +1428,6 @@ yangi oʻrnatilgan</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> yoki <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Himoyalangan kontentni yozib olish imkonsiz</translation>
 <translation id="9161053988251441839">TAVSIYA ETILGAN ILOVALAR</translation>
-<translation id="9166331175924255663">Nearby Share uchun keng ruxsat berish.</translation>
 <translation id="9168436347345867845">Keyinroq</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> – 1 ta natija chiqdi</translation>
 <translation id="9179259655489829027">Bu funksiya kirish bajarilgan istalgan hisobga tez va parolsiz ruxsat beradi. Faqatgina ishonchli hisoblarga qo‘llang.</translation>

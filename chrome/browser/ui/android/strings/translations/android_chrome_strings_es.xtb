@@ -6,7 +6,6 @@
 <translation id="103269572468856066">¿Borrar también datos de estos sitios y aplicaciones?</translation>
 <translation id="1034259925032978114">La ventana está abierta</translation>
 <translation id="1036348656032585052">Desactivar</translation>
-<translation id="1036727731225946849">Añadiendo <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">¿Borrar también datos de estos sitios?</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="10614374240317010">Contraseñas que nunca se guardan</translation>
@@ -511,7 +510,6 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="3771694256347217732">Términos del Servicio de Google</translation>
 <translation id="3773856050682458546">Datos básicos e información sobre los sitios web que visitas y las aplicaciones que usas.</translation>
 <translation id="3775705724665058594">Enviar a tus dispositivos</translation>
-<translation id="3778956594442850293">Se ha añadido a la pantalla de inicio</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="3803784507854318295">Gestionar la reproducción automática</translation>
 <translation id="3810838688059735925">Vídeo</translation>

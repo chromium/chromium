@@ -74,7 +74,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1293556467332435079">Fitxers</translation>
 <translation id="1294929383540927798">Canvia la configuració de notificacions de la pantalla de bloqueig</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Mostra la configuració del Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">APLICACIONS RECOMANADES</translation>
 <translation id="1312604459020188865"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
 <translation id="1316069254387866896">Mostra sempre el prestatge</translation>
@@ -119,7 +118,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1546930421365146760">Demana a l'administrador que configuri aquest dispositiu a la consola d'administració de Google</translation>
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
 <translation id="1555130319947370107">Blau</translation>
-<translation id="1570871743947603115">Activa o desactiva el Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
 <translation id="1610778689852195798">"Desfés"</translation>
 <translation id="1611993646327628135">Activat</translation>
@@ -150,7 +148,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1750088060796401187">Només es permeten <ph name="MAX_DESK_LIMIT" /> escriptoris. Suprimeix un escriptori per obrir-ne un altre.</translation>
 <translation id="1756833229520115364">No s'ha pogut desar la plantilla. Hi ha massa finestres o pestanyes.</translation>
 <translation id="1757857692711134412">Desactivada fins al vespre</translation>
-<translation id="1761222317188459878">Activa o desactiva la connexió a la xarxa. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Les tecles de drecera <ph name="LAUNCHER_KEY_NAME" />+punt han canviat. Per utilitzar la tecla d'inserció, prem <ph name="LAUNCHER_KEY_NAME" />+Maj+Retrocés.</translation>
 <translation id="1770726142253415363">S'ha mogut a la fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Desplaça't cap a la dreta</translation>
@@ -357,7 +354,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2981684127883932071">S'estan mostrant suggeriments</translation>
 <translation id="2985148236010982088">Mostra totes les aplicacions</translation>
 <translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
-<translation id="2995447421581609334">Mostra els dispositius d'emissió</translation>
 <translation id="2996462380875591307">La lupa acoblada està activada. Torna a prémer Ctrl+Cerca+D per desactivar-la.</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
 <translation id="3009178788565917040">Sortida</translation>
@@ -1161,7 +1157,6 @@ Instal·lació nova</translation>
 <translation id="7611213136657090146">S'ha tornat a connectar la càmera.</translation>
 <translation id="761736749114493194">Commuta l'enquadrament de la càmera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Mostra la configuració de Compartició Nearby.</translation>
 <translation id="7634648064048557203">La càmera s'ha ajustat a l'extrem inferior dret</translation>
 <translation id="7641938616688887143">Grava</translation>
 <translation id="7642106959537987271">mode d'inversió de colors</translation>
@@ -1346,7 +1341,6 @@ Instal·lació nova</translation>
 <translation id="8660331759611631213">Arrel quadrada de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
 <translation id="8664282223139913403">Prem Retorn per fer una captura de pantalla parcial</translation>
-<translation id="8664753092453405566">Mostra la llista de xarxes. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Obre <ph name="NAME" /> per configurar el dispositiu</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
 <translation id="8683506306463609433">Traça del rendiment activa</translation>
@@ -1356,7 +1350,6 @@ Instal·lació nova</translation>
 <translation id="8724318433625452070">Captura de pantalla completa</translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les combinacions de tecles</translation>
 <translation id="8735678380411481005">Color de la retroil·luminació del teclat</translation>
-<translation id="8735953464173050365">Mostra la configuració del teclat. S'ha seleccionat <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Activa l'accés a la càmera per permetre que les aplicacions i les pàgines web que tinguin permís per accedir a la càmera utilitzin les càmeres connectades a aquest dispositiu.</translation>
@@ -1380,7 +1373,6 @@ Instal·lació nova</translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>
 <translation id="8853703225951107899">El PIN o la contrasenya continuen sense poder-se verificar. Nota: si fa poc que has canviat la contrasenya, fes servir l'antiga. La contrasenya nova s'aplicarà un cop hagis tancat la sessió.</translation>
 <translation id="8870509716567206129">L'aplicació no admet la pantalla dividida.</translation>
-<translation id="8871580645200179206">Commuta el tema fosc. <ph name="STATE_TEXT" />.</translation>
 <translation id="8874184842967597500">No connectada</translation>
 <translation id="8876661425082386199">Comprova la connexió</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
@@ -1433,7 +1425,6 @@ Instal·lació nova</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">No es pot gravar contingut protegit</translation>
 <translation id="9161053988251441839">APLICACIONS SUGGERIDES</translation>
-<translation id="9166331175924255663">Commuta la visibilitat alta de Compartició Nearby.</translation>
 <translation id="9168436347345867845">Fes-ho més tard</translation>
 <translation id="9178475906033259337">S'està mostrant 1 resultat per a "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Aquesta funció et permet accedir ràpidament als usuaris que han iniciat la sessió sense haver d'introduir la contrasenya. Utilitza aquesta funció només amb comptes de confiança.</translation>

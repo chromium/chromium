@@ -3915,6 +3915,7 @@
 <translation id="4677772697204437347">ذاكرة وحدة معالج الرسومات</translation>
 <translation id="467823995058589466">تم إيقاف الكاميرا.</translation>
 <translation id="4680105648806843642">تم كتم الصوت في هذه الصفحة.</translation>
+<translation id="4680112532510845139">يمكنك إسقاط صورة هنا.</translation>
 <translation id="4681453295291708042">إيقاف ميزة "المشاركة عن قرب"</translation>
 <translation id="4681512854288453141">سياسة المصدر</translation>
 <translation id="4681930562518940301">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
@@ -4870,6 +4871,7 @@
            و<ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" />.</translation>
 <translation id="5620568081365989559">‏تطلب DevTools الدخول الكامل إلى <ph name="FOLDER_PATH" />. احرص على عدم كشف أي معلومات حساسة.</translation>
 <translation id="5620612546311710611">إحصاءات الاستخدام</translation>
+<translation id="562250930904332809">إيقاف &amp;ميزة "النسخ النصي التلقائي"</translation>
 <translation id="5623282979409330487">يستخدم الموقع الإلكتروني هذا مستشعرات الحركة.</translation>
 <translation id="5623842676595125836">السجل</translation>
 <translation id="5624120631404540903">إدارة كلمات المرور</translation>
@@ -8352,6 +8354,7 @@
 <translation id="8970887620466824814">حدث خطأ.</translation>
 <translation id="89720367119469899">خروج</translation>
 <translation id="8972513834460200407">‏يُرجى التحقق مع مشرف الشبكة للتأكد من عدم حظر الجدار الناري للتنزيلات من خوادم Google.</translation>
+<translation id="8973263196882835828">&amp;تفعيل ميزة "النسخ النصي التلقائي"</translation>
 <translation id="8973557916016709913">إزالة مستوى التكبير أو التصغير</translation>
 <translation id="8973596347849323817">يمكنك تخصيص هذا الجهاز للتوافق مع احتياجاتك. ويمكن تغيير ميزات إمكانية الوصول هذه لاحقًا من خلال الإعدادات.</translation>
 <translation id="897414447285476047">ملف الوجهة غير مكتمل بسبب حدوث مشكلة في الاتصال.</translation>

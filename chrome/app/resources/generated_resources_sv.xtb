@@ -3965,6 +3965,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4677772697204437347">GPU-minne</translation>
 <translation id="467823995058589466">Kameran är avstängd</translation>
 <translation id="4680105648806843642">Ljudet är avstängt på den här sidan</translation>
+<translation id="4680112532510845139">Släpp en bild här</translation>
 <translation id="4681453295291708042">Inaktivera Närdelning</translation>
 <translation id="4681512854288453141">Källprincip</translation>
 <translation id="4681930562518940301">Öppna originalbilden i en ny flik</translation>
@@ -4931,6 +4932,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
            och <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
 <translation id="5620568081365989559">DevTools kräver fullständig åtkomst till <ph name="FOLDER_PATH" />. Lämna inte ut känsliga uppgifter.</translation>
 <translation id="5620612546311710611">användningsstatistik</translation>
+<translation id="562250930904332809">&amp;Inaktivera Live Caption</translation>
 <translation id="5623282979409330487">Den här webbplatsen använder enhetens rörelsesensorer.</translation>
 <translation id="5623842676595125836">Logg</translation>
 <translation id="5624120631404540903">Hantera lösenord</translation>
@@ -8442,6 +8444,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8970887620466824814">Något gick fel.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Kontrollera med nätverksadministratören att brandväggen inte blockerar nedladdning från Googles servrar.</translation>
+<translation id="8973263196882835828">&amp;Aktivera Live Caption</translation>
 <translation id="8973557916016709913">Ta bort zoomnivå</translation>
 <translation id="8973596347849323817">Du kan anpassa enheten efter dina behov. Tillgänglighetsfunktionerna kan ändras senare under Inställningar.</translation>
 <translation id="897414447285476047">Hela målfilen laddades inte ned på grund av ett anslutningsfel.</translation>

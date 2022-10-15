@@ -1904,6 +1904,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Quản trị viên của bạn đã vô hiệu hóa người dùng được giám sát.</translation>
 <translation id="2722540561488096675">Thiết bị của bạn sẽ tắt trong <ph name="TIME_LEFT" />. Hãy tháo USB trước khi bật lại thiết bị của bạn. Sau đó, bạn có thể bắt đầu dùng <ph name="DEVICE_OS" />.</translation>
+<translation id="2722547199758472013">Mã nhận dạng: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">Nhật ký WebRTC</translation>
 <translation id="272488616838512378">Chuyển đổi đơn vị</translation>
 <translation id="2725200716980197196">Đã khôi phục kết nối mạng</translation>
@@ -3075,6 +3076,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3828029223314399057">Tìm kiếm dấu trang</translation>
 <translation id="3828953470056652895">Tôi đã đọc và đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" /> và <ph name="BEGIN_LINK3" />Điều khoản dịch vụ của Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Chia sẻ tệp SMB</translation>
+<translation id="3830268140528557982">vào <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Quản trị viên đã bật lại 1 tiện ích có thể gây hại}other{Quản trị viên đã bật lại {NUM_EXTENSIONS} tiện ích có thể gây hại}}</translation>
 <translation id="3831436149286513437">Đề xuất tìm kiếm của Google Drive</translation>
 <translation id="3834728400518755610">Bạn cần tắt Linux để thay đổi tùy chọn cài đặt micrô. Hãy tắt Linux để tiếp tục.</translation>
@@ -3965,6 +3967,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4677772697204437347">Bộ nhớ GPU</translation>
 <translation id="467823995058589466">Máy ảnh đang tắt</translation>
 <translation id="4680105648806843642">Trang này đã bị tắt tiếng</translation>
+<translation id="4680112532510845139">Thả hình ảnh vào đây</translation>
 <translation id="4681453295291708042">Tắt tính năng Chia sẻ lân cận</translation>
 <translation id="4681512854288453141">Chính sách về nguồn</translation>
 <translation id="4681930562518940301">Mở &amp;hình ảnh gốc trong thẻ mới</translation>
@@ -4931,6 +4934,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
            và <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
 <translation id="5620568081365989559">DevTools yêu cầu toàn quyền truy cập vào <ph name="FOLDER_PATH" />. Hãy đảm bảo bạn không hiển thị bất kỳ thông tin nhạy cảm nào.</translation>
 <translation id="5620612546311710611">thống kê sử dụng</translation>
+<translation id="562250930904332809">&amp;Tắt tính năng Phụ đề trực tiếp</translation>
 <translation id="5623282979409330487">Trang web này đang sử dụng cảm biến chuyển động.</translation>
 <translation id="5623842676595125836">Nhật ký</translation>
 <translation id="5624120631404540903">Quản lý mật khẩu</translation>
@@ -5204,6 +5208,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5884474295213649357">Thẻ này được kết nối với một thiết bị USB.</translation>
 <translation id="5885314688092915589">Tổ chức của bạn sẽ quản lý hồ sơ này</translation>
 <translation id="5886009770935151472">Ngón tay số 1</translation>
+<translation id="5886112770923972514">Kết nối và thiết lập nhanh các thiết bị Ghép nối nhanh ở gần</translation>
 <translation id="5886384907280980632">Tắt ngay</translation>
 <translation id="5889282057229379085">Số CA gián tiếp tối đa: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Các mạng Wi-Fi ưu tiên</translation>
@@ -7795,6 +7800,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8338952601723052325">Trang web dành cho nhà phát triển</translation>
 <translation id="833986336429795709">Để mở đường liên kết này, hãy chọn một ứng dụng</translation>
 <translation id="8340547030807793004">Thao tác khác cho <ph name="DEVICE" /></translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Xem lại <ph name="BEGIN_BOLD" />1 trang web<ph name="END_BOLD" /> đã gửi nhiều thông báo gần đây}other{Xem lại <ph name="BEGIN_BOLD" />{NUM_SITES} trang web<ph name="END_BOLD" /> đã gửi nhiều thông báo gần đây}}</translation>
 <translation id="8342221978608739536">Chưa thử</translation>
 <translation id="8342861492835240085">Chọn một bộ sưu tập</translation>
 <translation id="8345848587667658367">Giờ đây, bạn có thể xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại của mình.</translation>
@@ -8442,6 +8448,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8970887620466824814">Đã xảy ra lỗi.</translation>
 <translation id="89720367119469899">Thoát</translation>
 <translation id="8972513834460200407">Vui lòng kiểm tra với quản trị viên mạng của bạn để đảm bảo rằng tường lửa không chặn tài nguyên đã tải xuống từ máy chủ của Google.</translation>
+<translation id="8973263196882835828">&amp;Bật tính năng Phụ đề trực tiếp</translation>
 <translation id="8973557916016709913">Xóa mức thu phóng</translation>
 <translation id="8973596347849323817">Bạn có thể tùy chỉnh thiết bị này cho phù hợp với nhu cầu của mình. Bạn có thể thay đổi các tính năng hỗ trợ tiếp cận này trong phần Cài đặt.</translation>
 <translation id="897414447285476047">Tệp đích chưa hoàn chỉnh do sự cố kết nối.</translation>
@@ -8789,6 +8796,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Thiết lập kết nối an toàn...</translation>
 <translation id="996803490569799917">Xem lại kỷ niệm về những người bạn yêu thích và nhiều ảnh khác</translation>
+<translation id="997143476478634194">Các trang web sẽ tự động tuân theo chế độ cài đặt này khi bạn truy cập. Các trang web thường gửi thông báo để cho bạn biết về tin nổi bật hoặc tin nhắn trò chuyện.</translation>
 <translation id="99731366405731005">Bật <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> để dùng tính năng Đồng bộ hóa Wi-Fi. <ph name="LINK2_BEGIN" />Tìm hiểu thêm<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">K&amp;iểm tra</translation>
 </translationbundle>

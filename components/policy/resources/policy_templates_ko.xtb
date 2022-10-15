@@ -1251,7 +1251,6 @@
       정책을 False로 설정하면 정보가 보고되지 않습니다.
       정책을 True로 설정하거나 설정하지 않으면 기기의 네트워크 상태가 보고됩니다.</translation>
 <translation id="2223393221350938149">모든 사이트에서 자바스크립트 JIT를 실행하도록 허용 안함</translation>
-<translation id="2223582957891074498">정책을 True로 설정하면 단축키나 확장 프로그램 API를 통해 스크린샷을 캡처할 수 없습니다. 정책을 False로 설정하면 스크린샷을 캡처할 수 있습니다.</translation>
 <translation id="2223598546285729819">기본 알림 설정</translation>
 <translation id="222673035924187991">TLS Encrypted ClientHello 사용</translation>
 <translation id="2231726854197443389">이 정책은 사용자가 설정에서 HTTPS 전용 모드를 사용 설정할 수 있는지 결정합니다. HTTPS 전용 모드는 모든 탐색을 HTTPS로 업그레이드합니다.

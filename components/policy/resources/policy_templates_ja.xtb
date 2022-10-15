@@ -1201,7 +1201,6 @@
       このポリシーを false に設定した場合、この情報は報告されません。
       このポリシーを true に設定するか未設定のままにした場合、デバイスのネットワークのステータスが報告されます。</translation>
 <translation id="2223393221350938149">どのサイトにも JavaScript JIT の実行を許可しない</translation>
-<translation id="2223582957891074498">このポリシーを True に設定した場合、キーボード ショートカットまたは拡張機能 API を使用したスクリーンショットが許可されません。このポリシーを False に設定した場合、スクリーンショットが許可されます。</translation>
 <translation id="2223598546285729819">デフォルトの通知設定</translation>
 <translation id="222673035924187991">TLS 暗号化 ClientHello を有効にする</translation>
 <translation id="2231726854197443389">このポリシーでは、ユーザーが [設定] で HTTPS 専用モードを有効にできるかどうかを管理します。HTTPS 専用モードでは、移動先がすべて HTTPS にアップグレードされます。

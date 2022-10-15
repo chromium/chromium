@@ -3961,6 +3961,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4677772697204437347">GPU xotirasi</translation>
 <translation id="467823995058589466">Kamera yoqilmagan</translation>
 <translation id="4680105648806843642">Bu sahifada ovoz bloklangan</translation>
+<translation id="4680112532510845139">Rasmni shu yerga tashlang</translation>
 <translation id="4681453295291708042">Nearby Share’ni faolsizlashtirish</translation>
 <translation id="4681512854288453141">Manba siyosati</translation>
 <translation id="4681930562518940301">Asl rasmni yangi varaqda ochish</translation>
@@ -4927,6 +4928,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
            va <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> taʼsir qilgan</translation>
 <translation id="5620568081365989559">Dasturchilar asboblari <ph name="FOLDER_PATH" /> jildiga to‘liq ruxsat so‘ramoqda. U yerda maxfiy ma’lumotlar yo‘qligiga ishonch hosil qiling.</translation>
 <translation id="5620612546311710611">foydalanish statistikasi</translation>
+<translation id="562250930904332809">Jonli izohni &amp;oʻchirish</translation>
 <translation id="5623282979409330487">Bu saytda harakat sensorlari ishlatilyapti.</translation>
 <translation id="5623842676595125836">Jurnal</translation>
 <translation id="5624120631404540903">Sozlash</translation>
@@ -8447,6 +8449,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8970887620466824814">Xatolik yuz berdi.</translation>
 <translation id="89720367119469899">O‘chirib qo‘yish</translation>
 <translation id="8972513834460200407">Administratordan havfsizlik devori Google serverlaridan fayllar yuklab olinishi bloklanish holatini so‘rang.</translation>
+<translation id="8973263196882835828">Jonli izohni &amp;yoqish</translation>
 <translation id="8973557916016709913">Masshtabni bekor qilish</translation>
 <translation id="8973596347849323817">Qurilmangizdan qulay foydalanish uchun maxsus imkoniyatlardan foydalaning. Bu parametrlarni keyinroq sozlamalar orqali o‘zgartirish mumkin.</translation>
 <translation id="897414447285476047">Bu fayl ulanishdagi muammo tufayli oxirgacha yuklab olinmagan.</translation>

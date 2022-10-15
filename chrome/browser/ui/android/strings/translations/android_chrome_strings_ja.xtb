@@ -6,7 +6,6 @@
 <translation id="103269572468856066">これらのサイトやアプリのデータも削除しますか？</translation>
 <translation id="1034259925032978114">ウィンドウが開いています</translation>
 <translation id="1036348656032585052">オフにする</translation>
-<translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> を追加しています...</translation>
 <translation id="1045899828449635435">これらのサイトのデータも削除しますか？</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="10614374240317010">常に保存しない</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">Google 利用規約</translation>
 <translation id="3773856050682458546">基本データに加えて、アクセスしたウェブサイト、使用したアプリに関する情報</translation>
 <translation id="3775705724665058594">お使いのデバイスに送信</translation>
-<translation id="3778956594442850293">ホーム画面に追加されました</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
 <translation id="3803784507854318295">自動再生を管理します</translation>
 <translation id="3810838688059735925">動画</translation>

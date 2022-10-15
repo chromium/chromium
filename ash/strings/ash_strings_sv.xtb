@@ -74,7 +74,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1294929383540927798">Ändra aviseringsinställningarna för låsskärmen</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Visa Bluetooth-inställningar. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">REKOMMENDERADE APPAR</translation>
 <translation id="1312604459020188865">Signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Visa alltid hyllan</translation>
@@ -119,7 +118,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1546930421365146760">Be administratören att konfigurera enheten i Googles administratörskonsol</translation>
 <translation id="1550523713251050646">Klicka här för fler alternativ</translation>
 <translation id="1555130319947370107">Blå</translation>
-<translation id="1570871743947603115">Aktivera och inaktivera Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
 <translation id="1610778689852195798">”Ångra”</translation>
 <translation id="1611993646327628135">På</translation>
@@ -150,7 +148,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1750088060796401187">Bara <ph name="MAX_DESK_LIMIT" /> skrivbord tillåts. Ta bort ett skrivbord om du vill öppna ett nytt.</translation>
 <translation id="1756833229520115364">Det gick inte att spara mallen. För många fönster eller flikar.</translation>
 <translation id="1757857692711134412">Av till solnedgången</translation>
-<translation id="1761222317188459878">Aktivera och inaktivera nätverksanslutning. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + punkt har ändrats. Om du vill använda Insert-tangenten trycker du på <ph name="LAUNCHER_KEY_NAME" /> + Skift + Backsteg.</translation>
 <translation id="1770726142253415363">Flyttades till rad <ph name="ROW_NUMBER" />, kolumn <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Scrolla åt höger</translation>
@@ -357,7 +354,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2981684127883932071">Visar förslag</translation>
 <translation id="2985148236010982088">Visa alla appar</translation>
 <translation id="2992327365391326550">Enhetens mikrofon är avstängd.</translation>
-<translation id="2995447421581609334">Visa cast-enheter</translation>
 <translation id="2996462380875591307">Dockad skärmförstoring har aktiverats. Tryck på Ctrl + Sök + D igen om du vill inaktivera funktionen.</translation>
 <translation id="3000461861112256445">Monoljud</translation>
 <translation id="3009178788565917040">Utgång</translation>
@@ -1164,7 +1160,6 @@ Nyligen installerad</translation>
 <translation id="7611213136657090146">Kameran har återanslutits.</translation>
 <translation id="761736749114493194">Aktivera och inaktivera kamerainramning. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Visa inställningar för Närdelning</translation>
 <translation id="7634648064048557203">Kameran har fästs i det nedre högra hörnet</translation>
 <translation id="7641938616688887143">Spela in</translation>
 <translation id="7642106959537987271">läge för inverterade färger</translation>
@@ -1349,7 +1344,6 @@ Nyligen installerad</translation>
 <translation id="8660331759611631213">Kvadratroten ur 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tryck på retur för att ta en skärmbild av en del av skärmen</translation>
-<translation id="8664753092453405566">Visa nätverkslista. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Öppna <ph name="NAME" /> och konfigurera enheten där</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8683506306463609433">Prestandaspårning är aktiv</translation>
@@ -1359,7 +1353,6 @@ Nyligen installerad</translation>
 <translation id="8724318433625452070">Skärmbild/skärminspelning av hela skärmen</translation>
 <translation id="8734991477317290293">Det kan försöka stjäla dina tangenttryckningar</translation>
 <translation id="8735678380411481005">Färg på bakgrundsbelysning för tangentbord</translation>
-<translation id="8735953464173050365">Visa tangentbordsinställningar. Inställt på <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Aktivera kameraåtkomst för att tillåta att appar och webbsidor med kamerabehörighet använder kameror som är anslutna till den här enheten.</translation>
@@ -1383,7 +1376,6 @@ Nyligen installerad</translation>
 <translation id="8850991929411075241">Sök+Escape</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
-<translation id="8871580645200179206">Aktivera och inaktivera mörkt tema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8876661425082386199">Kontrollera anslutningen</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
@@ -1436,7 +1428,6 @@ Nyligen installerad</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Det går inte att spela in skyddat innehåll</translation>
 <translation id="9161053988251441839">FÖRESLAGNA APPAR</translation>
-<translation id="9166331175924255663">Aktivera och inaktivera Närdelning med hög synlighet.</translation>
 <translation id="9168436347345867845">Gör det senare</translation>
 <translation id="9178475906033259337">1 resultat visas för <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Med den här funktionen kan du snabbt öppna en inloggad användare utan att behöva ange lösenordet. Använd bara den här funktionen med konton som du litar på.</translation>

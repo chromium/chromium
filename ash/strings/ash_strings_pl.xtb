@@ -74,7 +74,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1293556467332435079">Pliki</translation>
 <translation id="1294929383540927798">Zmień ustawienia powiadomień na ekranie blokady</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Pokaż ustawienia Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">POLECANE APLIKACJE</translation>
 <translation id="1312604459020188865">Siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Zawsze pokazuj półkę</translation>
@@ -119,7 +118,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1546930421365146760">Poproś administratora o skonfigurowanie tego urządzenia w konsoli administracyjnej Google</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
 <translation id="1555130319947370107">Niebieski</translation>
-<translation id="1570871743947603115">Włącz lub wyłącz Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
 <translation id="1610778689852195798">„Cofnij”</translation>
 <translation id="1611993646327628135">Włączono</translation>
@@ -150,7 +148,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1750088060796401187">Dopuszczalna liczba biurek to <ph name="MAX_DESK_LIMIT" />. Jeśli chcesz otworzyć nowe, usuń jedno z dotychczasowych.</translation>
 <translation id="1756833229520115364">Nie udało się zapisać szablonu. Zbyt wiele okien lub kart.</translation>
 <translation id="1757857692711134412">Wyłączone do zachodu słońca</translation>
-<translation id="1761222317188459878">Włącz lub wyłącz połączenie sieciowe. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + kropka został zmieniony. Aby użyć klawisza Insert, naciśnij <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Przeniesiono do wiersza <ph name="ROW_NUMBER" />, kolumny <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Przewiń w prawo</translation>
@@ -357,7 +354,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2981684127883932071">Wyświetlam sugestie</translation>
 <translation id="2985148236010982088">Zobacz wszystkie aplikacje</translation>
 <translation id="2992327365391326550">Przycisk mikrofonu urządzenia jest wyłączony.</translation>
-<translation id="2995447421581609334">Pokaż urządzenia przesyłające.</translation>
 <translation id="2996462380875591307">Lupa zadokowana została włączona. Aby ją wyłączyć, naciśnij ponownie Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">Dźwięk mono</translation>
 <translation id="3009178788565917040">Urządzenie wyjściowe</translation>
@@ -1163,7 +1159,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7611213136657090146">Kamera została ponownie połączona.</translation>
 <translation id="761736749114493194">Przełącz kadrowanie. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Pokaż ustawienia Udostępniania w pobliżu.</translation>
 <translation id="7634648064048557203">Podgląd z kamery został przyciągnięty do prawego dolnego rogu</translation>
 <translation id="7641938616688887143">Nagraj</translation>
 <translation id="7642106959537987271">tryb odwrócenia kolorów</translation>
@@ -1348,7 +1343,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8660331759611631213">Pierwiastek kwadratowy z 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Aby zrobić częściowy zrzut ekranu, naciśnij Enter</translation>
-<translation id="8664753092453405566">Pokaż listę sieci. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Otwórz aplikację <ph name="NAME" />, aby skonfigurować urządzenie</translation>
 <translation id="8676770494376880701">Podłączono ładowarkę o małej mocy</translation>
 <translation id="8683506306463609433">Śledzenie wydajności jest aktywne</translation>
@@ -1358,7 +1352,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8724318433625452070">Zrzut całego ekranu</translation>
 <translation id="8734991477317290293">Klawiatura może próbować przechwycić naciskane klawisze</translation>
 <translation id="8735678380411481005">Kolor podświetlenia klawiatury</translation>
-<translation id="8735953464173050365">Pokaż ustawienia klawiatury. Wybrana jest: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Włącz dostęp do aparatu, aby zezwolić aplikacjom i stronom z uprawnieniami na korzystanie z aparatów podłączonych do tego urządzenia.</translation>
@@ -1382,7 +1375,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8850991929411075241">Szukaj+Esc</translation>
 <translation id="8853703225951107899">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Uwaga: jeśli Twoje hasło zostało ostatnio zmienione, użyj starego hasła. Nowe hasło zacznie obowiązywać, gdy się wylogujesz.</translation>
 <translation id="8870509716567206129">Aplikacja nie obsługuje dzielonego ekranu.</translation>
-<translation id="8871580645200179206">Przełącz ciemny motyw. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nie połączono</translation>
 <translation id="8876661425082386199">Sprawdź połączenie</translation>
 <translation id="8877788021141246043">Ustaw przypomnienie</translation>
@@ -1435,7 +1427,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> lub <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Nie można nagrać treści chronionej</translation>
 <translation id="9161053988251441839">SUGEROWANE APLIKACJE</translation>
-<translation id="9166331175924255663">Włącza/wyłącza dużą widoczność Udostępniania w pobliżu.</translation>
 <translation id="9168436347345867845">Później</translation>
 <translation id="9178475906033259337">Wyświetlam 1 wynik dla zapytania <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ta funkcja umożliwia szybki dostęp do każdego konta zalogowanego użytkownika bez konieczności podawania hasła. Używaj jej tylko w przypadku kont, którym ufasz.</translation>

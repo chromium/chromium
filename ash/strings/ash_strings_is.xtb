@@ -74,7 +74,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1293556467332435079">Skrár</translation>
 <translation id="1294929383540927798">Breyta tilkynningastillingum lásskjás</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Sýna Bluetooth-stillingar. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">FORRIT SEM MÆLT ER MEÐ</translation>
 <translation id="1312604459020188865"><ph name="SIGNAL_STRENGTH" /> sendistyrkur</translation>
 <translation id="1316069254387866896">Sýna alltaf hillu</translation>
@@ -119,7 +118,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1546930421365146760">Biddu kerfisstjórann um að setja þetta tæki upp á Google stjórnborði stjórnanda</translation>
 <translation id="1550523713251050646">Smelltu til að sjá fleiri valkosti</translation>
 <translation id="1555130319947370107">Blár</translation>
-<translation id="1570871743947603115">Kveikja/slökkva á Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Fengið aðgang að öllum aðgerðum þínum í þessari lotu</translation>
 <translation id="1610778689852195798">„Afturkalla“</translation>
 <translation id="1611993646327628135">Kveikt</translation>
@@ -150,7 +148,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1750088060796401187">Aðeins <ph name="MAX_DESK_LIMIT" /> skrifborð eru heimiluð. Fjarlægðu skrifborð til að opna nýtt.</translation>
 <translation id="1756833229520115364">Ekki tókst að vista sniðmát. Of margir gluggar eða flipar.</translation>
 <translation id="1757857692711134412">Slökkt til sólarlags</translation>
-<translation id="1761222317188459878">Kveikja/slökkva á nettengingu. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Flýtilyklinum <ph name="LAUNCHER_KEY_NAME" /> + punktur hefur verið breytt. Til að nota Insert-lykilinn ýtirðu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + Shift + bakklykilinn.</translation>
 <translation id="1770726142253415363">Fært í línu <ph name="ROW_NUMBER" />, dálk <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Fletta til hægri</translation>
@@ -357,7 +354,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2981684127883932071">Birtir tillögur</translation>
 <translation id="2985148236010982088">Sjá öll forrit</translation>
 <translation id="2992327365391326550">Slökkt er á hljóðnemahnappi tækisins.</translation>
-<translation id="2995447421581609334">Sýna útsendingartæki.</translation>
 <translation id="2996462380875591307">Kveikt á stækkunargleri í föstum glugga. Ýttu aftur á Ctrl+leitarhnappinn+D til að loka því.</translation>
 <translation id="3000461861112256445">Einóma hljóð</translation>
 <translation id="3009178788565917040">Úttak</translation>
@@ -1164,7 +1160,6 @@ Ný uppsetning</translation>
 <translation id="7611213136657090146">Myndavél tengd aftur.</translation>
 <translation id="761736749114493194">Kveikja/slökkva á myndavélarramma. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Sýna stillingar nærdeilingar.</translation>
 <translation id="7634648064048557203">Myndavél fest við neðra horn hægra megin</translation>
 <translation id="7641938616688887143">Taka upp</translation>
 <translation id="7642106959537987271">umsnúningur lita</translation>
@@ -1349,7 +1344,6 @@ Ný uppsetning</translation>
 <translation id="8660331759611631213">Kvaðratrótin af 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Ýttu á Enter til að taka skjámynd af hluta skjásins</translation>
-<translation id="8664753092453405566">Sýna lista yfir netkerfi. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Opnaðu <ph name="NAME" /> til að setja tækið upp</translation>
 <translation id="8676770494376880701">Afllítið hleðslutæki tengt</translation>
 <translation id="8683506306463609433">Afkastarakning virk</translation>
@@ -1359,7 +1353,6 @@ Ný uppsetning</translation>
 <translation id="8724318433625452070">Upptaka á öllum skjánum</translation>
 <translation id="8734991477317290293">Það gæti verið að reyna að stela lyklaborðsinnslætti</translation>
 <translation id="8735678380411481005">Litur baklýsingar lyklaborðs</translation>
-<translation id="8735953464173050365">Sýna lyklaborðsstillingar. <ph name="KEYBOARD_NAME" /> er valið</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Kveiktu á aðgangi að myndavél til að leyfa forritum og vefsíðum með myndavélarheimild að nota myndavélina/-vélarnar sem eru tengdar tækinu.</translation>
@@ -1383,7 +1376,6 @@ Ný uppsetning</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Enn tókst ekki að staðfesta PIN-númerið eða aðgangsorðið. Athugaðu: Ef þú skiptir nýlega um aðgangsorð skaltu nota gamla aðgangsorðið. Nýja aðgangsorðið tekur gildi þegar þú hefur skráð þig út.</translation>
 <translation id="8870509716567206129">Forritið styður ekki að skjánum sé skipt.</translation>
-<translation id="8871580645200179206">Kveikja/slökkva á dökku þema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ekki tengt</translation>
 <translation id="8876661425082386199">Athugaðu tenginguna</translation>
 <translation id="8877788021141246043">Stilla áminningu</translation>
@@ -1436,7 +1428,6 @@ Ný uppsetning</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eða <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Ekki hægt að taka upp varið efni</translation>
 <translation id="9161053988251441839">TILLÖGUR AÐ FORRITUM</translation>
-<translation id="9166331175924255663">Veldu/afveldu mikinn sýnileika nærdeilingar.</translation>
 <translation id="9168436347345867845">Gera þetta seinna</translation>
 <translation id="9178475906033259337">Birtir eina niðurstöðu fyrir „<ph name="QUERY" />“</translation>
 <translation id="9179259655489829027">Þessi eiginleiki veitir þér fljótlegan aðgang að hvaða innskráða notanda sem er án þess að aðgangsorðs sé krafist. Notaðu þennan eiginleika aðeins með reikningum sem þú treystir.</translation>

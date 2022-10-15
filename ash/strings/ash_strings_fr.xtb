@@ -74,7 +74,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1294929383540927798">Modifier les paramètres de notification sur l'écran de verrouillage</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Afficher les paramètres Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">APPLICATIONS RECOMMANDÉES</translation>
 <translation id="1312604459020188865">Force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Toujours afficher l'étagère</translation>
@@ -119,7 +118,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1546930421365146760">Demandez à votre administrateur de configurer cet appareil dans la console d'administration Google</translation>
 <translation id="1550523713251050646">Cliquez pour obtenir plus d'options.</translation>
 <translation id="1555130319947370107">Bleu</translation>
-<translation id="1570871743947603115">Activer/Désactiver le Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accéder à toutes vos activités dans cette session</translation>
 <translation id="1610778689852195798">"Annuler"</translation>
 <translation id="1611993646327628135">Activé</translation>
@@ -150,7 +148,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1750088060796401187">Seuls <ph name="MAX_DESK_LIMIT" /> bureaux sont autorisés. Supprimez un bureau pour en ajouter un.</translation>
 <translation id="1756833229520115364">Impossible d'enregistrer le modèle. Il y a trop de fenêtres ou d'onglets.</translation>
 <translation id="1757857692711134412">Désactivé jusqu'au coucher du soleil</translation>
-<translation id="1761222317188459878">Activer/Désactiver la connexion réseau. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+. (point) a été modifié. Pour utiliser la touche Entrée, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Maj+Retour arrière.</translation>
 <translation id="1770726142253415363">Déplacée vers la ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Vers la droite</translation>
@@ -356,7 +353,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2981684127883932071">Affichage de suggestions</translation>
 <translation id="2985148236010982088">Voir toutes les applis</translation>
 <translation id="2992327365391326550">Le bouton du micro de l'appareil est désactivé.</translation>
-<translation id="2995447421581609334">Afficher les appareils Cast.</translation>
 <translation id="2996462380875591307">Le mode Loupe ancrée est activé. Appuyez de nouveau sur Ctrl+Recherche+D pour le désactiver.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Sortie</translation>
@@ -1161,7 +1157,6 @@ Nouvelle installation</translation>
 <translation id="7611213136657090146">Appareil photo reconnecté.</translation>
 <translation id="761736749114493194">Activer/Désactiver le cadrage de la caméra. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Afficher les paramètres du Partage à proximité.</translation>
 <translation id="7634648064048557203">Appareil photo aligné sur l'angle inférieur droit</translation>
 <translation id="7641938616688887143">Enregistrer</translation>
 <translation id="7642106959537987271">mode d'inversion des couleurs</translation>
@@ -1346,7 +1341,6 @@ Nouvelle installation</translation>
 <translation id="8660331759611631213">Racine carrée de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Appuyez sur Entrée pour faire une capture d'écran partielle</translation>
-<translation id="8664753092453405566">Afficher la liste des réseaux. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Ouvrez <ph name="NAME" /> pour configurer votre appareil</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8683506306463609433">Suivi des performances actif</translation>
@@ -1356,7 +1350,6 @@ Nouvelle installation</translation>
 <translation id="8724318433625452070">Capture plein écran</translation>
 <translation id="8734991477317290293">Il est possible que cet autre clavier tente d'enregistrer les touches sur lesquelles vous appuyez afin de vous soutirer des informations</translation>
 <translation id="8735678380411481005">Couleur de rétroéclairage du clavier</translation>
-<translation id="8735953464173050365">Afficher les paramètres du clavier. <ph name="KEYBOARD_NAME" /> est sélectionné</translation>
 <translation id="8752416742247198423">Activez l'accès à l'appareil photo pour permettre aux applis et pages Web d'utiliser les appareils photo connectés à cet appareil si elles disposent de l'autorisation correspondante.</translation>
 <translation id="8755498163081687682">Valider votre identité : <ph name="ORIGIN_NAME" /> souhaite vérifier qu'il s'agit bien de vous</translation>
 <translation id="875593634123171288">Afficher les paramètres de VPN</translation>
@@ -1378,7 +1371,6 @@ Nouvelle installation</translation>
 <translation id="8850991929411075241">Recherche+Échap</translation>
 <translation id="8853703225951107899">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Remarque : si vous avez modifié votre mot de passe récemment, utilisez l'ancien. Votre nouveau mot de passe ne sera appliqué qu'une fois que vous serez déconnecté.</translation>
 <translation id="8870509716567206129">Application incompatible avec l'écran partagé.</translation>
-<translation id="8871580645200179206">Activer/Désactiver le thème sombre. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8876661425082386199">Vérifier votre connexion</translation>
 <translation id="8877788021141246043">Définis un rappel</translation>
@@ -1431,7 +1423,6 @@ Nouvelle installation</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Impossible d'enregistrer un contenu protégé</translation>
 <translation id="9161053988251441839">SUGGESTIONS D'APPLICATIONS</translation>
-<translation id="9166331175924255663">Activez/Désactivez le mode haute visibilité du Partage à proximité.</translation>
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9178475906033259337">1 résultat pour <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Cette fonctionnalité vous permet d'accéder rapidement à tout compte connecté sans avoir à indiquer le mot de passe. N'utilisez cette fonctionnalité que pour les comptes auxquels vous pouvez faire confiance.</translation>

@@ -110,6 +110,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">Ova web lokacija definira koja interesovanja mogu koristiti druge web lokacije da vam prikažu oglase. Ova web lokacija prikuplja vaša interesovanja iz Chromea da vam prikazuje relevantnije oglase.</translation>
 <translation id="3277252321222022663">Dozvolite web lokacijama pristup senzorima (preporučeno)</translation>
+<translation id="3285500645985761267">Dozvolite srodnim web lokacijama da vide vašu aktivnost u grupi</translation>
 <translation id="3295602654194328831">Sakrij informacije</translation>
 <translation id="3328801116991980348">Informacije o web lokaciji</translation>
 <translation id="3333961966071413176">Svi kontakti</translation>
@@ -117,6 +118,7 @@
 <translation id="3386292677130313581">Web lokacije moraju tražiti dozvolu za pristup lokaciji (preporučeno)</translation>
 <translation id="3521663503435878242">Web lokacije pod domenom <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Web lokacijama je blokirano kreiranje 3D mape vašeg okruženja ili praćenje položaja kamere</translation>
+<translation id="3544058026430919413">Kompanija može definirati grupu web lokacija koje mogu koristiti kolačiće da dijele vašu aktivnost u grupi. Ovo je isključeno u anonimnom načinu rada.</translation>
 <translation id="3551268116566418498">Napustiti anonimni načina rada?</translation>
 <translation id="3586500876634962664">Korištenje kamere i mikrofona</translation>
 <translation id="358794129225322306">Dozvolite web lokaciji automatsko preuzimanje više fajlova.</translation>
@@ -159,6 +161,7 @@
 <translation id="4434045419905280838">Skočni proz. i preusmjeravanja</translation>
 <translation id="445467742685312942">Dozvoljava web lokacijama da reproduciraju zaštićen sadržaj</translation>
 <translation id="4468959413250150279">Isključen zvuk za određenu web lokaciju.</translation>
+<translation id="4475912480633855319">{COOKIES,plural, =1{# kolačić}one{# kolačić}few{# kolačića}other{# kolačića}}</translation>
 <translation id="4479647676395637221">Web-lokacije moraju tražiti dopuštenje za pristup kameri (preporučeno)</translation>
 <translation id="4505788138578415521">URL je proširen</translation>
 <translation id="4534723447064627427">Da aplikaciji <ph name="APP_NAME" /> dozvolite pristup mikrofonu, također uključite mikrofon u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>

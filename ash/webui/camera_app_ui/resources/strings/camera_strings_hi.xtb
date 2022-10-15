@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">अपना दस्तावेज़ स्कैन करें</translation>
 <translation id="1309250603447638106">दस्तावेज़ को स्कैन करने की सुविधा से जुड़े अपडेट डाउनलोड हो रहे हैं</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ऐक्सेस करने के लिए, खोज बटन + लेफ़्ट ऐरो दबाएं.</translation>
+<translation id="1417314334557041815">पेज <ph name="INDEX" /> में बदलाव करें</translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> अनप्लग किया गया.</translation>
 <translation id="1473110567575736769">तीन सेकंड का टाइमर</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">कुछ भी रिकॉर्ड नहीं हुआ</translation>
 <translation id="1838104802459806957">ऊपर झुकाएं</translation>
+<translation id="1843105061469674856">अतिरिक्त पेज को स्कैन करें</translation>
 <translation id="1851169887664797861">कैमरे के लिए अतिरिक्त कंट्रोल उपलब्ध हैं</translation>
 <translation id="1851616744363735765">रिकॉर्डिंग रोकी गई</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> को एक्सपोर्ट नहीं किया जा सका</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">कैमरे का रिज़ॉल्यूशन नहीं बदला जा सकता</translation>
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
 <translation id="4281620174117014503">मीडियम रिज़ॉल्यूशन</translation>
+<translation id="428234092390943511">पेज का थंबनेल</translation>
 <translation id="4329152592498422850">चौकोर फ़ोटो खींचने के लिए स्विच करें</translation>
 <translation id="4340659173795395806">अब आपके पास कई पेजों वाली PDF बनाने की सुविधा उपलब्ध है</translation>
 <translation id="4383571725254449280">परफ़ॉर्मेंस लॉग प्रिंट करें</translation>

@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Vuoi cancellare anche i dati di questi siti e app?</translation>
 <translation id="1034259925032978114">La finestra è aperta</translation>
 <translation id="1036348656032585052">Disattiva</translation>
-<translation id="1036727731225946849">Aggiunta di <ph name="WEBAPK_NAME" /> in corso…</translation>
 <translation id="1045899828449635435">Vuoi cancellare anche i dati di questi siti?</translation>
 <translation id="1049743911850919806">In incognito</translation>
 <translation id="10614374240317010">Mai salvate</translation>
@@ -511,7 +510,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="3771694256347217732">Termini di servizio di Google</translation>
 <translation id="3773856050682458546">Dati di base e informazioni sui siti web che visiti e sulle app che utilizzi</translation>
 <translation id="3775705724665058594">Invia ai tuoi dispositivi</translation>
-<translation id="3778956594442850293">Aggiunto alla schermata Home</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 scheda}other{# schede}}</translation>
 <translation id="3803784507854318295">Gestisci riproduzione automatica</translation>
 <translation id="3810838688059735925">Video</translation>

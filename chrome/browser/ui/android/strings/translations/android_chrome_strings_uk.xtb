@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Видалити дані з цих сайтів і додатків?</translation>
 <translation id="1034259925032978114">Вікно відкрито</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
-<translation id="1036727731225946849">Додається <ph name="WEBAPK_NAME" />…</translation>
 <translation id="1045899828449635435">Видалити дані з цих сайтів?</translation>
 <translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="10614374240317010">Ніколи не зберігалося</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">Загальні положення та умови Google</translation>
 <translation id="3773856050682458546">Основні дані та інформація про веб-сайти, які ви відвідуєте, і додатки, якими користуєтеся</translation>
 <translation id="3775705724665058594">Надіслати на пристрої</translation>
-<translation id="3778956594442850293">Додано на головний екран</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="3803784507854318295">Керувати автоматичним відтворенням</translation>
 <translation id="3810838688059735925">Відео</translation>

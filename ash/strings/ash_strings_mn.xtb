@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Файлууд</translation>
 <translation id="1294929383540927798">Түгжигдсэн дэлгэцийн мэдэгдлийн тохиргоог өөрчлөх</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Bluetooth-н тохиргоог харуулна уу. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">САНАЛ БОЛГОСОН АПП</translation>
 <translation id="1312604459020188865">Дохионы хүч <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Тавиурыг байнга харуулах</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">Администратораасаа энэ төхөөрөмжийг Google Админ консолд тохируулахыг хүснэ үү</translation>
 <translation id="1550523713251050646">Бусад сонголтыг харахын тулд дарах</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
-<translation id="1570871743947603115">Bluetooth-г унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Энэ харилцан үйлдлийн бүх үйл ажиллагаандаа хандах</translation>
 <translation id="1610778689852195798">"Болих"</translation>
 <translation id="1611993646327628135">Асаалттай</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">Зөвхөн <ph name="MAX_DESK_LIMIT" /> дэлгэцийг зөвшөөрсөн. Шинэ дэлгэц нээхийн тулд дэлгэц хасна уу.</translation>
 <translation id="1756833229520115364">Загварыг хадгалж чадсангүй. Хэт олон цонх эсвэл таб байна.</translation>
 <translation id="1757857692711134412">Нар жаргах хүртэл унтраалттай</translation>
-<translation id="1761222317188459878">Сүлжээний холболтыг унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Цэг товчлуурын шууд холбоосыг өөрчилсөн байна. Оруулах товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Shift + Ухраахыг дарна уу.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-р мөр, <ph name="COLUMN_NUMBER" />-р багана руу зөөсөн.</translation>
 <translation id="1771761307086386028">Баруун тийш гүйлгэх</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">Зөвлөмжийг үзүүлж байна</translation>
 <translation id="2985148236010982088">Бүх аппыг харах</translation>
 <translation id="2992327365391326550">Төхөөрөмжийн микрофоны товчлуур унтраалттай байна.</translation>
-<translation id="2995447421581609334">Дамжуулагч төхөөрөмжийг харуулна уу.</translation>
 <translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг асаах/унтраахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Гаралт</translation>
@@ -1165,7 +1161,6 @@
 <translation id="7611213136657090146">Камер дахин холбогдсон.</translation>
 <translation id="761736749114493194">Камерын хүрээлэх онцлогийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Ойролцоо хуваалцах тохиргоог харуулна.</translation>
 <translation id="7634648064048557203">Камерыг баруун доод булан руу зэрэгцүүлсэн</translation>
 <translation id="7641938616688887143">Бичих</translation>
 <translation id="7642106959537987271">өнгө урвуулах горим</translation>
@@ -1351,7 +1346,6 @@
 <translation id="8660331759611631213">71-ийн квадрат язгуур</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Хэсэгчилсэн дэлгэцийн агшин авахын тулд enter дээр дарна уу</translation>
-<translation id="8664753092453405566">Сүлжээний жагсаалтыг харуулна уу. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Төхөөрөмжөө тохируулахын тулд <ph name="NAME" />-г нээнэ үү</translation>
 <translation id="8676770494376880701">Цэнэглэгчийг холбосон байна</translation>
 <translation id="8683506306463609433">Гүйцэтгэлийн хяналт идэвхтэй байна</translation>
@@ -1361,7 +1355,6 @@
 <translation id="8724318433625452070">Бүтэн дэлгэцийн зураг авах</translation>
 <translation id="8734991477317290293">Энэ нь таны түлхүүрийн цуглуулгыг хулгайлахаар оролдож байж болзошгүй</translation>
 <translation id="8735678380411481005">Гарын арын гэрлийн өнгө</translation>
-<translation id="8735953464173050365">Гарын тохиргоог харуулна уу. <ph name="KEYBOARD_NAME" />-г сонгосон</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Камерын зөвшөөрөлтэй аппууд болон веб хуудаснуудад энэ төхөөрөмжтэй холбогдсон камеруудыг ашиглахыг зөвшөөрөхийн тулд камерын хандалтыг асаана уу.</translation>
@@ -1385,7 +1378,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадаагүй хэвээрээ байна. Тайлбар: Хэрэв та нууц үгээ саяхан сольсон бол хуучин нууц үгээ ашиглана уу. Таныг гарсны дараа, шинэ нууц үгийг ашиглах боломжтой болно.</translation>
 <translation id="8870509716567206129">Апп нь дэлгэц хуваах тохиргоог дэмждэггүй.</translation>
-<translation id="8871580645200179206">Бараан загварыг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>
 <translation id="8876661425082386199">Холболтоо шалгана уу</translation>
 <translation id="8877788021141246043">Сануулагч тохируулах</translation>
@@ -1438,7 +1430,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> эсвэл <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Хамгаалалттай контентыг бичих боломжгүй</translation>
 <translation id="9161053988251441839">САНАЛ БОЛГОСОН АПП</translation>
-<translation id="9166331175924255663">Ойролцоо хуваалцах онцлог өндөр харагдцыг унтраана/асаана.</translation>
 <translation id="9168436347345867845">Үүнийг дараа хийх</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />-н 1 илэрцийг үзүүлж байна</translation>
 <translation id="9179259655489829027">Тус онцлог нь танаас нууц үг шаардахгүйгээр таныг түргэн хугацаанд хэрэглэгчид хандах боломжийг олгоно. Энэ онцлогийг зөвхөн итгэдэг бүртгэлд ашиглана уу.</translation>

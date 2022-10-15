@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Limpar também dados destes sites e apps?</translation>
 <translation id="1034259925032978114">A janela está aberta</translation>
 <translation id="1036348656032585052">Desativar</translation>
-<translation id="1036727731225946849">A adicionar <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">Limpar também dados destes sites?</translation>
 <translation id="1049743911850919806">Navegação anónima</translation>
 <translation id="10614374240317010">Nunca guardadas</translation>
@@ -511,7 +510,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="3771694256347217732">Termos de Utilização do Google</translation>
 <translation id="3773856050682458546">Os dados básicos e as informações acerca dos Websites que visita e as apps que utiliza.</translation>
 <translation id="3775705724665058594">Envie para os seus dispositivos</translation>
-<translation id="3778956594442850293">Adicionado ao ecrã principal</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 separador}other{# separadores}}</translation>
 <translation id="3803784507854318295">Faça a gestão da reprodução automática</translation>
 <translation id="3810838688059735925">Vídeo</translation>

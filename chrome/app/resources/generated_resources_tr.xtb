@@ -3947,6 +3947,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4677772697204437347">GPU belleği</translation>
 <translation id="467823995058589466">Kamera kapalı</translation>
 <translation id="4680105648806843642">Bu sayfada ses kapalı</translation>
+<translation id="4680112532510845139">Buraya bir görsel bırakın</translation>
 <translation id="4681453295291708042">Yakındakilerle Paylaş'ı devre dışı bırak</translation>
 <translation id="4681512854288453141">Kaynak politikası</translation>
 <translation id="4681930562518940301">Orijinal &amp;resmi yeni sekmede aç</translation>
@@ -4914,6 +4915,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5620568081365989559">DevTools <ph name="FOLDER_PATH" /> yoluna tam erişim ister.
 Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5620612546311710611">kullanım istatistikleri</translation>
+<translation id="562250930904332809">Canlı Altyazıyı &amp;Devre Dışı Bırak</translation>
 <translation id="5623282979409330487">Bu site, hareket sensörlerinize erişiyor.</translation>
 <translation id="5623842676595125836">Günlük</translation>
 <translation id="5624120631404540903">Şifreleri yönet</translation>
@@ -8425,6 +8427,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8970887620466824814">Bir hata oluştu.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Güvenlik duvarının, Google sunucularından yapılan indirme işlemlerini engellemediğinden emin olmak için lütfen ağ yöneticinizle görüşün.</translation>
+<translation id="8973263196882835828">Canlı Altyazıyı &amp;Etkinleştir</translation>
 <translation id="8973557916016709913">Yakınlaştırma seviyesini kaldır</translation>
 <translation id="8973596347849323817">Bu cihazı ihtiyaçlarınıza uygun şekilde özelleştirebilirsiniz. Bu erişilebilirlik özellikleri daha sonra Ayarlar'dan değiştirilebilir.</translation>
 <translation id="897414447285476047">Bağlantıda olan bir sorundan dolayı hedef dosya eksik.</translation>

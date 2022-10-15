@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1294929383540927798">變更上鎖畫面通知設定</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">顯示藍牙設定。<ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">推薦的應用程式</translation>
 <translation id="1312604459020188865">訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">永遠顯示捷徑列</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">請要求管理員在 Google 管理控制台設定此裝置</translation>
 <translation id="1550523713251050646">點擊即可取得更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
-<translation id="1570871743947603115">切換藍牙。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
 <translation id="1610778689852195798">「復原」</translation>
 <translation id="1611993646327628135">開啟</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">系統最多允許 <ph name="MAX_DESK_LIMIT" /> 個桌面。請移除一個桌面再開啟新桌面。</translation>
 <translation id="1756833229520115364">無法儲存範本，可能是視窗或分頁過多。</translation>
 <translation id="1757857692711134412">關閉，直到日落</translation>
-<translation id="1761222317188459878">切換網絡連線。<ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 句號鍵」的鍵盤快速鍵已變更。如要使用 Insert 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Shift + Backspace 鍵。</translation>
 <translation id="1770726142253415363">移咗去第 <ph name="ROW_NUMBER" /> 列，第 <ph name="COLUMN_NUMBER" /> 欄。</translation>
 <translation id="1771761307086386028">向右捲動</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">顯示緊建議</translation>
 <translation id="2985148236010982088">查看所有應用程式</translation>
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
-<translation id="2995447421581609334">顯示投放裝置。</translation>
 <translation id="2996462380875591307">已啟用固定的放大鏡。再次按下 Search+Shift+D 鍵即可停用。</translation>
 <translation id="3000461861112256445">單聲道音效</translation>
 <translation id="3009178788565917040">輸出</translation>
@@ -1162,7 +1158,6 @@
 <translation id="7611213136657090146">攝錄機已經重新連線。</translation>
 <translation id="761736749114493194">切換相機取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
-<translation id="7633755430369750696">顯示「咫尺共享」設定。</translation>
 <translation id="7634648064048557203">攝錄機已經對齊右下角</translation>
 <translation id="7641938616688887143">錄影</translation>
 <translation id="7642106959537987271">色彩反轉模式</translation>
@@ -1347,7 +1342,6 @@
 <translation id="8660331759611631213">71 嘅平方根</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">㩒 Enter 掣就可以擷取部分螢幕截圖</translation>
-<translation id="8664753092453405566">顯示網絡清單。<ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">開啟 <ph name="NAME" /> 以設定裝置</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
 <translation id="8683506306463609433">效能追蹤使用中</translation>
@@ -1357,7 +1351,6 @@
 <translation id="8724318433625452070">全螢幕畫面擷取</translation>
 <translation id="8734991477317290293">鍵盤可能會嘗試盜取您的按鍵操作</translation>
 <translation id="8735678380411481005">鍵盤背光顏色</translation>
-<translation id="8735953464173050365">顯示鍵盤設定。已選擇<ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">開啟相機存取權，允許任何具有相機權限的應用程式和網頁使用連接至此裝置的相機。</translation>
@@ -1381,7 +1374,6 @@
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>
 <translation id="8853703225951107899">系統仍然無法驗證您的 PIN 或密碼。注意：如果您最近變更過密碼，請嘗試使用舊密碼，新密碼會在您登出後立即生效。</translation>
 <translation id="8870509716567206129">應用程式不支援分割畫面。</translation>
-<translation id="8871580645200179206">切換深色主題背景。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8876661425082386199">請檢查連線</translation>
 <translation id="8877788021141246043">設定提醒</translation>
@@ -1434,7 +1426,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">無法錄影受保護的內容</translation>
 <translation id="9161053988251441839">建議使用的應用程式</translation>
-<translation id="9166331175924255663">將「咫尺共享」功能切換為向附近的所有裝置顯示。</translation>
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9178475906033259337">顯示緊 1 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="9179259655489829027">這項功能讓您可快速登入任何已登入的使用者帳戶，無需使用密碼。建議您只讓信任的帳戶使用此功能。</translation>

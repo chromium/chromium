@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">文件</translation>
 <translation id="1294929383540927798">更改锁定屏幕通知设置</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">显示蓝牙设置。<ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">推荐的应用</translation>
 <translation id="1312604459020188865">信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">一律显示任务栏</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">请让您的管理员在 Google 管理控制台中设置此设备</translation>
 <translation id="1550523713251050646">点击即可查看更多选项</translation>
 <translation id="1555130319947370107">蓝色</translation>
-<translation id="1570871743947603115">切换蓝牙设置。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
 <translation id="1610778689852195798">“撤消”</translation>
 <translation id="1611993646327628135">开启</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">最多只允许打开 <ph name="MAX_DESK_LIMIT" /> 个桌面。若要打开一个新桌面，请先移除一个已打开的桌面。</translation>
 <translation id="1756833229520115364">无法保存模板。窗口或标签页过多。</translation>
 <translation id="1757857692711134412">保持关闭状态，直到日落</translation>
-<translation id="1761222317188459878">切换网络连接设置。<ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 句点键”已更改。若要使用 Insert 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + Shift + 退格键。</translation>
 <translation id="1770726142253415363">已移至第 <ph name="ROW_NUMBER" /> 行与第 <ph name="COLUMN_NUMBER" /> 列的相交处。</translation>
 <translation id="1771761307086386028">向右滚动</translation>
@@ -266,6 +263,7 @@
 <translation id="2405664212338326887">未连接</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
+<translation id="2417486498593892439">登录到网络</translation>
 <translation id="2426051945783024481">相机取景画面已自动居中</translation>
 <translation id="2427507373259914951">点击鼠标左键</translation>
 <translation id="2429753432712299108">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。在接受之前，请确保该设备上显示以下配对密钥：<ph name="PASSKEY" /></translation>
@@ -356,7 +354,6 @@
 <translation id="2981684127883932071">显示了建议</translation>
 <translation id="2985148236010982088">查看所有应用</translation>
 <translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
-<translation id="2995447421581609334">显示投放设备。</translation>
 <translation id="2996462380875591307">已启用停靠的放大镜。再按一次 Ctrl+搜索键+D 组合键即可将其停用。</translation>
 <translation id="3000461861112256445">单声道音频</translation>
 <translation id="3009178788565917040">输出</translation>
@@ -423,6 +420,7 @@
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
 <translation id="3375634426936648815">已连接</translation>
+<translation id="3378438761594387761">您近期的下载内容和屏幕截图会显示在此处</translation>
 <translation id="3378442621503952303">正在连接到配置文件。请稍等几分钟。</translation>
 <translation id="3386978599540877378">全屏放大镜</translation>
 <translation id="3387527074123400161">Chromium 操作系统</translation>
@@ -730,6 +728,7 @@
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
 <translation id="509790653408515442">当您流式传输您手机上的应用时，它们会显示在此处</translation>
 <translation id="5098537242461068432">已重新打开桌面和窗口</translation>
+<translation id="5104236669533825617">无法创建抓屏</translation>
 <translation id="5107522548814527560">网页</translation>
 <translation id="5117590920725113268">显示下一个月</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
@@ -775,6 +774,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
 <translation id="5352250171825660495">深色主题已开启</translation>
 <translation id="5356963482258194581">在深色主题和浅色主题之间切换。右键点击相应桌面，然后选择“壁纸和样式”。</translation>
+<translation id="536019650977002321">您的管理员不允许截取音频。如需了解详情，请联系您的管理员。</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此标签页</translation>
 <translation id="5379115545237091094">尝试次数过多</translation>
 <translation id="5391307769715781764">要替换已保存的桌面吗？</translation>
@@ -1157,7 +1157,6 @@
 <translation id="7611213136657090146">已重新连接相机。</translation>
 <translation id="761736749114493194">开启/关闭相机取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> 华氏度</translation>
-<translation id="7633755430369750696">显示“附近分享”设置。</translation>
 <translation id="7634648064048557203">相机已对准右下角</translation>
 <translation id="7641938616688887143">录制</translation>
 <translation id="7642106959537987271">颜色反转模式</translation>
@@ -1342,7 +1341,6 @@
 <translation id="8660331759611631213">71 的平方根</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">按 Enter 键即可截取局部屏幕</translation>
-<translation id="8664753092453405566">显示网络列表。<ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">请打开“<ph name="NAME" />”以设置您的设备</translation>
 <translation id="8676770494376880701">已连接低功率充电器</translation>
 <translation id="8683506306463609433">正在跟踪性能</translation>
@@ -1352,7 +1350,6 @@
 <translation id="8724318433625452070">截取整个屏幕</translation>
 <translation id="8734991477317290293">当前连接的键盘可能会试图窃取您的击键操作</translation>
 <translation id="8735678380411481005">键盘背光颜色</translation>
-<translation id="8735953464173050365">显示键盘设置。已选择<ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">开启摄像头使用权限，以允许具有摄像头权限的应用和网页使用连接到此设备的摄像头。</translation>
@@ -1376,7 +1373,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
-<translation id="8871580645200179206">开启/关闭深色主题。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8876661425082386199">请检查您的网络连接状况</translation>
 <translation id="8877788021141246043">设置提醒</translation>
@@ -1393,6 +1389,7 @@
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
 <translation id="8940956008527784070">电池电量不足 (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">已连接，但无法访问互联网</translation>
 <translation id="8951539504029375108">只有已获批准的 Thunderbolt 设备能与您的 Chromebook 兼容</translation>
 <translation id="8982906748181120328">“附近分享”的高可见度模式</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1428,7 +1425,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">无法录制受保护的内容</translation>
 <translation id="9161053988251441839">推荐的应用</translation>
-<translation id="9166331175924255663">开启/关闭“附近分享”的高可见度模式。</translation>
 <translation id="9168436347345867845">以后再说</translation>
 <translation id="9178475906033259337">显示了 1 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="9179259655489829027">借助此功能，您无需使用密码即可快速访问任何已登录的用户。请仅对您信任的帐号使用此功能。</translation>

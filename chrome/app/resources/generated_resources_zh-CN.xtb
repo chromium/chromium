@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1001033507375626788">已与您共享该网络</translation>
+<translation id="1002085272681738789">标签页重新变为活动状态</translation>
 <translation id="1003088604756913841">在<ph name="APP" />的新窗口中打开链接</translation>
 <translation id="100323615638474026">USB 设备 (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">有权访问的网站</translation>
@@ -320,6 +321,7 @@
 <translation id="1296911687402551044">固定所选标签页</translation>
 <translation id="1297175357211070620">目标打印机</translation>
 <translation id="129770436432446029">针对实验“<ph name="EXPERIMENT_NAME" />”发送反馈</translation>
+<translation id="130097046531636712">开启此设置后，系统会通过限制后台活动和视觉效果（例如流畅滚动）来节省电池电量</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> 可修改以下文件</translation>
 <translation id="1302227299132585524">允许 Apple 事件中的 JavaScript</translation>
 <translation id="1303101771013849280">以前导出的书签（HTML 文件）</translation>
@@ -379,6 +381,7 @@
 <translation id="1361655923249334273">未使用</translation>
 <translation id="1362865166188278099">发生机械问题，请检查打印机</translation>
 <translation id="1363585519747660921">USB 打印机需要配置</translation>
+<translation id="136378536198524553">节能模式已开启</translation>
 <translation id="1368603372088757436">您的 <ph name="DEVICE_TYPE" /> 不支持 Linux。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1372841398847029212">同步到您的帐号中</translation>
 <translation id="1373176046406139583">您可指定设备的公开范围，从而控制哪些人员能在您的屏幕处于解锁状态时与您分享内容。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -642,6 +645,7 @@
 <translation id="1610272688494140697">应用设置</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的设备已锁定</translation>
+<translation id="1611776894942218234">设备必须采用 Beta 渠道</translation>
 <translation id="1612019740169791082">您的容器配置不支持调整磁盘空间大小。若要调整预留给 Linux 的空间，请先备份旧容器中的内容，然后再将这些内容恢复到新容器中。</translation>
 <translation id="1613019471223620622">显示 <ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的密码</translation>
 <translation id="1613149688105334014">2022 年 12 月之后，多款旧版 Chrome 应用将无法开启。您可查看是否有可用的新版本。</translation>
@@ -1194,6 +1198,7 @@
 <translation id="2098805196501063469">检查其余的密码</translation>
 <translation id="2099686503067610784">要删除服务器证书“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="2100273922101894616">自动登录</translation>
+<translation id="2100986609271491802">此设备目前不支持 Chromebook 版 Steam</translation>
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102396546234652240">不允许网站使用您的麦克风</translation>
 <translation id="2102495993840063010">Android 应用</translation>
@@ -1489,6 +1494,9 @@
 <translation id="2350133097354918058">已重新加载</translation>
 <translation id="2350182423316644347">正在初始化应用…</translation>
 <translation id="235028206512346451">如果您离开设备，设备屏幕就会自动锁定。当您位于设备前时，设备屏幕将会维持解锁状态更长时间。如果您没有设置屏幕锁定方式，您的设备将进入休眠状态，而不是锁定状态。</translation>
+<translation id="2350866610930767288"><ph name="BEGIN_PARAGRAPH1" />如果您在安装演示模式的过程中收到了让您输入零售商店 ID 代码的说明，请在右侧输入此代码*。否则，您可将此字段留空并继续操作。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />即使不输入代码，您仍能安装演示模式，但如果此代码适用于您的商店，请务必输入它。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*注意：Google 会使用此类代码来确定设备应接收哪个版本的演示模式，以及衡量演示模式的使用情况。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 项内容}other{{NUM_ITEMS} 项内容}}</translation>
 <translation id="2352662711729498748">&lt; 1MB</translation>
 <translation id="2352810082280059586">锁定屏幕记事会自动保存到 <ph name="LOCK_SCREEN_APP_NAME" /> 中。最近的记事将保留在锁定屏幕上。</translation>
@@ -1941,6 +1949,7 @@
 <translation id="2777251078198759550">删除此容器</translation>
 <translation id="2777525873368474674">粘贴图片链接</translation>
 <translation id="2778471504622896352">将远程应用添加到 ChromeOS 启动器</translation>
+<translation id="2781120507965857989">开启同步功能后，您便可在此设备上以及任何其他保持同步的位置获取您的书签、密码、历史记录等信息。Google 可能会根据您的历史记录在 Google 搜索及其他 Google 服务中为您提供个性化的体验。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">安装 Linux 应用时出错</translation>
 <translation id="2783298271312924866">已下载</translation>
@@ -1961,6 +1970,7 @@
 <translation id="2792697226874849938">限制图片</translation>
 <translation id="2794233252405721443">网站已被屏蔽</translation>
 <translation id="2794522004398861033">请连接到 Wi-Fi 或以太网以设置 eSIM 卡</translation>
+<translation id="2795074478966352573">目前尚不支持通过 Family Link 管理的帐号</translation>
 <translation id="2795716239552913152">网站通常会使用您的位置信息以实现相关功能或提供相关信息（例如本地新闻或附近的商店）</translation>
 <translation id="2796740370559399562">继续允许设置 Cookie</translation>
 <translation id="2798347533012571708">保留更新</translation>
@@ -2144,6 +2154,7 @@
 <translation id="2949289451367477459">使用位置信息。允许具有位置权限的应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">立即注册</translation>
 <translation id="2953019166882260872">使用数据线连接手机</translation>
+<translation id="2953218713108551165">不允许 <ph name="SITE" /> 传送通知。当您下次访问时，系统会再次询问您。</translation>
 <translation id="2956070239128776395">有区段嵌套在分组中：<ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">打包扩展程序警告</translation>
 <translation id="2959127025785722291">出了点问题。无法完成扫描。请重试。</translation>
@@ -2851,6 +2862,7 @@
 <translation id="3665919494326051362">当前版本为 <ph name="CURRENT_VERSION" /></translation>
 <translation id="3670113805793654926">来自任何供应商的设备</translation>
 <translation id="3670229581627177274">开启蓝牙</translation>
+<translation id="3672663996348587094">点击此按钮即可允许“<ph name="EXTENSIONS_REQUESTING_ACCESS" />”访问 <ph name="ORIGIN" />：</translation>
 <translation id="3672681487849735243">检测到出厂错误</translation>
 <translation id="3673097791729989571">由 <ph name="SAML_DOMAIN" /> 托管的登录服务</translation>
 <translation id="3673622964532248901">您不得投放到此设备。</translation>
@@ -3365,6 +3377,7 @@
 <translation id="4132183752438206707">在 Google Play 商店中查找所需应用</translation>
 <translation id="4132364317545104286">重命名 eSIM 卡配置文件</translation>
 <translation id="4133076602192971179">打开应用以更改密码</translation>
+<translation id="4134818201340504801">可用存储空间不足，无法完成设置。请释放一些存储空间，然后重试</translation>
 <translation id="4135746311382563554">Google Chrome 和 Chrome 操作系统附加服务条款</translation>
 <translation id="4136203100490971508">护眼模式将于日出时自动关闭</translation>
 <translation id="41365691917097717">继续操作会启用 ADB 调试，以创建和测试 Android 应用。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且一旦安装就无法停用，除非将设备恢复到出厂设置。</translation>
@@ -3598,6 +3611,7 @@
 <translation id="4378556263712303865">设备申请</translation>
 <translation id="4379281552162875326">卸载“<ph name="APP_NAME" />”？</translation>
 <translation id="4380648069038809855">已进入全屏模式</translation>
+<translation id="4383048856908088702">当此标签页处于闲置状态时，省内存模式释放了 <ph name="MEMORY_VALUE" /> 的内存以用于执行其他任务。您随时可在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
 <translation id="4384312707950789900">添加到首选网络列表</translation>
 <translation id="4384652540891215547">激活该扩展程序</translation>
 <translation id="4384886290276344300">更改键盘设置</translation>
@@ -3678,6 +3692,7 @@
 <translation id="4451479197788154834">您的密码已保存到此设备上和您的 Google 帐号中</translation>
 <translation id="4451757071857432900">已禁止会展示侵扰性或误导性广告的网站显示广告（推荐）</translation>
 <translation id="4453946976636652378">在<ph name="SEARCH_ENGINE_NAME" />中搜索，或者输入一个网址</translation>
+<translation id="4458535500699390320">当此标签页处于闲置状态时，省内存模式会释放一些内存以用于执行其他任务。您随时可在“设置”中更改此设置。</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前曾有活动</translation>
 <translation id="4460014764210899310">取消分组</translation>
 <translation id="4462159676511157176">自定义域名服务器</translation>
@@ -3847,6 +3862,7 @@
 <translation id="4613271546271159013">某个扩展程序更改了您打开新标签页时系统显示的页面。</translation>
 <translation id="4615586811063744755">未选择任何 Cookie</translation>
 <translation id="461661862154729886">电源</translation>
+<translation id="461676224702246336">点击后才能访问此网站</translation>
 <translation id="4617001782309103936">太短</translation>
 <translation id="4617019240346358451">刷新网页才能使用“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4617270414136722281">扩展程序选项</translation>
@@ -3970,6 +3986,7 @@
 <translation id="4728558894243024398">平台</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />您的管理员<ph name="END_LINK" />已停用有害软件检查功能</translation>
 <translation id="4730492586225682674">在锁定屏幕上显示触控笔最新记事</translation>
+<translation id="4730888769809690665">允许 <ph name="SITE" /> 传送通知</translation>
 <translation id="473140019006744096">此设备的空间不足，无法完成更新。请在设备上清理出 <ph name="NECESSARY_SPACE" /> 的空间，然后重试。</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左侧）</translation>
 <translation id="4733793249294335256">位置</translation>
@@ -4271,6 +4288,7 @@
 <translation id="5032430150487044192">无法创建二维码</translation>
 <translation id="5033137252639132982">不允许使用移动传感器</translation>
 <translation id="5033266061063942743">几何图形</translation>
+<translation id="5034000993065629381">请联系您的管理员</translation>
 <translation id="5037676449506322593">全选</translation>
 <translation id="5038818366306248416">您先前已选择禁止 <ph name="ORIGIN" /> 上的所有扩展程序</translation>
 <translation id="5039696241953571917">查看和管理您的 Google 帐号中保存的密码</translation>
@@ -4404,6 +4422,7 @@
 <translation id="5161251470972801814">由<ph name="VENDOR_NAME" />提供的 USB 设备</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 已被禁用</translation>
 <translation id="5163910114647549394">此标签页已移至标签栏的末尾</translation>
+<translation id="5164530241085602114">不允许 <ph name="SITE" /> 传送通知</translation>
 <translation id="516747639689914043">超文本传输协议 (HTTP)</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5171045022955879922">搜索或输入网址</translation>
@@ -4506,6 +4525,7 @@
 <translation id="5269977353971873915">打印失败</translation>
 <translation id="5273806377963980154">修改网站网址</translation>
 <translation id="5275084684151588738">用户字典</translation>
+<translation id="5275100789567222478">仅在我的电池电量不高于 <ph name="PERCENT" />% 时开启</translation>
 <translation id="5275338516105640560">“已保存的标签页分组”按钮</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605719918376753">将此标签页静音</translation>
@@ -4525,6 +4545,7 @@
 <translation id="5285635972691565180">显示屏 <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">正在扫描</translation>
 <translation id="5287425679749926365">您的帐号</translation>
+<translation id="5288106344236929384">更多操作，<ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的通行密钥选项</translation>
 <translation id="5288678174502918605">重新打开关闭的标签页(&amp;E)</translation>
 <translation id="52895863590846877">不是<ph name="LANGUAGE" />网页</translation>
 <translation id="52912272896845572">私有密钥文件无效。</translation>
@@ -4720,6 +4741,7 @@
 <translation id="5473099001878321374">继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您孩子的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 码必须包含至少 1 个字符}other{PIN 码必须包含至少 # 个字符}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。</translation>
+<translation id="5476016146231427848">若要使用 Chromebook 版 Steam，请重启您的设备</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
 <translation id="5483785310822538350">撤消对文件和设备的访问权限</translation>
@@ -4940,6 +4962,7 @@
 <translation id="5683806393796685434">请输入您的激活码</translation>
 <translation id="5684181005476681636">Wi-Fi 详细信息</translation>
 <translation id="5684661240348539843">资产标识符</translation>
+<translation id="5684969244627829799">请登录用户帐号，然后重试</translation>
 <translation id="5687326903064479980">时区</translation>
 <translation id="5687935527303996204">请确保已正确插入您的设备，且不要关闭它。整个安装流程最多可能需要 20 分钟的时间。待安装完毕后，您的设备将会自动关闭。</translation>
 <translation id="5689516760719285838">位置信息</translation>
@@ -5067,6 +5090,7 @@
 <translation id="5805697420284793859">窗口管理器</translation>
 <translation id="5806447147478173900">显示的网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（默认）</translation>
+<translation id="5810603387504252966">必须在 chrome://flags 中启用 #borealis-enabled</translation>
 <translation id="5810809306422959727">此帐号无法使用家长控制功能</translation>
 <translation id="5811614940486072060">此文件属于不常下载的内容，可能含有危险因素</translation>
 <translation id="5812674658566766066">全部展开</translation>
@@ -5146,6 +5170,7 @@
 <translation id="5882449899683447569">出了点问题，您的密码未能成功导入</translation>
 <translation id="5882919346125742463">已知网络</translation>
 <translation id="5883356647197510494">已自动禁用“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
+<translation id="5884447826201752041">针对每款扩展程序进行自定义</translation>
 <translation id="5884474295213649357">此标签页已连接到 USB 设备。</translation>
 <translation id="5885314688092915589">贵组织将管理这份资料</translation>
 <translation id="5886009770935151472">手指 1</translation>
@@ -5580,6 +5605,7 @@
 <translation id="6301300352769835063">允许 Google 使用您的硬件数据，以协助改进 <ph name="DEVICE_OS" />。如果您拒绝，系统仍会将这些数据发送给 Google 以确定适当的更新，但不会存储或以其他方式使用这些数据。如需了解详情，请访问 g.co/flex/HWDataCollection。</translation>
 <translation id="630292539633944562">个人信息建议</translation>
 <translation id="6305607932814307878">全局政策：</translation>
+<translation id="6305909198255586420">请使用您的主要个人资料进行安装</translation>
 <translation id="6307990684951724544">系统繁忙</translation>
 <translation id="6308493641021088955">登录服务提供方：<ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">链接另存为(&amp;K)...</translation>
@@ -5901,6 +5927,7 @@
 <translation id="6608166463665411119">重置 eSIM 卡</translation>
 <translation id="6609478180749378879">当您退出无痕模式后，登录数据会存储在此设备中。日后您将能够使用此设备重新登录该网站。</translation>
 <translation id="6610002944194042868">翻译选项</translation>
+<translation id="6611907964265870728">请确保您的设备已连接到互联网</translation>
 <translation id="6611972847767394631">您可在此处找到自己的标签页</translation>
 <translation id="6613668613087513143">此设备的空间不足，无法完成更新。请在设备上清理出 <ph name="NECESSARY_SPACE" /> 的空间，然后在 Chrome 浏览器中重试。</translation>
 <translation id="6615455863669487791">演示一下</translation>
@@ -6291,6 +6318,7 @@
 <translation id="697508444536771064">关闭 Linux</translation>
 <translation id="6975361011348772931">已请求读取和更改</translation>
 <translation id="6978121630131642226">搜索引擎</translation>
+<translation id="6979041727349121225">节能模式</translation>
 <translation id="6979044105893951891">启动和退出受管理访客会话</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
@@ -6344,6 +6372,7 @@
 <translation id="7014480873681694324">撤消突出显示</translation>
 <translation id="7014741021609395734">缩放级别</translation>
 <translation id="7014961128696979283">启动 Steam</translation>
+<translation id="7015088858756332848">无法启动 Chromebook 版 Steam。请重试</translation>
 <translation id="7017004637493394352">再说一遍“Ok Google”</translation>
 <translation id="7017219178341817193">添加新网页</translation>
 <translation id="7017354871202642555">无法在创建窗口后设置模式。</translation>
@@ -6718,6 +6747,7 @@
 <translation id="7409854300652085600">书签已导入完毕。</translation>
 <translation id="7410344089573941623"><ph name="HOST" /> 想要使用摄像头和麦克风时询问我是否同意</translation>
 <translation id="7410852728357935715">投放到设备</translation>
+<translation id="7411614333737930931">请重启您的设备，然后重试</translation>
 <translation id="741204030948306876">立即开启</translation>
 <translation id="7412226954991670867">GPU 内存</translation>
 <translation id="7414464185801331860">18 倍</translation>
@@ -6948,6 +6978,7 @@
 <translation id="7635048370253485243">已被您的管理员固定</translation>
 <translation id="7636919061354591437">在此设备上安装</translation>
 <translation id="7637253234491814483">轻触键盘右上角的指纹传感器（位于电源按钮旁边）。您的指纹数据会安全存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
+<translation id="7637272932128132922">当此标签页处于闲置状态时，省内存模式会释放一些内存以用于执行其他任务。您随时可在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
 <translation id="7637593984496473097">磁盘空间不足</translation>
 <translation id="7639914187072011620">未能从服务器中提取 SAML 重定向网址</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> 会使用您保存的密码让您自动登录到符合条件的网站。</translation>
@@ -7063,6 +7094,7 @@
 <translation id="7728668285692163452">系统将在稍后应用版本更改</translation>
 <translation id="7730449930968088409">截取您屏幕上的内容</translation>
 <translation id="7730683939467795481">此网页被扩展程序“<ph name="EXTENSION_NAME" />”更改了</translation>
+<translation id="7735165285389721951">已有一项 Steam 安装正在运行。请等待其完成，然后重试</translation>
 <translation id="7737115349420013392">正在与“<ph name="DEVICE_NAME" />”配对…</translation>
 <translation id="7737846262459425222">您随时可在“设置”&gt;“Google 助理”&gt;“屏幕上下文”下更改此设置。</translation>
 <translation id="7737948071472253612">不允许使用您的摄像头</translation>
@@ -7361,6 +7393,7 @@
 密钥文件：<ph name="KEY_FILE" />
 
 请妥善保存您的密钥文件。您还需要使用该文件创建新版扩展程序。</translation>
+<translation id="8001100670809322641">请过几分钟再试</translation>
 <translation id="8002274832045662704">高级打印机配置</translation>
 <translation id="8002670234429879764">“<ph name="PRINTER_NAME" />”已断开连接</translation>
 <translation id="8004092996156083991">如果您的密码已泄露，我们会通知您。</translation>
@@ -7370,6 +7403,7 @@
 <translation id="8008356846765065031">网络已断开，请检查您的互联网连接是否正常。</translation>
 <translation id="8009225694047762179">管理密码</translation>
 <translation id="8011372169388649948">已移动书签“<ph name="BOOKMARK_TITLE" />”。</translation>
+<translation id="8011875486979733097">无法安装 Steam</translation>
 <translation id="8012647001091218357">我们暂时无法与您父母取得联系，请重试。</translation>
 <translation id="8013993649590906847">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
 <translation id="8014154204619229810">更新程序正在运行，请稍后刷新并再次查看。</translation>
@@ -7462,6 +7496,7 @@
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8090234456044969073">读取您最常访问的网站列表</translation>
 <translation id="8090513782447872344">日后您可随时回来查看</translation>
+<translation id="809312780580957751">无法在此设备上安装 Steam</translation>
 <translation id="8093359998839330381">“<ph name="PLUGIN_NAME" />”没有响应</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />备份到 Google 云端硬盘。您随时都能轻松地恢复数据或更换设备。您的备份内容会包含应用数据。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您的备份内容会上传到 Google 并会使用您的 Google 帐号密码进行加密。<ph name="END_PARAGRAPH2" />
@@ -7558,6 +7593,7 @@
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
 <translation id="8179188928355984576">不使用此帐号登录 Android 应用</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8180785270975217276">节能模式已开启</translation>
 <translation id="8180786512391440389">“<ph name="EXTENSION" />”可以读取及删除选中位置的图片、视频及音频文件。</translation>
 <translation id="8181215761849004992">无法加入到该网域中。请检查您的帐号以了解您是否有足够的权限来添加设备。</translation>
 <translation id="8182105986296479640">应用无响应。</translation>
@@ -7679,6 +7715,7 @@
 <translation id="828642162569365647">此密码或 PIN 码可保护您在这部 <ph name="DEVICE_TYPE" /> 上的数据以及您通过手机访问的任何信息。每次 <ph name="DEVICE_TYPE" /> 从睡眠状态中唤醒后，您都需要解锁。</translation>
 <translation id="8287902281644548111">按 API 调用/网址搜索</translation>
 <translation id="8288032458496410887">卸载<ph name="APP" />…</translation>
+<translation id="8288539437195337464">请确保您的设备已及时更新，然后重试</translation>
 <translation id="8289128870594824098">磁盘大小</translation>
 <translation id="8289509909262565712">欢迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8293206222192510085">添加书签</translation>
@@ -7976,6 +8013,7 @@
 <translation id="8599864823732014237">跳过企业注册？</translation>
 <translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8601611099293226919">使用 Google 智能镜头搜索您的屏幕上的内容</translation>
+<translation id="8602674530529411098">应用（Beta 版）</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>
 <translation id="8605428685123651449">SQLite 使用的内存</translation>
 <translation id="8608618451198398104">添加 Kerberos 票据</translation>
@@ -8664,6 +8702,7 @@
 <translation id="939598580284253335">请输入密码</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共享 Chrome 标签页和音频。</translation>
+<translation id="944799160843436808">设置 Chromebook 版 Steam 时出现问题</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="947329552760389097">检查元素(&amp;I)</translation>
 <translation id="947526284350604411">您的回答</translation>
@@ -8688,6 +8727,7 @@
 <translation id="968000525894980488">开启 Google Play 服务。</translation>
 <translation id="968037381421390582">粘贴并搜索“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">更改语言</translation>
+<translation id="969574218206797926">省内存模式会释放闲置标签页占用的内存，以供使用中的标签页和其他应用使用</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="971510864672937292">清除 <ph name="SITE_NAME" /> 及其下属所有网站的网站数据和权限？</translation>
 <translation id="971774202801778802">书签网址</translation>

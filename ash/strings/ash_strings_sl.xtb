@@ -74,7 +74,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1294929383540927798">Spreminjanje nastavitve obvestil na zaklenjenem zaslonu</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Prikaz nastavitev Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">PRIPOROČENE APLIKACIJE</translation>
 <translation id="1312604459020188865">Moč signala je <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vedno pokaži polico</translation>
@@ -119,7 +118,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1546930421365146760">Skrbnika prosite, da to napravo nastavi v Googlovi skrbniški konzoli.</translation>
 <translation id="1550523713251050646">Kliknite za več možnosti</translation>
 <translation id="1555130319947370107">Modra</translation>
-<translation id="1570871743947603115">Preklop Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">dostop do vse dejavnosti v seji;</translation>
 <translation id="1610778689852195798">»Razveljavi«</translation>
 <translation id="1611993646327628135">Vklopljeno</translation>
@@ -150,7 +148,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1750088060796401187">Dovoljenih je samo toliko namizij: <ph name="MAX_DESK_LIMIT" />. Odstranite namizje, če želite odpreti novega.</translation>
 <translation id="1756833229520115364">Predloge ni bilo mogoče shraniti. Preveč je oken ali zavihkov.</translation>
 <translation id="1757857692711134412">Izklopljeno do sončnega zahoda</translation>
-<translation id="1761222317188459878">Preklop omrežne povezave. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Bližnjica na tipkovnici <ph name="LAUNCHER_KEY_NAME" /> + pika je spremenjena. Če želite uporabiti tipko za vstavljanje, pritisnite tipko <ph name="LAUNCHER_KEY_NAME" /> + Shift + vračalko.</translation>
 <translation id="1770726142253415363">Premaknjeno na <ph name="ROW_NUMBER" />. vrstico, <ph name="COLUMN_NUMBER" />. stolpec.</translation>
 <translation id="1771761307086386028">Pomik desno</translation>
@@ -357,7 +354,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2981684127883932071">Prikazovanje predlogov</translation>
 <translation id="2985148236010982088">Prikaz vseh aplikacij</translation>
 <translation id="2992327365391326550">Gumb naprave za mikrofon je izklopljen.</translation>
-<translation id="2995447421581609334">Prikaz naprav za predvajanje.</translation>
 <translation id="2996462380875591307">Zasidrana lupa je omogočena. Če jo želite izklopiti, znova pritisnite Ctrl + tipko za iskanje + D.</translation>
 <translation id="3000461861112256445">Mono zvok</translation>
 <translation id="3009178788565917040">Izhod</translation>
@@ -1164,7 +1160,6 @@ Nova namestitev</translation>
 <translation id="7611213136657090146">Fotoaparat je znova povezan.</translation>
 <translation id="761736749114493194">Preklop kadriranja fotoaparata. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Prikaz nastavitev deljenja v bližini.</translation>
 <translation id="7634648064048557203">Fotoaparat je pripet v spodnji desni kot</translation>
 <translation id="7641938616688887143">Snemaj</translation>
 <translation id="7642106959537987271">način inverzije barv</translation>
@@ -1349,7 +1344,6 @@ Nova namestitev</translation>
 <translation id="8660331759611631213">Kvadratni koren števila 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pritisnite Enter, če želite zajeti delni posnetek zaslona</translation>
-<translation id="8664753092453405566">Prikaz seznama omrežij. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Odprite aplikacijo <ph name="NAME" /> za nastavitev naprave</translation>
 <translation id="8676770494376880701">Priključen je nizkoenergijski polnilnik</translation>
 <translation id="8683506306463609433">Sledenje učinkovitosti delovanja je aktivno</translation>
@@ -1359,7 +1353,6 @@ Nova namestitev</translation>
 <translation id="8724318433625452070">Celozaslonski zajem</translation>
 <translation id="8734991477317290293">Morda poskuša beležiti vse, kar natipkate</translation>
 <translation id="8735678380411481005">Barva osvetlitve tipkovnice</translation>
-<translation id="8735953464173050365">Prikaz nastavitev tipkovnice. Izbrana je tipkovnica <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Omogočite dostop do kamere, če želite aplikacijam in spletnim stranem, ki imajo dovoljenje za uporabo kamer, dovolite uporabo kamer, povezanih s to napravo.</translation>
@@ -1383,7 +1376,6 @@ Nova namestitev</translation>
 <translation id="8850991929411075241">Iskanje + Esc</translation>
 <translation id="8853703225951107899">Vaše kode PIN ali gesla še vedno ni bilo mogoče preveriti. Opomba: Če ste nedavno spremenili geslo, uporabite staro. Novo geslo bo začelo veljati, ko se odjavite.</translation>
 <translation id="8870509716567206129">Aplikacija ne podpira načina razdeljenega zaslona.</translation>
-<translation id="8871580645200179206">Preklop temne teme. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ni povezano</translation>
 <translation id="8876661425082386199">Preverjanje povezave</translation>
 <translation id="8877788021141246043">Nastavi opomnik</translation>
@@ -1436,7 +1428,6 @@ Nova namestitev</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ali <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Zaščitene vsebine ni mogoče posneti</translation>
 <translation id="9161053988251441839">PREDLAGANE APLIKACIJE</translation>
-<translation id="9166331175924255663">Preklop visoke vidnosti deljenja v bližini.</translation>
 <translation id="9168436347345867845">Pozneje</translation>
 <translation id="9178475906033259337">Prikaz 1 rezultata za poizvedbo <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">S to funkcijo lahko hitro dostopate do poljubnega prijavljenega uporabnika, ne da bi vam bilo treba vnesti geslo. Uporabljajte to funkcijo samo z računi, ki jim zaupate.</translation>

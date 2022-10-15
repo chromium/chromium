@@ -1247,7 +1247,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
       Se impostato su Vero o non impostato, verrà segnalato lo stato di rete del dispositivo.</translation>
 <translation id="2223393221350938149">Non consentire ad alcun sito di eseguire JIT di JavaScript</translation>
-<translation id="2223582957891074498">Se il criterio è impostato su True, gli screenshot acquisiti con scorciatoie da tastiera o API di estensioni non sono consentiti. Se il criterio è impostato su False, gli screenshot sono consentiti.</translation>
 <translation id="2223598546285729819">Impostazione di notifica predefinita</translation>
 <translation id="222673035924187991">Attiva TLS Encrypted ClientHello</translation>
 <translation id="2231726854197443389">Questo criterio consente di stabilire se gli utenti possono attivare la Modalità solo HTTPS in Impostazioni. La Modalità solo HTTPS esegue l'upgrade di tutte le navigazioni alle estensioni HTTPS.

@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Մաքրե՞լ այս տվյալները</translation>
 <translation id="1034259925032978114">Պատուհանը բաց է</translation>
 <translation id="1036348656032585052">Անջատել</translation>
-<translation id="1036727731225946849"><ph name="WEBAPK_NAME" />-ն ավելացվում է...</translation>
 <translation id="1045899828449635435">Մաքրե՞լ այս տվյալները</translation>
 <translation id="1049743911850919806">Ինկոգնիտո</translation>
 <translation id="10614374240317010">Կայքեր, որոնց համար գաղտնաբառերը երբեք չեն պահվում</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">Google-ի օգտագործման պայմաններ</translation>
 <translation id="3773856050682458546">Հիմնական տվյալներ, ինչպես նաև տեղեկություններ ձեր այցելած կայքերի և օգտագործած հավելվածների մասին</translation>
 <translation id="3775705724665058594">Ուղարկել սարքերին</translation>
-<translation id="3778956594442850293">Ավելացվեց հիմնական էկրանին</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ներդիր}one{# ներդիր}other{# ներդիր}}</translation>
 <translation id="3803784507854318295">Կառավարել ավտոմատ նվագարկումը</translation>
 <translation id="3810838688059735925">Տեսանյութ</translation>

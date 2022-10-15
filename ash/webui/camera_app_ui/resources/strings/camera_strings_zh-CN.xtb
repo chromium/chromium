@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">扫描您的文件</translation>
 <translation id="1309250603447638106">正在下载“文件扫描”功能更新</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。按搜索键 + 向左键即可访问。</translation>
+<translation id="1417314334557041815">修改第 <ph name="INDEX" /> 页</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />已拔出。</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">未记录任何数据</translation>
 <translation id="1838104802459806957">向上倾斜</translation>
+<translation id="1843105061469674856">再扫描一页</translation>
 <translation id="1851169887664797861">已推出新的相机控件</translation>
 <translation id="1851616744363735765">已暂停</translation>
 <translation id="1862930711583847113">无法导出“<ph name="FILE" />”</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">此相机无法更改分辨率</translation>
 <translation id="4269820728363426813">复制链接地址</translation>
 <translation id="4281620174117014503">中等分辨率</translation>
+<translation id="428234092390943511">页面缩略图</translation>
 <translation id="4329152592498422850">切换到正方形照片拍摄模式</translation>
 <translation id="4340659173795395806">现在您可以创建多页 PDF</translation>
 <translation id="4383571725254449280">打印性能日志</translation>

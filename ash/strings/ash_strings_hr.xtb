@@ -74,7 +74,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1294929383540927798">Promijenite postavke obavijesti o zaključanom zaslonu</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Prikaz postavki Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">PREPORUČENE APLIKACIJE</translation>
 <translation id="1312604459020188865">Jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Uvijek prikaži policu</translation>
@@ -119,7 +118,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1546930421365146760">Zamolite administratora da postavi ovaj uređaj na Googleovoj administratorskoj konzoli</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
 <translation id="1555130319947370107">Plava</translation>
-<translation id="1570871743947603115">Prebacivanje Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pristup svim vašim aktivnostima u ovoj sesiji</translation>
 <translation id="1610778689852195798">"Poništi"</translation>
 <translation id="1611993646327628135">Uključeno</translation>
@@ -150,7 +148,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1750088060796401187">Broj radnih površina ne može biti veći od <ph name="MAX_DESK_LIMIT" />. Uklonite jednu radnu površinu da biste otvorili novu.</translation>
 <translation id="1756833229520115364">Pogreška pri spremanju predloška. Previše prozora ili kartica.</translation>
 <translation id="1757857692711134412">Isključeno do zalaska sunca</translation>
-<translation id="1761222317188459878">Prebacivanje mrežne veze. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Promijenjen je tipkovni prečac <ph name="LAUNCHER_KEY_NAME" /> + Točka Da biste koristili tipku za umetanje, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Premješteno u redak <ph name="ROW_NUMBER" />, stupac <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Pomicanje udesno</translation>
@@ -357,7 +354,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2981684127883932071">Prikazuju se prijedlozi</translation>
 <translation id="2985148236010982088">Pogledajte sve aplikacije</translation>
 <translation id="2992327365391326550">Gumb mikrofona na uređaju je isključen.</translation>
-<translation id="2995447421581609334">Prikaz uređaja za emitiranje.</translation>
 <translation id="2996462380875591307">Usidreno je povećalo omogućeno. Ponovo pritisnite Ctrl + Search + D da biste ga isključili.</translation>
 <translation id="3000461861112256445">Monozvuk</translation>
 <translation id="3009178788565917040">Izlaz</translation>
@@ -1163,7 +1159,6 @@ Novo instaliranje</translation>
 <translation id="7611213136657090146">Kamera je ponovo povezana.</translation>
 <translation id="761736749114493194">Uključite ili isključite okvir kamere. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Prikaži postavke dijeljenja u blizini.</translation>
 <translation id="7634648064048557203">Kamera je poravnata s donjim desnim kutom</translation>
 <translation id="7641938616688887143">Snimaj</translation>
 <translation id="7642106959537987271">način inverzije boja</translation>
@@ -1348,7 +1343,6 @@ Novo instaliranje</translation>
 <translation id="8660331759611631213">Kvadratni korijen od 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pritisnite Enter za snimanje djelomične snimke zaslona</translation>
-<translation id="8664753092453405566">Prikaz popisa mreža. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Otvorite <ph name="NAME" /> da biste postavili uređaj</translation>
 <translation id="8676770494376880701">Priključen je punjač male snage</translation>
 <translation id="8683506306463609433">Aktivno je praćenje izvedbe</translation>
@@ -1358,7 +1352,6 @@ Novo instaliranje</translation>
 <translation id="8724318433625452070">Snimka cijelog zaslona</translation>
 <translation id="8734991477317290293">Možda pokušava ukrasti podatke o pritisnutim tipkama</translation>
 <translation id="8735678380411481005">Boja pozadinskog svjetla tipkovnice</translation>
-<translation id="8735953464173050365">Prikaz postavki tipkovnice. Odabrana je tipkovnica <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Uključite pristup fotoaparatu da biste aplikacijama i web-stranicama s dopuštenjem za fotoaparat dopustili upotrebu fotoaparata povezanih s ovim uređajem.</translation>
@@ -1382,7 +1375,6 @@ Novo instaliranje</translation>
 <translation id="8850991929411075241">Pretraživanje + Esc</translation>
 <translation id="8853703225951107899">Bez obzira na to, vaš PIN ili zaporku nije bilo moguće potvrditi. Napomena: ako ste nedavno promijenili zaporku, upotrijebite staru zaporku. Vaša nova zaporka primijenit će se nakon što se odjavite.</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podijeljeni zaslon.</translation>
-<translation id="8871580645200179206">Uključite ili isključite tamnu temu. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Niste povezani</translation>
 <translation id="8876661425082386199">Provjerite vezu</translation>
 <translation id="8877788021141246043">Postavi podsjetnik</translation>
@@ -1435,7 +1427,6 @@ Novo instaliranje</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ili <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Snimanje zaštićenog sadržaja nije moguće</translation>
 <translation id="9161053988251441839">PREDLOŽENE APLIKACIJE</translation>
-<translation id="9166331175924255663">Prebacivanje na visoku vidljivost dijeljenja u blizini.</translation>
 <translation id="9168436347345867845">Učinite to kasnije</translation>
 <translation id="9178475906033259337">Prikazuje se jedan rezultat za upit <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ta vam značajka omogućuje brzi pristup bilo kojem prijavljenom korisniku bez zahtijevanja zaporke. Tu značajku upotrebljavajte samo s pouzdanim računima.</translation>

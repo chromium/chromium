@@ -1902,6 +1902,7 @@
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">ကြီးကြပ်ခံအသုံးပြုသူများကို သင့်စီမံခန့်ခွဲသူက ပိတ်လိုက်ပါသည်။</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" /> တွင် သင့်စက်အပြီးပိတ်ပါမည်။ သင့်စက်ပြန်မဖွင့်မီ USB ကိုဖြုတ်ပါ။ <ph name="DEVICE_OS" /> ကို စတင်အသုံးပြုနိုင်ပါပြီ။</translation>
+<translation id="2722547199758472013">ID- <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">WebRTC မှတ်တမ်းများ</translation>
 <translation id="272488616838512378">ယူနစ်ပြောင်းလဲခြင်း</translation>
 <translation id="2725200716980197196">ကွန်ရက်ချိတ်ဆက်မှု ပြန်လည်သိုလှောင်ပြီး</translation>
@@ -3073,6 +3074,7 @@
 <translation id="3828029223314399057">စညှပ်များကို ရှာဖွေရန်</translation>
 <translation id="3828953470056652895">ကျွန်ုပ်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" />၊ <ph name="BEGIN_LINK2" />Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> နှင့် <ph name="BEGIN_LINK3" />Play ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK3" /> ကို ဖတ်ရှုပြီး သဘောတူပါသည်။</translation>
 <translation id="3829765597456725595">SMB ဖိုင်မျှဝေမှု</translation>
+<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" /> တွင်</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{သင့်စီမံခန့်ခွဲသူက အန္တရာယ်ရှိနိုင်သော နောက်ဆက်တွဲ ၁ ခုကို ပြန်ဖွင့်လိုက်သည်}other{သင့်စီမံခန့်ခွဲသူက အန္တရာယ်ရှိနိုင်သော နောက်ဆက်တွဲ {NUM_EXTENSIONS} ခုကို ပြန်ဖွင့်လိုက်သည်}}</translation>
 <translation id="3831436149286513437">Google Drive ရှာဖွေမှု အကြံပြုချက်များ</translation>
 <translation id="3834728400518755610">မိုက်ခရိုဖုန်းဆက်တင်တွင် ထည့်လိုက်သော အပြောင်းအလဲက Linux ကို ပိတ်ရန် လိုအပ်သည်။ ရှေ့ဆက်ရန် Linux ကို ပိတ်ပါ။</translation>
@@ -5204,6 +5206,7 @@
 <translation id="5884474295213649357">ဤတဘ်သည် USB စက်ပစ္စည်းတစ်ခုသို့ ချိတ်ဆက်ထားသည်။</translation>
 <translation id="5885314688092915589">ဤပရိုဖိုင်ကို သင့်အဖွဲ့အစည်းက စီမံပါမည်</translation>
 <translation id="5886009770935151472">လက်ချောင်း ၁</translation>
+<translation id="5886112770923972514">အနီးရှိ ‘အမြန်တွဲချိတ်’ စက်များကို ချိတ်ဆက်ပြီး စနစ်အမြန်ထည့်သွင်းရန်</translation>
 <translation id="5886384907280980632">ယခု ပိတ်ရန်</translation>
 <translation id="5889282057229379085">ကြားခံ CAများ၏ အများဆုံး အရေအတွက်: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">ဦးစားပေး Wi-Fi ကွန်ရက်များ</translation>
@@ -6705,7 +6708,7 @@
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> မှ ထွက်ခွာရန် နှိပ်ပါ။</translation>
 <translation id="7348093485538360975">ဖန်သားပြင်လက်ကွက်</translation>
 <translation id="7349010927677336670">ဗီဒီယို ပြေပြစ်မှု</translation>
-<translation id="7352651011704765696">တစ်ခုခု မှားနေပြီ</translation>
+<translation id="7352651011704765696">တစ်ခုခု မှားသွားသည်</translation>
 <translation id="7353261921908507769">အနီးတစ်ဝိုက်ရှိ အဆက်အသွယ်များက သင်နှင့်မျှဝေနိုင်သည်။ သင်လက်မခံမချင်း လွှဲပြောင်းမှုကို စတင်မည်မဟုတ်ပါ။</translation>
 <translation id="735361434055555355">Linux ကို ထည့်သွင်းနေသည်...</translation>
 <translation id="7354341762311560488">လက်ဗွေ အာရုံခံကိရိယာသည် သင့်ကီးဘုတ်၏ ဘယ်ဘက်အောက်ခြေရှိကီး ဖြစ်သည်။ လက်ချောင်းတစ်ချောင်းဖြင့် ၎င်းကို အသာထိပါ။</translation>
@@ -7791,6 +7794,7 @@
 <translation id="8338952601723052325">ရေးသားသူ ဝက်ဆိုက်</translation>
 <translation id="833986336429795709">ဤလင့်ခ်ကို ဖွင့်ရန် အက်ပ်တစ်ခုကို ရွေးပါ</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{မကြာသေးမီက အကြောင်းကြားချက်များစွာပို့ထားသည့် <ph name="BEGIN_BOLD" />ဝဘ်ဆိုက် ၁ ခု<ph name="END_BOLD" /> ကို ပြန်ကြည့်ရန်}other{မကြာသေးမီက အကြောင်းကြားချက်များစွာပို့ထားသည့် <ph name="BEGIN_BOLD" />ဝဘ်ဆိုက် {NUM_SITES} ခု<ph name="END_BOLD" /> ကို ပြန်ကြည့်ရန်}}</translation>
 <translation id="8342221978608739536">စမ်းမထားပါ</translation>
 <translation id="8342861492835240085">သိမ်းဆည်းထားသည်များကို ရွေးရန်</translation>
 <translation id="8345848587667658367">သင့်ဖုန်း၏ လတ်တလော ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များကို ယခု ကြည့်နိုင်ပြီ</translation>
@@ -8786,6 +8790,7 @@
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">လုံခြုံသည့် ချိတ်ဆက်မှုကို ထူထောင်နေ...</translation>
 <translation id="996803490569799917">အခင်ဆုံးသူများ၏ အမှတ်တရများကို ကြည့်ခြင်းနှင့် အခြားအရာများ</translation>
+<translation id="997143476478634194">ဝဘ်ဆိုက်များသို့ ဝင်ကြည့်သောအခါ ၎င်းတို့က ဤဆက်တင်အတိုင်း အလိုအလျောက်လုပ်ဆောင်သည်။ သတင်းထူး (သို့) ချတ်မက်ဆေ့ဂျ်များအကြောင်း အသိပေးရန် ဝဘ်ဆိုက်များက အကြောင်းကြားချက် ပို့လေ့ရှိသည်။</translation>
 <translation id="99731366405731005">'Wi-Fi စင့်ခ်' အသုံးပြုရန် <ph name="LINK1_BEGIN" />Chrome စင့်ခ်<ph name="LINK1_END" /> ဖွင့်ပါ။ <ph name="LINK2_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">စုံ&amp;စမ်းပါ</translation>
 </translationbundle>

@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Файли</translation>
 <translation id="1294929383540927798">Змінити налаштування сповіщень на заблокованому екрані</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Показати налаштування Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">РЕКОМЕНДОВАНІ ПРОГРАМИ</translation>
 <translation id="1312604459020188865">Рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Завжди показувати полицю</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">Попросіть адміністратора налаштувати цей пристрій на Консолі адміністратора Google</translation>
 <translation id="1550523713251050646">Натисніть, щоб побачити більше опцій</translation>
 <translation id="1555130319947370107">Синій</translation>
-<translation id="1570871743947603115">Увімкнути/вимкнути Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
 <translation id="1610778689852195798">"Відмінити"</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">Максимальна кількість робочих столів – <ph name="MAX_DESK_LIMIT" />. Щоб додати новий робочий стіл, вилучіть старий.</translation>
 <translation id="1756833229520115364">Не вдалося зберегти шаблон. Забагато вікон або вкладок.</translation>
 <translation id="1757857692711134412">Вимкнено до заходу сонця</translation>
-<translation id="1761222317188459878">Увімкнути/вимкнути з’єднання з мережею. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Комбінацію клавіш <ph name="LAUNCHER_KEY_NAME" /> + крапка змінено. Щоб скористатися клавішею Insert, натисніть <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Переміщено в рядок <ph name="ROW_NUMBER" />, стовпець <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Прокрутити праворуч</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">Показано пропозиції</translation>
 <translation id="2985148236010982088">Показати всі додатки</translation>
 <translation id="2992327365391326550">Кнопку мікрофона пристрою вимкнено.</translation>
-<translation id="2995447421581609334">Показати пристрої для трансляції</translation>
 <translation id="2996462380875591307">Увімкнено закріплену лупу. Щоб вимкнути її, знову натисніть комбінацію Ctrl + клавіша пошуку + D.</translation>
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
 <translation id="3009178788565917040">Вихід</translation>
@@ -1164,7 +1160,6 @@
 <translation id="7611213136657090146">Камеру знову підключено.</translation>
 <translation id="761736749114493194">Увімкнути або вимкнути режим слідкування. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Показати налаштування функції "Передавання поблизу".</translation>
 <translation id="7634648064048557203">Зображення з камери закріплено в нижньому правому куті</translation>
 <translation id="7641938616688887143">Записати</translation>
 <translation id="7642106959537987271">режим інверсії кольорів</translation>
@@ -1349,7 +1344,6 @@
 <translation id="8660331759611631213">Квадратний корінь із 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Щоб зробити знімок частини екрана, натисніть клавішу Enter</translation>
-<translation id="8664753092453405566">Показати список мереж. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Відкрийте <ph name="NAME" />, щоб налаштувати пристрій</translation>
 <translation id="8676770494376880701">Зарядний пристрій низької потужності підключено</translation>
 <translation id="8683506306463609433">Відстеження ефективності активне</translation>
@@ -1359,7 +1353,6 @@
 <translation id="8724318433625452070">Зйомка всього екрана</translation>
 <translation id="8734991477317290293">Можливо, це спроба викрасти введенні символи.</translation>
 <translation id="8735678380411481005">Колір підсвічування клавіатури</translation>
-<translation id="8735953464173050365">Показати налаштування клавіатури. Вибрано: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Надайте доступ до камери, щоб додатки й веб-сторінки з відповідним дозволом могли використовувати камери, підключені до цього пристрою.</translation>
@@ -1383,7 +1376,6 @@
 <translation id="8850991929411075241">Search (Пошук)+Esc</translation>
 <translation id="8853703225951107899">PIN-код або пароль усе ще не вдається підтвердити. Примітка: якщо ви нещодавно змінювали пароль, введіть старий. Новий пароль буде застосовано, щойно ви вийдете з облікового запису.</translation>
 <translation id="8870509716567206129">Додаток не підтримує розділення екрана.</translation>
-<translation id="8871580645200179206">Перемкнути темну тему. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Не під’єднано</translation>
 <translation id="8876661425082386199">Перевірте з'єднання</translation>
 <translation id="8877788021141246043">Налаштуй нагадування</translation>
@@ -1436,7 +1428,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Не вдається записати захищений контент</translation>
 <translation id="9161053988251441839">ПРОПОНОВАНІ ДОДАТКИ</translation>
-<translation id="9166331175924255663">Перемикач режиму високої видимості для функції "Передавання поблизу".</translation>
 <translation id="9168436347345867845">Пізніше</translation>
 <translation id="9178475906033259337">Показано 1 результат для запиту "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Ця функція дає змогу швидко й без пароля змінити авторизованого користувача. Використовуйте її лише з обліковими записами, яким довіряєте.</translation>

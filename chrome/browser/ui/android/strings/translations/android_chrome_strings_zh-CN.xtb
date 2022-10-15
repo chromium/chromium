@@ -6,7 +6,6 @@
 <translation id="103269572468856066">一并清除来自这些网站和应用的数据？</translation>
 <translation id="1034259925032978114">窗口已打开</translation>
 <translation id="1036348656032585052">关闭</translation>
-<translation id="1036727731225946849">正在添加<ph name="WEBAPK_NAME" />…</translation>
 <translation id="1045899828449635435">一并清除来自这些网站的数据？</translation>
 <translation id="1049743911850919806">无痕</translation>
 <translation id="10614374240317010">一律不保存</translation>
@@ -508,7 +507,6 @@
 <translation id="3771694256347217732">Google 服务条款</translation>
 <translation id="3773856050682458546">基本数据加上您所访问网站、所用应用的有关信息</translation>
 <translation id="3775705724665058594">发送到您的设备</translation>
-<translation id="3778956594442850293">已添加到主屏幕</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="3803784507854318295">管理自动播放</translation>
 <translation id="3810838688059735925">视频</translation>

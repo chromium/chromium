@@ -3971,6 +3971,7 @@
 <translation id="4677772697204437347">GPU मेमरी</translation>
 <translation id="467823995058589466">कॅमेरा बंद आहे</translation>
 <translation id="4680105648806843642">या पेजवर आवाज म्यूट केला होता</translation>
+<translation id="4680112532510845139">येथे इमेज ड्रॉप करा</translation>
 <translation id="4681453295291708042">Nearby सह शेअरिंग बंद करा</translation>
 <translation id="4681512854288453141">स्रोत धोरण</translation>
 <translation id="4681930562518940301">नवीन टॅबमध्‍ये मूळ &amp;प्रतिमा उघडा</translation>
@@ -4938,6 +4939,7 @@
            आणि <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> मुळे परिणाम होतो</translation>
 <translation id="5620568081365989559">DevTools <ph name="FOLDER_PATH" /> मध्‍ये पूर्ण ॲक्सेसची विनंती करते. तुम्ही कोणतीही संवेदनशील माहिती उघड करत नाही हे निश्चित करा.</translation>
 <translation id="5620612546311710611">वापरविषयक आकडेवारी</translation>
+<translation id="562250930904332809">लाइव्ह कॅप्शन बंद करा</translation>
 <translation id="5623282979409330487">ही साइट तुमचा मोशन सेन्सर ॲक्सेस करत आहे.</translation>
 <translation id="5623842676595125836">लॉग</translation>
 <translation id="5624120631404540903">पासवर्ड व्यवस्थापित करा</translation>
@@ -8460,6 +8462,7 @@
 <translation id="8970887620466824814">काहीतरी चूक झाली.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">कृपया फायरवॉल Google सर्व्हरवरून डाउनलोड ब्लॉक करत नसल्याची खात्री करण्यासाठी तुमच्या नेटवर्क ॲडमिनिस्ट्रेटरच्या साहाय्याने तपासा.</translation>
+<translation id="8973263196882835828">लाइव्ह कॅप्शन सुरू करा</translation>
 <translation id="8973557916016709913">झूम स्तर काढून टाका</translation>
 <translation id="8973596347849323817">तुमच्या गरजा पूर्ण करण्यासाठी तुम्ही हे डिव्हाइस कस्टम करू शकता. ही ॲक्सेसिबिलिटी वैशिष्ट्ये नंतर सेटिंग्जमध्ये बदलली जाऊ शकतात.</translation>
 <translation id="897414447285476047">कनेक्शनमधील समस्येमुळे डेस्टिनेशन फाइल अपूर्ण राहिली.</translation>

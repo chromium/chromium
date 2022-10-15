@@ -1891,6 +1891,7 @@
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Ձեր ադմինիստրատորն անջատել է վերահսկվող պրոֆիլները:</translation>
 <translation id="2722540561488096675">Ձեր սարքը <ph name="TIME_LEFT" />ից կանջատվի։ Նախքան սարքը նորից միացնելը հեռացրեք USB-ն։ Դրանից հետո կարող եք սկսել օգտագործել <ph name="DEVICE_OS" />-ը։</translation>
+<translation id="2722547199758472013">ID՝ <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">WebRTC մատյաններ</translation>
 <translation id="272488616838512378">Չափման միավորների փոխարկում</translation>
 <translation id="2725200716980197196">Ցանցի կապակցումը վերականգնվել է</translation>
@@ -3062,6 +3063,7 @@
 <translation id="3828029223314399057">Որոնել էջանիշներ</translation>
 <translation id="3828953470056652895">Ես կարդացել և ընդունում եմ <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />Play-ի օգտագործման պայմանները<ph name="END_LINK3" />։</translation>
 <translation id="3829765597456725595">SMB ցանցային պահեստ</translation>
+<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" /> էջում</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Ձեր ադմինիստրատորը նորից 1 վտանգավոր ընդլայնում է միացրել}one{Ձեր ադմինիստրատորը նորից {NUM_EXTENSIONS} վտանգավոր ընդլայնում է միացրել}other{Ձեր ադմինիստրատորը նորից {NUM_EXTENSIONS} վտանգավոր ընդլայնում է միացրել}}</translation>
 <translation id="3831436149286513437">Google Drive-ի որոնման առաջարկներ</translation>
 <translation id="3834728400518755610">Խոսափողի կարգավորման փոփոխությունից հետո անհրաժեշտ է անջատել Լինուքսը։ Շարունակելու համար անջատեք Լինուքսը։</translation>
@@ -5193,6 +5195,7 @@
 <translation id="5884474295213649357">Այս ներդիրը միացված է USB սարքին:</translation>
 <translation id="5885314688092915589">Այս պրոֆիլը կկառավարի ձեր կազմակերպությունը</translation>
 <translation id="5886009770935151472">Մատ 1</translation>
+<translation id="5886112770923972514">Միացեք մոտակայքում գտնվող Արագ զուգակցման սարքերին և արագ կարգավորեք դրանք</translation>
 <translation id="5886384907280980632">Անջատել</translation>
 <translation id="5889282057229379085">Միջանկյալ հավաստագրման կենտրոնների առավելագույն քանակը՝ <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Նախընտրած Wi-Fi ցանցեր</translation>
@@ -7783,6 +7786,7 @@
 <translation id="8338952601723052325">Մշակողի վեբկայքը</translation>
 <translation id="833986336429795709">Հղումը բացելու համար ընտրեք հավելված</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> սարքի հետ կապված այլ գործողություններ</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Ստուգեք <ph name="BEGIN_BOLD" />1 կայք<ph name="END_BOLD" />, որը վերջերս բազմաթիվ ծանուցումներ է ուղարկել}one{Ստուգեք <ph name="BEGIN_BOLD" />{NUM_SITES} կայք<ph name="END_BOLD" />, որը վերջերս բազմաթիվ ծանուցումներ է ուղարկել}other{Ստուգեք <ph name="BEGIN_BOLD" />{NUM_SITES} կայքեր<ph name="END_BOLD" />, որոնք վերջերս բազմաթիվ ծանուցումներ են ուղարկել}}</translation>
 <translation id="8342221978608739536">Չեմ փորձել</translation>
 <translation id="8342861492835240085">Ընտրել հավաքածու</translation>
 <translation id="8345848587667658367">Այժմ դուք կարող եք դիտել ձեր հեռախոսի վերջին լուսանկարները, մեդիաֆայլերը, ծանուցումներն ու հավելվածները</translation>
@@ -8779,6 +8783,7 @@
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Ապահով կապակցում…</translation>
 <translation id="996803490569799917">Դիտեք ձեր սիրելի մարդկանց մասին հիշողությունները և ավելին</translation>
+<translation id="997143476478634194">Երբ դուք այցելում եք կայքեր, դրանք ավտոմատ հետևում են այս կարգավորմանը։ Կայքերը հաճախ ծանուցումներ են ուղարկում՝ տեղեկացնելու ձեզ հրատապ լուրերի կամ զրույցի հաղորդագրությունների մասին։</translation>
 <translation id="99731366405731005">Միացրեք <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" />-ը՝ համաժամացումն օգտագործելու համար։ <ph name="LINK2_BEGIN" />Իմանալ ավելին<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Ստուգել</translation>
 </translationbundle>

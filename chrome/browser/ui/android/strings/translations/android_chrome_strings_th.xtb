@@ -6,7 +6,6 @@
 <translation id="103269572468856066">ล้างข้อมูลเว็บไซต์และแอปเหล่านี้ด้วยไหม</translation>
 <translation id="1034259925032978114">หน้าต่างเปิดอยู่</translation>
 <translation id="1036348656032585052">ปิด</translation>
-<translation id="1036727731225946849">กำลังเพิ่ม <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">ล้างข้อมูลเว็บไซต์เหล่านี้ด้วยไหม</translation>
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="10614374240317010">ไม่เคยบันทึก</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">ข้อกำหนดในการให้บริการของ Google</translation>
 <translation id="3773856050682458546">ข้อมูลเบื้องต้นรวมถึงข้อมูลเกี่ยวกับเว็บไซต์ที่คุณเข้าชมและแอปที่คุณใช้</translation>
 <translation id="3775705724665058594">ส่งไปยังอุปกรณ์</translation>
-<translation id="3778956594442850293">เพิ่มในหน้าจอหลักแล้ว</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
 <translation id="3803784507854318295">จัดการการเล่นอัตโนมัติ</translation>
 <translation id="3810838688059735925">วิดีโอ</translation>

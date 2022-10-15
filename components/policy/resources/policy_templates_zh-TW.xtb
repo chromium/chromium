@@ -1242,7 +1242,6 @@
       如果將這項政策設為 False，系統不會回報這項資訊。
       如果設為 True 或未設定，則系統會回報裝置的網路狀態。</translation>
 <translation id="2223393221350938149">禁止任何網站執行 JavaScript JIT</translation>
-<translation id="2223582957891074498">如果將這項政策設為 True，使用者無法使用鍵盤快速鍵或擴充功能 API 來擷取螢幕畫面。如果將這項政策設為 False，使用者可以擷取螢幕畫面。</translation>
 <translation id="2223598546285729819">預設通知設定</translation>
 <translation id="222673035924187991">啟用經過 TLS 加密的 ClientHello</translation>
 <translation id="2231726854197443389">這項政策可控管使用者是否能夠在設定中啟用僅限 HTTPS 模式。此模式會將所有瀏覽作業升級為採用 HTTPS。

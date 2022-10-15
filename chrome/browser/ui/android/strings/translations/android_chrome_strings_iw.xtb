@@ -6,7 +6,6 @@
 <translation id="103269572468856066">למחוק נתונים גם מהאתרים ומהאפליקציות האלה?</translation>
 <translation id="1034259925032978114">החלון פתוח</translation>
 <translation id="1036348656032585052">כיבוי</translation>
-<translation id="1036727731225946849">הוספת <ph name="WEBAPK_NAME" /> מתבצעת...</translation>
 <translation id="1045899828449635435">למחוק נתונים גם מהאתרים האלה?</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="10614374240317010">פריטים שאף פעם לא נשמרו</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">‏תנאים והגבלות של Google</translation>
 <translation id="3773856050682458546">נתונים בסיסיים בנוסף למידע על האתרים שביקרת בהם והאפליקציות שהשתמשת בהן</translation>
 <translation id="3775705724665058594">שליחה אל המכשירים שלך</translation>
-<translation id="3778956594442850293">נוסף למסך דף הבית</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{כרטיסייה אחת}two{# כרטיסיות}many{# כרטיסיות}other{# כרטיסיות}}</translation>
 <translation id="3803784507854318295">ניהול ההפעלה האוטומטית</translation>
 <translation id="3810838688059735925">סרטון</translation>

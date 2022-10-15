@@ -320,6 +320,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1717218214683051432">Bewegingsensors</translation>
 <translation id="1717494416764505390">Posbus 3</translation>
 <translation id="1718029547804390981">Dokument is te groot om aantekeninge by te maak</translation>
+<translation id="1719434663396780149">Opletberigte oor prysverlagings is aan. Jy kan dit in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> verander.</translation>
 <translation id="1720941539803966190">Maak tutoriaal toe</translation>
 <translation id="1721424275792716183">* Veld word vereis</translation>
 <translation id="1725591448053514783">Koevert You 6</translation>
@@ -979,6 +980,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3550112004925580947">Gasvryheidsbedryf</translation>
 <translation id="3552297013052089404">Sans Serif-lettertipe</translation>
 <translation id="3558573058928565255">Dag</translation>
+<translation id="3560824484345057728">Sien verwante werwe</translation>
 <translation id="3566021033012934673">Jou verbinding is nie privaat nie</translation>
 <translation id="3567778190852720481">Kan nie met werkrekening inskryf nie (werkrekening kwalifiseer nie).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4542971377163063093">Laai 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Probeer om jou uitbreidings te deaktiveer.</translation>
+<translation id="4559134504959026834">Hierdie werf is in ’n groep, wat deur <ph name="SET_OWNER" /> gedefinieer is, en wat jou aktiwiteit kan sien</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Buitelug</translation>
 <translation id="4567686777917670400">Jou administrateur kan jou blaaieropstelling oor 'n afstand verander. Aktiwiteit op hierdie toestel kan ook buite Chromium bestuur word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
@@ -2670,6 +2673,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7995512525968007366">Nie gespesifiseer nie</translation>
 <translation id="7998269595945679889">Maak Incognito-oortjie Oop-knoppie; druk Enter om 'n nuwe Incognito-oortjie oop te maak om privaat te blaai</translation>
 <translation id="800218591365569300">Probeer ander oortjies of programme toemaak om berging beskikbaar te maak.</translation>
+<translation id="8002230960325005199">Sien verwante werwe in ’n nuwe oortjie</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Blaaier</translation>
 <translation id="8009225694047762179">Bestuur wagwoorde</translation>
@@ -2773,6 +2777,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8270242299912238708">PDF-dokumente</translation>
 <translation id="8275952078857499577">Moenie aanbied om hierdie werf te vertaal nie</translation>
 <translation id="8277900682056760511">Betalinghanteerdersigblad is oop</translation>
+<translation id="8279611986089885641">Chrome-kennisgewings moet aan wees. Jy kan hulle in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> aanskakel.</translation>
 <translation id="8280630997017109758">Laai 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Slaan oor</translation>

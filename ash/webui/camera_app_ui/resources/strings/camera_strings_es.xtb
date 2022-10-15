@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="1076394037877376434">Eliminar página <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modo de cámara</translation>
 <translation id="1153190633558910465">Cuadrícula desactivada</translation>
 <translation id="1175958423215084756">Enlace detectado. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Página <ph name="PAGE_NUMBER" /> eliminada</translation>
 <translation id="1258009455399840361">Girar 90 grados en el sentido de las agujas del reloj</translation>
 <translation id="1276998909102132017">Imágenes de la galería</translation>
 <translation id="1300209025925956156">Escanear tu documento</translation>

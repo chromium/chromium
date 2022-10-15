@@ -109,6 +109,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1687475363370981210">Tandakan Semua Sebagai Dibaca</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
+<translation id="1715515772563243997">Jika anda mempercayai <ph name="SITE" />, anda boleh menggunakan kata laluan yang disimpan untuk log masuk.</translation>
 <translation id="1740468249224277719">Ketik dua kali untuk memasang.</translation>
 <translation id="1752547299766512813">Simpan K/Laluan</translation>
 <translation id="1753905327828125965">Paling Kerap Dilawati</translation>
@@ -151,6 +152,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2149973817440762519">Edit Penanda Halaman</translation>
 <translation id="2155145621546387786">Kongsi Chrome</translation>
 <translation id="2175927920773552910">Kod QR</translation>
+<translation id="2178545675770638239">Pilih Kata Laluan</translation>
 <translation id="2218443599109088993">Zum Keluar</translation>
 <translation id="2230173723195178503">Halaman web dimuatkan</translation>
 <translation id="2239626343334228536">Mengosongkan data semakan imbas...</translation>
@@ -434,6 +436,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4502566650163919158">Semak Sekarang</translation>
 <translation id="4505980578794259603">Terakhir disemak <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Tutup promosi log masuk</translation>
+<translation id="4514889972748124117">Cadangkan Kata Laluan Kukuh...</translation>
 <translation id="4526249700380860531">Lihat dan urus kata laluan yang disimpan di <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Semak data anda yang disegerak</translation>
 <translation id="4536418791685807335">Cuba log masuk semula.</translation>
@@ -1015,6 +1018,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8917490105272468696">Ya, Saya Ikut Serta</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8952559610785099500">Tambah Kata Laluan</translation>
+<translation id="8953046091948372197">Anda dapat menemukan kata laluan anda di sini</translation>
 <translation id="895541991026785598">Laporkan Isu</translation>
 <translation id="8974714402877957201">1. Buka Tetapan ipad</translation>
 <translation id="8976382372951310360">Bantuan</translation>
@@ -1048,6 +1052,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9200875785104711666"><ph name="TIME" /> h yang lalu</translation>
 <translation id="9203116392574189331">Serah</translation>
 <translation id="9223358826628549784">Laporan ranap sistem dihantar.</translation>
+<translation id="941747855997058526">Pilih Kata Laluan...</translation>
 <translation id="952704832371081537">Batal</translation>
 <translation id="953008885340860025">Chrome sudah Dilog Keluar</translation>
 <translation id="959066944189734975">Anda mengikuti <ph name="CHANNEL_NAME" /></translation>

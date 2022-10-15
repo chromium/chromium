@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Recommended for best experience</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">From <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Related sites can see your activity in the group</translation>
 <translation id="1887786770086287077">Location access is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1919345977826869612">Ads</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Include all sites under this domain</translation>
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
 <translation id="4887024562049524730">Ask before allowing sites to use your virtual reality device and data (recommended)</translation>
+<translation id="4955223779495905865">A site that you visit can embed content from other sites, for example images, ads and text. Any of these sites can save cookies and other data to personalise your experience.</translation>
 <translation id="4962975101802056554">Revoke all permissions for device</translation>
 <translation id="497421865427891073">go forward</translation>
 <translation id="4976702386844183910">Last visited <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
 <translation id="5063480226653192405">Usage</translation>
+<translation id="5082281938627763039">This deletes cookies and other site data for <ph name="FPS_MEMBER" /> and for sites in <ph name="FPS_OWNER" />’s group of sites</translation>
 <translation id="5091013926750941408">Mobile site</translation>
 <translation id="509133520954049755">Request desktop view</translation>
 <translation id="5100237604440890931">Collapsed – click to expand.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Blocked</translation>
 <translation id="5689516760719285838">Location</translation>
 <translation id="5690795753582697420">Camera is turned off in Android settings</translation>
+<translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">This will clear all data and cookies stored by <ph name="ORIGIN" /> or by its app on your home screen.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Allow sound for a specific site.</translation>
 <translation id="789180354981963912">Block third-party cookies in Incognito:</translation>
 <translation id="7940722705963108451">Remind me</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site in <ph name="FPS_OWNER" />'s group of sites that can see your activity in the group}other{<ph name="FPS_MEMBERS_COUNT" /> sites in <ph name="FPS_OWNER" />'s group of sites that can see your activity in the group}}</translation>
 <translation id="7986741934819883144">Select a contact</translation>
 <translation id="7999064672810608036">Are you sure that you want to clear all local data, including cookies, and reset all permissions for this website?</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Unmute microphone</translation>
 <translation id="851751545965956758">Block sites from connecting to devices</translation>
 <translation id="8525306231823319788">Full screen</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> site}other{Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sites}}</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8676374126336081632">Clear input</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Forget</translation>
 <translation id="9019902583201351841">Managed by your parents</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">This site is in a group that can see your activity. The group is defined by <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Delete cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}}</translation>
 <translation id="913657688200966289">Turn on permissions for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">This page is dangerous</translation>

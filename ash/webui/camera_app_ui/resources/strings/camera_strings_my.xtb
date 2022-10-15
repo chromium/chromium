@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1076394037877376434">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို ဖျက်ရန်</translation>
 <translation id="1113173431709655881">ကင်မရာမုဒ်</translation>
 <translation id="1153190633558910465">အကွက်ပိတ်ရန်</translation>
 <translation id="1175958423215084756">လင့်ခ်တွေ့ရှိသည်။ <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို ဖျက်ပြီးပြီ</translation>
 <translation id="1258009455399840361">၉၀ ဒီဂရီ နာရီလက်တံအတိုင်း လှည့်ရန်</translation>
 <translation id="1276998909102132017">ပြခန်းပုံများ</translation>
 <translation id="1300209025925956156">သင့်မှတ်တမ်းဖိုင်ကို စကင်ဖတ်ခြင်း</translation>

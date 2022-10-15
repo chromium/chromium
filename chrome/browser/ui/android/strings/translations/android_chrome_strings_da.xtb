@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Vil du rydde data fra disse websites og apps?</translation>
 <translation id="1034259925032978114">Et vindue er åbent</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
-<translation id="1036727731225946849">Tilføjer <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">Vil du rydde data fra disse websites?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="10614374240317010">Gemmes aldrig</translation>
@@ -511,7 +510,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="3771694256347217732">Googles servicevilkår</translation>
 <translation id="3773856050682458546">Grundlæggende data samt oplysninger om de websites, du besøger, og de apps, du bruger</translation>
 <translation id="3775705724665058594">Send til dine enheder</translation>
-<translation id="3778956594442850293">Føjet til startskærmen</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 fane}one{# fane}other{# faner}}</translation>
 <translation id="3803784507854318295">Administrer autoplay</translation>
 <translation id="3810838688059735925">Video</translation>

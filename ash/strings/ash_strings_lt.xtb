@@ -74,7 +74,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1293556467332435079">Failai</translation>
 <translation id="1294929383540927798">Pakeisti užrakinimo ekrano pranešimų nustatymus</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Rodyti „Bluetooth“ nustatymus. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">REKOMENDUOJAMOS PROGRAMOS</translation>
 <translation id="1312604459020188865">Signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Visada rodyti lentyną</translation>
@@ -119,7 +118,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1546930421365146760">Paprašykite administratoriaus nustatyti šį įrenginį „Google“ administratoriaus pulte</translation>
 <translation id="1550523713251050646">Spustelėkite, jei reikia daugiau parinkčių</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
-<translation id="1570871743947603115">Perjungti „Bluetooth“. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pasiekti visą šios sesijos veiklą</translation>
 <translation id="1610778689852195798">„Anuliuoti“</translation>
 <translation id="1611993646327628135">Įjungta</translation>
@@ -150,7 +148,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1750088060796401187">Leidžiama tik tiek darbalaukių: <ph name="MAX_DESK_LIMIT" />. Pašalinkite darbalaukį, kad atidarytumėte naują.</translation>
 <translation id="1756833229520115364">Nepavyko išsaugoti šablono. Per daug langų ar skirtukų.</translation>
 <translation id="1757857692711134412">Išjungta iki saulėlydžio</translation>
-<translation id="1761222317188459878">Perjungti tinklo ryšį. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Pakeistas spartusis klavišas <ph name="LAUNCHER_KEY_NAME" /> + taškas. Jei norite naudoti klavišą „Insert“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + antrojo lygio klavišą + naikinimo klavišą.</translation>
 <translation id="1770726142253415363">Perkelta į <ph name="ROW_NUMBER" /> eilutę, <ph name="COLUMN_NUMBER" /> stulpelį.</translation>
 <translation id="1771761307086386028">Slinkti dešinėn</translation>
@@ -357,7 +354,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2981684127883932071">Pateikiami pasiūlymai</translation>
 <translation id="2985148236010982088">Žr. visas programas</translation>
 <translation id="2992327365391326550">Įrenginio mikrofono mygtukas išjungtas.</translation>
-<translation id="2995447421581609334">Rodyti perdavimo įrenginius.</translation>
 <translation id="2996462380875591307">Prie doko prijungtas didintuvas įgalintas. Dar kartą paspauskite „Ctrl“ + paieškos klavišą + D, kad išjungtumėte režimą.</translation>
 <translation id="3000461861112256445">Monofoninis garsas</translation>
 <translation id="3009178788565917040">Išvestis</translation>
@@ -1164,7 +1160,6 @@ Naujas įdiegimas</translation>
 <translation id="7611213136657090146">Fotoaparatas prijungtas iš naujo.</translation>
 <translation id="761736749114493194">Perjungti fotoaparato kadravimo funkciją. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Rodyti bendrinimo netoliese nustatymus.</translation>
 <translation id="7634648064048557203">Fotoaparato peržiūra pridėta apatiniame dešiniajame kampe</translation>
 <translation id="7641938616688887143">Įrašyti</translation>
 <translation id="7642106959537987271">spalvų inversijos režimas</translation>
@@ -1349,7 +1344,6 @@ Naujas įdiegimas</translation>
 <translation id="8660331759611631213">Kvadratinė šaknis iš 71</translation>
 <translation id="8663756353922886599">„<ph name="CONNECTION_STATUS" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Paspauskite „Enter“, kad užfiksuotumėte dalinę ekrano kopiją</translation>
-<translation id="8664753092453405566">Rodyti tinklų sąrašą. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Atidarykite „<ph name="NAME" />“, kad nustatytumėte įrenginį</translation>
 <translation id="8676770494376880701">Prijungtas mažos galios įkroviklis</translation>
 <translation id="8683506306463609433">Našumo stebėjimas aktyvus</translation>
@@ -1359,7 +1353,6 @@ Naujas įdiegimas</translation>
 <translation id="8724318433625452070">Viso ekrano užfiksavimas</translation>
 <translation id="8734991477317290293">Gali būti bandoma pavogti jūsų klavišų paspaudimus</translation>
 <translation id="8735678380411481005">Klaviatūros apšvietimo spalva</translation>
-<translation id="8735953464173050365">Rodyti klaviatūros nustatymus. Pasirinkta „<ph name="KEYBOARD_NAME" />“</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Įjunkite prieigą prie fotoaparato, kad leistumėte programoms ir tinklalapiams, turintiems leidimą pasiekti fotoaparatą, naudoti prie šio įrenginio prijungtą (-us) fotoaparatą (-us).</translation>
@@ -1383,7 +1376,6 @@ Naujas įdiegimas</translation>
 <translation id="8850991929411075241">Paieškos klavišas + „Esc“</translation>
 <translation id="8853703225951107899">Vis tiek nepavyko patvirtinti PIN kodo arba slaptažodžio. Pastaba: jei neseniai pakeitėte slaptažodį, naudokite senąjį. Naujas slaptažodis bus pritaikytas atsijungus.</translation>
 <translation id="8870509716567206129">Programoje nepalaikomas skaidytas ekranas.</translation>
-<translation id="8871580645200179206">Perjungti Tamsiąją temą. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Neprisijungta</translation>
 <translation id="8876661425082386199">Ryšio patikra</translation>
 <translation id="8877788021141246043">„Set a reminder“ (Nustatyk priminimą)</translation>
@@ -1436,7 +1428,6 @@ Naujas įdiegimas</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> arba <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Negalima įrašyti apsaugoto turinio</translation>
 <translation id="9161053988251441839">SIŪLOMOS PROGRAMOS</translation>
-<translation id="9166331175924255663">Perjungti bendrinimo netoliese didelį matomumą.</translation>
 <translation id="9168436347345867845">Atlikti vėliau</translation>
 <translation id="9178475906033259337">Pagal užklausą „<ph name="QUERY" />“ pateikiama rezultatų: 1</translation>
 <translation id="9179259655489829027">Naudodami šią funkciją galite greitai pasiekti bet kurį prisijungusį naudotoją be slaptažodžio. Šią funkciją naudokite tik su patikimomis paskyromis.</translation>

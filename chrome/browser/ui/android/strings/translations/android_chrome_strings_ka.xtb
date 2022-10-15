@@ -6,7 +6,6 @@
 <translation id="103269572468856066">ამ საიტებისა და აპების მონაცემთა გასუფთავებაც გსურთ?</translation>
 <translation id="1034259925032978114">ფანჯარა გახსნილია</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
-<translation id="1036727731225946849">მიმდინარეობს <ph name="WEBAPK_NAME" />-ის დამატება...</translation>
 <translation id="1045899828449635435">ამ საიტების მონაცემთა გასუფთავებაც გსურთ?</translation>
 <translation id="1049743911850919806">ინკოგნიტო</translation>
 <translation id="10614374240317010">არასოდეს შენახული</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">Google-ის მომსახურების პირობები</translation>
 <translation id="3773856050682458546">ძირითადი მონაცემები, პლუს ინფორმაცია თქვენ მიერ მონახულებული ვებსაიტებისა და გამოყენებული აპების შესახებ</translation>
 <translation id="3775705724665058594">გააგზავნეთ თქვენს მოწყობილობებზე</translation>
-<translation id="3778956594442850293">დაემატა მთავარ ეკრანს</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
 <translation id="3803784507854318295">ავტომატური დაკვრის მართვა</translation>
 <translation id="3810838688059735925">ვიდეო</translation>

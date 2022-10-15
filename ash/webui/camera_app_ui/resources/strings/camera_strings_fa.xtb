@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1057925581724305206">‏تمام HD (۱۰۸۰ پیکسل)</translation>
 <translation id="1113173431709655881">حالت دوربین</translation>
 <translation id="1153190633558910465">خطوط شطرنجی خاموش</translation>
 <translation id="1175958423215084756">پیوند شناسایی شد. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">معمولی</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1627744224761163218">۴ × ۴</translation>
+<translation id="1644345013557678440">‏HD (۷۲۰ پیکسل)</translation>
 <translation id="1664224225747386870">چیزی ضبط نشد</translation>
 <translation id="1838104802459806957">بالا بردن</translation>
 <translation id="1843105061469674856">اسکن صفحه دیگر</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">وضوح کامل</translation>
 <translation id="4890010094662541459">۳ × ۳</translation>
 <translation id="491895758387112773">ضبط ویدیوی چندجریانی</translation>
+<translation id="4984613436295737187">‏Quad HD (۱۴۴۰ پیکسل)</translation>
 <translation id="5034763830503483128">نسبت ابعادی عکس</translation>
 <translation id="5057360777601936059">درحال‌حاضر دوربینتان دردسترس نیست.
         مطمئن شوید دوربین درست وصل شده باشد.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">گوشه بالا سمت چپ سند</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5320594929574852403">درحال انتقال به‌سمت چپ</translation>
+<translation id="5374917190292010970">‏4K (۲۱۶۰ پیکسل)</translation>
 <translation id="5444515100983837161">همه لبه‌های سند را داخل قاب قرار دهید. اسکن بهترین عملکرد را زمانی دارد که رنگ سند و پس‌زمینه متفاوت باشد.</translation>
 <translation id="5662366948659129155">درحال اسکن کردن صفحه <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">مربع</translation>

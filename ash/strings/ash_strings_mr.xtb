@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294929383540927798">लॉक स्क्रीन सूचना सेटिंग्ज बदला</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">ब्लूटूथ सेटिंग्ज दाखवा. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">शिफारस केलेले अ‍ॅप्स</translation>
 <translation id="1312604459020188865">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">नेहमी शेल्फ दाखवा</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">तुमच्या अ‍ॅडमिनिस्ट्रेटरला हे डिव्हाइस Google ॲडमिन कन्सोलमध्ये सेट करण्यास सांगा</translation>
 <translation id="1550523713251050646">अधिक पर्यायांसाठी क्लिक करा</translation>
 <translation id="1555130319947370107">निळा</translation>
-<translation id="1570871743947603115">ब्लूटूथ टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">या सेशनमध्ये तुमची सर्व अ‍ॅक्टिव्हिटी अ‍ॅक्सेस करा</translation>
 <translation id="1610778689852195798">"पहिल्यासारखे करा"</translation>
 <translation id="1611993646327628135">सुरू करा</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">फक्त <ph name="MAX_DESK_LIMIT" /> डेस्कना अनुमती आहे. नवीन डेस्क उघडण्यासाठी एक डेस्क काढून टाका.</translation>
 <translation id="1756833229520115364">टेंप्लेट सेव्ह करता आले नाही. खूप जास्त विंडो किंवा टॅब आहेत.</translation>
 <translation id="1757857692711134412">सूर्यास्तापर्यंत बंद</translation>
-<translation id="1761222317188459878">नेटवर्क कनेक्शन टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पीरियड कीबोर्ड शॉर्टकट बदलला आहे. Insert की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace दाबा.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" /> पंक्ती, <ph name="COLUMN_NUMBER" /> स्तंभ वर हलवली.</translation>
 <translation id="1771761307086386028">उजवीकडे स्क्रोल करा</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">सूचना दाखवत आहे</translation>
 <translation id="2985148236010982088">सर्व अ‍ॅप्स पहा</translation>
 <translation id="2992327365391326550">डिव्हाइसच्या मायक्रोफोनचे बटण बंद केले आहे.</translation>
-<translation id="2995447421581609334">कास्‍ट डिव्‍हाइस दाखवा.</translation>
 <translation id="2996462380875591307">डॉक केलेले मॅग्निफायर सुरू केले. ते टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+D दाबा.</translation>
 <translation id="3000461861112256445">मोनो ऑडिओ</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
@@ -1164,7 +1160,6 @@
 <translation id="7611213136657090146">कॅमेरा पुन्हा कनेक्ट केला.</translation>
 <translation id="761736749114493194">कॅमेरा फ्रेमिंग टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फॅ</translation>
-<translation id="7633755430369750696">Nearby सह शेअरिंग सेटिंग्ज दाखवा.</translation>
 <translation id="7634648064048557203">कॅमेरा सर्वात खालच्या उजव्या कोपऱ्यात स्नॅप केला आहे</translation>
 <translation id="7641938616688887143">रेकॉर्ड करा</translation>
 <translation id="7642106959537987271">कलर इन्व्हर्जन मोड</translation>
@@ -1349,7 +1344,6 @@
 <translation id="8660331759611631213">७१ चे वर्गमूळ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">आंशिक स्क्रीनशॉट कॅप्चर करण्यासाठी एंटर दाबा</translation>
-<translation id="8664753092453405566">नेटवर्क सूची दाखवा. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">तुमचे डिव्हाइस सेट करण्यासाठी <ph name="NAME" /> उघडा</translation>
 <translation id="8676770494376880701">निम्न-उर्जेचे चार्जर कनेक्ट केले</translation>
 <translation id="8683506306463609433">परफॉर्मंस ट्रेसिंग ॲक्टिव्ह आहे</translation>
@@ -1359,7 +1353,6 @@
 <translation id="8724318433625452070">फुल स्‍क्रीन कॅप्‍चर</translation>
 <translation id="8734991477317290293">तो कदाचित तुमचे कीस्ट्रोक चोरण्याचा प्रयत्न करत असेल.</translation>
 <translation id="8735678380411481005">कीबोर्ड बॅकलाइटचा रंग</translation>
-<translation id="8735953464173050365">कीबोर्ड सेटिंग्ज दाखवा. <ph name="KEYBOARD_NAME" /> निवडले आहे</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">या डिव्‍हाइसशी कनेक्‍ट केलेला(ले) कॅमेरा वापरण्‍यासाठी कॅमेरा परवानगी असलेल्या ॲप्‍स आणि वेबपेजना अनुमती देण्‍याकरिता कॅमेराचा ॲक्सेस सुरू करा.</translation>
@@ -1383,7 +1376,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">तुमच्या पिन किंवा पासवर्डची अद्याप पडताळणी करता आली नाही. टीप: तुम्ही अलीकडेच तुमचा पासवर्ड बदलला असल्यास, जुना पासवर्ड वापरा. तुम्ही साइन आउट केल्यानंतर तुमचा नवीन पासवर्ड लागू केला जाईल.</translation>
 <translation id="8870509716567206129">अ‍ॅप विभाजित-स्क्रीनला सपोर्ट करत नाही.</translation>
-<translation id="8871580645200179206">गडद थीम टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">कनेक्ट नाही</translation>
 <translation id="8876661425082386199">तुमचे कनेक्शन तपासा</translation>
 <translation id="8877788021141246043">रिमाइंडर सेट करा</translation>
@@ -1437,7 +1429,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> किंवा <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">सुरक्षित आशय रेकॉर्ड करू शकत नाही</translation>
 <translation id="9161053988251441839">सुचवलेले अ‍ॅप्स</translation>
-<translation id="9166331175924255663">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा.</translation>
 <translation id="9168436347345867845">ते नंतर करा</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> साठी एक परिणाम दाखवत आहे</translation>
 <translation id="9179259655489829027">हे वैशिष्ट्य तुम्हाला पासवर्ड शिवाय कोणत्याही साइन-इन केलेल्या वापरकर्त्यास जलदपणे ॲक्सेस करण्याची परवानगी  देते. तुमचा विश्वास असलेल्या खात्यांसाठीच फक्त या वैशिष्ट्याचा वापर करा.</translation>

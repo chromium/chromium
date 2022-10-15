@@ -80,6 +80,7 @@
 <translation id="753732157349120914">Kibadilishaji cha Vichupo</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Maoni <ph name="REVIEWS_COUNT_ONE" /> kutoka Google}other{Maoni <ph name="REVIEWS_COUNT_MANY" /> kutoka Google}}</translation>
 <translation id="7559245342362162951">Onyesha vichupo vya kikundi katika gridi ya skrini nzima</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Shiriki kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa}other{Shiriki vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa}}</translation>
 <translation id="7792771145871471484">Soma mapendekezo.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Panga kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa}other{Panga pamoja vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Imekadiriwa alama <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, maoni <ph name="REVIEWS_COUNT_ONE" />}other{Imekadiriwa alama <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, maoni <ph name="REVIEWS_COUNT_MANY" />}}</translation>

@@ -6,7 +6,6 @@
 <translation id="103269572468856066">아래 사이트 및 앱의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1034259925032978114">창이 열려 있습니다.</translation>
 <translation id="1036348656032585052">사용 중지</translation>
-<translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> 추가 중...</translation>
 <translation id="1045899828449635435">아래 사이트의 데이터도 삭제하시겠습니까?</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="10614374240317010">저장하지 않음</translation>
@@ -511,7 +510,6 @@
 <translation id="3771694256347217732">Google 서비스 약관</translation>
 <translation id="3773856050682458546">기본 데이터, 방문한 웹사이트 및 사용한 앱에 관한 정보</translation>
 <translation id="3775705724665058594">기기로 전송</translation>
-<translation id="3778956594442850293">홈 화면에 추가됨</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
 <translation id="3803784507854318295">자동 재생 관리</translation>
 <translation id="3810838688059735925">동영상</translation>

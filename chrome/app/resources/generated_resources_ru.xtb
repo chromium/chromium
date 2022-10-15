@@ -3951,6 +3951,7 @@
 <translation id="4677772697204437347">Память GPU</translation>
 <translation id="467823995058589466">Камера выключена.</translation>
 <translation id="4680105648806843642">Звук на этой странице был отключен</translation>
+<translation id="4680112532510845139">Перетащите изображение сюда</translation>
 <translation id="4681453295291708042">Отключить Обмен с окружением</translation>
 <translation id="4681512854288453141">Исходное правило</translation>
 <translation id="4681930562518940301">Открыть оригинальное изображение в новой вкладке</translation>
@@ -4917,6 +4918,7 @@
            и <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" />.</translation>
 <translation id="5620568081365989559">Инструменты разработчика запрашивают полный доступ к каталогу <ph name="FOLDER_PATH" />. Убедитесь, что в нем нет конфиденциальных данных.</translation>
 <translation id="5620612546311710611">статистика использования</translation>
+<translation id="562250930904332809">&amp;Отключить автоматические субтитры</translation>
 <translation id="5623282979409330487">У этого сайта есть доступ к датчикам движения.</translation>
 <translation id="5623842676595125836">Журнал</translation>
 <translation id="5624120631404540903">Настройки паролей</translation>
@@ -8437,6 +8439,7 @@
 <translation id="8970887620466824814">Произошла ошибка</translation>
 <translation id="89720367119469899">Отключить</translation>
 <translation id="8972513834460200407">Уточните у администратора сети, не блокирует ли брандмауэр скачивание файлов с серверов Google.</translation>
+<translation id="8973263196882835828">&amp;Включить автоматические субтитры</translation>
 <translation id="8973557916016709913">Сбросить масштаб</translation>
 <translation id="8973596347849323817">Используйте специальные возможности для удобной работы с устройством. Эти параметры можно изменить в настройках.</translation>
 <translation id="897414447285476047">Файл был скачан не полностью из-за неполадок с подключением.</translation>

@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1076394037877376434">Xoá trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Chế độ camera</translation>
 <translation id="1153190633558910465">Tắt lưới</translation>
 <translation id="1175958423215084756">Phát hiện thấy đường liên kết. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Đã xoá trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Xoay 90 độ theo chiều kim đồng hồ</translation>
 <translation id="1276998909102132017">Ảnh trong thư viện</translation>
 <translation id="1300209025925956156">Quét tài liệu của bạn</translation>

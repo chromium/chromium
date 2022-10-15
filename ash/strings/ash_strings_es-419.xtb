@@ -74,7 +74,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1293556467332435079">Archivos</translation>
 <translation id="1294929383540927798">Cambia la configuración de notificaciones de pantalla bloqueada</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Mostrar la configuración de Bluetooth: <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">APPS RECOMENDADAS</translation>
 <translation id="1312604459020188865">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Siempre mostrar biblio.</translation>
@@ -119,7 +118,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1546930421365146760">Pídele a tu administrador que configure este dispositivo en la Consola del administrador de Google</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
-<translation id="1570871743947603115">Activar o desactivar Bluetooth: <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
 <translation id="1610778689852195798">"Deshacer"</translation>
 <translation id="1611993646327628135">Sí</translation>
@@ -150,7 +148,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1750088060796401187">Solo se permiten <ph name="MAX_DESK_LIMIT" /> escritorios. Para abrir un escritorio nuevo, deberás quitar uno.</translation>
 <translation id="1756833229520115364">No se pudo guardar la plantilla. Hay demasiadas ventanas o pestañas.</translation>
 <translation id="1757857692711134412">Desactivada hasta el atardecer</translation>
-<translation id="1761222317188459878">Activar o desactivar la conexión de red: <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + signo de punto. Para usar la tecla Insertar, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + Mayúsculas + retroceso.</translation>
 <translation id="1770726142253415363">Se movió a la fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Desplazar hacia la derecha</translation>
@@ -357,7 +354,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2981684127883932071">Mostrando sugerencias</translation>
 <translation id="2985148236010982088">Ver todas las apps</translation>
 <translation id="2992327365391326550">El botón del micrófono del dispositivo está desactivado.</translation>
-<translation id="2995447421581609334">Mostrar dispositivos de transmisión</translation>
 <translation id="2996462380875591307">Se habilitó la lupa con vista acoplada. Presiona Ctrl+Buscar+D de nuevo para desactivarla.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Salida</translation>
@@ -1165,7 +1161,6 @@ Nueva instalación</translation>
 <translation id="7611213136657090146">Se volvió a conectar la cámara.</translation>
 <translation id="761736749114493194">Activa o desactiva el encuadre de la cámara. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Mostrar la configuración de Compartir con Nearby</translation>
 <translation id="7634648064048557203">Se ajustó la cámara a la esquina inferior derecha</translation>
 <translation id="7641938616688887143">Graba</translation>
 <translation id="7642106959537987271">modo de inversión de colores</translation>
@@ -1350,7 +1345,6 @@ Nueva instalación</translation>
 <translation id="8660331759611631213">Raíz cuadrada de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Presiona intro para tomar una captura de pantalla parcial</translation>
-<translation id="8664753092453405566">Mostrar la lista de redes: <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Abre <ph name="NAME" /> para configurar tu dispositivo</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8683506306463609433">Registro del rendimiento activado</translation>
@@ -1360,7 +1354,6 @@ Nueva instalación</translation>
 <translation id="8724318433625452070">Captura de pantalla completa</translation>
 <translation id="8734991477317290293">Es posible que alguien esté intentando determinar qué teclas presionaste</translation>
 <translation id="8735678380411481005">Color de retroiluminación del teclado</translation>
-<translation id="8735953464173050365">Mostrar la configuración del teclado: Está seleccionado el teclado <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Activa el acceso a la cámara para permitir que las apps y páginas web con permiso de la cámara usen las cámaras conectadas a este dispositivo</translation>
@@ -1384,7 +1377,6 @@ Nueva instalación</translation>
 <translation id="8850991929411075241">Tecla de búsqueda + Esc</translation>
 <translation id="8853703225951107899">Aún no se pudo verificar tu PIN o contraseña. Nota: Si cambiaste la contraseña recientemente, usa la anterior. Se aplicará la nueva cuando salgas de la cuenta.</translation>
 <translation id="8870509716567206129">La app no es compatible con la función de pantalla dividida.</translation>
-<translation id="8871580645200179206">Activa o desactiva el Tema oscuro. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">No conectado</translation>
 <translation id="8876661425082386199">Revisa tu conexión</translation>
 <translation id="8877788021141246043">Establecer un recordatorio</translation>
@@ -1437,7 +1429,6 @@ Nueva instalación</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">No se puede grabar contenido protegido</translation>
 <translation id="9161053988251441839">APPS SUGERIDAS</translation>
-<translation id="9166331175924255663">Activar o desactivar la alta visibilidad para Compartir con Nearby</translation>
 <translation id="9168436347345867845">Hacerlo más tarde</translation>
 <translation id="9178475906033259337">Mostrando 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta función te permite alternar de forma rápida entre los usuarios que hayan accedido a su cuenta, sin necesidad de escribir la contraseña. Usa esta función solo con cuentas de confianza.</translation>

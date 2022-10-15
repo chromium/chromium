@@ -3946,6 +3946,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4677772697204437347">Memoria de la GPU</translation>
 <translation id="467823995058589466">Se desactivó la cámara</translation>
 <translation id="4680105648806843642">El sonido está silenciado en esta página</translation>
+<translation id="4680112532510845139">Arrastra una imagen hasta aquí</translation>
 <translation id="4681453295291708042">Inhabilitar Compartir con Nearby</translation>
 <translation id="4681512854288453141">Política de la fuente</translation>
 <translation id="4681930562518940301">Abrir imagen original en una pestaña nueva</translation>
@@ -4912,6 +4913,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
            y <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
 <translation id="5620568081365989559">DevTools solicita acceso completo a <ph name="FOLDER_PATH" />. Asegúrate de no revelar información confidencial.</translation>
 <translation id="5620612546311710611">estadísticas de uso</translation>
+<translation id="562250930904332809">&amp;Inhabilitar Subtitulado instantáneo</translation>
 <translation id="5623282979409330487">Este sitio accede a tus sensores de movimiento.</translation>
 <translation id="5623842676595125836">Registro</translation>
 <translation id="5624120631404540903">Administrar contraseñas</translation>
@@ -8423,6 +8425,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">Consulta con tu administrador de red para asegurarte de que el firewall no esté bloqueando las descargas de los servidores de Google.</translation>
+<translation id="8973263196882835828">&amp;Habilitar Subtitulado instantáneo</translation>
 <translation id="8973557916016709913">Quitar el nivel de zoom</translation>
 <translation id="8973596347849323817">Puedes personalizar este dispositivo para que se adapte a tus necesidades. Estas funciones de accesibilidad pueden cambiarse más tarde en Configuración.</translation>
 <translation id="897414447285476047">El archivo de destino está incompleto debido a un problema de conexión.</translation>

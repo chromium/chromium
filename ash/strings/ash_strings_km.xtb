@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">ឯកសារ</translation>
 <translation id="1294929383540927798">ផ្លាស់ប្ដូរ​ការកំណត់​ការជូនដំណឹងអេក្រង់​ចាក់សោ</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">បង្ហាញ​ការកំណត់​ប៊្លូធូស។ <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">កម្មវិធី​ដែល​បាន​ណែនាំ</translation>
 <translation id="1312604459020188865">កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">បង្ហាញ​ធ្នើជានិច្ច</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">សូមស្នើឱ្យអ្នកគ្រប់គ្រងរបស់អ្នករៀបចំឧបករណ៍នេះនៅក្នុងកុងសូល Google Admin</translation>
 <translation id="1550523713251050646">ចុចសម្រាប់ជម្រើសជាច្រើនទៀត</translation>
 <translation id="1555130319947370107">ខៀវ</translation>
-<translation id="1570871743947603115">បិទ/បើកប៊្លូធូស។ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ចូលប្រើសកម្មភាព​ទាំងអស់របស់អ្នកនៅក្នុង​រយៈពេលចូលប្រើនេះ</translation>
 <translation id="1610778689852195798">"ត្រឡប់វិញ"</translation>
 <translation id="1611993646327628135">បើក</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">បានអនុញ្ញាតតុ <ph name="MAX_DESK_LIMIT" /> ប៉ុណ្ណោះ។ សូមលុបតុមួយចេញ ដើម្បីបើកតុថ្មី។</translation>
 <translation id="1756833229520115364">មិនអាចរក្សាទុកទម្រង់គំរូបានទេ។ មានវិនដូ ឬផ្ទាំងច្រើនពេក។</translation>
 <translation id="1757857692711134412">បិទ​រហូតដល់​ពេលថ្ងៃលិច</translation>
-<translation id="1761222317188459878">បិទ/បើក​ការតភ្ជាប់​បណ្ដាញ។ <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច <ph name="LAUNCHER_KEY_NAME" /> + Period។ ដើម្បីប្រើគ្រាប់ចុច Insert សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace។</translation>
 <translation id="1770726142253415363">បានផ្លាស់ទីទៅជួរដេកទី <ph name="ROW_NUMBER" />, ជួរឈរទី <ph name="COLUMN_NUMBER" />។</translation>
 <translation id="1771761307086386028">រំកិល​ទៅស្តាំ</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">កំពុងបង្ហាញ​ការណែនាំ</translation>
 <translation id="2985148236010982088">មើលកម្មវិធីទាំងអស់</translation>
 <translation id="2992327365391326550">ប៊ូតុងមីក្រូហ្វូនរបស់ឧបករណ៍ត្រូវបានបិទ។</translation>
-<translation id="2995447421581609334">បង្ហាញ​ឧបករណ៍​បញ្ជូន។</translation>
 <translation id="2996462380875591307">បានបើក​កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត។ សូមចុច Ctrl+Search+D ម្តងទៀត​ដើម្បី​បិទវា។</translation>
 <translation id="3000461861112256445">សំឡេង​ម៉ូណូ</translation>
 <translation id="3009178788565917040">ទិន្នផល</translation>
@@ -1164,7 +1160,6 @@
 <translation id="7611213136657090146">បានភ្ជាប់​កាមេរ៉ា​ឡើងវិញ។</translation>
 <translation id="761736749114493194">បិទ/បើកការរក្សាឱ្យនៅក្នុងកាមេរ៉ា​។ <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">បង្ហាញ​ការកំណត់​ការចែករំលែកនៅជិត។</translation>
 <translation id="7634648064048557203">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងស្ដាំ​ផ្នែកខាងក្រោម</translation>
 <translation id="7641938616688887143">ថតវីដេអូ</translation>
 <translation id="7642106959537987271">មុខងារ​បញ្ច្រាស​ពណ៌</translation>
@@ -1349,7 +1344,6 @@
 <translation id="8660331759611631213">ឫសការ៉េនៃ 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ចុច enter ដើម្បីថតរូប​អេក្រង់មួយផ្នែក</translation>
-<translation id="8664753092453405566">បង្ហាញ​បញ្ជី​បណ្ដាញ។ <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">បើក <ph name="NAME" /> ដើម្បីរៀបចំឧបករណ៍របស់អ្នក</translation>
 <translation id="8676770494376880701">ឆ្នាំងសាកដែលមានថាមពលទាបត្រូវបានភ្ជាប់</translation>
 <translation id="8683506306463609433">ការតាមដាន​ប្រតិបត្តិការ​កំពុងបើក​ដំណើរការ</translation>
@@ -1359,7 +1353,6 @@
 <translation id="8724318433625452070">ថតពេញអេក្រង់</translation>
 <translation id="8734991477317290293">វាអាច​នឹង​ព្យាយាម​លួច​ការចុច​របស់អ្នក</translation>
 <translation id="8735678380411481005">ពណ៌​ពន្លឺ​ផ្នែកខាងក្រោយ​ក្ដារចុច</translation>
-<translation id="8735953464173050365">បង្ហាញ​ការកំណត់​ក្ដារចុច​។ <ph name="KEYBOARD_NAME" /> ត្រូវ​បានជ្រើសរើស</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
 <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">បើក​ការ​ចូលប្រើប្រាស់​កាមេរ៉ា ដើម្បី​អនុញ្ញាតឱ្យកម្មវិធី និង​ទំព័របណ្ដាញ​ដែល​មាន​ការអនុញ្ញាត​ឱ្យចូលប្រើ​កាមេរ៉ា ប្រើប្រាស់​កាមេរ៉ា​ដែល​បានភ្ជាប់​ជាមួយ​ឧបករណ៍​នេះ។</translation>
@@ -1383,7 +1376,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">នៅតែមិនអាច​ផ្ទៀងផ្ទាត់​កូដ PIN ឬពាក្យសម្ងាត់របស់អ្នក​បានដដែល។ ចំណាំ៖ ប្រសិនបើអ្នកបានប្ដូរ​ពាក្យសម្ងាត់របស់អ្នកថ្មីៗនេះ សូមប្រើពាក្យសម្ងាត់ចាស់របស់អ្នក។ ពាក្យសម្ងាត់ថ្មីរបស់អ្នក​នឹងត្រូវបានប្រើ បន្ទាប់ពីអ្នកចេញពីគណនី។</translation>
 <translation id="8870509716567206129">កម្មវិធីមិនស្គាល់អេក្រង់បំបែកទេ។</translation>
-<translation id="8871580645200179206">បិទ/បើក​រចនាប័ទ្ម​ងងឹត។ <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">មិនបានភ្ជាប់ទេ</translation>
 <translation id="8876661425082386199">សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក</translation>
 <translation id="8877788021141246043">កំណត់​ការរំលឹក</translation>
@@ -1436,7 +1428,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> ឬ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">មិនអាចថតខ្លឹមសារដែលមានការការពារបានទេ</translation>
 <translation id="9161053988251441839">កម្មវិធី​ដែលបាន​ណែនាំ</translation>
-<translation id="9166331175924255663">បិទ/បើក​លទ្ធភាពមើលឃើញខ្ពស់​របស់ការចែករំលែកនៅជិត។</translation>
 <translation id="9168436347345867845">ធ្វើនៅ​ពេលក្រោយ</translation>
 <translation id="9178475906033259337">កំពុង​បង្ហាញ​លទ្ធផល 1 សម្រាប់ <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">មុខងារនេះអនុញ្ញាតឱ្យអ្នកចូលប្រើគណនីអ្នកប្រើប្រាស់ទាំងឡាយបានឆាប់រហ័សដោយមិនចាំបាច់មានពាក្យសម្ងាត់។ ប្រើមុខងារនេះជាមួយគណនីដែលអ្នកជឿទុកចិត្តតែប៉ុណ្ណោះ។</translation>

@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Видалити сторінку <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Режим камери</translation>
 <translation id="1153190633558910465">Сітку вимкнено</translation>
 <translation id="1175958423215084756">Виявлене посилання. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Сторінку <ph name="PAGE_NUMBER" /> видалено</translation>
 <translation id="1258009455399840361">Повернути на 90 градусів за годинниковою стрілкою</translation>
 <translation id="1276998909102132017">Зображення з галереї</translation>
 <translation id="1300209025925956156">Зіскануйте документ</translation>

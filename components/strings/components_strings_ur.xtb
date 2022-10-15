@@ -321,6 +321,7 @@
 <translation id="1717218214683051432">موشن سینسرز</translation>
 <translation id="1717494416764505390">میل باکس 3</translation>
 <translation id="1718029547804390981">دستاویز اتنی بڑی ہے کہ اس کی تشریح نہیں کی جا سکتی</translation>
+<translation id="1719434663396780149">قیمت میں کمی کے الرٹس آن ہیں۔ آپ اسے <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="1720941539803966190">ٹیوٹوریل بند کریں</translation>
 <translation id="1721424275792716183">* فیلڈ لازمی ہے</translation>
 <translation id="1725591448053514783">‏You 6 لفافہ</translation>
@@ -981,6 +982,7 @@
 <translation id="3550112004925580947">مہمان نوازی کی انڈسٹری</translation>
 <translation id="3552297013052089404">‏Sans Serif فونٹ</translation>
 <translation id="3558573058928565255">دن کا وقت</translation>
+<translation id="3560824484345057728">متعلقہ سائٹس دیکھیں</translation>
 <translation id="3566021033012934673">آپ کا کنکشن نجی نہیں ہے</translation>
 <translation id="3567778190852720481">انٹرپرائز اکاؤنٹ کے ساتھ اندراج نہیں ہوسکتا (انٹرپرائز اکاؤنٹ اہل نہیں ہے)۔</translation>
 <translation id="3574305903863751447"><ph name="CITY" />، <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1366,6 +1368,7 @@
 <translation id="4542971377163063093">ٹرے 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">اپنے ایکسٹینشنز کو غیر فعال کرنے کی کوشش کریں۔</translation>
+<translation id="4559134504959026834">یہ سائٹ ایک گروپ میں موجود ہے، جس کی وضاحت <ph name="SET_OWNER" /> نے کی ہے، جو آپ کی سرگرمی دیکھ سکتی ہے</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">آؤٹ ڈورز</translation>
 <translation id="4567686777917670400">‏آپ کا منتظم دور سے آپ کے براؤزر کا سیٹ اپ تبدیل کر سکتا ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chromium سے باہر بھی کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -2673,6 +2676,7 @@
 <translation id="7995512525968007366">متعین نہیں ہے</translation>
 <translation id="7998269595945679889">پوشیدگی ٹیب بٹن کھولیں، نجی طور پر براؤز کرنے کی خاطر نیا پوشیدگی ٹیب کھولنے کے لیے اینٹر دبائیں</translation>
 <translation id="800218591365569300">میموری خالی کرنے کیلئے دیگر ٹیبز یا پروگرامز کو بند کرنے کی کوشش کریں۔</translation>
+<translation id="8002230960325005199">ایک نئے ٹیب میں متعلقہ سائٹس دیکھیں</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">براؤزر</translation>
 <translation id="8009225694047762179">پاسورڈز کا نظم کریں</translation>
@@ -2776,6 +2780,7 @@
 <translation id="8270242299912238708">‏PDF دستاویزات</translation>
 <translation id="8275952078857499577">اس سائٹ کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
 <translation id="8277900682056760511">ادائیگی کی ہینڈلر شیٹ کھلی ہے</translation>
+<translation id="8279611986089885641">‏Chrome کی اطلاعات کا آن ہونا ضروری ہے۔ آپ انہیں <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> میں آن کر سکتے ہیں۔</translation>
 <translation id="8280630997017109758">ٹرے 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>

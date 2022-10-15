@@ -74,7 +74,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1294929383540927798">Cambiar a configuración de notificacións da pantalla de bloqueo</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Mostrar a configuración do Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">APLICACIÓNS RECOMENDADAS</translation>
 <translation id="1312604459020188865">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mostrar sempre o estante</translation>
@@ -119,7 +118,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1546930421365146760">Pídelle ao teu administrador que configure este dispositivo na consola de administración de Google</translation>
 <translation id="1550523713251050646">Fai clic para ver máis opcións</translation>
 <translation id="1555130319947370107">Azul</translation>
-<translation id="1570871743947603115">Activar/desactivar o Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
 <translation id="1610778689852195798">"Desfai"</translation>
 <translation id="1611993646327628135">Activado</translation>
@@ -150,7 +148,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1750088060796401187">Só se permite un máximo de <ph name="MAX_DESK_LIMIT" /> escritorios. Para abrir outro, quita un dos anteriores.</translation>
 <translation id="1756833229520115364">Non se puido gardar o modelo. Hai demasiadas ventás ou pestanas.</translation>
 <translation id="1757857692711134412">Función desactivada ata o solpor</translation>
-<translation id="1761222317188459878">Activar/desactivar a conexión de rede. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Cambiouse o atallo de teclado <ph name="LAUNCHER_KEY_NAME" /> + Punto. Para utilizar a tecla Inserir, preme <ph name="LAUNCHER_KEY_NAME" /> + Maiúsculas + Retroceso.</translation>
 <translation id="1770726142253415363">Moveuse á fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Desprazarse á dereita</translation>
@@ -357,7 +354,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2981684127883932071">Mostrando suxestións</translation>
 <translation id="2985148236010982088">Ver todas as aplicacións</translation>
 <translation id="2992327365391326550">O botón do micrófono do dispositivo está desactivado.</translation>
-<translation id="2995447421581609334">Mostrar os dispositivos de emisión.</translation>
 <translation id="2996462380875591307">Activouse a Lupa ancorada. Preme Ctrl+Buscar+D de novo para desactivala.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
@@ -1165,7 +1161,6 @@ Nova instalación</translation>
 <translation id="7611213136657090146">Reconectouse a cámara.</translation>
 <translation id="761736749114493194">Activar/desactivar zoom automático. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Mostrar a configuración da función Compartir por Nearby.</translation>
 <translation id="7634648064048557203">Cámara axustada á esquina inferior dereita</translation>
 <translation id="7641938616688887143">Zona que se gravará</translation>
 <translation id="7642106959537987271">modo de inversión da cor</translation>
@@ -1350,7 +1345,6 @@ Nova instalación</translation>
 <translation id="8660331759611631213">Raíz cadrada de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Premer Introducir para facer captura de pantalla parcial</translation>
-<translation id="8664753092453405566">Mostrar a lista de redes. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Abre <ph name="NAME" /> para configurar o teu dispositivo</translation>
 <translation id="8676770494376880701">Cargador de baixa potencia conectado</translation>
 <translation id="8683506306463609433">O rastrexo do seguimento está activo</translation>
@@ -1360,7 +1354,6 @@ Nova instalación</translation>
 <translation id="8724318433625452070">Captura de pantalla completa</translation>
 <translation id="8734991477317290293">É posible que estea tentando detectar as teclas que premes</translation>
 <translation id="8735678380411481005">Cor de retroiluminación do teclado</translation>
-<translation id="8735953464173050365">Mostrar a configuración do teclado. Está seleccionado o seguinte: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Activa o acceso á cámara para que as aplicacións e páxinas web que teñan permiso poidan usar as cámaras conectadas a este dispositivo.</translation>
@@ -1384,7 +1377,6 @@ Nova instalación</translation>
 <translation id="8850991929411075241">Busca+Esc</translation>
 <translation id="8853703225951107899">Aínda non se puido verificar o teu PIN ou contrasinal. Nota: Se cambiaches o contrasinal recentemente, utiliza o antigo. O contrasinal novo aplicarase en canto peches sesión.</translation>
 <translation id="8870509716567206129">A aplicación non é compatible coa función de pantalla dividida.</translation>
-<translation id="8871580645200179206">Activar/desactivar tema escuro. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Non conectada</translation>
 <translation id="8876661425082386199">Comproba a conexión</translation>
 <translation id="8877788021141246043">Definir un recordatorio</translation>
@@ -1437,7 +1429,6 @@ Nova instalación</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Non se pode gravar contido protexido</translation>
 <translation id="9161053988251441839">APLICACIÓNS SUXERIDAS</translation>
-<translation id="9166331175924255663">Activar ou desactivar a alta visibilidade da función Compartir por Nearby.</translation>
 <translation id="9168436347345867845">Configurar máis tarde</translation>
 <translation id="9178475906033259337">Mostrando 1 resultado para "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Con esta función podes acceder rapidamente a calquera usuario que teña a sesión iniciada sen necesidade de introducir un contrasinal. Utiliza esta función só con contas nas que confíes.</translation>

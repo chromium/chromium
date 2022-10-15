@@ -396,6 +396,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{无}=1{1 个网站}other{# 个网站}}</translation>
 <translation id="1924727005275031552">新</translation>
 <translation id="1927439593081478069">“运行 Chrome 安全检查”按钮，按 Enter 键即可从 Chrome 设置中运行安全检查</translation>
+<translation id="1935995810530254458">仍然复制</translation>
 <translation id="1939175642807587452">可以询问能否向您发送通知</translation>
 <translation id="1943994668912612445">设计</translation>
 <translation id="1945968466830820669">您可能会无法再访问所属组织的帐号，或被他人盗用身份信息。Chromium 建议您立即更改密码。</translation>
@@ -449,6 +450,7 @@
 <translation id="2085876078937250610">保存…</translation>
 <translation id="2088086323192747268">“管理同步数据”按钮，按 Enter 键即可在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="2091887806945687916">声音</translation>
+<translation id="2093982008204312032">Google Chrome 正在尝试关闭 Windows Hello，以使其不再作为填充密码时的验证机制。</translation>
 <translation id="2094505752054353250">网域不匹配</translation>
 <translation id="2099652385553570808">三钉（左侧）</translation>
 <translation id="2101225219012730419">版本：</translation>
@@ -1143,6 +1145,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{包含 {COUNT} 页内容的 PDF 文档}other{包含 {COUNT} 页内容的 PDF 文档}}</translation>
 <translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">由于系统正在使用不安全的连接提交此表单，他人将能看到您的信息。</translation>
+<translation id="4024923292610332139">关闭触控 ID，以使其不再作为填充密码时的验证机制。</translation>
 <translation id="4025913568718019429">“管理 Google 隐私设置”按钮，按 Enter 键即可访问您的 Google 帐号隐私设置</translation>
 <translation id="4030383055268325496">撤消添加(&amp;U)</translation>
 <translation id="4031179711345676612">已允许使用麦克风</translation>
@@ -1261,6 +1264,7 @@
 <translation id="42981349822642051">展开</translation>
 <translation id="4300675098767811073">多孔（右侧）</translation>
 <translation id="4302514097724775343">点按恐龙图标即可开始玩这款游戏</translation>
+<translation id="4304049446746819918">{0,plural, =1{管理员政策不建议将这个文件移至<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件移至<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">无法访问您的文件</translation>
 <translation id="4306529830550717874">保存地址？</translation>
 <translation id="4306812610847412719">剪贴板</translation>
@@ -1637,6 +1641,7 @@
 <translation id="5254043433801397071">优化打印内容</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">仍然截取/录制</translation>
+<translation id="5257739419779698609">{0,plural, =1{管理员政策不建议将这个文件复制到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件复制到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">装订（顶部）</translation>
 <translation id="5269225904387178860">四孔（底部）</translation>
 <translation id="5269999699920406580">在整个系统范围内应用的功能只能由所有者 <ph name="OWNER_EMAIL" /> 设定</translation>
@@ -1700,6 +1705,7 @@
 <translation id="5412236728747081950">此网站会从 Chrome 中了解您的兴趣，从而向您展示与您的需求更相符的广告</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">堆叠出纸器 4</translation>
+<translation id="5414511064953050917">仍然移动</translation>
 <translation id="5421136146218899937">清除浏览数据...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{没有禁止使用 Cookie 的网站}=1{有 1 个禁止使用 Cookie 的网站}other{有 # 个禁止使用 Cookie 的网站}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
@@ -2320,6 +2326,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
 <translation id="7153618581592392745">薰衣草色</translation>
 <translation id="7156870133441232244">服务器应该升级到 TLS 1.2 或更高版本。</translation>
+<translation id="7163295244162773898">{0,plural, =1{复制这个机密文件？}other{复制这些机密文件？}}</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7174545416324379297">已合并</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}}</translation>
@@ -2928,6 +2935,7 @@
 <translation id="8763986294015493060">关闭当前打开的所有无痕式窗口</translation>
 <translation id="8766943070169463815">安全付款凭据身份验证表单已打开</translation>
 <translation id="8767765348545497220">关闭帮助气泡</translation>
+<translation id="877348612833018844">{0,plural, =1{移动这个机密文件？}other{移动这些机密文件？}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">摩托车</translation>
 <translation id="8790007591277257123">恢复删除(&amp;R)</translation>

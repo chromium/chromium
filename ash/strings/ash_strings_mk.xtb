@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">Датотеки</translation>
 <translation id="1294929383540927798">Променете ги поставките за известувања на заклучен екран</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Прикажи ги поставките за Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">ПРЕПОРАЧАНИ АПЛИКАЦИИ</translation>
 <translation id="1312604459020188865">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Секогаш прикажувај ја полицата</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">Побарајте од администраторот да го постави уредов во „Администраторската конзола на Google“</translation>
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1555130319947370107">Сина</translation>
-<translation id="1570871743947603115">Вклучи/исклучи Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
 <translation id="1610778689852195798">„Врати“</translation>
 <translation id="1611993646327628135">Вклучено</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">Дозволени се само <ph name="MAX_DESK_LIMIT" /> работни површини. Отстранете работна површина за да отворите нова.</translation>
 <translation id="1756833229520115364">Не можеше да се зачува шаблон. Премногу прозорци или картички.</translation>
 <translation id="1757857692711134412">Исклучено до зајдисонце</translation>
-<translation id="1761222317188459878">Вклучи/исклучи мрежна врска. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Кратенката од тастатура <ph name="LAUNCHER_KEY_NAME" /> + Точка се промени. За да го користите копчето Insert, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Преместена на ред <ph name="ROW_NUMBER" />, колона <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Лизгај надесно</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">Се прикажуваат предлози</translation>
 <translation id="2985148236010982088">Приказ на сите апликации</translation>
 <translation id="2992327365391326550">Копчето за микрофон на уредот е исклучено.</translation>
-<translation id="2995447421581609334">Прикажи ги уредите со Cast.</translation>
 <translation id="2996462380875591307">Овозможена е закотвената лупа. Притиснете Ctrl+Search+D повторно за да ја исклучите.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Излез</translation>
@@ -1165,7 +1161,6 @@
 <translation id="7611213136657090146">Камерата е поврзана повторно.</translation>
 <translation id="761736749114493194">Вклучете врамување на камера. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Прикажи поставки за „Споделување во близина“.</translation>
 <translation id="7634648064048557203">Камерата е поставена во долниот десен агол</translation>
 <translation id="7641938616688887143">Снимајте</translation>
 <translation id="7642106959537987271">режим за инверзија на боите</translation>
@@ -1350,7 +1345,6 @@
 <translation id="8660331759611631213">Квадратен корен од 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Притиснете Enter за да снимите делумна слика од екранот</translation>
-<translation id="8664753092453405566">Прикажи го списокот со мрежи. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Отворете ја <ph name="NAME" /> за да го поставите уредот</translation>
 <translation id="8676770494376880701">Поврзан е полнач со ниско напојување</translation>
 <translation id="8683506306463609433">Следењето на изведбата е активно</translation>
@@ -1360,7 +1354,6 @@
 <translation id="8724318433625452070">Снимање на целиот екран</translation>
 <translation id="8734991477317290293">Можеби се обидува да ви ги украде ударите на тастатурата</translation>
 <translation id="8735678380411481005">Боја на заднинско светло на тастатура</translation>
-<translation id="8735953464173050365">Прикажи ги поставките за тастатура. Избрана е <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Вклучете го пристапот до камерата за да дозволите апликациите и веб-страниците со дозвола за камера да ги користат камерите поврзани со уредов.</translation>
@@ -1384,7 +1377,6 @@
 <translation id="8850991929411075241">Пребарај+Esc</translation>
 <translation id="8853703225951107899">Сѐ уште не може да се потврди PIN-кодот или лозинката. Забелешка: ако неодамна сте ја промениле лозинката, користете ја вашата стара лозинка. Новата лозинка ќе се примени откако ќе се одјавите.</translation>
 <translation id="8870509716567206129">Апликацијата не поддржува поделен екран.</translation>
-<translation id="8871580645200179206">Вклучете/исклучете ја темната тема. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Не е поврзано</translation>
 <translation id="8876661425082386199">Проверете ја врската</translation>
 <translation id="8877788021141246043">Потсетник</translation>
@@ -1437,7 +1429,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Не може да се снимаат заштитени содржини</translation>
 <translation id="9161053988251441839">ПРЕДЛОЖЕНИ АПЛИКАЦИИ</translation>
-<translation id="9166331175924255663">Вклучете/исклучете голема видливост за „Споделување во близина“.</translation>
 <translation id="9168436347345867845">Остави за подоцна</translation>
 <translation id="9178475906033259337">Се прикажува 1 резултат за <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Функцијава ви овозможува брзо да пристапите до секој најавен корисник без да биде потребна лозинка. Користете ја само со сметки во кои имате доверба.</translation>

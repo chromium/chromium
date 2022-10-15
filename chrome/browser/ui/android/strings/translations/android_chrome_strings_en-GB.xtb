@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Also clear data from these sites &amp; apps?</translation>
 <translation id="1034259925032978114">Window is open</translation>
 <translation id="1036348656032585052">Turn off</translation>
-<translation id="1036727731225946849">Adding <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">Also clear data from these sites?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="10614374240317010">Never saved</translation>
@@ -511,7 +510,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3771694256347217732">Google Terms of Service</translation>
 <translation id="3773856050682458546">Basic data plus information about the websites that you visit and apps that you use</translation>
 <translation id="3775705724665058594">Send to your devices</translation>
-<translation id="3778956594442850293">Added to Home screen</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="3803784507854318295">Manage auto-play</translation>
 <translation id="3810838688059735925">Video</translation>

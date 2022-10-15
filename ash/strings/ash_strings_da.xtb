@@ -74,7 +74,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1294929383540927798">Skift indstillinger for notifikationer på låseskærm</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Vis Bluetooth-indstillinger. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">ANBEFALEDE APPS</translation>
 <translation id="1312604459020188865">Signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vis altid hylde</translation>
@@ -119,7 +118,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1546930421365146760">Bed din administrator om at konfigurere denne enhed i Google Administrationskonsol</translation>
 <translation id="1550523713251050646">Klik for at se flere muligheder</translation>
 <translation id="1555130319947370107">Blå</translation>
-<translation id="1570871743947603115">Slå Bluetooth til eller fra. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få adgang til al din aktivitet i denne session</translation>
 <translation id="1610778689852195798">"Fortryd"</translation>
 <translation id="1611993646327628135">Til</translation>
@@ -150,7 +148,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1750088060796401187">Maks. <ph name="MAX_DESK_LIMIT" /> skriveborde er tilladt. Fjern et skrivebord for at åbne et nyt.</translation>
 <translation id="1756833229520115364">Skabelonen kunne ikke gemmes. Der er for mange vinduer eller faner.</translation>
 <translation id="1757857692711134412">Deaktiveret indtil solnedgang</translation>
-<translation id="1761222317188459878">Slå netværksforbindelse til eller fra. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Tastaturgenvejen <ph name="LAUNCHER_KEY_NAME" />+punktum er blevet ændret. Hvis du vil bruge Insert-knappen, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+Shift+Backspace.</translation>
 <translation id="1770726142253415363">Flyttet til række <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Rul til højre</translation>
@@ -357,7 +354,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2981684127883932071">Viser forslag</translation>
 <translation id="2985148236010982088">Se alle apps</translation>
 <translation id="2992327365391326550">Enhedens mikrofonknap er slået fra.</translation>
-<translation id="2995447421581609334">Vis Cast-enheder.</translation>
 <translation id="2996462380875591307">Fastgjort lupvindue er aktiveret. Tryk på Ctrl+Søg+D igen for at deaktivere tilstanden.</translation>
 <translation id="3000461861112256445">Monolyd</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -1164,7 +1160,6 @@ Installeret for nylig</translation>
 <translation id="7611213136657090146">Der blev oprettet forbindelse til kameraet igen.</translation>
 <translation id="761736749114493194">Slå automatisk zoom til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Vis indstillinger for Deling tæt på.</translation>
 <translation id="7634648064048557203">Kameraet er fastgjort til hjørnet nederst til højre</translation>
 <translation id="7641938616688887143">Optag</translation>
 <translation id="7642106959537987271">tilstand for ombytning af farver</translation>
@@ -1349,7 +1344,6 @@ Installeret for nylig</translation>
 <translation id="8660331759611631213">Kvadratroden af 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tryk på Enter for at tage et delvist screenshot</translation>
-<translation id="8664753092453405566">Vis netværksliste. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Åbn <ph name="NAME" /> for at konfigurere din enhed</translation>
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
 <translation id="8683506306463609433">Sporing af effektivitet er aktiv</translation>
@@ -1359,7 +1353,6 @@ Installeret for nylig</translation>
 <translation id="8724318433625452070">Screenshot af hel skærm</translation>
 <translation id="8734991477317290293">Det forsøger muligvis at stjæle dine indtastninger</translation>
 <translation id="8735678380411481005">Farve på tastaturets baggrundslys</translation>
-<translation id="8735953464173050365">Vis tastaturindstillinger. <ph name="KEYBOARD_NAME" /> er valgt</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Aktivér kameraadgang for at tillade, at apps og websider med kameratilladelsen kan bruge de kameraer, der er knyttet til denne enhed.</translation>
@@ -1383,7 +1376,6 @@ Installeret for nylig</translation>
 <translation id="8850991929411075241">Søg+Esc</translation>
 <translation id="8853703225951107899">Din pin- eller adgangskode kan stadig ikke bekræftes. Bemærk! Hvis du har ændret din adgangskode for nylig, skal du bruge din gamle adgangskode. Den nye adgangskode anvendes, når du har logget ud.</translation>
 <translation id="8870509716567206129">Appen understøtter ikke opdelt skærm.</translation>
-<translation id="8871580645200179206">Slå Mørkt tema til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ikke forbundet</translation>
 <translation id="8876661425082386199">Tjek din forbindelse</translation>
 <translation id="8877788021141246043">Opret en påmindelse</translation>
@@ -1436,7 +1428,6 @@ Installeret for nylig</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Der kan ikke optages beskyttet indhold</translation>
 <translation id="9161053988251441839">FORESLÅEDE APPS</translation>
-<translation id="9166331175924255663">Slå høj synlighed for Deling tæt på til/fra.</translation>
 <translation id="9168436347345867845">Gør det senere</translation>
 <translation id="9178475906033259337">Viser ét resultat for <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Denne funktion giver dig hurtig adgang til alle brugere, der er logget ind, uden at du behøver at angive en adgangskode. Brug kun denne funktion til konti, du har tillid til.</translation>

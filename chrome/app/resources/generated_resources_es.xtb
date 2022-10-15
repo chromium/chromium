@@ -1890,6 +1890,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">El administrador ha inhabilitado a los usuarios supervisados.</translation>
 <translation id="2722540561488096675">Tu dispositivo se apagará en <ph name="TIME_LEFT" />. Quita el USB antes de volver a encender el dispositivo. Después, podrás empezar a usar <ph name="DEVICE_OS" />.</translation>
+<translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">Registros de WebRTC</translation>
 <translation id="272488616838512378">Conversión de unidades</translation>
 <translation id="2725200716980197196">Conexión de red restaurada</translation>
@@ -3061,6 +3062,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3828029223314399057">Buscar marcadores</translation>
 <translation id="3828953470056652895">He leído y acepto los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" />, los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Chrome y Chrome OS<ph name="END_LINK2" /> y los <ph name="BEGIN_LINK3" />Términos del Servicio de Play<ph name="END_LINK3" />.</translation>
 <translation id="3829765597456725595">Sistema de archivos compartidos SMB</translation>
+<translation id="3830268140528557982">en <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Tu administrador ha vuelto a activar 1 extensión potencialmente dañina}other{Tu administrador ha vuelto a activar {NUM_EXTENSIONS} extensiones potencialmente dañinas}}</translation>
 <translation id="3831436149286513437">Sugerencias de búsqueda de Google Drive</translation>
 <translation id="3834728400518755610">Es necesario apagar Linux para que se aplique el cambio realizado en el ajuste del micrófono. Apaga Linux para continuar.</translation>
@@ -3949,6 +3951,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4677772697204437347">Memoria de la GPU</translation>
 <translation id="467823995058589466">La cámara está desactivada</translation>
 <translation id="4680105648806843642">Se ha silenciado el sonido en esta página</translation>
+<translation id="4680112532510845139">Suelta una imagen aquí</translation>
 <translation id="4681453295291708042">Inhabilitar Compartir con Nearby</translation>
 <translation id="4681512854288453141">Política fuente</translation>
 <translation id="4681930562518940301">Abrir &amp;imagen original en una pestaña nueva</translation>
@@ -4915,6 +4918,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
            y <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
 <translation id="5620568081365989559">DevTools solicita acceso completo a <ph name="FOLDER_PATH" />. Asegúrate de no revelar información confidencial.</translation>
 <translation id="5620612546311710611">estadísticas de uso</translation>
+<translation id="562250930904332809">&amp;Inhabilitar Subtítulos automáticos</translation>
 <translation id="5623282979409330487">Este sitio web está accediendo a los sensores de movimiento.</translation>
 <translation id="5623842676595125836">Registro</translation>
 <translation id="5624120631404540903">Gestionar contraseñas</translation>
@@ -5188,6 +5192,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5884474295213649357">Esta pestaña está conectada a un dispositivo USB.</translation>
 <translation id="5885314688092915589">Tu organización gestionará este perfil</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
+<translation id="5886112770923972514">Conecta y configura rápidamente dispositivos con Emparejamiento rápido cercanos</translation>
 <translation id="5886384907280980632">Desactivar ahora</translation>
 <translation id="5889282057229379085">Número máximo de entidades emisoras de certificados intermediarias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
@@ -7779,6 +7784,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8338952601723052325">Sitio web para desarrolladores</translation>
 <translation id="833986336429795709">Para abrir este enlace, elige una aplicación</translation>
 <translation id="8340547030807793004">Más acciones de <ph name="DEVICE" /></translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que ha enviado muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que han enviado muchas notificaciones recientemente}}</translation>
 <translation id="8342221978608739536">No lo he intentado</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8345848587667658367">Ahora puedes consultar las fotos, el contenido multimedia, las notificaciones y las aplicaciones recientes de tu teléfono</translation>
@@ -8426,6 +8432,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8970887620466824814">Ha ocurrido un error.</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">Consulta al administrador de tu red para asegurarte de que el cortafuegos no está bloqueando las descargas procedentes de los servidores de Google.</translation>
+<translation id="8973263196882835828">&amp;Habilitar Subtítulos automáticos</translation>
 <translation id="8973557916016709913">Quitar el nivel de zoom</translation>
 <translation id="8973596347849323817">Puedes personalizar este dispositivo para adaptarlo a tus necesidades. Estas funciones de accesibilidad se pueden cambiar más tarde en Configuración.</translation>
 <translation id="897414447285476047">El archivo de destino está incompleto debido a un problema relacionado con la conexión.</translation>
@@ -8773,6 +8780,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Estableciendo conexión segura...</translation>
 <translation id="996803490569799917">Ver recuerdos de tus seres queridos y más</translation>
+<translation id="997143476478634194">Los sitios usan esta opción automáticamente cuando los visitas. Suelen enviar notificaciones para informarte sobre las últimas noticias o mensajes de chat.</translation>
 <translation id="99731366405731005">Activa la <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para usar la Sincronización Wi‑Fi. <ph name="LINK2_BEGIN" />Más información<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">I&amp;nspeccionar</translation>
 </translationbundle>

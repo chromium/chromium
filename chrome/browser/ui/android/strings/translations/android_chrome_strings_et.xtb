@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Kas kustutada ka nende saitide ja rakenduste andmed?</translation>
 <translation id="1034259925032978114">Aken on lahti</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
-<translation id="1036727731225946849">APK <ph name="WEBAPK_NAME" /> lisamine …</translation>
 <translation id="1045899828449635435">Kas kustutada ka nende saitide andmed?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="10614374240317010">Ei ole kunagi salvestatud</translation>
@@ -511,7 +510,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="3771694256347217732">Google’i teenusetingimused</translation>
 <translation id="3773856050682458546">Põhiandmed ning teave teie külastatavate veebisaitide ja kasutatavate rakenduste kohta</translation>
 <translation id="3775705724665058594">Saatmine teie seadmetesse</translation>
-<translation id="3778956594442850293">Lisatud avaekraanile</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
 <translation id="3803784507854318295">Automaatesituse haldamine</translation>
 <translation id="3810838688059735925">Video</translation>

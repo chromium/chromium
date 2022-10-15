@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">ചലന സെൻസറുകൾ</translation>
 <translation id="1717494416764505390">മെയിൽബോക്സ് 3</translation>
 <translation id="1718029547804390981">അനോട്ടേറ്റ് ചെയ്യാനാവുന്നതിലും വളരെ വലുതാണ് ഈ ഡോക്യുമെൻ്റ്</translation>
+<translation id="1719434663396780149">വിലക്കുറവുമായി ബന്ധപ്പെട്ട അലേർട്ടുകൾ ഓണാണ്. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> എന്നതിൽ നിങ്ങൾക്കിത് മാറ്റാം.</translation>
 <translation id="1720941539803966190">ട്യൂട്ടോറിയൽ അടയ്‌ക്കുക</translation>
 <translation id="1721424275792716183">* ഫീൽഡ് ആവശ്യമാണ്</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
@@ -978,6 +979,7 @@
 <translation id="3550112004925580947">ഹോസ്പിറ്റാലിറ്റി വ്യവസായം</translation>
 <translation id="3552297013052089404">Sans Serif ഫോണ്ട്</translation>
 <translation id="3558573058928565255">പകൽ</translation>
+<translation id="3560824484345057728">അനുബന്ധ സൈറ്റുകൾ കാണുക</translation>
 <translation id="3566021033012934673">നിങ്ങളുടെ കണക്ഷൻ സ്വകാര്യമല്ല</translation>
 <translation id="3567778190852720481">എന്റർപ്രൈസ് അക്കൗണ്ട് ഉപയോഗിച്ച് എൻറോൾ ചെയ്യാനാകുന്നില്ല (എന്റർപ്രൈസ് അക്കൗണ്ട് യോഗ്യമല്ല).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1363,6 +1365,7 @@
 <translation id="4542971377163063093">ട്രേ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">നിങ്ങളുടെ വിപുലീകരണങ്ങൾ പ്രവർത്തനരഹിതമാക്കുന്നത് പരീക്ഷിക്കുക.</translation>
+<translation id="4559134504959026834"><ph name="SET_OWNER" /> നിർവചിച്ചിരിക്കുന്ന ഗ്രൂപ്പിലാണ് ഈ സൈറ്റുള്ളത്, അതിന് നിങ്ങളുടെ ആക്റ്റിവിറ്റി കാണാം</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">ഔട്ട്ഡോർ</translation>
 <translation id="4567686777917670400">നിങ്ങളുടെ അഡ്‌മിന് വിദൂരമായി ബ്രൗസർ സജ്ജീകരണം മാറ്റാനാകും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -2667,6 +2670,7 @@
 <translation id="7995512525968007366">വ്യക്തമാക്കിയിട്ടില്ല</translation>
 <translation id="7998269595945679889">'അദൃശ്യ ടാബ് തുറക്കുക' ബട്ടൺ, സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ പുതിയ അദൃശ്യ ടാബ് തുറക്കാൻ 'Enter' അമർത്തുക</translation>
 <translation id="800218591365569300">ഇടം സൃഷ്‌ടിക്കാൻ മറ്റ് ടാബുകളോ പ്രോഗ്രാമുകളോ അടയ്‌ക്കുന്നത് പരീക്ഷിക്കൂ.</translation>
+<translation id="8002230960325005199">അനുബന്ധ സൈറ്റുകൾ പുതിയൊരു ടാബിൽ കാണുക</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>
 <translation id="8009225694047762179">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക</translation>
@@ -2770,6 +2774,7 @@
 <translation id="8270242299912238708">PDF ഡോക്യുമെന്‍റുകൾ</translation>
 <translation id="8275952078857499577">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="8277900682056760511">പേയ്മെന്റ് കൈകാര്യം ചെയ്യുന്ന ഷീറ്റ് തുറന്നിരിക്കുന്നു</translation>
+<translation id="8279611986089885641">Chrome അറിയിപ്പുകൾ ഓണാക്കണം. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> എന്നതിൽ നിങ്ങൾക്ക് അവ ഓണാക്കാം.</translation>
 <translation id="8280630997017109758">ട്രേ 11</translation>
 <translation id="8281084378435768645">വലിയ-ഫോട്ടോ</translation>
 <translation id="8281886186245836920">ഉപേക്ഷിക്കുക</translation>

@@ -74,7 +74,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1293556467332435079">Faili</translation>
 <translation id="1294929383540927798">Badilisha mipangilio ya arifa za kufunga skrini</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Onyesha mipangilio ya Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">PROGRAMU ZINAZOPENDEKEZWA</translation>
 <translation id="1312604459020188865">Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Onyesha rafu kila wakati</translation>
@@ -119,7 +118,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1546930421365146760">Mwombe msimamizi wako aweke mipangilio ya kifaa hiki kwenye dashibodi ya Msimamizi wa Google</translation>
 <translation id="1550523713251050646">Bofya ili upate chaguo zaidi</translation>
 <translation id="1555130319947370107">Samawati</translation>
-<translation id="1570871743947603115">Washa au uzime Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Fikia shughuli zako zote katika kipindi hiki</translation>
 <translation id="1610778689852195798">"Tendua"</translation>
 <translation id="1611993646327628135">Kimewashwa</translation>
@@ -150,7 +148,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1750088060796401187">Inaruhusu maeneokazi <ph name="MAX_DESK_LIMIT" /> pekee. Ondoa eneokazi moja ili ufungue jipya.</translation>
 <translation id="1756833229520115364">Imeshindwa kuhifadhi kiolezo. Madirisha au vichupo ni vingi sana.</translation>
 <translation id="1757857692711134412">Umezimwa hadi machweo</translation>
-<translation id="1761222317188459878">Washa au uzime muunganisho wa mtandao. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Mikato ya kibodi ya <ph name="LAUNCHER_KEY_NAME" /> + Kitone imebadilika. Ili utumie kitufe cha Insert, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Imehamishiwa kwenye safu mlalo ya <ph name="ROW_NUMBER" />, safu wima ya <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Sogeza kulia</translation>
@@ -357,7 +354,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2981684127883932071">Inaonyesha mapendekezo</translation>
 <translation id="2985148236010982088">Angalia programu zote</translation>
 <translation id="2992327365391326550">Kitufe cha maikrofoni ya kifaa kimezimwa.</translation>
-<translation id="2995447421581609334">Onyesha vifaa vinavyotuma maudhui.</translation>
 <translation id="2996462380875591307">Umewasha Kikuzaji Kilichoambatishwa. Bonyeza Ctrl+Search+D tena ili ukizime.</translation>
 <translation id="3000461861112256445">Kipengele cha sauti moja</translation>
 <translation id="3009178788565917040">Towe</translation>
@@ -1165,7 +1161,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7611213136657090146">Kamera imeunganishwa upya.</translation>
 <translation id="761736749114493194">Washa au zima kipengele cha kukuza picha kiotomatiki. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Onyesha mipangilio ya kipengele cha Uhamishaji wa Karibu.</translation>
 <translation id="7634648064048557203">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kulia</translation>
 <translation id="7641938616688887143">Rekodi</translation>
 <translation id="7642106959537987271">hali ya ugeuzaji rangi</translation>
@@ -1350,7 +1345,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8660331759611631213">Kipeo cha pili cha 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Bonyeza enter ili upige picha sehemu ya skrini</translation>
-<translation id="8664753092453405566">Onyesha orodha ya mitandao. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Fungua <ph name="NAME" /> ili uweke mipangilio ya kifaa chako</translation>
 <translation id="8676770494376880701">Chaja ya nguvu ya chini imeunganishwa</translation>
 <translation id="8683506306463609433">Kipengele cha ufuatiliaji wa utendaji kinatumika</translation>
@@ -1360,7 +1354,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8724318433625452070">Kupiga picha ya skrini nzima</translation>
 <translation id="8734991477317290293">Huenda inajaribu kuiba mibofyo yako</translation>
 <translation id="8735678380411481005">Rangi ya mwangaza wa kibodi</translation>
-<translation id="8735953464173050365">Onyesha mipangilio ya kibodi. Umechagua <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
 <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Washa ufikiaji wa kamera ili uruhusu programu na kurasa za wavuti zenye ruhusa ya kufikia kamera zitumie kamera iliyounganishwa kwenye kifaa hiki.</translation>
@@ -1384,7 +1377,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Bado imeshindwa kuthibitisha PIN au nenosiri lako. Kumbuka: Iwapo ulibadilisha nenosiri lako hivi majuzi, tumia nenosiri lako la awali. Nenosiri lako jipya litatumika utakapoondoka kwenye akaunti.</translation>
 <translation id="8870509716567206129">Programu haiwezi kutumia skrini iliyogawanywa.</translation>
-<translation id="8871580645200179206">Zima au uwashe Mandhari meusi. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Hujaunganishwa</translation>
 <translation id="8876661425082386199">Kagua muunganisho wako</translation>
 <translation id="8877788021141246043">Weka kikumbusho</translation>
@@ -1437,7 +1429,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9121941381564890244"><ph name="SNIP" /> au <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Huwezi kurekodi maudhui yanayolindwa</translation>
 <translation id="9161053988251441839">PROGRAMU ZINAZOPENDEKEZWA</translation>
-<translation id="9166331175924255663">Washa au uzime uonekanaji wa hali ya juu wa kipengele cha Uhamishaji wa Karibu.</translation>
 <translation id="9168436347345867845">Ufanye baadaye</translation>
 <translation id="9178475906033259337">Inaonyesha matokeo moja ya <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Kipengele hiki kinakuruhusu ufikie kwa haraka mtumiaji yeyote aliyeingia katika akaunti bila ya kuweka nenosiri. Tumia kipengele hiki katika akaunti unazoamini pekee.</translation>

@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">เซ็นเซอร์ตรวจจับความเคลื่อนไหว</translation>
 <translation id="1717494416764505390">กล่องจดหมาย 3</translation>
 <translation id="1718029547804390981">เอกสารมีขนาดใหญ่เกินกว่าจะใส่หมายเหตุได้</translation>
+<translation id="1719434663396780149">การแจ้งเตือนเมื่อราคาลดลงเปิดอยู่ คุณเปลี่ยนการตั้งค่านี้ได้ใน<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /></translation>
 <translation id="1720941539803966190">ปิดบทแนะนำ</translation>
 <translation id="1721424275792716183">* ช่องที่ต้องกรอก</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
@@ -978,6 +979,7 @@
 <translation id="3550112004925580947">อุตสาหกรรมการบริการ</translation>
 <translation id="3552297013052089404">แบบอักษร Sans Serif</translation>
 <translation id="3558573058928565255">ตอนกลางวัน</translation>
+<translation id="3560824484345057728">ดูเว็บไซต์ที่เกี่ยวข้อง</translation>
 <translation id="3566021033012934673">การเชื่อมต่อของคุณไม่เป็นส่วนตัว</translation>
 <translation id="3567778190852720481">ลงทะเบียนด้วยบัญชีองค์กรไม่ได้ (บัญชีองค์กรไม่มีสิทธิ์)</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1363,6 +1365,7 @@
 <translation id="4542971377163063093">ถาด 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ลองปิดใช้ส่วนขยาย</translation>
+<translation id="4559134504959026834">เว็บไซต์นี้อยู่ในกลุ่มที่ <ph name="SET_OWNER" /> กำหนดไว้และสามารถดูกิจกรรมของคุณได้</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">กลางแจ้ง</translation>
 <translation id="4567686777917670400">ผู้ดูแลระบบจะเปลี่ยนการตั้งค่าเบราว์เซอร์จากระยะไกลได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -2669,6 +2672,7 @@
 <translation id="7995512525968007366">ไม่ได้ระบุ</translation>
 <translation id="7998269595945679889">ปุ่มเปิดแท็บที่ไม่ระบุตัวตน กด Enter เพื่อเปิดแท็บที่ไม่ระบุตัวตนแท็บใหม่ในการท่องเว็บแบบส่วนตัว</translation>
 <translation id="800218591365569300">ลองปิดแท็บหรือโปรแกรมอื่นๆ เพื่อเพิ่มหน่วยความจำ</translation>
+<translation id="8002230960325005199">ดูเว็บไซต์ที่เกี่ยวข้องในแท็บใหม่</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
 <translation id="8009225694047762179">จัดการรหัสผ่าน</translation>
@@ -2772,6 +2776,7 @@
 <translation id="8270242299912238708">เอกสาร PDF</translation>
 <translation id="8275952078857499577">ไม่ต้องเสนอการแปลเว็บไซต์นี้</translation>
 <translation id="8277900682056760511">แผ่นงานของเครื่องจัดการการชำระเงินเปิดอยู่</translation>
+<translation id="8279611986089885641">ต้องเปิดการแจ้งเตือนของ Chrome ซึ่งทำได้ใน<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /></translation>
 <translation id="8280630997017109758">ถาด 11</translation>
 <translation id="8281084378435768645">รูปภาพขนาดใหญ่</translation>
 <translation id="8281886186245836920">ข้าม</translation>

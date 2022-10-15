@@ -80,6 +80,7 @@
 <translation id="753732157349120914">Välilehtien vaihtaja</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> arvostelu Googlesta}other{<ph name="REVIEWS_COUNT_MANY" /> arvostelua Googlesta}}</translation>
 <translation id="7559245342362162951">Näytä ryhmän välilehdet koko näytön ruudukossa</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Jaa <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Jaa <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="7792771145871471484">Tarkista ehdotukset.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Lisää <ph name="TABS_COUNT_ONE" /> valittu välilehti ryhmäksi}other{Lisää <ph name="TABS_COUNT_MANY" /> valittua välilehteä ryhmäksi}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Arvio: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> arvostelu}other{Arvio: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> arvostelua}}</translation>

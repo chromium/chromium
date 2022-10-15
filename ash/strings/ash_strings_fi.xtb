@@ -74,7 +74,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1293556467332435079">Tiedostot</translation>
 <translation id="1294929383540927798">Muuta lukitusnäytön ilmoitusasetuksia</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Näytä Bluetooth-asetukset. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">SOVELLUSSUOSITUKSET</translation>
 <translation id="1312604459020188865">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Näytä hylly aina</translation>
@@ -119,7 +118,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1546930421365146760">Pyydä järjestelmänvalvojaa suorittamaan käyttöönotto Google-hallintakonsolissa</translation>
 <translation id="1550523713251050646">Näet lisävaihtoehtoja klikkaamalla tätä.</translation>
 <translation id="1555130319947370107">Sininen</translation>
-<translation id="1570871743947603115">Laita Bluetooth päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">nähdä kaikki tämän käyttökerran toimintosi</translation>
 <translation id="1610778689852195798">Kumoa</translation>
 <translation id="1611993646327628135">Päällä</translation>
@@ -150,7 +148,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1750088060796401187">Vain <ph name="MAX_DESK_LIMIT" /> työpöytää sallittu. Poista jokin työpöytä, jotta voit avata uuden.</translation>
 <translation id="1756833229520115364">Mallia ei voitu tallentaa. Liian monta ikkunaa tai välilehteä.</translation>
 <translation id="1757857692711134412">Pois päältä auringonlaskuun asti</translation>
-<translation id="1761222317188459878">Laita verkkoyhteys päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Pikanäppäinyhdistelmä <ph name="LAUNCHER_KEY_NAME" /> + piste on muuttunut. Jos haluat käyttää Insert-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + vaihto + askelpalautin.</translation>
 <translation id="1770726142253415363">Siirretty riville <ph name="ROW_NUMBER" />, sarakkeeseen <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Vieritä oikealle</translation>
@@ -357,7 +354,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2981684127883932071">Ehdotuksia näytetään</translation>
 <translation id="2985148236010982088">Katso kaikki sovellukset</translation>
 <translation id="2992327365391326550">Laitteen mikrofonipainike ei ole päällä.</translation>
-<translation id="2995447421581609334">Näytä Cast-laitteet.</translation>
 <translation id="2996462380875591307">Kiinnitetty suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + D.</translation>
 <translation id="3000461861112256445">Monoääni</translation>
 <translation id="3009178788565917040">Äänentoisto</translation>
@@ -1164,7 +1160,6 @@ Uusi asennus</translation>
 <translation id="7611213136657090146">Kamera yhdistetty uudelleen.</translation>
 <translation id="761736749114493194">Laita kameran kehystys päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7633755430369750696">Näytä lähijakamisen asetukset.</translation>
 <translation id="7634648064048557203">Kamera kohdistettu oikeaan alakulmaan</translation>
 <translation id="7641938616688887143">Tallenna</translation>
 <translation id="7642106959537987271">käänteiset värit ‑tila</translation>
@@ -1349,7 +1344,6 @@ Uusi asennus</translation>
 <translation id="8660331759611631213">71:n neliöjuuri</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Ota osittainen kuvakaappaus painamalla Enter</translation>
-<translation id="8664753092453405566">Näytä verkkoluettelo. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Avaa <ph name="NAME" /> ottaaksesi laitteen käyttöön</translation>
 <translation id="8676770494376880701">Pienitehoinen laturi kytketty</translation>
 <translation id="8683506306463609433">Tehokkuuden seuranta aktiivinen</translation>
@@ -1359,7 +1353,6 @@ Uusi asennus</translation>
 <translation id="8724318433625452070">Koko näytön kuvakaappaus</translation>
 <translation id="8734991477317290293">Sillä voidaan yrittää kaapata näppäinpainalluksesi</translation>
 <translation id="8735678380411481005">Näppäimistön taustavalon väri</translation>
-<translation id="8735953464173050365">Näytä näppäimistöasetukset. <ph name="KEYBOARD_NAME" /> on valittuna.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Salli pääsy kameraan, jotta sovellukset ja verkkosivut, joilla on kameralupa, voivat käyttää tähän laitteeseen liitettyjä kameroita.</translation>
 <translation id="8755498163081687682">Vahvista henkilöllisyytesi: <ph name="ORIGIN_NAME" /> haluaa vahvistaa henkilöllisyytesi</translation>
@@ -1382,7 +1375,6 @@ Uusi asennus</translation>
 <translation id="8850991929411075241">Haku+Esc</translation>
 <translation id="8853703225951107899">PIN-koodiasi tai salasanaasi ei voitu vieläkään vahvistaa. Huom. Jos vaihdoit salasanasi äskettäin, käytä vanhaa salasanaa. Uusi salasana otetaan käyttöön kirjauduttuasi ulos.</translation>
 <translation id="8870509716567206129">Sovellus ei tue jaetun näytön tilaa.</translation>
-<translation id="8871580645200179206">Tumma teema päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ei yhdistetty</translation>
 <translation id="8876661425082386199">Tarkista yhteys</translation>
 <translation id="8877788021141246043">Aseta muistutus</translation>
@@ -1435,7 +1427,6 @@ Uusi asennus</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> tai <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Suojattua sisältöä ei voi kuvata</translation>
 <translation id="9161053988251441839">SOVELLUSEHDOTUKSET</translation>
-<translation id="9166331175924255663">Laita lähijakamisen näkyvyys päälle/pois.</translation>
 <translation id="9168436347345867845">Myöhemmin</translation>
 <translation id="9178475906033259337">Näytetään 1 tulos haulla <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Tämän ominaisuuden avulla kaikkia kirjautuneita käyttäjätilejä voi käyttää ilman salasanaa. Käytä tätä ominaisuutta vain luotettavien tilien kanssa.</translation>

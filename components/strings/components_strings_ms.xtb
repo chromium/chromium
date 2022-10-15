@@ -320,6 +320,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1717218214683051432">Penderia gerakan</translation>
 <translation id="1717494416764505390">Peti mel 3</translation>
 <translation id="1718029547804390981">Dokumen terlalu besar untuk dianotasikan</translation>
+<translation id="1719434663396780149">Makluman penurunan harga dihidupkan. Anda boleh menukar tetapan ini dalam <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Tutup tutorial</translation>
 <translation id="1721424275792716183">* Medan perlu diisi</translation>
 <translation id="1725591448053514783">Sampul You 6</translation>
@@ -979,6 +980,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3550112004925580947">Industri hospitaliti</translation>
 <translation id="3552297013052089404">Fon Sans-serif</translation>
 <translation id="3558573058928565255">Waktu siang</translation>
+<translation id="3560824484345057728">Lihat laman berkaitan</translation>
 <translation id="3566021033012934673">Sambungan anda tidak diperibadikan</translation>
 <translation id="3567778190852720481">Tidak dapat membuat pendaftaran dengan akaun perusahaan (akaun perusahaan tidak layak).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1365,6 +1367,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4542971377163063093">Dulang 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Cuba lumpuhkan sambungan anda.</translation>
+<translation id="4559134504959026834">Laman ini berada dalam kumpulan, ditakrifkan oleh <ph name="SET_OWNER" />, yang boleh melihat aktiviti anda</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Aktiviti luar</translation>
 <translation id="4567686777917670400">Pentadbir anda boleh menukar persediaan penyemak imbas anda dari jauh. Aktiviti pada peranti ini juga mungkin diurus di luar Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -2671,6 +2674,7 @@ Butiran tambahan:
 <translation id="7995512525968007366">Tidak Ditentukan</translation>
 <translation id="7998269595945679889">Buka butang tab Inkognito, tekan Enter untuk membuka tab Inkognito baharu untuk menyemak imbas secara peribadi</translation>
 <translation id="800218591365569300">Cuba tutup tab atau atur cara lain untuk mengosongkan memori.</translation>
+<translation id="8002230960325005199">Lihat laman berkaitan dalam tab baharu</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
 <translation id="8009225694047762179">Urus Kata Laluan</translation>
@@ -2774,6 +2778,7 @@ Butiran tambahan:
 <translation id="8270242299912238708">Dokumen PDF</translation>
 <translation id="8275952078857499577">Jangan tawarkan untuk menterjemahkan tapak ini</translation>
 <translation id="8277900682056760511">Helaian pengendali pembayaran dibuka</translation>
+<translation id="8279611986089885641">Pemberitahuan Chrome mesti dihidupkan. Anda boleh menghidupkan tetapan ini dalam <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Dulang 11</translation>
 <translation id="8281084378435768645">Foto-Besar</translation>
 <translation id="8281886186245836920">Langkau</translation>

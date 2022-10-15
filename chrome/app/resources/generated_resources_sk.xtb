@@ -3705,7 +3705,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4444304522807523469">Mať prístup ku skenerom dokumentov pripojeným cez USB alebo v miestnej sieti</translation>
 <translation id="4444512841222467874">Ak nie je dostatok miesta, môže dôjsť k automatickému odstráneniu používateľov a dát.</translation>
 <translation id="4446933390699670756">Zrkadlené</translation>
-<translation id="4448036230435816747">Tieto weby sú v skupine definovanej vlastníkom <ph name="FPS_OWNER" />. Webom v skupine sa zobrazuje vaša aktivita v nej. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4448914100439890108">Skryť heslo používateľa <ph name="USERNAME" /> v doméne <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Vaše používateľské meno patrí do pracovného účtu vašej organizácie. Ak chcete do tohto účtu zaregistrovať zariadenia, najprv overte vlastníctvo domény v Správcovskej konzole. Na overenie budete potrebovať správcovské oprávnenia pre daný účet.</translation>
 <translation id="4449996769074858870">Táto karta prehráva zvuk.</translation>
@@ -3958,6 +3957,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4677772697204437347">Pamäť grafického procesora</translation>
 <translation id="467823995058589466">Kamera je vypnutá</translation>
 <translation id="4680105648806843642">Na tejto stránke bol vypnutý zvuk</translation>
+<translation id="4680112532510845139">Tu presuňte obrázok</translation>
 <translation id="4681453295291708042">Zakázať Zdieľanie nablízku</translation>
 <translation id="4681512854288453141">Pravidlá zdroja</translation>
 <translation id="4681930562518940301">Otvoriť pôvodný &amp;obrázok na novej karte</translation>
@@ -4927,6 +4927,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
            a <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
 <translation id="5620568081365989559">Nástroj DevTools požaduje úplný prístup k priečinku <ph name="FOLDER_PATH" />. Dajte pozor, aby ste mu nesprístupnili žiadne citlivé informácie.</translation>
 <translation id="5620612546311710611">štatistiky používania</translation>
+<translation id="562250930904332809">&amp;Vypnúť živý prepis</translation>
 <translation id="5623282979409330487">Tento web má prístup k senzorom pohybu.</translation>
 <translation id="5623842676595125836">Denník</translation>
 <translation id="5624120631404540903">Správa hesiel</translation>
@@ -8456,6 +8457,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8970887620466824814">Vyskytol sa problém.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Kontaktujte správcu siete a uistite sa, že brána firewall neblokuje sťahovanie súborov zo serverov Google.</translation>
+<translation id="8973263196882835828">&amp;Zapnúť živý prepis</translation>
 <translation id="8973557916016709913">Odstrániť úroveň lupy</translation>
 <translation id="8973596347849323817">Zariadenie môžete prispôsobiť, aby zodpovedalo vašim potrebám. Tieto funkcie dostupnosti môžete neskôr zmeniť v Nastaveniach.</translation>
 <translation id="897414447285476047">Cieľový súbor bol neúplný, pretože sa vyskytol problém s pripojením.</translation>

@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Vymazat data i z těchto webů a aplikací?</translation>
 <translation id="1034259925032978114">Okno je otevřené</translation>
 <translation id="1036348656032585052">Vypnout</translation>
-<translation id="1036727731225946849">Přidávání aplikace <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">Vymazat data i z těchto webů?</translation>
 <translation id="1049743911850919806">Anonymní režim</translation>
 <translation id="10614374240317010">Nikdy se neukládají</translation>
@@ -511,7 +510,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="3771694256347217732">Smluvní podmínky společnosti Google</translation>
 <translation id="3773856050682458546">Základní data plus informace o navštívených webech a používaných aplikacích</translation>
 <translation id="3775705724665058594">Odeslat na vaše zařízení</translation>
-<translation id="3778956594442850293">Přidáno na domovskou obrazovku</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="3803784507854318295">Spravovat automatické přehrávání</translation>
 <translation id="3810838688059735925">Video</translation>

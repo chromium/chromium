@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Vill du även rensa data?</translation>
 <translation id="1034259925032978114">Fönstret är öppet</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
-<translation id="1036727731225946849">Lägger till <ph name="WEBAPK_NAME" /> …</translation>
 <translation id="1045899828449635435">Vill du även rensa data?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="10614374240317010">Aldrig sparad</translation>
@@ -511,7 +510,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="3771694256347217732">Googles användarvillkor</translation>
 <translation id="3773856050682458546">Grundläggande data samt information om webbplatser du besöker och appar du använder</translation>
 <translation id="3775705724665058594">Skicka till dina enheter</translation>
-<translation id="3778956594442850293">Tillagd på startskärmen</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 flik}other{# flikar}}</translation>
 <translation id="3803784507854318295">Hantera automatisk uppspelning</translation>
 <translation id="3810838688059735925">Video</translation>

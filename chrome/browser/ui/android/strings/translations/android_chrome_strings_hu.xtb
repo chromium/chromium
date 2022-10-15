@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Törli e webhelyek és alkalmazások adatait is?</translation>
 <translation id="1034259925032978114">Megnyitott ablak</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
-<translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> hozzáadása…</translation>
 <translation id="1045899828449635435">Törli az e webhelyekről származó adatokat is?</translation>
 <translation id="1049743911850919806">Inkognitó mód</translation>
 <translation id="10614374240317010">Az alábbi oldalakról soha ne mentsen jelszavakat</translation>
@@ -511,7 +510,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="3771694256347217732">Google Általános Szerződési Feltételek</translation>
 <translation id="3773856050682458546">Alapvető adatok az Ön által felkeresett webhelyekkel és az Ön által használt alkalmazásokkal kapcsolatos adatokkal kiegészülve</translation>
 <translation id="3775705724665058594">Küldés a saját eszközökre</translation>
-<translation id="3778956594442850293">Hozzáadva a kezdőképernyőhöz</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 lap}other{# lap}}</translation>
 <translation id="3803784507854318295">Automatikus lejátszás kezelése</translation>
 <translation id="3810838688059735925">Videó</translation>

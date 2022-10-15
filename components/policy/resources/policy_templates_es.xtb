@@ -1252,7 +1252,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se asigna el valor false a esta política, no se enviará la información.
       Si se le asigna el valor true o no se establece, se enviará información sobre el estado de la red del dispositivo.</translation>
 <translation id="2223393221350938149">No permitir que JavaScript use JIT en ningún sitio</translation>
-<translation id="2223582957891074498">Si se asigna el valor "Verdadero" a esta política, no se permitirá hacer capturas de pantalla utilizando combinaciones de teclas ni API de extensiones. Si se le asigna el valor "Falso", se permitirán las capturas de pantalla.</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>
 <translation id="222673035924187991">Habilitar Encrypted ClientHello de TLS</translation>
 <translation id="2231726854197443389">Esta política controla si los usuarios pueden habilitar el modo solo‑HTTPS en Configuración. El modo solo‑HTTPS cambia todos los accesos a páginas al protocolo HTTPS.
@@ -4870,6 +4869,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se inhabilita la política, no se permitirá el uso del protocolo QUIC.</translation>
 <translation id="5916855682471300200">Las políticas basadas en la nube tienen prioridad sobre las políticas basadas en la plataforma del equipo</translation>
+<translation id="5917425424971710623">No informar sobre los eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="5921713479449475707">Permitir descargas de actualizaciones automáticas a través de HTTP</translation>
 <translation id="5927903236543424081">Forzar al usuario a iniciar sesión antes de usar el navegador</translation>
 <translation id="5928633129285224981">Controla si <ph name="PRODUCT_NAME" /> hace que la opción Imprimir como imagen esté definida de forma predeterminada al imprimir PDFs.
@@ -7178,6 +7178,8 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="8244525275280476362">Retraso de recuperación máximo después de validar una política</translation>
 <translation id="8245574649143980200">Si se habilita esta política o no se establece, los usuarios podrán ver y usar la opción de menú de búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si se inhabilita la política, los usuarios no verán la opción de menú de búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual (si se admite la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />).</translation>
 <translation id="824818544897669723">Inhabilitar eliminación de historial de navegación y de descargas</translation>
+<translation id="8250048892729838843">Esta política está obsoleta. Si se habilita esta política o no se establece, el dispositivo podrá recibir controles de informes granulares.
+      Si se inhabilita esta política, los dispositivos registrados no recibirán controles de informes granulares.</translation>
 <translation id="82530263956734297">ID de extensiones excluidas de la lista de bloqueados</translation>
 <translation id="8256688113167012935">Permite controlar el nombre de la cuenta que <ph name="PRODUCT_OS_NAME" /> muestra en la pantalla de inicio de sesión para la cuenta local del dispositivo correspondiente.
 

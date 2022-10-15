@@ -74,7 +74,6 @@
 <translation id="1293556467332435079">파일</translation>
 <translation id="1294929383540927798">잠금 화면 알림 설정을 변경합니다.</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">블루투스 설정을 표시합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">추천 앱</translation>
 <translation id="1312604459020188865">신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">실행기 항상 표시</translation>
@@ -119,7 +118,6 @@
 <translation id="1546930421365146760">관리자에게 Google 관리 콘솔에서 이 기기를 설정해달라고 요청하세요.</translation>
 <translation id="1550523713251050646">더 많은 옵션을 확인하려면 클릭하세요.</translation>
 <translation id="1555130319947370107">파란색</translation>
-<translation id="1570871743947603115">블루투스를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">이 세션의 모든 활동에 액세스</translation>
 <translation id="1610778689852195798">"실행취소"</translation>
 <translation id="1611993646327628135">켜짐</translation>
@@ -150,7 +148,6 @@
 <translation id="1750088060796401187">데스크는 최대 <ph name="MAX_DESK_LIMIT" />개만 허용됩니다. 새로운 데스크를 열려면 기존 데스크를 1개 삭제하세요.</translation>
 <translation id="1756833229520115364">템플릿을 저장할 수 없습니다. 창 또는 탭이 너무 많습니다.</translation>
 <translation id="1757857692711134412">일몰까지 끄기</translation>
-<translation id="1761222317188459878">네트워크 연결을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + 마침표 단축키가 변경되었습니다. Insert 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + Shift + Backspace 키를 누르세요.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />행, <ph name="COLUMN_NUMBER" />열로 이동했습니다.</translation>
 <translation id="1771761307086386028">오른쪽으로 스크롤</translation>
@@ -357,7 +354,6 @@
 <translation id="2981684127883932071">추천 표시 중</translation>
 <translation id="2985148236010982088">앱 모두 보기</translation>
 <translation id="2992327365391326550">기기의 마이크 버튼이 사용 중지되어 있습니다.</translation>
-<translation id="2995447421581609334">전송 기기를 표시합니다.</translation>
 <translation id="2996462380875591307">고정 돋보기가 사용 설정되었습니다. 사용 중지하려면 다시 Ctrl+Search+D를 누르세요.</translation>
 <translation id="3000461861112256445">모노 오디오</translation>
 <translation id="3009178788565917040">출력</translation>
@@ -1164,7 +1160,6 @@
 <translation id="7611213136657090146">카메라가 다시 연결되었습니다.</translation>
 <translation id="761736749114493194">카메라 프레이밍을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
-<translation id="7633755430369750696">Nearby Share 설정 표시</translation>
 <translation id="7634648064048557203">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다</translation>
 <translation id="7641938616688887143">녹화</translation>
 <translation id="7642106959537987271">색상 반전 모드</translation>
@@ -1349,7 +1344,6 @@
 <translation id="8660331759611631213">71의 제곱근</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">부분 스크린샷을 캡처하려면 Enter를 누르세요</translation>
-<translation id="8664753092453405566">네트워크 목록을 표시합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727"><ph name="NAME" /> 앱을 열어 기기를 설정하세요</translation>
 <translation id="8676770494376880701">저출력 충전기 연결됨</translation>
 <translation id="8683506306463609433">성능 추적 활성화</translation>
@@ -1359,7 +1353,6 @@
 <translation id="8724318433625452070">전체 화면 캡처</translation>
 <translation id="8734991477317290293">키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="8735678380411481005">키보드 백라이트 색상</translation>
-<translation id="8735953464173050365">키보드 설정을 표시합니다. <ph name="KEYBOARD_NAME" />이(가) 선택되었습니다.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">카메라 액세스 권한이 있는 앱과 웹페이지에서 이 기기에 연결된 카메라를 사용할 수 있도록 하려면 카메라 액세스를 사용 설정하세요.</translation>
@@ -1383,7 +1376,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">여전히 PIN 또는 비밀번호를 확인할 수 없습니다. 참고: 최근에 비밀번호를 변경한 경우 이전 비밀번호를 사용해 보세요. 로그아웃하고 나면 새로운 비밀번호가 적용됩니다.</translation>
 <translation id="8870509716567206129">앱이 화면 분할을 지원하지 않습니다.</translation>
-<translation id="8871580645200179206">어두운 테마를 켜거나 끕니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">연결되지 않음</translation>
 <translation id="8876661425082386199">연결 상태 확인</translation>
 <translation id="8877788021141246043">알림을 설정해 줘</translation>
@@ -1436,7 +1428,6 @@
 <translation id="9121941381564890244"><ph name="SNIP" /> 또는 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">보호된 콘텐츠는 녹화할 수 없음</translation>
 <translation id="9161053988251441839">추천 앱</translation>
-<translation id="9166331175924255663">Nearby Share 모든 기기에 공개 설정 전환</translation>
 <translation id="9168436347345867845">나중에</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> 검색결과 1개 표시 중</translation>
 <translation id="9179259655489829027">이 기능을 사용하면 로그인한 모든 사용자에게 비밀번호 없이 액세스할 수 있습니다. 이 기능은 신뢰할 수 있는 계정에만 사용하시기 바랍니다.</translation>

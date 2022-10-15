@@ -1252,7 +1252,6 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Jika kebijakan disetel ke salah (false), informasi tersebut tidak akan dilaporkan.
       Jika kebijakan disetel ke benar (true) atau tidak disetel, status jaringan perangkat akan dilaporkan.</translation>
 <translation id="2223393221350938149">Jangan izinkan situs apa pun menjalankan JIT JavaScript</translation>
-<translation id="2223582957891074498">Jika kebijakan ditetapkan ke Benar (True), screenshot yang diambil dengan pintasan keyboard atau API ekstensi tidak akan diizinkan. Jika kebijakan ditetapkan ke Salah (False), screenshot akan diizinkan.</translation>
 <translation id="2223598546285729819">Setelan pemberitahuan default</translation>
 <translation id="222673035924187991">Mengaktifkan Encrypted ClientHello TLS</translation>
 <translation id="2231726854197443389">Kebijakan ini mengontrol apakah pengguna dapat mengaktifkan Mode Khusus HTTPS di Setelan. Mode Khusus HTTPS mengupgrade semua navigasi ke HTTPS.

@@ -6,7 +6,6 @@
 <translation id="103269572468856066">محو البيانات هنا أيضًا؟</translation>
 <translation id="1034259925032978114">تم فتح نافذة.</translation>
 <translation id="1036348656032585052">إيقاف</translation>
-<translation id="1036727731225946849">جارٍ إضافة <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">محو البيانات هنا أيضًا؟</translation>
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="10614374240317010">المواقع التي لن تحفظ كلمات المرور أبدًا</translation>
@@ -512,7 +511,6 @@
 <translation id="3771694256347217732">‏بنود خدمة Google</translation>
 <translation id="3773856050682458546">البيانات الأساسية بالإضافة إلى معلومات حول المواقع الالكترونية التي تزورها والتطبيقات التي تستخدمها</translation>
 <translation id="3775705724665058594">إرسال إلى أجهزتك</translation>
-<translation id="3778956594442850293">تمت الإضافة إلى الشاشة الرئيسية</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{علامة تبويب واحدة}zero{# علامة تبويب}two{علامتا تبويب}few{# علامات تبويب}many{# علامة تبويب}other{# علامة تبويب}}</translation>
 <translation id="3803784507854318295">إدارة التشغيل التلقائي</translation>
 <translation id="3810838688059735925">الفيديوهات</translation>

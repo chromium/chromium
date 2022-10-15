@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Poistetaanko data?</translation>
 <translation id="1034259925032978114">Ikkuna on auki</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
-<translation id="1036727731225946849">Lisätään <ph name="WEBAPK_NAME" />…</translation>
 <translation id="1045899828449635435">Poistetaanko data?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="10614374240317010">Ei tallenneta</translation>
@@ -511,7 +510,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="3771694256347217732">Googlen käyttöehdot</translation>
 <translation id="3773856050682458546">Perustiedot sekä tiedot avaamistasi sivustoista ja käyttämistäsi sovelluksista</translation>
 <translation id="3775705724665058594">Lähetä laitteillesi</translation>
-<translation id="3778956594442850293">Lisätty aloitusnäytölle</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 välilehti}other{# välilehteä}}</translation>
 <translation id="3803784507854318295">Muuta automaattisen toiston asetuksia</translation>
 <translation id="3810838688059735925">Video</translation>

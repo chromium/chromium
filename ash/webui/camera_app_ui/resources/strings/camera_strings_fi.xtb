@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
 <translation id="1113173431709655881">Kameratila</translation>
 <translation id="1153190633558910465">Ruudukko pois</translation>
 <translation id="1175958423215084756">Linkki havaittu. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">Normaali</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4x4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Mitään ei kuvattu</translation>
 <translation id="1838104802459806957">Kallista ylöspäin</translation>
 <translation id="1843105061469674856">Skannaa toinen sivu</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">Täysi resoluutio</translation>
 <translation id="4890010094662541459">3x3</translation>
 <translation id="491895758387112773">Striimaa videotallenne useaan paikkaan</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Kuvasuhde</translation>
 <translation id="5057360777601936059">Kamerasi ei ole käytettävissä tällä hetkellä.
         Tarkista, onko kamera yhdistetty oikein.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">Dokumentin vasen yläkulma</translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5320594929574852403">Siirretään vasemmalle</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Aseta dokumentti niin, että kaikki reunat ovat kehyksen sisällä. Skannaus toimii parhaiten, kun dokumentti ja tausta ovat erivärisiä</translation>
 <translation id="5662366948659129155">Skannataan sivua <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Neliö</translation>

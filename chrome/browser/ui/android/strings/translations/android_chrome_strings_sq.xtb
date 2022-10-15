@@ -6,7 +6,6 @@
 <translation id="103269572468856066">Të pastrohen edhe të dhënat nga këto sajte dhe aplikacione?</translation>
 <translation id="1034259925032978114">Dritarja është e hapur</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
-<translation id="1036727731225946849">Po shton <ph name="WEBAPK_NAME" />...</translation>
 <translation id="1045899828449635435">Të pastrohen edhe të dhënat nga këto sajte?</translation>
 <translation id="1049743911850919806">I fshehtë</translation>
 <translation id="10614374240317010">Nuk u ruaj asnjëherë</translation>
@@ -511,7 +510,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="3771694256347217732">Kushtet e shërbimit të Google</translation>
 <translation id="3773856050682458546">Të dhëna bazë plus informacione rreth faqeve të internetit që viziton dhe aplikacioneve që përdor</translation>
 <translation id="3775705724665058594">Dërgo te pajisjet e tua</translation>
-<translation id="3778956594442850293">U shtua në ekranin bazë</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 skedë}other{# skeda}}</translation>
 <translation id="3803784507854318295">Menaxho luajtjen automatike</translation>
 <translation id="3810838688059735925">Video</translation>

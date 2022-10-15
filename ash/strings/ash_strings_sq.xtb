@@ -74,7 +74,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1294929383540927798">Ndrysho cilësimet e njoftimeve të ekranit të kyçjes</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1302880136325416935">Shfaq cilësimet e Bluetooth-it. <ph name="STATE_TEXT" /></translation>
 <translation id="1306549533752902673">APLIKACIONET E REKOMANDUARA</translation>
 <translation id="1312604459020188865">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Shfaq gjithmonë raftin</translation>
@@ -119,7 +118,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1546930421365146760">Kërkoji administratorit ta konfigurojë këtë pajisje te paneli komandues i administratorit të Google</translation>
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
 <translation id="1555130319947370107">E kaltër</translation>
-<translation id="1570871743947603115">Aktivizo/çaktivizo Bluetooth-in. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
 <translation id="1610778689852195798">"Zhbëj"</translation>
 <translation id="1611993646327628135">Aktive</translation>
@@ -150,7 +148,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1750088060796401187">Lejohen vetëm <ph name="MAX_DESK_LIMIT" /> tavolina pune. Hiq një tavolinë pune për të hapur një të re.</translation>
 <translation id="1756833229520115364">Shablloni nuk mund të ruhej. Shumë dritare ose skeda.</translation>
 <translation id="1757857692711134412">Joaktive deri në perëndim</translation>
-<translation id="1761222317188459878">Aktivizo/çaktivizo lidhjen e rrjetit. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Pikë është ndryshuar. Për të përdorur tastin Insert, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Është zhvendosur në rreshtin <ph name="ROW_NUMBER" />, kolonën <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Lëviz djathtas</translation>
@@ -357,7 +354,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2981684127883932071">Po shfaq sugjerimet</translation>
 <translation id="2985148236010982088">Shiko të gjitha aplikacionet</translation>
 <translation id="2992327365391326550">Butoni i mikrofonit të pajisjes është i çaktivizuar.</translation>
-<translation id="2995447421581609334">Shfaq pajisjet e transmetimit.</translation>
 <translation id="2996462380875591307">"Zmadhuesi i stacionuar" u aktivizua. Shtyp sërish "Ctrl+Kërko+D" për ta çaktivizuar.</translation>
 <translation id="3000461861112256445">Audioja mono</translation>
 <translation id="3009178788565917040">Dalja</translation>
@@ -1164,7 +1160,6 @@ Instalim i ri</translation>
 <translation id="7611213136657090146">Kamera u rilidh.</translation>
 <translation id="761736749114493194">Aktivizo/çaktivizo inkuadrimin e kamerës. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7633755430369750696">Shfaq cilësimet e "Ndarjes në afërsi".</translation>
 <translation id="7634648064048557203">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas</translation>
 <translation id="7641938616688887143">Regjistro</translation>
 <translation id="7642106959537987271">modaliteti i anasjelljes së ngjyrës</translation>
@@ -1349,7 +1344,6 @@ Instalim i ri</translation>
 <translation id="8660331759611631213">Rrënja katrore e 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Shtyp "Enter" për të nxjerrë një pamje të pjesshme të ekranit</translation>
-<translation id="8664753092453405566">Shfaq listën e njoftimeve. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Hap <ph name="NAME" /> për të konfiguruar pajisjen tënde</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
 <translation id="8683506306463609433">Gjurmimi i cilësisë së funksionimit është aktiv</translation>
@@ -1359,7 +1353,6 @@ Instalim i ri</translation>
 <translation id="8724318433625452070">Regjistrimi i plotë i ekranit</translation>
 <translation id="8734991477317290293">Ajo ndoshta po përpiqet të regjistrojë goditjet e tasteve</translation>
 <translation id="8735678380411481005">Ngjyra e dritës së sfondit të tastierës</translation>
-<translation id="8735953464173050365">Shfaq cilësimet e tastierës. Është zgjedhur <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Aktivizo qasjen te kamera për të lejuar që aplikacionet dhe faqet e uebit me lejen e kamerës të përdorin kamerat e lidhura me këtë pajisje.</translation>
@@ -1383,7 +1376,6 @@ Instalim i ri</translation>
 <translation id="8850991929411075241">Kërko+Esc</translation>
 <translation id="8853703225951107899">Kod yt PIN ose fjalëkalimi përsëri nuk mund të verifikoheshin. Shënim. Nëse e ke ndryshuar fjalëkalimin së fundi, përdor fjalëkalimin e vjetër. Fjalëkalimi yt i ri do të zbatohet pasi të dalësh nga llogaria.</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
-<translation id="8871580645200179206">Aktivizo/çaktivizo "Temën e errët". <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
 <translation id="8876661425082386199">Kontrollo lidhjen tënde</translation>
 <translation id="8877788021141246043">Cakto një alarm rikujtues</translation>
@@ -1436,7 +1428,6 @@ Instalim i ri</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ose <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Përmbajtja e mbrojtur nuk mund të regjistrohet</translation>
 <translation id="9161053988251441839">APLIKACIONET E SUGJERUARA</translation>
-<translation id="9166331175924255663">Aktivizo/çaktivizo dukshmërinë e lartë për "Ndarjen në afërsi".</translation>
 <translation id="9168436347345867845">Bëje më vonë</translation>
 <translation id="9178475906033259337">Po shfaq 1 rezultat për <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ky funksion të lejon që të qasesh me shpejtësi te çdo përdorues i identifikuar pa kërkuar një fjalëkalim. Përdore këtë funksion vetëm me llogaritë që u beson.</translation>
