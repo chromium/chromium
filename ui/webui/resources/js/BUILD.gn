@@ -50,6 +50,7 @@ preprocess_if_expr("preprocess_src_ts") {
     "focus_row.ts",
     "icon.ts",
     "keyboard_shortcut_list.ts",
+    "parse_html_subset.ts",
     "plural_string_proxy.ts",
     "search_highlight_utils.ts",
     "static_types.ts",
@@ -81,7 +82,6 @@ preprocess_if_expr("preprocess_src") {
     "cr/ui.js",
     "load_time_data.m.js",
     "load_time_data_deprecated.js",
-    "parse_html_subset.js",
     "promise_resolver.js",
     "util.js",
   ]
@@ -139,7 +139,6 @@ js_type_check("js_resources_modules") {
     ":assert",
     ":cr.m",
     ":load_time_data.m",
-    ":parse_html_subset",
     ":promise_resolver",
     ":util",
   ]
@@ -157,9 +156,6 @@ js_library("cr.m") {
 }
 
 js_library("load_time_data.m") {
-}
-
-js_library("parse_html_subset") {
 }
 
 js_library("promise_resolver") {

@@ -15,7 +15,7 @@ import '../../components/common_styles/common_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 import '../../components/network_select_login.m.js';
 
-import {SanitizeInnerHtmlOpts} from '//resources/js/parse_html_subset.js';
+import {SanitizeInnerHtmlOpts} from '//resources/ash/common/parse_html_subset.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';

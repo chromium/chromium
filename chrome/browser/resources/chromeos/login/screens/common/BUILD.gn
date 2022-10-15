@@ -664,7 +664,7 @@ js_library("error_message") {
     "../../components/buttons:oobe_back_button.m",
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
-    "//ui/webui/resources/js:parse_html_subset",
+    "//ash/webui/common/resources:parse_html_subset",
   ]
   extra_deps = [ ":web_components" ]
 }

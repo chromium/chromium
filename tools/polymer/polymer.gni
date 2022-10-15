@@ -19,7 +19,7 @@ common_auto_imports = [
   "ui/webui/resources/html/cr/ui/focus_row_behavior.html|FocusRowBehavior",
   "ui/webui/resources/html/cr/ui/focus_without_ink_js.html|focusWithoutInk",
   "ui/webui/resources/html/load_time_data.html|loadTimeData",
-  "ui/webui/resources/html/parse_html_subset.html|parseHtmlSubset",
+  "ash/webui/common/resources/parse_html_subset.html|parseHtmlSubset",
   "ui/webui/resources/html/polymer.html|Polymer,html",
 
   # TODO(dpapad): Add more auto-imports here, as needed.

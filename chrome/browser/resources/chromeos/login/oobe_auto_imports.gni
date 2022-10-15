@@ -69,7 +69,7 @@ oobe_auto_imports = [
   "ash/webui/common/resources/quick_unlock/lock_screen_constants.html|recordLockScreenProgress",
   "ui/webui/resources/html/assert.html|assert,assertNotReached",
   "ui/webui/resources/html/cr.html|sendWithPromise,removeWebUIListener,addWebUIListener,WebUIListener",
-  "ui/webui/resources/html/parse_html_subset.html|SanitizeInnerHtmlOpts,sanitizeInnerHtml",
+  "ash/webui/common/resources/parse_html_subset.html|SanitizeInnerHtmlOpts,sanitizeInnerHtml",
   "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,flush,mixinBehaviors,dom",
   "ui/webui/resources/html/util.html|announceAccessibleMessage,ensureTransitionEndEvent",
 ]
@@ -144,6 +144,6 @@ oobe_migrated_imports = [
   "ui/webui/resources/cr_elements/cr_toggle/cr_toggle.html",
   "ui/webui/resources/cr_elements/md_select.css.html",
   "ui/webui/resources/html/assert.html",
-  "ui/webui/resources/html/parse_html_subset.html",
+  "ash/webui/common/resources/parse_html_subset.html",
   "ui/webui/resources/html/util.html",
 ]

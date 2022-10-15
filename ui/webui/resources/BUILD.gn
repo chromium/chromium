@@ -141,10 +141,7 @@ group("closure_compile") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
-checked_in_dts_files = [
-  "js/parse_html_subset.d.ts",
-  "js/promise_resolver.d.ts",
-]
+checked_in_dts_files = [ "js/promise_resolver.d.ts" ]
 
 # Copies checked-in .d.ts files to the preprocess folder so that they are
 # discovered by TSC the same way generated .d.ts files are.
@@ -186,6 +183,7 @@ ts_library("library") {
                "js/focus_outline_manager.ts",
                "js/icon.ts",
                "js/keyboard_shortcut_list.ts",
+               "js/parse_html_subset.ts",
                "js/plural_string_proxy.ts",
                "js/static_types.ts",
                "js/store_ts.ts",

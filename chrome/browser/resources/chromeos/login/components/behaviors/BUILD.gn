@@ -53,8 +53,8 @@ js_library("oobe_i18n_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/behaviors/oobe_i18n_behavior.m.js" ]
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:parse_html_subset",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:parse_html_subset",
   ]
   extra_deps = [ ":modulize" ]
 }
