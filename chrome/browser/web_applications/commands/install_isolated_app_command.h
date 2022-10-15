@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -56,14 +57,19 @@ struct InstallIsolatedAppCommandError {
 // re-using web contents.
 class InstallIsolatedAppCommand : public WebAppCommand {
  public:
-  // |application_url| is the url for the app to be installed. The url must be
-  // valid.
+  //
+  // |isolation_info| holds the origin information of the app. It is
+  // randomly generated for dev-proxy and the public key of signed bundle. It is
+  // guarantee to be valid.
+  //
+  // |isolation_data| holds information about the
+  // mode(dev-mod-proxy/signed-bundle) and the source.
   //
   // |callback| must be not null.
   //
   // The `id` in the application's manifest must equal "/".
   explicit InstallIsolatedAppCommand(
-      const GURL& application_url,
+      const IsolatedWebAppUrlInfo& isolation_info,
       const IsolationData& isolation_data,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
@@ -123,7 +129,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
 
   std::unique_ptr<AppLock> lock_;
 
-  GURL url_;
+  IsolatedWebAppUrlInfo isolation_info_;
   IsolationData isolation_data_;
 
   std::unique_ptr<content::WebContents> web_contents_;

@@ -44,6 +44,9 @@
 
 namespace web_app {
 
+constexpr static char kGeneratedInstallPagePath[] =
+    "/.well-known/_generated_install_page.html";
+
 namespace {
 
 bool IsUrlLoadingResultSuccess(WebAppUrlLoader::Result result) {
@@ -61,7 +64,7 @@ absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
 }  // namespace
 
 InstallIsolatedAppCommand::InstallIsolatedAppCommand(
-    const GURL& url,
+    const IsolatedWebAppUrlInfo& isolation_info,
     const IsolationData& isolation_data,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
@@ -70,8 +73,8 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
                                            InstallIsolatedAppCommandError>)>
         callback)
     : lock_(std::make_unique<AppLock>(
-          base::flat_set<AppId>{GenerateAppId("", GURL{url})})),
-      url_(url),
+          base::flat_set<AppId>{isolation_info.app_id()})),
+      isolation_info_(isolation_info),
       isolation_data_(isolation_data),
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
@@ -80,9 +83,6 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   DCHECK(web_contents_ != nullptr);
-  DCHECK(url_loader_ != nullptr);
-
-  DCHECK(url_.is_valid());
   DCHECK(!callback.is_null());
 
   callback_ =
@@ -110,7 +110,6 @@ void InstallIsolatedAppCommand::Start() {
 }
 
 void InstallIsolatedAppCommand::LoadUrl() {
-  DCHECK(url_.is_valid());
   DCHECK(web_contents_ != nullptr);
 
   // |web_app::IsolatedWebAppURLLoaderFactory| uses the isolation data in order
@@ -119,7 +118,9 @@ void InstallIsolatedAppCommand::LoadUrl() {
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents_)
       .set_isolation_data(isolation_data_);
 
-  url_loader_->LoadUrl(url_, web_contents_.get(),
+  GURL install_page_url =
+      isolation_info_.origin().GetURL().Resolve(kGeneratedInstallPagePath);
+  url_loader_->LoadUrl(install_page_url, web_contents_.get(),
                        WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
                        base::BindOnce(&InstallIsolatedAppCommand::OnLoadUrl,
                                       weak_factory_.GetWeakPtr()));
@@ -183,7 +184,7 @@ InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
 
   info.manifest_id = "";
 
-  url::Origin origin = url::Origin::Create(url_);
+  url::Origin origin = isolation_info_.origin();
   if (manifest.scope != origin.GetURL()) {
     return base::unexpected{
         base::StrCat({"Scope should resolve to the origin. scope: ",

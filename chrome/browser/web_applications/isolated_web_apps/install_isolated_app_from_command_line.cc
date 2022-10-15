@@ -18,13 +18,16 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -62,9 +65,17 @@ void ScheduleInstallIsolatedApp(GURL url,
   DCHECK(url.is_valid());
   DCHECK(!callback.is_null());
 
+  // TODO(zelin): move random generation up to MaybeInstallAppFromCommandLine()
+  web_package::SignedWebBundleId random_signed_web_bundle_id =
+      web_package::SignedWebBundleId::CreateRandomForDevelopment();
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+          random_signed_web_bundle_id);
+  DCHECK(url_info.has_value());
+
   provider.command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedAppCommand>(
-          url, isolation_data, CreateWebContents(profile),
+          url_info.value(), isolation_data, CreateWebContents(profile),
           std::make_unique<WebAppUrlLoader>(), provider.install_finalizer(),
           base::BindOnce(&ReportInstallationResult).Then(std::move(callback))));
 }

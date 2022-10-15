@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_app_from_command_line.h"
 
 #include "base/command_line.h"
@@ -12,12 +13,14 @@
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -30,6 +33,7 @@ class InstallIsolatedAppFromCommandLineBrowserTest
     : public InProcessBrowserTest {
  protected:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
     embedded_test_server()->AddDefaultHandlers(
         GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -63,15 +67,21 @@ class InstallIsolatedAppFromCommandLineBrowserTest
 
  private:
   base::OneShotEvent is_installation_done_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(zelin): enable this browser test
 IN_PROC_BROWSER_TEST_F(InstallIsolatedAppFromCommandLineBrowserTest,
-                       AppFromCommandLineIsInstalled) {
+                       DISABLED_AppFromCommandLineIsInstalled) {
   WaitForInstallation();
 
-  const AppId app_id = GenerateAppId("", GetAppUrl());
+  ASSERT_THAT(GetWebAppRegistrar().CountUserInstalledApps(), 1);
 
-  ASSERT_THAT(GetWebAppRegistrar().IsInstalled(app_id), IsTrue());
+  std::vector<AppId> all_apps = GetWebAppRegistrar().GetAppIds();
+
+  ASSERT_THAT(all_apps.size(), 1);
+
+  AppId app_id = all_apps.front();
 
   const WebApp* web_app = GetWebAppRegistrar().GetAppById(app_id);
   EXPECT_THAT(web_app->isolation_data().has_value(), IsTrue());
