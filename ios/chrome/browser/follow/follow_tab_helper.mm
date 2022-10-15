@@ -27,6 +27,9 @@
 #import "ios/chrome/browser/follow/follow_service_factory.h"
 #import "ios/chrome/browser/follow/follow_util.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -104,9 +107,23 @@ void FollowTabHelper::DidRedirectNavigation(
 void FollowTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
-  // TODO(crbug.com/1340154): move the checking to `follow_iph_presenter_`
-  // (FollowIPHCoordinator), so this class won't need to access browser_state
-  // anymore, which brings convinience to testing.
+  // Do not show follow IPH if the user is not signed in.
+  ChromeBrowserState* browserState =
+      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  if (!authenticationService || !authenticationService->GetPrimaryIdentity(
+                                    signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  // Do not show Follow IPH if it is disabled.
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHFollowWhileBrowsingFeature)) {
+    return;
+  }
+
+  DCHECK(IsWebChannelsEnabled());
 
   // Record when the page was successfully loaded. Computing whether the
   // IPH needs to be displayed is done asynchronously and the time used
@@ -114,8 +131,8 @@ void FollowTabHelper::PageLoaded(
   // displayed.
   const base::Time page_load_time = base::Time::Now();
 
-  // Do not update follow menu option and do not show IPH when browsing non
-  // http,https URLs and Chrome URLs, such as NTP, flags, version, sad tab, etc.
+  // Do not show IPH when browsing non http, https URLs and Chrome URLs, such as
+  // NTP, flags, version, sad tab, etc.
   const GURL& url = web_state->GetVisibleURL();
   if (UrlHasChromeScheme(url) || !url.SchemeIsHTTPOrHTTPS()) {
     return;
@@ -145,13 +162,6 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
                                            base::Time page_load_time,
                                            WebPageURLs* web_page_urls) {
   DCHECK(web_state_);
-
-  // Update follow menu option if needed.
-  if (follow_menu_updater_ && should_update_follow_item_) {
-    UpdateFollowMenuItemWithURL(web_page_urls);
-  }
-
-  // Show follow in-product help (IPH) if eligible.
 
   // Don't show follow in-product help (IPH) if there's no presenter. Ex.
   // follow_iph_presenter_ is nil when link preview page is loaded.
