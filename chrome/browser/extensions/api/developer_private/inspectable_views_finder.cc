@@ -181,7 +181,7 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
     // committed (or visible) url yet. In this case, use the initial url.
     if (url.is_empty()) {
       ExtensionHost* extension_host =
-          process_manager->GetExtensionHostForRenderFrameHost(host);
+          process_manager->GetBackgroundHostForRenderFrameHost(host);
       if (extension_host)
         url = extension_host->initial_url();
     }

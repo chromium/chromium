@@ -425,8 +425,11 @@ ExtensionHost* ProcessManager::GetBackgroundHostForExtension(
   return nullptr;
 }
 
-ExtensionHost* ProcessManager::GetExtensionHostForRenderFrameHost(
+ExtensionHost* ProcessManager::GetBackgroundHostForRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->IsInPrimaryMainFrame())
+    return nullptr;
+
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   for (ExtensionHost* extension_host : background_hosts_) {
