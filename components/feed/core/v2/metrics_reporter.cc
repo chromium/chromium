@@ -738,7 +738,7 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
   }
 }
 
-void MetricsReporter::ReportStableContentSliceVisibilityTime(
+void MetricsReporter::ReportStableContentSliceVisibilityTimeForGoodVisits(
     base::TimeDelta delta) {
   if (good_visit_state_)
     good_visit_state_->AddTimeInFeed(delta);

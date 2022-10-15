@@ -178,6 +178,8 @@ class FeedStream : public FeedApi,
                                          int info_card_type) override;
   void ResetInfoCardStates(const StreamType& stream_type,
                            int info_card_type) override;
+  void ReportContentSliceVisibleTimeForGoodVisits(
+      base::TimeDelta elapsed) override;
   base::Time GetLastFetchTime(const StreamType& stream_type) override;
   void SetContentOrder(const StreamType& stream_type,
                        ContentOrder content_order) override;

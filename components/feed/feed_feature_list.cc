@@ -190,4 +190,10 @@ const base::FeatureParam<base::TimeDelta> kMaxStableContentSliceVisibilityTime{
     &kClientGoodVisits, "max_stable_content_slice_visibility_time",
     base::Seconds(30)};
 
+const base::FeatureParam<double> kSliceVisibleExposureThreshold{
+    &kClientGoodVisits, "slice_exposure_threshold", 0.5f};
+
+const base::FeatureParam<double> kSliceVisibleCoverageThreshold{
+    &kClientGoodVisits, "slice_coverage_threshold", 0.25f};
+
 }  // namespace feed

@@ -207,6 +207,12 @@ class FeedApi {
   // Resets all the states of the info card.
   virtual void ResetInfoCardStates(const StreamType& stream_type,
                                    int info_card_type) = 0;
+  // Report a period of time for which at least one content slice is visible
+  // enough or at least one content slice covers enough of the viewport. See the
+  // slice_exposure_threshold and slice_coverage_threshold feature params for
+  // what counts as visible enough and covering enough.
+  virtual void ReportContentSliceVisibleTimeForGoodVisits(
+      base::TimeDelta elapsed) = 0;
 
   // The following methods are used for the internals page.
 

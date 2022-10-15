@@ -360,6 +360,7 @@ public abstract class ChromeFeatureList {
     public static final String FEED_BACK_TO_TOP = "FeedBackToTop";
     public static final String FEED_CLEAR_IMAGE_MEMORY_CACHE = "FeedClearImageMemoryCache";
     public static final String FEED_HEADER_STICK_TO_TOP = "FeedHeaderStickToTop";
+    public static final String FEED_CLIENT_GOOD_VISITS = "FeedClientGoodVisits";
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =
             "FeedImageMemoryCacheSizePercentage";
     public static final String FEED_INTERACTIVE_REFRESH = "FeedInteractiveRefresh";

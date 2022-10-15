@@ -1399,6 +1399,12 @@ void FeedStream::ResetInfoCardStates(const StreamType& stream_type,
   info_card_tracker_.ResetState(info_card_type);
 }
 
+void FeedStream::ReportContentSliceVisibleTimeForGoodVisits(
+    base::TimeDelta elapsed) {
+  metrics_reporter_->ReportStableContentSliceVisibilityTimeForGoodVisits(
+      elapsed);
+}
+
 void FeedStream::SetContentOrder(const StreamType& stream_type,
                                  ContentOrder content_order) {
   if (!stream_type.IsWebFeed()) {

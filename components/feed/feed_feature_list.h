@@ -164,6 +164,11 @@ extern const base::FeatureParam<base::TimeDelta>
 // viewport-stable feed viewing to this time.
 extern const base::FeatureParam<base::TimeDelta>
     kMaxStableContentSliceVisibilityTime;
+// Minimum slice exposure needed for counting time in feed for good visits.
+extern const base::FeatureParam<double> kSliceVisibleExposureThreshold;
+// Minimum slice coverage of viewport needed for counting time in feed for good
+// visits.
+extern const base::FeatureParam<double> kSliceVisibleCoverageThreshold;
 
 }  // namespace feed
 

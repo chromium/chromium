@@ -77,10 +77,10 @@ class MetricsReporter {
   void PageLoaded();
   void OtherUserAction(const StreamType& stream_type,
                        FeedUserActionType action_type);
-  // Report a period of time during which at least one content slice was >50%
-  // visible and covered >25% of the viewport.
-  // TODO(iwells): Call this.
-  void ReportStableContentSliceVisibilityTime(base::TimeDelta delta);
+  // Report a period of time during which at least one content slice was visible
+  // enough or covering enough of the viewport.
+  void ReportStableContentSliceVisibilityTimeForGoodVisits(
+      base::TimeDelta delta);
 
   // Indicates the user scrolled the feed by |distance_dp| and then stopped
   // scrolling.

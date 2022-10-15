@@ -99,6 +99,8 @@ class StubFeedApi : public FeedApi {
                                          int info_card_type) override {}
   void ResetInfoCardStates(const StreamType& stream_type,
                            int info_card_type) override {}
+  void ReportContentSliceVisibleTimeForGoodVisits(
+      base::TimeDelta elapsed) override {}
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging(const StreamType& stream_type) override {}
   std::string DumpStateForDebugging() override;

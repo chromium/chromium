@@ -9,21 +9,27 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.leq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyFloat;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,15 +41,19 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowSystemClock;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link FeedSliceViewTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class})
 public class FeedSliceViewTrackerTest {
     // Mocking dependencies that are always present, but using a real FeedListContentManager.
     @Mock
@@ -56,6 +66,12 @@ public class FeedSliceViewTrackerTest {
     ListLayoutHelper mLayoutHelper;
     @Mock
     ViewTreeObserver mViewTreeObserver;
+    @Mock
+    Activity mActivity;
+    @Mock
+    Window mWindow;
+    @Mock
+    View mDecorView;
     NtpListContentManager mContentManager;
 
     FeedSliceViewTracker mTracker;
@@ -74,20 +90,31 @@ public class FeedSliceViewTrackerTest {
 
     @Before
     public void setUp() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.FEED_CLIENT_GOOD_VISITS, true);
+        FeatureList.setTestValues(testValues);
+
         ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
         mContentManager = new NtpListContentManager();
         doReturn(mLayoutManager).when(mParentView).getLayoutManager();
         doReturn(mViewTreeObserver).when(mParentView).getViewTreeObserver();
-        mTracker = Mockito.spy(
-                new FeedSliceViewTracker(mParentView, mContentManager, mLayoutHelper, mObserver));
+        doReturn(mWindow).when(mActivity).getWindow();
+        doReturn(mDecorView).when(mWindow).getDecorView();
+        mTracker = Mockito.spy(new FeedSliceViewTracker(
+                mParentView, mActivity, mContentManager, mLayoutHelper, mObserver));
+    }
+
+    @After
+    public void tearDown() {
+        ShadowSystemClock.reset();
     }
 
     @Test
     @SmallTest
     public void testIsItemVisible_JustEnoughnViewport() {
         mockViewDimensions(mChildA, 10, 10);
-        mockGetChildVisibleRect(mChildA, 0, 7);
+        mockGetChildVisibleRect(mChildA, 0, 0, 10, 7);
         Assert.assertTrue(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
@@ -95,7 +122,7 @@ public class FeedSliceViewTrackerTest {
     @SmallTest
     public void testIsItemVisible_NotEnoughnViewport() {
         mockViewDimensions(mChildA, 10, 10);
-        mockGetChildVisibleRect(mChildA, 0, 6);
+        mockGetChildVisibleRect(mChildA, 0, 0, 10, 6);
         Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
@@ -103,7 +130,7 @@ public class FeedSliceViewTrackerTest {
     @SmallTest
     public void testIsItemVisible_ZeroAreaInViewport() {
         mockViewDimensions(mChildA, 10, 10);
-        mockGetChildVisibleRect(mChildA, 0, 0);
+        mockGetChildVisibleRect(mChildA, 0, 0, 0, 0);
         Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
     }
 
@@ -119,8 +146,44 @@ public class FeedSliceViewTrackerTest {
     @SmallTest
     public void testIsItemVisible_ZeroArea() {
         mockViewDimensions(mChildA, 0, 0);
-        mockGetChildVisibleRect(mChildA, 0, 0);
+        mockGetChildVisibleRect(mChildA, 0, 0, 0, 0);
         Assert.assertFalse(mTracker.isViewVisible(mChildA, 0.66f));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsItemCoveringViewport_JustEnough() {
+        mockViewDimensions(mChildA, 100, 100);
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 26);
+        mockViewportRect(0, 0, 100, 100);
+        Assert.assertTrue(mTracker.isViewCoveringViewport(mChildA, 0.25f));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsViewCoveringViewport_NotEnough() {
+        mockViewDimensions(mChildA, 100, 100);
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 24);
+        mockViewportRect(0, 0, 100, 100);
+        Assert.assertFalse(mTracker.isViewCoveringViewport(mChildA, 0.25f));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsContentCoveringViewport_ZeroArea() {
+        mockViewDimensions(mChildA, 0, 0);
+        mockGetChildVisibleRect(mChildA, 0, 0, 0, 0);
+        mockViewportRect(0, 0, 100, 100);
+        Assert.assertFalse(mTracker.isViewCoveringViewport(mChildA, 0.25f));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsContentCoveringViewport_NoViewport() {
+        mockViewDimensions(mChildA, 100, 100);
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 26);
+        mockViewportRect(0, 0, 0, 0);
+        Assert.assertFalse(mTracker.isViewCoveringViewport(mChildA, 0.25f));
     }
 
     @Test
@@ -305,18 +368,159 @@ public class FeedSliceViewTrackerTest {
         assertTrue(mChildBVisibleRunnable2Called);
     }
 
-    void mockViewDimensions(View view, int width, int height) {
-        when(view.getWidth()).thenReturn(10);
-        when(view.getHeight()).thenReturn(10);
+    @Test
+    @SmallTest
+    public void testReportContentVisibleTime_visibleAndCovering() {
+        mContentManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
+                        new NtpListContentManager.NativeViewContent(0, "c/key2", mChildB),
+                }));
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutHelper).findLastVisibleItemPosition();
+        doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
+        doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
+
+        // Not visible or covering: no time reported.
+        doReturn(false).when(mTracker).isViewVisible(eq(mChildA), anyFloat());
+        doReturn(false).when(mTracker).isViewCoveringViewport(eq(mChildA), anyFloat());
+        mTracker.onPreDraw();
+        advanceByMs(1L);
+        mTracker.onPreDraw();
+        verify(mObserver, never()).reportContentSliceVisibleTime(anyLong());
+
+        // Visible enough; time is reported.
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildA), anyFloat());
+        doReturn(false).when(mTracker).isViewCoveringViewport(eq(mChildA), anyFloat());
+        mTracker.onPreDraw();
+        advanceByMs(1L);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportContentSliceVisibleTime(eq(1L));
+        reset(mObserver);
+
+        // Covering enough; time is reported.
+        doReturn(false).when(mTracker).isViewVisible(eq(mChildA), anyFloat());
+        doReturn(true).when(mTracker).isViewCoveringViewport(eq(mChildA), anyFloat());
+        advanceByMs(1L);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportContentSliceVisibleTime(eq(1L));
+        reset(mObserver);
+
+        // Visible enough and covering enough: report some time spent in feed.
+        doReturn(true).when(mTracker).isViewVisible(eq(mChildA), anyFloat());
+        doReturn(true).when(mTracker).isViewCoveringViewport(eq(mChildA), anyFloat());
+        advanceByMs(1L);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportContentSliceVisibleTime(eq(1L));
     }
 
-    void mockGetChildVisibleRect(View child, int rectTop, int rectBottom) {
+    @Test
+    @SmallTest
+    public void testReportContentVisibleTime_testSmallCardsCoveringEnough() {
+        mContentManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
+                        new NtpListContentManager.NativeViewContent(0, "c/key2", mChildB),
+                }));
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutHelper).findLastVisibleItemPosition();
+        doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
+        doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
+
+        // Views are completely exposed so time is tracked.
+        mockViewportRect(0, 0, 100, 100);
+        mockViewDimensions(mChildA, 100, 15);
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 15);
+        mockViewDimensions(mChildB, 100, 15);
+        mockGetChildVisibleRect(mChildB, 0, 15, 100, 30);
+
+        mTracker.onPreDraw();
+        advanceByMs(1L);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportContentSliceVisibleTime(eq(1L));
+    }
+
+    @Test
+    @SmallTest
+    public void testReportContentVisibleTime_testBigCardCoveringEnough() {
+        mContentManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
+                }));
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(0).when(mLayoutHelper).findLastVisibleItemPosition();
+        doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
+
+        // View is completely exposed and covers 30% of the viewport in total.
+        mockViewportRect(0, 0, 100, 100);
+        mockViewDimensions(mChildA, 100, 26);
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 26);
+
+        mTracker.onPreDraw();
+        advanceByMs(1L);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportContentSliceVisibleTime(eq(1L));
+    }
+
+    @Test
+    @SmallTest
+    public void testReportContentVisibleTime_testBigCardExposedEnough() {
+        mContentManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
+                }));
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(0).when(mLayoutHelper).findLastVisibleItemPosition();
+        doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
+
+        // View is completely exposed but only covers 22% of the viewport.
+        mockViewportRect(0, 0, 100, 100);
+        mockViewDimensions(mChildA, 100, 22);
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 22);
+
+        mTracker.onPreDraw();
+        advanceByMs(1L);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportContentSliceVisibleTime(eq(1L));
+    }
+
+    @Test
+    @SmallTest
+    public void testReportContentVisibleTime_testReportTimeOnUnbind() {
+        mContentManager.addContents(0,
+                Arrays.asList(new NtpListContentManager.FeedContent[] {
+                        new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
+                }));
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(0).when(mLayoutHelper).findLastVisibleItemPosition();
+        doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
+
+        // View is completely exposed but only covers 22% of the viewport.
+        mockViewportRect(0, 0, 100, 100);
+        mockViewDimensions(mChildA, 100, 22);
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 22);
+
+        mTracker.onPreDraw();
+        advanceByMs(1L);
+        mTracker.unbind();
+        verify(mObserver, times(1)).reportContentSliceVisibleTime(eq(1L));
+    }
+
+    void mockViewDimensions(View view, int width, int height) {
+        when(view.getWidth()).thenReturn(width);
+        when(view.getHeight()).thenReturn(height);
+    }
+
+    void mockGetChildVisibleRect(
+            View child, int rectLeft, int rectTop, int rectRight, int rectBottom) {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 Rect rect = (Rect) invocation.getArguments()[1];
                 rect.top = rectTop;
                 rect.bottom = rectBottom;
+                rect.left = rectLeft;
+                rect.right = rectRight;
                 return true;
             }
         })
@@ -335,11 +539,27 @@ public class FeedSliceViewTrackerTest {
                 .getChildVisibleRect(eq(child), any(), any());
     }
 
+    void mockViewportRect(int left, int top, int right, int bottom) {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) {
+                ((Rect) invocation.getArguments()[0]).set(new Rect(left, top, right, bottom));
+                return null;
+            }
+        })
+                .when(mDecorView)
+                .getWindowVisibleDisplayFrame(any());
+    }
+
     void clearVisibleRunnableCalledStates() {
         mChildAVisibleRunnable1Called = false;
         mChildAVisibleRunnable2Called = false;
         mChildAVisibleRunnable3Called = false;
         mChildBVisibleRunnable1Called = false;
         mChildBVisibleRunnable2Called = false;
+    }
+
+    void advanceByMs(long ms) {
+        ShadowSystemClock.advanceBy(ms, TimeUnit.MILLISECONDS);
     }
 }
