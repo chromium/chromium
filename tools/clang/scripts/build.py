@@ -1001,11 +1001,13 @@ def main():
   runtimes_triples_args = []
 
   if sys.platform.startswith('linux'):
-    runtimes_triples_args.append(
-        ('i386-unknown-linux-gnu',
-         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
-             'CMAKE_SYSROOT=%s' % sysroot_i386,
-         ]))
+    runtimes_triples_args.append((
+        'i386-unknown-linux-gnu',
+        compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+            'CMAKE_SYSROOT=%s' % sysroot_i386,
+            # TODO(https://crbug.com/1374690): pass proper flags to i386 tests so they compile correctly
+            'LLVM_INCLUDE_TESTS=OFF',
+        ]))
     runtimes_triples_args.append(
         ('x86_64-unknown-linux-gnu',
          compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
