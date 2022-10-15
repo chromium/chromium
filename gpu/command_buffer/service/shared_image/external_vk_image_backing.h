@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
+#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
@@ -76,6 +77,9 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
 
   SharedContextState* context_state() const { return context_state_.get(); }
   const GrBackendTexture& backend_texture() const { return backend_texture_; }
+  sk_sp<SkPromiseImageTexture> promise_texture() const {
+    return promise_texture_;
+  }
   VulkanImage* image() const { return image_.get(); }
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       const {
@@ -189,6 +193,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanImage> image_;
   GrBackendTexture backend_texture_;
+  sk_sp<SkPromiseImageTexture> promise_texture_;
   const raw_ptr<VulkanCommandPool> command_pool_;
   const bool use_separate_gl_texture_;
 

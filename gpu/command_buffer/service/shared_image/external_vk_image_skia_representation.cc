@@ -27,7 +27,8 @@ ExternalVkImageSkiaImageRepresentation::
     ~ExternalVkImageSkiaImageRepresentation() {
   DCHECK_EQ(access_mode_, kNone) << "Previous access hasn't end yet.";
   DCHECK(!end_access_semaphore_);
-  backing_impl()->context_state()->EraseCachedSkSurface(this);
+  backing_impl()->context_state()->EraseCachedSkSurface(
+      backing_impl()->promise_texture().get());
 }
 
 sk_sp<SkSurface> ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
@@ -54,7 +55,8 @@ sk_sp<SkSurface> ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
     return nullptr;
   }
 
-  auto surface = backing_impl()->context_state()->GetCachedSkSurface(this);
+  auto surface = backing_impl()->context_state()->GetCachedSkSurface(
+      promise_texture.get());
 
   // If surface properties are different from the last access, then we cannot
   // reuse the cached SkSurface.
@@ -68,11 +70,13 @@ sk_sp<SkSurface> ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
         backing_impl()->color_space().ToSkColorSpace(), &surface_props);
     if (!surface) {
       LOG(ERROR) << "MakeFromBackendTexture() failed.";
-      backing_impl()->context_state()->EraseCachedSkSurface(this);
+      backing_impl()->context_state()->EraseCachedSkSurface(
+          promise_texture.get());
       return nullptr;
     }
     surface_msaa_count_ = final_msaa_count;
-    backing_impl()->context_state()->CacheSkSurface(this, surface);
+    backing_impl()->context_state()->CacheSkSurface(promise_texture.get(),
+                                                    surface);
   }
 
   [[maybe_unused]] int count = surface->getCanvas()->save();
@@ -130,7 +134,8 @@ void ExternalVkImageSkiaImageRepresentation::EndWriteAccess(
   if (surface) {
     surface->getCanvas()->restoreToCount(1);
     surface = nullptr;
-    DCHECK(backing_impl()->context_state()->CachedSkSurfaceIsUnique(this));
+    DCHECK(backing_impl()->context_state()->CachedSkSurfaceIsUnique(
+        backing_impl()->promise_texture().get()));
   }
   EndAccess(false /* readonly */);
   access_mode_ = kNone;
@@ -209,7 +214,7 @@ ExternalVkImageSkiaImageRepresentation::BeginAccess(
     end_semaphores->back().initVulkan(end_access_semaphore_.GetVkSemaphore());
   }
 
-  return SkPromiseImageTexture::Make(backing_impl()->backend_texture());
+  return backing_impl()->promise_texture();
 }
 
 void ExternalVkImageSkiaImageRepresentation::EndAccess(bool readonly) {

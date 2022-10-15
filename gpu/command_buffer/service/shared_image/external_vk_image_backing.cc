@@ -313,6 +313,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
       backend_texture_(size.width(),
                        size.height(),
                        CreateGrVkImageInfo(image_.get())),
+      promise_texture_(SkPromiseImageTexture::Make(backend_texture_)),
       command_pool_(command_pool),
       use_separate_gl_texture_(use_separate_gl_texture) {}
 
