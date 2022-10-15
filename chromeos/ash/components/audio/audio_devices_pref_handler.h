@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   virtual void SetUserPriorityHigherThan(const AudioDevice& target,
                                          const AudioDevice& base) = 0;
   // Reads the user priority from prefs.
-  virtual int32_t GetUserPriority(const AudioDevice& device) = 0;
+  virtual int GetUserPriority(const AudioDevice& device) = 0;
 
   // Reads the audio output allowed value from prefs.
   virtual bool GetAudioOutputAllowedValue() const = 0;

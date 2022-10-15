@@ -96,7 +96,7 @@ void AudioDevicesPrefHandlerStub::SetUserPriorityHigherThan(
   }
 }
 
-int32_t AudioDevicesPrefHandlerStub::GetUserPriority(
+int AudioDevicesPrefHandlerStub::GetUserPriority(
     const AudioDevice& device) {
   if (user_priority_map_.find(device.stable_device_id) ==
       user_priority_map_.end())

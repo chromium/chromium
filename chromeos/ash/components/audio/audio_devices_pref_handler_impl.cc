@@ -266,7 +266,7 @@ void AudioDevicesPrefHandlerImpl::SetUserPriorityHigherThan(
   }
 }
 
-int32_t AudioDevicesPrefHandlerImpl::GetUserPriority(
+int AudioDevicesPrefHandlerImpl::GetUserPriority(
     const AudioDevice& device) {
   if (device.is_input) {
     return input_device_user_priority_settings_

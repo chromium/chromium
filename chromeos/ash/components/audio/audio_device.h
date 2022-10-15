@@ -38,9 +38,9 @@ enum class AudioDeviceType {
 };
 
 // Default value of user priority preference.
-const uint32_t kUserPriorityNone = 0;
+const int kUserPriorityNone = 0;
 // Min value of user priority preference.
-const uint32_t kUserPriorityMin = 1;
+const int kUserPriorityMin = 1;
 
 struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevice {
   AudioDevice();

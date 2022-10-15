@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   void SetUserPriorityHigherThan(const AudioDevice& target,
                                  const AudioDevice& base) override;
-  int32_t GetUserPriority(const AudioDevice& device) override;
+  int GetUserPriority(const AudioDevice& device) override;
 
   bool GetNoiseCancellationState() override;
   void SetNoiseCancellationState(bool noise_cancellation_state) override;

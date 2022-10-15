@@ -179,7 +179,7 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
                          : audio_pref_handler_->GetOutputVolumeValue(&device);
   }
 
-  double GetUserPriority(const AudioDevice& device) {
+  int GetUserPriority(const AudioDevice& device) {
     return audio_pref_handler_->GetUserPriority(device);
   }
 
