@@ -270,67 +270,6 @@ TEST_F(AppListModelFolderTest, MergeItemIntoFolder) {
   model_->MergeItems(item0->id(), folder->id());
 }
 
-TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
-  // The configs tested here are not used by ProductivityLauncher. This test
-  // can be deleted when ProductivityLauncher is the default.
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kProductivityLauncher);
-
-  // Ensure any configs set by previous tests are cleared.
-  AppListConfigProvider::Get().ResetForTesting();
-
-  // Start with kLarge config available.
-  const AppListConfig* large_config =
-      AppListConfigProvider::Get().GetConfigForType(AppListConfigType::kLarge,
-                                                    true);
-  ASSERT_TRUE(large_config);
-
-  const size_t num_folder_apps = 5;
-  const size_t num_observed_apps = 4;
-  AppListFolderItem* folder = CreateFolderWithApps("folder1", num_folder_apps);
-
-  // Verify that the folder has folder image for large config.
-  FolderImage* large_config_image =
-      folder->GetFolderImageForTesting(AppListConfigType::kLarge);
-  ASSERT_TRUE(large_config_image);
-  EXPECT_EQ(large_config->folder_unclipped_icon_size(),
-            large_config_image->icon().size());
-
-  // Verify that the folder is observing the app list item.
-  EXPECT_TRUE(ItemObservedByFolder(
-      folder, folder->item_list()->item_at(num_observed_apps - 1),
-      AppListConfigType::kLarge));
-  EXPECT_FALSE(ItemObservedByFolder(
-      folder, folder->item_list()->item_at(num_observed_apps),
-      AppListConfigType::kLarge));
-
-  // Not medium folder image, as the config does not exist yet.
-  EXPECT_FALSE(folder->GetFolderImageForTesting(AppListConfigType::kMedium));
-
-  // Create medium config, and verify the folder image for medium config gets
-  // created.
-  const AppListConfig* medium_config =
-      AppListConfigProvider::Get().GetConfigForType(AppListConfigType::kMedium,
-                                                    true);
-  FolderImage* medium_config_image =
-      folder->GetFolderImageForTesting(AppListConfigType::kMedium);
-  ASSERT_TRUE(medium_config_image);
-  EXPECT_EQ(medium_config->folder_unclipped_icon_size(),
-            medium_config_image->icon().size());
-
-  // Verify that the folder is observing the app list item.
-  EXPECT_TRUE(ItemObservedByFolder(
-      folder, folder->item_list()->item_at(num_observed_apps - 1),
-      AppListConfigType::kMedium));
-  EXPECT_FALSE(ItemObservedByFolder(
-      folder, folder->item_list()->item_at(num_observed_apps),
-      AppListConfigType::kMedium));
-
-  EXPECT_FALSE(folder->GetFolderImageForTesting(AppListConfigType::kSmall));
-
-  AppListConfigProvider::Get().ResetForTesting();
-}
-
 // Same test as above, but for ProductivityLauncher config types.
 TEST_F(AppListModelFolderTest,
        NonSharedConfigIconGenerationProductivityLauncher) {

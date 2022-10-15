@@ -23,29 +23,11 @@ constexpr float kMinimumTileHeightAfterConfigScale = 48.;
 // size.
 ash::AppListConfigType GetConfigTypeForDisplaySize(
     const gfx::Size& display_size) {
-  if (features::IsProductivityLauncherEnabled()) {
-    // Values from go/cros-launcher-spec
-    if (display_size.height() <= 675 || display_size.width() <= 675)
-      return AppListConfigType::kDense;
+  // Values from go/cros-launcher-spec
+  if (display_size.height() <= 675 || display_size.width() <= 675)
+    return AppListConfigType::kDense;
 
-    return AppListConfigType::kRegular;
-  }
-
-  // Landscape:
-  if (display_size.width() > display_size.height()) {
-    if (display_size.width() >= 1200)
-      return ash::AppListConfigType::kLarge;
-    if (display_size.width() >= 960)
-      return ash::AppListConfigType::kMedium;
-    return ash::AppListConfigType::kSmall;
-  }
-
-  // Portrait:
-  if (display_size.width() >= 768)
-    return ash::AppListConfigType::kLarge;
-  if (display_size.width() >= 600)
-    return ash::AppListConfigType::kMedium;
-  return ash::AppListConfigType::kSmall;
+  return AppListConfigType::kRegular;
 }
 
 }  // namespace

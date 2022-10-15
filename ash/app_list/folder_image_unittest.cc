@@ -119,9 +119,8 @@ class FolderImageTest : public testing::Test,
 INSTANTIATE_TEST_SUITE_P(
     All,
     FolderImageTest,
-    ::testing::Combine(::testing::Values(AppListConfigType::kLarge,
-                                         AppListConfigType::kMedium,
-                                         AppListConfigType::kSmall),
+    ::testing::Combine(::testing::Values(AppListConfigType::kRegular,
+                                         AppListConfigType::kDense),
                        ::testing::Bool()));
 
 TEST_P(FolderImageTest, UpdateListTest) {

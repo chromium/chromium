@@ -26,13 +26,8 @@ AppListFolderItem::AppListFolderItem(
   // Item observers are added later in OnListItemAdded().
   item_list_->AddObserver(this);
 
-  std::vector<AppListConfigType> configs;
-  if (features::IsProductivityLauncherEnabled()) {
-    configs = {AppListConfigType::kRegular, AppListConfigType::kDense};
-  } else {
-    configs = {AppListConfigType::kLarge, AppListConfigType::kMedium,
-               AppListConfigType::kSmall};
-  }
+  std::vector<AppListConfigType> configs = {AppListConfigType::kRegular,
+                                            AppListConfigType::kDense};
   EnsureIconsForAvailableConfigTypes(configs, /*request_icon_update=*/false);
   config_provider_observation_.Observe(&AppListConfigProvider::Get());
   set_is_folder(true);
