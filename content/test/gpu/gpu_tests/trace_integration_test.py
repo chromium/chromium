@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(dawn:549) Move WebGPU caching tests to a separate module to trim file.
+# pylint: disable=too-many-lines
+
+from enum import Enum
 import logging
 import os
 import posixpath
@@ -132,6 +136,20 @@ _PROFILE_DIR_KEY = 'profile_dir'
 _PROFILE_TYPE_KEY = 'profile_type'
 
 
+class _TraceTestOrigin(Enum):
+  """Enum type for different origin types when navigating to URLs.
+
+  The default enum DEFAULT resolves URLs using the explicit localhost IP,
+  i.e. 127.0.0.1. LOCALHOST resolves URLs using 'localhost' instead. This is
+  useful when we want the navigations to hit the same resource but appear to
+  be from a different origin.
+
+  As an implementation detail, the values of the enums correspond to the name of
+  the SeriallyExecutedBrowserTestCase instance functions to get the URLs."""
+  DEFAULT = 'UrlOfStaticFilePath'
+  LOCALHOST = 'LocalhostUrlOfStaticFilePath'
+
+
 class _TraceTestArguments():
   """Struct-like object for passing trace test arguments instead of dicts."""
 
@@ -143,7 +161,8 @@ class _TraceTestArguments():
       finish_js_condition: str,
       success_eval_func: str,
       other_args: dict,
-      restart_browser: bool = True):
+      restart_browser: bool = True,
+      origin: _TraceTestOrigin = _TraceTestOrigin.DEFAULT):
     self.browser_args = browser_args
     self.category = category
     self.test_harness_script = test_harness_script
@@ -151,25 +170,53 @@ class _TraceTestArguments():
     self.success_eval_func = success_eval_func
     self.other_args = other_args
     self.restart_browser = restart_browser
+    self.origin = origin
 
 
 class _CacheTraceTestArguments():
   """Struct-like object for passing persistent cache trace test arguments.
 
   Cache trace tests consist of a series of normal trace test invocations that
-  are necessary in order to verify the expected caching behaviors."""
+  are necessary in order to verify the expected caching behaviors. The tests
+  start with a first load page which is generally used to populate cache
+  entries. If |test_renavigation| is true, the same browser that opened the
+  first load page is navigated to each cache page in |cache_pages| and the cache
+  conditions are verified. Then, regardless of the value of |test_renavigation|,
+  we iterate across the |cache_pages| again and restart the browser for each
+  page using a new clean user data directory that is seeded with the contents
+  from the first load page, and verify the cache conditions. The seeding just
+  copies all files in the user data directory from the first load over, see
+  *BrowserFinder classes for more details on the seeding:
+    //third_party/catapult/telemetry/telemetry/internal/backends/chrome/
+
+  The renavigation tests are suitable when we are verifying for cache hits since
+  no new entries should be generated in the |cache_pages|. However, they are not
+  suitable for cache miss cases because each |cache_page| may cause entries to
+  be written to the cache, thereby causing subsequent |cache_pages| to see cache
+  hits when we actually expect them to be misses. Note this is not a problem
+  for the restarted browser case because each browser restart seeds a new
+  temporary directory with only the contents after the first load page."""
 
   def __init__(  # pylint: disable=too-many-arguments
-      self, browser_args: List[str], category: str, test_harness_script: str,
-      finish_js_condition: str, first_load_eval_func: str,
-      cache_hit_eval_func: str, cache_hit_pages: List[str]):
+      self,
+      browser_args: List[str],
+      category: str,
+      test_harness_script: str,
+      finish_js_condition: str,
+      first_load_eval_func: str,
+      cache_eval_func: str,
+      cache_pages: List[str],
+      cache_page_origin: _TraceTestOrigin = _TraceTestOrigin.DEFAULT,
+      test_renavigation: bool = True):
     self.browser_args = browser_args
     self.category = category
     self.test_harness_script = test_harness_script
     self.finish_js_condition = finish_js_condition
     self.first_load_eval_func = first_load_eval_func
-    self.cache_hit_eval_func = cache_hit_eval_func
-    self.cache_hit_pages = cache_hit_pages
+    self.cache_eval_func = cache_eval_func
+    self.cache_pages = cache_pages
+    self.cache_page_origin = cache_page_origin
+    self.test_renavigation = test_renavigation
 
   def GenerateFirstLoadTest(self) -> _TraceTestArguments:
     """Returns the trace test arguments for the first load cache test."""
@@ -186,27 +233,30 @@ class _CacheTraceTestArguments():
   ) -> Generator[Tuple[str, _TraceTestArguments], None, None]:
     """Returns a generator for all cache hit trace tests.
 
-    First pass of tests just do a re-navigation, second pass should restarts
-    with a seeded profile directory.
+    First pass of tests just do a re-navigation, second pass restarts with a
+    seeded profile directory.
     """
-    for cache_hit_page in self.cache_hit_pages:
+    if self.test_renavigation:
+      for cache_hit_page in self.cache_pages:
+        yield (posixpath.join(gpu_data_relative_path, cache_hit_page),
+               _TraceTestArguments(browser_args=self.browser_args,
+                                   category=self.category,
+                                   test_harness_script=self.test_harness_script,
+                                   finish_js_condition=self.finish_js_condition,
+                                   success_eval_func=self.cache_eval_func,
+                                   other_args=cache_args,
+                                   restart_browser=False,
+                                   origin=self.cache_page_origin))
+    for cache_hit_page in self.cache_pages:
       yield (posixpath.join(gpu_data_relative_path, cache_hit_page),
              _TraceTestArguments(browser_args=self.browser_args,
                                  category=self.category,
                                  test_harness_script=self.test_harness_script,
                                  finish_js_condition=self.finish_js_condition,
-                                 success_eval_func=self.cache_hit_eval_func,
+                                 success_eval_func=self.cache_eval_func,
                                  other_args=cache_args,
-                                 restart_browser=False))
-    for cache_hit_page in self.cache_hit_pages:
-      yield (posixpath.join(gpu_data_relative_path, cache_hit_page),
-             _TraceTestArguments(browser_args=self.browser_args,
-                                 category=self.category,
-                                 test_harness_script=self.test_harness_script,
-                                 finish_js_condition=self.finish_js_condition,
-                                 success_eval_func=self.cache_hit_eval_func,
-                                 other_args=cache_args,
-                                 restart_browser=True))
+                                 restart_browser=True,
+                                 origin=self.cache_page_origin))
 
 
 class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -292,14 +342,14 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     #
     # The following tests are caching tests that do not render to canvas and so
     # are not a part of the pixel tests suite. Each tuple represents:
-    #   (test_name, first_load_url, cache_hit_pages)
+    #   (test_name, first_load_url, cache_pages)
     #
     # test_name: Name of the test.
     # first_load_url: The first URL that is loaded and when cache entries should
     #   be written. This URL determines the number of expected cache entries to
     #   expect in following loads.
-    # cache_hit_pages: List of URLs that should be both re-navigated to, and
-    #   reloaded in a restarted browser to expect cache hits from disk.
+    # cache_pages: List of URLs that should be both re-navigated and/or
+    #   reloaded in a restarted browser to expect some cache condition.
     webgpu_cache_test_browser_args = [
         cba.ENABLE_UNSAFE_WEBGPU,
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
@@ -311,7 +361,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # WebGPU load and reload caching tests.
     #   These tests load the |first_load_url|, records the number of cache
     #   entries written, then both re-navigates and restarts the browser for
-    #   each subsequence |cache_hit_pages| and verifies that the number of cache
+    #   each subsequence |cache_pages| and verifies that the number of cache
     #   hits is at least equal to the number of cache entries written before.
     webgpu_caching_tests: List[Tuple[str, str, List[str]]] = [
         ('RenderPipelineMainThread', 'webgpu-caching.html?testId=render-test', [
@@ -370,7 +420,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              'webgpu-caching.html?testId=compute-test-async&worker=true'
          ]),
     ]
-    for (name, first_load_page, cache_hit_pages) in webgpu_caching_tests:
+    for (name, first_load_page, cache_pages) in webgpu_caching_tests:
       yield ('WebGPUCachingTraceTest_' + name,
              posixpath.join(gpu_data_relative_path, first_load_page), [
                  _CacheTraceTestArguments(
@@ -379,15 +429,15 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                      test_harness_script=basic_test_harness_script,
                      finish_js_condition='domAutomationController._finished',
                      first_load_eval_func='CheckWebGPUFirstLoadCache',
-                     cache_hit_eval_func='CheckWebGPUCacheHits',
-                     cache_hit_pages=cache_hit_pages)
+                     cache_eval_func='CheckWebGPUCacheHits',
+                     cache_pages=cache_pages)
              ])
 
     # WebGPU incognito mode caching tests
     #   These tests load the |first_load_url| (which runs the same WebGPU code
     #   multiple times) in incognito mode, verifies that the pages had some
     #   in-memory cache hits, then both re-navigates and restarts the browser
-    #   for each subsequence |cache_hit_pages| and verifies that the number of
+    #   for each subsequence |cache_pages| and verifies that the number of
     #   cache hits is 0 since the in-memory cache should be purged.
     webgpu_incognito_caching_tests: List[Tuple[str, str, List[str]]] = [
         ('RenderPipelineIncognito',
@@ -405,8 +455,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              'webgpu-caching.html?testId=compute-test-async&worker=true'
          ]),
     ]
-    for (name, first_load_page,
-         cache_hit_pages) in webgpu_incognito_caching_tests:
+    for (name, first_load_page, cache_pages) in webgpu_incognito_caching_tests:
       yield ('WebGPUCachingTraceTest_' + name,
              posixpath.join(gpu_data_relative_path, first_load_page), [
                  _CacheTraceTestArguments(
@@ -416,8 +465,44 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                      test_harness_script=basic_test_harness_script,
                      finish_js_condition='domAutomationController._finished',
                      first_load_eval_func='CheckWebGPUCacheHits',
-                     cache_hit_eval_func='CheckNoWebGPUCacheHits',
-                     cache_hit_pages=cache_hit_pages)
+                     cache_eval_func='CheckNoWebGPUCacheHits',
+                     cache_pages=cache_pages)
+             ])
+
+    # WebGPU different origin caching tests
+    #   These tests load the |first_load_url| on the default origin, making sure
+    #   that the load populates on-disk entries. The tests then restart the
+    #   browser for subsequent |cache_pages| on localhost origin and
+    #   verifies that there are no cache hits.
+    webgpu_origin_caching_tests: List[Tuple[str, str, List[str]]] = [
+        ('RenderPipelineDifferentOrigins',
+         'webgpu-caching.html?testId=render-test', [
+             'webgpu-caching.html?testId=render-test',
+             'webgpu-caching.html?testId=render-test-async',
+             'webgpu-caching.html?testId=render-test&worker=true',
+             'webgpu-caching.html?testId=render-test-async&worker=true'
+         ]),
+        ('ComputePipelineDifferentOrigins',
+         'webgpu-caching.html?testId=compute-test', [
+             'webgpu-caching.html?testId=compute-test',
+             'webgpu-caching.html?testId=compute-test-async',
+             'webgpu-caching.html?testId=compute-test&worker=true',
+             'webgpu-caching.html?testId=compute-test-async&worker=true'
+         ]),
+    ]
+    for (name, first_load_page, cache_pages) in webgpu_origin_caching_tests:
+      yield ('WebGPUCachingTraceTest_' + name,
+             posixpath.join(gpu_data_relative_path, first_load_page), [
+                 _CacheTraceTestArguments(
+                     browser_args=webgpu_cache_test_browser_args,
+                     category='gpu',
+                     test_harness_script=basic_test_harness_script,
+                     finish_js_condition='domAutomationController._finished',
+                     first_load_eval_func='CheckWebGPUFirstLoadCache',
+                     cache_eval_func='CheckNoWebGPUCacheHits',
+                     cache_pages=cache_pages,
+                     cache_page_origin=_TraceTestOrigin.LOCALHOST,
+                     test_renavigation=False)
              ])
 
   def _RunActualGpuTraceTest(self,
@@ -443,7 +528,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab.browser.platform.tracing_controller.StartTracing(config, 60)
 
     # Perform page navigation.
-    url = self.UrlOfStaticFilePath(test_path)
+    url = getattr(self, args.origin.value)(test_path)
     tab.Navigate(url, script_to_evaluate_on_commit=args.test_harness_script)
 
     try:
@@ -485,7 +570,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                                     profile_dir=cache_profile_dir.name,
                                     profile_type='exact')
 
-      # Generate and run the cache hit tests using the seeding cache dir.
+      # Generate and run the cache hit tests using the seeded cache dir.
       for (hit_path, trace_params) in params.GenerateCacheHitTests(results):
         self._RunActualGpuTraceTest(hit_path,
                                     trace_params,
