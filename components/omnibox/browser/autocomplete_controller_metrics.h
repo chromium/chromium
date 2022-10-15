@@ -48,12 +48,12 @@ class AutocompleteControllerMetrics {
   // updated for the new request.
   void OnStart();
 
-  // Called when `AutocompleteController::UpdateResult()` is called. Will log
+  // Called when `AutocompleteController::NotifyChanged()` is called. Will log
   // metrics on how many suggestions changed with this update. If the controller
   // is done, will also log suggestion finalization metrics; otherwise, future
   // calls to `OnProviderUpdate()`, `OnStop()`, or `OnStart()` will log
   // suggestion finalization metrics.
-  void OnUpdateResult(
+  void OnNotifyChanged(
       std::vector<AutocompleteResult::MatchDedupComparator> last_result,
       std::vector<AutocompleteResult::MatchDedupComparator> new_result);
 

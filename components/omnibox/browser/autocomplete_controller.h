@@ -379,6 +379,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   // empty and unused.
   AutocompleteResult published_result_;
 
+  // Used for logging the changes between updates.
+  std::vector<AutocompleteResult::MatchDedupComparator>
+      last_result_for_logging_;
+
   // The most recent time the default match (inline match) changed.  This may
   // be earlier than the most recent keystroke if the recent keystrokes didn't
   // change the suggested match in the omnibox.  (For instance, if

@@ -57,7 +57,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
     controller_.in_start_ = true;
     controller_.done_ = sync_results_only;
     task_environment_.FastForwardBy(base::Milliseconds(sync_milliseconds));
-    metrics_.OnUpdateResult(old_results, sync_results);
+    metrics_.OnNotifyChanged(old_results, sync_results);
     controller_.in_start_ = false;
   }
 
@@ -82,7 +82,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
   // Convenience method to check the buckets of a single metric.
   void ExpectMetrics(const std::string metric_name,
                      std::vector<base::Bucket> expected_buckets) {
-    const std::string prefix = "Omnibox.AsyncAutocompletionTime.";
+    const std::string prefix = "Omnibox.AsyncAutocompletionTime2.";
     EXPECT_THAT(
         histogram_tester_->GetAllSamples(prefix + metric_name),
         ElementsAreArray(expected_buckets.data(), expected_buckets.size()))
@@ -182,14 +182,14 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({}, {{}});
+  metrics_.OnNotifyChanged({}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({}, {{}});
+  metrics_.OnNotifyChanged({}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnUpdateResult({}, {{}});
+  metrics_.OnNotifyChanged({}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 4, 4, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -200,14 +200,14 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {{}}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 0, 0, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -219,14 +219,14 @@ TEST_F(
   SimulateStart(false, 1, {{}}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnUpdateResult({}, {{}});
+  metrics_.OnNotifyChanged({}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 4, 4, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -238,14 +238,14 @@ TEST_F(
   SimulateStart(false, 1, {{}}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({}, {{}});
+  metrics_.OnNotifyChanged({}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 2, 2, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -256,14 +256,14 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   // 2nd async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   // Last async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(4, 1, 1, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -277,7 +277,7 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {}, {{}});
   // 1st async update.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   // Stop timer.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   metrics_.OnStop();
@@ -291,7 +291,7 @@ TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_Interrupted) {
   SimulateStart(false, 1, {}, {{}});
   // 1 async update for 1st input.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({}, {{}});
+  metrics_.OnNotifyChanged({}, {{}});
   ExpectNoSuggestionFinalizationMetrics();
   // Interrupted by 2nd input. The log should include the time until
   // interruption.
@@ -306,12 +306,12 @@ TEST_F(AutocompleteControllerMetricsTest, SuggestionFinalization_Interrupted) {
   // 1 async update for 3rd input. Controller completes with the 2nd update.
   ResetHistogramTester();
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({}, {{}});
+  metrics_.OnNotifyChanged({}, {{}});
   ExpectNoSuggestionFinalizationMetrics();
   // 2nd and last async update for 3rd input.
   controller_.done_ = true;
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({}, {{}});
+  metrics_.OnNotifyChanged({}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(3, 3, 3, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -322,11 +322,11 @@ TEST_F(AutocompleteControllerMetricsTest,
   SimulateStart(false, 1, {}, {{}});
   // 1st async update with non-default match changed.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}, {}});
+  metrics_.OnNotifyChanged({{}}, {{}, {}});
   // 2nd async update with no matches changed.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   controller_.done_ = true;
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(3, 2, 1, true);
   StopAndExpectNoSuggestionFinalizationMetrics();
 }
@@ -346,7 +346,7 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
   metrics_.OnProviderUpdate(*async_provider_done_sync);
   ExpectProviderMetrics(async_provider_done_sync->GetName(), 1, true);
   controller_.done_ = false;
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   controller_.in_start_ = false;
   ExpectNoSuggestionFinalizationMetrics();
   ResetHistogramTester();
@@ -355,7 +355,7 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
   task_environment_.FastForwardBy(base::Milliseconds(1));
   metrics_.OnProviderUpdate(*async_provider_done_not_last);
   ExpectProviderMetrics(async_provider_done_not_last->GetName(), 2, true);
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   ExpectNoSuggestionFinalizationMetrics();
   ResetHistogramTester();
 
@@ -364,7 +364,7 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
   metrics_.OnProviderUpdate(*async_provider_done_last);
   controller_.done_ = true;
   ExpectProviderMetrics(async_provider_done_last->GetName(), 3, true);
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   ExpectSingleCountSuggestionFinalizationMetrics(3, 0, 0, true);
 
   StopAndExpectNoSuggestionFinalizationMetrics();
@@ -385,20 +385,20 @@ TEST_F(AutocompleteControllerMetricsTest,
   metrics_.OnProviderUpdate(*provider);
   controller_.done_ = false;
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
   controller_.in_start_ = false;
 
   // 1st async update without completion.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   metrics_.OnProviderUpdate(*provider);
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
 
   // Last async update with completion.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   provider->done_ = true;
   controller_.done_ = true;
   metrics_.OnProviderUpdate(*provider);
-  metrics_.OnUpdateResult({{}}, {{}});
+  metrics_.OnNotifyChanged({{}}, {{}});
 
   ExpectProviderMetrics(provider->GetName(), 3, true);
   ExpectSingleCountSuggestionFinalizationMetrics(3, 0, 0, true);
@@ -451,90 +451,93 @@ TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
 
   // Verify logging to the Async* histograms.
   controller_.in_start_ = false;
-  metrics_.OnUpdateResult(first_result, second_result);
+  metrics_.OnNotifyChanged(first_result, second_result);
   // Expect the default match, third match, and last two matches to be logged
   // as changed, and nothing else.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeIndex.Async"),
+                  "Omnibox.MatchStability2.MatchChangeIndex.Async"),
               testing::ElementsAre(base::Bucket(0, 1), base::Bucket(2, 1),
                                    base::Bucket(3, 1), base::Bucket(4, 1)));
   // Expect that we log that at least one of the matches has changed.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeInAnyPosition.Async"),
+                  "Omnibox.MatchStability2.MatchChangeInAnyPosition.Async"),
               testing::ElementsAre(base::Bucket(1, 1)));
   // Expect that we don't log async updates to the sync histograms.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeIndex.CrossInput"),
+                  "Omnibox.MatchStability2.MatchChangeIndex.CrossInput"),
               testing::ElementsAre());
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeInAnyPosition.CrossInput"),
-              testing::ElementsAre());
+  EXPECT_THAT(
+      histogram_tester_->GetAllSamples(
+          "Omnibox.MatchStability2.MatchChangeInAnyPosition.CrossInput"),
+      testing::ElementsAre());
   // Verify the unsliced histograms.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeIndex"),
+                  "Omnibox.MatchStability2.MatchChangeIndex"),
               testing::ElementsAre(base::Bucket(0, 1), base::Bucket(2, 1),
                                    base::Bucket(3, 1), base::Bucket(4, 1)));
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeInAnyPosition"),
+                  "Omnibox.MatchStability2.MatchChangeInAnyPosition"),
               testing::ElementsAre(base::Bucket(1, 1)));
   ResetHistogramTester();
 
   // Verify logging to the CrossInput* histograms.
   controller_.in_start_ = true;
-  metrics_.OnUpdateResult(first_result, second_result);
+  metrics_.OnNotifyChanged(first_result, second_result);
   // Expect the default match, third match, and last two matches to be logged
   // as changed, and nothing else.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeIndex.CrossInput"),
+                  "Omnibox.MatchStability2.MatchChangeIndex.CrossInput"),
               testing::ElementsAre(base::Bucket(0, 1), base::Bucket(2, 1),
                                    base::Bucket(3, 1), base::Bucket(4, 1)));
   // Expect that we log that at least one of the matches has changed.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeInAnyPosition.CrossInput"),
-              testing::ElementsAre(base::Bucket(1, 1)));
+  EXPECT_THAT(
+      histogram_tester_->GetAllSamples(
+          "Omnibox.MatchStability2.MatchChangeInAnyPosition.CrossInput"),
+      testing::ElementsAre(base::Bucket(1, 1)));
   // Expect that we don't log sync updates to the async histograms.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeIndex.Async"),
+                  "Omnibox.MatchStability2.MatchChangeIndex.Async"),
               testing::ElementsAre());
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeInAnyPosition.Async"),
+                  "Omnibox.MatchStability2.MatchChangeInAnyPosition.Async"),
               testing::ElementsAre());
   // Verify the unsliced histograms.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeIndex"),
+                  "Omnibox.MatchStability2.MatchChangeIndex"),
               testing::ElementsAre(base::Bucket(0, 1), base::Bucket(2, 1),
                                    base::Bucket(3, 1), base::Bucket(4, 1)));
   // Expect that we log that at least one of the matches has changed.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeInAnyPosition"),
+                  "Omnibox.MatchStability2.MatchChangeInAnyPosition"),
               testing::ElementsAre(base::Bucket(1, 1)));
   ResetHistogramTester();
 
   // Verify no logging when appending matches.
   controller_.in_start_ = false;
-  metrics_.OnUpdateResult(second_result, third_result);
+  metrics_.OnNotifyChanged(second_result, third_result);
   controller_.in_start_ = true;
-  metrics_.OnUpdateResult(second_result, third_result);
+  metrics_.OnNotifyChanged(second_result, third_result);
   // Expect no changes logged; expect 1 false logged to
   // *MatchChangedInAnyPosition.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeIndex.Async"),
+                  "Omnibox.MatchStability2.MatchChangeIndex.Async"),
               testing::ElementsAre());
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeInAnyPosition.Async"),
+                  "Omnibox.MatchStability2.MatchChangeInAnyPosition.Async"),
               testing::ElementsAre(base::Bucket(0, 1)));
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeIndex.CrossInput"),
+                  "Omnibox.MatchStability2.MatchChangeIndex.CrossInput"),
               testing::ElementsAre());
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeInAnyPosition.CrossInput"),
-              testing::ElementsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(
+      histogram_tester_->GetAllSamples(
+          "Omnibox.MatchStability2.MatchChangeInAnyPosition.CrossInput"),
+      testing::ElementsAre(base::Bucket(0, 1)));
   // Verify the unsliced histograms.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeIndex"),
+                  "Omnibox.MatchStability2.MatchChangeIndex"),
               testing::ElementsAre());
   EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Omnibox.MatchStability.MatchChangeInAnyPosition"),
+                  "Omnibox.MatchStability2.MatchChangeInAnyPosition"),
               testing::ElementsAre(base::Bucket(0, 2)));
   ResetHistogramTester();
 }

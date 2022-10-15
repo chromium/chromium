@@ -912,8 +912,6 @@ void AutocompleteController::UpdateResult(
     }
   }
 
-  const auto last_result_for_logging = result_.GetMatchDedupComparators();
-
   if (regenerate_result)
     result_.Reset();
 
@@ -970,13 +968,6 @@ void AutocompleteController::UpdateResult(
 #if DCHECK_IS_ON()
   result_.Validate();
 #endif  // DCHECK_IS_ON()
-
-  // Will log metrics for how many matches changed. Will also log timing metrics
-  // for the current request if it's complete; otherwise, will just update
-  // timestamps of when the last update changing any or the default suggestion
-  // occurred.
-  metrics_.OnUpdateResult(last_result_for_logging,
-                          result_.GetMatchDedupComparators());
 
   // Below are all annotations after the match list is ready.
 
@@ -1220,10 +1211,19 @@ void AutocompleteController::UpdateAssistedQueryStats(
 }
 
 void AutocompleteController::NotifyChanged() {
-  // `CopyFrom()` does a vector copy, and `NotifyChanged()` is called a lot, so
-  // guard the copy to measure performance regressions.
+  // Will log metrics for how many matches changed. Will also log timing metrics
+  // for the current request if it's complete; otherwise, will just update
+  // timestamps of when the last update changed any or the default suggestion.
+  metrics_.OnNotifyChanged(last_result_for_logging_,
+                           result_.GetMatchDedupComparators());
+
+  // `NotifyChanged()` is called a lot, so guard the copies so performance
+  // differences between them are also measured.
   if (DebouncingEnabled())
     published_result_.CopyFrom(result_);
+
+  last_result_for_logging_ = result_.GetMatchDedupComparators();
+
   for (Observer& obs : observers_)
     obs.OnResultChanged(this, notify_changed_default_match_);
   notify_changed_debouncer_.CancelRequest();
