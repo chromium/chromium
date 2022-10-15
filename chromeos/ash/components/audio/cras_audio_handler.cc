@@ -1552,7 +1552,7 @@ void CrasAudioHandler::PauseAllStreams() {
 
 void CrasAudioHandler::HandleNonHotplugNodesChange(
     bool is_input,
-    const AudioDevicePriorityQueue& hotplug_nodes,
+    const AudioDevicePriorityQueue& hotplug_devices,
     bool has_device_change,
     bool has_device_removed,
     bool active_device_removed) {
@@ -1563,7 +1563,7 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
   if (!has_device_change && has_current_active_node)
     return;
 
-  if (hotplug_nodes.empty()) {
+  if (hotplug_devices.empty()) {
     if (has_device_removed) {
       if (!active_device_removed && has_current_active_node) {
         // Removed a non-active device, keep the current active device.
@@ -1763,22 +1763,27 @@ void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(bool is_input) {
 
 void CrasAudioHandler::UpdateDevicesAndSwitchActive(
     const AudioNodeList& nodes) {
-  AudioDevicePriorityQueue hotplug_output_nodes;
-  AudioDevicePriorityQueue hotplug_input_nodes;
+  AudioDevicePriorityQueue hotplug_output_devices;
+  AudioDevicePriorityQueue hotplug_input_devices;
   bool has_output_removed = false;
   bool has_input_removed = false;
   bool active_output_removed = false;
   bool active_input_removed = false;
   bool output_devices_changed =
-      HasDeviceChange(nodes, false, &hotplug_output_nodes, &has_output_removed,
-                      &active_output_removed);
+      HasDeviceChange(nodes, false, &hotplug_output_devices,
+                      &has_output_removed, &active_output_removed);
   bool input_devices_changed =
-      HasDeviceChange(nodes, true, &hotplug_input_nodes, &has_input_removed,
+      HasDeviceChange(nodes, true, &hotplug_input_devices, &has_input_removed,
                       &active_input_removed);
 
+  std::vector<AudioDevice> devices;
+  devices.reserve(nodes.size());
+  for (AudioNode node : nodes) {
+    devices.push_back(ConvertAudioNodeWithModifiedPriority(node));
+  }
+
   // Updates the display_rotation to the internal speaker when it's added.
-  for (auto node : nodes) {
-    AudioDevice device = ConvertAudioNodeWithModifiedPriority(node);
+  for (AudioDevice device : devices) {
     DeviceStatus status = CheckDeviceStatus(device);
     if (status == NEW_DEVICE &&
         device.type == AudioDeviceType::kInternalSpeaker) {
@@ -1795,8 +1800,7 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   while (!output_devices_pq_.empty())
     output_devices_pq_.pop();
 
-  for (size_t i = 0; i < nodes.size(); ++i) {
-    AudioDevice device = ConvertAudioNodeWithModifiedPriority(nodes[i]);
+  for (AudioDevice device : devices) {
     audio_devices_[device.id] = device;
     if (!has_alternative_input_ && device.is_input &&
         device.IsExternalDevice()) {
@@ -1814,12 +1818,12 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   }
 
   // Handle output device changes.
-  HandleAudioDeviceChange(false, output_devices_pq_, hotplug_output_nodes,
+  HandleAudioDeviceChange(false, output_devices_pq_, hotplug_output_devices,
                           output_devices_changed, has_output_removed,
                           active_output_removed);
 
   // Handle input device changes.
-  HandleAudioDeviceChange(true, input_devices_pq_, hotplug_input_nodes,
+  HandleAudioDeviceChange(true, input_devices_pq_, hotplug_input_devices,
                           input_devices_changed, has_input_removed,
                           active_input_removed);
 
@@ -1837,7 +1841,7 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
 void CrasAudioHandler::HandleAudioDeviceChange(
     bool is_input,
     const AudioDevicePriorityQueue& devices_pq,
-    const AudioDevicePriorityQueue& hotplug_nodes,
+    const AudioDevicePriorityQueue& hotplug_devices,
     bool has_device_change,
     bool has_device_removed,
     bool active_device_removed) {
@@ -1870,12 +1874,13 @@ void CrasAudioHandler::HandleAudioDeviceChange(
   if (!active_device || !active_device->active)
     active_node_id = 0;
 
-  if (!active_node_id || hotplug_nodes.empty() || hotplug_nodes.size() > 1) {
-    HandleNonHotplugNodesChange(is_input, hotplug_nodes, has_device_change,
+  if (!active_node_id || hotplug_devices.empty() ||
+      hotplug_devices.size() > 1) {
+    HandleNonHotplugNodesChange(is_input, hotplug_devices, has_device_change,
                                 has_device_removed, active_device_removed);
   } else {
     // Typical user hotplug case.
-    HandleHotPlugDevice(hotplug_nodes.top(), devices_pq);
+    HandleHotPlugDevice(hotplug_devices.top(), devices_pq);
   }
 }
 
