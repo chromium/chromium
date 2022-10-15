@@ -1116,6 +1116,7 @@ ci.builder(
     os = os.MAC_DEFAULT,
     cores = None,
     reclient_bootstrap_env = {
+        "RBE_ip_timeout": "-1s",
         "GLOG_vmodule": "bridge*=2",
     },
 )

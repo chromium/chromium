@@ -45,6 +45,10 @@
     }
   },
   "$build/reclient": {
+    "bootstrap_env": {
+      "GLOG_vmodule": "bridge*=2",
+      "RBE_ip_timeout": "-1s"
+    },
     "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics"
   },
