@@ -189,6 +189,62 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
   static_cast<DocumentParser*>(parser)->StopParsing();
 }
 
+class HTMLDocumentParserThreadedPreloadScannerTest : public PageTestBase {
+ protected:
+  HTMLDocumentParserThreadedPreloadScannerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kThreadedPreloadScanner, features::kPrecompileInlineScripts},
+        {});
+    HTMLDocumentParser::ResetCachedFeaturesForTesting();
+  }
+
+  ~HTMLDocumentParserThreadedPreloadScannerTest() override {
+    scoped_feature_list_.Reset();
+    HTMLDocumentParser::ResetCachedFeaturesForTesting();
+  }
+
+  void SetUp() override {
+    PageTestBase::SetUp();
+    GetDocument().SetURL(KURL("https://example.test"));
+  }
+
+  HTMLDocumentParser* CreateParser(HTMLDocument& document) {
+    return MakeGarbageCollected<HTMLDocumentParser>(document,
+                                                    kAllowDeferredParsing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HTMLDocumentParserThreadedPreloadScannerTest,
+       TakeBackgroundScanCallback) {
+  auto& document = To<HTMLDocument>(GetDocument());
+  HTMLDocumentParser* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+
+  // First append "foo" script which should be passed through to the scanner.
+  parser->AppendDecodedData("<script>foo</script>", DocumentEncodingData());
+  HTMLDocumentParser::FlushPreloadScannerThreadForTesting();
+  EXPECT_TRUE(parser->HasInlineScriptStreamerForTesting("foo"));
+
+  // Now take the callback.
+  auto callback =
+      static_cast<DocumentParser*>(parser)->TakeBackgroundScanCallback();
+
+  // Append "bar" script which should not be passed to the scanner.
+  parser->AppendDecodedData("<script>bar</script>", DocumentEncodingData());
+  HTMLDocumentParser::FlushPreloadScannerThreadForTesting();
+  EXPECT_FALSE(parser->HasInlineScriptStreamerForTesting("bar"));
+
+  // Append "baz" script to the callback which should be passed to the scanner.
+  callback.Run("<script>baz</script>");
+  HTMLDocumentParser::FlushPreloadScannerThreadForTesting();
+  EXPECT_TRUE(parser->HasInlineScriptStreamerForTesting("baz"));
+
+  static_cast<DocumentParser*>(parser)->StopParsing();
+}
+
 class HTMLDocumentParserProcessImmediatelyTest : public PageTestBase {
  protected:
   void SetUp() override {

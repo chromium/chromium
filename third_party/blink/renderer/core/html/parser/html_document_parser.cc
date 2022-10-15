@@ -90,11 +90,19 @@ class EndIfDelayedForbiddenScope;
 class ShouldCompleteScope;
 class AttemptToEndForbiddenScope;
 
-bool ThreadedPreloadScannerEnabled() {
+enum class FeatureResetMode {
+  kUseCached,
+  kResetForTesting,
+};
+
+bool ThreadedPreloadScannerEnabled(
+    FeatureResetMode reset_mode = FeatureResetMode::kUseCached) {
   // Cache the feature value since checking for each parser regresses some micro
   // benchmarks.
-  static const bool kEnabled =
+  static bool kEnabled =
       base::FeatureList::IsEnabled(features::kThreadedPreloadScanner);
+  if (reset_mode == FeatureResetMode::kResetForTesting)
+    kEnabled = base::FeatureList::IsEnabled(features::kThreadedPreloadScanner);
   return kEnabled;
 }
 
@@ -106,11 +114,14 @@ bool TimedParserBudgetEnabled() {
   return kEnabled;
 }
 
-bool PrecompileInlineScriptsEnabled() {
+bool PrecompileInlineScriptsEnabled(
+    FeatureResetMode reset_mode = FeatureResetMode::kUseCached) {
   // Cache the feature value since checking for each parser regresses some micro
   // benchmarks.
-  static const bool kEnabled =
+  static bool kEnabled =
       base::FeatureList::IsEnabled(features::kPrecompileInlineScripts);
+  if (reset_mode == FeatureResetMode::kResetForTesting)
+    kEnabled = base::FeatureList::IsEnabled(features::kPrecompileInlineScripts);
   return kEnabled;
 }
 
@@ -627,7 +638,7 @@ void HTMLDocumentParser::Detach() {
   preload_scanner_.reset();
   insertion_preload_scanner_.reset();
   background_script_scanner_.Reset();
-  background_scanner_.Reset();
+  background_scanner_.reset();
   // Oilpan: HTMLTokenProducer may allocate a fair amount of memory. Destroy
   // it to ensure that memory is released.
   token_producer_.reset();
@@ -1364,6 +1375,20 @@ void HTMLDocumentParser::NotifyNoRemainingAsyncScripts() {
     AttemptToRunDeferredScriptsAndEnd();
 }
 
+// static
+void HTMLDocumentParser::ResetCachedFeaturesForTesting() {
+  ThreadedPreloadScannerEnabled(FeatureResetMode::kResetForTesting);
+  PrecompileInlineScriptsEnabled(FeatureResetMode::kResetForTesting);
+}
+
+// static
+void HTMLDocumentParser::FlushPreloadScannerThreadForTesting() {
+  base::RunLoop run_loop;
+  GetPreloadScannerThread()->GetTaskRunner()->PostTask(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 void HTMLDocumentParser::ExecuteScriptsWaitingForResources() {
   TRACE_EVENT0("blink",
                "HTMLDocumentParser::ExecuteScriptsWaitingForResources");
@@ -1567,6 +1592,13 @@ std::string HTMLDocumentParser::GetPreloadHistogramSuffix() {
                        have_seen_first_byte ? ".NonInitial" : ".Initial"});
 }
 
+DocumentParser::BackgroundScanCallback
+HTMLDocumentParser::TakeBackgroundScanCallback() {
+  if (!background_scan_fn_)
+    return BackgroundScanCallback();
+  return CrossThreadBindRepeating(std::move(background_scan_fn_), KURL());
+}
+
 void HTMLDocumentParser::ScanInBackground(const String& source) {
   if (task_runner_state_->IsSynchronous() || !GetDocument()->Url().IsValid())
     return;
@@ -1580,17 +1612,29 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
     // is already available.
     DCHECK(!preload_scanner_);
     if (!background_scanner_) {
+      // See comment on NavigationBodyLoader::StartLoadingBodyInBackground() for
+      // details on how the preload scanner flow works when the body data is
+      // being loaded in the background.
       background_scanner_ = HTMLPreloadScanner::CreateBackground(
-          this, options_, GetPreloadScannerThread()->GetTaskRunner());
+          this, options_, GetPreloadScannerThread()->GetTaskRunner(),
+          CrossThreadBindRepeating(
+              &HTMLDocumentParser::AddPreloadDataOnBackgroundThread,
+              WrapCrossThreadWeakPersistent(this),
+              GetDocument()->GetTaskRunner(TaskType::kInternalLoading)));
+
+      background_scan_fn_ = CrossThreadBindRepeating(
+          [](base::WeakPtr<HTMLPreloadScanner> scanner, const KURL& url,
+             const String& data) {
+            PostCrossThreadTask(
+                *GetPreloadScannerThread()->GetTaskRunner(), FROM_HERE,
+                CrossThreadBindOnce(&HTMLPreloadScanner::ScanInBackground,
+                                    std::move(scanner), data, url));
+          },
+          background_scanner_->AsWeakPtr());
     }
 
-    background_scanner_.AsyncCall(&HTMLPreloadScanner::ScanInBackground)
-        .WithArgs(
-            source, GetDocument()->ValidBaseElementURL(),
-            CrossThreadBindRepeating(
-                &HTMLDocumentParser::AddPreloadDataOnBackgroundThread,
-                WrapCrossThreadPersistent(this),
-                GetDocument()->GetTaskRunner(TaskType::kInternalLoading)));
+    if (background_scan_fn_)
+      background_scan_fn_.Run(GetDocument()->ValidBaseElementURL(), source);
     return;
   }
 

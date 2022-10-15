@@ -147,6 +147,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -1027,6 +1028,17 @@ void DocumentLoader::DecodedBodyDataReceived(
   DecodedBodyData body_data(data, DocumentEncodingData(encoding_data),
                             encoded_data);
   BodyDataReceivedImpl(body_data);
+}
+
+DocumentLoader::ProcessBackgroundDataCallback
+DocumentLoader::TakeProcessBackgroundDataCallback() {
+  auto callback = parser_->TakeBackgroundScanCallback();
+  if (!callback)
+    return ProcessBackgroundDataCallback();
+  return CrossThreadBindRepeating(
+      [](const DocumentParser::BackgroundScanCallback& callback,
+         const WebString& data) { callback.Run(data); },
+      std::move(callback));
 }
 
 void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {

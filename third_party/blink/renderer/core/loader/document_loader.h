@@ -548,6 +548,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                            int64_t total_decoded_body_length,
                            bool should_report_corb_blocking,
                            const absl::optional<WebURLError>& error) override;
+  ProcessBackgroundDataCallback TakeProcessBackgroundDataCallback() override;
 
   void ApplyClientHintsConfig(
       const WebVector<network::mojom::WebClientHintsType>&

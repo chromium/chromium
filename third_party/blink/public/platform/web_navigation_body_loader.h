@@ -14,6 +14,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -54,6 +55,16 @@ class BLINK_EXPORT WebNavigationBodyLoader {
         int64_t total_decoded_body_length,
         bool should_report_corb_blocking,
         const absl::optional<WebURLError>& error) = 0;
+
+    // The client can return a ProcessBackgroundDataCallback which will be
+    // called on a background thread with the decoded data. The returned
+    // callback will be called on a background thread with the same decoded data
+    // which will be given to DecodedBodyDataReceived().
+    using ProcessBackgroundDataCallback =
+        WTF::CrossThreadRepeatingFunction<void(const WebString&)>;
+    virtual ProcessBackgroundDataCallback TakeProcessBackgroundDataCallback() {
+      return ProcessBackgroundDataCallback();
+    }
   };
 
   // This method fills navigation params related to the navigation request,

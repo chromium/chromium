@@ -1069,18 +1069,22 @@ std::unique_ptr<HTMLPreloadScanner> HTMLPreloadScanner::Create(
 }
 
 // static
-WTF::SequenceBound<HTMLPreloadScanner> HTMLPreloadScanner::CreateBackground(
+HTMLPreloadScanner::BackgroundPtr HTMLPreloadScanner::CreateBackground(
     HTMLDocumentParser* parser,
     HTMLParserOptions options,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    TakePreloadFn take_preload) {
   auto* document = parser->GetDocument();
-  return WTF::SequenceBound<HTMLPreloadScanner>(
-      std::move(task_runner), std::make_unique<HTMLTokenizer>(options),
-      options.priority_hints_origin_trial_enabled, document->Url(),
-      std::make_unique<CachedDocumentParameters>(document),
-      MediaValuesCached::MediaValuesCachedData(*document),
-      TokenPreloadScanner::ScannerType::kMainDocument,
-      BackgroundHTMLScanner::ScriptTokenScanner::Create(parser));
+  return BackgroundPtr(
+      new HTMLPreloadScanner(
+          std::make_unique<HTMLTokenizer>(options),
+          options.priority_hints_origin_trial_enabled, document->Url(),
+          std::make_unique<CachedDocumentParameters>(document),
+          MediaValuesCached::MediaValuesCachedData(*document),
+          TokenPreloadScanner::ScannerType::kMainDocument,
+          BackgroundHTMLScanner::ScriptTokenScanner::Create(parser),
+          std::move(take_preload)),
+      Deleter{task_runner});
 }
 
 HTMLPreloadScanner::HTMLPreloadScanner(
@@ -1091,14 +1095,16 @@ HTMLPreloadScanner::HTMLPreloadScanner(
     const MediaValuesCached::MediaValuesCachedData& media_values_cached_data,
     const TokenPreloadScanner::ScannerType scanner_type,
     std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
-        script_token_scanner)
+        script_token_scanner,
+    TakePreloadFn take_preload)
     : scanner_(document_url,
                std::move(document_parameters),
                media_values_cached_data,
                scanner_type,
                priority_hints_origin_trial_enabled),
       tokenizer_(std::move(tokenizer)),
-      script_token_scanner_(std::move(script_token_scanner)) {}
+      script_token_scanner_(std::move(script_token_scanner)),
+      take_preload_(std::move(take_preload)) {}
 
 HTMLPreloadScanner::~HTMLPreloadScanner() = default;
 
@@ -1107,8 +1113,7 @@ void HTMLPreloadScanner::AppendToEnd(const SegmentedString& source) {
 }
 
 std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
-    const KURL& starting_base_element_url,
-    const TakePreloadFn& take_preload) {
+    const KURL& starting_base_element_url) {
   auto pending_data = std::make_unique<PendingPreloadData>();
 
   TRACE_EVENT1("blink", "HTMLPreloadScanner::scan", "source_length",
@@ -1147,19 +1152,19 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
       return pending_data;
     }
     // Incrementally add preloads when scanning in the background.
-    if (take_preload && !pending_data->requests.empty()) {
-      take_preload.Run(std::move(pending_data));
+    if (take_preload_ && !pending_data->requests.empty()) {
+      take_preload_.Run(std::move(pending_data));
       pending_data = std::make_unique<PendingPreloadData>();
     }
   }
   return pending_data;
 }
 
-void HTMLPreloadScanner::ScanInBackground(const String& source,
-                                          const KURL& document_base_element_url,
-                                          const TakePreloadFn& take_preload) {
+void HTMLPreloadScanner::ScanInBackground(
+    const String& source,
+    const KURL& document_base_element_url) {
   source_.Append(source);
-  take_preload.Run(Scan(document_base_element_url, take_preload));
+  take_preload_.Run(Scan(document_base_element_url));
 }
 
 CachedDocumentParameters::CachedDocumentParameters(Document* document) {
