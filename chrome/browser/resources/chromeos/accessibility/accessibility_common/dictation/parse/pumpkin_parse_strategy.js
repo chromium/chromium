@@ -16,26 +16,26 @@ import {MacroName} from '../macros/macro_names.js';
 import * as RepeatableKeyPressMacro from '../macros/repeatable_key_press_macro.js';
 
 import {ParseStrategy} from './parse_strategy.js';
-
-const PumpkinData = chrome.accessibilityPrivate.PumpkinData;
+import * as PumpkinConstants from './pumpkin/pumpkin_constants.js';
 
 /** A parsing strategy that utilizes the Pumpkin semantic parser. */
 export class PumpkinParseStrategy extends ParseStrategy {
   /** @param {!InputController} inputController */
   constructor(inputController) {
     super(inputController);
-
-    /** @private {speech.pumpkin.api.js.PumpkinTagger.PumpkinTagger} */
-    this.pumpkinTagger_ = null;
-
-    /** @private {?Promise} */
-    this.pumpkinLoadingPromise_ = null;
-
     /**
      * Whether or not the feature flag gating this object's logic is enabled.
      * @private {boolean}
      */
     this.featureEnabled_ = false;
+    /** @private {?PumpkinConstants.PumpkinData} */
+    this.pumpkinData_ = null;
+    /** @private {boolean} */
+    this.pumpkinTaggerReady_ = false;
+    /** @private {Function} */
+    this.tagResolver_ = null;
+    /** @private {?Worker} */
+    this.worker_ = null;
 
     this.init_();
   }
@@ -46,7 +46,9 @@ export class PumpkinParseStrategy extends ParseStrategy {
                                .DICTATION_PUMPKIN_PARSING;
     chrome.accessibilityPrivate.isFeatureEnabled(pumpkinFeature, enabled => {
       this.featureEnabled_ = enabled;
-      if (!enabled) {
+      const pumpkinLocale =
+          PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale];
+      if (!enabled || !pumpkinLocale) {
         return;
       }
 
@@ -57,7 +59,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
   }
 
   /**
-   * @param {PumpkinData} data
+   * @param {PumpkinConstants.PumpkinData} data
    * @private
    */
   onPumpkinInstalled_(data) {
@@ -69,104 +71,75 @@ export class PumpkinParseStrategy extends ParseStrategy {
     }
 
     for (const [key, value] of Object.entries(data)) {
-      if (value.byteLength === 0) {
-        console.warn(`Pumpkin data incomplete, missing data for ${key}`);
-        return;
+      if (!value || value.byteLength === 0) {
+        throw new Error(`Pumpkin data incomplete, missing data for ${key}`);
       }
     }
 
-    // TODO(akihiroota): Instantiate a sandboxed iframe for Pumpkin.
-  }
-
-  /**
-   * Initializes Pumpkin by loading the required scripts and creating the
-   * PumpkinTagger object.
-   * @param {string} locale The locale in which to init Pumpkin actions.
-   * @return {!Promise<undefined>}
-   * @private
-   */
-  async initPumpkin_(locale) {
-    if (this.pumpkinLoadingPromise_) {
-      // Already initializing.
+    const pumpkinLocale = PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale];
+    if (!pumpkinLocale || !this.isEnabled()) {
       return;
     }
 
-    this.pumpkinLoadingPromise_ =
-        new Promise(async (pumpkinLoadResolve, pumpkinLoadReject) => {
-          // Check for objects defined by the Pumpkin WASM.
-          if (!goog || !goog['global'] || !goog['global']['Module']) {
-            await this.loadPumpkinScripts_();
-          }
-          const success = await this.createPumpkinTagger_(locale);
-          if (success) {
-            pumpkinLoadResolve();
-          } else {
-            pumpkinLoadReject();
-          }
+    // Create SandboxedPumpkinTagger.
+    this.pumpkinTaggerReady_ = false;
+    this.pumpkinData_ = data;
+
+    this.worker_ = new Worker(
+        PumpkinConstants.SANDBOXED_PUMPKIN_TAGGER_JS_FILE, {type: 'module'});
+    this.worker_.onmessage = (message) => this.onMessage_(message);
+  }
+
+  /**
+   * Called when the SandboxedPumpkinTagger posts a message to the background
+   * context.
+   * @param {!Event} message
+   * @private
+   */
+  onMessage_(message) {
+    const command =
+        /** @type {!PumpkinConstants.FromPumpkinTagger} */ (message.data);
+    switch (command.type) {
+      case PumpkinConstants.FromPumpkinTaggerCommand.READY:
+        const pumpkinLocale =
+            PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale];
+        if (!pumpkinLocale) {
+          throw new Error(
+              `Can't load SandboxedPumpkinTagger in an unsupported locale ${
+                  LocaleInfo.locale}`);
+        }
+
+        this.sendToSandboxedPumpkinTagger_({
+          type: PumpkinConstants.ToPumpkinTaggerCommand.LOAD,
+          locale: pumpkinLocale,
+          pumpkinData: this.pumpkinData_,
         });
-  }
-
-  /**
-   * Creates a PumpkinTagger from a config and action frame file for a
-   * particular locale.
-   * @param {string} locale The locale in which to init Pumpkin actions.
-   * @return {!Promise<boolean>} Whether the tagger was created successfully.
-   * @private
-   */
-  async createPumpkinTagger_(locale) {
-    const pumpkinTagger =
-        new speech.pumpkin.api.js.PumpkinTagger.PumpkinTagger();
-    try {
-      const path = `${PumpkinParseStrategy.PUMPKIN_DIR}${locale}/`;
-      let success = await pumpkinTagger.initializeFromPumpkinConfig(
-          `${path}${PumpkinParseStrategy.PUMPKIN_CONFIG_PROTO_SRC}`);
-      if (!success) {
-        console.warn('Failed to load PumpkinTagger from PumpkinConfig.');
-        return false;
-      }
-      success = await pumpkinTagger.loadActionFrame(
-          `${path}${PumpkinParseStrategy.PUMPKIN_ACTION_CONFIG_PROTO_SRC}`);
-      if (!success) {
-        console.warn('Failed to load Pumpkin ActionConfig.');
-        return false;
-      }
-    } catch (e) {
-      console.warn('Error initializing PumpkinTagger', e);
-      return false;
+        this.pumpkinData_ = null;
+        return;
+      case PumpkinConstants.FromPumpkinTaggerCommand.FULLY_INITIALIZED:
+        this.pumpkinTaggerReady_ = true;
+        return;
+      case PumpkinConstants.FromPumpkinTaggerCommand.TAG_RESULTS:
+        this.tagResolver_(command.results);
+        return;
     }
-    this.pumpkinTagger_ = pumpkinTagger;
-    return true;
+
+    throw new Error(
+        `Unrecognized message received from SandboxedPumpkinTagger: ${
+            command.type}`);
   }
 
   /**
-   * Loads the Pumpkin scripts javascript in to the document.
-   * @return {!Promise<undefined>}
+   * @param {!PumpkinConstants.ToPumpkinTagger} command
    * @private
    */
-  async loadPumpkinScripts_() {
-    const pumpkinTaggerScript =
-        /** @type {!HTMLScriptElement} */ (document.createElement('script'));
-    pumpkinTaggerScript.src = PumpkinParseStrategy.PUMPKIN_TAGGER_SRC;
-    const taggerLoadPromise = new Promise((resolve, reject) => {
-      pumpkinTaggerScript.addEventListener('load', () => {
-        resolve();
-      });
-    });
-    document.head.appendChild(pumpkinTaggerScript);
-    await taggerLoadPromise;
+  sendToSandboxedPumpkinTagger_(command) {
+    if (!this.worker_) {
+      throw new Error(
+          'Worker not ready, cannot send message to SandboxedPumpkinTagger');
+    }
 
-    const wasmModuleScript =
-        /** @type {!HTMLScriptElement} */ (document.createElement('script'));
-    wasmModuleScript.src = PumpkinParseStrategy.PUMPKIN_WASM_SRC;
-    const moduleLoadPromise = new Promise((resolve, reject) => {
-      goog['global']['Module'] = {
-        onRuntimeInitialized() {
-          resolve();
-        },
-      };
-    });
-    document.head.appendChild(wasmModuleScript);
-    await moduleLoadPromise;
+    this.worker_.postMessage(command);
   }
 
   /**
@@ -187,21 +160,21 @@ export class PumpkinParseStrategy extends ParseStrategy {
     for (let i = 0; i < numArgs; i++) {
       const argument = hypothesis.actionArgumentList[i];
       // See Variable Argument Placeholders in voiceaccess.patterns_template.
-      if (argument.name ===
-          PumpkinParseStrategy.HypothesisArgumentName.SEM_TAG) {
+      if (argument.name === PumpkinConstants.HypothesisArgumentName.SEM_TAG) {
         tag = MacroName[argument.value];
       } else if (
-          argument.name ===
-          PumpkinParseStrategy.HypothesisArgumentName.NUM_ARG) {
+          argument.name === PumpkinConstants.HypothesisArgumentName.NUM_ARG) {
         repeat = argument.value;
       } else if (
           argument.name ===
-          PumpkinParseStrategy.HypothesisArgumentName.OPEN_ENDED_TEXT) {
+          PumpkinConstants.HypothesisArgumentName.OPEN_ENDED_TEXT) {
         text = argument.value;
       }
     }
+
     // TODO(crbug.com/1362842) Add all macros under the DictationMoreCommands
     // to this switch statement.
+    // TODO(crbug.com/1258190): Add support for new macros here.
     switch (tag) {
       case MacroName.INPUT_TEXT_VIEW:
         return new InputTextViewMacro(text, this.getInputController());
@@ -241,85 +214,44 @@ export class PumpkinParseStrategy extends ParseStrategy {
   }
 
   /** @override */
+  refresh() {
+    const pumpkinLocale = PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale];
+    this.enabled = Boolean(pumpkinLocale) && LocaleInfo.areCommandsSupported();
+    // TODO(https://crbug.com/1258190): Re-initialize SandboxedPumpkinTagger
+    // if the locale changed.
+  }
+
+  /** @override */
   async parse(text) {
-    // Pumpkin load requires several async calls. If the request to parse
-    // comes before load is complete, wait for load. This happens during
-    // browser tests which may be fast enough to start sending speech text
-    // before callbacks with user prefs have completed.
-    if (this.pumpkinLoadingPromise_) {
-      await this.pumpkinLoadingPromise_;
+    if (!this.isEnabled() || !this.pumpkinTaggerReady_) {
+      return null;
     }
 
-    // Try to get results from Pumpkin.
+    this.tagResolver_ = null;
+    // Get results from Pumpkin.
     // TODO(crbug.com/1264544): Could increase the hypotheses count from 1
     // when we are ready to implement disambiguation.
-    if (this.pumpkinTagger_) {
-      // Try to get results from Pumpkin.
-      // TODO(crbug.com/1264544): Could increase the hypotheses count from 1
-      // when we are ready to implement disambiguation.
-      // TODO(crbug.com/1362842) Add logic to check whether
-      // DictationMoreCommands is enabled or not before
-      // running the macros hidden within that flag.
-      const taggerResults =
-          this.pumpkinTagger_.tagAndGetNBestHypotheses(text, 1);
-      if (taggerResults && taggerResults.hypothesisList.length > 0) {
-        const macro =
-            this.macroFromPumpkinHypothesis_(taggerResults.hypothesisList[0]);
-        if (macro) {
-          return macro;
-        }
-      }
+    // TODO(crbug.com/1362842) Add logic to check whether
+    // DictationMoreCommands is enabled or not before
+    // running the macros hidden within that flag.
+    this.sendToSandboxedPumpkinTagger_({
+      type: PumpkinConstants.ToPumpkinTaggerCommand.TAG,
+      text,
+      numResults: 1,
+    });
+    const taggerResults = await new Promise(resolve => {
+      this.tagResolver_ = resolve;
+    });
+
+    if (!taggerResults || taggerResults.hypothesisList.length === 0) {
+      return null;
     }
 
-    return null;
+    return this.macroFromPumpkinHypothesis_(taggerResults.hypothesisList[0]);
+  }
+
+  /** @override */
+  isEnabled() {
+    return this.enabled && this.featureEnabled_;
   }
 }
-
-/**
- * PumpkinTagger Hypothesis argument names. These should match the variable
- * argument placeholders in voiceaccess.patterns_template and the static strings
- * defined in voiceaccess/utils/PumpkinUtils.java in google3.
- * @enum {string}
- */
-PumpkinParseStrategy.HypothesisArgumentName = {
-  SEM_TAG: 'SEM_TAG',
-  NUM_ARG: 'NUM_ARG',
-  OPEN_ENDED_TEXT: 'OPEN_ENDED_TEXT',
-};
-
-/**
- * The pumpkin/ directory, relative to the accessibility common base directory.
- * @type {string}
- * @const
- */
-PumpkinParseStrategy.PUMPKIN_DIR = 'dictation/parse/pumpkin/';
-
-/**
- * The path to the pumpkin tagger source file.
- * @type {string}
- * @const
- */
-PumpkinParseStrategy.PUMPKIN_TAGGER_SRC =
-    PumpkinParseStrategy.PUMPKIN_DIR + 'js_pumpkin_tagger_bin.js';
-
-/**
- * The path to the pumpkin web assembly module source file.
- * @type {string}
- * @const
- */
-PumpkinParseStrategy.PUMPKIN_WASM_SRC =
-    PumpkinParseStrategy.PUMPKIN_DIR + 'tagger_wasm_main.js';
-
-/**
- * The name of the pumpkin config binary proto file.
- * @type {string}
- * @const
- */
-PumpkinParseStrategy.PUMPKIN_CONFIG_PROTO_SRC = 'pumpkin_config.binarypb';
-
-/**
- * The name of the pumpkin action config binary proto file.
- * @type {string}
- * @const
- */
-PumpkinParseStrategy.PUMPKIN_ACTION_CONFIG_PROTO_SRC = 'action_config.binarypb';

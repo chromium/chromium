@@ -53,7 +53,9 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/metrics_utils.js",
     "dictation/parse/input_text_strategy.js",
     "dictation/parse/parse_strategy.js",
+    "dictation/parse/pumpkin/pumpkin_constants.js",
     "dictation/parse/pumpkin_parse_strategy.js",
+    "dictation/parse/sandboxed_pumpkin_tagger.js",
     "dictation/parse/simple_parse_strategy.js",
     "dictation/parse/speech_parser.js",
     "dictation/ui_controller.js",
@@ -69,7 +71,10 @@ source_set("browser_tests") {
   testonly = true
   assert(enable_extensions)
 
-  deps = [ ":accessibility_common_extjs_tests" ]
+  deps = [
+    ":accessibility_common_extjs_tests",
+    ":pumpkin_test_files",
+  ]
 
   data = [
     "$root_out_dir/chrome_100_percent.pak",
@@ -99,6 +104,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "dictation/locale_info_test.js",
     "dictation/macros/dictation_macros_test.js",
     "dictation/parse/dictation_parse_test.js",
+    "dictation/parse/dictation_pumpkin_parse_test.js",
     "magnifier/magnifier_test.js",
   ]
   gen_include_files = [
@@ -234,7 +240,9 @@ js_library("speech_parsing") {
   sources = [
     "dictation/parse/input_text_strategy.js",
     "dictation/parse/parse_strategy.js",
+    "dictation/parse/pumpkin/pumpkin_constants.js",
     "dictation/parse/pumpkin_parse_strategy.js",
+    "dictation/parse/sandboxed_pumpkin_tagger.js",
     "dictation/parse/simple_parse_strategy.js",
     "dictation/parse/speech_parser.js",
   ]
@@ -243,6 +251,7 @@ js_library("speech_parsing") {
     ":dictation_locale_info",
     ":dictation_macros",
   ]
+  externs_list = [ "$externs_path/accessibility_private.js" ]
 }
 
 js_library("dictation_metrics") {
@@ -269,4 +278,26 @@ js_library("dictation_editing_util") {
 
 js_library("dictation_locale_info") {
   sources = [ "dictation/locale_info.js" ]
+}
+
+action("pumpkin_test_files") {
+  testonly = true
+
+  pumpkin_output_dir = "$accessibility_common_dir/dictation/parse/pumpkin"
+  script = "dictation/parse/pumpkin/unpack_pumpkin.py"
+  sources = [ "dictation/parse/pumpkin/pumpkin-2.0.tar.xz" ]
+  files_to_extract = [
+    "$pumpkin_output_dir/js_pumpkin_tagger_bin.js",
+    "$pumpkin_output_dir/tagger_wasm_main.js",
+    "$pumpkin_output_dir/tagger_wasm_main.wasm",
+    "$pumpkin_output_dir/en_us/action_config.binarypb",
+    "$pumpkin_output_dir/en_us/pumpkin_config.binarypb",
+  ]
+  args = [
+    "--dest-dir=resources/chromeos/accessibility/accessibility_common/dictation/parse/pumpkin",
+    rebase_path("dictation/parse/pumpkin/pumpkin-2.0.tar.xz", root_build_dir),
+    string_join(",", files_to_extract),
+    pumpkin_output_dir,
+  ]
+  outputs = files_to_extract
 }

@@ -12,6 +12,17 @@
  */
 let SelectToSpeakPanelState;
 
+/**
+ * @typedef {{
+ *  js_pumpkin_tagger_bin_js: !ArrayBuffer,
+ *  tagger_wasm_main_js: !ArrayBuffer,
+ *  tagger_wasm_main_wasm: !ArrayBuffer,
+ *  en_us_action_config_binarypb: !ArrayBuffer,
+ *  en_us_pumpkin_config_binarypb: !ArrayBuffer,
+ * }}
+ */
+let MockPumpkinData;
+
 /*
  * A mock AccessibilityPrivate API for tests.
  */
@@ -47,6 +58,9 @@ class MockAccessibilityPrivate {
 
     /** @private {function<number, number>} */
     this.boundsListener_ = null;
+
+    /** @private {?MockPumpkinData} */
+    this.pumpkinData_ = null;
 
     /**
      * @private {function(!chrome.accessibilityPrivate.SelectToSpeakPanelAction,
@@ -242,6 +256,11 @@ class MockAccessibilityPrivate {
    */
   sendSyntheticKeyEvent(unused) {}
 
+  /** @return {?PumpkinData} */
+  installPumpkinForDictation(callback) {
+    callback(MockAccessibilityPrivate.pumpkinData_);
+  }
+
   // Methods for testing. //
 
   /**
@@ -385,5 +404,35 @@ class MockAccessibilityPrivate {
     } else if (this.enabledFeatures_.has(feature)) {
       this.enabledFeatures_.delete(feature);
     }
+  }
+
+  /** @return {!Promise} */
+  async initializePumpkinData() {
+    /**
+     * @param {string} file
+     * @return {!Promise<!ArrayBuffer>}
+     */
+    const getFileBytes = async (file) => {
+      const response = await fetch(file);
+      if (response.status === 404) {
+        throw `Failed to fetch file: ${file}`;
+      }
+
+      return await response.arrayBuffer();
+    };
+
+    const data = {};
+    const pumpkinDir = '../../accessibility_common/dictation/parse/pumpkin';
+    data.js_pumpkin_tagger_bin_js =
+        await getFileBytes(`${pumpkinDir}/js_pumpkin_tagger_bin.js`);
+    data.tagger_wasm_main_js =
+        await getFileBytes(`${pumpkinDir}/tagger_wasm_main.js`);
+    data.tagger_wasm_main_wasm =
+        await getFileBytes(`${pumpkinDir}/tagger_wasm_main.wasm`);
+    data.en_us_action_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/en_us/action_config.binarypb`);
+    data.en_us_pumpkin_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/en_us/pumpkin_config.binarypb`);
+    MockAccessibilityPrivate.pumpkinData_ = data;
   }
 }
