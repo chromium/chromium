@@ -673,7 +673,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CWP.PSIMemPressure.{PType}" units="failures"
-    expires_after="2022-12-01">
+    expires_after="2023-10-13">
   <owner>raging@google.com</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
