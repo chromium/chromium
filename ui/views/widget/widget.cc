@@ -283,6 +283,7 @@ void Widget::GetAllOwnedWidgets(gfx::NativeView native_view, Widgets* owned) {
 // static
 void Widget::ReparentNativeView(gfx::NativeView native_view,
                                 gfx::NativeView new_parent) {
+  DCHECK(native_view);
   internal::NativeWidgetPrivate::ReparentNativeView(native_view, new_parent);
   Widget* child_widget = GetWidgetForNativeView(native_view);
   Widget* parent_widget =
@@ -640,6 +641,9 @@ Widget::MoveLoopResult Widget::RunMoveLoop(
     const gfx::Vector2d& drag_offset,
     MoveLoopSource source,
     MoveLoopEscapeBehavior escape_behavior) {
+  if (!native_widget_)
+    return MoveLoopResult::kCanceled;
+
   return native_widget_->RunMoveLoop(drag_offset, source, escape_behavior);
 }
 

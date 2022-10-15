@@ -1032,6 +1032,9 @@ void DesktopNativeWidgetAura::RunShellDrag(
     const gfx::Point& location,
     int operation,
     ui::mojom::DragEventSource source) {
+  if (!content_window_)
+    return;
+
   views::RunShellDrag(content_window_, std::move(data), location, operation,
                       source);
 }

@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/hit_test.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -1174,6 +1175,16 @@ TEST_P(WidgetWithDestroyedNativeViewTest, NotifyWillRemoveView) {
   widget()->NotifyWillRemoveView(widget()->non_client_view());
 }
 
+TEST_P(WidgetWithDestroyedNativeViewTest, parent) {
+  widget()->parent();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest,
+       RegisterPaintAsActiveChangedCallback) {
+  auto subscription =
+      widget()->RegisterPaintAsActiveChangedCallback(base::DoNothing());
+}
+
 TEST_P(WidgetWithDestroyedNativeViewTest, ReleaseCapture) {
   widget()->ReleaseCapture();
 }
@@ -1182,8 +1193,24 @@ TEST_P(WidgetWithDestroyedNativeViewTest, ReorderNativeViews) {
   widget()->ReorderNativeViews();
 }
 
+TEST_P(WidgetWithDestroyedNativeViewTest, ReparentNativeView) {
+  EXPECT_DCHECK_DEATH(
+      Widget::ReparentNativeView(widget()->GetNativeView(), nullptr));
+}
+
 TEST_P(WidgetWithDestroyedNativeViewTest, Restore) {
   widget()->Restore();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, RunMoveLoop) {
+  widget()->RunMoveLoop(gfx::Vector2d(), views::Widget::MoveLoopSource::kMouse,
+                        views::Widget::MoveLoopEscapeBehavior::kHide);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, RunShellDrag) {
+  std::unique_ptr<OSExchangeData> data(std::make_unique<OSExchangeData>());
+  widget()->RunShellDrag(nullptr, std::move(data), gfx::Point(), 0,
+                         ui::mojom::DragEventSource::kMouse);
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, SchedulePaintInRect) {
