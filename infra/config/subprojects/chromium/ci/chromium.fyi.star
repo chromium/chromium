@@ -1098,6 +1098,9 @@ ci.builder(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = 250,
     os = os.LINUX_DEFAULT,
+    reclient_bootstrap_env = {
+        "RBE_experimental_goma_deps_cache": "true",
+    },
 )
 
 ci.builder(
@@ -1118,6 +1121,7 @@ ci.builder(
     reclient_bootstrap_env = {
         "RBE_ip_timeout": "-1s",
         "GLOG_vmodule": "bridge*=2",
+        "RBE_experimental_goma_deps_cache": "true",
     },
 )
 
@@ -1138,6 +1142,7 @@ ci.builder(
     cores = None,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
+        "RBE_experimental_goma_deps_cache": "true",
     },
 )
 
@@ -1159,6 +1164,7 @@ ci.builder(
     cpu = cpu.ARM64,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
+        "RBE_experimental_goma_deps_cache": "true",
     },
 )
 
@@ -1177,6 +1183,9 @@ ci.builder(
     reclient_jobs = 80,
     os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
+    reclient_bootstrap_env = {
+        "RBE_experimental_goma_deps_cache": "true",
+    },
 )
 
 ci.builder(
@@ -1195,27 +1204,9 @@ ci.builder(
     reclient_jobs = 250,
     os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
-)
-
-ci.builder(
-    name = "Comparison Windows (reclient) (reproxy cache)",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "win|expcache",
-        short_name = "re",
-    ),
-    cores = 32,
-    goma_jobs = 250,
-    executable = "recipe:reclient_goma_comparison",
-    execution_timeout = 6 * time.hour,
-    reclient_cache_silo = "Comparison Windows (reproxy cache) - cache siloed",
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = 250,
     reclient_bootstrap_env = {
         "RBE_experimental_goma_deps_cache": "true",
     },
-    os = os.WINDOWS_DEFAULT,
-    free_space = builders.free_space.high,
 )
 
 ci.builder(
@@ -1250,6 +1241,9 @@ ci.builder(
     os = os.MAC_DEFAULT,
     cores = None,
     xcode = xcode.x14main,
+    reclient_bootstrap_env = {
+        "RBE_experimental_goma_deps_cache": "true",
+    },
 )
 
 ci.builder(
@@ -1271,6 +1265,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     os = os.LINUX_DEFAULT,
     cores = 32,
     ssd = True,
+    reclient_bootstrap_env = {
+        "RBE_experimental_goma_deps_cache": "true",
+    },
 )
 
 ci.builder(
@@ -1292,6 +1289,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     os = os.LINUX_DEFAULT,
     cores = 16,
     ssd = True,
+    reclient_bootstrap_env = {
+        "RBE_experimental_goma_deps_cache": "true",
+    },
 )
 
 ci.builder(
@@ -1316,6 +1316,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     cores = None,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
+        "RBE_experimental_goma_deps_cache": "true",
     },
 )
 
@@ -1340,6 +1341,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     os = os.WINDOWS_DEFAULT,
     ssd = True,
     cores = 32,
+    reclient_bootstrap_env = {
+        "RBE_experimental_goma_deps_cache": "true",
+    },
 )
 
 ci.builder(
@@ -1362,6 +1366,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     os = os.LINUX_DEFAULT,
     cores = 32,
     ssd = True,
+    reclient_bootstrap_env = {
+        "RBE_experimental_goma_deps_cache": "true",
+    },
 )
 
 ci.builder(
@@ -1385,6 +1392,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     cores = None,
     ssd = True,
     xcode = xcode.x14main,
+    reclient_bootstrap_env = {
+        "RBE_experimental_goma_deps_cache": "true",
+    },
 )
 
 # Build Perf builders use CQ reclient instance and high reclient jobs/cores and
