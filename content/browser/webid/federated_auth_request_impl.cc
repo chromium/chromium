@@ -300,6 +300,10 @@ std::string FormatUrlForDisplay(const GURL& url) {
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
 }
 
+std::string FormatOriginForDisplay(const url::Origin& origin) {
+  return FormatUrlForDisplay(origin.GetURL());
+}
+
 bool ShouldFailIfNotSignedInWithIdp(
     const GURL& idp_url,
     FederatedIdentitySharingPermissionContextDelegate*
@@ -837,8 +841,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog(
   if (!pending_idps_.empty())
     return;
 
-  std::string rp_url_for_display =
-      FormatUrlForDisplay(rp_web_contents->GetLastCommittedURL());
+  std::string rp_url_for_display = FormatOriginForDisplay(GetEmbeddingOrigin());
 
   std::vector<IdentityProviderData> idp_data_for_display;
   for (const auto& idp : idp_order_) {
@@ -848,8 +851,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog(
 
   absl::optional<std::string> iframe_url_for_display = absl::nullopt;
   if (IsFedCmIframeSupportEnabled() && show_iframe_requester_) {
-    iframe_url_for_display =
-        FormatUrlForDisplay(render_frame_host().GetLastCommittedURL());
+    iframe_url_for_display = FormatOriginForDisplay(origin());
   }
 
   request_dialog_controller_->ShowAccountsDialog(
@@ -892,10 +894,8 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   DCHECK(render_frame_host().GetMainFrame()->IsInPrimaryMainFrame());
 
   request_dialog_controller_->ShowFailureDialog(
-      rp_web_contents,
-      FormatUrlForDisplay(rp_web_contents->GetLastCommittedURL()),
-      FormatUrlForDisplay(idp_url),
-      FormatUrlForDisplay(render_frame_host().GetLastCommittedURL()),
+      rp_web_contents, FormatOriginForDisplay(GetEmbeddingOrigin()),
+      FormatUrlForDisplay(idp_url), FormatOriginForDisplay(origin()),
       base::BindOnce(
           &FederatedAuthRequestImpl::OnDismissFailureDialog,
           weak_ptr_factory_.GetWeakPtr(), FederatedAuthRequestResult::kError,
