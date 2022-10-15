@@ -391,6 +391,15 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              'webgpu-caching.html?testId=render-test&worker=true',
              'webgpu-caching.html?testId=render-test-async&worker=true'
          ]),
+        ('RenderPipelineCrossOriginCacheHits',
+         'webgpu-caching.html?testId=render-test&hostname=localhost', [
+             'webgpu-caching.html?testId=render-test&hostname=localhost',
+             'webgpu-caching.html?testId=render-test-async&hostname=localhost',
+             'webgpu-caching.html?testId=render-test&worker=true' +
+             '&hostname=localhost',
+             'webgpu-caching.html?testId=render-test-async&worker=true' +
+             '&hostname=localhost'
+         ]),
         ('ComputePipelineMainThread', 'webgpu-caching.html?testId=compute-test',
          [
              'webgpu-caching.html?testId=compute-test',
@@ -418,6 +427,15 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              'webgpu-caching.html?testId=compute-test-async',
              'webgpu-caching.html?testId=compute-test&worker=true',
              'webgpu-caching.html?testId=compute-test-async&worker=true'
+         ]),
+        ('ComputePipelineCrossOriginCacheHits',
+         'webgpu-caching.html?testId=compute-test&hostname=localhost', [
+             'webgpu-caching.html?testId=compute-test&hostname=localhost',
+             'webgpu-caching.html?testId=compute-test-async&hostname=localhost',
+             'webgpu-caching.html?testId=compute-test&worker=true' +
+             '&hostname=localhost',
+             'webgpu-caching.html?testId=compute-test-async&worker=true' +
+             '&hostname=localhost'
          ]),
     ]
     for (name, first_load_page, cache_pages) in webgpu_caching_tests:
@@ -504,6 +522,54 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                      cache_page_origin=_TraceTestOrigin.LOCALHOST,
                      test_renavigation=False)
              ])
+
+    # WebGPU cross origin cache miss tests.
+    #   These tests load the |first_load_url| and ensure that the load
+    #   populates on-disk entries. The tests then restart the browser for
+    #   subsequent |cache_hit_pages| which are pages that should not generate
+    #   cache hits because they're cross-origin with respect to the initial
+    #   page, and hence should have different isolation keys.
+    webgpu_xorigin_cache_miss_tests: List[Tuple[str, str, List[str]]] = [
+        ('RenderPipelineCrossOriginsCacheMisses',
+         'webgpu-caching.html?testId=render-test&hostname=localhost', [
+             'webgpu-caching.html?testId=render-test',
+             'webgpu-caching.html?testId=render-test-async',
+             'webgpu-caching.html?testId=render-test&worker=true',
+             'webgpu-caching.html?testId=render-test-async&worker=true'
+         ]),
+        ('ComputePipelineCrossOriginsCacheMisses',
+         'webgpu-caching.html?testId=compute-test&hostname=localhost', [
+             'webgpu-caching.html?testId=compute-test',
+             'webgpu-caching.html?testId=compute-test-async',
+             'webgpu-caching.html?testId=compute-test&worker=true',
+             'webgpu-caching.html?testId=compute-test-async&worker=true'
+         ]),
+    ]
+    for (name, first_load_page, cache_pages) in webgpu_xorigin_cache_miss_tests:
+      yield (
+          'WebGPUCachingTraceTest_' + name,
+          posixpath.join(gpu_data_relative_path, first_load_page),
+          [
+              _CacheTraceTestArguments(
+                  browser_args=webgpu_cache_test_browser_args + [
+                      # Currently it seems like this is not always the default
+                      # yet. We may be able to remove this once it is defaulted.
+                      # Without this flag, origin caching uses an isolation key
+                      # that depends only on the top-level page, and hence these
+                      # tests will fail. With the flag, the isolation key uses
+                      # both the top-level page and the subpage.
+                      # TODO(dawn:1568) Revisit whether this is necessary.
+                      '--disable-features=' +
+                      'ForceIsolationInfoFrameOriginToTopLevelFrame'
+                  ],
+                  category='gpu',
+                  test_harness_script=basic_test_harness_script,
+                  finish_js_condition='domAutomationController._finished',
+                  first_load_eval_func='CheckWebGPUFirstLoadCache',
+                  cache_eval_func='CheckNoWebGPUCacheHits',
+                  cache_pages=cache_pages,
+                  test_renavigation=False)
+          ])
 
   def _RunActualGpuTraceTest(self,
                              test_path: str,

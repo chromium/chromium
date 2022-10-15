@@ -17,11 +17,36 @@
 
         // Get the test parameters.
         const testId = parsedString.get('testId');
+        const hostname = parsedString.get('hostname');
         const worker_string = parsedString.get('worker');
         const use_worker =
               (worker_string != null) ? worker_string == 'true' : false;
         const runs_string = parsedString.get('runs');
         const runs = (runs_string != null) ? parseInt(runs_string) : 1;
+
+        // If we pass an explicit hostname, then forward the parameters inside
+        // an iframe at the hostname.
+        if (hostname != null) {
+            parsedString.delete('hostname');
+            const iframe = document.createElement('iframe');
+            const path = window.location.pathname;
+            const search = parsedString.toString();
+            const port = window.location.port;
+            iframe.src = `http://${hostname}:${port}${path}?${search}`;
+            document.body.append(iframe);
+
+            const success = new Promise(
+                resolve => {
+                    window.addEventListener('message',
+                                            e => {
+                                                resolve(e.data.success);
+                                                },
+                                            { once: true })
+                }
+            );
+            domAutomationController.send(await success ? 'SUCCESS' : 'FAILED');
+            return;
+        }
 
         var success = true;
         for (let i = 0; i < runs; i++) {
@@ -45,7 +70,11 @@
                 success = success && await result;
             }
         }
-        domAutomationController.send(success ? 'SUCCESS' : 'FAILED');
+        if (typeof domAutomationController === 'undefined') {
+            parent.postMessage({ success }, '*');
+        } else {
+            domAutomationController.send(success ? 'SUCCESS' : 'FAILED');
+        }
     }
 
     await main();
