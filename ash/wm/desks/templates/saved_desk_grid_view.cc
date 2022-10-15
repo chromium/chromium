@@ -54,7 +54,9 @@ constexpr int kGridPaddingDp = 24;
 // when the grid was first shown.
 constexpr std::size_t kMaxTemplateCount = 6u;
 
-constexpr gfx::Transform kEndTransform;
+gfx::Transform GetEndTransform() {
+  return gfx::Transform();
+}
 
 // Scale for adding/deleting grid items.
 constexpr float kAddOrDeleteItemScale = 0.75f;
@@ -322,7 +324,7 @@ void SavedDeskGridView::AnimateGridItems(
           .Once()
           .Offset(kBoundsChangeAnimationDuration -
                   kTemplateViewsScaleAndFadeDuration)
-          .SetTransform(layer, kEndTransform)
+          .SetTransform(layer, GetEndTransform())
           .SetOpacity(layer, 1.f)
           .SetDuration(kTemplateViewsScaleAndFadeDuration);
       continue;

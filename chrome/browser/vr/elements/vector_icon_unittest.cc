@@ -44,7 +44,7 @@ TEST(VectorIcon, SmokeTest) {
   UiTexture* texture = icon->GetTexture();
   scene.AddUiElement(kRoot, std::move(icon));
   base::TimeTicks start_time = gfx::MsToTicks(1);
-  scene.OnBeginFrame(start_time, kStartHeadPose);
+  scene.OnBeginFrame(start_time, StartHeadPose());
 
   InSequence scope;
   cc::MockCanvas canvas;

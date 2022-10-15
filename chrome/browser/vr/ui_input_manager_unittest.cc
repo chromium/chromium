@@ -104,7 +104,7 @@ class UiInputManagerTest : public testing::Test {
     element->SetTranslate(0, 0, z_position);
     element->set_hit_testable(true);
     scene_->AddUiElement(kRoot, std::move(element));
-    scene_->OnBeginFrame(base::TimeTicks(), kStartHeadPose);
+    scene_->OnBeginFrame(base::TimeTicks(), StartHeadPose());
     return p_element;
   }
 
@@ -115,7 +115,7 @@ class UiInputManagerTest : public testing::Test {
     element->SetSize(1, 0.1);
     element->set_hit_testable(true);
     scene_->AddUiElement(kRoot, std::move(element));
-    scene_->OnBeginFrame(base::TimeTicks(), kStartHeadPose);
+    scene_->OnBeginFrame(base::TimeTicks(), StartHeadPose());
     return p_element;
   }
 
@@ -216,7 +216,7 @@ TEST_F(UiInputManagerTest, FocusableChildStealsFocus) {
   child->set_hit_testable(true);
   child->set_focusable(true);
   p_element->AddChild(std::move(child));
-  scene_->OnBeginFrame(base::TimeTicks(), kStartHeadPose);
+  scene_->OnBeginFrame(base::TimeTicks(), StartHeadPose());
 
   // Focus element.
   testing::Sequence s;
@@ -242,7 +242,7 @@ TEST_F(UiInputManagerTest, NonFocusableChildDoestNotStealFocus) {
   child->set_hit_testable(true);
   child->set_focusable(false);
   p_element->AddChild(std::move(child));
-  scene_->OnBeginFrame(base::TimeTicks(), kStartHeadPose);
+  scene_->OnBeginFrame(base::TimeTicks(), StartHeadPose());
 
   // Focus element.
   testing::Sequence s;
@@ -262,7 +262,7 @@ TEST_F(UiInputManagerTest, ReticleRenderTarget) {
   element->SetTranslate(0, 0, -1.f);
   element->set_hit_testable(true);
   scene_->AddUiElement(kRoot, std::move(element));
-  scene_->OnBeginFrame(base::TimeTicks(), kStartHeadPose);
+  scene_->OnBeginFrame(base::TimeTicks(), StartHeadPose());
 
   ControllerModel controller_model;
   controller_model.laser_direction = kBackwardVector;
@@ -447,7 +447,7 @@ TEST_F(UiInputManagerTest, ElementDeletion) {
 
   // Re-add the element to the scene, and press on it to lock it for input.
   scene_->AddUiElement(kRoot, std::move(deleted_element));
-  scene_->OnBeginFrame(base::TimeTicks(), kStartHeadPose);
+  scene_->OnBeginFrame(base::TimeTicks(), StartHeadPose());
   EXPECT_CALL(*p_element, OnHoverEnter(_, _));
   EXPECT_CALL(*p_element, OnButtonDown(_, _));
   HandleInput(kForwardVector, kDown);
@@ -471,7 +471,7 @@ TEST_F(UiInputManagerTest, HitTestStrategy) {
   element->SetSize(1000.0f, 1000.0f);
   element->set_hit_testable(true);
   scene_->AddUiElement(kRoot, std::move(element));
-  scene_->OnBeginFrame(base::TimeTicks(), kStartHeadPose);
+  scene_->OnBeginFrame(base::TimeTicks(), StartHeadPose());
 
   gfx::Point3F center = p_element->GetCenter();
   gfx::Point3F laser_origin(0.5, -0.5, 0.0);

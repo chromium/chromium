@@ -410,7 +410,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   void SetTransform(const gfx::Transform& transform);
   const gfx::Transform& transform() const {
     return layer_tree_inputs() ? layer_tree_inputs()->transform
-                               : kIdentityTransform;
+                               : gfx::Transform::Identity();
   }
 
   // Gets the transform, including transform origin and position, of this layer
@@ -1175,7 +1175,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
   ProtectedSequenceWritable<std::unique_ptr<LayerDebugInfo>> debug_info_;
 
-  static constexpr gfx::Transform kIdentityTransform{};
   static constexpr gfx::RoundedCornersF kNoRoundedCornersF{};
 };
 

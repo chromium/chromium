@@ -19,7 +19,7 @@ namespace {
 bool DoBeginFrame(UiElement* element, int time_milliseconds) {
   element->set_last_frame_time(gfx::MsToTicks(time_milliseconds));
   const bool force_animations_to_completion = false;
-  return element->DoBeginFrame(kStartHeadPose, force_animations_to_completion);
+  return element->DoBeginFrame(StartHeadPose(), force_animations_to_completion);
 }
 
 }  // namespace
@@ -118,31 +118,31 @@ TEST(SimpleTransientElementTest, VisibilityChildren) {
   parent->AddChild(std::move(element));
 
   // Child hidden because parent is hidden.
-  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(0), StartHeadPose()));
   EXPECT_FALSE(child->IsVisible());
   EXPECT_FALSE(parent->IsVisible());
 
   // Setting visiblity on parent should make the child visible.
   parent->SetVisible(true);
   scene.set_dirty();
-  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(10), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(10), StartHeadPose()));
   EXPECT_TRUE(child->IsVisible());
   EXPECT_TRUE(parent->IsVisible());
 
   // Make sure the elements go away.
-  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(2010), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(2010), StartHeadPose()));
   EXPECT_FALSE(child->IsVisible());
   EXPECT_FALSE(parent->IsVisible());
 
   // Test again, but this time manually set the visibility to false.
   parent->SetVisible(true);
   scene.set_dirty();
-  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(2020), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(2020), StartHeadPose()));
   EXPECT_TRUE(child->IsVisible());
   EXPECT_TRUE(parent->IsVisible());
   parent->SetVisible(false);
   scene.set_dirty();
-  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(2030), kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(gfx::MsToTicks(2030), StartHeadPose()));
   EXPECT_FALSE(child->IsVisible());
   EXPECT_FALSE(parent->IsVisible());
 }

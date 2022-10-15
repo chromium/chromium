@@ -162,6 +162,12 @@ static constexpr char const* kFragmentShader = SHADER(
 
 }  // namespace
 
+TexturedQuadRenderer::QuadData::QuadData() = default;
+TexturedQuadRenderer::QuadData::~QuadData() = default;
+TexturedQuadRenderer::QuadData::QuadData(const QuadData&) = default;
+TexturedQuadRenderer::QuadData& TexturedQuadRenderer::QuadData::operator=(
+    const QuadData&) = default;
+
 TexturedQuadRenderer::TexturedQuadRenderer()
     : TexturedQuadRenderer(kVertexShader, kFragmentShader) {}
 

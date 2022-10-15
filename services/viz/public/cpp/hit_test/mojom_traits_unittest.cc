@@ -73,12 +73,12 @@ TEST(StructTraitsTest, HitTestRegionList) {
 // Ensures gfx::Transform doesn't mutate itself when its const methods are
 // called, to ensure it won't change in the read-only shared memory segment.
 TEST(StructTraitsTest, TransformImmutable) {
-  auto t1 = gfx::Transform::RowMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                                     14, 15, 16);
-  gfx::Transform t2;
-  std::memcpy(&t2, &t1, sizeof(t1));
-  EXPECT_FALSE(t2.IsIdentity());
-  EXPECT_EQ(0, std::memcmp(&t1, &t2, sizeof(t1)));
+  auto t = gfx::Transform::RowMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                                    14, 15, 16);
+  uint8_t mem[sizeof(t)];
+  std::memcpy(&mem, &t, sizeof(t));
+  EXPECT_FALSE(t.IsIdentity());
+  EXPECT_EQ(0, std::memcmp(&t, &mem, sizeof(t)));
 }
 
 }  // namespace viz

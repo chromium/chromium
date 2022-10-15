@@ -16,12 +16,6 @@
 
 namespace vr {
 
-namespace {
-
-constexpr gfx::Transform kIdentity;
-
-}  // namespace
-
 TEST_F(UiPixelTest, DrawVrBrowsingMode) {
 #if BUILDFLAG(IS_WIN)
   // VR is not supported on Windows 7.
@@ -37,8 +31,8 @@ TEST_F(UiPixelTest, DrawVrBrowsingMode) {
 
   // Draw UI.
   DrawUi(gfx::Vector3dF(0.0f, 0.0f, -1.0f), gfx::Point3F(0.5f, -0.5f, 0.0f),
-         ControllerModel::ButtonState::kUp, 1.0f, kIdentity, kIdentity,
-         GetPixelDaydreamProjMatrix());
+         ControllerModel::ButtonState::kUp, 1.0f, gfx::Transform(),
+         gfx::Transform(), GetPixelDaydreamProjMatrix());
 
   // Read pixels into SkBitmap.
   auto bitmap = SaveCurrentFrameBufferToSkBitmap();

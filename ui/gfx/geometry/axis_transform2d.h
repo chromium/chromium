@@ -61,9 +61,16 @@ class GEOMETRY_EXPORT AxisTransform2d {
     PostTranslate(post.translation_);
   }
 
+  double Determinant() const { return double{scale_.x()} * scale_.y(); }
+  bool IsInvertible() const {
+    // Check float determinant (stricter than checking each component or double
+    // determinant) to keep consistency with Matrix44.
+    // TODO(crbug.com/1359528): This may be stricter than necessary. Revisit
+    // this after combination of gfx::Transform and blink::TransformationMatrix.
+    return std::isnormal(scale_.x() * scale_.y());
+  }
   void Invert() {
-    DCHECK(scale_.x());
-    DCHECK(scale_.y());
+    DCHECK(IsInvertible());
     scale_ = Vector2dF(1.f / scale_.x(), 1.f / scale_.y());
     translation_.Scale(-scale_.x(), -scale_.y());
   }

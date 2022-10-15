@@ -25,14 +25,14 @@ TEST(Shadow, ShadowPaddingGrows) {
   shadow->AddChild(std::move(rect));
   scene.AddUiElement(kRoot, std::move(shadow));
 
-  scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(0), StartHeadPose());
   float old_left_padding = shadow_ptr->left_padding();
   float old_top_padding = shadow_ptr->top_padding();
   EXPECT_LE(0.0f, old_left_padding);
   EXPECT_LE(0.0f, old_top_padding);
 
   rect_ptr->SetTranslate(0, 0, 0.15);
-  scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(0), StartHeadPose());
   float new_left_padding = shadow_ptr->left_padding();
   float new_top_padding = shadow_ptr->top_padding();
   EXPECT_LE(old_left_padding, new_left_padding);

@@ -7,10 +7,13 @@
 namespace vr {
 
 gfx::Transform GetPixelDaydreamProjMatrix() {
-  static const auto pixel_daydream_proj_matrix = gfx::Transform::RowMajor(
-      1.03317f, 0.0f, 0.271253f, 0.0f, 0.0f, 0.862458f, -0.0314586f, 0.0f, 0.0f,
-      0.0f, -1.002f, -0.2002f, 0.0f, 0.0f, -1.0f, 0.0f);
-  return pixel_daydream_proj_matrix;
+  return gfx::Transform::RowMajor(1.03317f, 0.0f, 0.271253f, 0.0f, 0.0f,
+                                  0.862458f, -0.0314586f, 0.0f, 0.0f, 0.0f,
+                                  -1.002f, -0.2002f, 0.0f, 0.0f, -1.0f, 0.0f);
+}
+
+gfx::Transform StartHeadPose() {
+  return gfx::Transform();
 }
 
 }  // namespace vr

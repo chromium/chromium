@@ -24,7 +24,9 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Transform kEndTransform;
+gfx::Transform GetEndTransform() {
+  return gfx::Transform();
+}
 
 constexpr base::TimeDelta kExistingMiniViewsAnimationDuration =
     base::Milliseconds(250);
@@ -55,7 +57,7 @@ void AnimateView(views::View* view, const gfx::Transform& begin_transform) {
 
   ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
   InitScopedAnimationSettings(&settings, kExistingMiniViewsAnimationDuration);
-  layer->SetTransform(kEndTransform);
+  layer->SetTransform(GetEndTransform());
 }
 
 // See details at AnimateView.
@@ -96,7 +98,7 @@ void ScaleUpAndFadeInView(views::View* view, int bar_x_center) {
 
   ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
   InitScopedAnimationSettings(&settings, kZeroStateAnimationDuration);
-  layer->SetTransform(kEndTransform);
+  layer->SetTransform(GetEndTransform());
   layer->SetOpacity(1.f);
 }
 
@@ -136,7 +138,7 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
       layer->SetTransform(GetScaleTransformForView(
           removed_mini_view, bar_view->bounds().CenterPoint().x()));
     } else {
-      layer->SetTransform(kEndTransform);
+      layer->SetTransform(GetEndTransform());
     }
     layer->SetOpacity(0);
   }
@@ -256,7 +258,7 @@ void PerformNewDeskMiniViewAnimation(
     ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
     InitScopedAnimationSettings(&settings, kExistingMiniViewsAnimationDuration);
     layer->SetOpacity(1);
-    layer->SetTransform(kEndTransform);
+    layer->SetTransform(GetEndTransform());
   }
 
   AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
@@ -380,7 +382,7 @@ void PerformReorderDeskMiniViewAnimation(
   // Animate movement.
   ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
   InitScopedAnimationSettings(&settings, kExistingMiniViewsAnimationDuration);
-  layer->SetTransform(kEndTransform);
+  layer->SetTransform(GetEndTransform());
 }
 
 void PerformDesksTemplatesButtonVisibilityAnimation(

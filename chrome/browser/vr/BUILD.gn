@@ -319,6 +319,7 @@ component("vr_base") {
     "macros.h",
     "model/assets.cc",
     "model/assets.h",
+    "model/camera_model.cc",
     "model/camera_model.h",
     "model/capturing_state_model.h",
     "model/controller_model.cc",

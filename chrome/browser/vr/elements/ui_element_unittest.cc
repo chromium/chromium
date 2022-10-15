@@ -257,10 +257,10 @@ TEST(UiElement, AnimateSize) {
   UiElement* rect_ptr = rect.get();
   scene.AddUiElement(kRoot, std::move(rect));
   base::TimeTicks start_time = gfx::MicrosecondsToTicks(1);
-  EXPECT_TRUE(scene.OnBeginFrame(start_time, kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(start_time, StartHeadPose()));
   EXPECT_SIZEF_EQ(gfx::SizeF(10, 100), rect_ptr->size());
   EXPECT_TRUE(scene.OnBeginFrame(start_time + gfx::MicrosecondsToDelta(10000),
-                                 kStartHeadPose));
+                                 StartHeadPose()));
   EXPECT_SIZEF_EQ(gfx::SizeF(20, 200), rect_ptr->size());
 }
 
@@ -280,11 +280,11 @@ TEST(UiElement, AnimationAffectsInheritableTransform) {
       gfx::MicrosecondsToDelta(10000)));
 
   base::TimeTicks start_time = gfx::MicrosecondsToTicks(1);
-  EXPECT_TRUE(scene.OnBeginFrame(start_time, kStartHeadPose));
+  EXPECT_TRUE(scene.OnBeginFrame(start_time, StartHeadPose()));
   EXPECT_POINT3F_EQ(gfx::Point3F(10, 100, 1000),
                     rect_ptr->LocalTransform().MapPoint(gfx::Point3F()));
   EXPECT_TRUE(scene.OnBeginFrame(start_time + gfx::MicrosecondsToDelta(10000),
-                                 kStartHeadPose));
+                                 StartHeadPose()));
   EXPECT_POINT3F_EQ(gfx::Point3F(20, 200, 2000),
                     rect_ptr->LocalTransform().MapPoint(gfx::Point3F()));
 }
@@ -463,11 +463,11 @@ TEST(UiElement, CoordinatedVisibilityTransitions) {
   parent->AddChild(std::move(child));
   scene.AddUiElement(kRoot, std::move(parent));
 
-  scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(0), StartHeadPose());
 
   value = true;
 
-  scene.OnBeginFrame(gfx::MsToTicks(16), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(16), StartHeadPose());
 
   // We should have started animating both, and they should both be at opacity
   // zero given that this is the first frame. This does not guarantee that
@@ -478,7 +478,7 @@ TEST(UiElement, CoordinatedVisibilityTransitions) {
   EXPECT_TRUE(child_ptr->IsAnimatingProperty(OPACITY));
   EXPECT_EQ(child_ptr->opacity(), parent_ptr->opacity());
 
-  scene.OnBeginFrame(gfx::MsToTicks(32), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(32), StartHeadPose());
   EXPECT_EQ(child_ptr->opacity(), parent_ptr->opacity());
   EXPECT_LT(0.0f, child_ptr->opacity());
 }

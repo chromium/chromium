@@ -45,11 +45,11 @@ TEST(Rect, AnimateColorCorrectly) {
   rect->SetTransitionedProperties({BACKGROUND_COLOR, FOREGROUND_COLOR});
   rect->SetColor(SK_ColorBLACK);
 
-  scene.OnBeginFrame(gfx::MsToTicks(1), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(1), StartHeadPose());
   EXPECT_EQ(SK_ColorRED, rect->edge_color());
   EXPECT_EQ(SK_ColorBLUE, rect->center_color());
 
-  scene.OnBeginFrame(gfx::MsToTicks(5000), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(5000), StartHeadPose());
   EXPECT_EQ(SK_ColorBLACK, rect->edge_color());
   EXPECT_EQ(SK_ColorBLACK, rect->center_color());
 }
