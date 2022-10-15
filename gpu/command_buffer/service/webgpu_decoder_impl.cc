@@ -1992,14 +1992,13 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
       base::UnguessableToken::Deserialize(high, low);
   blink::WebGPUExecutionContextToken execution_context_token;
   switch (type) {
-    case blink::WebGPUExecutionContextToken::Base::template TypeIndex<
-        blink::DocumentToken>::kValue: {
+    case blink::WebGPUExecutionContextToken::IndexOf<blink::DocumentToken>(): {
       execution_context_token = blink::WebGPUExecutionContextToken(
           blink::DocumentToken(unguessable_token));
       break;
     }
-    case blink::WebGPUExecutionContextToken::Base::template TypeIndex<
-        blink::DedicatedWorkerToken>::kValue: {
+    case blink::WebGPUExecutionContextToken::IndexOf<
+        blink::DedicatedWorkerToken>(): {
       execution_context_token = blink::WebGPUExecutionContextToken(
           blink::DedicatedWorkerToken(unguessable_token));
       break;

@@ -4,8 +4,6 @@
 
 #include "third_party/blink/public/common/tokens/multi_token.h"
 
-#include <algorithm>
-
 #include "base/types/token_type.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,59 +14,12 @@ using FooToken = base::TokenType<class FooTokenTag>;
 using BarToken = base::TokenType<class BarTokenTag>;
 using BazToken = base::TokenType<class BazTokenTag>;
 
-// Test MultiTokenVariantCount.
-static_assert(internal::MultiTokenVariantCount<FooToken, BarToken>::kValue == 2,
-              "unexpected count");
-static_assert(
-    internal::MultiTokenVariantCount<FooToken, BarToken, BazToken>::kValue == 3,
-    "unexpected count");
+static_assert(internal::IsBaseTokenTypeV<FooToken>);
+static_assert(!internal::IsBaseTokenTypeV<int>);
 
-// Test MultiTokenTypeRepeated.
-static_assert(!internal::MultiTokenTypeRepeated<FooToken>::kValue,
-              "unexpected repeated value");
-static_assert(!internal::MultiTokenTypeRepeated<FooToken, FooToken>::kValue,
-              "unexpected repeated value");
-static_assert(
-    !internal::MultiTokenTypeRepeated<FooToken, FooToken, BarToken>::kValue,
-    "unexpected repeated value");
-static_assert(
-    internal::MultiTokenTypeRepeated<FooToken, FooToken, BarToken, FooToken>::
-        kValue,
-    "unexpected repeated value");
-static_assert(
-    internal::MultiTokenTypeRepeated<FooToken, BarToken, FooToken, FooToken>::
-        kValue,
-    "unexpected repeated value");
-
-// Test MultiTokenAnyTypeRepeated.
-static_assert(!internal::MultiTokenAnyTypeRepeated<FooToken>::kValue,
-              "unexpected any repeated value");
-static_assert(!internal::MultiTokenAnyTypeRepeated<FooToken, BarToken>::kValue,
-              "unexpected any repeated value");
-static_assert(
-    !internal::MultiTokenAnyTypeRepeated<FooToken, BarToken, BazToken>::kValue,
-    "unexpected any repeated value");
-static_assert(
-    internal::MultiTokenAnyTypeRepeated<FooToken, BarToken, FooToken>::kValue,
-    "unexpected any repeated value");
-static_assert(
-    internal::MultiTokenAnyTypeRepeated<FooToken, BarToken, BarToken>::kValue,
-    "unexpected any repeated value");
-
-// Test MultiTokenVariantIsTokenType.
-static_assert(internal::MultiTokenVariantIsTokenType<FooToken>::kValue,
-              "unexpected is token type value");
-static_assert(!internal::MultiTokenVariantIsTokenType<int>::kValue,
-              "unexpected is token type value");
-
-// Test MultiTokenAllVariantsAreTokenType.
-static_assert(
-    internal::MultiTokenAllVariantsAreTokenType<FooToken, BarToken>::kValue,
-    "unexpected all variants are token type value");
-static_assert(!internal::MultiTokenAllVariantsAreTokenType<FooToken,
-                                                           BarToken,
-                                                           int>::kValue,
-              "unexpected all variants are token type value");
+static_assert(internal::AreAllUnique<int>);
+static_assert(!internal::AreAllUnique<int, int>);
+static_assert(!internal::AreAllUnique<int, char, int>);
 
 using FooBarToken = MultiToken<FooToken, BarToken>;
 using FooBarBazToken = MultiToken<FooToken, BarToken, BazToken>;
@@ -119,6 +70,12 @@ TEST(MultiTokenTest, MultiTokenWorks) {
   FooToken foo(token1.value());
   EXPECT_EQ(foo, token1.GetAs<FooToken>());
   EXPECT_EQ(token2.GetAs<BarToken>(), token3.GetAs<BarToken>());
+}
+
+TEST(MultiTokenTest, IndexOf) {
+  static_assert(FooBarBazToken::IndexOf<FooToken>() == 0);
+  static_assert(FooBarBazToken::IndexOf<BarToken>() == 1);
+  static_assert(FooBarBazToken::IndexOf<BazToken>() == 2);
 }
 
 }  // namespace blink

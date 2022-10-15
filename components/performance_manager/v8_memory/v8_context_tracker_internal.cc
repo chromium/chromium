@@ -135,7 +135,7 @@ V8ContextData::V8ContextData(ProcessData* process_data,
             static_cast<bool>(description.execution_context_token));
   if (execution_context_data) {
     DCHECK_EQ(execution_context_data->GetToken(),
-              description.execution_context_token.value());
+              *description.execution_context_token);
 
     // These must be same process.
     DCHECK_EQ(process_data, execution_context_data->process_data());
