@@ -9,8 +9,14 @@ import {getTemplate} from './lens_form.html.js';
 /** Lens service endpoint for the Upload by File action. */
 const UPLOAD_FILE_ACTION: string = 'https://lens.google.com/upload';
 
+/** Entrypoint for the upload by file action. */
+const UPLOAD_FILE_ENTRYPOINT: string = 'cntpubb';
+
 /** Lens service endpoint for the Upload by URL action. */
 const UPLOAD_BY_URL_ACTION: string = 'https://lens.google.com/uploadbyurl';
+
+/** Entrypoint for the upload by url action. */
+const UPLOAD_URL_ENTRYPOINT: string = 'cntpubu';
 
 /** Max length for encoded input URL. */
 const MAX_URL_LENGTH: number = 2000;
@@ -70,21 +76,31 @@ export class LensFormElement extends PolymerElement {
         readOnly: true,
         value: SUPPORTED_FILE_TYPES.join(','),
       },
-      uploadFileAction_: {
-        type: String,
-        readOnly: true,
-        value: UPLOAD_FILE_ACTION,
-      },
+      uploadFileAction_: String,
       uploadUrlAction_: {
         type: String,
         readOnly: true,
         value: UPLOAD_BY_URL_ACTION,
       },
       uploadUrl_: String,
+      uploadUrlEntrypoint_: {
+        type: String,
+        readOnly: true,
+        value: UPLOAD_URL_ENTRYPOINT,
+      },
+      language_: {
+        type: String,
+        readOnly: true,
+        value: window.navigator.language,
+      },
+      startTime_: String,
     };
   }
 
+  private language_: string;
+  private uploadFileAction_: string = UPLOAD_FILE_ACTION;
   private uploadUrl_: string = '';
+  private startTime_: string|null = null;
 
   openSystemFilePicker() {
     this.$.fileInput.click();
@@ -126,6 +142,14 @@ export class LensFormElement extends PolymerElement {
     dataTransfer.items.add(file);
     this.$.fileInput.files = dataTransfer.files;
 
+    this.startTime_ = Date.now().toString();
+
+    const action = new URL(UPLOAD_FILE_ACTION);
+    action.searchParams.set('ep', UPLOAD_FILE_ENTRYPOINT);
+    action.searchParams.set('hl', this.language_);
+    action.searchParams.set('st', this.startTime_.toString());
+    this.uploadFileAction_ = action.toString();
+
     this.dispatchLoading_();
     this.$.fileForm.submit();
   }
@@ -151,6 +175,7 @@ export class LensFormElement extends PolymerElement {
     }
 
     this.uploadUrl_ = encodedUri;
+    this.startTime_ = Date.now().toString();
     this.dispatchLoading_();
     this.$.urlForm.submit();
   }

@@ -105,6 +105,46 @@ suite('LensFormTest', () => {
         assertFalse(loading);
       });
 
+  test('submit file should set entrypoint parameter', async () => {
+    // Arrange.
+    const file = new File([], 'file-name.png', {type: 'image/png'});
+
+    // Act.
+    dispatchFileInputChange(file);
+
+    // Assert.
+    const action = new URL(lensForm.$.fileForm.action);
+    const ep = action.searchParams.get('ep');
+    assertEquals('cntpubb', ep);
+  });
+
+  test('submit file should set language parameter', async () => {
+    // Arrange.
+    const file = new File([], 'file-name.png', {type: 'image/png'});
+
+    // Act.
+    dispatchFileInputChange(file);
+
+    // Assert.
+    const action = new URL(lensForm.$.fileForm.action);
+    const hl = action.searchParams.get('hl');
+    assertEquals('en-US', hl);
+  });
+
+  test('submit file should set start time parameter', async () => {
+    // Arrange.
+    Date.now = () => 1001;
+    const file = new File([], 'file-name.png', {type: 'image/png'});
+
+    // Act.
+    dispatchFileInputChange(file);
+
+    // Assert.
+    const action = new URL(lensForm.$.fileForm.action);
+    const st = action.searchParams.get('st');
+    assertEquals('1001', st);
+  });
+
   test('submit url with valid http should submit', async () => {
     // Arrange.
     const url = 'http://www.example.com/dog.jpg';
@@ -182,6 +222,38 @@ suite('LensFormTest', () => {
     // Assert.
     assertFalse(urlFormSubmitted);
     assertEquals(LensErrorType.LENGTH_TOO_GREAT, lastError);
+  });
+
+  test('submit url should set entrypoint parameter', async () => {
+    // Arrange.
+    const input =
+        lensForm.$.urlForm.children.namedItem('ep') as HTMLInputElement;
+
+    // Assert.
+    assertEquals('cntpubu', input.value);
+  });
+
+  test('submit url should set language parameter', async () => {
+    // Arrange.
+    const input =
+        lensForm.$.urlForm.children.namedItem('hl') as HTMLInputElement;
+
+    // Assert.
+    assertEquals('en-US', input.value);
+  });
+
+  test('submit url should set start time parameter', async () => {
+    // Arrange.
+    Date.now = () => 1001;
+    const input =
+        lensForm.$.urlForm.children.namedItem('st') as HTMLInputElement;
+
+    // Act.
+    const url = 'https://www.example.com/dog.jpg';
+    lensForm.submitUrl(url);
+
+    // Assert.
+    assertEquals('1001', input.value);
   });
 
   function dispatchFileInputChangeWithDataTransfer(dataTransfer: DataTransfer) {
