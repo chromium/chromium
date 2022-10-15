@@ -579,6 +579,8 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
   DCHECK(FlossDBusManager::Get());
   DCHECK(IsPresent());
 
+  BLUETOOTH_LOG(EVENT) << __func__ << device_found;
+
   auto device_floss = base::WrapUnique(new BluetoothDeviceFloss(
       this, device_found, ui_task_runner_, socket_thread_));
 
@@ -603,9 +605,27 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
         base::BindOnce(&BluetoothAdapterFloss::OnGetConnectionState,
                        weak_ptr_factory_.GetWeakPtr(), device_found),
         device_found);
+    return;
   }
 
-  BLUETOOTH_LOG(EVENT) << __func__ << device_found;
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
+  if (UpdateDevice(device, device_floss.get())) {
+    for (auto& observer : observers_)
+      observer.DeviceChanged(this, device);
+  }
+}
+
+bool BluetoothAdapterFloss::UpdateDevice(BluetoothDeviceFloss* device,
+                                         BluetoothDeviceFloss* new_device) {
+  bool updated = false;
+
+  if (new_device->GetName() && device->GetName() != new_device->GetName()) {
+    device->SetName(new_device->GetName().value_or(""));
+    updated = true;
+  }
+
+  return updated;
 }
 
 void BluetoothAdapterFloss::AdapterClearedDevice(

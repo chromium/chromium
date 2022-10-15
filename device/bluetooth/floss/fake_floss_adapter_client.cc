@@ -29,6 +29,8 @@ const char FakeFlossAdapterClient::kJustWorksAddress[] = "11:22:33:44:55:66";
 const char FakeFlossAdapterClient::kKeyboardAddress[] = "aa:aa:aa:aa:aa:aa";
 const char FakeFlossAdapterClient::kPhoneAddress[] = "bb:bb:bb:bb:bb:bb";
 const char FakeFlossAdapterClient::kOldDeviceAddress[] = "cc:cc:cc:cc:cc:cc";
+const char FakeFlossAdapterClient::kClassicAddress[] = "dd:dd:dd:dd:dd:dd";
+const char FakeFlossAdapterClient::kClassicName[] = "Classic Device";
 const uint32_t FakeFlossAdapterClient::kPasskey = 123456;
 const uint32_t FakeFlossAdapterClient::kHeadsetClassOfDevice = 2360344;
 
@@ -53,6 +55,9 @@ void FakeFlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
     observer.AdapterFoundDevice(FlossDeviceId({kKeyboardAddress, ""}));
     observer.AdapterFoundDevice(FlossDeviceId({kPhoneAddress, ""}));
     observer.AdapterFoundDevice(FlossDeviceId({kOldDeviceAddress, ""}));
+    // Simulate a device which sends its name later
+    observer.AdapterFoundDevice(FlossDeviceId({kClassicAddress, ""}));
+    observer.AdapterFoundDevice(FlossDeviceId({kClassicAddress, kClassicName}));
   }
 
   PostDelayedTask(base::BindOnce(std::move(callback), Void{}));

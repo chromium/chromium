@@ -556,6 +556,16 @@ TEST_F(BluetoothFlossTest, HandlesClearedDevices) {
   EXPECT_TRUE(same_bonded_device != nullptr);
 }
 
+TEST_F(BluetoothFlossTest, UpdatesDeviceName) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kClassicAddress);
+  ASSERT_TRUE(device != nullptr);
+  EXPECT_EQ(device->GetName(), FakeFlossAdapterClient::kClassicName);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(BluetoothFlossTest, StartLowEnergyScanSessions) {
   InitializeAdapter();

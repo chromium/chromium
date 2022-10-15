@@ -27,6 +27,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   static const char kKeyboardAddress[];
   static const char kPhoneAddress[];
   static const char kOldDeviceAddress[];
+  static const char kClassicAddress[];
+  static const char kClassicName[];
   static const uint32_t kPasskey;
   static const uint32_t kHeadsetClassOfDevice;
 
