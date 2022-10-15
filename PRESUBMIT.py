@@ -1340,7 +1340,10 @@ _KNOWN_ROBOTS = set(
   ) | set('%s@skia-corp.google.com.iam.gserviceaccount.com' % s
           for s in ('chromium-internal-autoroll',)
   ) | set('%s@owners-cleanup-prod.google.com.iam.gserviceaccount.com' % s
-          for s in ('swarming-tasks',))
+          for s in ('swarming-tasks',)
+  ) | set('%s@fuchsia-infra.iam.gserviceaccount.com' % s
+          for s in ('global-integration-try-builder',
+                    'global-integration-ci-builder'))
 
 _INVALID_GRD_FILE_LINE = [
         (r'<file lang=.* path=.*', 'Path should come before lang in GRD files.')
