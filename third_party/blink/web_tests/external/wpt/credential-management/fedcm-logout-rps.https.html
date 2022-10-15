@@ -7,9 +7,9 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <script type="module">
-  import {fedcm_test} from './support/fedcm-mojojs-helper.js';
+  import {fedcm_mojo_mock_test} from './support/fedcm-mojojs-helper.js';
 
-  fedcm_test(async (t, mock) => {
+  fedcm_mojo_mock_test(async (t, mock) => {
     mock.logoutRpsReturn("kError");
     return promise_rejects_dom(t, "NetworkError",
       IdentityCredential.logoutRPs([{
@@ -19,7 +19,7 @@
     );
   }, "IdentityCredential.logoutRPs() error.");
 
-  fedcm_test(async (t, mock) => {
+  fedcm_mojo_mock_test(async (t, mock) => {
     mock.logoutRpsReturn("kSuccess");
     await IdentityCredential.logoutRPs([{
       accountId: "1234",
@@ -27,7 +27,7 @@
     }]);
   }, "IdentityCredential.logoutRPs() success.");
 
-  fedcm_test(async (t, mock) => {
+  fedcm_mojo_mock_test(async (t, mock) => {
     return promise_rejects_dom(t, "NetworkError",
       IdentityCredential.logoutRPs([{
         accountId: "1234",

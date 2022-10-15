@@ -5,7 +5,7 @@
 
 import { MockFederatedAuthRequest } from './fedcm-mock.js';
 
-export function fedcm_test(test_func, name, exception, properties) {
+export function fedcm_mojo_mock_test(test_func, name, exception, properties) {
   promise_test(async (t) => {
     assert_implements(navigator.credentials, 'missing navigator.credentials');
     const mock = new MockFederatedAuthRequest();
