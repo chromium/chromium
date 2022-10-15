@@ -4,7 +4,9 @@
 
 #include "components/sync/test/mock_update_handler.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 namespace syncer {
 
@@ -42,8 +44,23 @@ void MockUpdateHandler::ApplyUpdates(StatusController* status) {
   apply_updates_count_++;
 }
 
+void MockUpdateHandler::RecordRemoteInvalidation(
+    std::unique_ptr<SyncInvalidation> incoming) {}
+
+void MockUpdateHandler::PrepareGetUpdates(sync_pb::GetUpdateTriggers* msg) {
+  prepare_get_updates_count_++;
+}
+
+bool MockUpdateHandler::HasPendingInvalidations() const {
+  return false;
+}
+
 int MockUpdateHandler::GetApplyUpdatesCount() {
   return apply_updates_count_;
+}
+
+int MockUpdateHandler::GetPrepareGetUpdatesCount() {
+  return prepare_get_updates_count_;
 }
 
 }  // namespace syncer

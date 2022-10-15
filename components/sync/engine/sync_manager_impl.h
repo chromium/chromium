@@ -122,6 +122,8 @@ class SyncManagerImpl
   // NudgeHandler implementation.
   void NudgeForInitialDownload(ModelType type) override;
   void NudgeForCommit(ModelType type) override;
+  void SetHasPendingInvalidations(ModelType type,
+                                  bool has_pending_invalidations) override;
 
  private:
   void NotifySyncStatusChanged(const SyncStatus& status);

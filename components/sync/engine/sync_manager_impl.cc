@@ -31,6 +31,7 @@
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_scheduler.h"
+#include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
@@ -365,6 +366,13 @@ void SyncManagerImpl::NudgeForCommit(ModelType type) {
   scheduler_->ScheduleLocalNudge(type);
 }
 
+void SyncManagerImpl::SetHasPendingInvalidations(
+    ModelType type,
+    bool has_pending_invalidations) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  scheduler_->SetHasPendingInvalidations(type, has_pending_invalidations);
+}
+
 void SyncManagerImpl::NotifySyncStatusChanged(const SyncStatus& status) {
   for (SyncManager::Observer& observer : observers_) {
     observer.OnSyncStatusChanged(status);
@@ -431,9 +439,14 @@ void SyncManagerImpl::OnIncomingInvalidation(
     ModelType type,
     std::unique_ptr<SyncInvalidation> invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  UpdateHandler* handler = model_type_registry_->GetMutableUpdateHandler(type);
+  if (handler) {
+    // TODO(crbug/1365290): Report lost invalidations at this level (as a new
+    // bucket in Sync.PendingInvalidationStatus).
+    handler->RecordRemoteInvalidation(std::move(invalidation));
+  }
   sync_status_tracker_->IncrementNotificationsReceived();
-  scheduler_->ScheduleInvalidationNudge(type, std::move(invalidation));
+  scheduler_->ScheduleInvalidationNudge(type);
 }
 
 void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {

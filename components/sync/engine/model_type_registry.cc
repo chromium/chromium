@@ -123,6 +123,11 @@ const UpdateHandler* ModelTypeRegistry::GetUpdateHandler(ModelType type) const {
   return it == update_handler_map_.end() ? nullptr : it->second;
 }
 
+UpdateHandler* ModelTypeRegistry::GetMutableUpdateHandler(ModelType type) {
+  auto it = update_handler_map_.find(type);
+  return it == update_handler_map_.end() ? nullptr : it->second;
+}
+
 UpdateHandlerMap* ModelTypeRegistry::update_handler_map() {
   return &update_handler_map_;
 }

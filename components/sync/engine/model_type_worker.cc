@@ -64,6 +64,10 @@ void LogPasswordNotesState(PasswordNotesStateForUMA state) {
   base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);
 }
 
+void LogPendingInvalidationStatus(PendingInvalidationStatus status) {
+  base::UmaHistogramEnumeration("Sync.PendingInvalidationStatus", status);
+}
+
 // A proxy which can be called from any sequence and delegates the work to the
 // commit queue injected on construction.
 class CommitQueueProxy : public CommitQueue {
@@ -240,10 +244,26 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
   }
 }
 
+ModelTypeWorker::PendingInvalidation::PendingInvalidation() = default;
+ModelTypeWorker::PendingInvalidation::PendingInvalidation(
+    PendingInvalidation&&) = default;
+ModelTypeWorker::PendingInvalidation&
+ModelTypeWorker::PendingInvalidation::operator=(PendingInvalidation&&) =
+    default;
+ModelTypeWorker::PendingInvalidation::PendingInvalidation(
+    std::unique_ptr<SyncInvalidation> invalidation,
+    bool is_processed)
+    : pending_invalidation(std::move(invalidation)),
+      is_processed(is_processed) {}
+ModelTypeWorker::PendingInvalidation::~PendingInvalidation() = default;
+
 ModelTypeWorker::~ModelTypeWorker() {
   if (model_type_processor_) {
     // This will always be the case in production today.
     model_type_processor_->DisconnectSync();
+  }
+  for (size_t i = 0; i < pending_invalidations_.size(); ++i) {
+    LogPendingInvalidationStatus(PendingInvalidationStatus::kLost);
   }
 }
 
@@ -538,6 +558,26 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status) {
       MaybeDropPendingUpdatesEncryptedWith(key);
     }
   }
+
+  // Processed pending invalidations are deleted, and unprocessed invalidations
+  // will be used in next sync cycle.
+  auto it = pending_invalidations_.begin();
+  while (it != pending_invalidations_.end()) {
+    if (it->is_processed) {
+      LogPendingInvalidationStatus(PendingInvalidationStatus::kAcknowledged);
+      it->pending_invalidation->Acknowledge();
+      it = pending_invalidations_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  if (last_dropped_invalidation_) {
+    last_dropped_invalidation_->Acknowledge();
+    last_dropped_invalidation_.reset();
+  }
+
+  nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
 
   if (HasNonDeletionUpdates()) {
     status->add_updated_type(type_);
@@ -1003,6 +1043,96 @@ void ModelTypeWorker::ExtractGcDirective() {
   // However, it's safer to keep the GC directive until it's applied even if the
   // server returns non-empty updates without GC directive within the same sync
   // cycle.
+}
+
+void ModelTypeWorker::RecordRemoteInvalidation(
+    std::unique_ptr<SyncInvalidation> incoming) {
+  DCHECK(incoming);
+  // Merge the incoming invalidation into our list of pending invalidations.
+  //
+  // We won't use STL algorithms here because our concept of equality doesn't
+  // quite fit the expectations of set_intersection.  In particular, two
+  // invalidations can be equal according to the SingleTopicInvalidationSet's
+  // rules (ie. have equal versions), but still have different AckHandle values
+  // and need to be acknowledged separately.
+  //
+  // The invalidations service can only track one outsanding invalidation per
+  // type and version, so the acknowledgement here should be redundant.  We'll
+  // acknowledge them anyway since it should do no harm, and makes this code a
+  // bit easier to test.
+  //
+  // Overlaps should be extremely rare for most invalidations.  They can happen
+  // for unknown version invalidations, though.
+
+  auto it = pending_invalidations_.begin();
+
+  // Find the lower bound.
+  while (it != pending_invalidations_.end() &&
+         SyncInvalidation::LessThanByVersion(*(it->pending_invalidation),
+                                             *incoming)) {
+    it++;
+  }
+
+  if (it != pending_invalidations_.end() &&
+      !SyncInvalidation::LessThanByVersion(*incoming,
+                                           *(it->pending_invalidation)) &&
+      !SyncInvalidation::LessThanByVersion(*(it->pending_invalidation),
+                                           *incoming)) {
+    // Incoming overlaps with existing.  Either both are unknown versions
+    // (likely) or these two have the same version number (very unlikely).
+    // Acknowledge and overwrite existing.
+
+    // Insert before the existing and get iterator to inserted.
+    auto it2 = pending_invalidations_.insert(it, {std::move(incoming), false});
+
+    // Increment that iterator to the old one, then acknowledge and remove it.
+    LogPendingInvalidationStatus(
+        (it2->pending_invalidation)->IsUnknownVersion()
+            ? PendingInvalidationStatus::kSameUnknownVersion
+            : PendingInvalidationStatus::kSameKnownVersion);
+    ++it2;
+    (it2->pending_invalidation)->Acknowledge();
+    pending_invalidations_.erase(it2);
+  } else {
+    // The incoming has a version not in the pending_invalidations_ list.
+    // Add it to the list at the proper position.
+    pending_invalidations_.insert(it, {std::move(incoming), false});
+  }
+
+  // The incoming invalidation may have caused us to exceed our buffer size.
+  // Trim some items from our list, if necessary.
+  while (pending_invalidations_.size() > kMaxPendingInvalidations) {
+    last_dropped_invalidation_ =
+        std::move(pending_invalidations_.front().pending_invalidation);
+    last_dropped_invalidation_->Drop();
+    LogPendingInvalidationStatus(
+        PendingInvalidationStatus::kInvalidationsOverflow);
+    pending_invalidations_.erase(pending_invalidations_.begin());
+  }
+  nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
+}
+
+void ModelTypeWorker::PrepareGetUpdates(sync_pb::GetUpdateTriggers* msg) {
+  // Fill the list of payloads, if applicable.  The payloads must be ordered
+  // oldest to newest, so we insert them in the same order as we've been storing
+  // them internally.
+  for (PendingInvalidation& invalidation : pending_invalidations_) {
+    if (!invalidation.pending_invalidation->IsUnknownVersion()) {
+      msg->add_notification_hint(
+          invalidation.pending_invalidation->GetPayload());
+    }
+    invalidation.is_processed = true;
+  }
+
+  msg->set_server_dropped_hints(
+      !pending_invalidations_.empty() &&
+      (pending_invalidations_.begin()->pending_invalidation)
+          ->IsUnknownVersion());
+  msg->set_client_dropped_hints(!!last_dropped_invalidation_);
+}
+
+bool ModelTypeWorker::HasPendingInvalidations() const {
+  return !pending_invalidations_.empty() || last_dropped_invalidation_;
 }
 
 GetLocalChangesRequest::GetLocalChangesRequest(

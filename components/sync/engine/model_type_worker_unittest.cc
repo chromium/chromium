@@ -34,9 +34,12 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_cryptographer.h"
+#include "components/sync/test/mock_invalidation.h"
+#include "components/sync/test/mock_invalidation_tracker.h"
 #include "components/sync/test/mock_model_type_processor.h"
 #include "components/sync/test/mock_nudge_handler.h"
 #include "components/sync/test/single_type_mock_server.h"
+#include "components/sync/test/trackable_mock_invalidation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -425,6 +428,16 @@ class ModelTypeWorkerTest : public ::testing::Test {
   }
 
   bool IsProcessorDisconnected() { return is_processor_disconnected_; }
+
+  std::unique_ptr<SyncInvalidation> BuildInvalidation(
+      int64_t version,
+      const std::string& payload) {
+    return MockInvalidation::Build(version, payload);
+  }
+
+  static std::unique_ptr<SyncInvalidation> BuildUnknownVersionInvalidation() {
+    return MockInvalidation::BuildUnknownVersion();
+  }
 
   void ResetWorker() { worker_.reset(); }
 
@@ -2633,6 +2646,356 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes, ShouldEmitNotesBackupCorrupted) {
   histogram_tester.ExpectUniqueSample(
       "Sync.PasswordNotesStateInUpdate",
       syncer::PasswordNotesStateForUMA::kSetOnlyInBackupButCorrupted, 1);
+}
+
+// Verifies the management of invalidation hints and GU trigger fields.
+TEST_F(ModelTypeWorkerTest, HintCoalescing) {
+  // Easy case: record one hint.
+  NormalInitialize();
+
+  {
+    worker()->RecordRemoteInvalidation(BuildInvalidation(1, "bm_hint_1"));
+
+    sync_pb::GetUpdateTriggers gu_trigger;
+    worker()->PrepareGetUpdates(&gu_trigger);
+    ASSERT_EQ(1, gu_trigger.notification_hint_size());
+    EXPECT_EQ("bm_hint_1", gu_trigger.notification_hint(0));
+    EXPECT_FALSE(gu_trigger.client_dropped_hints());
+  }
+
+  {
+    worker()->RecordRemoteInvalidation(BuildInvalidation(2, "bm_hint_2"));
+
+    sync_pb::GetUpdateTriggers gu_trigger;
+    worker()->PrepareGetUpdates(&gu_trigger);
+    ASSERT_EQ(2, gu_trigger.notification_hint_size());
+
+    // Expect the most hint recent is last in the list.
+    EXPECT_EQ("bm_hint_1", gu_trigger.notification_hint(0));
+    EXPECT_EQ("bm_hint_2", gu_trigger.notification_hint(1));
+    EXPECT_FALSE(gu_trigger.client_dropped_hints());
+  }
+}
+
+// Test the dropping of invalidation hints.  Receives invalidations one by one.
+// Pending invalidation vector buffer size is 10.
+TEST_F(ModelTypeWorkerTest, DropHintsLocally_OneAtATime) {
+  NormalInitialize();
+  for (size_t i = 0; i < ModelTypeWorker::kMaxPendingInvalidations; ++i) {
+    worker()->RecordRemoteInvalidation(BuildInvalidation(i, "hint"));
+  }
+  {
+    sync_pb::GetUpdateTriggers gu_trigger;
+    worker()->PrepareGetUpdates(&gu_trigger);
+    EXPECT_EQ(ModelTypeWorker::kMaxPendingInvalidations,
+              static_cast<size_t>(gu_trigger.notification_hint_size()));
+    EXPECT_FALSE(gu_trigger.client_dropped_hints());
+  }
+
+  // Force an overflow.
+  worker()->RecordRemoteInvalidation(BuildInvalidation(1000, "new_hint"));
+
+  {
+    sync_pb::GetUpdateTriggers gu_trigger;
+    worker()->PrepareGetUpdates(&gu_trigger);
+    EXPECT_TRUE(gu_trigger.client_dropped_hints());
+    ASSERT_EQ(ModelTypeWorker::kMaxPendingInvalidations,
+              static_cast<size_t>(gu_trigger.notification_hint_size()));
+
+    // Verify the newest hint was not dropped and is the last in the list.
+    EXPECT_EQ("new_hint", gu_trigger.notification_hint(
+                              ModelTypeWorker::kMaxPendingInvalidations - 1));
+
+    // Verify the oldest hint, too.
+    EXPECT_EQ("hint", gu_trigger.notification_hint(0));
+  }
+}
+
+// Tests the receipt of 'unknown version' invalidations.
+TEST_F(ModelTypeWorkerTest, DropHintsAtServer_Alone) {
+  NormalInitialize();
+  // Record the unknown version invalidation.
+  worker()->RecordRemoteInvalidation(BuildUnknownVersionInvalidation());
+  {
+    sync_pb::GetUpdateTriggers gu_trigger;
+    worker()->PrepareGetUpdates(&gu_trigger);
+    EXPECT_TRUE(gu_trigger.server_dropped_hints());
+    EXPECT_FALSE(gu_trigger.client_dropped_hints());
+    ASSERT_EQ(0, gu_trigger.notification_hint_size());
+  }
+
+  // Clear status then verify.
+  worker()->ApplyUpdates(status_controller());
+  {
+    sync_pb::GetUpdateTriggers gu_trigger;
+    worker()->PrepareGetUpdates(&gu_trigger);
+    EXPECT_FALSE(gu_trigger.client_dropped_hints());
+    EXPECT_FALSE(gu_trigger.server_dropped_hints());
+    ASSERT_EQ(0, gu_trigger.notification_hint_size());
+  }
+}
+
+// Tests the receipt of 'unknown version' invalidations.  This test also
+// includes a known version invalidation to mix things up a bit.
+TEST_F(ModelTypeWorkerTest, DropHintsAtServer_WithOtherInvalidations) {
+  NormalInitialize();
+  // Record the two invalidations, one with unknown version, the other known.
+  worker()->RecordRemoteInvalidation(BuildUnknownVersionInvalidation());
+  worker()->RecordRemoteInvalidation(BuildInvalidation(10, "hint"));
+
+  {
+    sync_pb::GetUpdateTriggers gu_trigger;
+    worker()->PrepareGetUpdates(&gu_trigger);
+    EXPECT_TRUE(gu_trigger.server_dropped_hints());
+    EXPECT_FALSE(gu_trigger.client_dropped_hints());
+    ASSERT_EQ(1, gu_trigger.notification_hint_size());
+    EXPECT_EQ("hint", gu_trigger.notification_hint(0));
+  }
+
+  // Clear status then verify.
+  worker()->ApplyUpdates(status_controller());
+  {
+    sync_pb::GetUpdateTriggers gu_trigger;
+    worker()->PrepareGetUpdates(&gu_trigger);
+    EXPECT_FALSE(gu_trigger.client_dropped_hints());
+    EXPECT_FALSE(gu_trigger.server_dropped_hints());
+    ASSERT_EQ(0, gu_trigger.notification_hint_size());
+  }
+}
+
+class ModelTypeWorkerAckTrackingTest : public ModelTypeWorkerTest {
+ public:
+  ModelTypeWorkerAckTrackingTest() = default;
+
+  bool IsInvalidationUnacknowledged(int tracking_id) {
+    return tracker_.IsUnacked(tracking_id);
+  }
+
+  bool IsInvalidationAcknowledged(int tracking_id) {
+    return tracker_.IsAcknowledged(tracking_id);
+  }
+
+  bool IsInvalidationDropped(int tracking_id) {
+    return tracker_.IsDropped(tracking_id);
+  }
+
+  int SendInvalidation(int version, const std::string& hint) {
+    // Build and register the invalidation.
+    std::unique_ptr<TrackableMockInvalidation> inv =
+        tracker_.IssueInvalidation(version, hint);
+    int id = inv->GetTrackingId();
+
+    // Send it to the ModelTypeWorker.
+    worker()->RecordRemoteInvalidation(std::move(inv));
+
+    // Return its ID to the test framework for use in assertions.
+    return id;
+  }
+
+  int SendUnknownVersionInvalidation() {
+    // Build and register the invalidation.
+    std::unique_ptr<TrackableMockInvalidation> inv =
+        tracker_.IssueUnknownVersionInvalidation();
+    int id = inv->GetTrackingId();
+
+    // Send it to the ModelTypeWorker.
+    worker()->RecordRemoteInvalidation(std::move(inv));
+
+    // Return its ID to the test framework for use in assertions.
+    return id;
+  }
+
+  bool AllInvalidationsAccountedFor() const {
+    return tracker_.AllInvalidationsAccountedFor();
+  }
+
+ private:
+  MockInvalidationTracker tracker_;
+};
+
+// Test the acknowledgement of a single invalidation.
+TEST_F(ModelTypeWorkerAckTrackingTest, SimpleAcknowledgement) {
+  NormalInitialize();
+  int inv_id = SendInvalidation(10, "hint");
+  EXPECT_TRUE(IsInvalidationUnacknowledged(inv_id));
+
+  // Invalidations are acknowledged if they were used in
+  // GetUpdates proto message. To check the acknowledged invalidation,
+  // force invalidation to be used in proto message.
+  sync_pb::GetUpdateTriggers gu_trigger;
+  worker()->PrepareGetUpdates(&gu_trigger);
+
+  worker()->ApplyUpdates(status_controller());
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv_id));
+
+  EXPECT_TRUE(AllInvalidationsAccountedFor());
+}
+
+// Test the acknowledgement of many invalidations.
+TEST_F(ModelTypeWorkerAckTrackingTest, ManyAcknowledgements) {
+  NormalInitialize();
+  int inv1_id = SendInvalidation(10, "hint");
+  int inv2_id = SendInvalidation(14, "hint2");
+
+  EXPECT_TRUE(IsInvalidationUnacknowledged(inv1_id));
+  EXPECT_TRUE(IsInvalidationUnacknowledged(inv2_id));
+
+  sync_pb::GetUpdateTriggers gu_trigger;
+  worker()->PrepareGetUpdates(&gu_trigger);
+
+  worker()->ApplyUpdates(status_controller());
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv2_id));
+
+  EXPECT_TRUE(AllInvalidationsAccountedFor());
+}
+
+// Test dropping when the buffer overflows and subsequent drop recovery.
+TEST_F(ModelTypeWorkerAckTrackingTest, OverflowAndRecover) {
+  NormalInitialize();
+  std::vector<int> invalidation_ids;
+
+  int inv10_id = SendInvalidation(10, "hint");
+  for (size_t i = 1; i < ModelTypeWorker::kMaxPendingInvalidations; ++i) {
+    invalidation_ids.push_back(SendInvalidation(i + 10, "hint"));
+  }
+
+  for (int id : invalidation_ids)
+    EXPECT_TRUE(IsInvalidationUnacknowledged(id));
+
+  // This invalidation, though arriving the most recently, has the oldest
+  // version number so it should be dropped first.
+  int inv5_id = SendInvalidation(5, "old_hint");
+  EXPECT_TRUE(IsInvalidationDropped(inv5_id));
+
+  // This invalidation has a larger version number, so it will force a
+  // previously delivered invalidation to be dropped.
+  int inv100_id = SendInvalidation(100, "new_hint");
+  EXPECT_TRUE(IsInvalidationDropped(inv10_id));
+
+  sync_pb::GetUpdateTriggers gu_trigger;
+  worker()->PrepareGetUpdates(&gu_trigger);
+
+  // This should recover from the drop and bring us back into sync.
+  worker()->ApplyUpdates(status_controller());
+
+  for (int id : invalidation_ids)
+    EXPECT_TRUE(IsInvalidationAcknowledged(id));
+
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv100_id));
+
+  EXPECT_TRUE(AllInvalidationsAccountedFor());
+}
+
+// Test receipt of an unknown version invalidation from the server.
+TEST_F(ModelTypeWorkerAckTrackingTest, UnknownVersionFromServer_Simple) {
+  NormalInitialize();
+  int inv_id = SendUnknownVersionInvalidation();
+  EXPECT_TRUE(IsInvalidationUnacknowledged(inv_id));
+  sync_pb::GetUpdateTriggers gu_trigger;
+  worker()->PrepareGetUpdates(&gu_trigger);
+  worker()->ApplyUpdates(status_controller());
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv_id));
+  EXPECT_TRUE(AllInvalidationsAccountedFor());
+}
+
+// Test receipt of multiple unknown version invalidations from the server.
+TEST_F(ModelTypeWorkerAckTrackingTest, UnknownVersionFromServer_Complex) {
+  NormalInitialize();
+  int inv1_id = SendUnknownVersionInvalidation();
+  int inv2_id = SendInvalidation(10, "hint");
+  int inv3_id = SendUnknownVersionInvalidation();
+  int inv4_id = SendUnknownVersionInvalidation();
+  int inv5_id = SendInvalidation(20, "hint2");
+
+  // These invalidations have been overridden, so they got acked early.
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv3_id));
+
+  // These invalidations are still waiting to be used.
+  EXPECT_TRUE(IsInvalidationUnacknowledged(inv2_id));
+  EXPECT_TRUE(IsInvalidationUnacknowledged(inv4_id));
+  EXPECT_TRUE(IsInvalidationUnacknowledged(inv5_id));
+
+  sync_pb::GetUpdateTriggers gu_trigger;
+  worker()->PrepareGetUpdates(&gu_trigger);
+
+  // Finish the sync cycle and expect all remaining invalidations to be acked.
+  worker()->ApplyUpdates(status_controller());
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv2_id));
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv3_id));
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv4_id));
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv5_id));
+
+  EXPECT_TRUE(AllInvalidationsAccountedFor());
+}
+
+TEST_F(ModelTypeWorkerAckTrackingTest, AckInvalidationsAddedDuringSyncCycle) {
+  NormalInitialize();
+  // Invalidations that are not used in PrepareGetUpdates() persist until
+  // next ApplyUpdates().
+  int inv1_id = SendInvalidation(10, "hint");
+  int inv2_id = SendInvalidation(14, "hint2");
+
+  worker()->ApplyUpdates(status_controller());
+
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv2_id));
+
+  // Prepare proto message with the invalidations inv1_id and inv2_id.
+  sync_pb::GetUpdateTriggers gu_trigger_1;
+  worker()->PrepareGetUpdates(&gu_trigger_1);
+  ASSERT_EQ(2, gu_trigger_1.notification_hint_size());
+
+  int inv3_id = SendInvalidation(100, "hint3");
+
+  worker()->ApplyUpdates(status_controller());
+
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv2_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv3_id));
+
+  // Be sure that invalidations are not used twice in proto messages.
+  // Invalidations are expected to be deleted in
+  // RecordSuccessfulSyncCycleIfNotBlocked after being processed in proto
+  // message.
+  sync_pb::GetUpdateTriggers gu_trigger_2;
+  worker()->PrepareGetUpdates(&gu_trigger_2);
+  ASSERT_EQ(1, gu_trigger_2.notification_hint_size());
+
+  worker()->ApplyUpdates(status_controller());
+  EXPECT_TRUE(AllInvalidationsAccountedFor());
+}
+
+// Test invalidations that are used in several proto messages.
+TEST_F(ModelTypeWorkerAckTrackingTest, MultipleGetUpdates) {
+  NormalInitialize();
+  int inv1_id = SendInvalidation(1, "hint1");
+  int inv2_id = SendInvalidation(2, "hint2");
+
+  worker()->ApplyUpdates(status_controller());
+
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv2_id));
+
+  sync_pb::GetUpdateTriggers gu_trigger_1;
+  worker()->PrepareGetUpdates(&gu_trigger_1);
+  ASSERT_EQ(2, gu_trigger_1.notification_hint_size());
+
+  int inv3_id = SendInvalidation(100, "hint3");
+
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv2_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv3_id));
+  // As they are not acknowledged yet, inv1_id, inv2_id and inv3_id
+  // should be included in next proto message.
+  sync_pb::GetUpdateTriggers gu_trigger_2;
+  worker()->PrepareGetUpdates(&gu_trigger_2);
+  ASSERT_EQ(3, gu_trigger_2.notification_hint_size());
+
+  worker()->ApplyUpdates(status_controller());
+  EXPECT_TRUE(AllInvalidationsAccountedFor());
 }
 
 }  // namespace syncer

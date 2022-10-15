@@ -22,8 +22,6 @@ class GetUpdateTriggers;
 
 namespace syncer {
 
-class SyncInvalidation;
-
 struct WaitInterval {
   enum class BlockingMode {
     // Uninitialized state, should not be set in practice.
@@ -45,19 +43,6 @@ struct WaitInterval {
   base::TimeDelta length;
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PendingInvalidationStatus {
-  kAcknowledged = 0,
-  kLost = 1,
-  kInvalidationsOverflow = 2,
-  // kSameVersion = 3,
-  // Invalidation list already has another invalidation with the same version.
-  kSameKnownVersion = 4,
-  kSameUnknownVersion = 5,
-  kMaxValue = kSameUnknownVersion,
-};
-
 // A class to track the per-type scheduling data.
 class DataTypeTracker {
  public:
@@ -76,9 +61,6 @@ class DataTypeTracker {
 
   // Tracks that a local refresh request has been made for this type.
   void RecordLocalRefreshRequest();
-
-  // Tracks that we received invalidation notifications for this type.
-  void RecordRemoteInvalidation(std::unique_ptr<SyncInvalidation> incoming);
 
   // Takes note that initial sync is pending for this type.
   void RecordInitialSyncRequired();
@@ -157,6 +139,9 @@ class DataTypeTracker {
   // Unblocks the type if base::TimeTicks::Now() >= |unblock_time_| expiry time.
   void UpdateThrottleOrBackoffState();
 
+  // Update |has_pending_invalidations_| flag.
+  void SetHasPendingInvalidations(bool has_pending_invalidations);
+
   // Update the local change nudge delay for this type.
   // No update happens if |delay| is too small (less than the smallest default
   // delay).
@@ -184,22 +169,6 @@ class DataTypeTracker {
       absl::optional<base::TimeDelta> depleted_quota_nudge_delay);
 
  private:
-  struct PendingInvalidation {
-    PendingInvalidation();
-    PendingInvalidation(const PendingInvalidation&) = delete;
-    PendingInvalidation& operator=(const PendingInvalidation&) = delete;
-    PendingInvalidation(PendingInvalidation&&);
-    PendingInvalidation& operator=(PendingInvalidation&&);
-    PendingInvalidation(std::unique_ptr<SyncInvalidation> invalidation,
-                        bool is_processed);
-    ~PendingInvalidation();
-
-    std::unique_ptr<SyncInvalidation> pending_invalidation;
-    // is_processed is true, if the invalidation included to GetUpdates message
-    // trigger.
-    bool is_processed = false;
-  };
-
   friend class SyncSchedulerImplTest;
 
   const ModelType type_;
@@ -212,19 +181,16 @@ class DataTypeTracker {
   // successful sync cycle.
   int local_refresh_request_count_;
 
-  // The list of invalidations received since the last successful sync cycle.
-  // This list may be incomplete.  See also:
-  // drop_tracker_.IsRecoveringFromDropEvent() and server_payload_overflow_.
-  //
-  // This list takes ownership of its contents.
-  std::vector<PendingInvalidation> pending_invalidations_;
-
   // Set to true if this type is ready for, but has not yet completed initial
   // sync.
   bool initial_sync_required_;
 
   // Set to true if this type need to get update to resolve conflict issue.
   bool sync_required_to_resolve_conflict_;
+
+  // Set to true if this type has invalidations that are needed to be used in
+  // GetUpdate() trigger message.
+  bool has_pending_invalidations_ = false;
 
   // If !unblock_time_.is_null(), this type is throttled or backed off, check
   // |wait_interval_->mode| for specific reason. Now the datatype may not
@@ -233,9 +199,6 @@ class DataTypeTracker {
 
   // Current wait state.  Null if we're not in backoff or throttling.
   std::unique_ptr<WaitInterval> wait_interval_;
-
-  // A helper to keep track invalidations we dropped due to overflow.
-  std::unique_ptr<SyncInvalidation> last_dropped_invalidation_;
 
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs.

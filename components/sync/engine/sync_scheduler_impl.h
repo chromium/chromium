@@ -53,11 +53,11 @@ class SyncSchedulerImpl : public SyncScheduler {
   void Stop() override;
   void ScheduleLocalNudge(ModelType type) override;
   void ScheduleLocalRefreshRequest(ModelTypeSet types) override;
-  void ScheduleInvalidationNudge(
-      ModelType type,
-      std::unique_ptr<SyncInvalidation> invalidation) override;
+  void ScheduleInvalidationNudge(ModelType type) override;
   void ScheduleInitialSyncNudge(ModelType model_type) override;
   void SetNotificationsEnabled(bool notifications_enabled) override;
+  void SetHasPendingInvalidations(ModelType type,
+                                  bool has_invalidations) override;
 
   void OnCredentialsUpdated() override;
   void OnConnectionStatusChange(network::mojom::ConnectionType type) override;

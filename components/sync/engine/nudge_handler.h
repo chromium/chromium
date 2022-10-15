@@ -19,6 +19,10 @@ class NudgeHandler {
   virtual void NudgeForInitialDownload(ModelType type) = 0;
   // Schedules a commit for |type| and returns.
   virtual void NudgeForCommit(ModelType type) = 0;
+  // This method is called whenever pending invalidations have been updated
+  // (added or removed).
+  virtual void SetHasPendingInvalidations(ModelType type,
+                                          bool has_pending_invalidations) = 0;
 };
 
 }  // namespace syncer

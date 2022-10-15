@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -296,6 +297,9 @@ class SyncSchedulerImplTest : public testing::Test {
   MockSyncer* syncer() { return syncer_; }
   MockDelayProvider* delay() { return delay_; }
   MockConnectionManager* connection() { return connection_.get(); }
+  ModelTypeRegistry* model_type_registry() {
+    return model_type_registry_.get();
+  }
   base::TimeDelta default_delay() { return base::Seconds(0); }
   base::TimeDelta long_delay() { return base::Seconds(60); }
   base::TimeDelta timeout() { return TestTimeouts::action_timeout(); }
@@ -763,7 +767,8 @@ TEST_F(SyncSchedulerImplTest, NudgeWithStates) {
       .WillOnce(
           DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times1, true)))
       .RetiresOnSaturation();
-  scheduler()->ScheduleInvalidationNudge(THEMES, BuildInvalidation(10, "test"));
+  scheduler()->SetHasPendingInvalidations(THEMES, true);
+  scheduler()->ScheduleInvalidationNudge(THEMES);
   RunLoop();
 
   Mock::VerifyAndClearExpectations(syncer());
@@ -773,8 +778,8 @@ TEST_F(SyncSchedulerImplTest, NudgeWithStates) {
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(
           DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times2, true)));
-  scheduler()->ScheduleInvalidationNudge(TYPED_URLS,
-                                         BuildInvalidation(10, "test2"));
+  scheduler()->SetHasPendingInvalidations(TYPED_URLS, true);
+  scheduler()->ScheduleInvalidationNudge(TYPED_URLS);
   RunLoop();
 }
 
@@ -1219,8 +1224,7 @@ TEST_F(SyncSchedulerImplTest, TypeThrottlingDoesBlockOtherSources) {
   EXPECT_FALSE(scheduler()->IsGlobalThrottle());
 
   // Ignore invalidations for throttled types.
-  scheduler()->ScheduleInvalidationNudge(throttled_type,
-                                         BuildInvalidation(10, "test"));
+  scheduler()->ScheduleInvalidationNudge(throttled_type);
   PumpLoop();
 
   // Ignore refresh requests for throttled types.
@@ -1265,8 +1269,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffDoesBlockOtherSources) {
   EXPECT_FALSE(scheduler()->IsGlobalThrottle());
 
   // Ignore invalidations for backed off types.
-  scheduler()->ScheduleInvalidationNudge(backed_off_type,
-                                         BuildInvalidation(10, "test"));
+  scheduler()->ScheduleInvalidationNudge(backed_off_type);
   PumpLoop();
 
   // Ignore refresh requests for backed off types.

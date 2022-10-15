@@ -20,9 +20,10 @@ void FakeSyncScheduler::ScheduleLocalNudge(ModelType type) {}
 
 void FakeSyncScheduler::ScheduleLocalRefreshRequest(ModelTypeSet types) {}
 
-void FakeSyncScheduler::ScheduleInvalidationNudge(
-    ModelType type,
-    std::unique_ptr<SyncInvalidation> interface) {}
+void FakeSyncScheduler::ScheduleInvalidationNudge(ModelType type) {}
+
+void FakeSyncScheduler::SetHasPendingInvalidations(ModelType type,
+                                                   bool has_invalidation) {}
 
 void FakeSyncScheduler::ScheduleConfiguration(
     sync_pb::SyncEnums::GetUpdatesOrigin origin,

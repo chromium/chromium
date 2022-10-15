@@ -226,6 +226,11 @@ ModelTypeSet SyncSchedulerImpl::GetEnabledAndUnblockedTypes() {
   return Difference(enabled_protocol_types, blocked_types);
 }
 
+void SyncSchedulerImpl::SetHasPendingInvalidations(ModelType type,
+                                                   bool has_invalidation) {
+  nudge_tracker_.SetHasPendingInvalidations(type, has_invalidation);
+}
+
 void SyncSchedulerImpl::SendInitialSnapshot() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -326,16 +331,14 @@ void SyncSchedulerImpl::ScheduleLocalRefreshRequest(ModelTypeSet types) {
   ScheduleNudgeImpl(nudge_delay);
 }
 
-void SyncSchedulerImpl::ScheduleInvalidationNudge(
-    ModelType model_type,
-    std::unique_ptr<SyncInvalidation> invalidation) {
+void SyncSchedulerImpl::ScheduleInvalidationNudge(ModelType model_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!syncer_->IsSyncing());
 
   SDVLOG(2) << "Scheduling sync because we received invalidation for "
             << ModelTypeToDebugString(model_type);
-  base::TimeDelta nudge_delay = nudge_tracker_.RecordRemoteInvalidation(
-      model_type, std::move(invalidation));
+  base::TimeDelta nudge_delay =
+      nudge_tracker_.GetRemoteInvalidationDelay(model_type);
   ScheduleNudgeImpl(nudge_delay);
 }
 

@@ -24,9 +24,9 @@ class FakeSyncScheduler : public SyncScheduler {
   void Stop() override;
   void ScheduleLocalNudge(ModelType type) override;
   void ScheduleLocalRefreshRequest(ModelTypeSet types) override;
-  void ScheduleInvalidationNudge(
-      ModelType type,
-      std::unique_ptr<SyncInvalidation> interface) override;
+  void ScheduleInvalidationNudge(ModelType type) override;
+  void SetHasPendingInvalidations(ModelType type,
+                                  bool has_invalidation) override;
   void ScheduleConfiguration(sync_pb::SyncEnums::GetUpdatesOrigin origin,
                              ModelTypeSet types_to_download,
                              base::OnceClosure ready_task) override;

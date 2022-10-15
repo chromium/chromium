@@ -19,6 +19,10 @@ void MockNudgeHandler::NudgeForCommit(ModelType type) {
   num_commit_nudges_++;
 }
 
+void MockNudgeHandler::SetHasPendingInvalidations(
+    ModelType type,
+    bool has_pending_invalidations) {}
+
 int MockNudgeHandler::GetNumInitialDownloadNudges() const {
   return num_initial_nudges_;
 }

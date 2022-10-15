@@ -5,14 +5,17 @@
 #ifndef COMPONENTS_SYNC_ENGINE_UPDATE_HANDLER_H_
 #define COMPONENTS_SYNC_ENGINE_UPDATE_HANDLER_H_
 
+#include <memory>
 #include <vector>
 
+#include "components/sync/base/sync_invalidation.h"
 #include "components/sync/base/syncer_error.h"
 
 namespace sync_pb {
 class DataTypeContext;
 class DataTypeProgressMarker;
 class SyncEntity;
+class GetUpdateTriggers;
 }  // namespace sync_pb
 
 using SyncEntityList = std::vector<const sync_pb::SyncEntity*>;
@@ -36,6 +39,15 @@ class UpdateHandler {
 
   // Returns the per-client datatype context.
   virtual const sync_pb::DataTypeContext& GetDataTypeContext() const = 0;
+
+  // Records an incoming invalidation for this type.
+  virtual void RecordRemoteInvalidation(
+      std::unique_ptr<SyncInvalidation> incoming) = 0;
+
+  // Fill invalidation related fields in GetUpdates request.
+  virtual void PrepareGetUpdates(sync_pb::GetUpdateTriggers* msg) = 0;
+  // Returns true if |pending_invalidations_| vector is not empty.
+  virtual bool HasPendingInvalidations() const = 0;
 
   // Processes the contents of a GetUpdates response message.
   //

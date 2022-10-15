@@ -29,12 +29,6 @@ namespace syncer {
 
 namespace {
 
-std::unique_ptr<SyncInvalidation> BuildInvalidation(
-    int64_t version,
-    const std::string& payload) {
-  return MockInvalidation::Build(version, payload);
-}
-
 }  // namespace
 
 // A test fixture for tests exercising download updates functions.
@@ -46,9 +40,9 @@ class GetUpdatesProcessorTest : public ::testing::Test {
   GetUpdatesProcessorTest& operator=(const GetUpdatesProcessorTest&) = delete;
 
   void SetUp() override {
-    AddUpdateHandler(AUTOFILL);
-    AddUpdateHandler(BOOKMARKS);
-    AddUpdateHandler(PREFERENCES);
+    autofill_handler_ = AddUpdateHandler(AUTOFILL);
+    bookmarks_handler_ = AddUpdateHandler(BOOKMARKS);
+    preferences_handler_ = AddUpdateHandler(PREFERENCES);
   }
 
   ModelTypeSet enabled_types() { return enabled_types_; }
@@ -88,6 +82,12 @@ class GetUpdatesProcessorTest : public ::testing::Test {
     return handler_ptr;
   }
 
+  MockUpdateHandler* GetBookmarksHandler() { return bookmarks_handler_; }
+
+  MockUpdateHandler* GetAutofillHandler() { return autofill_handler_; }
+
+  MockUpdateHandler* GetPreferencesHandler() { return preferences_handler_; }
+
   const base::TimeTicks kTestStartTime = base::TimeTicks::Now();
 
  private:
@@ -95,6 +95,10 @@ class GetUpdatesProcessorTest : public ::testing::Test {
   std::set<std::unique_ptr<MockUpdateHandler>> update_handlers_;
   UpdateHandlerMap update_handler_map_;
   std::unique_ptr<GetUpdatesProcessor> get_updates_processor_;
+
+  raw_ptr<MockUpdateHandler> bookmarks_handler_;
+  raw_ptr<MockUpdateHandler> autofill_handler_;
+  raw_ptr<MockUpdateHandler> preferences_handler_;
 };
 
 // Basic test to make sure nudges are expressed properly in the request.
@@ -135,17 +139,16 @@ TEST_F(GetUpdatesProcessorTest, BookmarkNudge) {
 
 // Basic test to ensure invalidation payloads are expressed in the request.
 TEST_F(GetUpdatesProcessorTest, NotifyMany) {
-  NudgeTracker nudge_tracker;
-  nudge_tracker.RecordRemoteInvalidation(
-      AUTOFILL, BuildInvalidation(1, "autofill_payload"));
-  nudge_tracker.RecordRemoteInvalidation(
-      BOOKMARKS, BuildInvalidation(1, "bookmark_payload"));
-  nudge_tracker.RecordRemoteInvalidation(
-      PREFERENCES, BuildInvalidation(1, "preferences_payload"));
+  MockUpdateHandler* autofill_handler = GetAutofillHandler();
+  MockUpdateHandler* bookmarks_handler = GetBookmarksHandler();
+  MockUpdateHandler* preferences_handler = GetPreferencesHandler();
+
   ModelTypeSet notified_types;
   notified_types.Put(AUTOFILL);
   notified_types.Put(BOOKMARKS);
   notified_types.Put(PREFERENCES);
+
+  NudgeTracker nudge_tracker;
 
   sync_pb::ClientToServerMessage message;
   NormalGetUpdatesDelegate normal_delegate(nudge_tracker);
@@ -157,23 +160,9 @@ TEST_F(GetUpdatesProcessorTest, NotifyMany) {
   EXPECT_EQ(sync_pb::GetUpdatesCallerInfo::UNKNOWN,
             gu_msg.caller_info().source());
   EXPECT_EQ(sync_pb::SyncEnums::GU_TRIGGER, gu_msg.get_updates_origin());
-  for (int i = 0; i < gu_msg.from_progress_marker_size(); ++i) {
-    ModelType type = GetModelTypeFromSpecificsFieldNumber(
-        gu_msg.from_progress_marker(i).data_type_id());
-
-    const sync_pb::DataTypeProgressMarker& progress_marker =
-        gu_msg.from_progress_marker(i);
-    const sync_pb::GetUpdateTriggers& gu_trigger =
-        progress_marker.get_update_triggers();
-
-    // We perform some basic tests of GU trigger and source fields here.  The
-    // more complicated scenarios are tested by the NudgeTracker tests.
-    if (notified_types.Has(type)) {
-      EXPECT_EQ(1, gu_trigger.notification_hint_size());
-    } else {
-      EXPECT_EQ(0, gu_trigger.notification_hint_size());
-    }
-  }
+  EXPECT_EQ(1, autofill_handler->GetPrepareGetUpdatesCount());
+  EXPECT_EQ(1, bookmarks_handler->GetPrepareGetUpdatesCount());
+  EXPECT_EQ(1, preferences_handler->GetPrepareGetUpdatesCount());
 }
 
 // Basic test to ensure initial sync requests are expressed in the request.
