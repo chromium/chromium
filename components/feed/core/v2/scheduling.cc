@@ -5,8 +5,8 @@
 #include "components/feed/core/v2/scheduling.h"
 
 #include "base/json/values_util.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feedstore_util.h"

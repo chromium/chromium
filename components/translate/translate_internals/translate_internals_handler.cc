@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"

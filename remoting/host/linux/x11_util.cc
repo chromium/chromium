@@ -5,8 +5,8 @@
 #include "remoting/host/linux/x11_util.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"

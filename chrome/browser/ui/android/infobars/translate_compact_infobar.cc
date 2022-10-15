@@ -13,7 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/android/chrome_jni_headers/TranslateCompactInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/infobars/content/content_infobar_manager.h"

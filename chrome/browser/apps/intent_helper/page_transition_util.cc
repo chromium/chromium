@@ -5,7 +5,7 @@
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace apps {
 

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 
-#import "base/stl_util.h"
 #import "base/time/time.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/commerce/core/pref_names.h"

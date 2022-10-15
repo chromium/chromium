@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace base {
 namespace internal {

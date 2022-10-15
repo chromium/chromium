@@ -4,7 +4,7 @@
 
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 
-#include "base/stl_util.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/prefs/pref_service.h"

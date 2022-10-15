@@ -10,10 +10,10 @@
 
 #include "base/base_export.h"
 #include "base/containers/intrusive_heap.h"
-#include "base/stl_util.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace base {
 namespace internal {
