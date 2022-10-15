@@ -43,19 +43,24 @@ ServiceConnectionLacros::~ServiceConnectionLacros() = default;
 
 chromeos::machine_learning::mojom::MachineLearningService&
 ServiceConnectionLacros::GetMachineLearningService() {
+  // TODO(crbug.com/1374564): Determine whether it is safe to assume
+  // LacrosService is always available here.
+  auto* service = chromeos::LacrosService::Get();
+  DCHECK(service);
   mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>&
-      machine_learning_service_remote =
-          chromeos::LacrosService::Get()
-              ->GetRemote<
-                  chromeos::machine_learning::mojom::MachineLearningService>();
+      machine_learning_service_remote = service->GetRemote<
+          chromeos::machine_learning::mojom::MachineLearningService>();
   return *machine_learning_service_remote.get();
 }
 
 void ServiceConnectionLacros::BindMachineLearningService(
     mojo::PendingReceiver<
         chromeos::machine_learning::mojom::MachineLearningService> receiver) {
-  chromeos::LacrosService::Get()->BindMachineLearningService(
-      std::move(receiver));
+  // TODO(crbug.com/1374564): Determine whether it is safe to assume
+  // LacrosService is always available here.
+  auto* service = chromeos::LacrosService::Get();
+  DCHECK(service);
+  service->BindMachineLearningService(std::move(receiver));
 }
 
 void ServiceConnectionLacros::Initialize() {}

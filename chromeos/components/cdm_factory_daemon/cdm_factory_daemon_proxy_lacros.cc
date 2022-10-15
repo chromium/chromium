@@ -94,13 +94,14 @@ void CdmFactoryDaemonProxyLacros::EstablishAshConnection(
     return;
   }
 
-  if (!LacrosService::Get()->IsBrowserCdmFactoryAvailable()) {
+  auto* service = LacrosService::Get();
+  if (!service || !service->IsBrowserCdmFactoryAvailable()) {
     std::move(callback).Run();
     return;
   }
   // For Lacros, we connect to the ash-chrome browser process which will proxy
   // the connection to the daemon.
-  LacrosService::Get()->BindBrowserCdmFactory(
+  service->BindBrowserCdmFactory(
       mojo::GenericPendingReceiver(ash_remote_.BindNewPipeAndPassReceiver()));
   std::move(callback).Run();
   return;
