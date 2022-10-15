@@ -29,7 +29,7 @@ namespace {
 // transmissible handles emitted by the driver are appended to
 // `transmissible_handles`, with relevant index and count also stashed in the
 // DriverObjectData.
-IpczResult SerializeDriverObject(
+bool SerializeDriverObject(
     DriverObject object,
     const DriverTransport& transport,
     Message& message,
@@ -38,7 +38,7 @@ IpczResult SerializeDriverObject(
   if (!object.is_valid()) {
     // This is not a valid driver handle and it cannot be serialized.
     data.num_driver_handles = 0;
-    return IPCZ_RESULT_INVALID_ARGUMENT;
+    return false;
   }
 
   uint32_t driver_data_array = 0;
@@ -60,10 +60,13 @@ IpczResult SerializeDriverObject(
                                dimensions.num_driver_handles);
 
   auto handles_view = absl::MakeSpan(transmissible_handles);
-  object.Serialize(
-      transport, driver_data,
-      handles_view.subspan(first_handle, dimensions.num_driver_handles));
-  return IPCZ_RESULT_OK;
+  if (!object.Serialize(
+          transport, driver_data,
+          handles_view.subspan(first_handle, dimensions.num_driver_handles))) {
+    return false;
+  }
+
+  return true;
 }
 
 // Returns `true` if and only if it will be safe to use GetArrayView() to access
@@ -208,10 +211,10 @@ bool Message::CanTransmitOn(const DriverTransport& transport) {
   return true;
 }
 
-void Message::Serialize(const DriverTransport& transport) {
+bool Message::Serialize(const DriverTransport& transport) {
   ABSL_ASSERT(CanTransmitOn(transport));
   if (driver_objects_.empty()) {
-    return;
+    return true;
   }
 
   const uint32_t array_offset =
@@ -222,16 +225,19 @@ void Message::Serialize(const DriverTransport& transport) {
   // handles attached. Since these objects are small, we inline some storage on
   // the stack to avoid some heap allocation in the most common cases.
   absl::InlinedVector<IpczDriverHandle, 2> transmissible_handles;
+  bool ok = true;
   for (size_t i = 0; i < driver_objects().size(); ++i) {
     internal::DriverObjectData data = {};
-    const IpczResult result =
-        SerializeDriverObject(std::move(driver_objects()[i]), transport, *this,
-                              data, transmissible_handles);
-    ABSL_ASSERT(result == IPCZ_RESULT_OK);
+    ok &= SerializeDriverObject(std::move(driver_objects()[i]), transport,
+                                *this, data, transmissible_handles);
     GetArrayView<internal::DriverObjectData>(array_offset)[i] = data;
   }
 
-  transmissible_driver_handles_ = std::move(transmissible_handles);
+  if (ok) {
+    transmissible_driver_handles_ = std::move(transmissible_handles);
+    return true;
+  }
+  return false;
 }
 
 bool Message::DeserializeUnknownType(const DriverTransport::RawMessage& message,
