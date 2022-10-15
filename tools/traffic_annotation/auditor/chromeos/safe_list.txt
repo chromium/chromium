@@ -15,7 +15,6 @@ all,components/quirks/quirks_client.cc
 all,ash/services/device_sync/cryptauth_client_impl.cc
 all,chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc
 all,chrome/services/sharing/nearby/platform/webrtc.cc
-all,chrome/browser/nearby_sharing/client/nearby_share_client_impl.cc
 all,chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc
 all,chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.cc
 all,chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc
