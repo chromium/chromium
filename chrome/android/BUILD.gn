@@ -193,6 +193,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/item_download.xml",
     "//chrome/android/java/res_app/layout/layout_menu.xml",
     "//chrome/android/java/res_app/layout/layout_smart_search.xml",
+    "//chrome/android/java/res_app/layout/menu_action_mode.xml",
 
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_action_full_screen.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_action_keyboard.png",
@@ -252,6 +253,7 @@ android_resources("chrome_app_java_resources") {
     "//components/translate/content/android:java_resources",
     "//content/public/android:content_java_resources",
     "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_cardview_cardview_java",
     "//third_party/androidx:androidx_gridlayout_gridlayout_java",
     "//third_party/androidx:androidx_preference_preference_java",
   ]

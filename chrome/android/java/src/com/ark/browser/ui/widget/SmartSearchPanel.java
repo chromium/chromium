@@ -1,11 +1,13 @@
 package com.ark.browser.ui.widget;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -45,7 +48,7 @@ import java.util.Arrays;
 
 public class SmartSearchPanel extends FrameLayout {
 
-    private static final String TAG = "SlidePanelLayout";
+    private static final String TAG = "SmartSearchPanel";
 
     private static final int MIN_FLING_VELOCITY = 400; // dips per second
 
@@ -155,10 +158,10 @@ public class SmartSearchPanel extends FrameLayout {
                 mOffset = mSlideRange - (top - mMarginTop);
 //                ArkLogger.e(TAG, "onViewPositionChanged top=" + top + " dy=" + dy + " getTop=" + mDragView.getTop());
 
-                if (mOffset > 0) {
-                    String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(keyword);
-                    loadUrl(posArray[mCurrentPosition], url);
-                }
+//                if (mOffset > 0) {
+//                    String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(keyword);
+//                    loadUrl(posArray[mCurrentPosition], url);
+//                }
             }
 
             @Override
@@ -174,9 +177,46 @@ public class SmartSearchPanel extends FrameLayout {
 
             @Override
             public void onViewDragStateChanged(int state) {
+                ArkLogger.e(TAG, "onViewDragStateChanged state=" + state + " mOffset=" + mOffset);
+                onDragStateChanged(state);
             }
         });
         mDragHelper.setMinVelocity(MIN_FLING_VELOCITY * density);
+    }
+
+    private OnPanelStateChangedListener mStateListener;
+
+    public void setOnPanelStateChangedListener(OnPanelStateChangedListener listener) {
+        this.mStateListener = listener;
+    }
+
+    private void onDragStateChanged(int state) {
+        if (state == ViewDragHelper.STATE_DRAGGING) {
+            select(mCurrentPosition);
+        }
+        if (mStateListener != null) {
+            mStateListener.onStateChanged(this);
+        }
+    }
+
+    public interface OnPanelStateChangedListener {
+        void onStateChanged(SmartSearchPanel panel);
+    }
+
+    public boolean isExpand() {
+        return mDragHelper.getViewDragState() == ViewDragHelper.STATE_IDLE && mOffset > 0;
+    }
+
+    public boolean isDragging() {
+        return mDragHelper.getViewDragState() == ViewDragHelper.STATE_DRAGGING;
+    }
+
+    public boolean isSettling() {
+        return mDragHelper.getViewDragState() == ViewDragHelper.STATE_SETTLING;
+    }
+
+    public boolean isClosed() {
+        return mDragHelper.getViewDragState() == ViewDragHelper.STATE_IDLE && mOffset == 0;
     }
 
     public void attachWindow(Window window) {
@@ -187,6 +227,7 @@ public class SmartSearchPanel extends FrameLayout {
     private static final String[] TAB_TITLES = {"web搜索", "磁力搜索", "网盘搜索", "图片搜索", "自定义搜索"};
     private int[] posArray;
     private ArkCompositorViewHolder mViewHolder;
+    private View mTopBar;
     private TabLayout tabLayout;
     private int mCurrentPosition = 0;
 
@@ -196,6 +237,7 @@ public class SmartSearchPanel extends FrameLayout {
         posArray = new int[TAB_TITLES.length];
         Arrays.fill(posArray, -1);
         mDragView = getChildAt(getChildCount() - 1);
+        mTopBar = mDragView.findViewById(R.id.top_bar);
         tabLayout = mDragView.findViewById(R.id.smart_search_indicator);
 
         for (String title : TAB_TITLES) {
@@ -206,22 +248,7 @@ public class SmartSearchPanel extends FrameLayout {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                int index = tab.getPosition();
-                mCurrentPosition = tab.getPosition();
-                int pos = posArray[index];
-
-                String url;
-
-
-                if (index == 0) {
-//                    url = "http://xia.fobenshidao.cc/search.php?mod=forum&searchsubmit=yes&srchtxt=" + keyword;
-                    url = "https://www.baidu.com";
-                } else {
-                    url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(keyword);
-                }
-
-                pos = loadUrl(pos, url);
-                posArray[index] = pos;
+                select(tab.getPosition());
             }
 
             @Override
@@ -238,6 +265,23 @@ public class SmartSearchPanel extends FrameLayout {
         mViewHolder.setRootView(this);
     }
 
+    private void select(int index) {
+        mCurrentPosition = index;
+        int pos = posArray[index];
+
+        String url;
+
+
+        if (index == 0) {
+//                    url = "http://xia.fobenshidao.cc/search.php?mod=forum&searchsubmit=yes&srchtxt=" + keyword;
+            url = "https://www.baidu.com";
+        } else {
+            url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(keyword);
+        }
+
+        pos = loadUrl(pos, url);
+        posArray[index] = pos;
+    }
 
     private static class MyTabInfo extends TabInfo {
 
@@ -304,6 +348,16 @@ public class SmartSearchPanel extends FrameLayout {
     private float mDownY;
     private boolean canSlide;
 
+    private boolean isCanSlide(int x, int y) {
+        View view = mDragView;
+        if (view == null) {
+            return false;
+        } else {
+            int bottom = view.getTop() + mTopBar.getHeight();
+            return x >= view.getLeft() && x < view.getRight() && y >= view.getTop() && y < bottom;
+        }
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         ArkLogger.e(TAG, "dispatchTouchEvent event=" + MotionEvent.actionToString(ev.getAction()));
@@ -317,7 +371,16 @@ public class SmartSearchPanel extends FrameLayout {
             case MotionEvent.ACTION_DOWN:
                 mDownX = x;
                 mDownY = y;
-                canSlide = mDragHelper.isViewUnder(mDragView, (int) x, (int) y);
+
+                Rect rect = new Rect();
+                mTopBar.getGlobalVisibleRect(rect);
+                canSlide = (x >= rect.left && x < rect.right
+                        && y >= rect.top && y < rect.bottom);
+//                if (x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom) {
+//                    canSlide = true;
+//                }
+
+//                canSlide = mDragHelper.isViewUnder(mDragView, (int) x, (int) y);
                 if (!canSlide) {
                     return super.dispatchTouchEvent(ev);
                 }
@@ -329,19 +392,29 @@ public class SmartSearchPanel extends FrameLayout {
                     break;
                 }
                 if (dy > dx) {
-
                     if (canSlide) {
-//                        MotionEvent event = MotionEvent.obtain(ev);
-////                        event.setAction(MotionEvent.ACTION_CANCEL);
-//                        super.dispatchTouchEvent(event);
-//                        event.recycle();
-
-//                        super.dispatchTouchEvent(ev);
-
                         mDragHelper.processTouchEvent(ev);
-
-                        ArkLogger.e(TAG, "dispatchTouchEvent move");
                         return true;
+                    } else {
+                        ViewGroup contentView = mViewHolder.getContentView();
+                        if (contentView != null) {
+                            boolean isTop = !contentView.canScrollVertically(-1);
+                            boolean isBottom = !contentView.canScrollVertically(1);
+                            ArkLogger.e(TAG, "dispatchTouchEvent move isTop=" + isTop + " isBottom=" + isBottom);
+                        }
+
+                        ArkLogger.e(TAG, "dispatchTouchEvent move isExpand=" + isExpand());
+
+//                        if (isExpand()) {
+//
+//                            if (y < mDownY) {
+//                                mDragHelper.cancel();
+//                                return super.dispatchTouchEvent(ev);
+//                            }
+//                            super.dispatchTouchEvent(ev);
+//                        }
+//                        mDragHelper.cancel();
+                        return super.dispatchTouchEvent(ev);
                     }
                 }
                 break;
@@ -352,7 +425,9 @@ public class SmartSearchPanel extends FrameLayout {
 //            mDragHelper.processTouchEvent(ev);
 //            return true;
 //        }
-        mDragHelper.processTouchEvent(ev);
+        if (canSlide) {
+            mDragHelper.processTouchEvent(ev);
+        }
         boolean result = super.dispatchTouchEvent(ev);
         ArkLogger.e(TAG, "dispatchTouchEvent result=" + result);
         return result;

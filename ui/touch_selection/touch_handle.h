@@ -95,6 +95,8 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandle : public TouchSelectionDraggable {
   // If an animation is in-progress, it will be overriden appropriately.
   void SetVisible(bool visible, AnimationStyle animation_style);
 
+  bool IsVisible();
+
   // Update the focus points for the handles. The handle will be positioned
   // either |top| or |bottom| based on the mirror parameters.
   // Note: If a fade out animation is active or the handle is invisible, the

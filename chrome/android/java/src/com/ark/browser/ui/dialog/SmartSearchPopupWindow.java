@@ -1,9 +1,7 @@
 package com.ark.browser.ui.dialog;
 
-import android.app.Activity;
-import android.app.Dialog;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,6 +37,9 @@ public class SmartSearchPopupWindow {
         }
     };
 
+    private View.OnTouchListener mTouchListener;
+
+    @SuppressLint("ClickableViewAccessibility")
     public SmartSearchPopupWindow(@NonNull Context context) {
         this.mContext = context;
 
@@ -53,19 +54,15 @@ public class SmartSearchPopupWindow {
         popupWindow.setOutsideTouchable(false);
         popupWindow.setClippingEnabled(false);
 
-        popupWindow.setTouchInterceptor(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                boolean result = popupWindow.getContentView().dispatchTouchEvent(event);
-                ArkLogger.e(TAG, "onTouch action=" + MotionEvent.actionToString(event.getAction()) + " result=" + result);
-                if (!result) {
-                    Activity activity = ContextUtils.activityFromContext(mContext);
-                    if (activity != null) {
-                        activity.dispatchTouchEvent(event);
-                    }
+        popupWindow.setTouchInterceptor((v, event) -> {
+            boolean result = popupWindow.getContentView().dispatchTouchEvent(event);
+            ArkLogger.e(TAG, "onTouch action=" + MotionEvent.actionToString(event.getAction()) + " result=" + result);
+            if (!result) {
+                if (mTouchListener != null) {
+                    mTouchListener.onTouch(v, event);
                 }
-                return true;
             }
+            return true;
         });
 
 
@@ -78,6 +75,14 @@ public class SmartSearchPopupWindow {
 
     public void setOnDismissListener(PopupWindow.OnDismissListener onDismissListener) {
         popupWindow.setOnDismissListener(onDismissListener);
+    }
+
+    public void setOnPanelStateChangedListener(SmartSearchPanel.OnPanelStateChangedListener listener) {
+        this.smartSearchPanel.setOnPanelStateChangedListener(listener);
+    }
+
+    public void setOnTouchListener(View.OnTouchListener listener) {
+        this.mTouchListener = listener;
     }
 
     public boolean isShowing() {

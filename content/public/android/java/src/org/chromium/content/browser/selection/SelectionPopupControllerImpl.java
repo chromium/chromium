@@ -297,6 +297,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     private void dropFocus() {
+        Log.e(TAG, "dropFocus");
         // Hide popups and clear selection.
         destroyActionModeAndUnselect();
         dismissTextHandles();
@@ -482,8 +483,25 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         destroyActionModeAndKeepSelection();
 
         assert mWebContents != null;
-        ActionMode actionMode = supportsFloatingActionMode() ? startFloatingActionMode()
-                                                             : mView.startActionMode(mCallback);
+//        boolean supportsFloating = supportsFloatingActionMode();
+//        ActionMode actionMode = supportsFloating ? startFloatingActionMode()
+//                                                             : mView.startActionMode(mCallback);
+//
+//        if (supportsFloating && actionMode == null) {
+//            actionMode = mView.startActionMode(mCallback);
+//        }
+
+        ActionMode actionMode = null;
+        if (mSelectionClient != null) {
+            actionMode = mSelectionClient.startActionMode(mView, this, mCallback);
+        }
+        if (actionMode == null) {
+            boolean supportsFloating = supportsFloatingActionMode();
+            actionMode = supportsFloating ? startFloatingActionMode()
+                    : mView.startActionMode(mCallback);
+        }
+
+        Log.e(TAG, "showActionModeOrClearOnFailure actionMode=" + actionMode + " supportsFloatingActionMode=" + supportsFloatingActionMode() + " mView=" + mView);
         if (actionMode != null) {
             // This is to work around an LGE email issue. See crbug.com/651706 for more details.
             LGEmailActionModeWorkaroundImpl.runIfNecessary(mContext, actionMode);
@@ -491,6 +509,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mActionMode = actionMode;
         mUnselectAllOnDismiss = true;
 
+        Log.e(TAG, "showActionModeOrClearOnFailure isActionModeValid=" + isActionModeValid());
         if (!isActionModeValid()) clearSelection();
     }
 
@@ -675,6 +694,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public void onViewFocusChanged(boolean gainFocus, boolean hideKeyboardOnBlur) {
+        Log.e(TAG, "onViewFocusChanged gainFocus=" + gainFocus + " getPreserveSelectionOnNextLossOfFocus=" + getPreserveSelectionOnNextLossOfFocus());
         if (gainFocus) {
             restoreSelectionPopupsIfNecessary();
         } else {
@@ -974,6 +994,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public void onDestroyActionMode() {
+        Log.e(TAG, "onDestroyActionMode");
         mActionMode = null;
         if (mUnselectAllOnDismiss) {
             clearSelection();
@@ -1421,6 +1442,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public void clearSelection() {
+        Log.e(TAG, "clearSelection");
         if (mWebContents == null || !isActionModeSupported()) return;
         mWebContents.collapseSelection();
         mClassificationResult = null;

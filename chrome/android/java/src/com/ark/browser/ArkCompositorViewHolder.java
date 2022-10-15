@@ -6,7 +6,6 @@ package com.ark.browser;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -18,17 +17,21 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.view.ActionMode;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.ActionMenuView;
 import android.widget.FrameLayout;
-import android.widget.PopupWindow;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,26 +43,20 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.ark.browser.tab.ArkTabWebContentsObserver;
-import com.ark.browser.tab.TabInfoObserver;
-import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.TabManagerObserver;
-import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
-import com.ark.browser.ui.dialog.SmartSearchDialog;
 import com.ark.browser.ui.dialog.SmartSearchPopupWindow;
 import com.ark.browser.ui.widget.SmartSearchPanel;
 import com.ark.browser.utils.ArkLogger;
-import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.Consumer;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorView;
@@ -67,7 +64,6 @@ import org.chromium.chrome.browser.compositor.Invalidator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
-import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -84,6 +80,8 @@ import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content.browser.selection.FloatingActionModeCallback;
+import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
@@ -98,10 +96,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.touch_selection.SelectionEventType;
-import org.chromium.url.GURL;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -779,7 +774,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    ViewGroup getContentView() {
+    public ViewGroup getContentView() {
         Tab tab = getCurrentTab();
         return tab != null ? tab.getContentView() : null;
     }
@@ -1398,6 +1393,15 @@ public class ArkCompositorViewHolder extends FrameLayout
 //            private SmartSearchPanel smartSearchDialog;
 
             @Override
+            public ActionMode startActionMode(View view, ActionModeCallbackHelper helper, ActionMode.Callback callback) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    return new MyActionMode((ViewGroup) view,
+                            new FloatingActionModeCallback(helper, callback));
+                }
+                return null;
+            }
+
+            @Override
             public void onSelectionChanged(String selection) {
                 ArkLogger.e(TAG, "onSelectionChanged selection=" + selection);
                 if (TextUtils.isEmpty(selection)) {
@@ -1438,6 +1442,24 @@ public class ArkCompositorViewHolder extends FrameLayout
                     smartSearchDialog.setOnDismissListener(() -> {
                         smartSearchDialog = null;
                         controller.clearSelection();
+                    });
+                    smartSearchDialog.setOnPanelStateChangedListener(new SmartSearchPanel.OnPanelStateChangedListener() {
+
+                        private boolean focused = true;
+
+                        @Override
+                        public void onStateChanged(SmartSearchPanel panel) {
+                            if (focused != panel.isClosed()) {
+                                focused = panel.isClosed();
+                                controller.updateTextSelectionUI(focused);
+                            }
+                        }
+                    });
+                    smartSearchDialog.setOnTouchListener((View v, MotionEvent event) -> {
+                        ArkLogger.e(TAG, "smartSearchDialog OnTouchListener rootView=" +
+                                ArkCompositorViewHolder.this.getRootView());
+                        ArkCompositorViewHolder.this.getRootView().dispatchTouchEvent(event);
+                        return true;
                     });
                 }
                 smartSearchDialog.show();
@@ -1684,6 +1706,266 @@ public class ArkCompositorViewHolder extends FrameLayout
 
         void onShutDown();
 
+    }
+
+
+    private static class MyActionMode extends ActionMode {
+
+        private static final String TAG = "MyActionMode";
+
+//        private final PopupWindow popupWindow;
+
+//        private final MaterialCardView mCardView;
+
+        private final Rect mContentRect = new Rect();
+
+
+        private final Menu mMenu;
+
+
+        private final Context mContext;
+        private final ViewGroup mParent;
+        private final ActionMode.Callback2 mCallback;
+
+        private final View mMenuView;
+        private final LinearLayout mContainer;
+
+        private final MenuInflater mInflater;
+
+        public MyActionMode(ViewGroup view, ActionMode.Callback2 callback) {
+
+            this.mParent = view;
+            this.mCallback = callback;
+
+            Context context = view.getContext();
+            this.mContext = context;
+
+            Log.e(TAG, "MyActionMode view=" + view);
+            mMenuView = LayoutInflater.from(context).inflate(
+                    org.chromium.chrome.R.layout.menu_action_mode, null, false);
+            mMenuView.setVisibility(INVISIBLE);
+
+            mMenuView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    Log.e(TAG, "invalidateContentRect rect=" + new Rect(left, top, right, bottom)
+                            + " oldRect=" + new Rect(oldLeft, oldTop, oldRight, oldBottom));
+                }
+            });
+
+            mContainer = mMenuView.findViewById(org.chromium.chrome.R.id.ll_container);
+            mMenu = new ActionMenuView(mContext).getMenu();
+            mInflater = new MenuInflater(mContext);
+            invalidate();
+        }
+
+        @Override
+        public void hide(long duration) {
+            mMenuView.setVisibility(View.INVISIBLE);
+//            popupWindow.dismiss();
+        }
+
+
+        @Override
+        public void setTitle(CharSequence title) {
+
+        }
+
+        @Override
+        public void setTitle(int resId) {
+
+        }
+
+        @Override
+        public void setSubtitle(CharSequence subtitle) {
+
+        }
+
+        @Override
+        public void setSubtitle(int resId) {
+
+        }
+
+        @Override
+        public void setCustomView(View view) {
+
+        }
+
+        @Override
+        public void invalidate() {
+            if (mMenuView.getParent() == null) {
+                mParent.addView(mMenuView, new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
+
+
+            if (mMenu.size() == 0) {
+                mCallback.onPrepareActionMode(this, mMenu);
+                mContainer.removeAllViews();
+
+                for (int i = 0; i < mMenu.size(); i++) {
+                    MenuItem item = mMenu.getItem(i);
+                    Log.e(TAG, "invalidate item=" + item.getTitle());
+                    mContainer.addView(createItem(item));
+
+                    if (i >= 3) {
+                        break;
+                    }
+                }
+            }
+
+            invalidateContentRect();
+        }
+
+        @Override
+        public void invalidateContentRect() {
+            mParent.post(this::invalidateContentRectInner2);
+        }
+
+        private void invalidateContentRectInner() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mCallback.onGetContentRect(this, mMenuView, mContentRect);
+            }
+
+            Log.e(TAG, "invalidateContentRect width=" + mMenuView.getWidth() + " height=" + mMenuView.getHeight());
+            Log.e(TAG, "invalidateContentRect mContentRect=" + mContentRect);
+
+            int oldCenterX = mMenuView.getLeft() + mMenuView.getWidth() / 2;
+            int oldCenterY = mMenuView.getTop() + mMenuView.getHeight() / 2;
+
+            int centerX = mContentRect.centerX();
+            int centerY = mContentRect.centerY();
+
+            int width = mParent.getWidth();
+            int height = mParent.getHeight();
+
+
+            int newCenterX;
+            int newCenterY;
+
+            newCenterX = Math.max(0, centerX - mMenuView.getWidth() / 2);
+            if (mContentRect.bottom + mMenuView.getHeight() >= height) {
+                newCenterY = Math.max(0, mContentRect.top - mMenuView.getHeight());
+            } else {
+                newCenterY = mContentRect.bottom + mMenuView.getHeight();
+            }
+
+            Log.e(TAG, "invalidateContentRect centerX=" + centerX + " centerY=" + centerY + " width=" + width + " height=" + height);
+            Log.e(TAG, "invalidateContentRect oldCenterX=" + oldCenterX + " oldCenterY=" + oldCenterY);
+            Log.e(TAG, "invalidateContentRect newCenterX=" + newCenterX + " newCenterY=" + newCenterY);
+            mMenuView.offsetLeftAndRight(newCenterX - oldCenterX);
+            mMenuView.offsetTopAndBottom(newCenterY - oldCenterY);
+
+            Log.e(TAG, "invalidateContentRect left=" + mMenuView.getLeft() + " right=" + mMenuView.getRight());
+            if (mMenuView.getLeft() < 0) {
+                mMenuView.offsetLeftAndRight(-mMenuView.getLeft());
+            } else if (mMenuView.getRight() > width) {
+                mMenuView.offsetLeftAndRight(width - mMenuView.getRight());
+            }
+
+            mMenuView.setVisibility(View.VISIBLE);
+        }
+
+
+        private final Rect mMenuRect = new Rect();
+
+        private void invalidateContentRectInner2() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mCallback.onGetContentRect(this, mMenuView, mContentRect);
+            }
+
+            int width = mParent.getWidth();
+            int height = mParent.getHeight();
+
+            int centerX = mContentRect.centerX();
+            int centerY = mContentRect.centerY();
+
+            Log.e(TAG, "invalidateContentRect width=" + mMenuView.getWidth() + " height=" + mMenuView.getHeight());
+            Log.e(TAG, "invalidateContentRect mContentRect=" + mContentRect);
+
+            if (mContentRect.bottom + mMenuView.getHeight() > height) {
+                mMenuRect.bottom = mContentRect.top;
+                mMenuRect.top = mMenuRect.bottom - mMenuView.getHeight();
+            } else {
+                mMenuRect.top = mContentRect.bottom;
+                mMenuRect.bottom = mMenuRect.top + mMenuView.getHeight();
+            }
+
+
+
+            if (centerX * 2 <= width) {
+                if (mMenuView.getWidth() < centerX * 2) {
+                    mMenuRect.left = centerX - mMenuView.getWidth() / 2;
+                    mMenuRect.right = mMenuRect.left + mMenuView.getWidth();
+                } else {
+                    mMenuRect.left = 0;
+                    mMenuRect.right = mMenuView.getWidth();
+                }
+            } else {
+
+
+                if (centerX + mMenuView.getWidth() / 2 > width) {
+                    mMenuRect.right = width;
+                    mMenuRect.left = mMenuRect.right - mMenuView.getWidth();
+                } else {
+                    mMenuRect.right = centerX + mMenuView.getWidth() / 2;
+                    mMenuRect.left = mMenuRect.right - mMenuView.getWidth();
+                }
+            }
+
+
+
+            Log.e(TAG, "invalidateContentRect mMenuRect=" + mMenuRect);
+
+//            mMenuView.setTranslationX(mMenuRect.left);
+//            mMenuView.setTranslationY(mMenuRect.top);
+
+            mMenuView.setX(mMenuRect.left);
+            mMenuView.setY(mMenuRect.top);
+
+            mMenuView.setVisibility(View.VISIBLE);
+        }
+
+        private View createItem(MenuItem item) {
+            TextView textView = new TextView(mContext);
+            textView.setText(item.getTitle());
+            textView.setPadding(30, 40, 30, 40);
+            textView.setTextColor(Color.BLACK);
+            textView.setOnClickListener(v -> mCallback.onActionItemClicked(MyActionMode.this, item));
+            return textView;
+        }
+
+        @Override
+        public void finish() {
+//            popupWindow.dismiss();
+            mParent.removeView(mMenuView);
+            mCallback.onDestroyActionMode(this);
+        }
+
+        @Override
+        public Menu getMenu() {
+            return mMenu;
+        }
+
+        @Override
+        public CharSequence getTitle() {
+            return null;
+        }
+
+        @Override
+        public CharSequence getSubtitle() {
+            return null;
+        }
+
+        @Override
+        public View getCustomView() {
+            return null;
+        }
+
+        @Override
+        public MenuInflater getMenuInflater() {
+            return mInflater;
+        }
     }
 
 }

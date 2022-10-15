@@ -6,6 +6,8 @@ package org.chromium.content_public.browser;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.view.ActionMode;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.textclassifier.TextClassification;
 import android.view.textclassifier.TextClassifier;
@@ -90,6 +92,10 @@ public interface SelectionClient {
          * The result is delivered with this method.
          */
         void onClassified(Result result);
+    }
+
+    default ActionMode startActionMode(View view, ActionModeCallbackHelper helper, ActionMode.Callback callback) {
+        return null;
     }
 
     /**

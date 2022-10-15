@@ -131,6 +131,10 @@ void TouchHandle::SetVisible(bool visible, AnimationStyle animation_style) {
     EndFade();
 }
 
+bool TouchHandle::IsVisible() {
+    return is_visible_;
+}
+
 void TouchHandle::SetFocus(const gfx::PointF& top, const gfx::PointF& bottom) {
   DCHECK(enabled_);
   if (focus_top_ == top && focus_bottom_ == bottom)

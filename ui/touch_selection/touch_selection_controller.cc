@@ -655,15 +655,30 @@ void TouchSelectionController::UpdateHandleLayoutIfNecessary() {
 
 void TouchSelectionController::RefreshHandleVisibility() {
   TouchHandle::AnimationStyle animation_style = GetAnimationStyle(true);
+  bool isChanged = false;
   if (active_status_ == SELECTION_ACTIVE) {
-    start_selection_handle_->SetVisible(GetStartVisible(), animation_style);
-    end_selection_handle_->SetVisible(GetEndVisible(), animation_style);
+    bool startVisible = GetStartVisible();
+    bool endVisible = GetEndVisible();
+    isChanged = start_selection_handle_->IsVisible() != startVisible;
+    isChanged = isChanged && end_selection_handle_->IsVisible() != endVisible;
+    start_selection_handle_->SetVisible(startVisible, animation_style);
+    end_selection_handle_->SetVisible(endVisible, animation_style);
+  } else if (active_status_ == INSERTION_ACTIVE) {
+    bool startVisible = GetStartVisible();
+    isChanged = insertion_handle_->IsVisible() != startVisible;
+    insertion_handle_->SetVisible(startVisible, animation_style);
   }
-  if (active_status_ == INSERTION_ACTIVE)
-    insertion_handle_->SetVisible(GetStartVisible(), animation_style);
 
   // Update handle layout if handle visibility is explicitly changed.
   UpdateHandleLayoutIfNecessary();
+
+  if (isChanged) {
+      if (active_status_ == SELECTION_ACTIVE) {
+          client_->OnSelectionEvent(SELECTION_HANDLES_SHOWN);
+      } else if (active_status_ == INSERTION_ACTIVE) {
+          client_->OnSelectionEvent(INSERTION_HANDLE_SHOWN);
+      }
+  }
 }
 
 gfx::Vector2dF TouchSelectionController::GetStartLineOffset() const {
