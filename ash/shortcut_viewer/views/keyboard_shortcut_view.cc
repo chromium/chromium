@@ -47,7 +47,6 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -187,10 +186,6 @@ std::unique_ptr<ShortcutsListScrollView> CreateScrollView(
   scroller->ClipHeightTo(0, 0);
   scroller->SetContents(std::move(content_view));
   scroller->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks. This crashes if fetching a11y node
-  // data during paint because message_view_ is null.
-  scroller->SetProperty(views::kSkipAccessibilityPaintChecks, true);
   return scroller;
 }
 
