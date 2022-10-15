@@ -12,6 +12,7 @@
 #include "device/bluetooth/floss/exported_callback_manager.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_gatt_client.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace floss {
 
@@ -38,10 +39,10 @@ struct AdvertisingSetParameters {
 
 // Represents the data to be advertised.
 struct AdvertiseData {
-  std::vector<std::string> service_uuids;
-  std::vector<std::string> solicit_uuids;
+  std::vector<device::BluetoothUUID> service_uuids;
+  std::vector<device::BluetoothUUID> solicit_uuids;
   std::vector<std::vector<uint8_t>> transport_discovery_data;
-  std::map<int32_t, std::vector<uint8_t>> manufacturer_data;
+  std::map<uint16_t, std::vector<uint8_t>> manufacturer_data;
   std::map<std::string, std::vector<uint8_t>> service_data;
   bool include_tx_power_level;
   bool include_device_name;

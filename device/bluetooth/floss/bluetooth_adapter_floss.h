@@ -33,6 +33,7 @@
 namespace floss {
 
 class BluetoothDeviceFloss;
+class BluetoothAdvertisementFloss;
 
 // The BluetoothAdapterFloss class implements BluetoothAdapter for platforms
 // that use Floss, a dbus front-end for the Fluoride Bluetooth stack.
@@ -251,6 +252,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // the ui thread but socket operations (including connect/disconnect) will be
   // run in this thread. See |BluetoothSocketNet| for more details.
   scoped_refptr<device::BluetoothSocketThread> socket_thread_;
+
+  // List of advertisements registered with this adapter. This list is used
+  // to ensure we unregister any advertisements that were registered with
+  // this adapter on adapter shutdown. This is a sub-optimal solution since
+  // we'll keep a list of all advertisements ever created by this adapter (the
+  // unregistered ones will just be inactive). This will be fixed with
+  // crbug.com/687396.
+  std::vector<scoped_refptr<BluetoothAdvertisementFloss>> advertisements_;
+
+  // Default BLE advertising interval.
+  // 100 ms is one of the recommended values on Floss AdvertisingSetParameters.
+  // b/253718595 will provide a 'no preference' option so that Floss can choose
+  // a default value for the advertising interval.
+  uint16_t interval_ms_ = 100;
 
   base::WeakPtrFactory<BluetoothAdapterFloss> weak_ptr_factory_{this};
 };

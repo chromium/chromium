@@ -37,12 +37,13 @@ void UnregisterFailure(device::BluetoothAdvertisement::ErrorCode error) {
 
 BluetoothAdvertisementFloss::BluetoothAdvertisementFloss(
     std::unique_ptr<device::BluetoothAdvertisement::Data> data,
+    const uint16_t interval_ms,
     scoped_refptr<BluetoothAdapterFloss> adapter) {
   // Initializing advertising set parameters.
   params_.connectable =
       (data->type() ==
        device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_PERIPHERAL);
-  params_.scannable = adapter->IsDiscoverable();
+  params_.scannable = false;
   params_.is_legacy = true;
   params_.is_anonymous = false;
   // TODO: check BluetoothAdvertisement::Data.
@@ -50,7 +51,7 @@ BluetoothAdvertisementFloss::BluetoothAdvertisementFloss(
   params_.primary_phy =
       LePhy::kPhy1m;  // For Legacy advertisement compatibility.
   params_.secondary_phy = LePhy::kPhy1m;
-  params_.interval = 0x122;  // 181.25 ms.
+  params_.interval = (interval_ms * 8) / 5;  // in 0.625 ms unit.
   params_.tx_power_level = kTxPowerNoPreference;
   params_.own_address_type =
       params_.connectable ? OwnAddressType::kPublic : OwnAddressType::kRandom;
@@ -58,10 +59,9 @@ BluetoothAdvertisementFloss::BluetoothAdvertisementFloss(
   // Initializing advertise data.
   absl::optional<UUIDList> service_uuids = data->service_uuids();
   if (service_uuids) {
-    adv_data_.service_uuids.insert(
-        adv_data_.service_uuids.end(),
-        std::make_move_iterator(service_uuids->begin()),
-        std::make_move_iterator(service_uuids->end()));
+    for (auto& uuid : *service_uuids) {
+      adv_data_.service_uuids.emplace_back(uuid);
+    }
   }
   absl::optional<ManufacturerData> manuf_data = data->manufacturer_data();
   if (manuf_data) {
@@ -71,10 +71,9 @@ BluetoothAdvertisementFloss::BluetoothAdvertisementFloss(
   }
   absl::optional<UUIDList> solicit_uuids = data->solicit_uuids();
   if (solicit_uuids) {
-    adv_data_.solicit_uuids.insert(
-        adv_data_.solicit_uuids.end(),
-        std::make_move_iterator(solicit_uuids->begin()),
-        std::make_move_iterator(solicit_uuids->end()));
+    for (auto& uuid : *service_uuids) {
+      adv_data_.solicit_uuids.emplace_back(uuid);
+    }
   }
   absl::optional<ServiceData> service_data = data->service_data();
   if (service_data) {
@@ -90,7 +89,7 @@ BluetoothAdvertisementFloss::BluetoothAdvertisementFloss(
   absl::optional<ScanResponseData> scan_response_data =
       data->scan_response_data();
   if (scan_response_data) {
-    with_scan_rsp_ = true;
+    params_.scannable = true;
     for (auto& [type, val] : *scan_response_data) {
       if (type == kServiceData16BitUuid) {
         if (val.size() < 2)
@@ -99,17 +98,16 @@ BluetoothAdvertisementFloss::BluetoothAdvertisementFloss(
         uint16_t id = (val[1] << 8) | val[0];
         std::stringstream stream;
         stream << std::setfill('0') << std::setw(4) << std::hex << id;
-        std::string uuid_str = stream.str();
+        device::BluetoothUUID uuid(stream.str());
         std::vector<uint8_t> bytes(val.begin() + 2, val.end());
-        scan_rsp_.service_data.emplace(std::move(uuid_str), std::move(bytes));
+        scan_rsp_.service_data.emplace(uuid.canonical_value(),
+                                       std::move(bytes));
       } else {
         BLUETOOTH_LOG(ERROR) << "Unsupported type: " << type;
       }
     }
     scan_rsp_.include_tx_power_level = false;
     scan_rsp_.include_device_name = false;
-  } else {
-    with_scan_rsp_ = false;
   }
 
   adv_id_ = kInvalidAdvId;
@@ -136,8 +134,8 @@ void BluetoothAdvertisementFloss::Start(
 
   FlossDBusManager::Get()->GetAdvertiserClient()->StartAdvertisingSet(
       params_, adv_data_,
-      (with_scan_rsp_ ? absl::optional<AdvertiseData>(scan_rsp_)
-                      : absl::nullopt),
+      (params_.scannable ? absl::optional<AdvertiseData>(scan_rsp_)
+                         : absl::nullopt),
       absl::nullopt, absl::nullopt, kUnlimitedDuration, kUnlimitedAdvEvents,
       base::BindOnce(&BluetoothAdvertisementFloss::OnStartSuccess,
                      weak_ptr_factory_.GetWeakPtr(),

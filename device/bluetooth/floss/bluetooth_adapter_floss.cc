@@ -17,6 +17,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
+#include "device/bluetooth/floss/bluetooth_advertisement_floss.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/bluetooth_low_energy_scan_session_floss.h"
 #include "device/bluetooth/floss/bluetooth_socket_floss.h"
@@ -118,6 +119,15 @@ void BluetoothAdapterFloss::Shutdown() {
   if (IsPresent())
     RemoveAdapter();  // Cleans up devices and adapter observers.
   DCHECK(devices_.empty());
+
+  // This may call unregister on advertisements that have already been
+  // unregistered but that's fine. The advertisement object keeps a track of
+  // the fact that it has been already unregistered and will call our empty
+  // error callback with an "Already unregistered" error, which we'll ignore.
+  for (const auto& adv : advertisements_) {
+    adv->Stop(base::DoNothing(), base::DoNothing());
+  }
+  advertisements_.clear();
 
   FlossDBusManager::Get()->GetManagerClient()->RemoveObserver(this);
   dbus_is_shutdown_ = true;
@@ -848,24 +858,36 @@ void BluetoothAdapterFloss::RegisterAdvertisement(
     std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
     CreateAdvertisementCallback callback,
     AdvertisementErrorCallback error_callback) {
-  std::move(error_callback)
-      .Run(device::BluetoothAdvertisement::ERROR_UNSUPPORTED_PLATFORM);
+  scoped_refptr<BluetoothAdvertisementFloss> advertisement(
+      new BluetoothAdvertisementFloss(std::move(advertisement_data),
+                                      interval_ms_, this));
+  advertisement->Start(base::BindOnce(std::move(callback), advertisement),
+                       std::move(error_callback));
+  advertisements_.emplace_back(advertisement);
 }
 
 void BluetoothAdapterFloss::SetAdvertisingInterval(
     const base::TimeDelta& min,
     const base::TimeDelta& max,
     base::OnceClosure callback,
-    AdvertisementErrorCallback error_callback) {
-  std::move(error_callback)
-      .Run(device::BluetoothAdvertisement::ERROR_UNSUPPORTED_PLATFORM);
+    AdvertisementErrorCallback r_callback) {
+  interval_ms_ = static_cast<uint16_t>(
+      std::min(static_cast<int64_t>(std::numeric_limits<uint16_t>::max()),
+               min.InMilliseconds()));
+  for (const auto& adv : advertisements_) {
+    adv->SetAdvertisingInterval(interval_ms_, base::DoNothing(),
+                                base::DoNothing());
+  }
+  std::move(callback).Run();
 }
 
 void BluetoothAdapterFloss::ResetAdvertising(
     base::OnceClosure callback,
     AdvertisementErrorCallback error_callback) {
-  std::move(error_callback)
-      .Run(device::BluetoothAdvertisement::ERROR_UNSUPPORTED_PLATFORM);
+  for (const auto& adv : advertisements_) {
+    adv->Stop(base::DoNothing(), base::DoNothing());
+  }
+  std::move(callback).Run();
 }
 
 void BluetoothAdapterFloss::ConnectDevice(
