@@ -508,6 +508,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
         PasswordDropdownSelectedOption::kPassword,
         password_client_->IsIncognito());
 
+    CancelBiometricReauthIfOngoing();
     scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
         password_client_->GetBiometricAuthenticator();
     // Note: this is currently only implemented on Android, Mac and Windows. For
