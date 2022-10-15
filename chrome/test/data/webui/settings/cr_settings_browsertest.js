@@ -757,7 +757,6 @@ TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
   mocha.run();
 });
 
-
 var CrSettingsReviewNotificationPermissionsTest =
     class extends CrSettingsBrowserTest {
   /** @override */
@@ -775,9 +774,12 @@ var CrSettingsReviewNotificationPermissionsTest =
   }
 };
 
-TEST_F('CrSettingsReviewNotificationPermissionsTest', 'All', function() {
-  mocha.run();
-});
+// Failing on buildbots. http://crbug.com/1374908
+TEST_F(
+    'CrSettingsReviewNotificationPermissionsTest',
+    'DISABLED_CrSettingsReviewNotificationPermissionsTest', function() {
+      mocha.run();
+    });
 
 [['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
  [
