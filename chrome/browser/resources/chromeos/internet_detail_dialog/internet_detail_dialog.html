@@ -17,6 +17,21 @@
   #networkState[connected] {
     color: var(--cros-text-color-positive);
   }
+
+  #networkState[warning] {
+    color: var(--cros-text-color-warning);
+  }
+
+  .signin-button {
+    margin-inline-end: 8px;
+    padding: 8px 16px 8px 8px;
+  }
+
+  .signin-icon {
+    background-color: var(--text-color);
+    margin-inline-end: 4px;
+    margin-inline-start: 0;
+  }
 </style>
 
 <!-- Title section: Icon + name + connection state. -->
@@ -29,9 +44,18 @@
     [[getNameText_(managedProperties_)]]
   </div>
   <div id="networkState" class="title flex"
-      connected$="[[isConnectedState_(managedProperties_)]]">
+      connected$="[[showConnectedState_(managedProperties_)]]"
+      warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
     [[getStateText_(managedProperties_)]]
   </div>
+  <template is="dom-if" if="[[isCaptivePortalUI2022Enabled_]]">
+    <cr-button class="signin-button" id="signinButton" on-click="onSigninTap_"
+        hidden$="[[!showSignin_(managedProperties_)]]"
+        disabled="[[disableSignin_(managedProperties_, disabled_)]]">
+      <div class="signin-icon cr-icon icon-external"></div>
+      $i18n{networkButtonSignin}
+    </cr-button>
+  </template>
   <cr-button on-click="onForgetTap_"
       hidden$="[[!showForget_(managedProperties_)]]"
       disabled="[[disabled_]]">
