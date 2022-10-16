@@ -17,7 +17,7 @@
 <translation id="1516966594427080024">시크릿 모드로 새 창 열기</translation>
 <translation id="152892567002884378">볼륨 크게</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />을 누르고 <ph name="ESC" /></translation>
-<translation id="1586324912145647027">데스크 1~8로 이동</translation>
+<translation id="1586324912145647027">데스크 1에서 8로 이동</translation>
 <translation id="1652741121070700329">이전 단어의 시작으로 이동</translation>
 <translation id="1679841710523778799">밝게</translation>
 <translation id="168356808214100546"><ph name="ALT" />를 길게 누르고 열려는 창으로 이동할 때까지 <ph name="TAB" />을 탭한 후 놓습니다.</translation>
@@ -191,7 +191,7 @@
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />을 누르고 <ph name="SPACE" /> 또는 <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">브라우저에서 파일 열기</translation>
-<translation id="7952165122793773711">1~8번째 탭으로 이동합니다.</translation>
+<translation id="7952165122793773711">1번째부터 8번째 탭으로 이동합니다.</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
 <translation id="8130528849632411619">문서 처음으로 이동</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> 또는 <ph name="E" /></translation>
@@ -207,7 +207,7 @@
 <translation id="8644639153978066712">파일 앱에 숨겨진 파일 표시하기</translation>
 <translation id="8717459106217102612">이전 단어 또는 글자를 선택</translation>
 <translation id="8727232706774971183">알림 확인</translation>
-<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" />1~8</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" />1부터 8</translation>
 <translation id="8855885154700222542">전체화면 키</translation>
 <translation id="8881584919399569791">활성 창을 왼쪽 데스크로 옮깁니다.</translation>
 <translation id="88986195241502842">페이지 아래로</translation>
@@ -227,6 +227,6 @@
 <translation id="9179672198516322668">자주 쓰는 단축키</translation>
 <translation id="93603345341560814"><ph name="SHIFT" /> 키를 누른 상태에서 링크 클릭</translation>
 <translation id="945383118875625837">링크를 북마크바로 드래그</translation>
-<translation id="969054500339500113">메뉴 바에 초점 맞추기</translation>
+<translation id="969054500339500113">메뉴 바에 포커스 놓기</translation>
 <translation id="98120814841227350">문서 하단으로 이동</translation>
 </translationbundle>

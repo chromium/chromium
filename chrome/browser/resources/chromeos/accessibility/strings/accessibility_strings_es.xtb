@@ -448,7 +448,7 @@
 <translation id="3898233949376129212">Idioma del dispositivo</translation>
 <translation id="3907138069015388678">listcuadríc</translation>
 <translation id="3909320334364316587">Encabezado anterior de nivel 6</translation>
-<translation id="3914173277599553213">Obligatorios</translation>
+<translation id="3914173277599553213">Obligatorio</translation>
 <translation id="3914732343065571127">Referencia de comandos de ChromeVox</translation>
 <translation id="3930383913623796990">Verde primavera</translation>
 <translation id="3930498801443296724">Cita</translation>
@@ -576,7 +576,7 @@
 <translation id="4854380505292502090">No hay ningún widget multimedia anterior</translation>
 <translation id="4855927945655956315">Teclas imprescindibles: Ctrl</translation>
 <translation id="4862744964787595316">Sin negrita</translation>
-<translation id="4865995900839719272">mover a la línea anterior</translation>
+<translation id="4865995900839719272">ir a la línea anterior</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Habilita registro de conversión de texto a voz</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -634,7 +634,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, pestaña</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5310788376443009632">eliminada:</translation>
-<translation id="5316825363044614340">mover a la línea siguiente</translation>
+<translation id="5316825363044614340">ir a la línea siguiente</translation>
 <translation id="5320727453979144100">Modo Persistente habilitado</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{coma}other{# comas}}</translation>
 <translation id="532485153932049746">Formato del texto

@@ -10,20 +10,20 @@
 <translation id="110877069173485804">Questo è il tuo Chrome</translation>
 <translation id="1125124144982679672">Chi usa Chrome?</translation>
 <translation id="1142745911746664600">Impossibile aggiornare Chrome</translation>
-<translation id="1152920704813762236">Informazioni su Chrome OS</translation>
+<translation id="1152920704813762236">Informazioni su ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Apri in Chrome</translation>
 <translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Riavvia per aggiornare &amp;Chrome</translation>
 <translation id="1302523850133262269">Attendi mentre Chrome installa gli aggiornamenti di sistema più recenti.</translation>
-<translation id="1335640173511558774"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google Chrome OS Flex.</translation>
-<translation id="1363996462118479832">Impossibile sincronizzare i dati in Chrome OS a causa di un errore durante l'accesso.</translation>
+<translation id="1335640173511558774"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google ChromeOS Flex.</translation>
+<translation id="1363996462118479832">Impossibile sincronizzare i dati in ChromeOS a causa di un errore durante l'accesso.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Su questo computer è già installata una versione più recente di Google Chrome. Se il software non funziona, disinstalla Google Chrome e riprova.</translation>
 <translation id="139993653570221430">Puoi cambiare idea in qualsiasi momento. In questo caso, usa le impostazioni di Chrome. Le prove vengono eseguite insieme alla modalità corrente di pubblicazione degli annunci, quindi non vedrai immediatamente le modifiche.</translation>
 <translation id="1434626383986940139">Applicazioni Chrome Canary</translation>
 <translation id="1507198376417198979">Personalizza il tuo nuovo profilo Chrome</translation>
 <translation id="1516530951338665275">Google Chrome richiede l'accesso al Bluetooth per continuare l'accoppiamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
-<translation id="1547295885616600893">La realizzazione di Chrome OS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
+<translation id="1547295885616600893">La realizzazione di ChromeOS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
 <translation id="1553358976309200471">Aggiorna Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chrome. Questa operazione creerà un nuovo profilo Chrome per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome sta utilizzando la videocamera.</translation>
@@ -33,7 +33,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati:<ph name="END_BOLD" /> per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chrome prenda in considerazione.</translation>
 <translation id="1628000112320670027">Ricevi assistenza per Chrome</translation>
 <translation id="1640672724030957280">Download in corso...</translation>
-<translation id="1662146548738125461">Informazioni su Chrome OS Flex</translation>
+<translation id="1662146548738125461">Informazioni su ChromeOS Flex</translation>
 <translation id="1674870198290878346">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non è in grado di leggere e scrivere nella directory dei dati: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome è un browser web che apre pagine e applicazioni web con grande velocità. È veloce, stabile e facile da utilizzare. Esplora il Web in modo più sicuro grazie alla protezione contro malware e phishing incorporata in Google Chrome.</translation>
@@ -53,14 +53,14 @@
 <translation id="2018879682492276940">Installazione non riuscita. Riprova.</translation>
 <translation id="2071318482926839249">Un altro account ha già eseguito l'accesso. Per tenere separata la tua navigazione, Chrome può creare per te il tuo profilo personale.</translation>
 <translation id="207902854391093810">Quando sono attive le prove, Ad measurement consente ai siti che visiti di chiedere a Chrome informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
-<translation id="2094648590148273905">Termini di Chrome OS Flex</translation>
+<translation id="2094648590148273905">Termini di ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vuoi chiudere comunque Chrome?</translation>
-<translation id="2106831557840787829">La realizzazione di Chrome OS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2106831557840787829">La realizzazione di ChromeOS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2120620239521071941">Verranno eliminati <ph name="ITEMS_COUNT" /> elementi da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Riavvia per aggiornare &amp;Chrome</translation>
 <translation id="2123055963409958220">Contribuisci a migliorare Chrome indicando le <ph name="BEGIN_LINK" />impostazioni attuali<ph name="END_LINK" /></translation>
 <translation id="2131230230468101642">Per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chrome prenda in considerazione.</translation>
-<translation id="2139300032719313227">Riavvia Chrome OS</translation>
+<translation id="2139300032719313227">Riavvia ChromeOS</translation>
 <translation id="2151406531797534936">Riavvia subito Chrome</translation>
 <translation id="2174917724755363426">Installazione non completata. Vuoi annullarla?</translation>
 <translation id="223889379102603431">Informazioni su come Chrome gestisce i suoi certificati radice</translation>
@@ -73,7 +73,7 @@
 <translation id="234869673307233423">Chrome non può controllare le tue password. Riprova più tardi.</translation>
 <translation id="235650106824528204">Tutti i dati di Chrome generati durante l'utilizzo di questo profilo (come i preferiti, la cronologia, le password e altre impostazioni) possono essere rimossi dall'amministratore del profilo di lavoro. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2401189691232800402">Sistema Chrome OS</translation>
+<translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2467438592969358367">Google Chrome vuole esportare le password. Per consentire l'esportazione, digita la tua password Windows.</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
 <translation id="2494974097748878569">Assistente Google in Chrome</translation>
@@ -85,7 +85,7 @@
 <translation id="2586406160782125153">Verranno eliminati i tuoi dati di navigazione da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Accedi ai tuoi contenuti del browser Chrome dall'account <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome non può controllare la disponibilità di aggiornamenti. Prova a controllare la connessione a Internet.</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">Apri link in una nuova &amp;scheda di Chrome</translation>
 <translation id="2665296953892887393">Aiutaci a migliorare Google Chrome inviando a Google report sugli arresti anomali e <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Questa estensione ha cambiato la pagina mostrata all'avvio di Chrome.</translation>
@@ -131,7 +131,7 @@
 <translation id="3434246496373299699">Chrome può controllare le tue password quando accedi con il tuo Account Google</translation>
 <translation id="3451115285585441894">Aggiunta a Chrome in corso...</translation>
 <translation id="345171907106878721">Aggiungiti a Chrome</translation>
-<translation id="3453763134178591239">Termini di Chrome OS</translation>
+<translation id="3453763134178591239">Termini di ChromeOS</translation>
 <translation id="34857402635545079">Cancella anche i dati di Chrome (<ph name="URL" />)</translation>
 <translation id="3503306920980160878">Chrome deve poter accedere alla tua posizione per condividerla con questo sito</translation>
 <translation id="3533694711092285624">Nessuna password salvata. Chrome può controllare le password quando le salvi.</translation>
@@ -141,21 +141,21 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="3622797965165704966">Ora è più facile utilizzare Chrome con il tuo Account Google e sui computer condivisi.</translation>
 <translation id="3673813398384385993">Chrome ha rilevato che l'estensione "<ph name="EXTENSION_NAME" />" contiene malware</translation>
-<translation id="3703994572283698466">La realizzazione di Chrome OS è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="3716540481907974026">Versione Chrome OS Flex</translation>
+<translation id="3703994572283698466">La realizzazione di ChromeOS è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="3716540481907974026">Versione ChromeOS Flex</translation>
 <translation id="3718181793972440140">Verrà eliminato 1 elemento da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">L'estensione "<ph name="EXTENSION_NAME" />" ha cambiato la pagina mostrata all'avvio di Chrome.</translation>
-<translation id="3744202345691150878">Ricevi assistenza per Chrome OS</translation>
+<translation id="3744202345691150878">Ricevi assistenza per ChromeOS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">Impossibile sincronizzare i dati in Chrome OS Flex a causa di un errore durante l'accesso.</translation>
-<translation id="3795971588916395511">Google Chrome OS</translation>
+<translation id="3785324443014631273">Impossibile sincronizzare i dati in ChromeOS Flex a causa di un errore durante l'accesso.</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3835168907083856002">Questa operazione creerà un nuovo profilo Chrome per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Chiudi tutte le finestre di Google Chrome e riprova.</translation>
 <translation id="3865754807470779944">La versione di Chrome <ph name="PRODUCT_VERSION" /> è installata</translation>
 <translation id="3873044882194371212">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
 <translation id="3889417619312448367">Disinstalla Google Chrome</translation>
 <translation id="3999683152997576765">Puoi visualizzare e rimuovere argomenti di interesse usati dai siti per mostrarti annunci. Chrome stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
-<translation id="4035053306113201399">Per applicare l'aggiornamento è necessario riavviare Chrome OS.</translation>
+<translation id="4035053306113201399">Per applicare l'aggiornamento è necessario riavviare ChromeOS.</translation>
 <translation id="4050175100176540509">Nell'ultima versione sono stati apportati miglioramenti rilevanti in materia di sicurezza e sono state aggiunte nuove funzioni.</translation>
 <translation id="4053720452172726777">Personalizza e controlla Google Chrome</translation>
 <translation id="4106587138345390261">Chrome sta esaminando nuove funzionalità che consentono ai siti di offrire la stessa esperienza di navigazione utilizzando meno informazioni personali</translation>
@@ -186,7 +186,7 @@
 <translation id="4571503333518166079">Vai alle impostazioni di notifica di Chrome</translation>
 <translation id="459622048091363950">Dopo che Chrome avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
 <translation id="4600710005438004015">Non è stato possibile aggiornare Chrome alla versione più recente, quindi non potrai utilizzare le nuove funzioni e gli aggiornamenti di sicurezza.</translation>
-<translation id="4627412468266359539">Facoltativo: contribuisci a migliorare le funzionalità e le prestazioni di Chrome OS Flex inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
+<translation id="4627412468266359539">Facoltativo: contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS Flex inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
 <translation id="4633000520311261472">Per rendere Chrome più sicuro, abbiamo disattivato alcune estensioni che non sono elencate nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e potrebbero essere state aggiunte a tua insaputa.</translation>
 <translation id="4680828127924988555">Annulla l'installazione</translation>
 <translation id="469553575393225953">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chrome consiglia di installare questi elementi soltanto dal Chrome Web Store</translation>
@@ -195,15 +195,15 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Questo file potrebbe essere pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="479167709087336770">Viene usato lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google. Puoi modificare questo comportamento in qualsiasi momento nelle impostazioni.</translation>
-<translation id="4842397268809523050">Impossibile sincronizzare i dati in Chrome OS Flex perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
+<translation id="4842397268809523050">Impossibile sincronizzare i dati in ChromeOS Flex perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="4873783916118289636">Esamina i controlli per la privacy e la sicurezza più importanti in Chrome</translation>
 <translation id="4891791193823137474">Lascia Google Chrome in esecuzione in background</translation>
 <translation id="4895437082222824641">Apri link in una nuova &amp;scheda di Chrome</translation>
 <translation id="4953650215774548573">Imposta Google Chrome come browser predefinito</translation>
 <translation id="495931528404527476">In Chrome</translation>
-<translation id="4969674060580488087">Impossibile sincronizzare i dati in Chrome OS Flex perché i dati di accesso dell'account sono obsoleti.</translation>
+<translation id="4969674060580488087">Impossibile sincronizzare i dati in ChromeOS Flex perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="4970761609246024540">Ti diamo il benvenuto nei profili Chrome</translation>
-<translation id="4970880042055371251">Versione di Chrome OS</translation>
+<translation id="4970880042055371251">Versione di ChromeOS</translation>
 <translation id="4970947549776831107">Chrome ha bloccato questo file perché è un tipo di file pericoloso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere macOS 10.13 o versioni successive. Su questo computer è installato il sistema operativo X 10.11.</translation>
@@ -214,10 +214,10 @@
 <translation id="5170938038195470297">Non è possibile utilizzare il tuo profilo perché è associato a una versione di Google Chrome più recente. Alcune funzioni potrebbero non essere disponibili. Specifica una directory del profilo diversa o utilizza una versione di Chrome più recente.</translation>
 <translation id="521447420733633466">Se condividi un dispositivo, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chrome in base alle proprie esigenze</translation>
 <translation id="5251420635869119124">Gli ospiti possono utilizzare Chrome senza lasciare tracce.</translation>
-<translation id="5334309298019785904">Impossibile sincronizzare i dati in Chrome OS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
+<translation id="5334309298019785904">Impossibile sincronizzare i dati in ChromeOS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="5334487786912937552">Chrome deve avere l'autorizzazione di accesso allo spazio di archiviazione per poter scaricare file</translation>
-<translation id="5337648990166757586">(Facoltativo) Contribuisci a migliorare le funzionalità e le prestazioni di Chrome OS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
-<translation id="5357889879764279201">Ricevi assistenza per Chrome OS Flex</translation>
+<translation id="5337648990166757586">(Facoltativo) Contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
+<translation id="5357889879764279201">Ricevi assistenza per ChromeOS Flex</translation>
 <translation id="5386244825306882791">Controlla anche la pagina visualizzata all'avvio di Chrome o quando esegui ricerche dalla Omnibox.</translation>
 <translation id="5394833366792865639">Condividi una scheda di Chrome</translation>
 <translation id="5412485296464121825">I siti possono memorizzare su Chrome informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
@@ -262,11 +262,11 @@
 <translation id="6506909944137591434">Chrome deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome per gli sviluppatori</translation>
 <translation id="659498884637196217">In Gestore delle password di Google su questo dispositivo</translation>
-<translation id="6632473616050862500">La realizzazione di Chrome OS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo.</translation>
+<translation id="6632473616050862500">La realizzazione di ChromeOS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo.</translation>
 <translation id="6676384891291319759">Accesso a Internet</translation>
 <translation id="6679975945624592337">Lascia Google Chrome in esecuzione in background</translation>
 <translation id="6696915334902295848">Chrome deve avere l'autorizzazione di accesso al microfono per questo sito</translation>
-<translation id="6735387454586646204">Sistema Chrome OS Flex</translation>
+<translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
 <translation id="6739177684496155661">Vuoi continuare con un nuovo profilo Chrome?</translation>
 <translation id="6750954913813541382">Per correggere gli errori ortografici, Chrome invia a Google il testo che digiti nel browser</translation>
 <translation id="677276454032249905">Vuoi uscire comunque da Chrome?</translation>
@@ -274,7 +274,7 @@
 <translation id="683440813066116847">Regola inbound per consentire il traffico mDNS in Google Chrome Canary.</translation>
 <translation id="6881299373831449287">Aggiornamento di Chrome</translation>
 <translation id="6885412569789873916">App di Chrome Beta</translation>
-<translation id="6933858244219479645">Sistema Chrome OS</translation>
+<translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6943584222992551122">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regola inbound per consentire il traffico mDNS in Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Google Chrome è stato aggiornato ma non lo utilizzi da almeno 30 giorni.</translation>
@@ -308,9 +308,9 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7486227612705979895">Chrome accederà al tuo Drive per inserire suggerimenti nella barra degli indirizzi</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Programma di installazione di <ph name="COMPANY_NAME" /></translation>
-<translation id="7606334485649076285">Google Chrome OS Flex</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Benvenuto in Chrome</translation>
-<translation id="7626072681686626474"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google Chrome OS.</translation>
+<translation id="7626072681686626474"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google ChromeOS.</translation>
 <translation id="7629695634924605473">Chrome ti avvisa se le tue password vengono compromesse</translation>
 <translation id="7641148173327520642">L'amministratore di sistema ha configurato Google Chrome per l'apertura di <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedere a<ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Guida</translation>
@@ -332,13 +332,13 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7896673875602241923">Qualcuno ha già eseguito l'accesso a Chrome su questo computer come <ph name="ACCOUNT_EMAIL_LAST" />. Crea un nuovo utente Chrome per tenere separate le tue informazioni.</translation>
 <translation id="7917876797003313048">Puoi gestire gli Account Google a cui hai eseguito l'accesso. I tuoi Account Google vengono usati per il browser Chrome, il Play Store, Gmail e altro ancora. Se vuoi aggiungere un account per qualcun altro, come un membro del gruppo Famiglia, aggiungi invece una nuova persona a <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome sta cercando di copiare le password.</translation>
-<translation id="7951272445806340501">Per applicare l'aggiornamento è necessario riavviare Chrome OS Flex.</translation>
+<translation id="7951272445806340501">Per applicare l'aggiornamento è necessario riavviare ChromeOS Flex.</translation>
 <translation id="7962410387636238736">Questo computer non riceverà più gli aggiornamenti di Google Chrome perché Windows XP e Windows Vista non sono più supportati.</translation>
 <translation id="8005666035647241369">Su Gestore delle password di Google su questo dispositivo</translation>
 <translation id="8008534537613507642">Reinstalla Chrome</translation>
 <translation id="8013993649590906847">Se un'immagine è senza descrizione utile, Chrome proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google.</translation>
 <translation id="80471789339884597">L'installazione è terminata. Dovrai riavviare tutti i browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Informazioni su &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>
@@ -354,7 +354,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8394720698884623075">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chrome</translation>
 <translation id="840084489713044809">Google Chrome vuole esportare le password.</translation>
 <translation id="8416347857511542594">Scopri di più sulla personalizzazione degli annunci in Chrome</translation>
-<translation id="8418845734693287262">Impossibile sincronizzare i dati in Chrome OS perché i dati di accesso dell'account sono obsoleti.</translation>
+<translation id="8418845734693287262">Impossibile sincronizzare i dati in ChromeOS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="8433638294851456451">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>
 <translation id="8451192282033883849">Il tuo account è gestito da <ph name="MANAGER_NAME" />. L'amministratore può vedere e modificare questo profilo del browser Chrome e i relativi dati, come preferiti, cronologia e password.</translation>
 <translation id="8498858610309223613">È stato appena applicato un aggiornamento di sicurezza speciale per Google Chrome. Riavvia ora e le schede verranno ripristinate.</translation>
@@ -388,14 +388,14 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8986207147630327271">Stai per aggiungere a questo browser un profilo di lavoro che sarà controllato dal tuo amministratore.</translation>
 <translation id="8989968390305463310">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>
-<translation id="9053892488859122171">Sistema Chrome OS Flex</translation>
+<translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
 <translation id="9067395829937117663">Google Chrome richiede Windows 7 o versioni successive.</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>
 <translation id="9138603949443464873">Riavvia Chrome per applicare le modifiche</translation>
 <translation id="9195993889682885387">Chrome può stimare i tuoi interessi in base alla cronologia di navigazione delle ultime settimane. Queste informazioni rimangono sul dispositivo.</translation>
 <translation id="919706545465235479">Aggiorna Chrome per avviare la sincronizzazione</translation>
 <translation id="922152298093051471">Personalizza Chrome</translation>
-<translation id="93760716455950538">Riavvia Chrome OS Flex</translation>
+<translation id="93760716455950538">Riavvia ChromeOS Flex</translation>
 <translation id="940313311831216333">Per accedere ai tuoi contenuti Chrome su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione.</translation>
 <translation id="989369509083708165">Google Chrome è il tuo browser predefinito</translation>
 <translation id="989816563149873169">La scorciatoia <ph name="SHORTCUT" /> consente di passare da un profilo Chrome all'altro</translation>

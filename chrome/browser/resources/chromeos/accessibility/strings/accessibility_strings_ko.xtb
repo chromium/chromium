@@ -525,7 +525,7 @@
 <translation id="4432896207833262240">표시된 콘텐츠</translation>
 <translation id="4437615272777527928">입력하여 메뉴를 검색합니다. 위쪽 및 아래쪽 화살표를 사용하여 다른 결과로 이동합니다. 왼쪽 및 오른쪽 화살표를 사용하여 텍스트 캐럿을 조정하고 메뉴 간에 이동합니다.</translation>
 <translation id="4457472090507035117">현재 음성 선택:</translation>
-<translation id="4476183483923481720">새로운 행</translation>
+<translation id="4476183483923481720">새로운 줄</translation>
 <translation id="4479068155583208887">파이어 브릭</translation>
 <translation id="4482330759234983253">이전 표</translation>
 <translation id="4491109536499578614">이미지</translation>
@@ -777,7 +777,7 @@
 <translation id="6218813441317556731"><ph name="DELETE_PHRASE" />를 <ph name="INSERT_PHRASE" />로 대체</translation>
 <translation id="6236061028292614533">다음 제목</translation>
 <translation id="6254901459154107917">다음 수정 가능 텍스트 영역</translation>
-<translation id="6259464875943891919"><ph name="TYPE" />을(를) 종료합니다.</translation>
+<translation id="6259464875943891919"><ph name="TYPE" />에서 나왔습니다.</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">필수 키: 검색 키</translation>
 <translation id="6305702903308659374">ChromeVox 음성이 나올 때도 보통 볼륨으로 재생합니다.</translation>
@@ -1163,7 +1163,7 @@
 <translation id="9099429023611373837">잘라내기</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{퍼센트 기호}other{퍼센트 기호 #개}}</translation>
+<translation id="911476240645808512">{COUNT,plural, =1{퍼센트}other{#퍼센트}}</translation>
 <translation id="9128414153595658330">dlg</translation>
 <translation id="9133928141873682933">카키</translation>
 <translation id="9149560530563164529">sctn</translation>

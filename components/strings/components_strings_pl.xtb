@@ -901,7 +901,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3399952811970034796">Adres dostawy</translation>
 <translation id="3402261774528610252">Do połączenia z tą stroną użyto protokołu TLS 1.0 lub 1.1. Obie te wersje zostały wycofane, a w przyszłości zostaną wyłączone. Po ich wyłączeniu użytkownicy nie będą mogli otwierać tej strony. Serwer powinien korzystać z protokołu TLS w wersji 1.2 lub nowszej.</translation>
 <translation id="3405664148539009465">Dostosuj czcionki</translation>
-<translation id="3407789382767355356">logowanie się w przypadku innych firm</translation>
+<translation id="3407789382767355356">logowanie przez usługę zewnętrzną</translation>
 <translation id="3409896703495473338">Zarządzaj ustawieniami zabezpieczeń</translation>
 <translation id="3414952576877147120">Rozmiar:</translation>
 <translation id="3417660076059365994">Przesyłane lub dołączone pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane w poszukiwaniu danych wrażliwych lub złośliwego oprogramowania.</translation>
@@ -1062,7 +1062,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3816482573645936981">Wartość (zastąpiona)</translation>
 <translation id="3823402221513322552">Przeglądarką zarządza <ph name="BROWSER_DOMAIN" />, a Twoim profilem – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Jeśli używasz serwera proxy...</translation>
-<translation id="3826050100957962900">Logowanie się w przypadku innych firm</translation>
+<translation id="3826050100957962900">Logowanie przez usługę zewnętrzną</translation>
 <translation id="3827112369919217609">Bezwzględna</translation>
 <translation id="3827666161959873541">Kino familijne</translation>
 <translation id="3828924085048779000">Puste hasło jest niedozwolone.</translation>

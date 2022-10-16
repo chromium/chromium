@@ -1040,7 +1040,7 @@
 <translation id="8132248161074464367">Item inválido anterior</translation>
 <translation id="8138880386467279117">Tocar</translation>
 <translation id="8146613869421949343">A seguir, você aprenderá sobre a tecla de pesquisa. Ela é usada em combinação com outras teclas para acionar comandos do ChromeVox. Ela fica imediatamente acima da tecla Shift esquerda. Para continuar, pressione a tecla de pesquisa.</translation>
-<translation id="8158033275290782295">selecionar todos</translation>
+<translation id="8158033275290782295">selecionar tudo</translation>
 <translation id="816818801578874684">Este é o primeiro cabeçalho. Pressione a tecla de pesquisa + H para ir até o próximo cabeçalho.</translation>
 <translation id="8173092779156526980">Deslize para a esquerda usando quatro dedos</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{sublinhado}one{# sublinhados}other{# sublinhados}}</translation>
@@ -1161,7 +1161,7 @@
 <translation id="9077305471618729969">Verde-mar-claro</translation>
 <translation id="9080299285199342830">Ir para o final</translation>
 <translation id="9089864840575085222">Percorrer eco de digitação</translation>
-<translation id="9099429023611373837">cortar</translation>
+<translation id="9099429023611373837">recortar</translation>
 <translation id="9108370397979208512">matemática</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{porcentagem}one{# indicadores de porcentagem}other{# indicadores de porcentagem}}</translation>

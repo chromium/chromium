@@ -42,7 +42,7 @@
     አንድ ትር ለመዝጋት Control+W ይጫኑ።
     በክፍት ትሮች መካከል ወደፊት ለመሄድ Control+Tab ይጠቀሙ።
     የChrome አሳሽ ምናሌውን ለመክፈት Alt+F ይጫኑ።</translation>
-<translation id="1213216066620407844">ChromeVox - ድምጽ ለChrome መስጠት</translation>
+<translation id="1213216066620407844">ChromeVox - ድምፅ ለChrome መስጠት</translation>
 <translation id="1225969361094801578">ጠቆር ያለ መከለያ ግራጫ</translation>
 <translation id="122928249241119550">ወደ ቀዳሚው ዓረፍተ ነገር ሂድ</translation>
 <translation id="1230503547248836149">የምርጫ መጀመሪያ</translation>
@@ -89,7 +89,7 @@
 <translation id="1480046233931937785">ክሬዲቶች</translation>
 <translation id="1487494366197411587">በChromebook ላይ የSearch ቁልፉ ልክ ከግራው Shift በላይ ነው።</translation>
 <translation id="1498498210836053409">ጽሁፍ ሲያርትዑ ተለጣፊ ሁነታ ይጥፋ (ዘመናዊ ተለጣፊ ሁነታ)</translation>
-<translation id="1499041187027566160">ድምጽ ጨምር</translation>
+<translation id="1499041187027566160">ድምፅ ጨምር</translation>
 <translation id="1502086903961450562">ቀዳሚ ስዕላዊ</translation>
 <translation id="1506187449813838456">የድምጽ ቅጥነት ይጨምሩ</translation>
 <translation id="151784044608172266">ቀጣይ አረፍተ ነገር</translation>
@@ -175,7 +175,7 @@
 <translation id="2152179395627233441">የመለማመቻ ቦታን ዝጋ</translation>
 <translation id="2163782704988363449">እርማት</translation>
 <translation id="2169714232367507776">በአሁኑ ንጥል ላይ ጠቅ ያድርጉ</translation>
-<translation id="2179452035581866348">ChromeVox መሠረታዊ እና ተጨማሪ መረጃ ለእርስዎ ለመስጠት ድምጾችን ይጠቀማል። እያንዳንዱ ድምጽ ምን ማለት እንደሆነ በማወቅ እነዚህን ድምጾች ተጠቅመው በበለጠ ፍጥነት ማሰስ ይችላሉ። አንዴ በይበልጥ ከተመቸዎት በኋላ በንግግር ውስጥ ያሉ ብዙ መግለጫዎችን ማጥፋት እና ስለገጹ መሠረታዊ መረጃ ለማግኘት በእነሱ ላይ መተማመን ይችላሉ። ሙሉ የድምጾች ዝርዝር እና ምን ማለት እንደሆኑ እነሆ።</translation>
+<translation id="2179452035581866348">ChromeVox መሠረታዊ እና ተጨማሪ መረጃ ለእርስዎ ለመስጠት ድምጾችን ይጠቀማል። እያንዳንዱ ድምፅ ምን ማለት እንደሆነ በማወቅ እነዚህን ድምጾች ተጠቅመው በበለጠ ፍጥነት ማሰስ ይችላሉ። አንዴ በይበልጥ ከተመቸዎት በኋላ በንግግር ውስጥ ያሉ ብዙ መግለጫዎችን ማጥፋት እና ስለገጹ መሠረታዊ መረጃ ለማግኘት በእነሱ ላይ መተማመን ይችላሉ። ሙሉ የድምጾች ዝርዝር እና ምን ማለት እንደሆኑ እነሆ።</translation>
 <translation id="2183409941723714159">የትር ዳሰሳ</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{ዝግ ቅንፍ}one{# ዝግ ቅንፎች}other{# ዝግ ቅንፎች}}</translation>
 <translation id="2197863150503783129">የኮርቻ ቡናማ ቀለም</translation>
@@ -185,7 +185,7 @@
 <translation id="2220205454259065436">አንድ ቁምፊ ወደኋላ ውሰድ</translation>
 <translation id="2220529011494928058">ችግር ሪፖርት አድርግ</translation>
 <translation id="2243633977138166243">ለማሰስ ግራ ወይም ቀኝ ቀስት ይጫኑ፤ ለማግበር ይግቡ</translation>
-<translation id="224426591676115802">ለዚህ ቋንቋ ድምጽ አይገኝም፦ <ph name="LANGUAGE" /></translation>
+<translation id="224426591676115802">ለዚህ ቋንቋ ድምፅ አይገኝም፦ <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">መማር ሁነታን በማቆም ላይ</translation>
 <translation id="2247870315273396641">የድምፅ ቅድመ-እይታ</translation>
 <translation id="225732394367814946">የንግግር ፍጥነት ይጨምሩ</translation>
@@ -259,7 +259,7 @@
 <translation id="2713444072780614174">ነጭ</translation>
 <translation id="2714180132046334502">ጨለማ ጀርባ</translation>
 <translation id="2717271541250958000">tabpnl</translation>
-<translation id="2723001399770238859">ድምጽ</translation>
+<translation id="2723001399770238859">ድምፅ</translation>
 <translation id="27349076983469322">ፈዛዝ ያለ ጀርባ</translation>
 <translation id="2737898226590637227">ምንም ቀጣይ የARIA ምልክት የለም</translation>
 <translation id="2749275490991666823">ምልክት ተደርጎበታል</translation>
@@ -410,7 +410,7 @@
 <translation id="3599054940393788245">ሒሳብ ውስጥ አይደለም</translation>
 <translation id="360241989769010433">ምስጋና</translation>
 <translation id="3616016838842055984">ጠቅ ሊያደርጉት የሚፈልጉት አንድ ንጥል ላይ ከደረሱ Search + ክፍተትን ይጫኑ። ለመቀጠል አሁን ይሞክሩ።</translation>
-<translation id="3616113530831147358">ድምጽ</translation>
+<translation id="3616113530831147358">ድምፅ</translation>
 <translation id="3622350485154495700">በአንድ ጣት ሁለቴ መዳት ያድርጉ</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{የኋሊት ጥቅስ}one{# የኋሊት ጥቅሶች}other{# የኋሊት ጥቅሶች}}</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
@@ -437,7 +437,7 @@
 <translation id="3813387282697781382">ፈዛዛ አረንጓዴ</translation>
 <translation id="3816633764618089385">ቀጣይ ሚዲያ</translation>
 <translation id="3840823741487267909">ምሕጻረ ቃል</translation>
-<translation id="3841319830220785495">ነባሪ የተፈጥሮ ድምጽ</translation>
+<translation id="3841319830220785495">ነባሪ የተፈጥሮ ድምፅ</translation>
 <translation id="385383972552776628">የአማራጮች ገጹን ይክፈቱ</translation>
 <translation id="3856075812838139784">ተነባቢ ብቻ</translation>
 <translation id="3857141338659865495">መካከለኛ የወይራ ቅጠል</translation>
@@ -601,7 +601,7 @@
 <translation id="5012724933919010465"><ph name="NAME" />፣ የምናሌ ንጥል ሬዲዮ አዝራር ተመርጧል</translation>
 <translation id="5020651427400641814">ንግግርን በምዝግብ ማስታወሻ መያዝን አንቃ</translation>
 <translation id="5041394372352067729">የብሬይል ማሳያውን ወደ ገጹ አናት ያንቀሳቅሱ</translation>
-<translation id="5042770794184672516">የንግግር ድምጽ መጠን ይጨምሩ</translation>
+<translation id="5042770794184672516">የንግግር ድምፅ መጠን ይጨምሩ</translation>
 <translation id="5042992464904238023">የድር ይዘት</translation>
 <translation id="5045870649377683106">አሁን በቀጥታ ከመቆጣጠሪያ ቁልፉ በላይ የሚገኘውን የግራ Shift ቁልፉን ያግኙ። ለመቀጠል የግራ Shift ቁልፉን ይጫኑ።</translation>
 <translation id="5050015258024679800">ቀዳሚ የደረጃ 4 ርዕስ</translation>
@@ -702,7 +702,7 @@
 <translation id="5682113568322255809">የመሬት ምልክት</translation>
 <translation id="5683155931978483559">ቀዳሚ አመልካች ሳጥን</translation>
 <translation id="5684277895745049190">ዝርዝር</translation>
-<translation id="5703716265115423771">ድምጽ ቀንስ</translation>
+<translation id="5703716265115423771">ድምፅ ቀንስ</translation>
 <translation id="5704453877234251104">ለራስ-ሰር መሙላቶች የላይ ወይም የታች ቀስትን ይጫኑ</translation>
 <translation id="5712244464475377681">popbtn</translation>
 <translation id="5712889723513495267">ወደ ቀጣዩ ወይም ቀዳሚው ክፍል ይሂዱ</translation>
@@ -726,7 +726,7 @@
 <translation id="5866210856231860256">የዚህ ርዕሰ ጉዳይ ትምህርቶችን ለማሰስ Search + ቀኝ ቀስት፣ ወይም Search + ግራ ቀስትን ይጫኑ</translation>
 <translation id="5867591286054666064">በዚህ አጋዥ ሥልጠና ጊዜ ስሙን ለመስማት ማንኛውንም ቁልፍ ይጫኑ።</translation>
 <translation id="5869546221129391014">ፍርግርግ</translation>
-<translation id="5876817486144482042">የንግግር ድምጽ ይቀንሱ</translation>
+<translation id="5876817486144482042">የንግግር ድምፅ ይቀንሱ</translation>
 <translation id="5878206664863390311">ርዕሰ ጉዳዮችን ለማሰስ Search + ቀኝ ቀስት፣ ወይም Search + ግራ ቀስትን ይጫኑ</translation>
 <translation id="5878908838135392163">ዱቄታማ ሰማያዊ</translation>
 <translation id="588108970619830498">የጽሑፍ ወደ ንግግር ቅንብሮችን ወደ ነባሪ እሴቶች ዳግም አቀናብር</translation>
@@ -909,7 +909,7 @@
 <translation id="7244947685630430863">ምንም ቀዳሚ ስዕላዊ የለም</translation>
 <translation id="7248671827512403053">መተግበሪያ</translation>
 <translation id="725969808843520477">ቀጣይ የሬዲዮ አዝራር</translation>
-<translation id="7261612856573623172">የስርዓት ጽሁፍ-ወደ-ንግግር ድምጽ</translation>
+<translation id="7261612856573623172">የስርዓት ጽሁፍ-ወደ-ንግግር ድምፅ</translation>
 <translation id="7269119382257320590">ምንም ስርዓተ ነጥብ የለም</translation>
 <translation id="7271278495464744706">ብዙ ቃላት ያላቸው ማብራሪያዎችን አንቃ</translation>
 <translation id="7273174640290488576">ባዶ</translation>
@@ -941,7 +941,7 @@
 <translation id="743783356331413498">ምሳሌ</translation>
 <translation id="7439060726180460871">ማውጫ</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7465123027577412805">ተፈጥሯዊ ድምጽ ይጠቀሙ?</translation>
+<translation id="7465123027577412805">ተፈጥሯዊ ድምፅ ይጠቀሙ?</translation>
 <translation id="7491962110804786152">TAB</translation>
 <translation id="7492497529767769458">ወደ ቀጣይ ክፍል ውሰድ። ምሳሌዎች የሁኔታ መሳቢያውን እና ማስጀመሪያውን ያካትታሉ።</translation>
 <translation id="7505149250476994901">ከፊደል በፊት «cap» ይበሉ</translation>
@@ -1105,7 +1105,7 @@
 <translation id="8628186274519446680">ቲማቲም</translation>
 <translation id="8638532244051952400">የአሁኑ የሕዋስ መገናኛ ነጥቦች አስታውቅ</translation>
 <translation id="8640369214276455272">ነጭ ጭስ</translation>
-<translation id="8651481478098336970">ድምጽ ዝጋ</translation>
+<translation id="8651481478098336970">ድምፅ ዝጋ</translation>
 <translation id="8653646212587894517">የአገናኞች ዝርዝር አሳይ</translation>
 <translation id="8656888282555543604">የብሬይል ምዝግብ ማስታወሻን ያንቁ</translation>
 <translation id="8659501358298941449">ተቆልቋይ ዝርዝሮች</translation>
@@ -1169,7 +1169,7 @@
 <translation id="9133928141873682933">ካኪ</translation>
 <translation id="9149560530563164529">sctn</translation>
 <translation id="9150735707954472829">ትር</translation>
-<translation id="9151249085738989067">በቋንቋ ላይ ተመስርተው የChromeVox ድምጽ በራስ-ሰር ይቀይሩ</translation>
+<translation id="9151249085738989067">በቋንቋ ላይ ተመስርተው የChromeVox ድምፅ በራስ-ሰር ይቀይሩ</translation>
 <translation id="9153606228985488238">ቅጥነት <ph name="PERCENT" /> በመቶ</translation>
 <translation id="9160096769946561184">ወደ የአሁኑ አምድ መጨረሻ ሂድ</translation>
 <translation id="9173115498289768110">የድምጽ መጠን <ph name="PERCENT" /> በመቶ</translation>

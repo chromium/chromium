@@ -517,7 +517,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2298855485018661510">Pulsante Gestisci i cookie: premi Invio per gestire le preferenze relative ai cookie nelle impostazioni di Chrome</translation>
 <translation id="2300306941146563769">Non caricato</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
-<translation id="2316159751672436664">Personalizza i tuoi strumenti di accessibilità nelle impostazioni di Chrome OS</translation>
+<translation id="2316159751672436664">Personalizza i tuoi strumenti di accessibilità nelle impostazioni di ChromeOS</translation>
 <translation id="2316887270356262533">Consente di liberare meno di 1 MB. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> richiede un nome utente e una password.</translation>
 <translation id="2318594867107319532">Timestamp ultimo aggiornamento delle norme:</translation>
@@ -1149,7 +1149,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4117700440116928470">L'ambito della norma non è supportato.</translation>
 <translation id="4121428309786185360">Scade in data</translation>
 <translation id="4123572138124678573">Tripla perforatura in basso</translation>
-<translation id="4127575959421463246">Stai cercando i flag di Chrome OS? Visita la pagina</translation>
+<translation id="4127575959421463246">Stai cercando i flag di ChromeOS? Visita la pagina</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 altro}other{# altri}}</translation>
 <translation id="4130226655945681476">Controllare i cavi di rete, il modem e il router</translation>
 <translation id="4134123981501319574">Crea documento</translation>
@@ -1687,7 +1687,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5519516356611866228">Con le tue modifiche</translation>
 <translation id="5523118979700054094">Nome criterio</translation>
 <translation id="5525755241743357906">Il file viene copiato o spostato</translation>
-<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per personalizzare i tuoi strumenti di accessibilità nelle impostazioni di Chrome OS</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per personalizzare i tuoi strumenti di accessibilità nelle impostazioni di ChromeOS</translation>
 <translation id="5528532273234423708">Domotica</translation>
 <translation id="55293785478302737">Impuntura</translation>
 <translation id="553484882784876924">Prc6 (Envelope)</translation>
@@ -2667,7 +2667,7 @@ Ulteriori dettagli:
 <translation id="8242426110754782860">Procedi</translation>
 <translation id="8249296373107784235">Interrompi</translation>
 <translation id="8249463483885748674">Test di ammissione e standardizzati</translation>
-<translation id="8252991034201168845">Pulsante Gestisci le impostazioni di accessibilità, premi Invio per personalizzare i tuoi strumenti di accessibilità nelle impostazioni di Chrome OS</translation>
+<translation id="8252991034201168845">Pulsante Gestisci le impostazioni di accessibilità, premi Invio per personalizzare i tuoi strumenti di accessibilità nelle impostazioni di ChromeOS</translation>
 <translation id="8253091569723639551">Indirizzo di fatturazione obbligatorio</translation>
 <translation id="8257387598443225809">Questa app è stata progettata per i dispositivi mobili</translation>
 <translation id="825929999321470778">Mostra tutte le password salvate</translation>

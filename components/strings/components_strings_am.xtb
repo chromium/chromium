@@ -245,7 +245,7 @@
 <translation id="154408704832528245">የማድረሻ አድራሻ ይምረጡ</translation>
 <translation id="1549470594296187301">ይህን ባህሪ ለመጠቀም ጃቫስክሪፕት መንቃት አለበት።</translation>
 <translation id="155039086686388498">ምሕንድስና-D</translation>
-<translation id="1551884710160394169">ነጻ ዌር እና ተከፋይ ዌር</translation>
+<translation id="1551884710160394169">ነፃ ዌር እና ተከፋይ ዌር</translation>
 <translation id="1553358976309200471">Chromeን አዘምን</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="1559447966090556585">ማሳወቂያዎችን ያግኙ?</translation>
@@ -1050,7 +1050,7 @@
 <translation id="3789155188480882154">መጠን 16</translation>
 <translation id="3789841737615482174">ጫን  </translation>
 <translation id="3793574014653384240">በቅርቡ ያጋጠሙ ብልሽቶች ብዛት እና ምክንያታቸው</translation>
-<translation id="3795344968043407227">ነጻ እና አማራጭ ሙዚቃ</translation>
+<translation id="3795344968043407227">ነፃ እና አማራጭ ሙዚቃ</translation>
 <translation id="3797522431967816232">Prc3 (የደብዳቤ ፖስታ)</translation>
 <translation id="3799805948399000906">ቅርጸ-ቁምፊ ተጠይቋል</translation>
 <translation id="380329542618494757">ስም</translation>
@@ -1366,7 +1366,7 @@
 <translation id="4702504834785592287">ጎን</translation>
 <translation id="4702656508969495934">የቀጥታ መግለጫ ጽሁፍ ይታያል፣ ለትኩረት መስኮት መቀየሪያን ይጠቀሙ</translation>
 <translation id="470284880436071933">ወንጀል እና ፍትህ</translation>
-<translation id="4704732901923281920">የስነ ህይወት ሳይንሶች</translation>
+<translation id="4704732901923281920">የስነ ሕይወት ሳይንሶች</translation>
 <translation id="4708268264240856090">የእርስዎ ግንኙነት ተቋርጧል</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />የWindows አውታረ መረብ መመርመሪያን በማሄድ ላይ<ph name="END_LINK" /></translation>
@@ -1781,7 +1781,7 @@
 <translation id="5778389256418062749">አንድ የይለፍ ቁልፍን በተለየ መሣሪያ ላይ ይጠቀሙ</translation>
 <translation id="5781136890105823427">ሙከራ ነቅቷል</translation>
 <translation id="578305955206182703">አምበር</translation>
-<translation id="57838592816432529">ድምጽ ይዝጉ</translation>
+<translation id="57838592816432529">ድምፅ ይዝጉ</translation>
 <translation id="5784606427469807560">የእርስዎን ካርድ ማረጋገጥ ላይ አንድ ችግር ነበር። የበይነመረብ ግንኙነትዎን ይፈትሹት እና እንደገና ይሞክሩ።</translation>
 <translation id="5785756445106461925">በተጨማሪ፣ ይህ ገጽ ደህንነታቸው ያልተጠበቀ ሌሎች ንብረቶችን አካትቷል። እነዚህ ንብረቶች በሽግግር ወቅት በሌሎች ሊታዩ ይችላሉ፣ እናም የገጹን መልክ ለመለወጥ በአጥቂዎች ሊቀየሩ ይችላሉ።</translation>
 <translation id="5786044859038896871">የካርድዎን መረጃ መሙላት ይፈልጋሉ?</translation>
@@ -1888,7 +1888,7 @@
 <translation id="6058977677006700226">በሁሉም የእርስዎ መሣሪያዎች ላይ የእርስዎ ኮርዶች ጥቅም ላይ ይዋሉ?</translation>
 <translation id="6059925163896151826">የዩኤስቢ መሣሪያዎች</translation>
 <translation id="6060009363608157444">ልክ ያልሆነ የDnsOverHttps ሁነታ።</translation>
-<translation id="6061154937977953833">ነጻ ትግል</translation>
+<translation id="6061154937977953833">ነፃ ትግል</translation>
 <translation id="6064217302520318294">ማያ ገጽ መቆለፊያ</translation>
 <translation id="6064602040258638498">ኩፖኖች እና የዋጋ ቅናሾች</translation>
 <translation id="6080696365213338172">በአስተዳዳሪ የቀረበ የእውቅና ማረጋገጫ በመጠቀም ይዘት ደርሰዋል። ለ<ph name="DOMAIN" /> የሚያቀርቡት ውሂብ በአስተዳዳሪዎ ሊያዝ ይችላል።</translation>

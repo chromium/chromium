@@ -2435,7 +2435,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="32939749466444286">Kontener Linuksa nie uruchomił się. Spróbuj ponownie.</translation>
 <translation id="3294437725009624529">Gość</translation>
 <translation id="3294686910656423119">Statystyki użytkowania i raporty o awariach</translation>
-<translation id="3297105622164376095">Zezwolono na wyświetlanie podpowiedzi logowania przy użyciu usług innych firm.</translation>
+<translation id="3297105622164376095">Zezwolono na wyświetlanie podpowiedzi logowania przez usługę zewnętrzną</translation>
 <translation id="3297536526040732495">Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, żeby chronić Cię we wszystkich aplikacjach Google.</translation>
 <translation id="329838636886466101">Napraw</translation>
 <translation id="3298789223962368867">Wprowadzono nieprawidłowy adres URL.</translation>
@@ -3922,7 +3922,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="471880041731876836">Nie masz pozwolenia, by wejść na tę stronę</translation>
 <translation id="4722735765955348426">Hasło użytkownika <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Aplikacja <ph name="APP_NAME" /> udostępnia Twój ekran.</translation>
-<translation id="4722989931633062466">Nie zezwolono na wyświetlanie podpowiedzi logowania przy użyciu usług innych firm.</translation>
+<translation id="4722989931633062466">Nie zezwolono na wyświetlanie podpowiedzi logowania przez usługę zewnętrzną</translation>
 <translation id="4723140812774948886">Zamień z następnym</translation>
 <translation id="4724450788351008910">Zmiana przynależności</translation>
 <translation id="4725511304875193254">Corgi</translation>

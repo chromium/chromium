@@ -1886,7 +1886,7 @@
 <translation id="6059925163896151826">ইউএছবি ডিভাইচসমূহ</translation>
 <translation id="6060009363608157444">অমান্য DnsOverHttps ম’ড।</translation>
 <translation id="6061154937977953833">মল্লযুদ্ধ</translation>
-<translation id="6064217302520318294">স্ক্ৰীণ লক</translation>
+<translation id="6064217302520318294">স্ক্ৰীন লক</translation>
 <translation id="6064602040258638498">কুপন আৰু ৰেহাইৰ অফাৰ</translation>
 <translation id="6080696365213338172">আপুনি প্ৰশাসকে প্ৰদান কৰা প্ৰমাণপত্ৰ ব্যৱহাৰ কৰি সমল এক্সেছ কৰিছে। আপুনি <ph name="DOMAIN" />ৰ যোগান ধৰা ডেটা আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিব পাৰে।</translation>
 <translation id="6087312102907839798">সম্বন্ধীয় সন্ধানসমুহ</translation>
@@ -1989,7 +1989,7 @@
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" />ৰ পৰা এই অৱস্থানটোত পে’ষ্ট কৰাৰ সুবিধাটো প্রশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="6394852772105848029">এই ছাইটটোৱে <ph name="APP_NAME" /> এপ্‌টো খুলিব বিচাৰিছে</translation>
 <translation id="6398277657359595425">ডাঙৰকৈ কান্দি থকা</translation>
-<translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীণ ম’ডৰ পৰা বাহিৰ হওক</translation>
+<translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীন ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="6401136357288658127">এই নীতিটো অপ্ৰচলিত। আপুনি তাৰ পৰিৱৰ্তে <ph name="NEW_POLICY" /> নীতিটো ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" />লৈ যাবনে?</translation>
@@ -2977,7 +2977,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">ছাইটক আপোনাৰ পৰিশোধ পদ্ধতি ছেভ কৰা আছেনে নাই পৰীক্ষা কৰিব দিয়ক</translation>
 <translation id="9169664750068251925">এই ছাইটত সদায় অৱৰোধ কৰক</translation>
-<translation id="9169931577761441333"><ph name="APP_NAME" />ক গৃহ স্ক্ৰীণত যোগ কৰক</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" />ক গৃহ স্ক্ৰীনত যোগ কৰক</translation>
 <translation id="9170848237812810038">&amp;আনডু কৰক</translation>
 <translation id="9171296965991013597">এপ্‌টো বাদ দিবনে?</translation>
 <translation id="9173282814238175921">একক নথি/নতুন শ্বীট</translation>

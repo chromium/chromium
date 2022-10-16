@@ -185,7 +185,7 @@
 <translation id="5216942107514965959">শেষবাৰ আজি চাইছে</translation>
 <translation id="5225463052809312700">কেমেৰা অন কৰক</translation>
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ আঁতৰাওক</translation>
-<translation id="528192093759286357">সম্পূৰ্ণ স্ক্ৰীণৰ পৰা প্ৰস্থান কৰিবলৈ ওপৰৰ পৰা টানি আনক আৰু বেক বুটামটো টিপক।</translation>
+<translation id="528192093759286357">সম্পূৰ্ণ স্ক্ৰীনৰ পৰা প্ৰস্থান কৰিবলৈ ওপৰৰ পৰা টানি আনক আৰু বেক বুটামটো টিপক।</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5301954838959518834">ঠিক আছে, বুজি পালোঁ</translation>
 <translation id="5313967007315987356">ছাইট যোগ দিয়ক</translation>
@@ -241,7 +241,7 @@
 <translation id="6320088164292336938">কম্পন</translation>
 <translation id="6367753977865761591">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইন অৱৰোধ কৰক।</translation>
 <translation id="6388207532828177975">মচক আৰু ৰিছেট কৰক</translation>
-<translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীণ ম’ডৰ পৰা বাহিৰ হওক</translation>
+<translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীন ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ছাইটসমূহে আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা এক্সেছ কৰাটো অৱৰোধ কৰক</translation>
 <translation id="6447842834002726250">কুকীসমূহ</translation>
@@ -275,13 +275,13 @@
 <translation id="702463548815491781">TalkBack বা ছুইচৰ দ্বাৰা এক্সেছ কৰাৰ সুবিধা অন থাকিলে এয়া চুপাৰিছ কৰা হয়</translation>
 <translation id="7053983685419859001">অৱৰোধ কৰক</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{১টা বস্তু বাছনি কৰা হ’ল}one{#টা বস্তু বাছনি কৰা হ’ল}other{#টা বস্তু বাছনি কৰা হ’ল}}</translation>
-<translation id="7087918508125750058"><ph name="ITEM_COUNT" />টা বাছনি কৰা হ’ল।  স্ক্ৰীণৰ ওপৰৰ অংশত কাষত থকা বিকল্পসমূহ</translation>
+<translation id="7087918508125750058"><ph name="ITEM_COUNT" />টা বাছনি কৰা হ’ল।  স্ক্ৰীনৰ ওপৰৰ অংশত কাষত থকা বিকল্পসমূহ</translation>
 <translation id="7141896414559753902">ছাইটসমূহে পপ্‌-আপ দেখুওৱাটো আৰু বেলেগ লিংকলৈ লৈ যোৱাটো অৱৰোধ কৰক (আমি চুপাৰিছ কৰোঁ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> কে.বি.</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7203150201908454328">বিস্তাৰিত</translation>
 <translation id="723171743924126238">ছবি বাছনি কৰক</translation>
-<translation id="7243308994586599757">স্ক্ৰীণৰ কাষৰ বুটামত উপলব্ধ বিকল্প</translation>
+<translation id="7243308994586599757">স্ক্ৰীনৰ কাষৰ বুটামত উপলব্ধ বিকল্প</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />টা বাছনি কৰা হৈছে</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> আৰু <ph name="PERMISSION_2" />ৰ অনুমতি দিয়া আছে</translation>
 <translation id="7302486331832100261">আপুনি সাধাৰণতে জাননীসমূহ অৱৰোধ কৰে। অনুমতি দিবলৈ সবিশেষত টিপক।</translation>
@@ -347,7 +347,7 @@
 <translation id="848952951823693243">সদায়েই ম’বাইল ছাইট অনুৰোধ কৰিব</translation>
 <translation id="8499083585497694743">মাইক্ৰ’ফ’ন আনমিউট কৰক</translation>
 <translation id="851751545965956758">ডিভাইচৰ সৈতে সংযোগ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
-<translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীণ</translation>
+<translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীন</translation>
 <translation id="857943718398505171">অনুমোদিত (চুপাৰিছ কৰা)</translation>
 <translation id="8609465669617005112">ওপৰলৈ নিয়ক</translation>
 <translation id="8676374126336081632">ইনপুট মচক</translation>

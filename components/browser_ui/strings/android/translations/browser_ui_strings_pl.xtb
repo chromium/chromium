@@ -95,7 +95,7 @@
 <translation id="300526633675317032">Spowoduje to usunięcie <ph name="SIZE_IN_KB" /> danych witryn.</translation>
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
-<translation id="3069226013421428034">Zezwalanie na logowanie się innych firm w określonej witrynie.</translation>
+<translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="3109724472072898302">Zwinięty</translation>
 <translation id="3114012059975132928">Odtwarzacz</translation>
 <translation id="3115898365077584848">Pokaż informacje</translation>
@@ -125,7 +125,7 @@
 <translation id="3797520601150691162">Nie stosuj ciemnego motywu konkretnej witryny</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Numery telefonów</translation>
-<translation id="3826050100957962900">Logowanie się w przypadku innych firm</translation>
+<translation id="3826050100957962900">Logowanie przez usługę zewnętrzną</translation>
 <translation id="3835233591525155343">Korzystanie z urządzenia</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3859306556332390985">Przewiń do przodu</translation>
@@ -239,7 +239,7 @@
 <translation id="6270391203985052864">Strony mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6320088164292336938">Wibracje</translation>
-<translation id="6367753977865761591">Blokowanie logowania się innych firm w określonej witrynie.</translation>
+<translation id="6367753977865761591">Blokowanie logowania przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="6388207532828177975">Wyczyść i zresetuj</translation>
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
