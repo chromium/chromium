@@ -63,7 +63,10 @@ apiBridge.registerCustomHook(function(api) {
         if (e !== failureException)
           chromeTest.fail('uncaught exception: ' + message);
       });
-      $Function.call(currentTest);
+      const result = $Function.call(currentTest);
+      if (result instanceof Promise) {
+        result.catch(e => handleException(e.message, e));
+      }
     } catch (e) {
       handleException(e.message, e);
     }
