@@ -3681,7 +3681,8 @@ chromium-metrics-reviews@google.com.
   <owner>cros-projector@google.com</owner>
   <summary>
     Recorded whenever the user chooses a marker color on the Projector toolbar
-    in {TabletOrClamshell}.
+    in {TabletOrClamshell}. This metric records when the user changes the color
+    or when the annotator toggles on, to record the saved last used color.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
