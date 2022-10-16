@@ -220,6 +220,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // - For Kiosk sessions, Lacros needs to be started earlier because all
   // extensions and browser window should be well prepared before the user
   // enters the session. This method should be called at the appropriate time.
+  //
+  // NOTE: If InitializeAndStartIfNeeded finds Lacros disabled, it unloads
+  // Lacros via BrowserLoader::Unload, which also deletes the user data
+  // directory.
   void InitializeAndStartIfNeeded();
 
   // Returns true if keep-alive is enabled.

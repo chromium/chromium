@@ -338,6 +338,28 @@ bool IsLoginLacrosOpeningDisabledForTesting() {
       ash::switches::kDisableLoginLacrosOpening);
 }
 
+void WarnThatLacrosNotAllowedToLaunch() {
+  LOG(WARNING) << "Lacros enabled but not allowed to launch";
+  std::unique_ptr<message_center::Notification> notification =
+      ash::CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kLacrosCannotLaunchNotificationID,
+          /*title=*/std::u16string(),
+          l10n_util::GetStringUTF16(
+              IDS_LACROS_CANNOT_LAUNCH_MULTI_SIGNIN_MESSAGE),
+          /* display_source= */ std::u16string(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kLacrosLauncherNotifierID,
+              ash::NotificationCatalogName::kLacrosCannotLaunch),
+          message_center::RichNotificationData(),
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              base::RepeatingClosure()),
+          gfx::kNoneIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
+  SystemNotificationHelper::GetInstance()->Display(*notification);
+}
+
 }  // namespace
 
 // To be sure the lacros is running with neutral thread type.
@@ -520,24 +542,28 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   crosapi::lacros_startup_state::SetLacrosStartupState(
       is_lacros_enabled, browser_util::IsLacrosPrimaryBrowser());
 
-  // Must be checked after user session start because it depends on user type.
   if (is_lacros_enabled) {
-    // Start Lacros automatically on login, if
-    // 1) Lacros was opened in the previous session; or
-    // 2) Lacros is the primary web browser.
-    //    This can be suppressed via commandline flag for testing.
-    if (GetLaunchOnLoginPref() || (browser_util::IsLacrosPrimaryBrowser() &&
-                                   !IsLoginLacrosOpeningDisabledForTesting())) {
-      pending_actions_.Push(BrowserAction::GetActionForSessionStart());
+    if (browser_util::IsLacrosAllowedToLaunch()) {
+      // Start Lacros automatically on login, if
+      // 1) Lacros was opened in the previous session; or
+      // 2) Lacros is the primary web browser.
+      //    This can be suppressed via commandline flag for testing.
+      if (GetLaunchOnLoginPref() ||
+          (browser_util::IsLacrosPrimaryBrowser() &&
+           !IsLoginLacrosOpeningDisabledForTesting())) {
+        pending_actions_.Push(BrowserAction::GetActionForSessionStart());
+      }
+      component_update_observation_.Observe(component_update_service_);
+      SetState(State::MOUNTING);
+      browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
+                                           weak_factory_.GetWeakPtr()));
+    } else {
+      SetState(State::UNAVAILABLE);
+      WarnThatLacrosNotAllowedToLaunch();
     }
-
-    component_update_observation_.Observe(component_update_service_);
-    SetState(State::MOUNTING);
-    browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
-                                         weak_factory_.GetWeakPtr()));
   } else {
     SetState(State::UNAVAILABLE);
-    browser_loader_->Unload();
+    browser_loader_->Unload();  // NOTE: This deletes the user data dir.
   }
 
   // Post `DryRunToCollectUMA()` to send UMA stats about sizes of files/dirs
@@ -681,6 +707,7 @@ void BrowserManager::Start() {
   DCHECK(!shutdown_requested_);
   DCHECK(!lacros_path_.empty());
   DCHECK(lacros_selection_.has_value());
+  DCHECK(browser_util::IsLacrosAllowedToLaunch());
 
   if (update_available_) {
     update_available_ = false;
@@ -1040,31 +1067,7 @@ void BrowserManager::OnSessionStateChanged() {
   }
 
   // Launch Lacros if appropriate.
-  if (browser_util::IsLacrosEnabled()) {
-    if (!browser_util::IsLacrosAllowedToLaunch()) {
-      std::unique_ptr<message_center::Notification> notification =
-          ash::CreateSystemNotification(
-              message_center::NOTIFICATION_TYPE_SIMPLE,
-              kLacrosCannotLaunchNotificationID,
-              /*title=*/std::u16string(),
-              l10n_util::GetStringUTF16(
-                  IDS_LACROS_CANNOT_LAUNCH_MULTI_SIGNIN_MESSAGE),
-              /* display_source= */ std::u16string(), GURL(),
-              message_center::NotifierId(
-                  message_center::NotifierType::SYSTEM_COMPONENT,
-                  kLacrosLauncherNotifierID,
-                  ash::NotificationCatalogName::kLacrosCannotLaunch),
-              message_center::RichNotificationData(),
-              base::MakeRefCounted<
-                  message_center::HandleNotificationClickDelegate>(
-                  base::RepeatingClosure()),
-              gfx::kNoneIcon,
-              message_center::SystemNotificationWarningLevel::NORMAL);
-      SystemNotificationHelper::GetInstance()->Display(*notification);
-    } else {
-      InitializeAndStartIfNeeded();
-    }
-  }
+  InitializeAndStartIfNeeded();
 
   // If "Go to files" on the migration error page was clicked, launch it here.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
