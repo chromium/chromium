@@ -152,6 +152,7 @@ class FastPairPresenterImplTest : public AshTestBase {
 
     initially_paired_device_ = base::MakeRefCounted<Device>(
         kValidModelId, kTestAddress, Protocol::kFastPairInitial);
+    initially_paired_device_->set_display_name("test_name");
     subsequently_paired_device_ = base::MakeRefCounted<Device>(
         kValidModelId, kTestAddress, Protocol::kFastPairSubsequent);
     fast_pair_presenter_ =

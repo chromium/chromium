@@ -459,10 +459,17 @@ void FastPairPresenterImpl::OnAssociateAccountMetadataRetrieved(
   const std::string email =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
+  std::u16string device_name;
+  // If the name of the device has been set by the user, use that name,
+  // otherwise use the OEM default name.
+  if (device->display_name().has_value()) {
+    device_name = base::UTF8ToUTF16(device->display_name().value());
+  } else {
+    device_name = base::ASCIIToUTF16(device_metadata->GetDetails().name());
+  }
 
   notification_controller_->ShowAssociateAccount(
-      base::ASCIIToUTF16(device_metadata->GetDetails().name()),
-      base::ASCIIToUTF16(email), device_metadata->image(),
+      device_name, base::ASCIIToUTF16(email), device_metadata->image(),
       base::BindRepeating(
           &FastPairPresenterImpl::OnAssociateAccountActionClicked,
           weak_pointer_factory_.GetWeakPtr(), callback),

@@ -51,5 +51,25 @@ TEST_F(DeviceTest, SetClassicAddressForV1Devices) {
 
   EXPECT_EQ(device_->classic_address(), device_->ble_address);
 }
+
+TEST_F(DeviceTest, GetAndSetName) {
+  // Test that name returns null before any sets.
+  absl::optional<std::string> name = device_->display_name();
+  EXPECT_FALSE(name.has_value());
+
+  // Test that name returns the set value.
+  std::string test_name = "test_name";
+  device_->set_display_name(test_name);
+  name = device_->display_name();
+  EXPECT_TRUE(name.has_value());
+  EXPECT_EQ(name.value(), test_name);
+
+  // Test that overriding works.
+  std::string new_test_name = "new_test_name";
+  device_->set_display_name(new_test_name);
+  name = device_->display_name();
+  EXPECT_TRUE(name.has_value());
+  EXPECT_EQ(name.value(), new_test_name);
+}
 }  // namespace quick_pair
 }  // namespace ash

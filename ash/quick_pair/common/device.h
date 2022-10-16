@@ -45,6 +45,14 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     classic_address_ = address;
   }
 
+  const absl::optional<std::string>& display_name() const {
+    return display_name_;
+  }
+
+  void set_display_name(const absl::optional<std::string>& display_name) {
+    display_name_ = display_name;
+  }
+
   absl::optional<std::vector<uint8_t>> GetAdditionalData(
       const AdditionalDataType& type) const;
 
@@ -69,6 +77,13 @@ struct COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
 
   // Bluetooth classic address of the device.
   absl::optional<std::string> classic_address_;
+
+  // Display name for the device
+  // Similar to Bluetooth classic address field, this will be null when a
+  // device is found from a discoverable advertisement due to the fact that
+  // initial pair notifications show the OEM default name from the device
+  // metadata instead of the display name.
+  absl::optional<std::string> display_name_;
 
   // Additional data that can be set as needed per Protocol.
   base::flat_map<AdditionalDataType, std::vector<uint8_t>> additional_data_;

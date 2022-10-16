@@ -382,6 +382,7 @@ void RetroactivePairingDetectorImpl::VerifyDeviceFound(
   auto device = base::MakeRefCounted<Device>(model_id, ble_address,
                                              Protocol::kFastPairRetroactive);
   device->set_classic_address(classic_address);
+  device->set_display_name(bluetooth_device->GetName());
   QP_LOG(INFO) << __func__ << ": Found device for Retroactive Pairing "
                << device;
 
