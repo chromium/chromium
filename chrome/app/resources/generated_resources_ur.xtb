@@ -1897,6 +1897,7 @@
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">تحفظ یافتہ صارفین کو آپ کے منتظم نے غیر فعال کر دیا ہے۔</translation>
 <translation id="2722540561488096675">‏آپ کا آلہ <ph name="TIME_LEFT" /> میں شٹ ڈاؤن ہو جائے گا۔ اپنے آلے کو واپس آن کرنے سے پہلے USB کو ہٹائیں۔ پھر آپ <ph name="DEVICE_OS" /> استعمال کرنا شروع کر سکتے ہیں۔</translation>
+<translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">‏WebRTC لاگز</translation>
 <translation id="272488616838512378">یونٹ کی تبدیلی</translation>
 <translation id="2725200716980197196">نیٹ ورک کنیکٹویٹی بحال کر دی گئی</translation>
@@ -3073,6 +3074,7 @@
 <translation id="3828029223314399057">بُک مارکس تلاش کریں</translation>
 <translation id="3828953470056652895">‏میں نے پڑھا اور میں <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، <ph name="BEGIN_LINK2" />Chrome اور ChromeOS کی اضافی سروس کی شرائط<ph name="END_LINK2" /> اور <ph name="BEGIN_LINK3" />Play کی سروس کی شرائط<ph name="END_LINK3" /> سے اتفاق کرتا ہوں۔</translation>
 <translation id="3829765597456725595">‏SMB فائل کا اشتراک</translation>
+<translation id="3830268140528557982">بتاریخ <ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{آپ کے منتظم نے 1 ممکنہ طور پر نقصان دہ ایکسٹینشن کو پھر سے آن کر دیا}other{آپ کے منتظم نے {NUM_EXTENSIONS} ممکنہ طور پر نقصان دہ ایکسٹینشنز کو واپس آن کر دیا}}</translation>
 <translation id="3831436149286513437">‏Google Drive تلاش کی تجاویز</translation>
 <translation id="3834728400518755610">‏مائیکروفون کی ترتیب میں تبدیلی کیلئے Linux کو شٹ ڈاؤن کرنے کی ضرورت ہے۔ آگے بڑھنے کے لیے Linux کو شٹ ڈاؤن کریں۔</translation>
@@ -5211,6 +5213,7 @@
 <translation id="5884474295213649357">‏یہ ٹیب ایک USB آلہ سے منسلک ہے۔</translation>
 <translation id="5885314688092915589">آپ کی تنظیم اس پروفائل کا نظم کرے گی</translation>
 <translation id="5886009770935151472">انگلی 1</translation>
+<translation id="5886112770923972514">قریبی فاسٹ پئیر آلات سے منسلک ہوں اور آسانی سے سیٹ اپ کریں</translation>
 <translation id="5886384907280980632">ابھی آف کریں</translation>
 <translation id="5889282057229379085">‏انٹر میڈیٹ CAs کی زیادہ سے زیادہ تعداد: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">‏ترجیحی Wi-Fi نیٹ ورکس</translation>
@@ -7816,6 +7819,7 @@
 <translation id="8338952601723052325">ڈویلپر کی ویب سائٹ</translation>
 <translation id="833986336429795709">یہ لنک کھولنے کیلئے، ایک ایپ منتخب کریں</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> کے لیے مزید کارروائیاں</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 سائٹ<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{<ph name="BEGIN_BOLD" />{NUM_SITES} سائٹس<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
 <translation id="8342221978608739536">کوشش نہیں کی</translation>
 <translation id="8342861492835240085">ایک مجموعہ منتخب کریں</translation>
 <translation id="8345848587667658367">اب آپ اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھ سکتے ہیں</translation>
@@ -8814,6 +8818,7 @@
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">محفوظ کنکشن تشکیل دیا جا رہا ہے…</translation>
 <translation id="996803490569799917">اپنے پسندیدہ لوگوں کی میموریز اور مزید دیکھیں</translation>
+<translation id="997143476478634194">آپ کی سائٹس کو ملاحظہ کرنے پر وہ خود کار طور پر اس ترتیب کی پیروی کرتی ہیں۔ سائٹس عام طور پر اہم خبروں یا چیٹ پیغامات کے بارے میں آپ کو مطلع کرنے کے لیے اطلاعات بھیجتی ہیں۔</translation>
 <translation id="99731366405731005">‏Wi-Fi سِنک استعمال کرنے کے لئے <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> کو آن کریں۔ <ph name="LINK2_BEGIN" />مزید جانیں<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">م&amp;عائنہ کریں</translation>
 </translationbundle>

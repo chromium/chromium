@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">‏כדי לבדוק אם שאר הסיסמאות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
+<translation id="1261119230216066228">‏Chromium פועל מהר יותר בזכות מצב החיסכון בזיכרון</translation>
 <translation id="1315551408014407711">‏הגדרת הפרופיל החדש שלך ב-Chromium</translation>
 <translation id="1385859895174722837">‏Google Assistant ב-Chromium</translation>
 <translation id="1396446129537741364">‏Chromium מנסה להציג סיסמאות.</translation>
@@ -206,6 +207,7 @@
 <translation id="6055895534982063517">‏גרסה חדשה של Chromium זמינה, והיא מהירה יותר מאי פעם.</translation>
 <translation id="6063093106622310249">‏&amp;פתיחה ב-Chromium</translation>
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> נוסף ל-‏Chromium‏</translation>
+<translation id="6072463441809498330">‏שיפור המהירות ב-Chromium</translation>
 <translation id="608006075545470555">הוספת פרופיל עבודה לדפדפן זה</translation>
 <translation id="6096348254544841612">‏כדי להתאים אישית את Google Chrome ולשלוט בו טוב יותר, כדאי להוריד את העדכון החדש.</translation>
 <translation id="6119438414301547735">‏מתן הרשאה לתוסף להציג בקשות גישה בסרגל הכלים של Chromium</translation>

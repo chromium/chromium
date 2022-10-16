@@ -320,6 +320,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1717218214683051432">Sensori di movimento</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1718029547804390981">Il documento è troppo voluminoso per potervi inserire annotazioni</translation>
+<translation id="1719434663396780149">Gli avvisi relativi ai cali di prezzo sono attivi. Puoi modificare questa opzione nelle <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Chiudi il tutorial</translation>
 <translation id="1721424275792716183">* Campo obbligatorio</translation>
 <translation id="1725591448053514783">Busta You 6</translation>
@@ -976,6 +977,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3550112004925580947">Settore turistico-alberghiero e dell'hospitality</translation>
 <translation id="3552297013052089404">Carattere Sans Serif</translation>
 <translation id="3558573058928565255">Giorno e ora</translation>
+<translation id="3560824484345057728">Visualizza i siti correlati</translation>
 <translation id="3566021033012934673">La connessione non è privata</translation>
 <translation id="3567778190852720481">Impossibile effettuare la registrazione con l'account aziendale (l'account aziendale non è idoneo).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1361,6 +1363,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4542971377163063093">Vassoio 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Prova a disattivare le estensioni.</translation>
+<translation id="4559134504959026834">Questo sito fa parte di un gruppo definito da <ph name="SET_OWNER" />, che può vedere la tua attività</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Attività all'aria aperta</translation>
 <translation id="4567686777917670400">L'amministratore può modificare da remoto la configurazione del browser. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chromium. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -2666,6 +2669,7 @@ Ulteriori dettagli:
 <translation id="7995512525968007366">Non specificato</translation>
 <translation id="7998269595945679889">Pulsante Apri scheda di navigazione in incognito, premi Invio per aprire una nuova scheda di navigazione in incognito per navigare in privato</translation>
 <translation id="800218591365569300">Prova a chiudere altri programmi o schede per liberare spazio in memoria.</translation>
+<translation id="8002230960325005199">Visualizza i siti correlati in una nuova scheda</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009225694047762179">Gestisci password</translation>
@@ -2769,6 +2773,7 @@ Ulteriori dettagli:
 <translation id="8270242299912238708">Documenti PDF</translation>
 <translation id="8275952078857499577">Non proporre di tradurre questo sito</translation>
 <translation id="8277900682056760511">Il foglio per la gestione dei pagamenti è aperto</translation>
+<translation id="8279611986089885641">Le notifiche di Chrome devono essere attive. Puoi attivarle nelle <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Vassoio 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Salta</translation>

@@ -80,6 +80,7 @@
 <translation id="753732157349120914">Vahelehtede vaheti</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> arvustus Google'ist}other{<ph name="REVIEWS_COUNT_MANY" /> arvustust Google'ist}}</translation>
 <translation id="7559245342362162951">Kuva grupi vahelehed täisekraani ruudustikus</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Jaga <ph name="TABS_COUNT_ONE" /> valitud vahelehte}other{Jaga <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="7792771145871471484">Vaadake soovitused üle.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupeeri <ph name="TABS_COUNT_ONE" /> valitud vaheleht}other{Grupeeri <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang, <ph name="REVIEWS_COUNT_ONE" /> arvustus}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang, <ph name="REVIEWS_COUNT_MANY" /> arvustust}}</translation>

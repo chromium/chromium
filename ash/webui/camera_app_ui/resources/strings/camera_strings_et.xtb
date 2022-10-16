@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
 <translation id="1113173431709655881">Kaamerarežiim</translation>
 <translation id="1153190633558910465">Ruudustik on välja lülitatud</translation>
 <translation id="1175958423215084756">Tuvastati link. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">Tavaline</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Midagi pole salvestatud</translation>
 <translation id="1838104802459806957">Kalluta üles</translation>
 <translation id="1843105061469674856">Skanni veel üks leht</translation>
@@ -93,6 +95,7 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="4705093842003735294">Täiseraldusvõime</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Mitmevooline videosalvestus</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Foto kuvasuhe</translation>
 <translation id="5057360777601936059">Teie kaamera pole praegu saadaval.
         Kontrollige, kas kaamera on korralikult ühendatud.</translation>
@@ -101,6 +104,7 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="5266635337630551423">Dokumendi vasak ülanurk</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5320594929574852403">Liigub vasakule</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Paigutage kõik dokumendi servad raami sisse. Skannimine toimib kõige paremini, kui dokument ja taust on eri värvi.</translation>
 <translation id="5662366948659129155">Lehe <ph name="COUNT" /> skannimine</translation>
 <translation id="5671277269877808209">Ruut</translation>

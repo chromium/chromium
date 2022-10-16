@@ -562,6 +562,7 @@
 <translation id="4780458943471935919">Scroll to next page</translation>
 <translation id="4784215347943747396">Control the device with just 1 or 2 switches</translation>
 <translation id="4786285211967466855">No previous level 1 heading</translation>
+<translation id="4786591486270126089">Automatically switch voice based on language</translation>
 <translation id="4787577491510559358">Announce formatting for current item</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Disconnect</translation>
@@ -950,6 +951,7 @@
 <translation id="7492497529767769458">Move to next section. Examples include the Status Tray and Launcher.</translation>
 <translation id="7505149250476994901">Say 'cap' before letter</translation>
 <translation id="7533226154149229506">Light Goldenrod Yellow</translation>
+<translation id="7541021454094606506">delete all</translation>
 <translation id="7543255924852002459">Discard label</translation>
 <translation id="7552432549459840808">Helpful Chrome Shortcuts</translation>
 <translation id="7553679324939294712">insert <ph name="INSERT_PHRASE" /> before <ph name="BEFORE_PHRASE" /></translation>

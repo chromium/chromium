@@ -91,6 +91,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Use arrow keys to navigate between dates.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installed app</translation>
+<translation id="1415846719612499304">Show network list. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Unlock device to perform the notification action</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">View your phone's recent photos and media on your <ph name="DEVICE_TYPE" /></translation>
@@ -305,6 +306,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2678852583403169292">Select to Speak menu</translation>
 <translation id="2689613560355655046">Desk 8</translation>
 <translation id="2695305337569143674">web</translation>
+<translation id="2697697418792422688">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected.</translation>
 <translation id="2700493154570097719">Set your keyboard</translation>
 <translation id="2704781753052663061">Join other Wi-Fi networks</translation>
 <translation id="2705001408393684014">Toggle mic. <ph name="STATE_TEXT" /></translation>
@@ -776,6 +778,7 @@ Connect your device to power.</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5329548388331921293">Connecting…</translation>
 <translation id="5331975486040154427">USB-C device (left side back port)</translation>
+<translation id="533282197239610265">Show cast devices</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (right)</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
 <translation id="5356963482258194581">Switch between Dark and Light theme. Right-click on the desktop and select Wallpaper and style.</translation>
@@ -807,10 +810,12 @@ Connect your device to power.</translation>
 <translation id="553675580533261935">Exiting session</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Toggle dictation</translation>
+<translation id="5558091555391176027">Toggle Nearby Share high visibility</translation>
 <translation id="5560420195677022218">View your phone's apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Button</translation>
 <translation id="5571066253365925590">Bluetooth enabled</translation>
 <translation id="557563299383177668">Next paragraph</translation>
+<translation id="5577082622442191756">Toggle Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Check that Bluetooth is enabled on your phone to use Phone Hub</translation>
 <translation id="5580000943347215299">Library</translation>
 <translation id="558849140439112033">Drag to select an area to capture</translation>
@@ -880,6 +885,7 @@ Connect your device to power.</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Supervised user</translation>
+<translation id="5965524703725988602">Toggle Dark theme. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Press enter to record window</translation>
 <translation id="5977415296283489383">Headphone</translation>
 <translation id="5978382165065462689">Sharing control of your screen via Remote Assistance.</translation>
@@ -1125,6 +1131,7 @@ New install</translation>
 <translation id="7378889811480108604">Battery saver mode is off</translation>
 <translation id="7382680553121047388">On</translation>
 <translation id="7384028040782072252">Right-click anywhere to reorder your apps</translation>
+<translation id="7386767620098596324">Toggle network connection. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">You can always perform setup later from Settings.</translation>
 <translation id="7405710164030118432">To unlock the device, enter your Family Link parent access code</translation>
 <translation id="7406608787870898861">Finish setting up your mobile network</translation>
@@ -1265,6 +1272,7 @@ New install</translation>
 <translation id="8142441511840089262">Double click</translation>
 <translation id="8142699993796781067">Private network</translation>
 <translation id="8144760705599030999">Save your <ph name="NAME" /> to <ph name="EMAIL" /> for faster pairing to your other devices</translation>
+<translation id="8149413265954228307">Show Bluetooth settings. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Press Ctrl + W to close.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autocomplete</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> This setting is managed by your administrator.</translation>
@@ -1325,6 +1333,7 @@ New install</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> has <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Press Alt+Search or Shift to cancel.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" />. The resolution was changed to <ph name="FALLBACK_RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Show Nearby Share settings</translation>
 <translation id="85123341071060231">Your Chromebook’s Bluetooth is off. To unlock your Chromebook, enter password.</translation>
 <translation id="8513108775083588393">Auto-rotate</translation>
 <translation id="851458219935658693">Show windows from the current desk, radio button selected</translation>

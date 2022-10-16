@@ -109,6 +109,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1687475363370981210">Označit vše jako přečtené</translation>
 <translation id="1689333818294560261">Přezdívka</translation>
 <translation id="1700629756560807968">Počet vybraných položek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">Pokud webu <ph name="SITE" /> důvěřujete, můžete k přihlášení použít uložené heslo.</translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte instalaci.</translation>
 <translation id="1752547299766512813">Ukládání hesel</translation>
 <translation id="1753905327828125965">Nejnavštěvovanější</translation>
@@ -151,6 +152,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2149973817440762519">Upravit záložku</translation>
 <translation id="2155145621546387786">Sdílet Chrome</translation>
 <translation id="2175927920773552910">QR kód</translation>
+<translation id="2178545675770638239">Vyberte heslo</translation>
 <translation id="2218443599109088993">Oddálit</translation>
 <translation id="2230173723195178503">Webová stránka byla načtena</translation>
 <translation id="2239626343334228536">Mazání údajů o prohlížení...</translation>
@@ -434,6 +436,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4502566650163919158">Zkontrolovat</translation>
 <translation id="4505980578794259603">Poslední kontrola: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Zavřít propagační zprávu ohledně přihlášení</translation>
+<translation id="4514889972748124117">Navrhnout silné heslo…</translation>
 <translation id="4526249700380860531">Uložená hesla můžete zobrazit a upravit na adrese <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Zkontrolovat synchronizovaná data</translation>
 <translation id="4536418791685807335">Zkuste se přihlásit znovu.</translation>
@@ -1015,6 +1018,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8917490105272468696">Souhlasím</translation>
 <translation id="8928133177108699615">Počítač</translation>
 <translation id="8952559610785099500">Přidat heslo</translation>
+<translation id="8953046091948372197">Zde najdete svá hesla</translation>
 <translation id="895541991026785598">Nahlásit problém</translation>
 <translation id="8974714402877957201">1. Otevřete nastavení iPadu.</translation>
 <translation id="8976382372951310360">Nápověda</translation>
@@ -1048,6 +1052,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9200875785104711666">před <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Zpráva o selhání byla odeslána.</translation>
+<translation id="941747855997058526">Vybrat heslo…</translation>
 <translation id="952704832371081537">Zrušit</translation>
 <translation id="953008885340860025">Chrome je odhlášen</translation>
 <translation id="959066944189734975">Sledujete web <ph name="CHANNEL_NAME" /></translation>

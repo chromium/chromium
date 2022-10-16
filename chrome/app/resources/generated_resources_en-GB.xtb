@@ -423,6 +423,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1397594434718759194">You're signed in to Chrome on these devices, so you can use them as security keys.</translation>
 <translation id="1398853756734560583">Maximise</translation>
 <translation id="139911022479327130">Unlock your phone and confirm that it's you</translation>
+<translation id="1401216725754314428">Learn more about related sites in a new tab</translation>
 <translation id="1401308693935339022">Use location. Allow apps and services with location permission to use this device’s location. Google may collect location data periodically and use this data anonymously to improve location accuracy and location-based services.</translation>
 <translation id="1403222014593521787">Unable to connect to the proxy</translation>
 <translation id="1405779994569073824">Crashed.</translation>
@@ -7702,6 +7703,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8207404892907560325">Choose a passkey</translation>
+<translation id="8208188204689616705">These sites are in a group defined by <ph name="FPS_OWNER" />. Sites in a group can see your activity in the group.</translation>
 <translation id="8208216423136871611">Don't save</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{New notification}other{# new notifications}}</translation>
 <translation id="821119981794423735">To import passwords to Google Password Manager for <ph name="USER_EMAIL" />, select a CSV file</translation>
