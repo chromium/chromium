@@ -276,7 +276,7 @@ class SettingGetterImplGSettings
     DCHECK(!task_runner_.get());
 
     if (!g_settings_schema_source_lookup(g_settings_schema_source_get_default(),
-                                         kProxyGSettingsSchema, FALSE) ||
+                                         kProxyGSettingsSchema, TRUE) ||
         !(client_ = g_settings_new(kProxyGSettingsSchema))) {
       // It's not clear whether/when this can return NULL.
       LOG(ERROR) << "Unable to create a gsettings client";
@@ -488,7 +488,7 @@ bool SettingGetterImplGSettings::CheckVersion(
 
   GSettings* client = nullptr;
   if (g_settings_schema_source_lookup(g_settings_schema_source_get_default(),
-                                      kProxyGSettingsSchema, FALSE)) {
+                                      kProxyGSettingsSchema, TRUE)) {
     client = g_settings_new(kProxyGSettingsSchema);
   }
   if (!client) {
