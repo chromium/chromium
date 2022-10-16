@@ -36,8 +36,8 @@ void CaptivePortalDetector::DetectCaptivePortal(
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!FetchingURL());
-  DCHECK(detection_callback_.is_null());
-  DCHECK(!detection_callback.is_null());
+  CHECK(detection_callback_.is_null());
+  CHECK(!detection_callback.is_null());
 
   detection_callback_ = std::move(detection_callback);
 
@@ -83,8 +83,7 @@ void CaptivePortalDetector::OnSimpleLoaderComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kProbe);
   CHECK(FetchingURL());
-  // TODO(crbug/1361443): Make a CHECK or remove.
-  DCHECK(!detection_callback_.is_null());
+  CHECK(!detection_callback_.is_null());
 
   int response_code = 0;
   net::HttpResponseHeaders* headers = nullptr;
@@ -107,8 +106,7 @@ void CaptivePortalDetector::OnSimpleLoaderCompleteInternal(
   GetCaptivePortalResultFromResponse(net_error, response_code, url, headers,
                                      &results);
   simple_loader_.reset();
-  if (detection_callback_)
-    std::move(detection_callback_).Run(results);
+  std::move(detection_callback_).Run(results);
 }
 
 void CaptivePortalDetector::GetCaptivePortalResultFromResponse(
