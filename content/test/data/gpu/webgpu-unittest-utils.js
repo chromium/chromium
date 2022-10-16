@@ -11,7 +11,10 @@ const WebGpuUnitTestId = {
 };
 
 // Implements a set of simple standalone unit tests to test WebGPU without
-// depending on the canvas.
+// depending on the canvas. Each test returns a pair consisting of a bool
+// indicating whether the test passed (true) or failed (false), and a
+// potentially empty array of messages detailing why the test may have
+// failed.
 export const webGpuUnitTests = function() {
   //////////////////////////////////////////////////////////////////////////////
   // Private internal helpers
@@ -21,23 +24,58 @@ export const webGpuUnitTests = function() {
     const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
     if (!adapter) {
       console.error('navigator.gpu && navigator.gpu.requestAdapter failed');
-      return [null, null];
+      return [
+        null,
+        null,
+        ['WebGPU was unavailable and/or requesting adapter failed.']
+      ];
     }
     const device = await adapter.requestDevice();
     if (!device) {
       console.error('adapter.requestDevice() failed');
-      return [adapter, null];
+      return [
+        adapter,
+        null,
+        ['Failed to request a WebGPU device.']
+      ];
     }
     return [adapter, device];
   };
+
+  // Compares an actual array (a) to an expected one (e), returning [true, []]
+  // iff the type and contents of the arrays are equal, otherwise returning
+  // [false, [description]].
+  const compareArrays = function(e, a) {
+    if (e.constructor !== a.constructor) {
+      return [
+        false,
+        [`Expected type '${e.constructor.name}', got '${a.constructor.name}'.`]
+      ];
+    }
+    if (e.length !== a.length) {
+      return [
+        false,
+        [`Expected length ${e.length}, got ${a.length}.`]
+      ];
+    }
+    var equal = true;
+    for (var i = 0; i !== e.length; i++) {
+      if (e[i] != a[i]) {
+        success = equal;
+      }
+    }
+    return equal ?
+        [true, []] :
+        [false, [`Expected [${e.toString()}], got [${a.toString()}].`]];
+  }
 
   // Render test base which allows for specifying whether to use async pipeline
   // creation. Renders a single pixel texture, copies it to a buffer, and
   // verifies.
   const renderTestBase = async function(useAsync) {
-    const [adapter, device] = await init();
+    const [adapter, device, errors] = await init();
     if (!adapter || !device) {
-      return false;
+      return [false, errors];
     }
 
     // Create the WebGPU primitives and execute the rendering and buffer copy.
@@ -107,27 +145,20 @@ export const webGpuUnitTests = function() {
     device.queue.submit([encoder.finish()]);
 
     // Verify the contents of the buffer that the texture was copied into.
+    var success = true;
     const expected = new Uint8Array([0x00, 0xff, 0x00, 0xff]);
     await buffer.mapAsync(GPUMapMode.READ);
     const actual = new Uint8Array(buffer.getMappedRange());
-    if (expected.length !== actual.length) {
-      return false;
-    }
-    for (var i = 0; i !== expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        return false;
-      }
-    }
-    return true;
+    return compareArrays(expected, actual);
   };
 
   // Compute test base which allows for specifying whether to use async pipeline
   // creation. Fills a buffer with global_invocation_id.x and verifies the
   // contents of the buffer.
   const computeTestBase = async function(useAsync) {
-    const [adapter, device] = await init();
+    const [adapter, device, errors] = await init();
     if (!adapter || !device) {
-      return false;
+      return [false, errors];
     }
 
     // Test constants.
@@ -177,18 +208,11 @@ export const webGpuUnitTests = function() {
     device.queue.submit([encoder.finish()]);
 
     // Verify the contents of the buffer that was copied into.
+    var success = true;
     const expected = new Uint32Array([...Array(n).keys()]);
     await result.mapAsync(GPUMapMode.READ);
     const actual = new Uint32Array(result.getMappedRange());
-    if (expected.length !== actual.length) {
-      return false;
-    }
-    for (var i = 0; i !== expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        return false;
-      }
-    }
-    return true;
+    return compareArrays(expected, actual);
   };
 
   return {
@@ -211,22 +235,34 @@ export const webGpuUnitTests = function() {
     ////////////////////////////////////////////////////////////////////////////
     // Test driver
     runTest: async function(testId) {
+      // Test running wrapper to prefix error messages with test name.
+      const wrapper = async function(testId, testFunc) {
+        const [success, errors] = await testFunc();
+        if (success) {
+          return [true, []];
+        }
+        return [
+          false,
+          [`WebGPU test '${testId}' failed with the following errors:`] +
+              errors.map(function(e) { return '    ' + e; })];
+      };
+
       switch (testId) {
         case WebGpuUnitTestId.RenderTest:
-          return await this.renderTest();
+          return await wrapper(testId, this.renderTest);
           break;
         case WebGpuUnitTestId.RenderTestAsync:
-          return await this.renderTestAsync();
+          return await wrapper(testId, this.renderTestAsync);
           break;
         case WebGpuUnitTestId.ComputeTest:
-          return await this.computeTest();
+          return await wrapper(testId, this.computeTest);
           break;
         case WebGpuUnitTestId.ComputeTestAsync:
-          return await this.computeTestAsync();
+          return await wrapper(testId, this.computeTestAsync);
           break;
         default:
           // Just fail for any undefined tests.
-          return false;
+          return [false, [`Undefined WebGPU test '${testId}' specified.`]];
       }
     },
   };

@@ -5,5 +5,5 @@
 import { webGpuUnitTests } from './webgpu-unittest-utils.js';
 
 onmessage = async (e) => {
-  postMessage({ result: await webGpuUnitTests.runTest(e.data.testId) });
+  postMessage(await webGpuUnitTests.runTest(e.data.testId));
 }

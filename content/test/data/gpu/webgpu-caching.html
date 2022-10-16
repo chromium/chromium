@@ -12,6 +12,17 @@
   <script type="module">
     import { webGpuUnitTests } from './webgpu-unittest-utils.js';
 
+    function finish(success, errors) {
+        if (!success) {
+            console.error(errors.join('\n'));
+            errors.forEach(e => domAutomationController.log(e));
+            domAutomationController.send('FAILED');
+        } else {
+            console.log('SUCCESS');
+            domAutomationController.send('SUCCESS');
+        }
+    }
+
     async function main() {
         const parsedString = new URLSearchParams(window.location.search);
 
@@ -23,11 +34,15 @@
               (worker_string != null) ? worker_string == 'true' : false;
         const runs_string = parsedString.get('runs');
         const runs = (runs_string != null) ? parseInt(runs_string) : 1;
+        const iframe_string = parsedString.get('iframe');
+        const is_iframe =
+              (iframe_string != null) ? iframe_string == 'true' : false;
 
         // If we pass an explicit hostname, then forward the parameters inside
         // an iframe at the hostname.
         if (hostname != null) {
             parsedString.delete('hostname');
+            parsedString.set('iframe', 'true');
             const iframe = document.createElement('iframe');
             const path = window.location.pathname;
             const search = parsedString.toString();
@@ -35,45 +50,54 @@
             iframe.src = `http://${hostname}:${port}${path}?${search}`;
             document.body.append(iframe);
 
-            const success = new Promise(
+            const [success, errors] = await (new Promise(
                 resolve => {
                     window.addEventListener('message',
                                             e => {
-                                                resolve(e.data.success);
+                                                resolve(e.data);
                                                 },
                                             { once: true })
                 }
-            );
-            domAutomationController.send(await success ? 'SUCCESS' : 'FAILED');
+            ));
+            finish(success, errors);
             return;
         }
 
         var success = true;
+        var errors = [];
         for (let i = 0; i < runs; i++) {
             if (!use_worker) {
-                success = success && await webGpuUnitTests.runTest(testId);
+                const [run_success, run_errors] =
+                      await webGpuUnitTests.runTest(testId);
+                success = success && run_success;
+                errors = errors.concat(run_errors);
             } else {
                 const worker = new Worker(
                     './webgpu-unittest-worker.js',
                     { type: 'module' }
                 );
-                const result = new Promise(
+                const promise = new Promise(
                     resolve => {
                         worker.addEventListener('message',
                                                 e => {
-                                                    resolve(e.data.result);
+                                                    resolve(e.data);
                                                 },
                                                 { once: true })
                     }
                 );
                 worker.postMessage({ testId });
-                success = success && await result;
+                const [run_success, run_errors] = await promise;
+                success = success && run_success;
+                errors = errors.concat(run_errors);
             }
         }
-        if (typeof domAutomationController === 'undefined') {
-            parent.postMessage({ success }, '*');
+
+        if (is_iframe) {
+            // In this case, we are an iframe embedded inside a parent, so
+            // post the results back to the parent to be handled.
+            parent.postMessage([success, errors], '*');
         } else {
-            domAutomationController.send(success ? 'SUCCESS' : 'FAILED');
+            finish(success, errors);
         }
     }
 
