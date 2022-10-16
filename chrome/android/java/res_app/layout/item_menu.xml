@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/app_name"
+    android:textColor="#333333"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="16dp"
+    android:background="?android:selectableItemBackground"
+    >
+
+</TextView>

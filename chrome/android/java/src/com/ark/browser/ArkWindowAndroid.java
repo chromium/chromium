@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
@@ -18,7 +19,7 @@ public abstract class ArkWindowAndroid extends ActivityWindowAndroid {
     private ModalDialogManager mModalDialogManager;
 
     public ArkWindowAndroid(Context context) {
-        super(context, true, null);
+        super(context, true, ((AsyncInitializationActivity) context).getIntentRequestTracker());
     }
 
     public ArkWindowAndroid(Context context, boolean listenToActivityState, @NonNull ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate, IntentRequestTracker intentRequestTracker) {

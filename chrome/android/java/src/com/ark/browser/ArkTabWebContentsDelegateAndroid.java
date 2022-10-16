@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
 import com.ark.browser.tab.ArkSwipeRefreshHandler;
+import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.utils.ArkLogger;
 
@@ -139,7 +140,9 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
 
         LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url.getSpec()));
         params.setHasUserGesture(userGesture);
-        boolean success = TabListManager.getInstance().openNewPage(mTab, params);
+        boolean success = ((ArkTabImpl) mTab).getWindowAndroid()
+                .getCompositorViewHolder()
+                .openNewPage(mTab, params);
 
         if (success) {
             if (disposition == org.chromium.ui.mojom.WindowOpenDisposition.NEW_POPUP) {

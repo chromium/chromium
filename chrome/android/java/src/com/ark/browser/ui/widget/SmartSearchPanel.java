@@ -2,8 +2,8 @@ package com.ark.browser.ui.widget;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -33,17 +34,19 @@ import com.ark.browser.tab.core.TabImpl;
 import com.ark.browser.utils.ArkLogger;
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class SmartSearchPanel extends FrameLayout {
@@ -224,24 +227,88 @@ public class SmartSearchPanel extends FrameLayout {
     }
 
 
-    private static final String[] TAB_TITLES = {"web搜索", "磁力搜索", "网盘搜索", "图片搜索", "自定义搜索"};
+    private final FormatSmartSearchItem[] mSearchItems = {
+            new FormatSmartSearchItem("Bing", "https://cn.bing.com/search?q=%s"),
+            new FormatSmartSearchItem("磁力搜索", "http://www.btmovi.in/so/%s.html"),
+            new FormatSmartSearchItem("网盘搜索", "https://www.wuyasou.com/search?keyword=%s"),
+            new FormatSmartSearchItem("Baidu", "https://www.baidu.com"),
+            new FormatSmartSearchItem("自定义搜索", "http://xia.fobenshidao.cc/search.php?mod=forum&searchsubmit=yes&srchtxt=%s"),
+    };
+
+
     private int[] posArray;
     private ArkCompositorViewHolder mViewHolder;
     private View mTopBar;
     private TabLayout tabLayout;
     private int mCurrentPosition = 0;
 
+    public abstract static class SmartSearchItem {
+
+        @DrawableRes
+        private final int icon;
+        private final String title;
+
+        public SmartSearchItem(String title) {
+            this(title, 0);
+        }
+
+        public SmartSearchItem(String title, @DrawableRes int icon) {
+            this.title = title;
+            this.icon = icon;
+        }
+
+        @DrawableRes
+        public int getIcon() {
+            return icon;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public abstract String getUrl(String keyword);
+
+    }
+
+    public static class FormatSmartSearchItem extends SmartSearchItem {
+
+        private final String formatUrl;
+
+        private String keyword;
+
+        public FormatSmartSearchItem(String title, String formatUrl) {
+            super(title);
+            this.formatUrl = formatUrl;
+        }
+
+        @Override
+        public String getUrl(String keyword) {
+            this.keyword = keyword;
+            keyword = new String(keyword.getBytes(), StandardCharsets.UTF_8);
+            try {
+                keyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8.name());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            return String.format(formatUrl, keyword);
+        }
+
+        public String getKeyword() {
+            return keyword;
+        }
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        posArray = new int[TAB_TITLES.length];
+        posArray = new int[mSearchItems.length];
         Arrays.fill(posArray, -1);
         mDragView = getChildAt(getChildCount() - 1);
         mTopBar = mDragView.findViewById(R.id.top_bar);
         tabLayout = mDragView.findViewById(R.id.smart_search_indicator);
 
-        for (String title : TAB_TITLES) {
-            TabLayout.Tab tab = tabLayout.newTab().setText(title);
+        for (SmartSearchItem item : mSearchItems) {
+            TabLayout.Tab tab = tabLayout.newTab().setText(item.getTitle());
             tabLayout.addTab(tab);
         }
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
@@ -269,17 +336,10 @@ public class SmartSearchPanel extends FrameLayout {
         mCurrentPosition = index;
         int pos = posArray[index];
 
-        String url;
+        FormatSmartSearchItem item = mSearchItems[index];
+//        String url = item.getUrl(keyword);
 
-
-        if (index == 0) {
-//                    url = "http://xia.fobenshidao.cc/search.php?mod=forum&searchsubmit=yes&srchtxt=" + keyword;
-            url = "https://www.baidu.com";
-        } else {
-            url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(keyword);
-        }
-
-        pos = loadUrl(pos, url);
+        pos = loadUrl(pos, item);
         posArray[index] = pos;
     }
 
@@ -488,7 +548,18 @@ public class SmartSearchPanel extends FrameLayout {
     }
 
     public void updateKeyword(String keyword) {
+        Log.e(TAG, "updateKeyword keyword=" + keyword);
         this.keyword = keyword;
+    }
+
+    public boolean onBackPressed() {
+        if (mViewHolder == null) {
+            return false;
+        }
+        if (isClosed()) {
+            return false;
+        }
+        return mViewHolder.onBackPressed();
     }
 
     public int getOffset() {
@@ -614,25 +685,33 @@ public class SmartSearchPanel extends FrameLayout {
         return mFloatTabList;
     }
 
-    private int loadUrl(int index, String url) {
-        ArkLogger.e(TAG, "loadUrl url=" + url);
-
-        LoadUrlParams loadUrlParams = new LoadUrlParams(UrlFormatter.fixupUrl(url));
-        loadUrlParams.setTransitionType(TabLaunchType.FROM_CHROME_UI);
-
-        ArkLogger.e(TAG, "loadUrl mFloatTabList=" + mFloatTabList);
+    private int loadUrl(int index, FormatSmartSearchItem item) {
         mFloatTabList = getFloatTabList();
-
-
         ArkLogger.e(TAG, "loadUrl mFloatTabList=" + mFloatTabList);
-
         if (mFloatTabList == null) {
             return index;
         }
 
-        TabInfo tabInfo = mFloatTabList.getTabInfoAt(index);
-        if (tabInfo == null) {
+        IPage page = mFloatTabList.getPageAt(index);
+        ArkLogger.e(TAG, "loadUrl page=" + page);
+        if (page == null) {
+            String url = item.getUrl(keyword);
+            LoadUrlParams loadUrlParams = new LoadUrlParams(UrlFormatter.fixupUrl(url));
+            loadUrlParams.setTransitionType(TabLaunchType.FROM_CHROME_UI);
             index = openNewTab(loadUrlParams);
+        } else {
+            Tab tab = page.getNativePage();
+            ArkLogger.e(TAG, "loadUrl tab=" + tab);
+            if (tab != null) {
+                ArkLogger.e(TAG, "loadUrl oldKey=" + item.getKeyword() + " newKey=" + keyword);
+                if (!TextUtils.equals(keyword, item.getKeyword())) {
+                    String url = item.getUrl(keyword);
+                    LoadUrlParams loadUrlParams = new LoadUrlParams(UrlFormatter.fixupUrl(url));
+                    loadUrlParams.setTransitionType(TabLaunchType.FROM_CHROME_UI);
+                    mFloatTabList.openNewPage(tab, loadUrlParams);
+                    return index;
+                }
+            }
         }
 
         mFloatTabList.selectTabAt(index);

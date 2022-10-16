@@ -97,7 +97,9 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
 
                     Log.e(TAG, "shouldIgnoreNavigation params=" + params);
 
-                    TabListManager.getInstance().openNewPage(mTab, params);
+                    ((ArkTabImpl) mTab).getWindowAndroid()
+                            .getCompositorViewHolder()
+                            .openNewPage(mTab, params);
                 }
             }
         });

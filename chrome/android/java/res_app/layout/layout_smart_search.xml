@@ -75,13 +75,6 @@
             android:gravity="center"
             android:background="#F9FAFC"
             android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textSize="18sp"
-                android:textColor="#333"/>
-
 
             <com.ark.browser.ArkCompositorViewHolder
                 android:id="@+id/my_compositor_view_holder"

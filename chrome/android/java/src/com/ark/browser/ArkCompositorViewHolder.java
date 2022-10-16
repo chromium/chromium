@@ -4,6 +4,7 @@
 
 package com.ark.browser;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -83,6 +84,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content.browser.selection.FloatingActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -268,7 +270,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     private boolean mInGesture;
     private boolean mContentViewScrolling;
     private ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier;
-    private org.chromium.base.Callback<Integer> mBottomInsetObserver = (inset) -> updateViewportSize();
+    private final org.chromium.base.Callback<Integer> mBottomInsetObserver = (inset) -> updateViewportSize();
 
     /**
      * Tracks whether geometrychange event is fired for the active tab when the keyboard
@@ -279,9 +281,9 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     private OnscreenContentProvider mOnscreenContentProvider;
 
-    private Set<Runnable> mOnCompositorLayoutCallbacks = new HashSet<>();
-    private Set<Runnable> mDidSwapFrameCallbacks = new HashSet<>();
-    private Set<Runnable> mDidSwapBuffersCallbacks = new HashSet<>();
+    private final Set<Runnable> mOnCompositorLayoutCallbacks = new HashSet<>();
+    private final Set<Runnable> mDidSwapFrameCallbacks = new HashSet<>();
+    private final Set<Runnable> mDidSwapBuffersCallbacks = new HashSet<>();
 
     /**
      * Last MotionEvent dispatched to this object for a currently active gesture. If there is no
@@ -293,6 +295,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(false) {
         @Override
         public void handleOnBackPressed() {
+            ArkLogger.e(TAG, "handleOnBackPressed");
             if (mCallback != null) {
                 ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
                 if (tabGroup.canGoBack()) {
@@ -1293,6 +1296,19 @@ public class ArkCompositorViewHolder extends FrameLayout
         return mWindowAndroid;
     }
 
+    public boolean onBackPressed() {
+        if (mCallback != null) {
+            ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
+            if (tabGroup.canGoBack()) {
+                tabGroup.goBack();
+                onBackPressedCallback.setEnabled(tabGroup.canGoBack());
+                return true;
+            }
+        }
+        onBackPressedCallback.setEnabled(false);
+        return false;
+    }
+
     /**
      * This is called when the native library are ready.
      */
@@ -1395,7 +1411,7 @@ public class ArkCompositorViewHolder extends FrameLayout
             @Override
             public ActionMode startActionMode(View view, ActionModeCallbackHelper helper, ActionMode.Callback callback) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    return new MyActionMode((ViewGroup) view,
+                    return new ArkCustomActionMode((ViewGroup) view,
                             new FloatingActionModeCallback(helper, callback));
                 }
                 return null;
@@ -1435,6 +1451,7 @@ public class ArkCompositorViewHolder extends FrameLayout
             @Override
             public void cancelAllRequests() {}
 
+            @SuppressLint("ClickableViewAccessibility")
             private void show() {
                 ArkLogger.e(TAG, "smartSearchDialog show");
                 if (smartSearchDialog == null) {
@@ -1694,11 +1711,20 @@ public class ArkCompositorViewHolder extends FrameLayout
         return mTabContentManager;
     }
 
+    public boolean openNewPage(@NonNull Tab parent, LoadUrlParams params) {
+        ArkLogger.d(TAG, "openNewPage params=" + params);
+        if (mCallback == null) {
+            return false;
+        }
+        ITabGroup tabList = mCallback.getTabList(parent);
+        return tabList.openNewPage(parent, params);
+    }
+
     public interface Callback {
 
-        public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url);
+        boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url);
 
-        public ITabGroup getTabList(Tab current);
+        ITabGroup getTabList(Tab current);
 
         void onPageAttached(@NonNull Tab page);
 
@@ -1709,16 +1735,11 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
 
-    private static class MyActionMode extends ActionMode {
+    private static class ArkCustomActionMode extends ActionMode {
 
-        private static final String TAG = "MyActionMode";
-
-//        private final PopupWindow popupWindow;
-
-//        private final MaterialCardView mCardView;
+        private static final String TAG = "ArkCustomActionMode";
 
         private final Rect mContentRect = new Rect();
-
 
         private final Menu mMenu;
 
@@ -1732,7 +1753,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
         private final MenuInflater mInflater;
 
-        public MyActionMode(ViewGroup view, ActionMode.Callback2 callback) {
+        private ArkCustomActionMode(ViewGroup view, ActionMode.Callback2 callback) {
 
             this.mParent = view;
             this.mCallback = callback;
@@ -1740,18 +1761,9 @@ public class ArkCompositorViewHolder extends FrameLayout
             Context context = view.getContext();
             this.mContext = context;
 
-            Log.e(TAG, "MyActionMode view=" + view);
             mMenuView = LayoutInflater.from(context).inflate(
                     org.chromium.chrome.R.layout.menu_action_mode, null, false);
             mMenuView.setVisibility(INVISIBLE);
-
-            mMenuView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    Log.e(TAG, "invalidateContentRect rect=" + new Rect(left, top, right, bottom)
-                            + " oldRect=" + new Rect(oldLeft, oldTop, oldRight, oldBottom));
-                }
-            });
 
             mContainer = mMenuView.findViewById(org.chromium.chrome.R.id.ll_container);
             mMenu = new ActionMenuView(mContext).getMenu();
@@ -1762,7 +1774,6 @@ public class ArkCompositorViewHolder extends FrameLayout
         @Override
         public void hide(long duration) {
             mMenuView.setVisibility(View.INVISIBLE);
-//            popupWindow.dismiss();
         }
 
 
@@ -1798,7 +1809,6 @@ public class ArkCompositorViewHolder extends FrameLayout
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
 
-
             if (mMenu.size() == 0) {
                 mCallback.onPrepareActionMode(this, mMenu);
                 mContainer.removeAllViews();
@@ -1807,10 +1817,6 @@ public class ArkCompositorViewHolder extends FrameLayout
                     MenuItem item = mMenu.getItem(i);
                     Log.e(TAG, "invalidate item=" + item.getTitle());
                     mContainer.addView(createItem(item));
-
-                    if (i >= 3) {
-                        break;
-                    }
                 }
             }
 
@@ -1821,53 +1827,6 @@ public class ArkCompositorViewHolder extends FrameLayout
         public void invalidateContentRect() {
             mParent.post(this::invalidateContentRectInner2);
         }
-
-        private void invalidateContentRectInner() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mCallback.onGetContentRect(this, mMenuView, mContentRect);
-            }
-
-            Log.e(TAG, "invalidateContentRect width=" + mMenuView.getWidth() + " height=" + mMenuView.getHeight());
-            Log.e(TAG, "invalidateContentRect mContentRect=" + mContentRect);
-
-            int oldCenterX = mMenuView.getLeft() + mMenuView.getWidth() / 2;
-            int oldCenterY = mMenuView.getTop() + mMenuView.getHeight() / 2;
-
-            int centerX = mContentRect.centerX();
-            int centerY = mContentRect.centerY();
-
-            int width = mParent.getWidth();
-            int height = mParent.getHeight();
-
-
-            int newCenterX;
-            int newCenterY;
-
-            newCenterX = Math.max(0, centerX - mMenuView.getWidth() / 2);
-            if (mContentRect.bottom + mMenuView.getHeight() >= height) {
-                newCenterY = Math.max(0, mContentRect.top - mMenuView.getHeight());
-            } else {
-                newCenterY = mContentRect.bottom + mMenuView.getHeight();
-            }
-
-            Log.e(TAG, "invalidateContentRect centerX=" + centerX + " centerY=" + centerY + " width=" + width + " height=" + height);
-            Log.e(TAG, "invalidateContentRect oldCenterX=" + oldCenterX + " oldCenterY=" + oldCenterY);
-            Log.e(TAG, "invalidateContentRect newCenterX=" + newCenterX + " newCenterY=" + newCenterY);
-            mMenuView.offsetLeftAndRight(newCenterX - oldCenterX);
-            mMenuView.offsetTopAndBottom(newCenterY - oldCenterY);
-
-            Log.e(TAG, "invalidateContentRect left=" + mMenuView.getLeft() + " right=" + mMenuView.getRight());
-            if (mMenuView.getLeft() < 0) {
-                mMenuView.offsetLeftAndRight(-mMenuView.getLeft());
-            } else if (mMenuView.getRight() > width) {
-                mMenuView.offsetLeftAndRight(width - mMenuView.getRight());
-            }
-
-            mMenuView.setVisibility(View.VISIBLE);
-        }
-
-
-        private final Rect mMenuRect = new Rect();
 
         private void invalidateContentRectInner2() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -1880,64 +1839,49 @@ public class ArkCompositorViewHolder extends FrameLayout
             int centerX = mContentRect.centerX();
             int centerY = mContentRect.centerY();
 
-            Log.e(TAG, "invalidateContentRect width=" + mMenuView.getWidth() + " height=" + mMenuView.getHeight());
-            Log.e(TAG, "invalidateContentRect mContentRect=" + mContentRect);
+            ArkLogger.e(TAG, "invalidateContentRect width=" + mMenuView.getWidth() + " height=" + mMenuView.getHeight());
+            ArkLogger.e(TAG, "invalidateContentRect mContentRect=" + mContentRect);
 
-            if (mContentRect.bottom + mMenuView.getHeight() > height) {
-                mMenuRect.bottom = mContentRect.top;
-                mMenuRect.top = mMenuRect.bottom - mMenuView.getHeight();
-            } else {
-                mMenuRect.top = mContentRect.bottom;
-                mMenuRect.bottom = mMenuRect.top + mMenuView.getHeight();
-            }
-
-
+            final int x;
+            final int y;
 
             if (centerX * 2 <= width) {
                 if (mMenuView.getWidth() < centerX * 2) {
-                    mMenuRect.left = centerX - mMenuView.getWidth() / 2;
-                    mMenuRect.right = mMenuRect.left + mMenuView.getWidth();
+                    x = centerX - mMenuView.getWidth() / 2;
                 } else {
-                    mMenuRect.left = 0;
-                    mMenuRect.right = mMenuView.getWidth();
+                    x = 0;
                 }
             } else {
-
-
                 if (centerX + mMenuView.getWidth() / 2 > width) {
-                    mMenuRect.right = width;
-                    mMenuRect.left = mMenuRect.right - mMenuView.getWidth();
+                    x = width - mMenuView.getWidth();
                 } else {
-                    mMenuRect.right = centerX + mMenuView.getWidth() / 2;
-                    mMenuRect.left = mMenuRect.right - mMenuView.getWidth();
+                    x = centerX - mMenuView.getWidth() / 2;
                 }
             }
 
+            if (mContentRect.bottom + mMenuView.getHeight() > height) {
+                y = mContentRect.top - mMenuView.getHeight();
+            } else {
+                y = mContentRect.bottom;
+            }
 
+            ArkLogger.e(TAG, "invalidateContentRect x=" + x + " y=" + y);
 
-            Log.e(TAG, "invalidateContentRect mMenuRect=" + mMenuRect);
-
-//            mMenuView.setTranslationX(mMenuRect.left);
-//            mMenuView.setTranslationY(mMenuRect.top);
-
-            mMenuView.setX(mMenuRect.left);
-            mMenuView.setY(mMenuRect.top);
-
+            mMenuView.setX(x);
+            mMenuView.setY(y);
             mMenuView.setVisibility(View.VISIBLE);
         }
 
         private View createItem(MenuItem item) {
-            TextView textView = new TextView(mContext);
+            TextView textView = (TextView) LayoutInflater.from(mContext)
+                    .inflate(org.chromium.chrome.R.layout.item_menu, null, false);
             textView.setText(item.getTitle());
-            textView.setPadding(30, 40, 30, 40);
-            textView.setTextColor(Color.BLACK);
-            textView.setOnClickListener(v -> mCallback.onActionItemClicked(MyActionMode.this, item));
+            textView.setOnClickListener(v -> mCallback.onActionItemClicked(ArkCustomActionMode.this, item));
             return textView;
         }
 
         @Override
         public void finish() {
-//            popupWindow.dismiss();
             mParent.removeView(mMenuView);
             mCallback.onDestroyActionMode(this);
         }
