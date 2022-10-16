@@ -39,6 +39,21 @@ public abstract class Observable<T> {
     }
 
     /**
+     * Creates an Observable out of the activations of `this` and `other`. An observer that is
+     * subscribed to the result will be subscribed to both `this` and `other` at the same time.
+     *
+     * This combines Observables in the same way that concatenation combines lists. This operation
+     * forms a monoid over Observables with empty() as the identity element. I.e. for all
+     * Observables `x`:
+     *
+     *   x.or(empty()) == x
+     *   empty().or(x) == x
+     */
+    public final Observable<T> or(Observable<T> other) {
+        return make(observer -> Scopes.combine(subscribe(observer), other.subscribe(observer)));
+    }
+
+    /**
      * Returns an Observable that is only activated with the values added after subscription.
      *
      * Some Observables synchronously notify observers of their current state the moment they are

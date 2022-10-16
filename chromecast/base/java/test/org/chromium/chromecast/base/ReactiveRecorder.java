@@ -92,7 +92,7 @@ public class ReactiveRecorder {
         return result;
     }
 
-    private class Event {
+    private static class Event {
         public String type;
         public Object value;
 
