@@ -175,8 +175,8 @@ ActivityLogPrivateDeleteActivitiesFunction::Run() {
   // Put the arguments in the right format.
   std::vector<int64_t> action_ids;
   int64_t value;
-  for (size_t i = 0; i < params->activity_ids.size(); i++) {
-    if (base::StringToInt64(params->activity_ids[i], &value))
+  for (const auto& activity_id : params->activity_ids) {
+    if (base::StringToInt64(activity_id, &value))
       action_ids.push_back(value);
   }
 

@@ -586,11 +586,11 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     }
 
     // Second, resolve, validate and convert them to GURLs.
-    for (auto i = url_strings.begin(); i != url_strings.end(); ++i) {
+    for (auto& url_string : url_strings) {
       GURL url;
       std::string error;
-      if (!ExtensionTabUtil::PrepareURLForNavigation(*i, extension(), &url,
-                                                     &error)) {
+      if (!ExtensionTabUtil::PrepareURLForNavigation(url_string, extension(),
+                                                     &url, &error)) {
         return RespondNow(Error(std::move(error)));
       }
       urls.push_back(url);
@@ -1373,8 +1373,8 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   if (params->highlight_info.tabs.as_integers) {
     std::vector<int>& tab_indices = *params->highlight_info.tabs.as_integers;
     // Create a new selection model as we read the list of tab indices.
-    for (size_t i = 0; i < tab_indices.size(); ++i) {
-      if (!HighlightTab(tabstrip, &selection, &active_index, tab_indices[i],
+    for (int tab_index : tab_indices) {
+      if (!HighlightTab(tabstrip, &selection, &active_index, tab_index,
                         &error)) {
         return RespondNow(Error(std::move(error)));
       }
@@ -1813,8 +1813,8 @@ ExtensionFunction::ResponseAction TabsRemoveFunction::Run() {
   std::string error;
   if (params->tab_ids.as_integers) {
     std::vector<int>& tab_ids = *params->tab_ids.as_integers;
-    for (size_t i = 0; i < tab_ids.size(); ++i) {
-      if (!RemoveTab(tab_ids[i], &error))
+    for (int tab_id : tab_ids) {
+      if (!RemoveTab(tab_id, &error))
         return RespondNow(Error(std::move(error)));
     }
   } else {

@@ -98,8 +98,8 @@ bool GetNodesFromVector(BookmarkModel* model,
   if (id_strings.empty())
     return false;
 
-  for (size_t i = 0; i < id_strings.size(); ++i) {
-    const BookmarkNode* node = GetNodeFromString(model, id_strings[i]);
+  for (const auto& id_string : id_strings) {
+    const BookmarkNode* node = GetNodeFromString(model, id_string);
     if (!node)
       return false;
     nodes->push_back(node);
@@ -142,9 +142,8 @@ bookmark_manager_private::BookmarkNodeDataElement CreateApiNodeDataElement(
   if (element.is_url)
     node_element.url = element.url.spec();
   node_element.title = base::UTF16ToUTF8(element.title);
-  for (size_t i = 0; i < element.children.size(); ++i) {
-    node_element.children.push_back(
-        CreateApiNodeDataElement(element.children[i]));
+  for (const auto& child : element.children) {
+    node_element.children.push_back(CreateApiNodeDataElement(child));
   }
 
   return node_element;
@@ -162,9 +161,9 @@ bookmark_manager_private::BookmarkNodeData CreateApiBookmarkNodeData(
   if (node_data.same_profile) {
     std::vector<const BookmarkNode*> nodes = data.GetNodes(
         BookmarkModelFactory::GetForBrowserContext(profile), profile_path);
-    for (size_t i = 0; i < nodes.size(); ++i) {
+    for (const auto* node : nodes) {
       node_data.elements.push_back(
-          CreateNodeDataElementFromBookmarkNode(*nodes[i]));
+          CreateNodeDataElementFromBookmarkNode(*node));
     }
   } else {
     // We do not have a node IDs when the data comes from a different profile.

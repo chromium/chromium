@@ -387,9 +387,9 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
 
     // Turn the array into a JS array, which effectively gets eval()ed.
     std::string as_js_array;
-    for (size_t i = 0; i < std::size(non_messaging_apis); ++i) {
+    for (const auto* non_messaging_api : non_messaging_apis) {
       as_js_array += as_js_array.empty() ? "[" : ",";
-      as_js_array += base::StringPrintf("'%s'", non_messaging_apis[i]);
+      as_js_array += base::StringPrintf("'%s'", non_messaging_api);
     }
     as_js_array += "]";
 

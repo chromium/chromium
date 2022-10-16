@@ -131,8 +131,8 @@ OperationManager::OperationManager(content::BrowserContext* context)
 OperationManager::~OperationManager() = default;
 
 void OperationManager::Shutdown() {
-  for (auto iter = operations_.begin(); iter != operations_.end(); iter++) {
-    scoped_refptr<Operation> operation = iter->second;
+  for (auto& id_and_operation : operations_) {
+    scoped_refptr<Operation> operation = id_and_operation.second;
     operation->PostTask(base::BindOnce(&Operation::Abort, operation));
   }
 }

@@ -564,9 +564,8 @@ TEST(WebRequestActionTest, GetName) {
   std::unique_ptr<WebRequestActionSet> action_set(CreateSetOfActions(kActions));
   ASSERT_EQ(std::size(kExpectedNames), action_set->actions().size());
   size_t index = 0;
-  for (auto it = action_set->actions().cbegin();
-       it != action_set->actions().cend(); ++it) {
-    EXPECT_EQ(kExpectedNames[index], (*it)->GetName());
+  for (const auto& action : action_set->actions()) {
+    EXPECT_EQ(kExpectedNames[index], action->GetName());
     ++index;
   }
 }

@@ -83,8 +83,7 @@ void ValidateUserActions(const base::UserActionTester& user_action_tester,
 void ValidateSparseHistogramSamples(
     const std::string& name,
     const base::HistogramSamples& samples) {
-  for (unsigned int i = 0; i < std::size(g_sparse_histograms); ++i) {
-    const SparseHistogram& sparse_histogram = g_sparse_histograms[i];
+  for (const auto& sparse_histogram : g_sparse_histograms) {
     if (std::string(name) == sparse_histogram.name) {
       for (int j = 0; j < sparse_histogram.bucket_count; ++j) {
         const Bucket& bucket = sparse_histogram.buckets[j];

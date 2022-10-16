@@ -142,16 +142,16 @@ bool CommandService::GetNamedCommands(const std::string& extension_id,
   if (!commands)
     return false;
 
-  for (auto iter = commands->cbegin(); iter != commands->cend(); ++iter) {
+  for (const auto& named_command : *commands) {
     // Look up to see if the user has overridden how the command should work.
     Command saved_command =
-        FindCommandByName(extension_id, iter->second.command_name());
+        FindCommandByName(extension_id, named_command.second.command_name());
     ui::Accelerator shortcut_assigned = saved_command.accelerator();
 
     if (type == ACTIVE && shortcut_assigned.key_code() == ui::VKEY_UNKNOWN)
       continue;
 
-    Command command = iter->second;
+    Command command = named_command.second;
     if (scope != ANY_SCOPE && ((scope == GLOBAL) != saved_command.global()))
       continue;
 
@@ -159,7 +159,7 @@ bool CommandService::GetNamedCommands(const std::string& extension_id,
       command.set_accelerator(shortcut_assigned);
     command.set_global(saved_command.global());
 
-    (*command_map)[iter->second.command_name()] = command;
+    (*command_map)[named_command.second.command_name()] = command;
   }
 
   return !command_map->empty();
@@ -415,8 +415,8 @@ void CommandService::AssignKeybindings(const Extension* extension) {
   if (!commands)
     return;
 
-  for (auto iter = commands->cbegin(); iter != commands->cend(); ++iter) {
-    const Command command = iter->second;
+  for (const auto& named_command : *commands) {
+    const Command command = named_command.second;
     if (CanAutoAssign(command, extension)) {
       AddKeybindingPref(command.accelerator(),
                         extension->id(),
@@ -499,8 +499,8 @@ void CommandService::UpdateExtensionSuggestedCommandPrefs(
 
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension);
   if (commands) {
-    for (auto iter = commands->cbegin(); iter != commands->cend(); ++iter) {
-      const Command command = iter->second;
+    for (const auto& named_command : *commands) {
+      const Command command = named_command.second;
       base::Value::Dict command_keys;
       command_keys.Set(kSuggestedKey,
                        Command::AcceleratorToString(command.accelerator()));

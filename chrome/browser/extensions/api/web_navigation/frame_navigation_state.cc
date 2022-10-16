@@ -39,8 +39,8 @@ FrameNavigationState::~FrameNavigationState() = default;
 
 // static
 bool FrameNavigationState::IsValidUrl(const GURL& url) {
-  for (unsigned i = 0; i < std::size(kValidSchemes); ++i) {
-    if (url.scheme() == kValidSchemes[i])
+  for (const auto* valid_scheme : kValidSchemes) {
+    if (url.scheme() == valid_scheme)
       return true;
   }
   // Allow about:blank and about:srcdoc.

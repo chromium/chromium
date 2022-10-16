@@ -69,8 +69,8 @@ FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
 
   // Collect all the URLs, convert them to GURLs, and crack all the urls into
   // file paths.
-  for (size_t i = 0; i < params->urls.size(); ++i) {
-    const GURL url(params->urls[i]);
+  for (const auto& url_as_string : params->urls) {
+    const GURL url(url_as_string);
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
     if (drive::util::HasHostedDocumentExtension(file_system_url.path())) {
@@ -198,8 +198,8 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
 
   // Collect all the URLs, convert them to GURLs, and crack all the urls into
   // file paths.
-  for (size_t i = 0; i < params->urls.size(); ++i) {
-    const GURL url(params->urls[i]);
+  for (const auto& url_string : params->urls) {
+    const GURL url(url_string);
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
     if (drive::util::HasHostedDocumentExtension(file_system_url.path()))

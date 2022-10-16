@@ -920,9 +920,9 @@ FileManagerPrivateInternalSharePathsWithCrostiniFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
   std::vector<base::FilePath> paths;
-  for (size_t i = 0; i < params->urls.size(); ++i) {
+  for (const auto& url : params->urls) {
     storage::FileSystemURL cracked =
-        file_system_context->CrackURLInFirstPartyContext(GURL(params->urls[i]));
+        file_system_context->CrackURLInFirstPartyContext(GURL(url));
     paths.emplace_back(cracked.path());
   }
 

@@ -1706,20 +1706,20 @@ void DeveloperPrivateLoadDirectoryFunction::ReadDirectoryByFileSystemAPICb(
   // operations of files are released by the CopyFile function.
   pending_copy_operations_count_ += file_list.size();
 
-  for (size_t i = 0; i < file_list.size(); ++i) {
-    if (file_list[i].type == filesystem::mojom::FsFileType::DIRECTORY) {
-      ReadDirectoryByFileSystemAPI(project_path.Append(file_list[i].name),
-                                   destination_path.Append(file_list[i].name));
+  for (auto& file : file_list) {
+    if (file.type == filesystem::mojom::FsFileType::DIRECTORY) {
+      ReadDirectoryByFileSystemAPI(project_path.Append(file.name),
+                                   destination_path.Append(file.name));
       continue;
     }
 
     GURL project_url = GURL(project_base_url_ +
-        destination_path.Append(file_list[i].name).AsUTF8Unsafe());
+                            destination_path.Append(file.name).AsUTF8Unsafe());
     storage::FileSystemURL url =
         context_->CrackURLInFirstPartyContext(project_url);
 
     base::FilePath target_path = project_path;
-    target_path = target_path.Append(file_list[i].name);
+    target_path = target_path.Append(file.name);
 
     context_->operation_runner()->CreateSnapshotFile(
         url, base::BindOnce(

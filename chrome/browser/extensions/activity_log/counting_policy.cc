@@ -171,9 +171,8 @@ CountingPolicy::CountingPolicy(Profile* profile)
       string_table_("string_ids"),
       url_table_("url_ids"),
       retention_time_(base::Hours(60)) {
-  for (size_t i = 0; i < std::size(kAlwaysLog); i++) {
-    api_arg_allowlist_.insert(
-        std::make_pair(kAlwaysLog[i].type, kAlwaysLog[i].name));
+  for (auto log : kAlwaysLog) {
+    api_arg_allowlist_.insert(std::make_pair(log.type, log.name));
   }
 }
 
@@ -270,11 +269,10 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       " SET count = count + ?, time = max(?, time)"
       " WHERE rowid = ?";
 
-  for (size_t i = 0; i < std::size(matched_columns); i++) {
-    locate_str = base::StringPrintf(
-        "%s AND %s IS ?", locate_str.c_str(), matched_columns[i]);
-    insert_str =
-        base::StringPrintf("%s, %s", insert_str.c_str(), matched_columns[i]);
+  for (const auto* column : matched_columns) {
+    locate_str =
+        base::StringPrintf("%s AND %s IS ?", locate_str.c_str(), column);
+    insert_str = base::StringPrintf("%s, %s", insert_str.c_str(), column);
   }
   insert_str += ") VALUES (?, ?";
   for (size_t i = 0; i < std::size(matched_columns); i++) {
@@ -283,11 +281,8 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
   locate_str += " ORDER BY time DESC LIMIT 1";
   insert_str += ")";
 
-  for (auto i = queue.begin(); i != queue.end(); ++i) {
-    const Action& action = *i->first;
-    int count = i->second;
-
-    base::Time day_start = action.time().LocalMidnight();
+  for (auto& [action, count] : queue) {
+    base::Time day_start = action->time().LocalMidnight();
     base::Time next_day = Util::AddDays(day_start, 1);
 
     // The contents in values must match up with fields in matched_columns.  A
@@ -295,18 +290,18 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
     int64_t id;
     std::vector<int64_t> matched_values;
 
-    if (!string_table_.StringToInt(db, action.extension_id(), &id))
+    if (!string_table_.StringToInt(db, action->extension_id(), &id))
       return false;
     matched_values.push_back(id);
 
-    matched_values.push_back(static_cast<int>(action.action_type()));
+    matched_values.push_back(static_cast<int>(action->action_type()));
 
-    if (!string_table_.StringToInt(db, action.api_name(), &id))
+    if (!string_table_.StringToInt(db, action->api_name(), &id))
       return false;
     matched_values.push_back(id);
 
-    if (action.args()) {
-      std::string args = Util::Serialize(action.args());
+    if (action->args()) {
+      std::string args = Util::Serialize(action->args());
       // TODO(mvrable): For now, truncate long argument lists.  This is a
       // workaround for excessively-long values coming from DOM logging.  When
       // the V8ValueConverter is fixed to return more reasonable values, we can
@@ -321,7 +316,7 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       matched_values.push_back(-1);
     }
 
-    std::string page_url_string = action.SerializePageUrl();
+    std::string page_url_string = action->SerializePageUrl();
     if (!page_url_string.empty()) {
       if (!url_table_.StringToInt(db, page_url_string, &id))
         return false;
@@ -331,15 +326,15 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
     }
 
     // TODO(mvrable): Create a title_table_?
-    if (!action.page_title().empty()) {
-      if (!string_table_.StringToInt(db, action.page_title(), &id))
+    if (!action->page_title().empty()) {
+      if (!string_table_.StringToInt(db, action->page_title(), &id))
         return false;
       matched_values.push_back(id);
     } else {
       matched_values.push_back(-1);
     }
 
-    std::string arg_url_string = action.SerializeArgUrl();
+    std::string arg_url_string = action->SerializeArgUrl();
     if (!arg_url_string.empty()) {
       if (!url_table_.StringToInt(db, arg_url_string, &id))
         return false;
@@ -348,8 +343,8 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       matched_values.push_back(-1);
     }
 
-    if (action.other()) {
-      if (!string_table_.StringToInt(db, Util::Serialize(action.other()), &id))
+    if (action->other()) {
+      if (!string_table_.StringToInt(db, Util::Serialize(action->other()), &id))
         return false;
       matched_values.push_back(id);
     } else {
@@ -380,7 +375,7 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       sql::Statement update_statement(db->GetCachedStatement(
           sql::StatementID(SQL_FROM_HERE), update_str.c_str()));
       update_statement.BindInt(0, count);
-      update_statement.BindInt64(1, action.time().ToInternalValue());
+      update_statement.BindInt64(1, action->time().ToInternalValue());
       update_statement.BindInt64(2, rowid);
       if (!update_statement.Run())
         return false;
@@ -389,7 +384,7 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       sql::Statement insert_statement(db->GetCachedStatement(
           sql::StatementID(SQL_FROM_HERE), insert_str.c_str()));
       insert_statement.BindInt(0, count);
-      insert_statement.BindInt64(1, action.time().ToInternalValue());
+      insert_statement.BindInt64(1, action->time().ToInternalValue());
       for (size_t j = 0; j < matched_values.size(); j++) {
         if (matched_values[j] == -1)
           insert_statement.BindNull(j + 2);
@@ -542,9 +537,9 @@ void CountingPolicy::DoRemoveActions(const std::vector<int64_t>& action_ids) {
       base::StringPrintf("DELETE FROM %s WHERE rowid = ?", kTableName);
   sql::Statement statement(db->GetCachedStatement(
       sql::StatementID(SQL_FROM_HERE), statement_str.c_str()));
-  for (size_t i = 0; i < action_ids.size(); i++) {
+  for (long action_id : action_ids) {
     statement.Reset(true);
-    statement.BindInt64(0, action_ids[i]);
+    statement.BindInt64(0, action_id);
     if (!statement.Run()) {
       LOG(ERROR) << "Removing activities from database failed: "
                  << statement.GetSQLStatement();
@@ -587,10 +582,9 @@ void CountingPolicy::DoRemoveURLs(const std::vector<GURL>& restrict_urls) {
   }
 
   // If URLs are specified then restrict to only those URLs.
-  for (size_t i = 0; i < restrict_urls.size(); ++i) {
+  for (const auto& url : restrict_urls) {
     int64_t url_id;
-    if (!restrict_urls[i].is_valid() ||
-        !url_table_.StringToInt(db, restrict_urls[i].spec(), &url_id)) {
+    if (!url.is_valid() || !url_table_.StringToInt(db, url.spec(), &url_id)) {
       continue;
     }
 

@@ -550,9 +550,7 @@ void CompileDownloadQueryOrderBy(const std::vector<std::string>& order_by_strs,
   if (sorter_types.Get().empty())
     InitSortTypeMap(sorter_types.Pointer());
 
-  for (auto iter = order_by_strs.cbegin(); iter != order_by_strs.cend();
-       ++iter) {
-    std::string term_str = *iter;
+  for (auto term_str : order_by_strs) {
     if (term_str.empty())
       continue;
     DownloadQuery::SortDirection direction = DownloadQuery::ASCENDING;
@@ -777,8 +775,8 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   void AddPendingDeterminer(const std::string& extension_id,
                             const base::Time& installed) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    for (size_t index = 0; index < determiners_.size(); ++index) {
-      if (determiners_[index].extension_id == extension_id) {
+    for (auto& determiner : determiners_) {
+      if (determiner.extension_id == extension_id) {
         DCHECK(false) << extension_id;
         return;
       }
@@ -788,9 +786,9 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
 
   bool DeterminerAlreadyReported(const std::string& extension_id) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    for (size_t index = 0; index < determiners_.size(); ++index) {
-      if (determiners_[index].extension_id == extension_id) {
-        return determiners_[index].reported;
+    for (auto& determiner : determiners_) {
+      if (determiner.extension_id == extension_id) {
+        return determiner.reported;
       }
     }
     return false;
@@ -827,12 +825,12 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
                           downloads::FilenameConflictAction conflict_action) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     bool found_info = false;
-    for (size_t index = 0; index < determiners_.size(); ++index) {
-      if (determiners_[index].extension_id == extension_id) {
+    for (auto& determiner : determiners_) {
+      if (determiner.extension_id == extension_id) {
         found_info = true;
-        if (determiners_[index].reported)
+        if (determiner.reported)
           return false;
-        determiners_[index].reported = true;
+        determiner.reported = true;
         // Do not use filename if another determiner has already overridden the
         // filename and they take precedence. Extensions that were installed
         // later take precedence over previous extensions.
@@ -841,14 +839,14 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
           WarningSet warnings;
           std::string winner_extension_id;
           ExtensionDownloadsEventRouter::DetermineFilenameInternal(
-              filename, conflict_action, determiners_[index].extension_id,
-              determiners_[index].install_time, determiner_.extension_id,
+              filename, conflict_action, determiner.extension_id,
+              determiner.install_time, determiner_.extension_id,
               determiner_.install_time, &winner_extension_id,
               &determined_filename_, &determined_conflict_action_, &warnings);
           if (!warnings.empty())
             WarningService::NotifyWarningsOnUI(browser_context, warnings);
-          if (winner_extension_id == determiners_[index].extension_id)
-            determiner_ = determiners_[index];
+          if (winner_extension_id == determiner.extension_id)
+            determiner_ = determiner;
         }
         break;
       }
@@ -878,8 +876,8 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   // This is safe to call even while not waiting for determiners to call back;
   // in that case, the callbacks will be null so they won't be Run.
   void CheckAllDeterminersCalled() {
-    for (auto iter = determiners_.begin(); iter != determiners_.end(); ++iter) {
-      if (!iter->reported)
+    for (auto& determiner : determiners_) {
+      if (!determiner.reported)
         return;
     }
     CallFilenameCallback();

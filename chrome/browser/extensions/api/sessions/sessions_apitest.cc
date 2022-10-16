@@ -79,8 +79,8 @@ void BuildWindowSpecifics(int window_id,
   window->set_window_id(window_id);
   window->set_selected_tab_index(0);
   window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
-  for (auto iter = tab_list.cbegin(); iter != tab_list.cend(); ++iter) {
-    window->add_tab(*iter);
+  for (int tab : tab_list) {
+    window->add_tab(tab);
   }
 }
 
@@ -255,9 +255,9 @@ void ExtensionSessionsTest::CreateSessionModels() {
     updates.push_back(std::move(header_update));
     worker.UpdateFromServer(std::move(updates));
 
-    for (size_t i = 0; i < tabs.size(); i++) {
+    for (const auto& tab : tabs) {
       sync_pb::EntitySpecifics tab_entity;
-      *tab_entity.mutable_session() = tabs[i];
+      *tab_entity.mutable_session() = tab;
       worker.UpdateFromServer(TagHashFromSpecifics(tab_entity.session()),
                               tab_entity);
     }

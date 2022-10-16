@@ -110,10 +110,10 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
   data->last_modified = base::Time();
   if (search_provider.alternate_urls) {
     data->alternate_urls.clear();
-    for (size_t i = 0; i < search_provider.alternate_urls->size(); ++i) {
-      if (!search_provider.alternate_urls->at(i).empty())
-        data->alternate_urls.push_back(SubstituteInstallParam(
-            search_provider.alternate_urls->at(i), install_parameter));
+    for (const auto& url : *search_provider.alternate_urls) {
+      if (!url.empty())
+        data->alternate_urls.push_back(
+            SubstituteInstallParam(url, install_parameter));
     }
   }
   return data;

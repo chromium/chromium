@@ -329,17 +329,15 @@ void RequestContentScript::InitScript(const mojom::HostID& host_id,
       script_data.match_about_blank
           ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
           : MatchOriginAsFallbackBehavior::kNever);
-  for (auto it = script_data.css_file_names.cbegin();
-       it != script_data.css_file_names.cend(); ++it) {
-    GURL url = extension->GetResourceURL(*it);
-    ExtensionResource resource = extension->GetResource(*it);
+  for (const auto& css_file_name : script_data.css_file_names) {
+    GURL url = extension->GetResourceURL(css_file_name);
+    ExtensionResource resource = extension->GetResource(css_file_name);
     script_.css_scripts().push_back(std::make_unique<UserScript::File>(
         resource.extension_root(), resource.relative_path(), url));
   }
-  for (auto it = script_data.js_file_names.cbegin();
-       it != script_data.js_file_names.cend(); ++it) {
-    GURL url = extension->GetResourceURL(*it);
-    ExtensionResource resource = extension->GetResource(*it);
+  for (const auto& js_file_name : script_data.js_file_names) {
+    GURL url = extension->GetResourceURL(js_file_name);
+    ExtensionResource resource = extension->GetResource(js_file_name);
     script_.js_scripts().push_back(std::make_unique<UserScript::File>(
         resource.extension_root(), resource.relative_path(), url));
   }

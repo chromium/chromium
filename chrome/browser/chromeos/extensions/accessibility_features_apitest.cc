@@ -113,17 +113,17 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
       PrefService* prefs,
       const std::vector<std::string>& enabled_features,
       const std::vector<std::string>& disabled_features) {
-    for (size_t i = 0; i < enabled_features.size(); ++i) {
-      const char* const pref_name = GetPrefForFeature(enabled_features[i]);
-      EXPECT_TRUE(pref_name) << "Invalid feature " << enabled_features[i];
+    for (const auto& feature : enabled_features) {
+      const char* const pref_name = GetPrefForFeature(feature);
+      EXPECT_TRUE(pref_name) << "Invalid feature " << feature;
       if (!pref_name)
         return false;
       prefs->SetBoolean(pref_name, true);
     }
 
-    for (size_t i = 0; i < disabled_features.size(); ++i) {
-      const char* const pref_name = GetPrefForFeature(disabled_features[i]);
-      EXPECT_TRUE(pref_name) << "Invalid feature " << disabled_features[i];
+    for (const auto& feature : disabled_features) {
+      const char* const pref_name = GetPrefForFeature(feature);
+      EXPECT_TRUE(pref_name) << "Invalid feature " << feature;
       if (!pref_name)
         return false;
       prefs->SetBoolean(pref_name, false);
@@ -141,15 +141,15 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
       PrefService* prefs,
       const std::vector<std::string>& enabled_features,
       const std::vector<std::string>& disabled_features) {
-    for (size_t i = 0; i < enabled_features.size(); ++i) {
-      const char* const pref_name = GetPrefForFeature(enabled_features[i]);
-      ASSERT_TRUE(pref_name) << "Invalid feature " << enabled_features[i];
+    for (const auto& feature : enabled_features) {
+      const char* const pref_name = GetPrefForFeature(feature);
+      ASSERT_TRUE(pref_name) << "Invalid feature " << feature;
       ASSERT_TRUE(prefs->GetBoolean(pref_name));
     }
 
-    for (size_t i = 0; i < disabled_features.size(); ++i) {
-      const char* const pref_name = GetPrefForFeature(disabled_features[i]);
-      ASSERT_TRUE(pref_name) << "Invalid feature " << disabled_features[i];
+    for (const auto& feature : disabled_features) {
+      const char* const pref_name = GetPrefForFeature(feature);
+      ASSERT_TRUE(pref_name) << "Invalid feature " << feature;
       ASSERT_FALSE(prefs->GetBoolean(pref_name));
     }
   }
@@ -167,13 +167,13 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
     test_arg.SetStringKey(kTestNameKey, test_name);
 
     base::ListValue enabled_list;
-    for (size_t i = 0; i < enabled_features.size(); ++i)
-      enabled_list.Append(enabled_features[i]);
+    for (const auto& feature : enabled_features)
+      enabled_list.Append(feature);
     test_arg.SetKey(kEnabledFeaturesKey, std::move(enabled_list));
 
     base::ListValue disabled_list;
-    for (size_t i = 0; i < disabled_features.size(); ++i)
-      disabled_list.Append(disabled_features[i]);
+    for (const auto& feature : disabled_features)
+      disabled_list.Append(feature);
     test_arg.SetKey(kDisabledFeaturesKey, std::move(disabled_list));
 
     return base::JSONWriter::Write(test_arg, result);

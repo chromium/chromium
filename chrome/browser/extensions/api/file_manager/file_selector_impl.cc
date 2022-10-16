@@ -23,9 +23,9 @@ ui::SelectFileDialog::FileTypeInfo ConvertExtensionsToFileTypeInfo(
     const std::vector<std::string>& extensions) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
 
-  for (size_t i = 0; i < extensions.size(); ++i) {
+  for (const auto& extension : extensions) {
     base::FilePath::StringType allowed_extension =
-        base::FilePath::FromUTF8Unsafe(extensions[i]).value();
+        base::FilePath::FromUTF8Unsafe(extension).value();
 
     // FileTypeInfo takes a nested vector like [["htm", "html"], ["txt"]] to
     // group equivalent extensions, but we don't use this feature here.

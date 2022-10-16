@@ -143,8 +143,8 @@ class ExtensionContextMenuBrowserTest
     MenuItem::List result;
     std::set<MenuItem::ExtensionKey> extension_ids =
         menu_manager()->ExtensionIds();
-    for (auto i = extension_ids.begin(); i != extension_ids.end(); ++i) {
-      const MenuItem::OwnedList* list = menu_manager()->MenuItems(*i);
+    for (const auto& extension_id : extension_ids) {
+      const MenuItem::OwnedList* list = menu_manager()->MenuItems(extension_id);
       for (const auto& item : *list)
         result.push_back(item.get());
     }

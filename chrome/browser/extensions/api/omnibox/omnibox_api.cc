@@ -462,9 +462,9 @@ void ApplyDefaultSuggestionForExtensionKeyword(
         remaining_input.empty() ? kReplacementText : remaining_input;
     description.replace(placeholder, kPlaceholderText.length(), replacement);
 
-    for (size_t i = 0; i < description_styles.size(); ++i) {
-      if (description_styles[i].offset > placeholder)
-        description_styles[i].offset += replacement.length() - 2;
+    for (auto& description_style : description_styles) {
+      if (description_style.offset > placeholder)
+        description_style.offset += replacement.length() - 2;
     }
   }
 

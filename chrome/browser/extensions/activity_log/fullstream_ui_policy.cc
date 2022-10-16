@@ -80,29 +80,28 @@ bool FullStreamUIPolicy::FlushDatabase(sql::Database* db) {
   sql::Statement statement(db->GetCachedStatement(
       sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
 
-  for (size_t i = 0; i != queued_actions_.size(); ++i) {
-    const Action& action = *queued_actions_[i];
+  for (const auto& action : queued_actions_) {
     statement.Reset(true);
-    statement.BindString(0, action.extension_id());
-    statement.BindInt64(1, action.time().ToInternalValue());
-    statement.BindInt(2, static_cast<int>(action.action_type()));
-    statement.BindString(3, action.api_name());
-    if (action.args()) {
-      statement.BindString(4, Util::Serialize(action.args()));
+    statement.BindString(0, action->extension_id());
+    statement.BindInt64(1, action->time().ToInternalValue());
+    statement.BindInt(2, static_cast<int>(action->action_type()));
+    statement.BindString(3, action->api_name());
+    if (action->args()) {
+      statement.BindString(4, Util::Serialize(action->args()));
     }
-    std::string page_url_string = action.SerializePageUrl();
+    std::string page_url_string = action->SerializePageUrl();
     if (!page_url_string.empty()) {
       statement.BindString(5, page_url_string);
     }
-    if (!action.page_title().empty()) {
-      statement.BindString(6, action.page_title());
+    if (!action->page_title().empty()) {
+      statement.BindString(6, action->page_title());
     }
-    std::string arg_url_string = action.SerializeArgUrl();
+    std::string arg_url_string = action->SerializeArgUrl();
     if (!arg_url_string.empty()) {
       statement.BindString(7, arg_url_string);
     }
-    if (action.other()) {
-      statement.BindString(8, Util::Serialize(action.other()));
+    if (action->other()) {
+      statement.BindString(8, Util::Serialize(action->other()));
     }
 
     if (!statement.Run()) {
@@ -240,9 +239,9 @@ void FullStreamUIPolicy::DoRemoveActions(
       base::StringPrintf("DELETE FROM %s WHERE rowid = ?", kTableName);
   sql::Statement statement(db->GetCachedStatement(
       sql::StatementID(SQL_FROM_HERE), statement_str.c_str()));
-  for (size_t i = 0; i < action_ids.size(); i++) {
+  for (long action_id : action_ids) {
     statement.Reset(true);
-    statement.BindInt64(0, action_ids[i]);
+    statement.BindInt64(0, action_id);
     if (!statement.Run()) {
       LOG(ERROR) << "Removing activities from database failed: "
                  << statement.GetSQLStatement();
@@ -282,8 +281,8 @@ void FullStreamUIPolicy::DoRemoveURLs(const std::vector<GURL>& restrict_urls) {
   }
 
   // If URLs are specified then restrict to only those URLs.
-  for (size_t i = 0; i < restrict_urls.size(); ++i) {
-    if (!restrict_urls[i].is_valid()) {
+  for (const auto& url : restrict_urls) {
+    if (!url.is_valid()) {
       continue;
     }
 
@@ -294,7 +293,7 @@ void FullStreamUIPolicy::DoRemoveURLs(const std::vector<GURL>& restrict_urls) {
       kTableName);
     statement.Assign(db->GetCachedStatement(
         sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
-    statement.BindString(0, restrict_urls[i].spec());
+    statement.BindString(0, url.spec());
 
     if (!statement.Run()) {
       LOG(ERROR) << "Removing page URL from database failed: "
@@ -307,7 +306,7 @@ void FullStreamUIPolicy::DoRemoveURLs(const std::vector<GURL>& restrict_urls) {
                                  kTableName);
     statement.Assign(db->GetCachedStatement(
         sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
-    statement.BindString(0, restrict_urls[i].spec());
+    statement.BindString(0, url.spec());
 
     if (!statement.Run()) {
       LOG(ERROR) << "Removing arg URL from database failed: "

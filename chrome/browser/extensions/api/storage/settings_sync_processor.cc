@@ -85,8 +85,8 @@ absl::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
     return error;
 
   synced_keys_.insert(added_keys.begin(), added_keys.end());
-  for (auto i = deleted_keys.begin(); i != deleted_keys.end(); ++i) {
-    synced_keys_.erase(*i);
+  for (const auto& deleted_key : deleted_keys) {
+    synced_keys_.erase(deleted_key);
   }
 
   return absl::nullopt;

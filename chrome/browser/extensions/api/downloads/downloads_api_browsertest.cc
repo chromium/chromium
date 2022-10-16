@@ -1229,13 +1229,14 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
     ASSERT_FALSE(base::PathExists(fake_path));
   }
 
-  for (auto iter = all_downloads.begin(); iter != all_downloads.end(); ++iter) {
+  for (const auto* download : all_downloads) {
     std::string result_string;
     // Use a MockIconExtractorImpl to test if the correct path is being passed
     // into the DownloadFileIconExtractor.
-    EXPECT_TRUE(RunFunctionAndReturnString(MockedGetFileIconFunction(
-            (*iter)->GetTargetFilePath(), IconLoader::NORMAL, "hello"),
-        base::StringPrintf("[%d, {\"size\": 32}]", (*iter)->GetId()),
+    EXPECT_TRUE(RunFunctionAndReturnString(
+        MockedGetFileIconFunction(download->GetTargetFilePath(),
+                                  IconLoader::NORMAL, "hello"),
+        base::StringPrintf("[%d, {\"size\": 32}]", download->GetId()),
         &result_string));
     EXPECT_STREQ("hello", result_string.c_str());
   }
@@ -4504,11 +4505,11 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::IN_PROGRESS));
     DownloadManager::DownloadVector items;
     manager->GetAllDownloads(&items);
-    for (auto iter = items.begin(); iter != items.end(); ++iter) {
-      if ((*iter)->GetState() == DownloadItem::IN_PROGRESS) {
+    for (auto* download_item : items) {
+      if (download_item->GetState() == DownloadItem::IN_PROGRESS) {
         // There should be only one IN_PROGRESS item.
         EXPECT_EQ(nullptr, item);
-        item = *iter;
+        item = download_item;
       }
     }
     ASSERT_TRUE(item);

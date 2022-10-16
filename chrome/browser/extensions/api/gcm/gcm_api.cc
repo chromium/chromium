@@ -195,12 +195,11 @@ void GcmSendFunction::CompleteFunctionWithResult(
 
 bool GcmSendFunction::ValidateMessageData(const gcm::MessageData& data) const {
   size_t total_size = 0u;
-  for (auto iter = data.cbegin(); iter != data.cend(); ++iter) {
-    total_size += iter->first.size() + iter->second.size();
+  for (const auto& [key, value] : data) {
+    total_size += key.size() + value.size();
 
-    if (!IsMessageKeyValid(iter->first) ||
-        kMaximumGcmMessageSize < iter->first.size() ||
-        kMaximumGcmMessageSize < iter->second.size() ||
+    if (!IsMessageKeyValid(key) || kMaximumGcmMessageSize < key.size() ||
+        kMaximumGcmMessageSize < value.size() ||
         kMaximumGcmMessageSize < total_size)
       return false;
   }

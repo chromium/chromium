@@ -291,8 +291,8 @@ TEST_F(WebRequestRulesRegistryTest, AddRulesImpl) {
   EXPECT_EQ(2u, matches.size());
 
   std::set<WebRequestRule::GlobalRuleId> matches_ids;
-  for (auto it = matches.cbegin(); it != matches.cend(); ++it)
-    matches_ids.insert((*it)->id());
+  for (const auto* match : matches)
+    matches_ids.insert(match->id());
   EXPECT_TRUE(
       base::Contains(matches_ids, std::make_pair(kExtensionId, kRuleId1)));
   EXPECT_TRUE(

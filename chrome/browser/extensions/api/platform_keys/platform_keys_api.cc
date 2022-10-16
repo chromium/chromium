@@ -516,10 +516,9 @@ void PlatformKeysVerifyTLSServerCertificateFunction::FinishedVerification(
   if (net::IsCertificateError(verify_result)) {
     // Only report errors, not internal informational statuses.
     const int masked_cert_status = cert_status & net::CERT_STATUS_ALL_ERRORS;
-    for (size_t i = 0; i < std::size(kCertStatusErrors); ++i) {
-      if ((masked_cert_status & kCertStatusErrors[i].value) ==
-          kCertStatusErrors[i].value) {
-        result.debug_errors.push_back(kCertStatusErrors[i].name);
+    for (auto status_error : kCertStatusErrors) {
+      if ((masked_cert_status & status_error.value) == status_error.value) {
+        result.debug_errors.push_back(status_error.name);
       }
     }
   }

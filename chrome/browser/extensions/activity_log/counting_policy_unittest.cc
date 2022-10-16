@@ -271,8 +271,8 @@ class CountingPolicyTest : public testing::Test {
   static void CheckDuplicates(std::unique_ptr<Action::ActionVector> actions) {
     ASSERT_EQ(2u, actions->size());
     int total_count = 0;
-    for (size_t i = 0; i < actions->size(); i++) {
-      total_count += actions->at(i)->count();
+    for (const auto& action : *actions) {
+      total_count += action->count();
     }
     ASSERT_EQ(3, total_count);
   }

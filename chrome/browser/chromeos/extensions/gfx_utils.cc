@@ -106,11 +106,11 @@ class AppDualBadgeMap {
   using ExtensionToArcAppMap = std::unordered_map<std::string, std::string>;
 
   AppDualBadgeMap() {
-    for (size_t i = 0; i < std::size(kDualBadgeMap); ++i) {
-      arc_app_to_extensions_map_[kDualBadgeMap[i].arc_package_name].push_back(
-          kDualBadgeMap[i].extension_id);
-      extension_to_arc_app_map_[kDualBadgeMap[i].extension_id] =
-          kDualBadgeMap[i].arc_package_name;
+    for (auto dual_badge : kDualBadgeMap) {
+      arc_app_to_extensions_map_[dual_badge.arc_package_name].push_back(
+          dual_badge.extension_id);
+      extension_to_arc_app_map_[dual_badge.extension_id] =
+          dual_badge.arc_package_name;
     }
   }
 

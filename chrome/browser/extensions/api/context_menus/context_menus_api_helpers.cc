@@ -58,8 +58,8 @@ MenuItem* GetParent(MenuItem::Id parent_id,
 MenuItem::ContextList GetContexts(const std::vector<
     extensions::api::context_menus::ContextType>& in_contexts) {
   MenuItem::ContextList contexts;
-  for (size_t i = 0; i < in_contexts.size(); ++i) {
-    switch (in_contexts[i]) {
+  for (auto context : in_contexts) {
+    switch (context) {
       case extensions::api::context_menus::CONTEXT_TYPE_ALL:
         contexts.Add(extensions::MenuItem::ALL);
         break;

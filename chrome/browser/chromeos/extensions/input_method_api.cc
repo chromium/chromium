@@ -155,8 +155,7 @@ InputMethodPrivateSetCurrentInputMethodFunction::Run() {
       ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
   const std::vector<std::string>& input_methods =
       ime_state->GetEnabledInputMethodIds();
-  for (size_t i = 0; i < input_methods.size(); ++i) {
-    const std::string& input_method = input_methods[i];
+  for (const auto& input_method : input_methods) {
     if (input_method == params->input_method_id) {
       ime_state->ChangeInputMethod(params->input_method_id,
                                    false /* show_message */);

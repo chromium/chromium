@@ -192,9 +192,8 @@ class ApiInfoDatabase {
 
  private:
   ApiInfoDatabase() {
-    for (size_t i = 0; i < std::size(kApiInfoTable); i++) {
-      const ApiInfo* info = &kApiInfoTable[i];
-      api_database_[info->api_name] = info;
+    for (const auto& info : kApiInfoTable) {
+      api_database_[info.api_name] = &info;
     }
   }
   virtual ~ApiInfoDatabase() {}
@@ -675,16 +674,16 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
   if (!is_active_)
     return;
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
-  for (auto it = extension_ids.begin(); it != extension_ids.end(); ++it) {
-    const Extension* extension =
-        registry->GetExtensionById(it->first, ExtensionRegistry::ENABLED);
+  for (const auto& extension_id : extension_ids) {
+    const Extension* extension = registry->GetExtensionById(
+        extension_id.first, ExtensionRegistry::ENABLED);
     if (!extension || IsExtensionAllowlisted(extension->id()))
       continue;
 
     // If OnScriptsExecuted is fired because of tabs.executeScript, the list
     // of content scripts will be empty.  We don't want to log it because
     // the call to tabs.executeScript will have already been logged anyway.
-    if (!it->second.empty()) {
+    if (!extension_id.second.empty()) {
       auto action = base::MakeRefCounted<Action>(
           extension->id(), base::Time::Now(), Action::ACTION_CONTENT_SCRIPT,
           "");  // no API call here
@@ -699,8 +698,8 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
       if (no_state_prefetch_manager &&
           no_state_prefetch_manager->IsWebContentsPrefetching(web_contents))
         action->mutable_other().Set(constants::kActionPrerender, true);
-      for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-        action->mutable_args().Append(*it2);
+      for (const auto& id : extension_id.second) {
+        action->mutable_args().Append(id);
       }
       LogAction(action);
     }
@@ -754,8 +753,8 @@ void ActivityLog::RemoveURLs(const std::set<GURL>& restrict_urls) {
     return;
 
   std::vector<GURL> urls;
-  for (auto it = restrict_urls.begin(); it != restrict_urls.end(); ++it) {
-    urls.push_back(*it);
+  for (const auto& url : restrict_urls) {
+    urls.push_back(url);
   }
   database_policy_->RemoveURLs(urls);
 }

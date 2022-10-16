@@ -279,8 +279,7 @@ SessionsGetDevicesFunction::CreateWindowModel(
   // Prune tabs that are not syncable or are NewTabPage. Then, sort the tabs
   // from most recent to least recent.
   std::vector<const sessions::SessionTab*> tabs_in_window;
-  for (size_t i = 0; i < window.tabs.size(); ++i) {
-    const sessions::SessionTab* tab = window.tabs[i].get();
+  for (const auto& tab : window.tabs) {
     if (tab->navigations.empty())
       continue;
     const sessions::SerializedNavigationEntry& current_navigation =
@@ -290,7 +289,7 @@ SessionsGetDevicesFunction::CreateWindowModel(
             Profile::FromBrowserContext(browser_context()))) {
       continue;
     }
-    tabs_in_window.push_back(tab);
+    tabs_in_window.push_back(tab.get());
   }
   if (tabs_in_window.empty())
     return absl::nullopt;
@@ -424,8 +423,8 @@ ExtensionFunction::ResponseAction SessionsGetDevicesFunction::Run() {
   std::vector<api::sessions::Device> result;
   // Sort sessions from most recent to least recent.
   std::sort(sessions.begin(), sessions.end(), SortSessionsByRecency);
-  for (size_t i = 0; i < sessions.size(); ++i)
-    result.push_back(CreateDeviceModel(sessions[i]));
+  for (const auto* session : sessions)
+    result.push_back(CreateDeviceModel(session));
 
   return RespondNow(ArgumentList(GetDevices::Results::Create(result)));
 }

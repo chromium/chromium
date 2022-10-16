@@ -101,8 +101,8 @@ bool AreModesEqual(const QuickUnlockModeList& a, const QuickUnlockModeList& b) {
 
   // This is a slow comparison algorithm, but the number of entries in |a| and
   // |b| will always be very low (0-3 items) so it doesn't matter.
-  for (size_t i = 0; i < a.size(); ++i) {
-    if (!base::Contains(b, a[i]))
+  for (auto mode : a) {
+    if (!base::Contains(b, mode))
       return false;
   }
 
@@ -548,8 +548,8 @@ ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
 
   // Do not allow setting a PIN if it is disabled by policy. It is disabled
   // on the UI, but users can still reach here via dev tools.
-  for (size_t i = 0; i < params_->modes.size(); ++i) {
-    if (params_->modes[i] == QuickUnlockMode::QUICK_UNLOCK_MODE_PIN &&
+  for (auto& mode : params_->modes) {
+    if (mode == QuickUnlockMode::QUICK_UNLOCK_MODE_PIN &&
         ash::quick_unlock::IsPinDisabledByPolicy(
             pref_service, ash::quick_unlock::Purpose::kAny)) {
       return RespondNow(Error(kPinDisabledByPolicy));

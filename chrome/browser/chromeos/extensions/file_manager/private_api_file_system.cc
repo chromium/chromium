@@ -1497,9 +1497,9 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
   DCHECK(external_backend);
 
   file_manager::util::FileDefinitionList file_definition_list;
-  for (size_t i = 0; i < params->urls.size(); ++i) {
+  for (const auto& url : params->urls) {
     const FileSystemURL file_system_url =
-        file_system_context->CrackURLInFirstPartyContext(GURL(params->urls[i]));
+        file_system_context->CrackURLInFirstPartyContext(GURL(url));
     DCHECK(external_backend->CanHandleType(file_system_url.type()))
         << "GURL: " << file_system_url.ToGURL()
         << "type: " << file_system_url.type();
