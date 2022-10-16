@@ -42,6 +42,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 
 using crosapi::mojom::BrowserInitParams;
 using crosapi::mojom::BrowserInitParamsPtr;
@@ -75,6 +76,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     bool use_callback = false;
     browser_service()->NewFullscreenWindow(
         GURL(kNavigationUrl),
+        display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
         base::BindLambdaForTesting([&](CreationResult result) {
           use_callback = true;
           EXPECT_EQ(result, CreationResult::kSuccess);
@@ -113,8 +115,10 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
 
   void NewWindowSync(bool incognito, bool should_trigger_session_restore) {
     base::RunLoop run_loop;
-    browser_service()->NewWindow(incognito, should_trigger_session_restore,
-                                 run_loop.QuitClosure());
+    browser_service()->NewWindow(
+        incognito, should_trigger_session_restore,
+        display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
+        run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -491,6 +495,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   base::RunLoop run_loop;
   browser_service()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false,
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
       /*callback=*/run_loop.QuitClosure());
   profiles::testing::CompleteLacrosFirstRun(LoginUIService::ABORT_SYNC);
 
@@ -518,6 +523,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   base::RunLoop run_loop;
   browser_service()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false,
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
       /*callback=*/run_loop.QuitClosure());
   profiles::testing::CompleteLacrosFirstRun(LoginUIService::UI_CLOSED);
 

@@ -1409,7 +1409,7 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 72.
+// Next MinVersion: 73.
 // Next ID: 21
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
@@ -1427,7 +1427,8 @@ interface BrowserService {
   // new window with the default blank tab.
   NewWindow@1(
     [MinVersion=10] bool incognito,
-    [MinVersion=61] bool should_trigger_session_restore) => ();
+    [MinVersion=61] bool should_trigger_session_restore,
+    [MinVersion=72] int64 target_display_id) => ();
 
   // Opens a new fullscreen window in the browser with, currently, the main
   // profile. The only tab will be navigated to the given `url` once the window
@@ -1436,9 +1437,12 @@ interface BrowserService {
   // and it shouldn't be used by anybody else.
   // Added in M96.
   [MinVersion=11]
-  NewFullscreenWindow@9(url.mojom.Url url) => (CreationResult result);
+  NewFullscreenWindow@9(
+    url.mojom.Url url,
+    [MinVersion=72] int64 target_display_id) => (CreationResult result);
 
   // Transfers the given tab (or group) to a new window with the same profile.
+
   // NOTE: This method is used by Chrome OS WebUI in tablet mode as a response
   // to a drag'n drop operation from the user.
   [MinVersion=13]
@@ -1450,7 +1454,7 @@ interface BrowserService {
   // is enabled.
   // Added in M100.
   [MinVersion=63]
-  NewGuestWindow@14() => ();
+  NewGuestWindow@14([MinVersion=72] int64 target_display_id) => ();
 
   // Opens a new tab in the browser with, currently, the main profile. This may
   // open a new window, if there's no window. If a new browser is opened and
@@ -1554,7 +1558,7 @@ interface BrowserService {
   // session startup pref and no new tab will be added.
   // Added in M108.
   [MinVersion=70]
-  Launch@19() => ();
+  Launch@19([MinVersion=72] int64 target_display_id) => ();
 };
 
 // TODO(crbug.com/1180712): move to its own file. Currently due to circular

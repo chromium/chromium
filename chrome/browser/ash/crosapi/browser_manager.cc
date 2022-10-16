@@ -93,6 +93,7 @@
 #include "ui/base/resource/temporary_shared_resource_path_chromeos.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/display/screen.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 // TODO(crbug.com/1101667): Currently, this source has log spamming
@@ -454,8 +455,10 @@ bool BrowserManager::IsRunningOrWillRun() const {
 
 void BrowserManager::NewWindow(bool incognito,
                                bool should_trigger_session_restore) {
-  PerformOrEnqueue(
-      BrowserAction::NewWindow(incognito, should_trigger_session_restore));
+  int64_t target_display_id =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+  PerformOrEnqueue(BrowserAction::NewWindow(
+      incognito, should_trigger_session_restore, target_display_id));
 }
 
 void BrowserManager::OpenForFullRestore(bool skip_crash_restore) {
@@ -472,12 +475,16 @@ void BrowserManager::NewWindowForDetachingTab(
 
 void BrowserManager::NewFullscreenWindow(const GURL& url,
                                          NewFullscreenWindowCallback callback) {
-  PerformOrEnqueue(
-      BrowserAction::NewFullscreenWindow(url, std::move(callback)));
+  int64_t target_display_id =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+  PerformOrEnqueue(BrowserAction::NewFullscreenWindow(url, target_display_id,
+                                                      std::move(callback)));
 }
 
 void BrowserManager::NewGuestWindow() {
-  PerformOrEnqueue(BrowserAction::NewGuestWindow());
+  int64_t target_display_id =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+  PerformOrEnqueue(BrowserAction::NewGuestWindow(target_display_id));
 }
 
 void BrowserManager::NewTab(bool should_trigger_session_restore) {
@@ -485,7 +492,9 @@ void BrowserManager::NewTab(bool should_trigger_session_restore) {
 }
 
 void BrowserManager::Launch() {
-  PerformOrEnqueue(BrowserAction::Launch());
+  int64_t target_display_id =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+  PerformOrEnqueue(BrowserAction::Launch(target_display_id));
 }
 
 void BrowserManager::OpenUrl(

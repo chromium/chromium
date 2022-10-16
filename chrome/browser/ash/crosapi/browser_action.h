@@ -34,17 +34,19 @@ class BrowserAction {
   // the browser_manager.h for documentation.
   static std::unique_ptr<BrowserAction> NewWindow(
       bool incognito,
-      bool should_trigger_session_restore);
+      bool should_trigger_session_restore,
+      int64_t target_display_id);
   static std::unique_ptr<BrowserAction> NewTab(
       bool should_trigger_session_restore);
-  static std::unique_ptr<BrowserAction> Launch();
+  static std::unique_ptr<BrowserAction> Launch(int64_t target_display_id);
   static std::unique_ptr<BrowserAction> NewWindowForDetachingTab(
       base::StringPiece16 tab_id_str,
       base::StringPiece16 group_id_str,
       NewWindowForDetachingTabCallback callback);
-  static std::unique_ptr<BrowserAction> NewGuestWindow();
+  static std::unique_ptr<BrowserAction> NewGuestWindow(int64_t target_display);
   static std::unique_ptr<BrowserAction> NewFullscreenWindow(
       const GURL& url,
+      int64_t target_display,
       NewFullscreenWindowCallback callback);
   static std::unique_ptr<BrowserAction> OpenUrl(
       const GURL& url,

@@ -37,10 +37,13 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
                       policy) override;
   void NewWindow(bool incognito,
                  bool should_trigger_session_restore,
+                 int64_t target_display_id,
                  NewWindowCallback callback) override;
   void NewFullscreenWindow(const GURL& url,
+                           int64_t target_display_id,
                            NewFullscreenWindowCallback callback) override;
-  void NewGuestWindow(NewGuestWindowCallback callback) override;
+  void NewGuestWindow(int64_t target_display_id,
+                      NewGuestWindowCallback callback) override;
   void NewWindowForDetachingTab(
       const std::u16string& tab_id,
       const std::u16string& group_id,
@@ -48,7 +51,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
   void NewTab(bool should_trigger_session_restore,
               NewTabCallback callback) override;
   void NewTabWithoutParameter(NewTabWithoutParameterCallback callback) override;
-  void Launch(LaunchCallback callback) override;
+  void Launch(int64_t target_display_id, LaunchCallback callback) override;
   void OpenUrl(const GURL& url,
                crosapi::mojom::OpenUrlParamsPtr params,
                OpenUrlCallback callback) override;
@@ -81,9 +84,11 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
   // profile-less function, after loading the profile.
   void NewWindowWithProfile(bool incognito,
                             bool should_trigger_session_restore,
+                            int64_t target_display_id,
                             NewWindowCallback callback,
                             Profile* profile);
   void NewFullscreenWindowWithProfile(const GURL& url,
+                                      int64_t target_display_id,
                                       NewFullscreenWindowCallback callback,
                                       Profile* profile);
   void NewWindowForDetachingTabWithProfile(
@@ -92,6 +97,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
       NewWindowForDetachingTabCallback callback,
       Profile* profile);
   void LaunchOrNewTabWithProfile(bool should_trigger_session_restore,
+                                 int64_t target_display_id,
                                  NewTabCallback callback,
                                  bool is_new_tab,
                                  Profile* profile);

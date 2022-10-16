@@ -13,6 +13,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_init_params.h"
 #include "content/public/test/browser_test.h"
+#include "ui/display/screen.h"
 
 using crosapi::mojom::BrowserInitParams;
 using crosapi::mojom::BrowserInitParamsPtr;
@@ -73,6 +74,7 @@ class KioskSessionServiceBrowserTest : public InProcessBrowserTest {
     bool use_callback = false;
     browser_service()->NewFullscreenWindow(
         GURL(kNavigationUrl),
+        display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
         base::BindLambdaForTesting([&](CreationResult result) {
           use_callback = true;
           EXPECT_EQ(result, CreationResult::kSuccess);

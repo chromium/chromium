@@ -23,10 +23,13 @@ class NoOpAction final : public BrowserAction {
 
 class NewWindowAction final : public BrowserAction {
  public:
-  NewWindowAction(bool incognito, bool should_trigger_session_restore)
+  NewWindowAction(bool incognito,
+                  bool should_trigger_session_restore,
+                  int64_t target_display_id)
       : BrowserAction(true),
         incognito_(incognito),
-        should_trigger_session_restore_(should_trigger_session_restore) {}
+        should_trigger_session_restore_(should_trigger_session_restore),
+        target_display_id_(target_display_id) {}
 
   void Perform(const VersionedBrowserService& service) override {
     if (incognito_) {
@@ -35,12 +38,13 @@ class NewWindowAction final : public BrowserAction {
         return;
     }
     service.service->NewWindow(incognito_, should_trigger_session_restore_,
-                               base::DoNothing());
+                               target_display_id_, base::DoNothing());
   }
 
  private:
   const bool incognito_;
   const bool should_trigger_session_restore_;
+  const int64_t target_display_id_;
 };
 
 class NewWindowForDetachingTabAction final : public BrowserAction {
@@ -89,7 +93,8 @@ class NewTabAction final : public BrowserAction {
 
 class LaunchAction final : public BrowserAction {
  public:
-  LaunchAction() : BrowserAction(true) {}
+  explicit LaunchAction(int64_t target_display_id)
+      : BrowserAction(true), target_display_id_(target_display_id) {}
 
   void Perform(const VersionedBrowserService& service) override {
     if (service.interface_version < mojom::BrowserService::kLaunchMinVersion) {
@@ -99,8 +104,11 @@ class LaunchAction final : public BrowserAction {
                               base::DoNothing());
       return;
     }
-    service.service->Launch(base::DoNothing());
+    service.service->Launch(target_display_id_, base::DoNothing());
   }
+
+ private:
+  int64_t target_display_id_;
 };
 
 namespace {
@@ -149,15 +157,19 @@ class OpenUrlAction final : public BrowserAction {
 
 class NewGuestWindowAction final : public BrowserAction {
  public:
-  NewGuestWindowAction() : BrowserAction(true) {}
+  explicit NewGuestWindowAction(int64_t target_display_id)
+      : BrowserAction(true), target_display_id_(target_display_id) {}
 
   void Perform(const VersionedBrowserService& service) override {
     if (service.interface_version <
         crosapi::mojom::BrowserService::kNewGuestWindowMinVersion) {
       return;
     }
-    service.service->NewGuestWindow(base::DoNothing());
+    service.service->NewGuestWindow(target_display_id_, base::DoNothing());
   }
+
+ private:
+  const int64_t target_display_id_;
 };
 
 class HandleTabScrubbingAction final : public BrowserAction {
@@ -180,8 +192,12 @@ class HandleTabScrubbingAction final : public BrowserAction {
 class NewFullscreenWindowAction final : public BrowserAction {
  public:
   NewFullscreenWindowAction(const GURL& url,
+                            int64_t target_display_id,
                             NewFullscreenWindowCallback callback)
-      : BrowserAction(true), url_(url), callback_(std::move(callback)) {}
+      : BrowserAction(true),
+        url_(url),
+        target_display_id_(target_display_id),
+        callback_(std::move(callback)) {}
 
   void Perform(const VersionedBrowserService& service) override {
     if (service.interface_version <
@@ -189,7 +205,8 @@ class NewFullscreenWindowAction final : public BrowserAction {
       Cancel(crosapi::mojom::CreationResult::kUnsupported);
       return;
     }
-    service.service->NewFullscreenWindow(url_, std::move(callback_));
+    service.service->NewFullscreenWindow(url_, target_display_id_,
+                                         std::move(callback_));
   }
 
   void Cancel(crosapi::mojom::CreationResult reason) override {
@@ -198,6 +215,7 @@ class NewFullscreenWindowAction final : public BrowserAction {
 
  private:
   const GURL url_;
+  const int64_t target_display_id_;
   NewFullscreenWindowCallback callback_;
 };
 
@@ -285,9 +303,10 @@ class CreateBrowserWithRestoredDataAction final : public BrowserAction {
 // static
 std::unique_ptr<BrowserAction> BrowserAction::NewWindow(
     bool incognito,
-    bool should_trigger_session_restore) {
-  return std::make_unique<NewWindowAction>(incognito,
-                                           should_trigger_session_restore);
+    bool should_trigger_session_restore,
+    int64_t target_display_id) {
+  return std::make_unique<NewWindowAction>(
+      incognito, should_trigger_session_restore, target_display_id);
 }
 
 // static
@@ -297,8 +316,9 @@ std::unique_ptr<BrowserAction> BrowserAction::NewTab(
 }
 
 // static
-std::unique_ptr<BrowserAction> BrowserAction::Launch() {
-  return std::make_unique<LaunchAction>();
+std::unique_ptr<BrowserAction> BrowserAction::Launch(
+    int64_t target_display_id) {
+  return std::make_unique<LaunchAction>(target_display_id);
 }
 
 // static
@@ -311,15 +331,18 @@ std::unique_ptr<BrowserAction> BrowserAction::NewWindowForDetachingTab(
 }
 
 // static
-std::unique_ptr<BrowserAction> BrowserAction::NewGuestWindow() {
-  return std::make_unique<NewGuestWindowAction>();
+std::unique_ptr<BrowserAction> BrowserAction::NewGuestWindow(
+    int64_t target_display_id) {
+  return std::make_unique<NewGuestWindowAction>(target_display_id);
 }
 
 // static
 std::unique_ptr<BrowserAction> BrowserAction::NewFullscreenWindow(
     const GURL& url,
+    int64_t target_display_id,
     NewFullscreenWindowCallback callback) {
-  return std::make_unique<NewFullscreenWindowAction>(url, std::move(callback));
+  return std::make_unique<NewFullscreenWindowAction>(url, target_display_id,
+                                                     std::move(callback));
 }
 
 // static
@@ -367,12 +390,12 @@ std::unique_ptr<BrowserAction> BrowserAction::CreateBrowserWithRestoredData(
 std::unique_ptr<BrowserAction> BrowserAction::GetActionForSessionStart() {
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest())
     return std::make_unique<NewWindowAction>(
-        /*incognito=*/false, /*should_trigger_session_restore=*/false);
+        /*incognito=*/false, /*should_trigger_session_restore=*/false, -1);
   if (user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
       ash::full_restore::MaybeCreateFullRestoreServiceForLacros())
     return std::make_unique<NoOpAction>();
   return std::make_unique<NewWindowAction>(
-      /*incognito=*/false, /*should_trigger_session_restore=*/true);
+      /*incognito=*/false, /*should_trigger_session_restore=*/true, -1);
 }
 
 BrowserActionQueue::BrowserActionQueue() = default;

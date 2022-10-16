@@ -27,6 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/test_screen.h"
 
 using ::component_updater::FakeCrOSComponentManager;
 using ::component_updater::MockComponentUpdateService;
@@ -52,6 +53,7 @@ class MockBrowserService : public mojom::BrowserServiceInterceptorForTesting {
               NewWindow,
               (bool incognito,
                bool should_trigger_session_restore,
+               int64_t target_display_id,
                NewWindowCallback callback),
               (override));
   MOCK_METHOD(void, OpenForFullRestore, (bool skip_crash_restore), (override));
@@ -147,7 +149,7 @@ class BrowserManagerTest : public testing::Test {
     crosapi::browser_util::SetLacrosLaunchSwitchSourceForTest(
         crosapi::browser_util::LacrosAvailability::kUserChoice);
 
-    EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _)).Times(0);
+    EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _)).Times(0);
     EXPECT_CALL(mock_browser_service_, OpenForFullRestore(_)).Times(0);
   }
 
@@ -182,6 +184,8 @@ class BrowserManagerTest : public testing::Test {
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
   MockBrowserService mock_browser_service_;
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -313,7 +317,7 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
 
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
   EXPECT_CALL(*browser_loader_, Load(_));
-  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _))
+  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _))
       .Times(1)
       .RetiresOnSaturation();
   fake_browser_manager_->NewWindow(/*incognito=*/false,

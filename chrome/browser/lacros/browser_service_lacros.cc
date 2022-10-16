@@ -61,6 +61,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #include "url/gurl.h"
@@ -248,28 +249,34 @@ void BrowserServiceLacros::REMOVED_16(
 
 void BrowserServiceLacros::NewWindow(bool incognito,
                                      bool should_trigger_session_restore,
+                                     int64_t target_display_id,
                                      NewWindowCallback callback) {
   if (ShowProfilePickerIfNeeded(incognito)) {
     std::move(callback).Run();
     return;
   }
-  LoadMainProfile(
-      base::BindOnce(&BrowserServiceLacros::NewWindowWithProfile,
-                     weak_ptr_factory_.GetWeakPtr(), incognito,
-                     should_trigger_session_restore, std::move(callback)),
-      /*can_trigger_fre=*/true);
+  LoadMainProfile(base::BindOnce(&BrowserServiceLacros::NewWindowWithProfile,
+                                 weak_ptr_factory_.GetWeakPtr(), incognito,
+                                 should_trigger_session_restore,
+                                 target_display_id, std::move(callback)),
+                  /*can_trigger_fre=*/true);
 }
 
 void BrowserServiceLacros::NewFullscreenWindow(
     const GURL& url,
+    int64_t target_display_id,
     NewFullscreenWindowCallback callback) {
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::NewFullscreenWindowWithProfile,
-                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), url, target_display_id,
+                     std::move(callback)),
       /*can_trigger_fre=*/false);
 }
 
-void BrowserServiceLacros::NewGuestWindow(NewGuestWindowCallback callback) {
+void BrowserServiceLacros::NewGuestWindow(int64_t target_display_id,
+                                          NewGuestWindowCallback callback) {
+  display::ScopedDisplayForNewWindows scoped(target_display_id);
+
   if (profiles::IsGuestModeEnabled())
     profiles::SwitchToGuestProfile();
 
@@ -305,7 +312,7 @@ void BrowserServiceLacros::NewTab(bool should_trigger_session_restore,
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::LaunchOrNewTabWithProfile,
                      weak_ptr_factory_.GetWeakPtr(),
-                     should_trigger_session_restore, std::move(callback),
+                     should_trigger_session_restore, -1, std::move(callback),
                      /*is_new_tab=*/true),
       /*can_trigger_fre=*/true);
 }
@@ -315,7 +322,8 @@ void BrowserServiceLacros::NewTabWithoutParameter(
   return NewTab(false, std::move(callback));
 }
 
-void BrowserServiceLacros::Launch(LaunchCallback callback) {
+void BrowserServiceLacros::Launch(int64_t target_display_id,
+                                  LaunchCallback callback) {
   if (ShowProfilePickerIfNeeded(false)) {
     std::move(callback).Run();
     return;
@@ -323,7 +331,7 @@ void BrowserServiceLacros::Launch(LaunchCallback callback) {
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::LaunchOrNewTabWithProfile,
                      weak_ptr_factory_.GetWeakPtr(),
-                     /*should_trigger_session_restore=*/true,
+                     /*should_trigger_session_restore=*/true, target_display_id,
                      std::move(callback), /*is_new_tab=*/false),
       /*can_trigger_fre=*/true);
 }
@@ -542,6 +550,7 @@ void BrowserServiceLacros::OpenUrlImpl(Profile* profile,
 void BrowserServiceLacros::NewWindowWithProfile(
     bool incognito,
     bool should_trigger_session_restore,
+    int64_t target_display_id,
     NewWindowCallback callback,
     Profile* profile) {
   if (!profile) {
@@ -566,6 +575,8 @@ void BrowserServiceLacros::NewWindowWithProfile(
       break;
   }
 
+  display::ScopedDisplayForNewWindows scoped(target_display_id);
+
   chrome::NewEmptyWindow(
       incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                 : profile,
@@ -575,12 +586,15 @@ void BrowserServiceLacros::NewWindowWithProfile(
 
 void BrowserServiceLacros::NewFullscreenWindowWithProfile(
     const GURL& url,
+    int64_t target_display_id,
     NewFullscreenWindowCallback callback,
     Profile* profile) {
   if (!profile) {
     std::move(callback).Run(crosapi::mojom::CreationResult::kProfileNotExist);
     return;
   }
+
+  display::ScopedDisplayForNewWindows scoped(target_display_id);
 
   // Launch a fullscreen window with the user profile, and navigate to the
   // target URL.
@@ -659,6 +673,7 @@ void BrowserServiceLacros::NewWindowForDetachingTabWithProfile(
 
 void BrowserServiceLacros::LaunchOrNewTabWithProfile(
     bool should_trigger_session_restore,
+    int64_t target_display_id,
     NewTabCallback callback,
     bool is_new_tab,
     Profile* profile) {

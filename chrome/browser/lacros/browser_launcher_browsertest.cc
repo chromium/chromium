@@ -39,6 +39,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/screen.h"
 
 namespace {
 
@@ -84,8 +85,10 @@ class BrowserLauncherTest : public InProcessBrowserTest {
 
   void NewWindowSync(bool incognito, bool should_trigger_session_restore) {
     base::RunLoop run_loop;
-    browser_service()->NewWindow(incognito, should_trigger_session_restore,
-                                 run_loop.QuitClosure());
+    browser_service()->NewWindow(
+        incognito, should_trigger_session_restore,
+        display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
+        run_loop.QuitClosure());
     run_loop.Run();
   }
 

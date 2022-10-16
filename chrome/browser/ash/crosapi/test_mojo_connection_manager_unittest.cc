@@ -74,19 +74,22 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
 
   void NewWindow(bool incognito,
                  bool should_trigger_session_restore,
+                 int64_t target_display_id,
                  NewWindowCallback callback) override {}
   void NewWindowForDetachingTab(
       const std::u16string& tab_id,
       const std::u16string& group_id,
       NewWindowForDetachingTabCallback closure) override {}
   void NewFullscreenWindow(const GURL& url,
+                           int64_t target_display_id,
                            NewFullscreenWindowCallback callback) override {}
-  void NewGuestWindow(NewGuestWindowCallback callback) override {}
+  void NewGuestWindow(int64_t target_display_id,
+                      NewGuestWindowCallback callback) override {}
   void NewTab(bool should_trigger_session_restore,
               NewTabCallback callback) override {}
   void NewTabWithoutParameter(
       NewTabWithoutParameterCallback callback) override {}
-  void Launch(LaunchCallback callback) override {}
+  void Launch(int64_t target_display_id, LaunchCallback callback) override {}
   void OpenUrl(const GURL& url,
                crosapi::mojom::OpenUrlParamsPtr params,
                OpenUrlCallback callback) override {}

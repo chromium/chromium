@@ -17,9 +17,12 @@ TestScreen* test_screen = nullptr;
 // static
 constexpr gfx::Rect TestScreen::kDefaultScreenBounds;
 
-TestScreen::TestScreen(bool create_display) {
+TestScreen::TestScreen(bool create_display, bool register_screen)
+    : register_screen_(register_screen) {
   DCHECK(!test_screen);
   test_screen = this;
+  if (register_screen_)
+    Screen::SetScreenInstance(this);
 
   if (!create_display)
     return;
@@ -29,6 +32,10 @@ TestScreen::TestScreen(bool create_display) {
 
 TestScreen::~TestScreen() {
   DCHECK_EQ(test_screen, this);
+  if (register_screen_) {
+    DCHECK_EQ(Screen::GetScreen(), this);
+    Screen::SetScreenInstance(nullptr);
+  }
   test_screen = nullptr;
 }
 
