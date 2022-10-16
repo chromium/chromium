@@ -339,8 +339,13 @@ RefreshResponseData TranslateWireResponse(
       chrome_response_metadata.privacy_notice_fulfilled());
 
   for (const feedstore::Content& content : result->content) {
+    feedstore::StreamContentHashList* hash_list = nullptr;
     for (auto& metadata : content.prefetch_metadata()) {
-      result->stream_data.add_content_hashes(
+      if (!metadata.has_uri())
+        continue;
+      if (hash_list == nullptr)
+        hash_list = result->stream_data.add_content_hashes();
+      hash_list->add_hashes(
           feedstore::ContentHashFromPrefetchMetadata(metadata));
     }
   }

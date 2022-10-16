@@ -688,6 +688,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.ContentDuplication.Position{Index}"
+    enum="Boolean" expires_after="2023-03-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports whether the feed content at the specific position is
+    duplicate. It is reported when the feed content is received from the server.
+  </summary>
+  <token key="Index">
+    <variant name="1" summary="1"/>
+    <variant name="2" summary="2"/>
+    <variant name="3" summary="3"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.ContentDuplication.{Range}" units="%"
+    expires_after="2023-03-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports the percentage of the duplicate contents received for a
+    range of cards. It is reported when the feed contents are received from the
+    server.
+  </summary>
+  <token key="Range">
+    <variant name="All" summary="All cards"/>
+    <variant name="First10" summary="First 10 cards"/>
+  </token>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAge" units="ms"
     expires_after="2023-03-01">
   <owner>birnie@google.com</owner>

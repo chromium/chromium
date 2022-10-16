@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/types.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,13 +53,32 @@ TEST(Types, ToContentRevision) {
 }
 
 TEST(Types, ContentHashSet) {
-  ContentHashSet v123(std::vector<uint32_t>{1, 2, 3});
-  ContentHashSet v1234(std::vector<uint32_t>{1, 2, 3, 4});
+  feedstore::StreamContentHashList g1;
+  g1.add_hashes(3);
+  g1.add_hashes(1);
+  feedstore::StreamContentHashList g2;
+  g2.add_hashes(2);
+  ContentHashSet v123(std::vector<feedstore::StreamContentHashList>{g1, g2});
+  feedstore::StreamContentHashList h1;
+  h1.add_hashes(4);
+  feedstore::StreamContentHashList h2;
+  h2.add_hashes(1);
+  h2.add_hashes(3);
+  feedstore::StreamContentHashList h3;
+  h3.add_hashes(2);
+  ContentHashSet v1234(
+      std::vector<feedstore::StreamContentHashList>{h1, h2, h3});
 
   EXPECT_TRUE(v1234.ContainsAllOf(v123));
   EXPECT_FALSE(v123.ContainsAllOf(v1234));
+  EXPECT_TRUE(v1234.Contains(4));
+  EXPECT_FALSE(v123.Contains(4));
   EXPECT_FALSE(v123.IsEmpty());
   EXPECT_TRUE(ContentHashSet().IsEmpty());
+  /*std::vector<uint32_t> actual_values(
+      v1234.values().begin(), v1234.values().end());
+  std::vector<uint32_t> expected_values({1, 2, 3, 4});
+  EXPECT_EQ(expected_values, actual_values);*/
 }
 
 }  // namespace feed

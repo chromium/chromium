@@ -360,16 +360,36 @@ stream_data: {
   shared_state_ids {
     content_domain: "render_data"
   }
-  content_hashes: 934967784
-  content_hashes: 1272916258
-  content_hashes: 3242987079
-  content_hashes: 1955343871
-  content_hashes: 3258315382
-  content_hashes: 3546053313
-  content_hashes: 1640265464
-  content_hashes: 2920920940
-  content_hashes: 3805198647
-  content_hashes: 3846950793
+  content_hashes {
+    hashes: 934967784
+  }
+  content_hashes {
+    hashes: 1272916258
+  }
+  content_hashes {
+    hashes: 3242987079
+  }
+  content_hashes {
+    hashes: 1955343871
+  }
+  content_hashes {
+    hashes: 3258315382
+  }
+  content_hashes {
+    hashes: 3546053313
+  }
+  content_hashes {
+    hashes: 1640265464
+  }
+  content_hashes {
+    hashes: 2920920940
+  }
+  content_hashes {
+    hashes: 3805198647
+  }
+  content_hashes {
+    hashes: 3846950793
+  }
 }
 content: {
   content_id {

@@ -96,6 +96,15 @@ bool UnpickleDebugStreamData(base::PickleIterator iterator,
          iterator.ReadString(&value.load_stream_status);
 }
 
+std::vector<uint32_t> GetExpandedHashes(
+    const std::vector<feedstore::StreamContentHashList>& hashes_list) {
+  std::vector<uint32_t> expanded_hashes;
+  for (const feedstore::StreamContentHashList& hash_list : hashes_list)
+    for (const auto& hash : hash_list.hashes())
+      expanded_hashes.push_back(hash);
+  return expanded_hashes;
+}
+
 }  // namespace
 
 RequestMetadata::RequestMetadata() = default;
@@ -191,29 +200,42 @@ void LoadLatencyTimes::StepComplete(StepKind kind) {
 
 ContentHashSet::ContentHashSet() = default;
 ContentHashSet::~ContentHashSet() = default;
-ContentHashSet::ContentHashSet(base::flat_set<uint32_t> content_hashes)
-    : content_hashes_(std::move(content_hashes)) {}
+ContentHashSet::ContentHashSet(
+    std::vector<feedstore::StreamContentHashList> hashes)
+    : original_hashes_(std::move(hashes)),
+      sorted_hashes_(GetExpandedHashes(original_hashes_)) {}
 ContentHashSet::ContentHashSet(const ContentHashSet&) = default;
 ContentHashSet::ContentHashSet(ContentHashSet&&) = default;
 ContentHashSet& ContentHashSet::operator=(const ContentHashSet&) = default;
 ContentHashSet& ContentHashSet::operator=(ContentHashSet&&) = default;
 bool ContentHashSet::ContainsAllOf(const ContentHashSet& items) const {
-  for (uint32_t id : items.content_hashes_) {
-    if (!content_hashes_.contains(id))
+  for (uint32_t hash : items.sorted_hashes_) {
+    if (!sorted_hashes_.contains(hash))
       return false;
   }
   return true;
 }
+bool ContentHashSet::Contains(uint32_t hash) const {
+  return sorted_hashes_.contains(hash);
+}
 bool ContentHashSet::IsEmpty() const {
-  return content_hashes_.empty();
+  return sorted_hashes_.empty();
 }
 bool ContentHashSet::operator==(const ContentHashSet& rhs) const {
-  return content_hashes_ == rhs.content_hashes_;
+  return sorted_hashes_ == rhs.sorted_hashes_;
 }
-std::ostream& operator<<(std::ostream& s, const ContentHashSet& id_set) {
+std::ostream& operator<<(std::ostream& s, const ContentHashSet& hash_set) {
   s << "{";
-  for (uint32_t id : id_set.values()) {
-    s << id << ", ";
+  for (const auto& hash_list : hash_set.original_hashes()) {
+    s << "(";
+    for (const auto hash : hash_list.hashes()) {
+      s << hash << ", ";
+    }
+    s << ")";
+  }
+  s << "} {";
+  for (const auto& hash : hash_set.sorted_hashes()) {
+    s << hash << ", ";
   }
   s << "}";
   return s;

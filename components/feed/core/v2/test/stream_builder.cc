@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/eventid.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
@@ -19,7 +20,7 @@ namespace {
 void AddContentHashes(const feedstore::Content& content,
                       feedstore::StreamData& stream_data) {
   for (auto& metadata : content.prefetch_metadata()) {
-    stream_data.add_content_hashes(
+    stream_data.add_content_hashes()->add_hashes(
         feedstore::ContentHashFromPrefetchMetadata(metadata));
   }
 }
@@ -219,6 +220,17 @@ StreamModelUpdateRequestGenerator::~StreamModelUpdateRequestGenerator() =
 std::unique_ptr<StreamModelUpdateRequest>
 StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id,
                                                  int num_cards) const {
+  std::vector<int> id_numbers;
+  for (int i = first_cluster_id; i < first_cluster_id + num_cards; ++i) {
+    id_numbers.push_back(i);
+  }
+  return MakeFirstPageWithSpecificContents(id_numbers);
+}
+
+std::unique_ptr<StreamModelUpdateRequest>
+StreamModelUpdateRequestGenerator::MakeFirstPageWithSpecificContents(
+    const std::vector<int>& id_numbers) const {
+  int first_cluster_id = id_numbers.front();
   bool include_notice_card =
       (privacy_notice_fulfilled && first_cluster_id == 0);
 
@@ -227,7 +239,7 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id,
       StreamModelUpdateRequest::Source::kInitialLoadFromStore;
   initial_update->stream_structures = {MakeClearAll(), MakeStream()};
 
-  for (int i = first_cluster_id; i < first_cluster_id + num_cards; ++i) {
+  for (const auto i : id_numbers) {
     if (include_notice_card && i == first_cluster_id) {
       initial_update->content.push_back(MakeNoticeCardContent(i));
       initial_update->stream_structures.push_back(
@@ -258,7 +270,7 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id,
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
 
-  for (int i = 0; i < num_cards; ++i) {
+  for (size_t i = 0; i < id_numbers.size(); ++i) {
     AddContentHashes(initial_update->content[i], initial_update->stream_data);
   }
   feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);

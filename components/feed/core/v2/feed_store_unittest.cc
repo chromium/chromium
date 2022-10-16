@@ -144,8 +144,12 @@ TEST_F(FeedStoreTest, OverwriteStream) {
       content_domain: "render_data"
     }
     stream_id: "i"
-    content_hashes: 1403410510
-    content_hashes: 1084072211
+    content_hashes {
+      hashes: 1403410510
+    }
+    content_hashes {
+      hashes: 1084072211
+    }
   }
 }
 [T/i/0] {
@@ -268,8 +272,12 @@ TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
       content_domain: "render_data"
     }
     stream_id: "w"
-    content_hashes: 1403410510
-    content_hashes: 1084072211
+    content_hashes {
+      hashes: 1403410510
+    }
+    content_hashes {
+      hashes: 1084072211
+    }
   }
 }
 [T/w/0] {

@@ -150,7 +150,8 @@ void SetStreamViewContentHashes(Metadata& metadata,
       MetadataForStream(metadata, stream_type);
   stream_metadata.clear_view_content_hashes();
   stream_metadata.mutable_view_content_hashes()->Add(
-      content_hashes.values().begin(), content_hashes.values().end());
+      content_hashes.original_hashes().begin(),
+      content_hashes.original_hashes().end());
 }
 
 bool IsKnownStale(const Metadata& metadata, const StreamType& stream_type) {
@@ -220,6 +221,26 @@ void SetLastServerResponseTime(Metadata& metadata,
 int32_t ContentHashFromPrefetchMetadata(
     const feedwire::PrefetchMetadata& prefetch_metadata) {
   return base::PersistentHash(prefetch_metadata.uri());
+}
+
+void AddMostRecentContentHashes(Metadata& metadata,
+                                std::deque<uint32_t> new_content_hashes) {
+  // Make sure the size of new contents do not exceed the cap.
+  if (new_content_hashes.size() > kMaxMostRecentContentHashes)
+    new_content_hashes.resize(kMaxMostRecentContentHashes);
+  // Combine the existing contents with the new contents.
+  new_content_hashes.insert(new_content_hashes.begin(),
+                            metadata.most_recent_content_hashes().begin(),
+                            metadata.most_recent_content_hashes().end());
+  // Remove the oldest contents to keep the combined contents within the cap.
+  if (new_content_hashes.size() > kMaxMostRecentContentHashes) {
+    auto end_iter = new_content_hashes.begin();
+    end_iter += (new_content_hashes.size() - kMaxMostRecentContentHashes);
+    new_content_hashes.erase(new_content_hashes.begin(), end_iter);
+  }
+  // Now copy over the capped combined contents.
+  metadata.mutable_most_recent_content_hashes()->Assign(
+      new_content_hashes.begin(), new_content_hashes.end());
 }
 
 }  // namespace feedstore

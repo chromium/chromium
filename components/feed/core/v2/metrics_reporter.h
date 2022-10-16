@@ -166,6 +166,12 @@ class MetricsReporter {
                                      int info_card_type);
   void OnInfoCardStateReset(const StreamType& stream_type, int info_card_type);
 
+  void ReportContentDuplication(bool is_duplicated_at_pos_1,
+                                bool is_duplicated_at_pos_2,
+                                bool is_duplicated_at_pos_3,
+                                int duplicate_percentage_for_first_10,
+                                int duplicate_percentaget_for_all);
+
  private:
   // State replicated for reporting per-stream-type metrics.
   struct StreamStats {

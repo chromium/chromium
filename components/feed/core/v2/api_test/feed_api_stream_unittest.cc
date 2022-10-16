@@ -3770,6 +3770,44 @@ TEST_F(FeedApiTest, ChannelFeed_AttachMultiple) {
   EXPECT_FALSE(
       stream_->GetStreamPresentForTest(StreamType(StreamKind::kChannel, "B")));
 }
+
+TEST_F(FeedApiTest, CheckDuplicatedContents) {
+  base::HistogramTester histograms;
+  StreamModelUpdateRequestGenerator model_generator;
+
+  std::vector<int> num_ids({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+  response_translator_.InjectResponse(
+      model_generator.MakeFirstPageWithSpecificContents(num_ids));
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.ContentDuplication.Position1", 0);
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.ContentDuplication.Position2", 0);
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.ContentDuplication.Position3", 0);
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.ContentDuplication.Top10", 0);
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.ContentDuplication.ForAll", 0);
+
+  std::vector<int> num_ids2({7, 11, 6, 13, 14, 2, 16, 1, 5, 19, 12, 10, 8, 19});
+  response_translator_.InjectResponse(
+      model_generator.MakeFirstPageWithSpecificContents(num_ids2));
+  stream_->ManualRefresh(StreamType(StreamKind::kForYou), base::DoNothing());
+  WaitForIdleTaskQueue();
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentDuplication.Position1", true, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentDuplication.Position2", false, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentDuplication.Position3", true, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentDuplication.First10", 50, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentDuplication.All", 42, 1);
+}
+
 // Keep instantiations at the bottom.
 INSTANTIATE_TEST_SUITE_P(FeedApiTest,
                          FeedStreamTestForAllStreamTypes,

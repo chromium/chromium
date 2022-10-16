@@ -189,6 +189,12 @@ class TextProtoPrinter {
     EndMessage();
     return *this;
   }
+  TextProtoPrinter& operator<<(const feedstore::StreamContentHashList& v) {
+    BeginMessage();
+    PRINT_FIELD(hashes);
+    EndMessage();
+    return *this;
+  }
   TextProtoPrinter& operator<<(const feedstore::StreamData& v) {
     BeginMessage();
     PRINT_FIELD(content_id);
@@ -533,6 +539,7 @@ DECLARE_PRINTER(feedstore, Metadata)
 DECLARE_PRINTER(feedstore, RecommendedWebFeedIndex)
 DECLARE_PRINTER(feedstore, Record)
 DECLARE_PRINTER(feedstore, StoredAction)
+DECLARE_PRINTER(feedstore, StreamContentHashList)
 DECLARE_PRINTER(feedstore, StreamData)
 DECLARE_PRINTER(feedstore, StreamSharedState)
 DECLARE_PRINTER(feedstore, StreamStructure)

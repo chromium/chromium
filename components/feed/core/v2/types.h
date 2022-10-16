@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "base/values.h"
+#include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/info_card.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
@@ -117,7 +118,7 @@ class ContentHashSet {
  public:
   ContentHashSet();
   ~ContentHashSet();
-  explicit ContentHashSet(base::flat_set<uint32_t> ids);
+  explicit ContentHashSet(std::vector<feedstore::StreamContentHashList>);
   ContentHashSet(const ContentHashSet&);
   ContentHashSet(ContentHashSet&&);
   ContentHashSet& operator=(const ContentHashSet&);
@@ -125,13 +126,23 @@ class ContentHashSet {
 
   // Returns whether this set contains all items.
   bool ContainsAllOf(const ContentHashSet& items) const;
+  bool Contains(uint32_t hash) const;
   bool IsEmpty() const;
-  const base::flat_set<uint32_t>& values() const { return content_hashes_; }
+
+  const std::vector<feedstore::StreamContentHashList>& original_hashes() const {
+    return original_hashes_;
+  }
+  const base::flat_set<uint32_t>& sorted_hashes() const {
+    return sorted_hashes_;
+  }
 
   bool operator==(const ContentHashSet& rhs) const;
 
  private:
-  base::flat_set<uint32_t> content_hashes_;
+  // Hashes in the same order as in the stream.
+  std::vector<feedstore::StreamContentHashList> original_hashes_;
+  // Sorted hashes.
+  base::flat_set<uint32_t> sorted_hashes_;
 };
 
 std::ostream& operator<<(std::ostream& s, const ContentHashSet& id_set);

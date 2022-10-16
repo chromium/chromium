@@ -1116,8 +1116,10 @@ void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
   }
   if (result.loaded_new_content_from_network) {
     SetStreamStale(result.stream_type, false);
-    if (result.stream_type.IsForYou())
+    if (result.stream_type.IsForYou()) {
       UpdateExperiments(result.experiments);
+      CheckDuplicatedContents();
+    }
   }
 
   MaybeNotifyHasUnreadContent(result.stream_type);
@@ -1480,6 +1482,65 @@ void FeedStream::ScheduleFeedCloseRefresh(const StreamType& type) {
   schedule.refresh_offsets = {delay, delay * 2, delay * 3};
   schedule.type = RequestSchedule::Type::kFeedCloseRefresh;
   SetRequestSchedule(type, std::move(schedule));
+}
+
+void FeedStream::CheckDuplicatedContents() {
+  Stream& stream = GetStream(StreamType(StreamKind::kForYou));
+  if (stream.content_ids.IsEmpty())
+    return;
+  base::flat_set<uint32_t> most_recent_content_hashes(
+      metadata_.most_recent_content_hashes().begin(),
+      metadata_.most_recent_content_hashes().end());
+  bool is_duplicated_at_pos_1 = false;
+  bool is_duplicated_at_pos_2 = false;
+  bool is_duplicated_at_pos_3 = false;
+  int duplicate_count_for_top_10 = 0;
+  int duplicate_count_for_all = 0;
+  int total_count = 0;
+  int pos = 0;
+  std::deque<uint32_t> new_content_hashes;
+  for (const feedstore::StreamContentHashList& hash_list :
+       stream.content_ids.original_hashes()) {
+    if (hash_list.hashes_size() == 0)
+      continue;
+
+    // For position specific metrics, only the first item is checked for
+    // duplication if there are more than one items in a row, like carousel,
+    // collection or 2-column.
+    if (most_recent_content_hashes.contains(hash_list.hashes(0))) {
+      if (pos < 10) {
+        duplicate_count_for_top_10++;
+        if (pos == 0)
+          is_duplicated_at_pos_1 = true;
+        else if (pos == 1)
+          is_duplicated_at_pos_2 = true;
+        else if (pos == 2)
+          is_duplicated_at_pos_3 = true;
+      }
+    }
+
+    for (uint32_t hash : hash_list.hashes()) {
+      total_count++;
+      if (most_recent_content_hashes.contains(hash)) {
+        duplicate_count_for_all++;
+      } else {
+        new_content_hashes.push_back(hash);
+      }
+    }
+
+    pos++;
+  }
+  // Don't report the duplication metrics for the first time.
+  if (metadata_.most_recent_content_hashes().size() > 0 && total_count > 0) {
+    metrics_reporter_->ReportContentDuplication(
+        is_duplicated_at_pos_1, is_duplicated_at_pos_2, is_duplicated_at_pos_3,
+        static_cast<int>(duplicate_count_for_top_10 * 10),
+        static_cast<int>(100 * duplicate_count_for_all / total_count));
+  }
+  feedstore::Metadata metadata = GetMetadata();
+  feedstore::AddMostRecentContentHashes(metadata,
+                                        std::move(new_content_hashes));
+  SetMetadata(metadata);
 }
 
 }  // namespace feed

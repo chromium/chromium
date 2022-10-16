@@ -45,6 +45,14 @@ message Record {
   }
 }
 
+// List of the hashes for all the contents in a collection (carousel, list,
+// or 2-column) if multiple items show up in a row. Otherwise, it just contain
+// a single hash value.
+message StreamContentHashList {
+  // The hash of the content URL.
+  repeated uint32 hashes = 1;
+}
+
 // Data about the Feed stream. There is at most one instance of StreamData.
 message StreamData {
   // Root ContentId, as provided by the server.
@@ -67,8 +75,8 @@ message StreamData {
   bool privacy_notice_fulfilled = 9;
   // Stream ID. Should match the id value stored in the record's key.
   string stream_id = 10;
-  // List of IDs representing content contained in the stream.
-  repeated uint32 content_hashes = 11;
+  // List of hashes for all the contents contained in the stream.
+  repeated StreamContentHashList content_hashes = 11;
   // Root EventID provided by the server.
   bytes root_event_id = 12;
 
@@ -90,10 +98,9 @@ message Metadata {
     // WebFeed stream if the subscription list changes.
     bool is_known_stale = 3;
     // If this stream has been viewed before, this is the list of content in the
-    // stream
-    // (`StreamData.content_hashes`). This is used to determine whether the user
-    // has already seen a stored stream's data.
-    repeated uint32 view_content_hashes = 4;
+    // stream (`StreamData.content_hashes`). This is used to determine whether
+    // the user has already seen a stored stream's data.
+    repeated StreamContentHashList view_content_hashes = 4;
 
     message ContentLifetime {
       int64 stale_age_ms = 1;
@@ -134,6 +141,11 @@ message Metadata {
   // Count of how many times the user has followed from the main menu, so we
   // can show appropriate user education help for the following feed.
   int32 followed_from_web_page_menu_count = 9;
+  // The list of IDs representing the most recent contents received from the.
+  // server. The size of the list is capped to
+  // feedstore_util::kMaxMostRecentContentHashes. The IDs are stored in the
+  // ascending order of the time when the content is received from the server.
+  repeated uint32 most_recent_content_hashes = 10;
 }
 
 // A set of StreamStructures that should be applied to a stream.

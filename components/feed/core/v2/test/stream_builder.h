@@ -73,6 +73,8 @@ struct StreamModelUpdateRequestGenerator {
   std::unique_ptr<StreamModelUpdateRequest> MakeFirstPage(
       int first_cluster_id = 0,
       int num_cards = 2) const;
+  std::unique_ptr<StreamModelUpdateRequest> MakeFirstPageWithSpecificContents(
+      const std::vector<int>& id_numbers) const;
 
   std::unique_ptr<StreamModelUpdateRequest> MakeNextPage(
       int page_number = 2,

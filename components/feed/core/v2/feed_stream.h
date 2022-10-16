@@ -414,6 +414,8 @@ class FeedStream : public FeedApi,
   // Internal method for scheduling the feed-close refresh.
   void ScheduleFeedCloseRefresh(const StreamType& type);
 
+  void CheckDuplicatedContents();
+
   // Unowned.
 
   raw_ptr<RefreshTaskScheduler> refresh_task_scheduler_;
