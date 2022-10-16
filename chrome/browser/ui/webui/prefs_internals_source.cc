@@ -37,5 +37,7 @@ void PrefsInternalsSource::StartDataRequest(
       profile_->GetPrefs()->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS);
   CHECK(base::JSONWriter::WriteWithOptions(
       prefs, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json));
-  std::move(callback).Run(base::RefCountedString::TakeString(&json));
+
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(json)));
 }

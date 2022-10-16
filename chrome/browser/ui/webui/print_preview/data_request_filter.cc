@@ -54,7 +54,8 @@ void HandleRequestCallback(const std::string& path,
 
     CHECK(base::ReadFileToString(pdf_path, &test_pdf_content));
     scoped_refptr<base::RefCountedString> response =
-        base::RefCountedString::TakeString(&test_pdf_content);
+        base::MakeRefCounted<base::RefCountedString>(
+            std::move(test_pdf_content));
     std::move(callback).Run(response.get());
     return;
   }

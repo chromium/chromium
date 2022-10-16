@@ -126,6 +126,7 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
 class BASE_EXPORT RefCountedString : public RefCountedMemory {
  public:
   RefCountedString();
+  explicit RefCountedString(std::string value);
 
   RefCountedString(const RefCountedString&) = delete;
   RefCountedString& operator=(const RefCountedString&) = delete;
@@ -133,8 +134,12 @@ class BASE_EXPORT RefCountedString : public RefCountedMemory {
   // Constructs a RefCountedString object by performing a swap. (To non
   // destructively build a RefCountedString, use the default constructor and
   // copy into object->data()).
+  // TODO(crbug.com/1374216): Remove once all usages have been converted to use
+  // the rvalue constructor.
   static scoped_refptr<RefCountedString> TakeString(std::string* to_destroy);
 
+  // TODO(crbug.com/1374216): Remove once all usages have been converted to use
+  // the rvalue constructor.
   static scoped_refptr<RefCountedString> TakeString(std::string&& str);
 
   // RefCountedMemory:

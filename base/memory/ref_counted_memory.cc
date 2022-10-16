@@ -67,6 +67,8 @@ RefCountedString::RefCountedString() = default;
 
 RefCountedString::~RefCountedString() = default;
 
+RefCountedString::RefCountedString(std::string str) : data_(std::move(str)) {}
+
 // static
 scoped_refptr<RefCountedString> RefCountedString::TakeString(
     std::string* to_destroy) {

@@ -74,8 +74,8 @@ NtpBackgroundFetcher::~NtpBackgroundFetcher() = default;
 void NtpBackgroundFetcher::OnFetchCompleted(
     std::unique_ptr<std::string> response_body) {
   if (response_body) {
-    std::move(callback_).Run(
-        base::RefCountedString::TakeString(response_body.release()));
+    std::move(callback_).Run(base::MakeRefCounted<base::RefCountedString>(
+        std::move(*response_body)));
   } else {
     std::move(callback_).Run(base::MakeRefCounted<base::RefCountedBytes>());
   }

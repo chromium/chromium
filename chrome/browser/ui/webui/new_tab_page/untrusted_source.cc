@@ -59,7 +59,8 @@ std::string ReadBackgroundImageData(const base::FilePath& profile_path) {
 
 void ServeBackgroundImageData(content::URLDataSource::GotDataCallback callback,
                               std::string data_string) {
-  std::move(callback).Run(base::RefCountedString::TakeString(&data_string));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(data_string)));
 }
 
 }  // namespace
@@ -140,9 +141,8 @@ void UntrustedSource::StartDataRequest(
        url_param.SchemeIs(content::kChromeUIUntrustedScheme))) {
     ui::TemplateReplacements replacements;
     replacements["url"] = url_param.spec();
-    std::string html =
-        FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_IMAGE_HTML, replacements);
-    std::move(callback).Run(base::RefCountedString::TakeString(&html));
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
+        FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_IMAGE_HTML, replacements)));
     return;
   }
   if (path == "background_image") {
@@ -264,7 +264,9 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
     html = FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_HTML,
                           replacements);
   }
-  auto html_ref_counted = base::RefCountedString::TakeString(&html);
+
+  auto html_ref_counted =
+      base::MakeRefCounted<base::RefCountedString>(std::move(html));
   for (auto& callback : one_google_bar_callbacks_) {
     std::move(callback).Run(html_ref_counted);
   }
@@ -307,7 +309,7 @@ void UntrustedSource::ServeBackgroundImage(
   replacements["positionX"] = position_x;
   replacements["positionY"] = position_y;
   replacements["scrimDisplay"] = scrim_display;
-  std::string html = FormatTemplate(
-      IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_HTML, replacements);
-  std::move(callback).Run(base::RefCountedString::TakeString(&html));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(FormatTemplate(
+          IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_HTML, replacements)));
 }

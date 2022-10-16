@@ -472,7 +472,8 @@ void ExtensionsInternalsSource::StartDataRequest(
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
   std::string json = WriteToString();
-  std::move(callback).Run(base::RefCountedString::TakeString(&json));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(json)));
 }
 
 std::string ExtensionsInternalsSource::WriteToString() const {

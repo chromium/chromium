@@ -332,7 +332,7 @@ scoped_refptr<base::RefCountedMemory> ReadFileForDevTools(
     LOG(ERROR) << "Failed to read " << path;
     return CreateNotFoundResponse();
   }
-  return base::RefCountedString::TakeString(&buffer);
+  return base::MakeRefCounted<base::RefCountedString>(std::move(buffer));
 }
 
 void DevToolsDataSource::StartFileRequest(const std::string& path,
@@ -361,9 +361,9 @@ void DevToolsDataSource::OnLoadComplete(
     std::list<PendingRequest>::iterator request_iter,
     std::unique_ptr<std::string> response_body) {
   std::move(request_iter->callback)
-      .Run(response_body
-               ? base::RefCountedString::TakeString(response_body.get())
-               : CreateNotFoundResponse());
+      .Run(response_body ? base::MakeRefCounted<base::RefCountedString>(
+                               std::move(*response_body))
+                         : CreateNotFoundResponse());
   pending_requests_.erase(request_iter);
 }
 

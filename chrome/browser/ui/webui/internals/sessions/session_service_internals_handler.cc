@@ -98,6 +98,6 @@ void SessionServiceInternalsHandler::HandleWebUIRequestCallback(
     content::WebUIDataSource::GotDataCallback callback) {
   DCHECK(ShouldHandleWebUIRequestCallback(path));
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::string result = GetEventLogAsString(profile);
-  std::move(callback).Run(base::RefCountedString::TakeString(&result));
+  std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
+      GetEventLogAsString(profile)));
 }

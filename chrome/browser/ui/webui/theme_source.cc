@@ -324,7 +324,8 @@ void ThemeSource::SendColorsCss(
     std::move(callback).Run(nullptr);
     return;
   }
-  std::move(callback).Run(base::RefCountedString::TakeString(&css_string));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(css_string)));
 }
 
 std::string ThemeSource::GetAccessControlAllowOriginForOrigin(

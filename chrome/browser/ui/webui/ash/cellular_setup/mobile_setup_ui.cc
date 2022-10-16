@@ -331,8 +331,8 @@ void MobileSetupUIHTMLSource::StartDataRequest(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_MOBILE_SETUP_PORTAL_PAGE_HTML);
   std::string full_html = webui::GetI18nTemplateHtml(html_string, strings);
-
-  std::move(callback).Run(base::RefCountedString::TakeString(&full_html));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(full_html)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
