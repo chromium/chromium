@@ -136,6 +136,7 @@ public class AddToHomescreenDialogView
     protected void setTitle(String title) {
         mAppNameView.setText(title);
         mShortcutTitleInput.setText(title);
+        mIconView.setContentDescription(title);
     }
 
     void setUrl(String url) {
