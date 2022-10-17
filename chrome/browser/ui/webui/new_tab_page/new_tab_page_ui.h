@@ -41,6 +41,7 @@ class RefCountedMemory;
 
 namespace content {
 class NavigationHandle;
+class WebContents;
 class WebUI;
 }  // namespace content
 
@@ -231,6 +232,7 @@ class NewTabPageUI
   base::ScopedObservation<NtpCustomBackgroundService,
                           NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observation_{this};
+  raw_ptr<content::WebContents> web_contents_;
   // Time the NTP started loading. Used for logging the WebUI NTP's load
   // performance.
   base::Time navigation_start_time_;
