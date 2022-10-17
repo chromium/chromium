@@ -247,8 +247,7 @@ void BookmarkBubbleView::ShowBubble(
       dialog_model_builder.AddSeparator().AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
               std::make_unique<PriceTrackingView>(
-                  profile, url, ui::ImageModel::FromImage(product_image),
-                  is_price_tracked),
+                  profile, url, *product_image.ToImageSkia(), is_price_tracked),
               views::BubbleDialogModelHost::FieldType::kControl),
           kPriceTrackingBookmarkViewElementId);
     }

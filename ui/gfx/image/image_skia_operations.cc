@@ -795,4 +795,21 @@ ImageSkia ImageSkiaOperations::CreateImageWithRoundRectClip(
   return gfx::CanvasImageSource::MakeImageSkia<ImageWithRoundRectClipSource>(
       radius, image);
 }
+
+ImageSkia ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
+    const Size& size,
+    int border_radius,
+    const ImageSkia& image) {
+  float scale = std::min(static_cast<float>(image.width()) / size.width(),
+                         static_cast<float>(image.height()) / size.height());
+  Size scaled_size = {base::ClampFloor(scale * size.width()),
+                      base::ClampFloor(scale * size.height())};
+  Rect bounds{{0, 0}, image.size()};
+  bounds.ClampToCenteredSize(scaled_size);
+  auto scaled_and_cropped_image = CreateTiledImage(
+      image, bounds.x(), bounds.y(), bounds.width(), bounds.height());
+  auto resized_image = CreateResizedImage(
+      scaled_and_cropped_image, skia::ImageOperations::RESIZE_LANCZOS3, size);
+  return CreateImageWithRoundRectClip(border_radius, resized_image);
+}
 }  // namespace gfx

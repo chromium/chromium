@@ -123,6 +123,13 @@ class GFX_EXPORT ImageSkiaOperations {
   static ImageSkia CreateImageWithRoundRectClip(int radius,
                                                 const ImageSkia& image);
 
+  // Returns an image of `size` that contains as much of `image` as possible
+  // without distorting the `image`. That result is clipped to a roundrect with
+  // radius `border_radius`.
+  static ImageSkia CreateCroppedCenteredRoundRectImage(const Size& size,
+                                                       int border_radius,
+                                                       const ImageSkia& image);
+
  private:
   ImageSkiaOperations();  // Class for scoping only.
 };
