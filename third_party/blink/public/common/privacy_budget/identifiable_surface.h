@@ -276,7 +276,7 @@ class IdentifiableSurface {
     kMax = kWorkerClientAdded_WorkerType
   };
 
-  enum class WorkerType {
+  enum class WorkerType : uint64_t {
     kSharedWorker = 0,
     kServiceWorker = 1,
     kMax = kServiceWorker,
