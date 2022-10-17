@@ -24,7 +24,6 @@ class AwClientHintsControllerDelegateTest : public testing::Test {
 };
 
 TEST_F(AwClientHintsControllerDelegateTest, GetNetworkQualityTracker) {
-  // TODO(crbug.com/921655): Actually test function once implemented.
   EXPECT_EQ(nullptr,
             client_hints_controller_delegate_->GetNetworkQualityTracker());
 }

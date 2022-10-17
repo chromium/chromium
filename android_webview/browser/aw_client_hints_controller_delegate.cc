@@ -27,8 +27,7 @@ AwClientHintsControllerDelegate::~AwClientHintsControllerDelegate() {
 
 network::NetworkQualityTracker*
 AwClientHintsControllerDelegate::GetNetworkQualityTracker() {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
+  // Android WebViews lack a Network Quality Tracker.
   return nullptr;
 }
 
