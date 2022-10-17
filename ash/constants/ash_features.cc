@@ -1331,7 +1331,7 @@ BASE_FEATURE(kMacAddressRandomization,
 // Enables the custom color picker and recent colors UI in the media app.
 BASE_FEATURE(kMediaAppCustomColors,
              "MediaAppCustomColors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Within the ChromeOS media app, reveals the button to edit the current image
 // in Photos.
