@@ -87,6 +87,7 @@ void AcceleratorConfigurationProvider::BindInterface(
     mojo::PendingReceiver<
         shortcut_customization::mojom::AcceleratorConfigurationProvider>
         receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 

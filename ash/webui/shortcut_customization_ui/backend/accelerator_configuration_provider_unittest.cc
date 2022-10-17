@@ -124,6 +124,18 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
 };
 
+TEST_F(AcceleratorConfigurationProviderTest, ResetReceiverOnBindInterface) {
+  mojo::Remote<shortcut_customization::mojom::AcceleratorConfigurationProvider>
+      remote;
+  provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  remote.reset();
+
+  provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, BrowserIsMutable) {
   // Verify that requesting IsMutable state for Browser accelerators returns
   // false.
