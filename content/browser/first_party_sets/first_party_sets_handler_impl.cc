@@ -210,25 +210,6 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(
   sets_loader_->SetComponentSets(std::move(sets_file));
 }
 
-void FirstPartySetsHandlerImpl::ResetForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  initialized_ = false;
-  enabled_ = GetContentClient()->browser()->IsFirstPartySetsEnabled();
-  embedder_will_provide_public_sets_ =
-      GetContentClient()->browser()->WillProvidePublicFirstPartySets();
-
-  // Initializes the `sets_loader_` member with a callback to SetCompleteSets
-  // and the result of content::GetFirstPartySetsOverrides.
-  sets_loader_ = std::make_unique<FirstPartySetsLoader>(
-      base::BindOnce(&FirstPartySetsHandlerImpl::SetCompleteSets,
-                     // base::Unretained(this) is safe here because
-                     // this is a static singleton.
-                     base::Unretained(this)));
-  on_sets_ready_callbacks_.clear();
-  global_sets_ = absl::nullopt;
-  db_helper_.Reset();
-}
-
 void FirstPartySetsHandlerImpl::GetPersistedGlobalSetsForTesting(
     const std::string& browser_context_id,
     base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>

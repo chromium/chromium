@@ -56,12 +56,6 @@ void MockFirstPartySetsHandler::ClearSiteDataOnChangedSetsForContext(
   std::move(callback).Run(config_->Clone(), cache_filter_->Clone());
 }
 
-void MockFirstPartySetsHandler::ResetForTesting() {
-  global_sets_ = absl::nullopt;
-  config_ = absl::nullopt;
-  cache_filter_ = absl::nullopt;
-}
-
 void MockFirstPartySetsHandler::SetContextConfig(
     net::FirstPartySetsContextConfig config) {
   config_ = std::move(config);

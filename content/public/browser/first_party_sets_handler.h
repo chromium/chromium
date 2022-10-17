@@ -136,9 +136,6 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   virtual void SetPublicFirstPartySets(const base::Version& version,
                                        base::File sets_file) = 0;
 
-  // Resets the state on the instance for testing.
-  virtual void ResetForTesting() = 0;
-
   // Looks up `site` in the global First-Party Sets and `config` to find its
   // associated FirstPartySetEntry.
   //

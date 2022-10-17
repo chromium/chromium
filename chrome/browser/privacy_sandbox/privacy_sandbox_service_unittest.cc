@@ -2353,9 +2353,6 @@ TEST_F(PrivacySandboxServiceTest,
   prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  // Reset test state to reflect required state above.
-  content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
-
   // Verify `GetFirstPartySetOwner` returns empty if FPS is enabled but the
   // Global sets are not ready yet.
   EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),

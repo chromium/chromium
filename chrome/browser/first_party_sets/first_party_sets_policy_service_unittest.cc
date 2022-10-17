@@ -60,9 +60,18 @@ class DefaultFirstPartySetsPolicyServiceTest : public testing::Test {
   DefaultFirstPartySetsPolicyServiceTest() = default;
 
   void SetUp() override {
-    content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+    content::FirstPartySetsHandler::SetInstanceForTesting(
+        &mock_first_party_sets_handler_);
+    mock_first_party_sets_handler_.SetContextConfig(
+        net::FirstPartySetsContextConfig());
+    mock_first_party_sets_handler_.SetCacheFilter(
+        net::FirstPartySetsCacheFilter());
     mock_delegate_receiver_.Bind(
         mock_delegate_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    content::FirstPartySetsHandler::SetInstanceForTesting(nullptr);
   }
 
   content::BrowserTaskEnvironment& env() { return env_; }
@@ -76,6 +85,7 @@ class DefaultFirstPartySetsPolicyServiceTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment env_;
+  first_party_sets::MockFirstPartySetsHandler mock_first_party_sets_handler_;
 };
 
 TEST_F(DefaultFirstPartySetsPolicyServiceTest, DisabledByFeature) {
