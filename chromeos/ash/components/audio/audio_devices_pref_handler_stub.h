@@ -50,6 +50,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void SetUserPriorityHigherThan(const AudioDevice& target,
                                  const AudioDevice* base) override;
   int32_t GetUserPriority(const AudioDevice& device) override;
+  void DropLeastRecentlySeenDevices(
+      const std::vector<AudioDevice>& connected_devices,
+      size_t keep_devices) override;
   bool GetAudioOutputAllowedValue() const override;
   void AddAudioPrefObserver(AudioPrefObserver* observer) override;
   void RemoveAudioPrefObserver(AudioPrefObserver* observer) override;

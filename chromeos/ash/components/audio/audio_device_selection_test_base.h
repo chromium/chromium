@@ -47,13 +47,15 @@ class AudioDeviceSelectionTestBase : public testing::Test {
  private:
   AudioNode NewNode(bool is_input, const std::string& type);
 
+ protected:
+  scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler_;
+
  private:
   // Test services
   std::unique_ptr<ActiveNodeObserver> active_node_observer_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   CrasAudioHandler* cras_audio_handler_ = nullptr;         // Not owned.
   FakeCrasAudioClient* fake_cras_audio_client_ = nullptr;  // Not owned.
-  scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 
   // Counters

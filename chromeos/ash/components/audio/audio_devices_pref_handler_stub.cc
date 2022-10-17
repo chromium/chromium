@@ -105,13 +105,16 @@ void AudioDevicesPrefHandlerStub::SetUserPriorityHigherThan(
   }
 }
 
-int AudioDevicesPrefHandlerStub::GetUserPriority(
-    const AudioDevice& device) {
+int AudioDevicesPrefHandlerStub::GetUserPriority(const AudioDevice& device) {
   if (user_priority_map_.find(device.stable_device_id) ==
       user_priority_map_.end())
     return kUserPriorityNone;
   return user_priority_map_[device.stable_device_id];
 }
+
+void AudioDevicesPrefHandlerStub::DropLeastRecentlySeenDevices(
+    const std::vector<AudioDevice>& connected_devices,
+    size_t keep_devices) {}
 
 bool AudioDevicesPrefHandlerStub::GetNoiseCancellationState() {
   return noise_cancellation_state_;

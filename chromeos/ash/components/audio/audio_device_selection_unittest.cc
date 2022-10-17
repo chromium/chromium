@@ -4,7 +4,9 @@
 
 #include "chromeos/ash/components/audio/audio_device_selection_test_base.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 const char* kInputSwitched = "StatusArea_Audio_SwitchInputDevice";
@@ -96,6 +98,49 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugMetricAction) {
     EXPECT_EQ(actions.GetActionCount(kOutputSwitched), 1);
     // Switching after the system decides to do nothing, should be counted.
     EXPECT_EQ(actions.GetActionCount(kOutputOverridden), 1);
+  }
+}
+
+TEST_F(AudioDeviceSelectionTest, DevicePrefEviction) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        static int i = 0;
+        i++;
+        return base::Time::FromDoubleT(i);
+      },
+      nullptr, nullptr);
+
+  base::test::ScopedFeatureList features(
+      ash::features::kRobustAudioDeviceSelectLogic);
+
+  std::vector<AudioNode> nodes;
+  for (int i = 0; i < 101; i++) {
+    nodes.push_back(NewInputNode("USB"));
+  }
+
+  Plug(nodes[0]);
+  for (int i = 1; i < 101; i++) {
+    Plug(nodes[i]);
+    ASSERT_EQ(ActiveInputNodeId(), nodes[i].id) << " i = " << i;
+    ASSERT_NE(audio_pref_handler_->GetUserPriority(AudioDevice(nodes[i])),
+              kUserPriorityNone)
+        << " i = " << i;
+    Unplug(nodes[i]);
+  }
+
+  // We store at most 100 devices in prefs.
+  EXPECT_NE(audio_pref_handler_->GetUserPriority(AudioDevice(nodes[0])),
+            kUserPriorityNone)
+      << "nodes[0] should be kept because it is connected";
+  EXPECT_EQ(audio_pref_handler_->GetUserPriority(AudioDevice(nodes[1])),
+            kUserPriorityNone)
+      << "nodes[1] should be evicted because it is unplugged and the least "
+         "recently seen";
+  for (int i = 2; i < 101; i++) {
+    EXPECT_NE(audio_pref_handler_->GetUserPriority(AudioDevice(nodes[i])),
+              kUserPriorityNone)
+        << "nodes[" << i
+        << "] should be kept because it is within the recent 100 seen devices";
   }
 }
 

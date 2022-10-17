@@ -94,6 +94,10 @@ const char kAudioInputDevicesUserPriority[] =
 const char kAudioOutputDevicesUserPriority[] =
     "settings.audio.output_user_priority";
 
+// A dictionary pref that maps device id string to the timestamp of the last
+// time the audio device was connected, in `base::Time::ToDoubleT()`'s format.
+const char kAudioDevicesLastSeen[] = "settings.audio.last_seen";
+
 // A string pref storing an identifier that is getting sent with parental
 // consent in EDU account addition flow.
 const char kEduCoexistenceId[] = "account_manager.edu_coexistence_id";

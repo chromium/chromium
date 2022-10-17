@@ -7,12 +7,14 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <unordered_set>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -287,6 +289,60 @@ int AudioDevicesPrefHandlerImpl::GetUserPriority(const AudioDevice& device) {
   }
 }
 
+void AudioDevicesPrefHandlerImpl::DropLeastRecentlySeenDevices(
+    const std::vector<AudioDevice>& connected_devices,
+    size_t keep_devices) {
+  ScopedDictPrefUpdate last_seen_update(local_state_,
+                                        prefs::kAudioDevicesLastSeen);
+  base::Value::Dict& last_seen = last_seen_update.Get();
+
+  // Set timestamp of connected devices.
+  double time = base::Time::Now().ToDoubleT();
+  for (AudioDevice device : connected_devices) {
+    last_seen.Set(GetDeviceIdString(device), time);
+  }
+
+  // Order devices by last seen timestamp.
+  std::vector<std::string> recently_seen_ids;
+  for (auto device : last_seen) {
+    recently_seen_ids.push_back(device.first);
+  }
+  std::sort(recently_seen_ids.begin(), recently_seen_ids.end(),
+            [&](const std::string& i, const std::string& j) {
+              // More recent device first.
+              return last_seen.FindDouble(i).value_or(0) >
+                     last_seen.FindDouble(j).value_or(0);
+            });
+
+  // Keep `keep_devices` recently seen devices.
+  while (recently_seen_ids.size() > keep_devices &&
+         last_seen.FindDouble(recently_seen_ids.back()).value_or(0) != time) {
+    last_seen.Remove(recently_seen_ids.back());
+    recently_seen_ids.pop_back();
+  }
+
+  // Remove preferences if not seen recently, keeping the most recent
+  // `keep_devices` devices.
+  // TODO(aaronyu): Consider also remove volume/mute/gain preferences.
+  for (base::Value::Dict& settings :
+       std::initializer_list<std::reference_wrapper<base::Value::Dict>>{
+           input_device_user_priority_settings_,
+           output_device_user_priority_settings_}) {
+    std::vector<std::string> to_remove;
+    for (auto entry : settings) {
+      const std::string& id = entry.first;
+      if (last_seen.Find(id) == nullptr) {
+        to_remove.push_back(id);
+      }
+    }
+    for (const std::string& id : to_remove) {
+      settings.Remove(id);
+    }
+  }
+  SaveInputDevicesUserPriorityPref();
+  SaveOutputDevicesUserPriorityPref();
+}
+
 bool AudioDevicesPrefHandlerImpl::GetAudioOutputAllowedValue() const {
   return local_state_->GetBoolean(prefs::kAudioOutputAllowed);
 }
@@ -487,8 +543,9 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kAudioMute, kPrefMuteOff);
 
   registry->RegisterDictionaryPref(prefs::kAudioInputDevicesUserPriority);
-
   registry->RegisterDictionaryPref(prefs::kAudioOutputDevicesUserPriority);
+
+  registry->RegisterDictionaryPref(prefs::kAudioDevicesLastSeen);
 }
 
 }  // namespace ash

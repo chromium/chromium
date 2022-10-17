@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time_override.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
@@ -518,6 +519,54 @@ TEST_P(AudioDevicesPrefHandlerTest, UserPrioritySingle) {
   EXPECT_LT(GetUserPriority(device2), GetUserPriority(device));
   EXPECT_NE(kUserPriorityNone, GetUserPriority(device2));
   EXPECT_NE(kUserPriorityNone, GetUserPriority(device));
+}
+
+TEST_P(AudioDevicesPrefHandlerTest, DropLeastRecentlySeenDevices) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        static int i = 0;
+        i++;
+        return base::Time::FromDoubleT(i);
+      },
+      nullptr, nullptr);
+
+  AudioDevice d[3] = {
+      GetDeviceWithVersion(2),
+      GetSecondaryDeviceWithVersion(2),
+      GetDeviceWithSpecialCharactersWithVersion(2),
+  };
+
+  audio_pref_handler_->SetUserPriorityHigherThan(d[0], nullptr);
+  audio_pref_handler_->SetUserPriorityHigherThan(d[1], &d[0]);
+  audio_pref_handler_->SetUserPriorityHigherThan(d[2], &d[1]);
+
+  // All devices should have priorities assigned.
+  ASSERT_NE(kUserPriorityNone, GetUserPriority(d[0]));
+  ASSERT_NE(kUserPriorityNone, GetUserPriority(d[1]));
+  ASSERT_NE(kUserPriorityNone, GetUserPriority(d[2]));
+
+  audio_pref_handler_->DropLeastRecentlySeenDevices(
+      /*connected_devices=*/{d[0], d[1], d[2]}, 3);
+  // Keep 2 devices. Only the most recently seen d[0], d[2] should be left.
+  audio_pref_handler_->DropLeastRecentlySeenDevices(
+      /*connected_devices=*/{d[0], d[2]}, 2);
+  EXPECT_NE(kUserPriorityNone, GetUserPriority(d[0]));
+  EXPECT_EQ(kUserPriorityNone, GetUserPriority(d[1]));
+  EXPECT_NE(kUserPriorityNone, GetUserPriority(d[2]));
+
+  // Request to keep 1 device. But connected devices are always kept.
+  audio_pref_handler_->DropLeastRecentlySeenDevices(
+      /*connected_devices=*/{d[0], d[2]}, 1);
+  EXPECT_NE(kUserPriorityNone, GetUserPriority(d[0]));
+  EXPECT_EQ(kUserPriorityNone, GetUserPriority(d[1]));
+  EXPECT_NE(kUserPriorityNone, GetUserPriority(d[2]));
+
+  // Keep 1 devices. Only the most recently seen d[2] should be left.
+  audio_pref_handler_->DropLeastRecentlySeenDevices(
+      /*connected_devices=*/{d[2]}, 1);
+  EXPECT_EQ(kUserPriorityNone, GetUserPriority(d[0]));
+  EXPECT_EQ(kUserPriorityNone, GetUserPriority(d[1]));
+  EXPECT_NE(kUserPriorityNone, GetUserPriority(d[2]));
 }
 
 }  // namespace ash

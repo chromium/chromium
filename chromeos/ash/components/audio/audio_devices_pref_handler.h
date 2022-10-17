@@ -78,6 +78,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   // Removes an audio preference observer.
   virtual void RemoveAudioPrefObserver(AudioPrefObserver* observer) = 0;
 
+  // Mark `connected_devices` as seen and drop the least recently seen devices
+  // if there are more than `keep_devices` stored in preferences.
+  virtual void DropLeastRecentlySeenDevices(
+      const std::vector<AudioDevice>& connected_devices,
+      size_t keep_devices) = 0;
+
  protected:
   virtual ~AudioDevicesPrefHandler() {}
 

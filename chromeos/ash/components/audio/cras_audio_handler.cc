@@ -45,6 +45,9 @@ const double kStereoToMono[] = {0.5, 0.5, 0.5, 0.5};
 // Mixer matrix, [1, 0; 0, 1]
 const double kStereoToStereo[] = {1, 0, 0, 1};
 
+// Number of entries we're willing to store in preferences.
+const int kMaxDeviceStoredInPref = 100;
+
 CrasAudioHandler* g_cras_audio_handler = nullptr;
 
 bool IsSameAudioDevice(const AudioDevice& a, const AudioDevice& b) {
@@ -1788,6 +1791,10 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
       CrasAudioClient::Get()->SetDisplayRotation(device.id, display_rotation_);
     }
   }
+
+  // Remove the least recently seen devices if there are too many devices.
+  audio_pref_handler_->DropLeastRecentlySeenDevices(devices,
+                                                    kMaxDeviceStoredInPref);
 
   audio_devices_.clear();
   has_alternative_input_ = false;
