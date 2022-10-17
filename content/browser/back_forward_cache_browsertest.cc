@@ -1600,13 +1600,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Disabled on Linux and Win because of flakiness, see crbug.com/1170802.
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || BUILDFLAG(IS_WIN)
-#define MAYBE_PagehideRunsWhenPageIsHidden DISABLED_PagehideRunsWhenPageIsHidden
-#else
-#define MAYBE_PagehideRunsWhenPageIsHidden PagehideRunsWhenPageIsHidden
-#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_PagehideRunsWhenPageIsHidden) {
+                       PagehideRunsWhenPageIsHidden) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -1616,7 +1611,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to |url_1| and hide the tab.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  RenderFrameHostImpl* main_frame_1 = web_contents->GetPrimaryMainFrame();
+  RenderFrameHostImplWrapper main_frame_1(web_contents->GetPrimaryMainFrame());
   // We need to set it to Visibility::VISIBLE first in case this is the first
   // time the visibility is updated.
   web_contents->UpdateWebContentsVisibility(Visibility::VISIBLE);
@@ -1626,7 +1621,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Create a pagehide handler that sets item "pagehide_storage" and a
   // visibilitychange handler that sets item "visibilitychange_storage" in
   // localStorage.
-  EXPECT_TRUE(ExecJs(main_frame_1,
+  EXPECT_TRUE(ExecJs(main_frame_1.get(),
                      R"(
     localStorage.setItem('pagehide_storage', 'not_dispatched');
     var dispatched_pagehide = false;
@@ -1649,7 +1644,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   )"));
   // |visibilitychange_storage| should be set to its initial correct value.
   EXPECT_EQ("not_dispatched",
-            GetLocalStorage(main_frame_1, "visibilitychange_storage"));
+            GetLocalStorage(main_frame_1.get(), "visibilitychange_storage"));
 
   // 2) Navigate cross-site to |url_2|. We need to navigate cross-site to make
   // sure we won't run pagehide and visibilitychange during new page's commit,
