@@ -47,6 +47,10 @@ class MEDIA_EXPORT VideoEncoder {
     bool produce_annexb = false;
   };
 
+  struct MEDIA_EXPORT HevcOptions {
+    bool produce_annexb = false;
+  };
+
   enum class LatencyMode { Realtime, Quality };
 
   struct MEDIA_EXPORT Options {
@@ -66,6 +70,9 @@ class MEDIA_EXPORT VideoEncoder {
 
     // Only used for H264 encoding.
     AvcOptions avc;
+
+    // Only used for HEVC encoding.
+    HevcOptions hevc;
   };
 
   // A sequence of codec specific bytes, commonly known as extradata.

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/big_endian.h"
 #include "base/logging.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
@@ -56,6 +57,92 @@ bool HEVCDecoderConfigurationRecord::Parse(BoxReader* reader) {
   return ParseInternal(reader, reader->media_log());
 }
 
+bool HEVCDecoderConfigurationRecord::Serialize(
+    std::vector<uint8_t>& output) const {
+  // See ISO/IEC 14496-15, section 8.3.3.1 for the format description.
+  if (lengthSizeMinusOne > 3) {
+    return false;
+  }
+
+  // Calculating total size needed for the serialization buffer
+  size_t expected_size = 1 +  // configurationVersion
+                         1 +  // profile_indication:
+                              // general_profile_space(2)/general_tier_flag(1)
+                              // /general_profile_idc(5)
+                         4 +  // general_profile_compatibility_flags
+                         6 +  // general_constraint_indicator_flags
+                         1 +  // general_level_idc
+                         2 +  // reserved1s(4)/min_spatial_segmentation_idc(12)
+                         1 +  // reserved1s(6)/parallelismType(2)
+                         1 +  // reserved1s(6)/chromaFormat(2)
+                         1 +  // reserved1s(5)bitDepthLumaMinus8(3)
+                         1 +  // reserved1s(5)/bitDepthChromaMinus8(3)
+                         2 +  // avgFrameRate
+                         1 +  // constantFrameRate(2)/numTemporalLayers(3)
+                              // /temporalIdNested(1)/lengthSizeMinusOne(2)
+                         1;   // numOfArrays
+
+  // Adds up size required for the arrays
+  for (auto& array : arrays) {
+    expected_size += 1 +  // array_completeness(1)/reserved0(1)/NAL_unit_type
+                     2;   // numNalus
+    for (auto& nalu : array.units) {
+      expected_size += 2 +  // nalUnitLength
+                       nalu.size();
+    }
+  }
+
+  bool result = true;
+  output.clear();
+  output.resize(expected_size);
+  base::BigEndianWriter writer(reinterpret_cast<char*>(output.data()),
+                               output.size());
+
+  // configurationVersion
+  result &= writer.WriteU8(configurationVersion);
+  // profile_indication
+  result &= writer.WriteU8((general_profile_space << 6) +
+                           (general_tier_flag << 5) + general_profile_idc);
+  // general_profile_compatibility_flag
+  result &= writer.WriteU32(general_profile_compatibility_flags);
+  // general_constraint_indicator_flags
+  result &= writer.WriteU32(general_constraint_indicator_flags >> 16);
+  result &= writer.WriteU16(general_constraint_indicator_flags & 0xffff);
+  // genral_level_idc
+  result &= writer.WriteU8(general_level_idc);
+  // min_spatial_segmentation_idc
+  result &= writer.WriteU16(min_spatial_segmentation_idc | (0xf << 12));
+  // parallelismType
+  result &= writer.WriteU8(parallelismType | (0x3f << 2));
+  // chromaFormat
+  result &= writer.WriteU8(chromaFormat | (0x3f << 2));
+  // bitDepthLumaMinus8
+  result &= writer.WriteU8(bitDepthLumaMinus8 | (0x1f << 3));
+  // bitDepthChromaMinus8
+  result &= writer.WriteU8(bitDepthChromaMinus8 | (0x1f << 3));
+  // avgFrameRate
+  result &= writer.WriteU16(avgFrameRate);
+  // miscs
+  result &= writer.WriteU8((constantFrameRate << 6) + (numTemporalLayers << 3) +
+                           (temporalIdNested << 2) + lengthSizeMinusOne);
+  // numOfArrays
+  result &= writer.WriteU8(numOfArrays);
+  for (auto& array : arrays) {
+    // array_completeness and nalu type, etc.
+    result &= writer.WriteU8(array.first_byte);
+    // num_nalus
+    result &= writer.WriteU16(array.units.size());
+    for (auto& nalu : array.units) {
+      // nalUnitLength
+      result &= writer.WriteU16(nalu.size());
+      // NAL unit data
+      result &= writer.WriteBytes(nalu.data(), nalu.size());
+    }
+  }
+
+  return result;
+}
+
 bool HEVCDecoderConfigurationRecord::Parse(const uint8_t* data, int data_size) {
   BufferReader reader(data, data_size);
   // TODO(wolenetz): Questionable MediaLog usage, http://crbug.com/712310
@@ -63,8 +150,7 @@ bool HEVCDecoderConfigurationRecord::Parse(const uint8_t* data, int data_size) {
   return ParseInternal(&reader, &media_log);
 }
 
-HEVCDecoderConfigurationRecord::HVCCNALArray::HVCCNALArray()
-    : first_byte(0) {}
+HEVCDecoderConfigurationRecord::HVCCNALArray::HVCCNALArray() = default;
 
 HEVCDecoderConfigurationRecord::HVCCNALArray::HVCCNALArray(
     const HVCCNALArray& other) = default;

@@ -964,6 +964,12 @@ BASE_FEATURE(kIncludeIRCamerasInDeviceEnumeration,
              "IncludeIRCamerasInDeviceEnumeration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+// Enables HEVC encode acceleration for Windows.
+const base::Feature MEDIA_EXPORT kMediaFoundationHEVCEncoding{
+    "MediaFoundationHEVCEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables AV1 encode acceleration for Windows.
 const base::Feature MEDIA_EXPORT kMediaFoundationAV1Encoding{
     "MediaFoundationAV1Encoding", base::FEATURE_DISABLED_BY_DEFAULT};

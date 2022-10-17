@@ -189,6 +189,7 @@ test("media_unittests") {
   data = [
     "test/data/",
     "formats/mp4/h264_annex_b_fuzz_corpus/",
+    "formats/mp4/h265_annex_b_fuzz_corpus/",
   ]
 
   data_deps = [ "//testing/buildbot/filters:media_unittests_filters" ]

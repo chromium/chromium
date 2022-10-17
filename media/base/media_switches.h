@@ -273,6 +273,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kDelayCopyNV12Textures);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kDirectShowGetPhotoState);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kIncludeIRCamerasInDeviceEnumeration);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationAV1Encoding);
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationHEVCEncoding);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
 // For feature check of kMediaFoundationH264CbpEncoding at runtime,
 // please use IsMediaFoundationH264CbpEncodingEnabled() instead.

@@ -431,7 +431,7 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   IN_RANGE_OR_RETURN(sps->sps_video_parameter_set_id, 0, 15);
   READ_BITS_OR_RETURN(3, &sps->sps_max_sub_layers_minus1);
   IN_RANGE_OR_RETURN(sps->sps_max_sub_layers_minus1, 0, 6);
-  SKIP_BITS_OR_RETURN(1);  // sps_temporal_id_nesting_flag
+  READ_BOOL_OR_RETURN(&sps->sps_temporal_id_nesting_flag);
 
   res = ParseProfileTierLevel(true, sps->sps_max_sub_layers_minus1,
                               &sps->profile_tier_level);
@@ -919,6 +919,28 @@ const H265PPS* H265Parser::GetPPS(int pps_id) const {
   return it->second.get();
 }
 
+H265Parser::Result H265Parser::ParseSliceHeaderForPictureParameterSets(
+    const H265NALU& nalu,
+    int* pps_id) {
+  // 7.4.7 Slice segment header
+  DVLOG(4) << "Parsing slice header for pps";
+
+  H265SliceHeader shdr;
+  READ_BOOL_OR_RETURN(&shdr.first_slice_segment_in_pic_flag);
+  shdr.irap_pic = (nalu.nal_unit_type >= H265NALU::BLA_W_LP &&
+                   nalu.nal_unit_type <= H265NALU::RSV_IRAP_VCL23);
+  if (shdr.irap_pic) {
+    READ_BOOL_OR_RETURN(&shdr.no_output_of_prior_pics_flag);
+  }
+  READ_UE_OR_RETURN(&shdr.slice_pic_parameter_set_id);
+  IN_RANGE_OR_RETURN(shdr.slice_pic_parameter_set_id, 0, 63);
+  if (pps_id) {
+    *pps_id = shdr.slice_pic_parameter_set_id;
+  }
+
+  return kOk;
+}
+
 H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
                                                 H265SliceHeader* shdr,
                                                 H265SliceHeader* prior_shdr) {
@@ -1307,21 +1329,28 @@ H265Parser::Result H265Parser::ParseProfileTierLevel(
     SKIP_BITS_OR_RETURN(1);  // general_tier_flag
     READ_BITS_OR_RETURN(5, &profile_tier_level->general_profile_idc);
     IN_RANGE_OR_RETURN(profile_tier_level->general_profile_idc, 0, 11);
-    bool general_profile_compatibility_flag[32];
-    for (int j = 0; j < 32; ++j) {
-      READ_BOOL_OR_RETURN(&general_profile_compatibility_flag[j]);
-    }
-    bool general_progressive_source_flag;
-    bool general_interlaced_source_flag;
-    READ_BOOL_OR_RETURN(&general_progressive_source_flag);
-    READ_BOOL_OR_RETURN(&general_interlaced_source_flag);
-    if (!general_progressive_source_flag && general_interlaced_source_flag) {
+    uint16_t general_profile_compatibility_flag_high16;
+    uint16_t general_profile_compatibility_flag_low16;
+    READ_BITS_OR_RETURN(16, &general_profile_compatibility_flag_high16);
+    READ_BITS_OR_RETURN(16, &general_profile_compatibility_flag_low16);
+    profile_tier_level->general_profile_compatibility_flags =
+        (general_profile_compatibility_flag_high16 << 16) +
+        general_profile_compatibility_flag_low16;
+    READ_BOOL_OR_RETURN(&profile_tier_level->general_progressive_source_flag);
+    READ_BOOL_OR_RETURN(&profile_tier_level->general_interlaced_source_flag);
+    if (!profile_tier_level->general_progressive_source_flag &&
+        profile_tier_level->general_interlaced_source_flag) {
       DVLOG(1) << "Interlaced streams not supported";
       return kUnsupportedStream;
     }
-    SKIP_BITS_OR_RETURN(2);  // general_{non_packed,frame_only}_constraint_flag
-    // Skip the compatibility flags, they are always 43 bits.
-    SKIP_BITS_OR_RETURN(43);
+    READ_BOOL_OR_RETURN(
+        &profile_tier_level->general_non_packed_constraint_flag);
+    READ_BOOL_OR_RETURN(
+        &profile_tier_level->general_frame_only_constraint_flag);
+    SKIP_BITS_OR_RETURN(7);  // general_reserved_zero_7bits
+    READ_BOOL_OR_RETURN(
+        &profile_tier_level->general_one_picture_only_constraint_flag);
+    SKIP_BITS_OR_RETURN(35);  // general_reserved_zero_35bits
     SKIP_BITS_OR_RETURN(1);  // general_inbld_flag
   }
   READ_BITS_OR_RETURN(8, &profile_tier_level->general_level_idc);
@@ -1668,17 +1697,16 @@ H265Parser::Result H265Parser::ParseVuiParameters(const H265SPS& sps,
       return res;
   }
 
-  bool bitstream_restriction_flag;
-  READ_BOOL_OR_RETURN(&bitstream_restriction_flag);
-  if (bitstream_restriction_flag) {
+  READ_BOOL_OR_RETURN(&vui->bitstream_restriction_flag);
+  if (vui->bitstream_restriction_flag) {
     // Skip tiles_fixed_structure_flag, motion_vectors_over_pic_boundaries_flag
     // and restricted_ref_pic_lists_flag.
     SKIP_BITS_OR_RETURN(3);
-    READ_UE_OR_RETURN(&data);  // min_spatial_segmentation_idc
-    READ_UE_OR_RETURN(&data);  // max_bytes_per_pic_denom
-    READ_UE_OR_RETURN(&data);  // max_bits_per_min_cu_denom
-    READ_UE_OR_RETURN(&data);  // log2_max_mv_length_horizontal
-    READ_UE_OR_RETURN(&data);  // log2_max_mv_length_vertical
+    READ_UE_OR_RETURN(&vui->min_spatial_segmentation_idc);
+    READ_UE_OR_RETURN(&vui->max_bytes_per_pic_denom);
+    READ_UE_OR_RETURN(&vui->max_bits_per_min_cu_denom);
+    READ_UE_OR_RETURN(&vui->log2_max_mv_length_horizontal);
+    READ_UE_OR_RETURN(&vui->log2_max_mv_length_vertical);
   }
 
   return kOk;

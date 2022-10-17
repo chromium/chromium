@@ -31,6 +31,11 @@ namespace media {
 class GpuVideoAcceleratorFactories;
 class MediaLog;
 class H264AnnexBToAvcBitstreamConverter;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+class H265AnnexBToHevcBitstreamConverter;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
+        // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // This class is a somewhat complex adapter from VideoEncodeAccelerator
 // to VideoEncoder, it takes cares of such things as
@@ -135,6 +140,13 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   // If |h264_converter_| is null, we output in annexb format. Otherwise, we
   // output in avc format.
   std::unique_ptr<H264AnnexBToAvcBitstreamConverter> h264_converter_;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  // If |h265_converter_| is null, we output in annexb format. Otherwise, we
+  // output in hevc format.
+  std::unique_ptr<H265AnnexBToHevcBitstreamConverter> h265_converter_;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
+        // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   // These are encodes that have been sent to the accelerator but have not yet

@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_avc_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_hevc_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_svc_output_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
@@ -279,23 +280,43 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   }
 
   // We are done with the parsing.
-  if (!config->hasAvc())
+  if (!config->hasAvc() && !config->hasHevc())
     return result;
 
   // We should only get here with H264 codecs.
-  if (result->codec != media::VideoCodec::kH264) {
+  if (result->codec != media::VideoCodec::kH264 &&
+      result->codec != media::VideoCodec::kHEVC) {
     exception_state.ThrowTypeError(
-        "'avc' field can only be used with AVC codecs");
+        "'avc/hevc' field can only be used with AVC/HEVC codecs");
     return nullptr;
   }
 
-  std::string avc_format = IDLEnumAsString(config->avc()->format()).Utf8();
-  if (avc_format == "avc") {
-    result->options.avc.produce_annexb = false;
-  } else if (avc_format == "annexb") {
-    result->options.avc.produce_annexb = true;
-  } else {
-    NOTREACHED();
+  switch (result->codec) {
+    case media::VideoCodec::kH264: {
+      std::string avc_format = IDLEnumAsString(config->avc()->format()).Utf8();
+      if (avc_format == "avc") {
+        result->options.avc.produce_annexb = false;
+      } else if (avc_format == "annexb") {
+        result->options.avc.produce_annexb = true;
+      } else {
+        NOTREACHED();
+      }
+      break;
+    }
+    case media::VideoCodec::kHEVC: {
+      std::string hevc_format =
+          IDLEnumAsString(config->hevc()->format()).Utf8();
+      if (hevc_format == "hevc") {
+        result->options.hevc.produce_annexb = false;
+      } else if (hevc_format == "annexb") {
+        result->options.hevc.produce_annexb = true;
+      } else {
+        NOTREACHED();
+      }
+      break;
+    }
+    default:
+      break;
   }
 
   return result;
@@ -328,6 +349,18 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
         return false;
       }
       break;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    case media::VideoCodec::kHEVC:
+      if (config->profile != media::VideoCodecProfile::HEVCPROFILE_MAIN) {
+        if (exception_state) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              "Unsupported hevc profile.");
+        }
+        return false;
+      }
+      break;
+#endif
 
     case media::VideoCodec::kH264: {
       if (config->options.frame_size.width() % 2 != 0 ||
@@ -416,6 +449,12 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
     auto* avc = AvcEncoderConfig::Create();
     avc->setFormat(config.avc()->format());
     result->setAvc(avc);
+  }
+
+  if (config.hasHevc() && config.hevc()->hasFormat()) {
+    auto* hevc = HevcEncoderConfig::Create();
+    hevc->setFormat(config.hevc()->format());
+    result->setHevc(hevc);
   }
 
   return result;

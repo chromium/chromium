@@ -53,6 +53,12 @@ struct MEDIA_EXPORT H265ProfileTierLevel {
   // Syntax elements.
   int general_profile_idc;
   int general_level_idc;  // 30x the actual level.
+  uint32_t general_profile_compatibility_flags;
+  bool general_progressive_source_flag;
+  bool general_interlaced_source_flag;
+  bool general_non_packed_constraint_flag;
+  bool general_frame_only_constraint_flag;
+  bool general_one_picture_only_constraint_flag;
 
   // From Table A.8 - General tier and level limits.
   int GetMaxLumaPs() const;
@@ -113,6 +119,12 @@ struct MEDIA_EXPORT H265VUIParameters {
   int def_disp_win_right_offset;
   int def_disp_win_top_offset;
   int def_disp_win_bottom_offset;
+  bool bitstream_restriction_flag;
+  int min_spatial_segmentation_idc;
+  int max_bytes_per_pic_denom;
+  int max_bits_per_min_cu_denom;
+  int log2_max_mv_length_horizontal;
+  int log2_max_mv_length_vertical;
 };
 
 struct MEDIA_EXPORT H265VPS {
@@ -141,6 +153,7 @@ struct MEDIA_EXPORT H265SPS {
   // Syntax elements.
   int sps_video_parameter_set_id;
   int sps_max_sub_layers_minus1;
+  bool sps_temporal_id_nesting_flag;
   H265ProfileTierLevel profile_tier_level;
   int sps_seq_parameter_set_id;
   int chroma_format_idc;
@@ -493,6 +506,10 @@ class MEDIA_EXPORT H265Parser : public H265NaluParser {
   Result ParseSliceHeader(const H265NALU& nalu,
                           H265SliceHeader* shdr,
                           H265SliceHeader* prior_shdr);
+
+  // Parse a slice header and return the associated picture parameter set ID.
+  Result ParseSliceHeaderForPictureParameterSets(const H265NALU& nalu,
+                                                 int* pps_id);
 
   // Parse a SEI message, returning it in |*sei_msg|, provided and managed
   // by the caller.

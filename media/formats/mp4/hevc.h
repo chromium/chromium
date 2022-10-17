@@ -26,12 +26,21 @@ namespace mp4 {
 struct MEDIA_EXPORT HEVCDecoderConfigurationRecord : Box {
   DECLARE_BOX_METHODS(HEVCDecoderConfigurationRecord);
 
+  // Parallel processing tools used by decoder.
+  enum {
+    kMixedParallel = 0,  // mixed mode of slice-based/tile-based/wavefront
+    kSliceParallel,      // slices can be decoded independently
+    kTileParallel,       // tiles can be decoded independently
+    kWaveFrontParallel,  // first row of CTUs decoded normally and rest
+                         // parallelized
+  };
   // Parses HEVCDecoderConfigurationRecord data encoded in |data|.
   // Note: This method is intended to parse data outside the MP4StreamParser
   //       context and therefore the box header is not expected to be present
   //       in |data|.
   // Returns true if |data| was successfully parsed.
   bool Parse(const uint8_t* data, int data_size);
+  bool Serialize(std::vector<uint8_t>& output) const;
 
   uint8_t configurationVersion;
   uint8_t general_profile_space;
@@ -57,7 +66,8 @@ struct MEDIA_EXPORT HEVCDecoderConfigurationRecord : Box {
     HVCCNALArray();
     HVCCNALArray(const HVCCNALArray& other);
     ~HVCCNALArray();
-    uint8_t first_byte;
+    uint8_t first_byte =
+        0;  // array_completeness(1)/reserved0(1)/NAL_unit_type(6)
     std::vector<HVCCNALUnit> units;
   };
   std::vector<HVCCNALArray> arrays;

@@ -848,6 +848,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webcodecs/encoded_video_chunk_metadata.idl",
           "//third_party/blink/renderer/modules/webcodecs/encoded_video_chunk_output_callback.idl",
           "//third_party/blink/renderer/modules/webcodecs/hardware_preference.idl",
+          "//third_party/blink/renderer/modules/webcodecs/hevc_encoder_config.idl",
           "//third_party/blink/renderer/modules/webcodecs/image_decode_options.idl",
           "//third_party/blink/renderer/modules/webcodecs/image_decode_result.idl",
           "//third_party/blink/renderer/modules/webcodecs/image_decoder.idl",

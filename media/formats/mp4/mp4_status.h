@@ -25,6 +25,10 @@ struct MP4StatusTraits {
     kInvalidSliceHeader = 7,
 
     kBufferTooSmall = 8,
+
+    // H265 specific
+    kInvalidVPS = 9,
+    kFailedToLookupVPS = 10,
   };
   static constexpr StatusGroupType Group() { return "MP4Status"; }
   static constexpr Codes DefaultEnumValue() { return Codes::kOk; }

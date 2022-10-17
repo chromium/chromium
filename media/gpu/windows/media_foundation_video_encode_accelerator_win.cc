@@ -115,6 +115,16 @@ eAVEncVP9VProfile GetVP9VProfile(VideoCodecProfile profile) {
   }
 }
 
+// Only eAVEncH265Vprofile_Main_420_8 is supported.
+eAVEncH265VProfile GetHEVCProfile(VideoCodecProfile profile) {
+  switch (profile) {
+    case HEVCPROFILE_MAIN:
+      return eAVEncH265VProfile_Main_420_8;
+    default:
+      return eAVEncH265VProfile_unknown;
+  }
+}
+
 bool IsSvcSupported(IMFActivate* activate) {
 #if defined(ARCH_CPU_X86)
   // x86 systems sometimes crash in video drivers here.
@@ -203,7 +213,11 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec,
   }
 
   if (codec != VideoCodec::kH264 && codec != VideoCodec::kVP9 &&
-      codec != VideoCodec::kAV1) {
+      codec != VideoCodec::kAV1
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+      && codec != VideoCodec::kHEVC
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  ) {
     DVLOG(ERROR) << "Enumerating unsupported hardware encoders.";
     return 0;
   }
@@ -346,7 +360,8 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
   SupportedProfiles profiles;
 
-  for (auto codec : {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1}) {
+  for (auto codec : {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1,
+                     VideoCodec::kHEVC}) {
     auto codec_profiles = GetSupportedProfilesForCodec(codec);
     profiles.insert(profiles.end(), codec_profiles.begin(),
                     codec_profiles.end());
@@ -360,10 +375,19 @@ VideoEncodeAccelerator::SupportedProfiles
 MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
     VideoCodec codec) {
   SupportedProfiles profiles;
-  if ((codec == VideoCodec::kVP9 &&
-       !base::FeatureList::IsEnabled(kMediaFoundationVP9Encoding)) ||
-      (codec == VideoCodec::kAV1 &&
-       !base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding))) {
+
+  if (codec == VideoCodec::kHEVC) {
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    if (!base::FeatureList::IsEnabled(kMediaFoundationHEVCEncoding)) {
+      return profiles;
+    }
+#else
+    return profiles;
+#endif  // BULIDFLAG(ENABLE_PLATFORM_HEVC)
+  } else if ((codec == VideoCodec::kVP9 &&
+              !base::FeatureList::IsEnabled(kMediaFoundationVP9Encoding)) ||
+             (codec == VideoCodec::kAV1 &&
+              !base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding))) {
     return profiles;
   }
 
@@ -421,6 +445,9 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   } else if (codec == VideoCodec::kAV1) {
     profile.profile = AV1PROFILE_PROFILE_MAIN;
     profiles.push_back(profile);
+  } else if (codec == VideoCodec::kHEVC) {
+    profile.profile = HEVCPROFILE_MAIN;
+    profiles.push_back(profile);
   }
   return profiles;
 }
@@ -459,6 +486,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     codec_ = VideoCodec::kVP9;
   } else if (config.output_profile == AV1PROFILE_PROFILE_MAIN) {
     codec_ = VideoCodec::kAV1;
+  } else if (config.output_profile == HEVCPROFILE_MAIN) {
+    codec_ = VideoCodec::kHEVC;
   }
 
   if (codec_ == VideoCodec::kUnknown) {
@@ -838,6 +867,9 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
   } else if (codec_ == VideoCodec::kVP9) {
     hr = imf_output_media_type_->SetUINT32(MF_MT_MPEG2_PROFILE,
                                            GetVP9VProfile(output_profile));
+  } else if (codec_ == VideoCodec::kHEVC) {
+    hr = imf_output_media_type_->SetUINT32(MF_MT_MPEG2_PROFILE,
+                                           GetHEVCProfile(output_profile));
   }
   RETURN_ON_HR_FAILURE(hr, "Couldn't set codec profile", false);
   hr = encoder_->SetOutputType(output_stream_id_, imf_output_media_type_.Get(),
@@ -893,11 +925,12 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     RETURN_ON_HR_FAILURE(hr, "Couldn't set CommonRateControlMode", false);
   }
 
-  // Intel drivers want the layer count to be set explicitly for H.264, even if
-  // it's one.
+  // Intel drivers want the layer count to be set explicitly for H.264/HEVC,
+  // even if it's one.
   const bool set_svc_layer_count =
       (num_temporal_layers_ > 1) ||
-      (vendor_ == DriverVendor::kIntel && codec_ == VideoCodec::kH264);
+      (vendor_ == DriverVendor::kIntel &&
+       (codec_ == VideoCodec::kH264 || codec_ == VideoCodec::kHEVC));
   if (set_svc_layer_count) {
     var.ulVal = num_temporal_layers_;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoTemporalLayerCount, &var);
@@ -1236,11 +1269,11 @@ bool MediaFoundationVideoEncodeAccelerator::AssignTemporalId(
     bool keyframe) {
   *temporal_id = 0;
 
-  // H264, VP9 and AV1 have hardware SVC support on windows. H264 can parse the
-  // information from Nalu(7.3.1 NAL unit syntax); AV1 can parse the OBU(5.3.3.
-  // OBU extension header syntax), it's future work. Unfortunately, VP9 spec
-  // doesn't provide the temporal information, we can only assign it based on
-  // spec.
+  // H264, HEVC, VP9 and AV1 have hardware SVC support on windows. H264 can
+  // parse the information from Nalu(7.3.1 NAL unit syntax); AV1 can parse the
+  // OBU(5.3.3. OBU extension header syntax), it's future work. Unfortunately,
+  // VP9 spec doesn't provide the temporal information, we can only assign it
+  // based on spec.
   if (codec_ == VideoCodec::kH264) {
     // See the 7.3.1 NAL unit syntax in H264 spec.
     // https://www.itu.int/rec/T-REC-H.264

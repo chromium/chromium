@@ -235,11 +235,6 @@ GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
     });
   }
 
-  base::EraseIf(profiles, [](const auto& vea_profile) {
-    return vea_profile.profile >= HEVCPROFILE_MIN &&
-           vea_profile.profile <= HEVCPROFILE_MAX;
-  });
-
   return profiles;
 }
 
