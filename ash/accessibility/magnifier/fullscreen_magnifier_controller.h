@@ -140,11 +140,6 @@ class ASH_EXPORT FullscreenMagnifierController
   // Returns true if magnifier is still on animation for moving viewport.
   bool IsOnAnimationForTesting() const { return is_on_animation_; }
 
-  // Disables the delay for moving magnifier window.
-  void DisableMoveMagnifierDelayForTesting() {
-    disable_move_magnifier_delay_ = true;
-  }
-
  private:
   class GestureProviderClient;
 
@@ -313,10 +308,6 @@ class ASH_EXPORT FullscreenMagnifierController
 
   // Most recent caret position in |root_window_| coordinates.
   gfx::Point caret_point_;
-
-  // Flag for disabling moving magnifier delay. It can only be true in testing
-  // mode.
-  bool disable_move_magnifier_delay_ = false;
 
   // Flag to draw a preview box around magnifier viewport area instead of
   // magnifying the screen for debugging.

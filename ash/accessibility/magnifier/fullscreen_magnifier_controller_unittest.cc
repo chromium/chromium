@@ -62,8 +62,6 @@ class FullscreenMagnifierControllerTest : public AshTestBase {
     AshTestBase::SetUp();
     UpdateDisplay(base::StringPrintf("%dx%d", kRootWidth, kRootHeight));
 
-    GetFullscreenMagnifierController()->DisableMoveMagnifierDelayForTesting();
-
     touch_event_watcher_ = std::make_unique<TouchEventWatcher>();
     GetRootWindow()->AddPreTargetHandler(touch_event_watcher_.get(),
                                          ui::EventTarget::Priority::kSystem);
