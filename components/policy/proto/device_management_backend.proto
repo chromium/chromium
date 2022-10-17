@@ -2846,13 +2846,13 @@ message DeviceRemoteCommandResponse {
   repeated SignedData secure_commands = 2;
 }
 
-// Sent by the client to the server to check if the current user is allowed
-// to update attributes (asset id and location).  The HTTP request contains an
-// end-user OAuth token.
+// Sent by the client to the server to check if the current user or device is
+// allowed to update attributes (asset id and location).  The HTTP request
+// can contain an end-user OAuth token or a device DM Token.
 message DeviceAttributeUpdatePermissionRequest {}
 
-// Response from the server specifying whether the current user is allowed to
-// update attributes (asset id and location).
+// Response from the server specifying whether the current user or device is
+// allowed to update attributes (asset id and location).
 message DeviceAttributeUpdatePermissionResponse {
   enum ResultType {
     ATTRIBUTE_UPDATE_DISALLOWED = 0;
@@ -2863,7 +2863,8 @@ message DeviceAttributeUpdatePermissionResponse {
 }
 
 // Sent by the client to the server to update device attributes (asset id and
-// location).  The HTTP request contains an end-user OAuth token.
+// location). The HTTP request can contain an end-user OAuth token or a device
+// DM Token.
 message DeviceAttributeUpdateRequest {
   // The user-generated asset identifier.
   optional string asset_id = 1;
