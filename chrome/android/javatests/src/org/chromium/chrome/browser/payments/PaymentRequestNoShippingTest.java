@@ -134,12 +134,22 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickDismissAndPayShouldNotCrash() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        // Install two payment apps, so that the PaymentRequest UI is shown rather than skipped.
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://alicepay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        // Quickly dismiss and then press on "pay."
+        mPaymentRequestTestRule.openPage();
+
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "triggerPaymentRequest([{supportedMethods:'https://bobpay.com'}, "
+                        + "{supportedMethods:'https://alicepay.com'}]);",
+                mPaymentRequestTestRule.getReadyToPay());
+
+        // Quickly dismiss and then press on "Continue"
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPaymentRequestTestRule.getPaymentRequestUI().getDialogForTest().onBackPressed();
@@ -150,8 +160,16 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
         });
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
 
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
+        // Currently, the above calls for the back button and pay button result in the
+        // PaymentRequest being in a bad state. The back button call is handled asynchronously by
+        // Android, and so the pay click happens first. The show() promise resolves, kicking off the
+        // must-call-complete timer, however the back button cancellation then tears down the
+        // PaymentRequest state - including setting the must-call-complete timer to failed.
+        //
+        // TODO(crbug.com/1375286): Avoid ending up in this state.
+        Assert.assertEquals("\"Failed to execute 'complete' on 'PaymentResponse': "
+                        + "Timed out after 60 seconds, complete() called too late\"",
+                mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("getResult()"));
     }
 
     /**
