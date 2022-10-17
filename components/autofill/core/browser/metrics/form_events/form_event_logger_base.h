@@ -91,11 +91,9 @@ class FormEventLoggerBase {
     return form_interaction_counts_;
   }
 
-#ifdef UNIT_TEST
   const FormInteractionsFlowId& form_interactions_flow_id_for_test() {
     return flow_id_;
   }
-#endif
 
  protected:
   virtual ~FormEventLoggerBase();
