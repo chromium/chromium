@@ -36,7 +36,7 @@ class ProxyManagerTest : public testing::Test {
             std::make_unique<MyFakeCupsProxyServiceDelegate>())) {}
 
   // Proxy a dummy request and add the response code to count_.
-  void ProxyRequest() const {
+  void ProxyRequest() {
     manager_->ProxyRequest({}, {}, {}, {}, {},
                            base::BindOnce(&ProxyManagerTest::Callback,
                                           weak_factory_.GetWeakPtr()));
