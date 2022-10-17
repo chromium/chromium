@@ -158,6 +158,11 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                          'due to excessive unexpected failures:')
             for builder in sorted(interrupted_builders):
                 _log.warning('  %s', builder)
+            _log.warning('Please consider retry the failed builders or '
+                         'give the builders more shards. See '
+                         'https://chromium.googlesource.com/chromium/src/+/'
+                         'HEAD/docs/testing/web_test_expectations.md'
+                         '#rebaselining-using-try-jobs')
 
         incomplete_builders = builders_without_results | interrupted_builders
         if options.fill_missing is None and incomplete_builders:

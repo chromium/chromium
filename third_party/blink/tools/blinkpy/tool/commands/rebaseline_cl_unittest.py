@@ -808,6 +808,11 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'WARNING: Some shards may have timed out or exited early due to '
             'excessive unexpected failures:\n',
             'WARNING:   MOCK Try Win\n',
+            'WARNING: Please consider retry the failed builders or '
+            'give the builders more shards. See '
+            'https://chromium.googlesource.com/chromium/src/+/'
+            'HEAD/docs/testing/web_test_expectations.md'
+            '#rebaselining-using-try-jobs\n',
             'INFO: Would you like to continue?\n',
             'INFO: Would you like to try to fill in missing results '
             'with available results?\n'
