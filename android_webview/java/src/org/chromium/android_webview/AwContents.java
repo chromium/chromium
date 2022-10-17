@@ -48,6 +48,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
@@ -1159,6 +1160,11 @@ public class AwContents implements SmartClipProvider {
 
     private void initializeAutofillProviderIfNecessary() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+
+        if (AndroidAutofillSafeModeAction.isAndroidAutofillDisabled()) {
+            Log.i(TAG, "Android autofill is disabled by SafeMode");
+            return;
+        }
 
         if (mAutofillProvider == null) {
             mAutofillProvider =

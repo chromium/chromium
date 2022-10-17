@@ -307,6 +307,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
   ]
   sources = [
     "../javatests/src/org/chromium/android_webview/test/AcceptLanguageTest.java",
+    "../javatests/src/org/chromium/android_webview/test/AndroidAutofillSafeModeTest.java",
     "../javatests/src/org/chromium/android_webview/test/AndroidProtocolHandlerTest.java",
     "../javatests/src/org/chromium/android_webview/test/AndroidScrollIntegrationTest.java",
     "../javatests/src/org/chromium/android_webview/test/AndroidViewIntegrationTest.java",
