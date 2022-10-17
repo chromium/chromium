@@ -99,14 +99,8 @@
   // TODO(crbug.com/1189815): Remember that the welcome screen has been shown in
   // NSUserDefaults.
   [self.mediator acceptToS];
-  if (fre_field_trial::GetNewMobileIdentityConsistencyFRE() ==
-      NewMobileIdentityConsistencyFRE::kOld) {
-    [self.mediator
-        setMetricsReportingEnabled:self.viewController.checkBoxSelected];
-  } else {
-    [self.mediator
-        setMetricsReportingEnabled:self.mediator.UMAReportingUserChoice];
-  }
+  [self.mediator
+      setMetricsReportingEnabled:self.mediator.UMAReportingUserChoice];
   if (self.TOSLinkWasTapped) {
     base::RecordAction(base::UserMetricsAction("MobileFreTOSLinkTapped"));
   }

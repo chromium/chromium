@@ -39,14 +39,10 @@ NSString* const kManageMetricsReportedURL = @"internal://uma-manager";
 
 NSString* const kEnterpriseIconImageName = @"enterprise_icon";
 
-NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
-    @"kMetricsConsentCheckboxAccessibilityIdentifier";
-
 }  // namespace
 
 @interface WelcomeScreenViewController () <UITextViewDelegate>
 
-@property(nonatomic, strong) CheckboxButton* metricsConsentButton;
 @property(nonatomic, strong) UITextView* footerTextView;
 @property(nonatomic, weak) id<TOSCommands> TOSHandler;
 
@@ -78,13 +74,7 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON);
 
-  self.metricsConsentButton = [self createMetricsConsentButton];
-  UIView* footerView = nil;
-  BOOL showUMAReportingCheckBox =
-      fre_field_trial::GetNewMobileIdentityConsistencyFRE() ==
-      NewMobileIdentityConsistencyFRE::kOld;
-  self.footerTextView =
-      [self createFooterTextViewWithUMAReportingLink:!showUMAReportingCheckBox];
+  self.footerTextView = [self createFooterTextView];
   [self.specificContentView addSubview:self.footerTextView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -95,23 +85,6 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
     [self.footerTextView.bottomAnchor
         constraintEqualToAnchor:self.specificContentView.bottomAnchor],
   ]];
-
-  if (!showUMAReportingCheckBox) {
-    footerView = self.footerTextView;
-  } else {
-    self.metricsConsentButton = [self createMetricsConsentButton];
-    [self.specificContentView addSubview:self.metricsConsentButton];
-    footerView = self.metricsConsentButton;
-    [NSLayoutConstraint activateConstraints:@[
-      [self.metricsConsentButton.centerXAnchor
-          constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-      [self.metricsConsentButton.widthAnchor
-          constraintEqualToAnchor:self.specificContentView.widthAnchor],
-      [self.footerTextView.topAnchor
-          constraintEqualToAnchor:self.metricsConsentButton.bottomAnchor
-                         constant:kDefaultMargin]
-    ]];
-  }
 
   if (self.isManaged) {
     UILabel* managedLabel = [self createManagedLabel];
@@ -136,13 +109,13 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
 
     // Put the footer below the header in the content area with a margin, when
     // the header is not empty.
-    [footerView.topAnchor
+    [self.footerTextView.topAnchor
         constraintGreaterThanOrEqualToAnchor:managedIcon.bottomAnchor
                                     constant:kDefaultMargin]
         .active = YES;
   } else {
     // Put the footer at the top of the content area when there is no header.
-    [footerView.topAnchor
+    [self.footerTextView.topAnchor
         constraintGreaterThanOrEqualToAnchor:self.specificContentView.topAnchor]
         .active = YES;
   }
@@ -157,12 +130,6 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
                  withUMACheckboxVisible:
                      fre_field_trial::GetNewMobileIdentityConsistencyFRE() ==
                      NewMobileIdentityConsistencyFRE::kOld];
-}
-
-#pragma mark - Accessors
-
-- (BOOL)checkBoxSelected {
-  return self.metricsConsentButton.selected;
 }
 
 #pragma mark - Private
@@ -231,40 +198,26 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
   return iconContainer;
 }
 
-// Creates and configures the UMA consent checkbox button.
-- (CheckboxButton*)createMetricsConsentButton {
-  CheckboxButton* button = [[CheckboxButton alloc] initWithFrame:CGRectZero];
-  button.accessibilityIdentifier =
-      kMetricsConsentCheckboxAccessibilityIdentifier;
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.labelText =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRICS_CONSENT);
-  button.selected = YES;
-  [button addTarget:self
-                action:@selector(didTapMetricsButton)
-      forControlEvents:UIControlEventTouchUpInside];
-
-  button.pointerInteractionEnabled = YES;
-  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-
-  return button;
-}
-
 // Creates and configures the text view for the terms of service, with a
 // formatted link to the full text of the terms of service.
-- (UITextView*)createFooterTextViewWithUMAReportingLink:
-    (BOOL)UMAReportingLink {
-  UIFontTextStyle fontTextStyle =
-      (UMAReportingLink) ? UIFontTextStyleCaption2 : UIFontTextStyleFootnote;
+- (UITextView*)createFooterTextView {
   NSAttributedString* termsOfServiceString =
-      [self createTermsOfServiceStringWithFontTextStyle:fontTextStyle];
-  NSMutableAttributedString* footerString = [[NSMutableAttributedString alloc]
-      initWithAttributedString:termsOfServiceString];
-  if (UMAReportingLink) {
-    NSAttributedString* manageMetricsReported =
-        [self createManageMetricsReportedString];
-    [footerString appendAttributedString:manageMetricsReported];
-  }
+      [self createFooterAttributedStringWithString:
+                l10n_util::GetNSString(
+                    IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE)
+                                        linkString:kTermsOfServiceURL];
+  NSAttributedString* endOfLine =
+      [self createFooterAttributedStringWithString:@"\n" linkString:nil];
+  NSAttributedString* manageMetricsReported =
+      [self createFooterAttributedStringWithString:
+                l10n_util::GetNSString(
+                    IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING)
+                                        linkString:kManageMetricsReportedURL];
+  NSMutableAttributedString* footerString =
+      [[NSMutableAttributedString alloc] init];
+  [footerString appendAttributedString:termsOfServiceString];
+  [footerString appendAttributedString:endOfLine];
+  [footerString appendAttributedString:manageMetricsReported];
 
   UITextView* textView = CreateUITextViewWithTextKit1();
   textView.scrollEnabled = NO;
@@ -280,26 +233,11 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
   return textView;
 }
 
-- (NSAttributedString*)createTermsOfServiceStringWithFontTextStyle:
-    (UIFontTextStyle)fontTextStyle {
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  paragraphStyle.alignment = NSTextAlignmentCenter;
-
-  NSDictionary* textAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSFontAttributeName : [UIFont preferredFontForTextStyle:fontTextStyle],
-    NSParagraphStyleAttributeName : paragraphStyle
-  };
-  NSDictionary* linkAttributes =
-      @{NSLinkAttributeName : [NSURL URLWithString:kTermsOfServiceURL]};
-  return AttributedStringFromStringWithLink(
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-      textAttributes, linkAttributes);
-}
-
-//  Returns a NSAttributedString for UMA reporting with a link.
-- (NSAttributedString*)createManageMetricsReportedString {
+// Returns a NSAttributedString using a `string` and `linkString`.
+// `linkString` should be nil, if `string` doesn't contain any link.
+- (NSAttributedString*)createFooterAttributedStringWithString:(NSString*)string
+                                                   linkString:
+                                                       (NSString*)linkString {
   NSMutableParagraphStyle* paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   paragraphStyle.alignment = NSTextAlignmentCenter;
@@ -310,20 +248,14 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
     NSParagraphStyleAttributeName : paragraphStyle
   };
+  if (!linkString) {
+    return [[NSAttributedString alloc] initWithString:string
+                                           attributes:textAttributes];
+  }
   NSDictionary* linkAttributes =
-      @{NSLinkAttributeName : [NSURL URLWithString:kManageMetricsReportedURL]};
-  NSMutableString* string = [[NSMutableString alloc] initWithString:@"\n"];
-  NSString* manageString =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING);
-  [string appendString:manageString];
+      @{NSLinkAttributeName : [NSURL URLWithString:linkString]};
   return AttributedStringFromStringWithLink(string, textAttributes,
                                             linkAttributes);
-}
-
-// Handler for when the metrics button gets tapped. Toggles the button's
-// selected state.
-- (void)didTapMetricsButton {
-  self.metricsConsentButton.selected = !self.metricsConsentButton.selected;
 }
 
 #pragma mark - UITextViewDelegate

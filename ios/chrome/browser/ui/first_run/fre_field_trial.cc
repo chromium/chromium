@@ -53,8 +53,6 @@ constexpr base::FeatureParam<NewMobileIdentityConsistencyFRE>::Option
          kNewMobileIdentityConsistencyFREParamTangibleSyncC},
         {NewMobileIdentityConsistencyFRE::kTwoSteps,
          kNewMobileIdentityConsistencyFREParamTwoSteps},
-        {NewMobileIdentityConsistencyFRE::kUMADialog,
-         kNewMobileIdentityConsistencyFREParamUMADialog},
 };
 
 // Parameter for signin::kNewMobileIdentityConsistencyFRE feature.

@@ -23,7 +23,6 @@
     case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
       [screens addObject:@(kSignIn)];
       break;
-    case NewMobileIdentityConsistencyFRE::kUMADialog:
     case NewMobileIdentityConsistencyFRE::kOld:
       [screens addObject:@(kLegacySignIn)];
       break;
