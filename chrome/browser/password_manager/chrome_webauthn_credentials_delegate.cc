@@ -121,3 +121,10 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
     std::move(retrieve_suggestions_callback_).Run();
   }
 }
+
+void ChromeWebAuthnCredentialsDelegate::NotifyWebAuthnRequestAborted() {
+  suggestions_ = absl::nullopt;
+  if (retrieve_suggestions_callback_) {
+    std::move(retrieve_suggestions_callback_).Run();
+  }
+}

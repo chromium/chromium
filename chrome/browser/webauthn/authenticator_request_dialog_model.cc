@@ -492,6 +492,15 @@ void AuthenticatorRequestDialogModel::RemoveObserver(Observer* observer) {
 }
 
 void AuthenticatorRequestDialogModel::OnRequestComplete() {
+  if (use_conditional_mediation_) {
+    auto* render_frame_host = content::RenderFrameHost::FromID(frame_host_id_);
+    auto* web_contents = GetWebContents();
+    if (web_contents && render_frame_host) {
+      ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
+          ->GetDelegateForFrame(render_frame_host)
+          ->NotifyWebAuthnRequestAborted();
+    }
+  }
   SetCurrentStep(Step::kClosed);
 }
 

@@ -725,25 +725,23 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
   WebAuthnCredentialsDelegate* delegate =
       password_client_->GetWebAuthnCredentialsDelegateForDriver(
           password_manager_driver_);
-  bool should_show_webauthn_suggestions = show_webauthn_credentials &&
-                                          delegate &&
-                                          delegate->IsWebAuthnAutofillEnabled();
-  if (should_show_webauthn_suggestions) {
-    absl::optional<std::vector<autofill::Suggestion>> webauthn_suggestions =
-        delegate->GetWebAuthnSuggestions();
-    if (webauthn_suggestions.has_value()) {
-      for (auto& suggestion : *webauthn_suggestions) {
-        suggestion.custom_icon = page_favicon_;
-      }
-      suggestions.insert(suggestions.end(), webauthn_suggestions->begin(),
-                         webauthn_suggestions->end());
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_suggestions;
+  if (show_webauthn_credentials && delegate &&
+      delegate->IsWebAuthnAutofillEnabled()) {
+    webauthn_suggestions = delegate->GetWebAuthnSuggestions();
+  }
+  if (webauthn_suggestions.has_value()) {
+    for (auto& suggestion : *webauthn_suggestions) {
+      suggestion.custom_icon = page_favicon_;
     }
+    suggestions.insert(suggestions.end(), webauthn_suggestions->begin(),
+                       webauthn_suggestions->end());
   }
 
   if (!fill_data_ && !show_account_storage_optin &&
       !show_account_storage_resignin &&
 #if !BUILDFLAG(IS_ANDROID)
-      !should_show_webauthn_suggestions &&
+      !webauthn_suggestions.has_value() &&
 #endif  // !BUILDFLAG(IS_ANDROID)
       suggestions.empty()) {
     // Probably the credential was deleted in the mean time.
@@ -759,7 +757,7 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Add "Sign in with another device" button.
-  if (should_show_webauthn_suggestions) {
+  if (webauthn_suggestions.has_value()) {
     suggestions.push_back(CreateWebAuthnEntry());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -12,7 +12,6 @@
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 // static
 ConditionalUiDelegateAndroid*
@@ -32,9 +31,9 @@ ConditionalUiDelegateAndroid::GetConditionalUiDelegate(
   return delegate;
 }
 
-ConditionalUiDelegateAndroid::ConditionalUiDelegateAndroid() {}
+ConditionalUiDelegateAndroid::ConditionalUiDelegateAndroid() = default;
 
-ConditionalUiDelegateAndroid::~ConditionalUiDelegateAndroid() {}
+ConditionalUiDelegateAndroid::~ConditionalUiDelegateAndroid() = default;
 
 void ConditionalUiDelegateAndroid::OnWebAuthnRequestPending(
     content::RenderFrameHost* frame_host,
@@ -52,13 +51,11 @@ void ConditionalUiDelegateAndroid::OnWebAuthnRequestPending(
 
 void ConditionalUiDelegateAndroid::CancelWebAuthnRequest(
     content::RenderFrameHost* frame_host) {
-  // Calling OnCredentialsReceived() with an empty list will prevent autofill
-  // from offering WebAuthn credentials in the popup.
+  // Prevent autofill from offering WebAuthn credentials in the popup.
   ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
       content::WebContents::FromRenderFrameHost(frame_host))
       ->GetDelegateForFrame(frame_host)
-      ->OnCredentialsReceived(
-          std::vector<device::DiscoverableCredentialMetadata>());
+      ->NotifyWebAuthnRequestAborted();
   std::move(webauthn_account_selection_callback_).Run(std::vector<uint8_t>());
 }
 
