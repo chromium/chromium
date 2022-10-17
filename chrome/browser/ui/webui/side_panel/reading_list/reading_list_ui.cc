@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_resources.h"
@@ -94,6 +95,17 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   source->AddBoolean("readAnythingEnabled", features::IsReadAnythingEnabled());
   source->AddBoolean("unifiedSidePanel",
                      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
+
+  source->AddBoolean(
+      "showPowerBookmarks",
+      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel));
+
+  bool shouldShowBookmark =
+      prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab);
+  source->AddBoolean("shouldShowBookmark", shouldShowBookmark);
+  if (shouldShowBookmark) {
+    prefs->SetBoolean(prefs::kShouldShowSidePanelBookmarkTab, false);
+  }
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

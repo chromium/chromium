@@ -3614,6 +3614,13 @@ const char kHighEfficiencyChipExpandedCount[] =
 // button in the FUE bubble once.
 const char kShouldShowPriceTrackFUEBubble[] =
     "should_show_price_track_fue_bubble_fue";
+
+// A boolean indicating whether we should show the bookmark tab for the next
+// side panel opening. Right now this is only used by Price Tracking feature
+// to show the bookmark tab (which contains the price tracking list) after
+// IPH.
+const char kShouldShowSidePanelBookmarkTab[] =
+    "should_show_side_panel_bookmark_tab";
 #endif
 
 const char kStrictMimetypeCheckForWorkerScriptsEnabled[] =

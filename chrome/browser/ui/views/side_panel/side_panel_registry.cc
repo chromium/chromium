@@ -84,6 +84,10 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
   return true;
 }
 
+void SidePanelRegistry::SetActiveEntry(SidePanelEntry* entry) {
+  active_entry_ = entry;
+}
+
 void SidePanelRegistry::OnEntryShown(SidePanelEntry* entry) {
   active_entry_ = entry;
 }

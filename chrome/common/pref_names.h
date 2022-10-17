@@ -1273,6 +1273,7 @@ extern const char kConsumerAutoUpdateToggle[];
 extern const char kHighEfficiencyChipExpandedCount[];
 
 extern const char kShouldShowPriceTrackFUEBubble[];
+extern const char kShouldShowSidePanelBookmarkTab[];
 #endif
 
 extern const char kStrictMimetypeCheckForWorkerScriptsEnabled[];
