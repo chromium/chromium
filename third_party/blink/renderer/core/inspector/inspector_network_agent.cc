@@ -1055,8 +1055,12 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
     }
   }
   response_object->setProtocol(protocol);
-  response_object->setAlternateProtocolUsage(
-      AlternateProtocolUsageToString(response.AlternateProtocolUsage()));
+  if (response.AlternateProtocolUsage() !=
+      net::AlternateProtocolUsage::
+          ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON) {
+    response_object->setAlternateProtocolUsage(
+        AlternateProtocolUsageToString(response.AlternateProtocolUsage()));
+  }
 
   const absl::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
   if (ssl_info.has_value()) {

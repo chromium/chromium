@@ -1936,8 +1936,12 @@ std::unique_ptr<Network::Response> BuildResponse(
   }
 
   response->SetProtocol(GetProtocol(url, info));
-  response->SetAlternateProtocolUsage(
-      AlternateProtocolUsageToString(info.alternate_protocol_usage));
+  if (info.alternate_protocol_usage !=
+      net::AlternateProtocolUsage::
+          ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON) {
+    response->SetAlternateProtocolUsage(
+        AlternateProtocolUsageToString(info.alternate_protocol_usage));
+  }
   response->SetRemoteIPAddress(
       net::HostPortPair::FromIPEndPoint(info.remote_endpoint).HostForURL());
   response->SetRemotePort(info.remote_endpoint.port());
