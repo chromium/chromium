@@ -1070,7 +1070,7 @@ void ManagedNetworkConfigurationHandlerImpl::Init(
 void ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork(
     base::OnceClosure callback,
     const std::string& service_path,
-    const std::string& guid) {
+    const std::string& guid) const {
   // When this is called, the policy has been fully applied and is reflected in
   // NetworkStateHandler, so it is safe to notify obserers.
   // Notifying observers is the last step of policy application to

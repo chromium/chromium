@@ -250,7 +250,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   // identified by |service_path|. Notifies observers and calls |callback|.
   void OnPolicyAppliedToNetwork(base::OnceClosure callback,
                                 const std::string& service_path,
-                                const std::string& guid);
+                                const std::string& guid) const;
 
   // Helper method to append associated Device properties to |properties|.
   void GetDeviceStateProperties(const std::string& service_path,
