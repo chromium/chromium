@@ -43,13 +43,13 @@ class CheckPseudoHasFastRejectFilterTest : public PageTestBase {
 
   bool CheckFastReject(CheckPseudoHasFastRejectFilter& filter,
                        const char* selector_text) {
-    CSSSelectorList selector_list =
+    CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
 
-    EXPECT_EQ(selector_list.First()->GetPseudoType(), CSSSelector::kPseudoHas);
+    EXPECT_EQ(selector_list->First()->GetPseudoType(), CSSSelector::kPseudoHas);
 
     CheckPseudoHasArgumentContext context(
-        selector_list.First()->SelectorList()->First());
+        selector_list->First()->SelectorList()->First());
 
     return filter.FastReject(context.GetPseudoHasArgumentHashes());
   }

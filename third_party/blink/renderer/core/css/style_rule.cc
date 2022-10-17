@@ -408,19 +408,25 @@ bool StyleRule::HasParsedProperties() const {
 void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
   visitor->Trace(lazy_property_parser_);
+
+  const CSSSelector* current = SelectorArray();
+  do {
+    visitor->Trace(*current);
+  } while (!(current++)->IsLastInSelectorList());
+
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
-StyleRulePage::StyleRulePage(CSSSelectorList selector_list,
+StyleRulePage::StyleRulePage(CSSSelectorList* selector_list,
                              CSSPropertyValueSet* properties)
     : StyleRuleBase(kPage),
       properties_(properties),
-      selector_list_(std::move(selector_list)) {}
+      selector_list_(selector_list) {}
 
 StyleRulePage::StyleRulePage(const StyleRulePage& page_rule)
     : StyleRuleBase(page_rule),
       properties_(page_rule.properties_->MutableCopy()),
-      selector_list_(page_rule.selector_list_.Copy()) {}
+      selector_list_(page_rule.selector_list_->Copy()) {}
 
 MutableCSSPropertyValueSet& StyleRulePage::MutableProperties() {
   if (!properties_->IsMutable())
@@ -431,6 +437,7 @@ MutableCSSPropertyValueSet& StyleRulePage::MutableProperties() {
 void StyleRulePage::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
   visitor->Trace(layer_);
+  visitor->Trace(selector_list_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

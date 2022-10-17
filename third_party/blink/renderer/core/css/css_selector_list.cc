@@ -32,19 +32,27 @@
 
 namespace blink {
 
-CSSSelectorList CSSSelectorList::Copy() const {
-  CSSSelectorList list;
+CSSSelectorList* CSSSelectorList::Empty() {
+  CSSSelectorList* list =
+      MakeGarbageCollected<CSSSelectorList>(base::PassKey<CSSSelectorList>());
+  new (list->first_selector_) CSSSelector();
+  list->first_selector_[0].SetMatch(CSSSelector::kInvalidList);
+  DCHECK(!list->IsValid());
+  return list;
+}
 
+CSSSelectorList* CSSSelectorList::Copy() const {
   if (!IsValid()) {
-    DCHECK(!list.IsValid());
-    return list;
+    return CSSSelectorList::Empty();
   }
 
   unsigned length = ComputeLength();
   DCHECK(length);
-  list.selector_array_ = std::make_unique<CSSSelector[]>(length);
+  CSSSelectorList* list = MakeGarbageCollected<CSSSelectorList>(
+      AdditionalBytes(sizeof(CSSSelector) * (length - 1)),
+      base::PassKey<CSSSelectorList>());
   for (unsigned i = 0; i < length; ++i)
-    new (&list.selector_array_[i]) CSSSelector(selector_array_[i]);
+    new (&list->first_selector_[i]) CSSSelector(first_selector_[i]);
 
   return list;
 }
@@ -57,21 +65,21 @@ void CSSSelectorList::AdoptSelectorVector(
   selector_array[selector_vector.size() - 1].SetLastInSelectorList(true);
 }
 
-CSSSelectorList CSSSelectorList::AdoptSelectorVector(
+CSSSelectorList* CSSSelectorList::AdoptSelectorVector(
     base::span<CSSSelector> selector_vector) {
   if (selector_vector.empty()) {
-    return {};
+    return CSSSelectorList::Empty();
   }
 
-  CSSSelectorList list;
-  list.selector_array_ =
-      std::make_unique<CSSSelector[]>(selector_vector.size());
-  AdoptSelectorVector(selector_vector, list.selector_array_.get());
+  CSSSelectorList* list = MakeGarbageCollected<CSSSelectorList>(
+      AdditionalBytes(sizeof(CSSSelector) * (selector_vector.size() - 1)),
+      base::PassKey<CSSSelectorList>());
+  AdoptSelectorVector(selector_vector, list->first_selector_);
   return list;
 }
 
 unsigned CSSSelectorList::ComputeLength() const {
-  if (!selector_array_)
+  if (!IsValid())
     return 0;
   const CSSSelector* current = First();
   while (!current->IsLastInSelectorList())
@@ -98,6 +106,16 @@ String CSSSelectorList::SelectorsText(const CSSSelector* first) {
   }
 
   return result.ReleaseString();
+}
+
+void CSSSelectorList::Trace(Visitor* visitor) const {
+  if (!IsValid()) {
+    return;
+  }
+  const CSSSelector* current = First();
+  do {
+    visitor->Trace(*current);
+  } while (!(current++)->IsLastInSelectorList());
 }
 
 }  // namespace blink

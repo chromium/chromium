@@ -43,7 +43,7 @@ WebString CanonicalizeSelector(WebString web_selector,
   // NOTE: We will always parse the selector in an insecure context mode, if we
   // have selectors which are only parsed in secure contexts, this will need to
   // accept a SecureContextMode as an argument.
-  Vector<CSSSelector> arena;
+  HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
       web_selector, arena);
@@ -52,17 +52,17 @@ WebString CanonicalizeSelector(WebString web_selector,
     return {};
   }
 
-  CSSSelectorList selector_list =
+  CSSSelectorList* selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   if (restriction == kWebSelectorTypeCompound) {
-    for (const CSSSelector* selector = selector_list.First(); selector;
-         selector = selector_list.Next(*selector)) {
+    for (const CSSSelector* selector = selector_list->First(); selector;
+         selector = selector_list->Next(*selector)) {
       if (!selector->IsCompound())
         return {};
     }
   }
-  return selector_list.SelectorsText();
+  return selector_list->SelectorsText();
 }
 
 }  // namespace blink

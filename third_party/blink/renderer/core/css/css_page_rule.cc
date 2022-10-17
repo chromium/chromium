@@ -63,15 +63,15 @@ void CSSPageRule::setSelectorText(const ExecutionContext* execution_context,
   auto* context = MakeGarbageCollected<CSSParserContext>(
       ParserContext(execution_context->GetSecureContextMode()));
   DCHECK(context);
-  CSSSelectorList selector_list = CSSParser::ParsePageSelector(
+  CSSSelectorList* selector_list = CSSParser::ParsePageSelector(
       *context, parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr,
       selector_text);
-  if (!selector_list.IsValid())
+  if (!selector_list || !selector_list->IsValid())
     return;
 
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
 
-  page_rule_->WrapperAdoptSelectorList(std::move(selector_list));
+  page_rule_->WrapperAdoptSelectorList(selector_list);
 }
 
 String CSSPageRule::cssText() const {

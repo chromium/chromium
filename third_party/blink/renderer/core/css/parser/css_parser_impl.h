@@ -122,9 +122,9 @@ class CORE_EXPORT CSSParserImpl {
       CSSDeferPropertyParsing = CSSDeferPropertyParsing::kNo,
       bool allow_import_rules = true,
       std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
-  static CSSSelectorList ParsePageSelector(CSSParserTokenRange,
-                                           StyleSheetContents*,
-                                           const CSSParserContext& context);
+  static CSSSelectorList* ParsePageSelector(CSSParserTokenRange,
+                                            StyleSheetContents*,
+                                            const CSSParserContext& context);
 
   static std::unique_ptr<Vector<double>> ParseKeyframeKeyList(const String&);
 
@@ -227,7 +227,7 @@ class CORE_EXPORT CSSParserImpl {
 
   // Used for temporary allocations of CSSParserSelector (we send it down
   // to CSSSelectorParser, which temporarily holds on to a reference to it).
-  Vector<CSSSelector> arena_;
+  HeapVector<CSSSelector> arena_;
 
   HeapHashMap<String, Member<const MediaQuerySet>> media_query_cache_;
 };

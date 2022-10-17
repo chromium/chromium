@@ -26,10 +26,10 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
       int expected_adjacent_distance_limit,
       int expected_depth_limit,
       CheckPseudoHasArgumentTraversalScope expected_traversal_scope) const {
-    CSSSelectorList selector_list =
+    CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
     CheckPseudoHasArgumentContext context(
-        selector_list.First()->SelectorList()->First());
+        selector_list->First()->SelectorList()->First());
 
     EXPECT_EQ(expected_leftmost_relation, context.LeftmostRelation())
         << "Failed : " << selector_text;
@@ -58,10 +58,10 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
     }
 
     unsigned i = 0;
-    CSSSelectorList selector_list =
+    CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
     CheckPseudoHasArgumentContext argument_context(
-        selector_list.First()->SelectorList()->First());
+        selector_list->First()->SelectorList()->First());
     for (CheckPseudoHasArgumentTraversalIterator iterator(*has_anchor_element,
                                                           argument_context);
          !iterator.AtEnd(); ++iterator, ++i) {
@@ -81,13 +81,13 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
 
   CheckPseudoHasArgumentTraversalType GetTraversalType(
       const char* selector_text) const {
-    CSSSelectorList selector_list =
+    CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
 
-    EXPECT_EQ(selector_list.First()->GetPseudoType(), CSSSelector::kPseudoHas);
+    EXPECT_EQ(selector_list->First()->GetPseudoType(), CSSSelector::kPseudoHas);
 
     CheckPseudoHasArgumentContext context(
-        selector_list.First()->SelectorList()->First());
+        selector_list->First()->SelectorList()->First());
     return context.TraversalType();
   }
 
@@ -107,10 +107,10 @@ class CheckPseudoHasArgumentContextTest : public PageTestBase {
     EXPECT_EQ(has_anchor_element->GetIdAttribute(), has_anchor_element_id);
 
     unsigned i = 0;
-    CSSSelectorList selector_list =
+    CSSSelectorList* selector_list =
         css_test_helpers::ParseSelectorList(selector_text);
     CheckPseudoHasArgumentContext argument_context(
-        selector_list.First()->SelectorList()->First());
+        selector_list->First()->SelectorList()->First());
     for (CheckPseudoHasArgumentTraversalIterator iterator(*has_anchor_element,
                                                           argument_context);
          !iterator.AtEnd(); ++iterator, ++i) {

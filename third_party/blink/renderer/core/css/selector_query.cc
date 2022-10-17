@@ -418,17 +418,17 @@ void SelectorQuery::Execute(
 }
 
 std::unique_ptr<SelectorQuery> SelectorQuery::Adopt(
-    CSSSelectorList selector_list) {
-  return base::WrapUnique(new SelectorQuery(std::move(selector_list)));
+    CSSSelectorList* selector_list) {
+  return base::WrapUnique(new SelectorQuery(selector_list));
 }
 
-SelectorQuery::SelectorQuery(CSSSelectorList selector_list)
-    : selector_list_(std::move(selector_list)),
+SelectorQuery::SelectorQuery(CSSSelectorList* selector_list)
+    : selector_list_(selector_list),
       selector_id_is_rightmost_(true),
       selector_id_affected_by_sibling_combinator_(false),
       use_slow_scan_(true) {
-  selectors_.ReserveInitialCapacity(selector_list_.ComputeLength());
-  for (const CSSSelector* selector = selector_list_.First(); selector;
+  selectors_.ReserveInitialCapacity(selector_list_->ComputeLength());
+  for (const CSSSelector* selector = selector_list_->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     if (selector->MatchesPseudoElement())
       continue;
@@ -476,7 +476,7 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
   if (it != entries_.end())
     return it->value.get();
 
-  Vector<CSSSelector> arena;
+  HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           document, document.BaseURL(), true /* origin_clean */, Referrer(),
@@ -490,15 +490,14 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
     return nullptr;
   }
 
-  CSSSelectorList selector_list =
+  CSSSelectorList* selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   const unsigned kMaximumSelectorQueryCacheSize = 256;
   if (entries_.size() == kMaximumSelectorQueryCacheSize)
     entries_.erase(entries_.begin());
 
-  return entries_
-      .insert(selectors, SelectorQuery::Adopt(std::move(selector_list)))
+  return entries_.insert(selectors, SelectorQuery::Adopt(selector_list))
       .stored_value->value.get();
 }
 

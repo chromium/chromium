@@ -53,10 +53,10 @@ class CORE_EXPORT CSSParser {
       const CSSParserContext* context,
       StyleSheetContents* style_sheet_contents,
       const String& selector,
-      Vector<CSSSelector>& arena);
-  static CSSSelectorList ParsePageSelector(const CSSParserContext&,
-                                           StyleSheetContents*,
-                                           const String&);
+      HeapVector<CSSSelector>& arena);
+  static CSSSelectorList* ParsePageSelector(const CSSParserContext&,
+                                            StyleSheetContents*,
+                                            const String&);
   static bool ParseDeclarationList(const CSSParserContext*,
                                    MutableCSSPropertyValueSet*,
                                    const String&);

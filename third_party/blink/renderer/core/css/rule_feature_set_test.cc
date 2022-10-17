@@ -79,7 +79,7 @@ class RuleFeatureSetTest : public testing::Test {
   static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
       const String& selector_text,
       RuleFeatureSet& set) {
-    Vector<CSSSelector> arena;
+    HeapVector<CSSSelector> arena;
     base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
         selector_text, arena);

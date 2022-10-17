@@ -91,7 +91,7 @@ StyleRuleBase* ParseRule(Document& document, String text);
 // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
 const CSSValue* ParseValue(Document&, String syntax, String value);
 
-CSSSelectorList ParseSelectorList(const String&);
+CSSSelectorList* ParseSelectorList(const String&);
 
 }  // namespace css_test_helpers
 }  // namespace blink

@@ -340,7 +340,7 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
 }
 
 // static
-CSSSelectorList CSSParserImpl::ParsePageSelector(
+CSSSelectorList* CSSParserImpl::ParsePageSelector(
     CSSParserTokenRange range,
     StyleSheetContents* style_sheet,
     const CSSParserContext& context) {
@@ -354,15 +354,15 @@ CSSSelectorList CSSParserImpl::ParsePageSelector(
   if (range.Peek().GetType() == kColonToken) {
     range.Consume();
     if (range.Peek().GetType() != kIdentToken)
-      return CSSSelectorList();
+      return nullptr;
     pseudo = range.Consume().Value().ToAtomicString();
   }
 
   range.ConsumeWhitespace();
   if (!range.AtEnd())
-    return CSSSelectorList();  // Parse error; extra tokens in @page selector
+    return nullptr;  // Parse error; extra tokens in @page selector
 
-  Vector<CSSSelector> selectors;
+  HeapVector<CSSSelector> selectors;
   if (!type_selector.IsNull()) {
     selectors.push_back(
         CSSSelector(QualifiedName(g_null_atom, type_selector, g_star_atom)));
@@ -372,7 +372,7 @@ CSSSelectorList CSSParserImpl::ParsePageSelector(
     selector.SetMatch(CSSSelector::kPagePseudoClass);
     selector.UpdatePseudoPage(pseudo.LowerASCII(), context.GetDocument());
     if (selector.GetPseudoType() == CSSSelector::kPseudoUnknown)
-      return CSSSelectorList();
+      return nullptr;
     if (selectors.size() != 0) {
       selectors[0].SetLastInTagHistory(false);
     }
@@ -975,9 +975,9 @@ StyleRulePage* CSSParserImpl::ConsumePageRule(CSSParserTokenStream& stream) {
     return nullptr;
   CSSParserTokenStream::BlockGuard guard(stream);
 
-  CSSSelectorList selector_list =
+  CSSSelectorList* selector_list =
       ParsePageSelector(prelude, style_sheet_, *context_);
-  if (!selector_list.IsValid())
+  if (!selector_list || !selector_list->IsValid())
     return nullptr;  // Parse error, invalid @page selector
 
   if (observer_) {
@@ -988,7 +988,7 @@ StyleRulePage* CSSParserImpl::ConsumePageRule(CSSParserTokenStream& stream) {
   ConsumeDeclarationList(stream, StyleRule::kStyle);
 
   return MakeGarbageCollected<StyleRulePage>(
-      std::move(selector_list),
+      selector_list,
       CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 

@@ -26,9 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_LIST_H_
 
-#include <memory>
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -64,44 +65,45 @@ namespace blink {
 // but not as part of a CSSSelectorList (see its class comments).
 // It reuses many of the exposed static member functions from CSSSelectorList
 // to provide a subset of its API.
-class CORE_EXPORT CSSSelectorList {
-  USING_FAST_MALLOC(CSSSelectorList);
-
+class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
  public:
-  CSSSelectorList() = default;
+  // Constructs an empty selector list, for which IsValid() returns false.
+  // TODO(sesse): Consider making this a singleton.
+  static CSSSelectorList* Empty();
 
-  CSSSelectorList(CSSSelectorList&& o)
-      : selector_array_(std::move(o.selector_array_)) {}
+  // Do not call; for Empty() and AdoptSelectorVector() only.
+  explicit CSSSelectorList(base::PassKey<CSSSelectorList>) {}
 
-  CSSSelectorList& operator=(CSSSelectorList&& o) {
-    DCHECK(this != &o);
-    selector_array_ = std::move(o.selector_array_);
-    return *this;
+  CSSSelectorList(CSSSelectorList&& o) {
+    memcpy(this, o.first_selector_, ComputeLength() * sizeof(CSSSelector));
   }
-
   ~CSSSelectorList() = default;
 
-  static CSSSelectorList AdoptSelectorVector(
+  static CSSSelectorList* AdoptSelectorVector(
       base::span<CSSSelector> selector_vector);
   static void AdoptSelectorVector(base::span<CSSSelector> selector_vector,
                                   CSSSelector* selector_array);
 
-  CSSSelectorList Copy() const;
+  CSSSelectorList* Copy() const;
 
-  bool IsValid() const { return !!selector_array_; }
-  const CSSSelector* First() const { return selector_array_.get(); }
+  bool IsValid() const {
+    return first_selector_[0].Match() != CSSSelector::kInvalidList;
+  }
+  const CSSSelector* First() const {
+    return IsValid() ? first_selector_ : nullptr;
+  }
   static const CSSSelector* Next(const CSSSelector&);
 
   // The CSS selector represents a single sequence of simple selectors.
-  bool HasOneSelector() const { return selector_array_ && !Next(*First()); }
+  bool HasOneSelector() const { return IsValid() && !Next(*first_selector_); }
   const CSSSelector& SelectorAt(wtf_size_t index) const {
-    DCHECK(selector_array_);
-    return selector_array_[index];
+    DCHECK(IsValid());
+    return first_selector_[index];
   }
 
   wtf_size_t SelectorIndex(const CSSSelector& selector) const {
-    DCHECK(First());
-    return static_cast<wtf_size_t>(&selector - First());
+    DCHECK(IsValid());
+    return static_cast<wtf_size_t>(&selector - first_selector_);
   }
 
   wtf_size_t IndexOfNextSelectorAfter(wtf_size_t index) const {
@@ -125,11 +127,15 @@ class CORE_EXPORT CSSSelectorList {
   CSSSelectorList(const CSSSelectorList&) = delete;
   CSSSelectorList& operator=(const CSSSelectorList&) = delete;
 
+  void Trace(Visitor* visitor) const;
+
  private:
-  // End of a multipart selector is indicated by is_last_in_tag_history_ bit in
-  // the last item. End of the array is indicated by is_last_in_selector_list_
-  // bit in the last item.
-  std::unique_ptr<CSSSelector[]> selector_array_;
+  // All of the remaining CSSSelector objects are allocated on
+  // AdditionalBytes, and thus live immediately after this object. The length
+  // is not stored explicitly anywhere: End of a multipart selector is
+  // indicated by is_last_in_tag_history_ bit in the last item. End of the
+  // array is indicated by is_last_in_selector_list_ bit in the last item.
+  CSSSelector first_selector_[1];
 };
 
 inline const CSSSelector* CSSSelectorList::Next(const CSSSelector& current) {

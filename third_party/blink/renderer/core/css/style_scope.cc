@@ -9,12 +9,12 @@
 
 namespace blink {
 
-StyleScope::StyleScope(CSSSelectorList from, absl::optional<CSSSelectorList> to)
-    : from_(std::move(from)), to_(std::move(to)) {}
+StyleScope::StyleScope(CSSSelectorList* from, CSSSelectorList* to)
+    : from_(from), to_(to) {}
 
 StyleScope::StyleScope(const StyleScope& other)
-    : from_(other.from_.Copy()),
-      to_(other.to_ ? absl::make_optional(other.to_->Copy()) : absl::nullopt) {}
+    : from_(other.from_->Copy()),
+      to_(other.to_.Get() ? other.to_->Copy() : nullptr) {}
 
 StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
   StyleScope* copy = MakeGarbageCollected<StyleScope>(*this);
@@ -25,7 +25,7 @@ StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
 unsigned StyleScope::Specificity() const {
   if (!specificity_.has_value()) {
     specificity_ =
-        from_.MaximumSpecificity() + (parent_ ? parent_->Specificity() : 0);
+        from_->MaximumSpecificity() + (parent_ ? parent_->Specificity() : 0);
   }
   return *specificity_;
 }
@@ -33,8 +33,8 @@ unsigned StyleScope::Specificity() const {
 StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
                               const CSSParserContext* context,
                               StyleSheetContents* style_sheet) {
-  absl::optional<CSSSelectorList> from;
-  absl::optional<CSSSelectorList> to;
+  CSSSelectorList* from = nullptr;
+  CSSSelectorList* to = nullptr;
 
   prelude.ConsumeWhitespace();
   if (prelude.Peek().GetType() != kLeftParenthesisToken)
@@ -66,7 +66,7 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
   if (!prelude.AtEnd())
     return nullptr;
 
-  return MakeGarbageCollected<StyleScope>(std::move(*from), std::move(to));
+  return MakeGarbageCollected<StyleScope>(from, to);
 }
 
 }  // namespace blink

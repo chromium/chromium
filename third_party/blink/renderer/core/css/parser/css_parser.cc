@@ -47,14 +47,14 @@ base::span<CSSSelector> CSSParser::ParseSelector(
     const CSSParserContext* context,
     StyleSheetContents* style_sheet_contents,
     const String& selector,
-    Vector<CSSSelector>& arena) {
+    HeapVector<CSSSelector>& arena) {
   CSSTokenizer tokenizer(selector);
   const auto tokens = tokenizer.TokenizeToEOF();
   return CSSSelectorParser::ParseSelector(CSSParserTokenRange(tokens), context,
                                           style_sheet_contents, arena);
 }
 
-CSSSelectorList CSSParser::ParsePageSelector(
+CSSSelectorList* CSSParser::ParsePageSelector(
     const CSSParserContext& context,
     StyleSheetContents* style_sheet_contents,
     const String& selector) {

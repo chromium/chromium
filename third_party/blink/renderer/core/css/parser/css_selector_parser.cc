@@ -97,7 +97,7 @@ base::span<CSSSelector> CSSSelectorParser::ParseSelector(
     CSSParserTokenRange range,
     const CSSParserContext* context,
     StyleSheetContents* style_sheet,
-    Vector<CSSSelector>& arena) {
+    HeapVector<CSSSelector>& arena) {
   CSSSelectorParser parser(context, style_sheet, arena);
   range.ConsumeWhitespace();
   base::span<CSSSelector> result = parser.ConsumeComplexSelectorList(range);
@@ -115,7 +115,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
     const CSSParserContext* context,
     StyleSheetContents* style_sheet,
     CSSParserObserver* observer,
-    Vector<CSSSelector>& arena) {
+    HeapVector<CSSSelector>& arena) {
   CSSSelectorParser parser(context, style_sheet, arena);
   stream.ConsumeWhitespace();
   base::span<CSSSelector> result =
@@ -125,20 +125,19 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
 }
 
 // static
-absl::optional<CSSSelectorList> CSSSelectorParser::ParseScopeBoundary(
+CSSSelectorList* CSSSelectorParser::ParseScopeBoundary(
     CSSParserTokenRange range,
     const CSSParserContext* context,
     StyleSheetContents* style_sheet) {
-  Vector<CSSSelector> arena;
+  HeapVector<CSSSelector> arena;
   CSSSelectorParser parser(context, style_sheet, arena);
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   range.ConsumeWhitespace();
-  absl::optional<CSSSelectorList> result =
-      parser.ConsumeForgivingComplexSelectorList(range);
+  CSSSelectorList* result = parser.ConsumeForgivingComplexSelectorList(range);
   DCHECK(result);
   if (!range.AtEnd())
-    return absl::nullopt;
+    return nullptr;
   for (const CSSSelector* current = result->First(); current;
        current = current->TagHistory()) {
     RecordUsageAndDeprecationsOneSelector(current, context);
@@ -151,7 +150,7 @@ bool CSSSelectorParser::SupportsComplexSelector(
     CSSParserTokenRange range,
     const CSSParserContext* context) {
   range.ConsumeWhitespace();
-  Vector<CSSSelector> arena;
+  HeapVector<CSSSelector> arena;
   CSSSelectorParser parser(context, nullptr, arena);
   parser.SetInSupportsParsing();
   base::span<CSSSelector> selectors = parser.ConsumeComplexSelector(range);
@@ -164,7 +163,7 @@ bool CSSSelectorParser::SupportsComplexSelector(
 
 CSSSelectorParser::CSSSelectorParser(const CSSParserContext* context,
                                      StyleSheetContents* style_sheet,
-                                     Vector<CSSSelector>& output)
+                                     HeapVector<CSSSelector>& output)
     : context_(context), style_sheet_(style_sheet), output_(output) {}
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
@@ -218,14 +217,14 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
   return reset_vector.CommitAddedElements();
 }
 
-CSSSelectorList CSSSelectorParser::ConsumeCompoundSelectorList(
+CSSSelectorList* CSSSelectorParser::ConsumeCompoundSelectorList(
     CSSParserTokenRange& range) {
   ResetVectorAfterScope reset_vector(output_);
 
   base::span<CSSSelector> selector = ConsumeCompoundSelector(range);
   range.ConsumeWhitespace();
   if (selector.empty()) {
-    return CSSSelectorList();
+    return nullptr;
   }
   MarkAsEntireComplexSelector(selector);
   while (!range.AtEnd() && range.Peek().GetType() == kCommaToken) {
@@ -233,19 +232,19 @@ CSSSelectorList CSSSelectorParser::ConsumeCompoundSelectorList(
     selector = ConsumeCompoundSelector(range);
     range.ConsumeWhitespace();
     if (selector.empty()) {
-      return CSSSelectorList();
+      return nullptr;
     }
     MarkAsEntireComplexSelector(selector);
   }
 
   if (failed_parsing_) {
-    return CSSSelectorList();
+    return nullptr;
   }
 
   return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
-CSSSelectorList CSSSelectorParser::ConsumeNestedSelectorList(
+CSSSelectorList* CSSSelectorParser::ConsumeNestedSelectorList(
     CSSParserTokenRange& range) {
   if (inside_compound_pseudo_)
     return ConsumeCompoundSelectorList(range);
@@ -255,7 +254,7 @@ CSSSelectorList CSSSelectorParser::ConsumeNestedSelectorList(
   if (result.empty()) {
     return {};
   } else {
-    CSSSelectorList selector_list =
+    CSSSelectorList* selector_list =
         CSSSelectorList::AdoptSelectorVector(result);
     return selector_list;
   }
@@ -288,16 +287,14 @@ class CSSAtSupportsDropInvalidWhileForgivingParsingCounter {
 
 }  // namespace
 
-absl::optional<CSSSelectorList>
-CSSSelectorParser::ConsumeForgivingNestedSelectorList(
+CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
     CSSParserTokenRange& range) {
   if (inside_compound_pseudo_)
     return ConsumeForgivingCompoundSelectorList(range);
   return ConsumeForgivingComplexSelectorList(range);
 }
 
-absl::optional<CSSSelectorList>
-CSSSelectorParser::ConsumeForgivingComplexSelectorList(
+CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     CSSParserTokenRange& range) {
   ResetVectorAfterScope reset_vector(output_);
 
@@ -305,7 +302,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
       in_supports_parsing_) {
     base::span<CSSSelector> selectors = ConsumeComplexSelectorList(range);
     if (selectors.empty()) {
-      return absl::nullopt;
+      return nullptr;
     } else {
       return CSSSelectorList::AdoptSelectorVector(selectors);
     }
@@ -334,20 +331,19 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     // Parsed nothing that was supported.
     if (in_supports_parsing_)
       at_supports_drop_invalid_counter.Count();
-    return CSSSelectorList();
+    return CSSSelectorList::Empty();
   }
 
   return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
-absl::optional<CSSSelectorList>
-CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
+CSSSelectorList* CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
     CSSParserTokenRange& range) {
   if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
       in_supports_parsing_) {
-    CSSSelectorList selector_list = ConsumeCompoundSelectorList(range);
-    if (!selector_list.IsValid())
-      return absl::nullopt;
+    CSSSelectorList* selector_list = ConsumeCompoundSelectorList(range);
+    if (!selector_list || !selector_list->IsValid())
+      return nullptr;
     return selector_list;
   }
 
@@ -377,20 +373,19 @@ CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
   if (reset_vector.AddedElements().empty()) {
     if (in_supports_parsing_)
       at_supports_drop_invalid_counter.Count();
-    return CSSSelectorList();
+    return CSSSelectorList::Empty();
   }
 
   return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
-absl::optional<CSSSelectorList>
-CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
+CSSSelectorList* CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
     CSSParserTokenRange& range) {
   if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
       in_supports_parsing_) {
-    CSSSelectorList selector_list = ConsumeRelativeSelectorList(range);
-    if (!selector_list.IsValid())
-      return absl::nullopt;
+    CSSSelectorList* selector_list = ConsumeRelativeSelectorList(range);
+    if (!selector_list || !selector_list->IsValid())
+      return nullptr;
     return selector_list;
   }
 
@@ -427,26 +422,26 @@ CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
 
     // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
     // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
-    // Should return empty CSSSelectorList. (return CSSSelectorList())
-    return absl::nullopt;
+    // Should return empty CSSSelectorList. (return CSSSelectorList::Empty())
+    return nullptr;
   }
 
   return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
-CSSSelectorList CSSSelectorParser::ConsumeRelativeSelectorList(
+CSSSelectorList* CSSSelectorParser::ConsumeRelativeSelectorList(
     CSSParserTokenRange& range) {
   ResetVectorAfterScope reset_vector(output_);
   if (ConsumeRelativeSelector(range).empty())
-    return CSSSelectorList();
+    return nullptr;
   while (!range.AtEnd() && range.Peek().GetType() == kCommaToken) {
     range.ConsumeIncludingWhitespace();
     if (ConsumeRelativeSelector(range).empty())
-      return CSSSelectorList();
+      return nullptr;
   }
 
   if (failed_parsing_)
-    return CSSSelectorList();
+    return CSSSelectorList::Empty();
 
   // :has() is not allowed in the pseudos accepting only compound selectors, or
   // not allowed after pseudo elements.
@@ -454,7 +449,7 @@ CSSSelectorList CSSSelectorParser::ConsumeRelativeSelectorList(
   if (inside_compound_pseudo_ ||
       restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
       reset_vector.AddedElements().empty()) {
-    return CSSSelectorList();
+    return nullptr;
   }
 
   return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
@@ -1152,12 +1147,11 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
           &is_inside_logical_combination_in_has_argument_,
           is_inside_has_argument_);
 
-      absl::optional<CSSSelectorList> selector_list =
+      CSSSelectorList* selector_list =
           ConsumeForgivingNestedSelectorList(block);
       if (!selector_list || !block.AtEnd())
         return false;
-      selector.SetSelectorList(
-          std::make_unique<CSSSelectorList>(std::move(*selector_list)));
+      selector.SetSelectorList(selector_list);
       output_.push_back(std::move(selector));
       return true;
     }
@@ -1168,12 +1162,11 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
           &is_inside_logical_combination_in_has_argument_,
           is_inside_has_argument_);
 
-      absl::optional<CSSSelectorList> selector_list =
+      CSSSelectorList* selector_list =
           ConsumeForgivingNestedSelectorList(block);
       if (!selector_list || !block.AtEnd())
         return false;
-      selector.SetSelectorList(
-          std::make_unique<CSSSelectorList>(std::move(*selector_list)));
+      selector.SetSelectorList(selector_list);
       output_.push_back(std::move(selector));
       return true;
     }
@@ -1188,19 +1181,18 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
           ignore_default_namespace_ ||
               selector.GetPseudoType() == CSSSelector::kPseudoCue);
 
-      CSSSelectorList selector_list = ConsumeCompoundSelectorList(block);
-      if (!selector_list.IsValid() || !block.AtEnd())
+      CSSSelectorList* selector_list = ConsumeCompoundSelectorList(block);
+      if (!selector_list || !selector_list->IsValid() || !block.AtEnd())
         return false;
 
-      if (!selector_list.HasOneSelector()) {
+      if (!selector_list->HasOneSelector()) {
         if (selector.GetPseudoType() == CSSSelector::kPseudoHost)
           return false;
         if (selector.GetPseudoType() == CSSSelector::kPseudoHostContext)
           return false;
       }
 
-      selector.SetSelectorList(
-          std::make_unique<CSSSelectorList>(std::move(selector_list)));
+      selector.SetSelectorList(selector_list);
       output_.push_back(std::move(selector));
       return true;
     }
@@ -1218,12 +1210,11 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       base::AutoReset<bool> found_complex_logical_combinations_in_has_argument(
           &found_complex_logical_combinations_in_has_argument_, false);
 
-      absl::optional<CSSSelectorList> selector_list =
+      CSSSelectorList* selector_list =
           ConsumeForgivingRelativeSelectorList(block);
       if (!selector_list || !block.AtEnd())
         return false;
-      selector.SetSelectorList(
-          std::make_unique<CSSSelectorList>(std::move(*selector_list)));
+      selector.SetSelectorList(selector_list);
       if (found_pseudo_in_has_argument_)
         selector.SetContainsPseudoInsideHasPseudoClass();
       if (found_complex_logical_combinations_in_has_argument_)
@@ -1238,12 +1229,11 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
           &is_inside_logical_combination_in_has_argument_,
           is_inside_has_argument_);
 
-      CSSSelectorList selector_list = ConsumeNestedSelectorList(block);
-      if (!selector_list.IsValid() || !block.AtEnd())
+      CSSSelectorList* selector_list = ConsumeNestedSelectorList(block);
+      if (!selector_list || !selector_list->IsValid() || !block.AtEnd())
         return false;
 
-      selector.SetSelectorList(
-          std::make_unique<CSSSelectorList>(std::move(selector_list)));
+      selector.SetSelectorList(selector_list);
       output_.push_back(std::move(selector));
       return true;
     }
@@ -1299,9 +1289,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
         if (inner_selector.empty() || !block.AtEnd())
           return false;
         MarkAsEntireComplexSelector(reset_vector.AddedElements());
-        selector.SetSelectorList(std::make_unique<CSSSelectorList>(
-            CSSSelectorList::AdoptSelectorVector(
-                reset_vector.AddedElements())));
+        selector.SetSelectorList(
+            CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements()));
       }
       output_.push_back(std::move(selector));
       return true;

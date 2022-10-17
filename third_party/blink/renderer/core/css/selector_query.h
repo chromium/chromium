@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -54,7 +55,7 @@ class CORE_EXPORT SelectorQuery {
   SelectorQuery(const SelectorQuery&) = delete;
   SelectorQuery& operator=(const SelectorQuery&) = delete;
 
-  static std::unique_ptr<SelectorQuery> Adopt(CSSSelectorList);
+  static std::unique_ptr<SelectorQuery> Adopt(CSSSelectorList*);
 
   // https://dom.spec.whatwg.org/#dom-element-matches
   bool Matches(Element&) const;
@@ -83,7 +84,7 @@ class CORE_EXPORT SelectorQuery {
   static QueryStats LastQueryStats();
 
  private:
-  explicit SelectorQuery(CSSSelectorList);
+  explicit SelectorQuery(CSSSelectorList*);
 
   template <typename SelectorQueryTrait>
   void ExecuteWithId(ContainerNode& root_node,
@@ -105,7 +106,8 @@ class CORE_EXPORT SelectorQuery {
 
   bool SelectorListMatches(ContainerNode& root_node, Element&) const;
 
-  CSSSelectorList selector_list_;
+  // TODO(sesse): Consider moving SelectorQuery to Oilpan.
+  Persistent<CSSSelectorList> selector_list_;
   // Contains the list of CSSSelector's to match, but without ones that could
   // never match like pseudo elements, div::before. This can be empty, while
   // |selector_list_| will never be empty as SelectorQueryCache::add would have

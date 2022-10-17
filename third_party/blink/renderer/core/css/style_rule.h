@@ -266,15 +266,15 @@ class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {
 
 class StyleRulePage : public StyleRuleBase {
  public:
-  StyleRulePage(CSSSelectorList, CSSPropertyValueSet*);
+  StyleRulePage(CSSSelectorList*, CSSPropertyValueSet*);
   StyleRulePage(const StyleRulePage&);
 
-  const CSSSelector* Selector() const { return selector_list_.First(); }
+  const CSSSelector* Selector() const { return selector_list_->First(); }
   const CSSPropertyValueSet& Properties() const { return *properties_; }
   MutableCSSPropertyValueSet& MutableProperties();
 
-  void WrapperAdoptSelectorList(CSSSelectorList selectors) {
-    selector_list_ = std::move(selectors);
+  void WrapperAdoptSelectorList(CSSSelectorList* selectors) {
+    selector_list_ = selectors;
   }
 
   StyleRulePage* Copy() const {
@@ -289,7 +289,7 @@ class StyleRulePage : public StyleRuleBase {
  private:
   Member<CSSPropertyValueSet> properties_;  // Cannot be null.
   Member<const CascadeLayer> layer_;
-  CSSSelectorList selector_list_;
+  Member<CSSSelectorList> selector_list_;
 };
 
 class CORE_EXPORT StyleRuleProperty : public StyleRuleBase {

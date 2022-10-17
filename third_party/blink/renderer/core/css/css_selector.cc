@@ -77,9 +77,9 @@ void CSSSelector::CreateRareData() {
   // to be careful to correctly manage explicitly destruction of |value_|
   // followed by placement new of |rare_data_|. A straight-assignment will
   // compile and may kinda work, but will be undefined behavior.
-  auto rare_data = RareData::Create(data_.value_);
+  auto* rare_data = MakeGarbageCollected<RareData>(data_.value_);
   data_.value_.~AtomicString();
-  new (&data_.rare_data_) scoped_refptr<RareData>(std::move(rare_data));
+  data_.rare_data_ = rare_data;
   has_rare_data_ = true;
 }
 
@@ -1071,10 +1071,9 @@ void CSSSelector::SetArgument(const AtomicString& value) {
   data_.rare_data_->argument_ = value;
 }
 
-void CSSSelector::SetSelectorList(
-    std::unique_ptr<CSSSelectorList> selector_list) {
+void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
   CreateRareData();
-  data_.rare_data_->selector_list_ = std::move(selector_list);
+  data_.rare_data_->selector_list_ = selector_list;
 }
 
 void CSSSelector::SetToggle(const AtomicString& name,
@@ -1113,6 +1112,8 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPagePseudoClass:
     case CSSSelector::kPseudoClass:
       break;
+    case CSSSelector::kInvalidList:
+      NOTREACHED();
   }
 
   switch (selector->GetPseudoType()) {
@@ -1335,6 +1336,16 @@ void CSSSelector::SetPartNames(
     std::unique_ptr<Vector<AtomicString>> part_names) {
   CreateRareData();
   data_.rare_data_->part_names_ = std::move(part_names);
+}
+
+void CSSSelector::Trace(Visitor* visitor) const {
+  if (has_rare_data_) {
+    visitor->Trace(data_.rare_data_);
+  }
+}
+
+void CSSSelector::RareData::Trace(Visitor* visitor) const {
+  visitor->Trace(selector_list_);
 }
 
 }  // namespace blink

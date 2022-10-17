@@ -16,15 +16,15 @@ namespace blink {
 namespace {
 
 unsigned Specificity(const String& selector_text) {
-  CSSSelectorList selector_list =
+  CSSSelectorList* selector_list =
       css_test_helpers::ParseSelectorList(selector_text);
-  return selector_list.First()->Specificity();
+  return selector_list->First()->Specificity();
 }
 
 bool HasLinkOrVisited(const String& selector_text) {
-  CSSSelectorList selector_list =
+  CSSSelectorList* selector_list =
       css_test_helpers::ParseSelectorList(selector_text);
-  return selector_list.First()->HasLinkOrVisited();
+  return selector_list->First()->HasLinkOrVisited();
 }
 
 }  // namespace
@@ -217,21 +217,21 @@ TEST(CSSSelector, CueDefaultNamespace) {
 }
 
 TEST(CSSSelector, CopyInvalidList) {
-  CSSSelectorList list;
-  EXPECT_FALSE(list.IsValid());
-  EXPECT_FALSE(list.Copy().IsValid());
+  CSSSelectorList* list = CSSSelectorList::Empty();
+  EXPECT_FALSE(list->IsValid());
+  EXPECT_FALSE(list->Copy()->IsValid());
 }
 
 TEST(CSSSelector, CopyValidList) {
-  CSSSelectorList list = css_test_helpers::ParseSelectorList(".a");
-  EXPECT_TRUE(list.IsValid());
-  EXPECT_TRUE(list.Copy().IsValid());
+  CSSSelectorList* list = css_test_helpers::ParseSelectorList(".a");
+  EXPECT_TRUE(list->IsValid());
+  EXPECT_TRUE(list->Copy()->IsValid());
 }
 
 TEST(CSSSelector, FirstInInvalidList) {
-  CSSSelectorList list;
-  EXPECT_FALSE(list.IsValid());
-  EXPECT_FALSE(list.First());
+  CSSSelectorList* list = CSSSelectorList::Empty();
+  EXPECT_FALSE(list->IsValid());
+  EXPECT_FALSE(list->First());
 }
 
 }  // namespace blink
