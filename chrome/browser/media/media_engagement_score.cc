@@ -35,27 +35,26 @@ const int kScoreMinVisitsParamDefault = 20;
 const double kHighScoreLowerThresholdParamDefault = 0.2;
 const double kHighScoreUpperThresholdParamDefault = 0.3;
 
-std::unique_ptr<base::DictionaryValue> GetMediaEngagementScoreDictForSettings(
+base::Value::Dict GetMediaEngagementScoreDictForSettings(
     const HostContentSettingsMap* settings,
     const url::Origin& origin) {
   if (!settings)
-    return std::make_unique<base::DictionaryValue>();
+    return base::Value::Dict();
 
-  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
-      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
-          origin.GetURL(), origin.GetURL(),
-          ContentSettingsType::MEDIA_ENGAGEMENT, nullptr)));
+  base::Value value = settings->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
+      nullptr);
+  if (value.is_dict())
+    return std::move(value).TakeDict();
 
-  if (value.get())
-    return value;
-  return std::make_unique<base::DictionaryValue>();
+  return base::Value::Dict();
 }
 
-void GetIntegerFromScore(base::DictionaryValue* dict,
+void GetIntegerFromScore(const base::Value::Dict& dict,
                          base::StringPiece key,
                          int* out) {
-  if (base::Value* v = dict->FindKeyOfType(key, base::Value::Type::INTEGER))
-    *out = v->GetInt();
+  if (absl::optional<int> v = dict.FindInt(key))
+    *out = v.value();
 }
 
 }  // namespace
@@ -90,18 +89,14 @@ MediaEngagementScore::MediaEngagementScore(base::Clock* clock,
           GetMediaEngagementScoreDictForSettings(settings, origin),
           settings) {}
 
-MediaEngagementScore::MediaEngagementScore(
-    base::Clock* clock,
-    const url::Origin& origin,
-    std::unique_ptr<base::DictionaryValue> score_dict,
-    HostContentSettingsMap* settings)
+MediaEngagementScore::MediaEngagementScore(base::Clock* clock,
+                                           const url::Origin& origin,
+                                           base::Value::Dict score_dict,
+                                           HostContentSettingsMap* settings)
     : origin_(origin),
       clock_(clock),
-      score_dict_(score_dict.release()),
+      score_dict_(std::move(score_dict)),
       settings_map_(settings) {
-  if (!score_dict_)
-    return;
-
   // This is to prevent using previously saved data to mark an HTTP website as
   // allowed to autoplay.
   if (base::FeatureList::IsEnabled(media::kMediaEngagementHTTPSOnly) &&
@@ -109,18 +104,18 @@ MediaEngagementScore::MediaEngagementScore(
     return;
   }
 
-  GetIntegerFromScore(score_dict_.get(), kVisitsKey, &visits_);
-  GetIntegerFromScore(score_dict_.get(), kMediaPlaybacksKey, &media_playbacks_);
+  GetIntegerFromScore(score_dict_, kVisitsKey, &visits_);
+  GetIntegerFromScore(score_dict_, kMediaPlaybacksKey, &media_playbacks_);
 
-  if (base::Value* value = score_dict_->FindKeyOfType(
-          kHasHighScoreKey, base::Value::Type::BOOLEAN)) {
-    is_high_ = value->GetBool();
+  if (absl::optional<bool> has_high_score =
+          score_dict_.FindBool(kHasHighScoreKey)) {
+    is_high_ = has_high_score.value();
   }
 
-  if (base::Value* value = score_dict_->FindKeyOfType(
-          kLastMediaPlaybackTimeKey, base::Value::Type::DOUBLE)) {
+  if (absl::optional<double> last_time =
+          score_dict_.FindDouble(kLastMediaPlaybackTimeKey)) {
     last_media_playback_time_ =
-        base::Time::FromInternalValue(value->GetDouble());
+        base::Time::FromInternalValue(last_time.value());
   }
 
   // Recalculate the total score and high bit. If the high bit changed we
@@ -163,8 +158,8 @@ void MediaEngagementScore::Commit(bool force_update) {
       base::Time::Now() + kScoreExpirationDuration};
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-      content_settings::FromNullableUniquePtrValue(std::move(score_dict_)),
-      constraints);
+      base::Value(std::move(score_dict_)), constraints);
+  score_dict_.clear();
 }
 
 void MediaEngagementScore::IncrementMediaPlaybacks() {
@@ -178,28 +173,24 @@ bool MediaEngagementScore::UpdateScoreDict(bool force_update) {
   double stored_last_media_playback_internal = 0;
   bool is_high = false;
 
-  if (!score_dict_)
-    return false;
-
   // This is to prevent saving data that we would otherwise not use.
   if (base::FeatureList::IsEnabled(media::kMediaEngagementHTTPSOnly) &&
       origin_.scheme() != url::kHttpsScheme) {
     return false;
   }
 
-  if (base::Value* value = score_dict_->FindKeyOfType(
-          kHasHighScoreKey, base::Value::Type::BOOLEAN)) {
-    is_high = value->GetBool();
+  if (absl::optional<bool> has_high_score =
+          score_dict_.FindBool(kHasHighScoreKey)) {
+    is_high = has_high_score.value();
   }
 
-  if (base::Value* value = score_dict_->FindKeyOfType(
-          kLastMediaPlaybackTimeKey, base::Value::Type::DOUBLE)) {
-    stored_last_media_playback_internal = value->GetDouble();
+  if (absl::optional<double> last_time =
+          score_dict_.FindDouble(kLastMediaPlaybackTimeKey)) {
+    stored_last_media_playback_internal = last_time.value();
   }
 
-  GetIntegerFromScore(score_dict_.get(), kVisitsKey, &stored_visits);
-  GetIntegerFromScore(score_dict_.get(), kMediaPlaybacksKey,
-                      &stored_media_playbacks);
+  GetIntegerFromScore(score_dict_, kVisitsKey, &stored_visits);
+  GetIntegerFromScore(score_dict_, kMediaPlaybacksKey, &stored_media_playbacks);
 
   bool changed = stored_visits != visits() ||
                  stored_media_playbacks != media_playbacks() ||
@@ -210,23 +201,23 @@ bool MediaEngagementScore::UpdateScoreDict(bool force_update) {
   if (!changed && !force_update)
     return false;
 
-  score_dict_->SetInteger(kVisitsKey, visits_);
-  score_dict_->SetInteger(kMediaPlaybacksKey, media_playbacks_);
-  score_dict_->SetDoubleKey(kLastMediaPlaybackTimeKey,
-                            last_media_playback_time_.ToInternalValue());
-  score_dict_->SetBoolean(kHasHighScoreKey, is_high_);
+  score_dict_.Set(kVisitsKey, visits_);
+  score_dict_.Set(kMediaPlaybacksKey, media_playbacks_);
+  score_dict_.Set(kLastMediaPlaybackTimeKey,
+                  double(last_media_playback_time_.ToInternalValue()));
+  score_dict_.Set(kHasHighScoreKey, is_high_);
 
   // visitsWithMediaTag was deprecated in https://crbug.com/998687 and should
   // be removed if we see it in |score_dict_|.
-  score_dict_->RemoveKey("visitsWithMediaTag");
+  score_dict_.Remove("visitsWithMediaTag");
 
   // These keys were deprecated in https://crbug.com/998892 and should be
   // removed if we see it in |score_dict_|.
-  score_dict_->RemoveKey("audiblePlaybacks");
-  score_dict_->RemoveKey("significantPlaybacks");
-  score_dict_->RemoveKey("highScoreChanges");
-  score_dict_->RemoveKey("mediaElementPlaybacks");
-  score_dict_->RemoveKey("audioContextPlaybacks");
+  score_dict_.Remove("audiblePlaybacks");
+  score_dict_.Remove("significantPlaybacks");
+  score_dict_.Remove("highScoreChanges");
+  score_dict_.Remove("mediaElementPlaybacks");
+  score_dict_.Remove("audioContextPlaybacks");
 
   return true;
 }

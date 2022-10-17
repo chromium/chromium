@@ -364,12 +364,11 @@ std::vector<MediaEngagementScore> MediaEngagementService::GetAllStoredScores()
     const auto& origin = it.first;
     auto* const site = it.second;
 
-    std::unique_ptr<base::Value> clone =
-        base::Value::ToUniquePtrValue(site->setting_value.Clone());
+    base::Value clone = site->setting_value.Clone();
+    DCHECK(clone.is_dict());
 
-    data.push_back(MediaEngagementScore(
-        clock_, origin, base::DictionaryValue::From(std::move(clone)),
-        settings));
+    data.push_back(MediaEngagementScore(clock_, origin,
+                                        std::move(clone).TakeDict(), settings));
   }
 
   return data;

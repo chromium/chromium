@@ -83,7 +83,7 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TestScoreInitializesAndUpdates(
-      std::unique_ptr<base::DictionaryValue> score_dict,
+      base::Value::Dict score_dict,
       int expected_visits,
       int expected_media_playbacks,
       base::Time expected_last_media_playback_time,
@@ -179,16 +179,15 @@ TEST_F(MediaEngagementScoreTest, MojoSerialization) {
 // Test that scores are read / written correctly from / to empty score
 // dictionaries.
 TEST_F(MediaEngagementScoreTest, EmptyDictionary) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  TestScoreInitializesAndUpdates(std::move(dict), 0, 0, base::Time(), false,
+  TestScoreInitializesAndUpdates(base::Value::Dict(), 0, 0, base::Time(), false,
                                  true);
 }
 
 // Test that scores are read / written correctly from / to partially empty
 // score dictionaries.
 TEST_F(MediaEngagementScoreTest, PartiallyEmptyDictionary) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger(MediaEngagementScore::kVisitsKey, 2);
+  base::Value::Dict dict;
+  dict.Set(MediaEngagementScore::kVisitsKey, int(2));
 
   TestScoreInitializesAndUpdates(std::move(dict), 2, 0, base::Time(), false,
                                  true);
@@ -197,12 +196,12 @@ TEST_F(MediaEngagementScoreTest, PartiallyEmptyDictionary) {
 // Test that scores are read / written correctly from / to populated score
 // dictionaries.
 TEST_F(MediaEngagementScoreTest, PopulatedDictionary) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
-  dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 12);
-  dict->SetDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                     test_clock.Now().ToInternalValue());
-  dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
+  base::Value::Dict dict;
+  dict.Set(MediaEngagementScore::kVisitsKey, int(20));
+  dict.Set(MediaEngagementScore::kMediaPlaybacksKey, int(12));
+  dict.Set(MediaEngagementScore::kLastMediaPlaybackTimeKey,
+           double(test_clock.Now().ToInternalValue()));
+  dict.Set(MediaEngagementScore::kHasHighScoreKey, true);
 
   TestScoreInitializesAndUpdates(std::move(dict), 20, 12, test_clock.Now(),
                                  true, true);
@@ -249,17 +248,16 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
 
   // Store some example data in content settings.
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  std::unique_ptr<base::DictionaryValue> score_dict =
-      std::make_unique<base::DictionaryValue>();
-  score_dict->SetInteger(MediaEngagementScore::kVisitsKey, example_num_visits);
-  score_dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey,
-                         example_media_playbacks);
-  score_dict->SetDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                           test_clock.Now().ToInternalValue());
-  score_dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, false);
+  base::Value::Dict score_dict;
+  score_dict.Set(MediaEngagementScore::kVisitsKey, example_num_visits);
+  score_dict.Set(MediaEngagementScore::kMediaPlaybacksKey,
+                 example_media_playbacks);
+  score_dict.Set(MediaEngagementScore::kLastMediaPlaybackTimeKey,
+                 double(test_clock.Now().ToInternalValue()));
+  score_dict.Set(MediaEngagementScore::kHasHighScoreKey, false);
   settings_map->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-      base::Value::FromUniquePtrValue(std::move(score_dict)));
+      base::Value(std::move(score_dict)));
 
   // Make sure we read that data back correctly.
   MediaEngagementScore score(&test_clock, origin, settings_map);
@@ -452,13 +450,13 @@ class MediaEngagementScoreWithHTTPSOnlyTest : public MediaEngagementScoreTest {
 // Test that scores are read / written correctly from / to populated score
 // dictionaries.
 TEST_F(MediaEngagementScoreWithHTTPSOnlyTest, PopulatedDictionary_HTTPSOnly) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
-  dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 12);
-  dict->SetDoubleKey(
+  base::Value::Dict dict;
+  dict.Set(MediaEngagementScore::kVisitsKey, int(20));
+  dict.Set(MediaEngagementScore::kMediaPlaybacksKey, int(12));
+  dict.Set(
       MediaEngagementScore::kLastMediaPlaybackTimeKey,
-      test_clock.Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
+      double(test_clock.Now().ToDeltaSinceWindowsEpoch().InMicroseconds()));
+  dict.Set(MediaEngagementScore::kHasHighScoreKey, true);
 
   TestScoreInitializesAndUpdates(std::move(dict), 0, 0, base::Time(), false,
                                  false);
