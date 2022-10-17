@@ -572,10 +572,7 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status) {
     }
   }
 
-  if (last_dropped_invalidation_) {
-    last_dropped_invalidation_->Acknowledge();
-    last_dropped_invalidation_.reset();
-  }
+  has_dropped_invalidation_ = false;
 
   nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
 
@@ -1102,11 +1099,10 @@ void ModelTypeWorker::RecordRemoteInvalidation(
   // The incoming invalidation may have caused us to exceed our buffer size.
   // Trim some items from our list, if necessary.
   while (pending_invalidations_.size() > kMaxPendingInvalidations) {
-    last_dropped_invalidation_ =
-        std::move(pending_invalidations_.front().pending_invalidation);
-    last_dropped_invalidation_->Drop();
+    has_dropped_invalidation_ = true;
     LogPendingInvalidationStatus(
         PendingInvalidationStatus::kInvalidationsOverflow);
+    pending_invalidations_.front().pending_invalidation->Drop();
     pending_invalidations_.erase(pending_invalidations_.begin());
   }
   nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
@@ -1128,11 +1124,11 @@ void ModelTypeWorker::PrepareGetUpdates(sync_pb::GetUpdateTriggers* msg) {
       !pending_invalidations_.empty() &&
       (pending_invalidations_.begin()->pending_invalidation)
           ->IsUnknownVersion());
-  msg->set_client_dropped_hints(!!last_dropped_invalidation_);
+  msg->set_client_dropped_hints(has_dropped_invalidation_);
 }
 
 bool ModelTypeWorker::HasPendingInvalidations() const {
-  return !pending_invalidations_.empty() || last_dropped_invalidation_;
+  return !pending_invalidations_.empty() || has_dropped_invalidation_;
 }
 
 GetLocalChangesRequest::GetLocalChangesRequest(

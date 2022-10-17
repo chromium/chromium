@@ -305,10 +305,9 @@ class ModelTypeWorker : public UpdateHandler,
   // successful sync cycle.
   std::vector<PendingInvalidation> pending_invalidations_;
 
-  // A helper to keep track invalidations we dropped due to overflow.
-  // TODO(crbug.com/1365290): Change it to boolean. As it is used as does
-  // |last_dropped_invalidation_| exist or not.
-  std::unique_ptr<SyncInvalidation> last_dropped_invalidation_;
+  // Whether any invalidations were dropped due to overflow since the last
+  // GetUpdates cycle.
+  bool has_dropped_invalidation_ = false;
 
   // Returns whether |pending_updates_| contain any non-deletion update.
   bool HasNonDeletionUpdates() const;
