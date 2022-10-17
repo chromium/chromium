@@ -92,8 +92,8 @@ bool LatencyInfo::Verify(const std::vector<LatencyInfo>& latency_info,
   if (latency_info.size() > kMaxLatencyInfoNumber) {
     LOG(ERROR) << referring_msg << ", LatencyInfo vector size "
                << latency_info.size() << " is too big.";
-    TRACE_EVENT_INSTANT1("input,benchmark", "LatencyInfo::Verify Fails",
-                         TRACE_EVENT_SCOPE_GLOBAL,
+    TRACE_EVENT_INSTANT1("input,benchmark,latencyInfo",
+                         "LatencyInfo::Verify Fails", TRACE_EVENT_SCOPE_GLOBAL,
                          "size", latency_info.size());
     return false;
   }
@@ -108,7 +108,7 @@ void LatencyInfo::TraceIntermediateFlowEvents(
       continue;
 
     TRACE_EVENT(
-        "input,benchmark", "LatencyInfo.Flow",
+        "input,benchmark,latencyInfo", "LatencyInfo.Flow",
         [&latency, &step](perfetto::EventContext ctx) {
           ChromeLatencyInfo* info = ctx.event()->set_chrome_latency_info();
           info->set_step(step);
@@ -195,7 +195,7 @@ void LatencyInfo::AddLatencyNumberWithTimestampImpl(
                         perfetto::Track::Global(trace_id_), ts);
     }
 
-    TRACE_EVENT("input,benchmark", "LatencyInfo.Flow",
+    TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
                 [this](perfetto::EventContext ctx) {
                   ChromeLatencyInfo* info =
                       ctx.event()->set_chrome_latency_info();
@@ -251,7 +251,7 @@ void LatencyInfo::Terminate() {
         });
   }
 
-  TRACE_EVENT("input,benchmark", "LatencyInfo.Flow",
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [this](perfetto::EventContext ctx) {
                 ChromeLatencyInfo* info =
                     ctx.event()->set_chrome_latency_info();

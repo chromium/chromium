@@ -583,8 +583,8 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
     blink::mojom::WidgetInputHandler::DispatchEventCallback callback) {
   TRACE_EVENT1("input", "InputRouterImpl::FilterAndSendWebInputEvent", "type",
                WebInputEvent::GetName(input_event.GetType()));
-  TRACE_EVENT("input,benchmark,devtools.timeline", "LatencyInfo.Flow",
-              [&latency_info](perfetto::EventContext ctx) {
+  TRACE_EVENT("input,benchmark,devtools.timeline,latencyInfo",
+              "LatencyInfo.Flow", [&latency_info](perfetto::EventContext ctx) {
                 ChromeLatencyInfo* info =
                     ctx.event()->set_chrome_latency_info();
                 info->set_trace_id(latency_info.trace_id());
