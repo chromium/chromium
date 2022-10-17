@@ -152,12 +152,12 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
                                         {kAdditionsField, 0, kPrimaryField}));
 }
 
-class FirstPartySetsHandlerImplTest : public ::testing::Test {
+class FirstPartySetsHandlerImplEnabledTest : public ::testing::Test {
  public:
-  explicit FirstPartySetsHandlerImplTest(bool embedder_will_provide_public_sets)
+  explicit FirstPartySetsHandlerImplEnabledTest()
       : handler_(FirstPartySetsHandlerImpl::CreateForTesting(
             /*enabled=*/true,
-            embedder_will_provide_public_sets)) {
+            /*embedder_will_provide_public_sets=*/true)) {
     CHECK(scoped_dir_.CreateUniqueTempDir());
     CHECK(PathExists(scoped_dir_.GetPath()));
   }
@@ -204,17 +204,12 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
   FirstPartySetsHandlerImpl handler_;
 };
 
-class FirstPartySetsHandlerImplWithoutPublicSetsTest
-    : public FirstPartySetsHandlerImplTest {
- public:
-  FirstPartySetsHandlerImplWithoutPublicSetsTest()
-      : FirstPartySetsHandlerImplTest(
-            /*embedder_will_provide_public_sets=*/false) {}
-};
-
-TEST_F(FirstPartySetsHandlerImplWithoutPublicSetsTest, EmptyDBPath) {
+TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite associated(GURL("https://associatedsite1.test"));
+
+  handler().SetPublicFirstPartySets(base::Version("0.0.1"),
+                                    WritePublicSetsFile(""));
 
   // Empty `user_data_dir` will fail to load persisted sets, but that will not
   // prevent `on_sets_ready` from being invoked.
@@ -233,14 +228,6 @@ TEST_F(FirstPartySetsHandlerImplWithoutPublicSetsTest, EmptyDBPath) {
           Pair(associated, net::FirstPartySetEntry(
                                example, net::SiteType::kAssociated, 0))));
 }
-
-class FirstPartySetsHandlerImplEnabledTest
-    : public FirstPartySetsHandlerImplTest {
- public:
-  FirstPartySetsHandlerImplEnabledTest()
-      : FirstPartySetsHandlerImplTest(
-            /*embedder_will_provide_public_sets=*/true) {}
-};
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_FeatureNotEnabled) {
