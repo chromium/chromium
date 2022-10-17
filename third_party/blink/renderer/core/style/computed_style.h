@@ -1447,6 +1447,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Hyphen utility functions.
   Hyphenation* GetHyphenation() const;
+  Hyphenation* GetHyphenationWithLimits() const;
   const AtomicString& HyphenString() const;
 
   // text-align utility functions.

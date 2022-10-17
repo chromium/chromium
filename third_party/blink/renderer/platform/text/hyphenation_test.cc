@@ -60,6 +60,25 @@ class HyphenationTest : public testing::Test {
 #endif
     return nullptr;
   }
+
+  Vector<wtf_size_t> FirstHyphenLocations(
+      StringView word,
+      const Hyphenation& hyphenation) const {
+    Vector<wtf_size_t> indexes;
+    const wtf_size_t word_len = word.length();
+    for (wtf_size_t i = 0; i < word_len; ++i)
+      indexes.push_back(hyphenation.FirstHyphenLocation(word, i));
+    return indexes;
+  }
+
+  Vector<wtf_size_t> LastHyphenLocations(StringView word,
+                                         const Hyphenation& hyphenation) const {
+    Vector<wtf_size_t> indexes;
+    const wtf_size_t word_len = word.length();
+    for (wtf_size_t i = 0; i < word_len; ++i)
+      indexes.push_back(hyphenation.LastHyphenLocation(word, i));
+    return indexes;
+  }
 #endif
 
 #if defined(USE_MINIKIN_HYPHENATION)
@@ -246,7 +265,11 @@ TEST_F(HyphenationTest, German) {
 
   Vector<wtf_size_t, 8> locations =
       hyphenation->HyphenLocations("konsonantien");
+#if BUILDFLAG(IS_MAC)
+  EXPECT_THAT(locations, ElementsAreArray({10, 8, 5, 3}));
+#else
   EXPECT_THAT(locations, ElementsAreArray({8, 5, 3}));
+#endif
 
   // Test words with non-ASCII (> U+0080) characters.
   locations = hyphenation->HyphenLocations(
@@ -270,6 +293,114 @@ TEST_F(HyphenationTest, CapitalizedWords) {
     Vector<wtf_size_t, 8> locations = de->HyphenLocations("Konsonantien");
     EXPECT_NE(locations.size(), 0u);
   }
+}
+
+// Test the used values of the `hyphenate-limit-chars` property.
+// https://w3c.github.io/csswg-drafts/css-text-4/#propdef-hyphenate-limit-chars
+TEST_F(HyphenationTest, SetLimits) {
+  scoped_refptr<Hyphenation> en = GetHyphenation("en-us");
+  if (!en)
+    return;
+
+  en->SetLimits(0, 0, 0);
+  EXPECT_THAT(en->MinPrefixLength(), Hyphenation::kDefaultMinPrefixLength);
+  EXPECT_THAT(en->MinSuffixLength(), Hyphenation::kDefaultMinSuffixLength);
+  EXPECT_THAT(en->MinWordLength(), Hyphenation::kDefaultMinWordLength);
+
+  const wtf_size_t word = Hyphenation::kDefaultMinWordLength + 1;
+  en->SetLimits(0, 0, word);
+  EXPECT_THAT(en->MinPrefixLength(), Hyphenation::kDefaultMinPrefixLength);
+  EXPECT_THAT(en->MinSuffixLength(), Hyphenation::kDefaultMinSuffixLength);
+  EXPECT_THAT(en->MinWordLength(), word);
+
+  const wtf_size_t prefix = Hyphenation::kDefaultMinPrefixLength + 1;
+  const wtf_size_t suffix = Hyphenation::kDefaultMinSuffixLength + 10;
+  en->SetLimits(prefix, suffix, 0);
+  EXPECT_THAT(en->MinPrefixLength(), prefix);
+  EXPECT_THAT(en->MinSuffixLength(), suffix);
+  EXPECT_THAT(en->MinWordLength(),
+              std::max(prefix + suffix, Hyphenation::kDefaultMinWordLength));
+
+  // If the `suffix` is missing, it is the same as the `prefix`.
+  en->SetLimits(prefix, 0, 0);
+  EXPECT_THAT(en->MinPrefixLength(), prefix);
+  EXPECT_THAT(en->MinSuffixLength(), prefix);
+  EXPECT_THAT(en->MinWordLength(),
+              std::max(prefix + prefix, Hyphenation::kDefaultMinWordLength));
+
+  // If the `prefix` is missing, it is `auto`.
+  en->SetLimits(0, suffix, 0);
+  EXPECT_THAT(en->MinPrefixLength(), Hyphenation::kDefaultMinPrefixLength);
+  EXPECT_THAT(en->MinSuffixLength(), suffix);
+  EXPECT_THAT(en->MinWordLength(),
+              std::max(Hyphenation::kDefaultMinPrefixLength + suffix,
+                       Hyphenation::kDefaultMinWordLength));
+
+  en->ResetLimits();
+}
+
+// Test the limitation with all the 3 public APIs.
+TEST_F(HyphenationTest, Limits) {
+  scoped_refptr<Hyphenation> en = GetHyphenation("en-us");
+  if (!en)
+    return;
+
+  // "example" hyphenates to "ex-am-ple".
+  EXPECT_THAT(en->HyphenLocations("example"), ElementsAre(4, 2));
+  EXPECT_THAT(FirstHyphenLocations("example", *en),
+              ElementsAre(2, 2, 4, 4, 0, 0, 0));
+  EXPECT_THAT(LastHyphenLocations("example", *en),
+              ElementsAre(0, 0, 0, 2, 2, 4, 4));
+
+  // Limiting prefix >= 2 and suffix >= 3 doesn't affect results.
+  en->SetLimits(2, 3, 0);
+  EXPECT_THAT(en->HyphenLocations("example"), ElementsAre(4, 2));
+  EXPECT_THAT(FirstHyphenLocations("example", *en),
+              ElementsAre(2, 2, 4, 4, 0, 0, 0));
+  EXPECT_THAT(LastHyphenLocations("example", *en),
+              ElementsAre(0, 0, 0, 2, 2, 4, 4));
+
+  // Limiting the prefix >= 3 disables the first hyphenation point.
+  en->SetLimits(3, 0, 0);
+  EXPECT_THAT(en->HyphenLocations("example"), ElementsAre(4));
+  EXPECT_THAT(FirstHyphenLocations("example", *en),
+              ElementsAre(4, 4, 4, 4, 0, 0, 0));
+  EXPECT_THAT(LastHyphenLocations("example", *en),
+              ElementsAre(0, 0, 0, 0, 0, 4, 4));
+
+  // Limiting the suffix >= 4 disables the last hyphenation point.
+  en->SetLimits(0, 4, 0);
+  EXPECT_THAT(en->HyphenLocations("example"), ElementsAre(2));
+  EXPECT_THAT(FirstHyphenLocations("example", *en),
+              ElementsAre(2, 2, 0, 0, 0, 0, 0));
+  EXPECT_THAT(LastHyphenLocations("example", *en),
+              ElementsAre(0, 0, 0, 2, 2, 2, 2));
+
+  // Applying both limitations results in no hyphenation points.
+  en->SetLimits(3, 4, 0);
+  EXPECT_THAT(en->HyphenLocations("example"), ElementsAre());
+  EXPECT_THAT(FirstHyphenLocations("example", *en),
+              ElementsAre(0, 0, 0, 0, 0, 0, 0));
+  EXPECT_THAT(LastHyphenLocations("example", *en),
+              ElementsAre(0, 0, 0, 0, 0, 0, 0));
+
+  // Limiting the word length >= 7 doesn't affect the results.
+  en->SetLimits(0, 0, 7);
+  EXPECT_THAT(en->HyphenLocations("example"), ElementsAre(4, 2));
+  EXPECT_THAT(FirstHyphenLocations("example", *en),
+              ElementsAre(2, 2, 4, 4, 0, 0, 0));
+  EXPECT_THAT(LastHyphenLocations("example", *en),
+              ElementsAre(0, 0, 0, 2, 2, 4, 4));
+
+  // Limiting the word length >= 8 disables hyphenating "example".
+  en->SetLimits(0, 0, 8);
+  EXPECT_THAT(en->HyphenLocations("example"), ElementsAre());
+  EXPECT_THAT(FirstHyphenLocations("example", *en),
+              ElementsAre(0, 0, 0, 0, 0, 0, 0));
+  EXPECT_THAT(LastHyphenLocations("example", *en),
+              ElementsAre(0, 0, 0, 0, 0, 0, 0));
+
+  en->ResetLimits();
 }
 #endif  // defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
 

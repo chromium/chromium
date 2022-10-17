@@ -984,6 +984,7 @@ crbug.com/591099 external/wpt/css/css-text/boundary-shaping/boundary-shaping-005
 crbug.com/591099 external/wpt/css/css-text/boundary-shaping/boundary-shaping-010.html [ Failure ]
 
 ### external/wpt/css/css-text/hyphens/
+crbug.com/924069 external/wpt/css/css-text/hyphens/hyphenate-limit-chars-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/hyphens/hyphens-shaping-001.html [ Failure ]
 crbug.com/958672 external/wpt/css/css-text/hyphens/hyphens-shaping-002.html [ Failure ]
 crbug.com/958672 external/wpt/css/css-text/hyphens/hyphens-span-001.html [ Failure ]

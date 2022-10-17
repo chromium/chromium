@@ -102,21 +102,21 @@ unsigned ShapingLineBreaker::Hyphenate(unsigned offset,
   DCHECK_GE(offset, word_start);
   DCHECK_LE(offset, word_end);
   unsigned word_len = word_end - word_start;
-  if (word_len <= Hyphenation::kMinimumSuffixLength)
+  if (word_len < hyphenation_->MinWordLength())
     return 0;
 
   const String& text = GetText();
   const StringView word(text, word_start, word_len);
   const unsigned word_offset = offset - word_start;
   if (backwards) {
-    if (word_offset < Hyphenation::kMinimumPrefixLength)
+    if (word_offset < hyphenation_->MinPrefixLength())
       return 0;
     unsigned prefix_length =
         hyphenation_->LastHyphenLocation(word, word_offset + 1);
     DCHECK(!prefix_length || prefix_length <= word_offset);
     return prefix_length;
   } else {
-    if (word_len - word_offset < Hyphenation::kMinimumSuffixLength)
+    if (word_len - word_offset < hyphenation_->MinSuffixLength())
       return 0;
     unsigned prefix_length = hyphenation_->FirstHyphenLocation(
         word, word_offset ? word_offset - 1 : 0);

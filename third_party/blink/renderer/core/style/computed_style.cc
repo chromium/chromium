@@ -1668,6 +1668,16 @@ Hyphenation* ComputedStyle::GetHyphenation() const {
   return nullptr;
 }
 
+Hyphenation* ComputedStyle::GetHyphenationWithLimits() const {
+  if (Hyphenation* hyphenation = GetHyphenation()) {
+    const StyleHyphenateLimitChars& limits = HyphenateLimitChars();
+    hyphenation->SetLimits(limits.MinBeforeChars(), limits.MinAfterChars(),
+                           limits.MinWordChars());
+    return hyphenation;
+  }
+  return nullptr;
+}
+
 const AtomicString& ComputedStyle::HyphenString() const {
   const AtomicString& hyphenation_string = HyphenationString();
   if (!hyphenation_string.IsNull())

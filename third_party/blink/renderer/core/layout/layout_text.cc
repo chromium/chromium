@@ -1344,7 +1344,7 @@ static float MaxWordFragmentWidth(LayoutText* layout_text,
                                   wtf_size_t word_length,
                                   int& suffix_start) {
   suffix_start = 0;
-  if (word_length <= Hyphenation::kMinimumSuffixLength)
+  if (word_length < hyphenation.MinWordLength())
     return 0;
 
   Vector<wtf_size_t, 8> hyphen_locations = hyphenation.HyphenLocations(

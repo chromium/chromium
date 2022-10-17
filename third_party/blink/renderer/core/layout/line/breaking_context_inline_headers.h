@@ -931,7 +931,7 @@ ALWAYS_INLINE bool BreakingContext::Hyphenate(
     WordMeasurement& word_measurement) {
   unsigned start = word_measurement.start_offset;
   unsigned len = word_measurement.end_offset - start;
-  if (len <= Hyphenation::kMinimumSuffixLength)
+  if (len < hyphenation.MinWordLength())
     return false;
 
   float hyphen_width = text.HyphenWidth(
@@ -950,14 +950,14 @@ ALWAYS_INLINE bool BreakingContext::Hyphenate(
   // TODO(fserb): Check if this need to be BreakGlyphsOption(true).
   unsigned max_prefix_length = font.OffsetForPosition(
       run, max_prefix_width, kOnlyFullGlyphs, BreakGlyphsOption(false));
-  if (max_prefix_length < Hyphenation::kMinimumPrefixLength)
+  if (max_prefix_length < hyphenation.MinPrefixLength())
     return false;
 
   unsigned prefix_length = hyphenation.LastHyphenLocation(
       StringView(text.GetText(), start, len),
-      std::min(max_prefix_length, len - Hyphenation::kMinimumSuffixLength) + 1);
+      std::min(max_prefix_length, len - hyphenation.MinSuffixLength()) + 1);
   DCHECK_LE(prefix_length, max_prefix_length);
-  if (!prefix_length || prefix_length < Hyphenation::kMinimumPrefixLength)
+  if (!prefix_length || prefix_length < hyphenation.MinPrefixLength())
     return false;
 
   // TODO(kojii): getCharacterRange() measures as if the word were not broken

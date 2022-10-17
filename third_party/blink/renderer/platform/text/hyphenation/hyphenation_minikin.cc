@@ -123,6 +123,7 @@ StringView HyphenationMinikin::WordToHyphenate(
 
 Vector<uint8_t> HyphenationMinikin::Hyphenate(const StringView& text) const {
   DCHECK(ShouldHyphenateWord(text));
+  DCHECK_GE(text.length(), MinWordLength());
   Vector<uint8_t> result;
   if (text.Is8Bit()) {
     String text16_bit = text.ToString();
@@ -142,21 +143,23 @@ wtf_size_t HyphenationMinikin::LastHyphenLocation(
     const StringView& text,
     wtf_size_t before_index) const {
   unsigned num_leading_chars;
-  StringView word = WordToHyphenate(text, &num_leading_chars);
+  const StringView word = WordToHyphenate(text, &num_leading_chars);
   if (before_index <= num_leading_chars || !ShouldHyphenateWord(word))
     return 0;
-  before_index = std::min<wtf_size_t>(before_index - num_leading_chars,
-                                      word.length() - kMinimumSuffixLength);
+  DCHECK_GE(word.length(), MinWordLength());
 
-  if (word.length() < kMinimumPrefixLength + kMinimumSuffixLength ||
-      before_index <= kMinimumPrefixLength)
+  DCHECK_GT(word.length(), MinSuffixLength());
+  before_index = std::min<wtf_size_t>(before_index - num_leading_chars,
+                                      word.length() - MinSuffixLength() + 1);
+  const wtf_size_t min_prefix_len = MinPrefixLength();
+  if (before_index <= min_prefix_len)
     return 0;
 
   Vector<uint8_t> result = Hyphenate(word);
   CHECK_LE(before_index, result.size());
   CHECK_GE(before_index, 1u);
-  static_assert(kMinimumPrefixLength >= 1, "|beforeIndex - 1| can underflow");
-  for (wtf_size_t i = before_index - 1; i >= kMinimumPrefixLength; i--) {
+  DCHECK_GE(min_prefix_len, 1u);
+  for (wtf_size_t i = before_index - 1; i >= min_prefix_len; i--) {
     if (result[i])
       return i + num_leading_chars;
   }
@@ -169,15 +172,16 @@ Vector<wtf_size_t, 8> HyphenationMinikin::HyphenLocations(
   StringView word = WordToHyphenate(text, &num_leading_chars);
 
   Vector<wtf_size_t, 8> hyphen_locations;
-  if (word.length() < kMinimumPrefixLength + kMinimumSuffixLength ||
-      !ShouldHyphenateWord(word))
+  if (!ShouldHyphenateWord(word))
     return hyphen_locations;
+  DCHECK_GE(word.length(), MinWordLength());
 
   Vector<uint8_t> result = Hyphenate(word);
-  static_assert(kMinimumPrefixLength >= 1,
-                "Change the 'if' above if this fails");
-  for (wtf_size_t i = word.length() - kMinimumSuffixLength - 1;
-       i >= kMinimumPrefixLength; i--) {
+  const wtf_size_t min_prefix_len = MinPrefixLength();
+  DCHECK_GE(min_prefix_len, 1u);
+  DCHECK_GT(word.length(), MinSuffixLength());
+  for (wtf_size_t i = word.length() - MinSuffixLength(); i >= min_prefix_len;
+       --i) {
     if (result[i])
       hyphen_locations.push_back(i + num_leading_chars);
   }
