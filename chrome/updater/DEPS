@@ -12,6 +12,7 @@ include_rules = [
   "+components/winhttp",
   "+courgette",
   "+crypto",
+  "+mojo",
   "+third_party/boringssl",
   "+third_party/crashpad",
   "+third_party/re2",

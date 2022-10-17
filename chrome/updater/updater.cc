@@ -46,6 +46,7 @@
 #include "chrome/updater/app/server/mac/server.h"
 #elif BUILDFLAG(IS_LINUX)
 #include "chrome/updater/app/server/linux/server.h"
+#include "chrome/updater/linux/ipc_support.h"
 #endif
 
 // Instructions For Windows.
@@ -136,6 +137,13 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     CHECK(false) << "--crash-me was used.";
   }
 
+#if BUILDFLAG(IS_LINUX)
+  // As long as this object is alive, all Mojo API surface relevant to IPC
+  // connections is usable, and message pipes which span a process boundary will
+  // continue to function.
+  ScopedIPCSupportWrapper ipc_support;
+#endif
+
   if (command_line->HasSwitch(kServerSwitch)) {
 #if BUILDFLAG(IS_WIN)
     // By design, Windows uses a leaky singleton server for its RPC server.
@@ -205,8 +213,8 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
   // that do not pass --recover, report the browser version switch as --recover.
   return it != std::end(commands)
              ? *it
-             : command_line->HasSwitch(kBrowserVersionSwitch) ? kRecoverSwitch
-                                                              : "";
+             : (command_line->HasSwitch(kBrowserVersionSwitch) ? kRecoverSwitch
+                                                               : "");
 }
 
 constexpr const char* BuildFlavor() {
