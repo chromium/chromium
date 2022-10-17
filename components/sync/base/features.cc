@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/sync/base/features.h"
+#include "base/feature_list.h"
 
 namespace syncer {
 
@@ -108,6 +109,10 @@ BASE_FEATURE(kSyncTrustedVaultRedoDeviceRegistration,
 
 BASE_FEATURE(kSyncTrustedVaultResetKeysAreStale,
              "SyncTrustedVaultResetKeysAreStale",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncTrustedVaultUseMD5HashedFile,
+             "SyncTrustedVaultUseMD5HashedFile",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseSyncInvalidations,

@@ -104,4 +104,8 @@ void RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
   }
 }
 
+void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status) {
+  base::UmaHistogramEnumeration("Sync.TrustedVaultFileReadStatus", status);
+}
+
 }  // namespace syncer

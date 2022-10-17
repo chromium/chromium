@@ -90,3 +90,14 @@ message LocalTrustedVault {
   // Version of the stored data, used to perform data migrations.
   optional int32 data_version = 2;
 }
+
+// Encapsulates serialized local data (LocalTrustedVault) together with its MD5
+// digest, used to store data in the file and verify its integrity.
+message LocalTrustedVaultFileContent {
+  // Serialized LocalTrustedVault.
+  optional string serialized_local_trusted_vault = 1;
+
+  // MD5 digest of `serialized_local_trusted_vault` formatted as hexadecimal
+  // string.
+  optional string md5_digest_hex_string = 2;
+}

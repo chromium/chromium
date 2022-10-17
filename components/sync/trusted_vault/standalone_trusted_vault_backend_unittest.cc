@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -83,18 +85,27 @@ CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
   return account_info;
 }
 
-bool WriteLocalTrustedVaultFile(const sync_pb::LocalTrustedVault& content,
+bool WriteLocalTrustedVaultFile(const sync_pb::LocalTrustedVault& proto,
                                 const base::FilePath& path) {
+  sync_pb::LocalTrustedVaultFileContent file_proto;
+  file_proto.set_serialized_local_trusted_vault(proto.SerializeAsString());
+  file_proto.set_md5_digest_hex_string(
+      base::MD5String(file_proto.serialized_local_trusted_vault()));
+  return base::WriteFile(path, file_proto.SerializeAsString());
+}
+
+bool WriteLocalEncryptedTrustedVaultFile(
+    const sync_pb::LocalTrustedVault& proto,
+    const base::FilePath& path) {
   std::string encrypted_content;
-  if (!OSCrypt::EncryptString(content.SerializeAsString(),
-                              &encrypted_content)) {
+  if (!OSCrypt::EncryptString(proto.SerializeAsString(), &encrypted_content)) {
     return false;
   }
   return base::WriteFile(path, encrypted_content.c_str(),
                          encrypted_content.size()) != -1;
 }
 
-sync_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
+sync_pb::LocalTrustedVault ReadLocalEncryptedTrustedVaultFile(
     const base::FilePath& path) {
   std::string ciphertext;
   base::ReadFileToString(path, &ciphertext);
@@ -105,6 +116,27 @@ sync_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
   sync_pb::LocalTrustedVault proto;
   proto.ParseFromString(decrypted_content);
   return proto;
+}
+
+sync_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
+    const base::FilePath& path) {
+  std::string file_content;
+  sync_pb::LocalTrustedVault data_proto;
+  if (!base::ReadFileToString(path, &file_content)) {
+    return data_proto;
+  }
+  sync_pb::LocalTrustedVaultFileContent file_proto;
+  if (!file_proto.ParseFromString(file_content)) {
+    return data_proto;
+  }
+
+  if (base::MD5String(file_proto.serialized_local_trusted_vault()) !=
+      file_proto.md5_digest_hex_string()) {
+    return data_proto;
+  }
+
+  data_proto.ParseFromString(file_proto.serialized_local_trusted_vault());
+  return data_proto;
 }
 
 class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
@@ -152,9 +184,10 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
 class StandaloneTrustedVaultBackendTest : public testing::Test {
  public:
   StandaloneTrustedVaultBackendTest()
-      : file_path_(
-            CreateUniqueTempDir(&temp_dir_)
-                .Append(base::FilePath(FILE_PATH_LITERAL("some_file")))) {
+      : file_path_(CreateUniqueTempDir(&temp_dir_)
+                       .Append(base::FilePath(FILE_PATH_LITERAL("some_file")))),
+        deprecated_file_path_(temp_dir_.GetPath().Append(
+            base::FilePath(FILE_PATH_LITERAL("deprecated_file")))) {
     clock_.SetNow(base::Time::Now());
     ResetBackend();
   }
@@ -174,7 +207,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     connection_ = connection.get();
 
     backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-        file_path_, std::move(delegate), std::move(connection));
+        file_path_, deprecated_file_path_, std::move(delegate),
+        std::move(connection));
     backend_->SetClockForTesting(&clock_);
     backend_->ReadDataFromDisk();
 
@@ -198,6 +232,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   StandaloneTrustedVaultBackend* backend() { return backend_.get(); }
 
   const base::FilePath& file_path() { return file_path_; }
+
+  const base::FilePath& deprecated_file_path() { return deprecated_file_path_; }
 
   // Stores |vault_keys| and mimics successful device registration, returns
   // private device key material.
@@ -254,6 +290,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
  private:
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
+  const base::FilePath deprecated_file_path_;
   raw_ptr<testing::NiceMock<MockDelegate>> delegate_;
   raw_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection_;
   base::SimpleTestClock clock_;
@@ -307,6 +344,60 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchEmptyKeys) {
   backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 }
 
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldRecordNotFoundWhenReadingFile) {
+  base::HistogramTester histogram_tester;
+  backend()->ReadDataFromDisk();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultFileReadStatus",
+      /*sample=*/TrustedVaultFileReadStatusForUMA::kNotFound,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRecordMD5DigestMismatchWhenReadingFile) {
+  sync_pb::LocalTrustedVaultFileContent file_proto;
+  file_proto.set_md5_digest_hex_string("corrupted_md5_digest");
+  ASSERT_TRUE(base::WriteFile(file_path(), file_proto.SerializeAsString()));
+
+  base::HistogramTester histogram_tester;
+  backend()->ReadDataFromDisk();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultFileReadStatus",
+      /*sample=*/TrustedVaultFileReadStatusForUMA::kMD5DigestMismatch,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRecordFileProtoDeserializationFailedWhenReadingFile) {
+  ASSERT_TRUE(base::WriteFile(file_path(), "corrupted_proto"));
+
+  base::HistogramTester histogram_tester;
+  backend()->ReadDataFromDisk();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultFileReadStatus",
+      /*sample=*/
+      TrustedVaultFileReadStatusForUMA::kFileProtoDeserializationFailed,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRecordDataProtoDeserializationFailedWhenReadingFile) {
+  const std::string kCorruptedSerializedDataProto = "corrupted_proto";
+  sync_pb::LocalTrustedVaultFileContent file_proto;
+  file_proto.set_serialized_local_trusted_vault(kCorruptedSerializedDataProto);
+  file_proto.set_md5_digest_hex_string(
+      base::MD5String(kCorruptedSerializedDataProto));
+  ASSERT_TRUE(base::WriteFile(file_path(), file_proto.SerializeAsString()));
+
+  base::HistogramTester histogram_tester;
+  backend()->ReadDataFromDisk();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultFileReadStatus",
+      /*sample=*/
+      TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
   const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
@@ -325,6 +416,45 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
 
   ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
+  base::HistogramTester histogram_tester;
+  backend()->ReadDataFromDisk();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultFileReadStatus",
+      /*sample=*/TrustedVaultFileReadStatusForUMA::kSuccess,
+      /*expected_bucket_count=*/1);
+
+  // Keys should be fetched immediately for both accounts.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey1)));
+  backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
+  backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldReadAndFetchNonEmptyKeysFromDeprecatedFile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSyncTrustedVaultUseMD5HashedFile);
+
+  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
+
+  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
+  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
+  const std::vector<uint8_t> kKey3 = {2, 3, 4};
+
+  sync_pb::LocalTrustedVault initial_data;
+  sync_pb::LocalTrustedVaultPerUser* user_data1 = initial_data.add_user();
+  sync_pb::LocalTrustedVaultPerUser* user_data2 = initial_data.add_user();
+  user_data1->set_gaia_id(account_info_1.gaia);
+  user_data2->set_gaia_id(account_info_2.gaia);
+  user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
+  user_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
+  user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
+
+  ASSERT_TRUE(WriteLocalEncryptedTrustedVaultFile(initial_data,
+                                                  deprecated_file_path()));
   backend()->ReadDataFromDisk();
 
   // Keys should be fetched immediately for both accounts.
@@ -334,6 +464,38 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
   backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldMigrateDataFromDeprecatedFile) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
+  const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
+  const int kLastKeyVersion = 1;
+
+  sync_pb::LocalTrustedVault initial_data;
+  // Migration from version 0 to version 1 makes test more complex, bypass it.
+  initial_data.set_data_version(1);
+
+  sync_pb::LocalTrustedVaultPerUser* user_data = initial_data.add_user();
+  user_data->set_gaia_id(account_info.gaia);
+  user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
+  user_data->set_last_vault_key_version(kLastKeyVersion);
+
+  ASSERT_TRUE(WriteLocalEncryptedTrustedVaultFile(initial_data,
+                                                  deprecated_file_path()));
+  backend()->ReadDataFromDisk();
+
+  // Ensure that backend is able to use data from deprecated file.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+
+  // Ensure that backend completed file migration.
+  EXPECT_FALSE(base::PathExists(deprecated_file_path()));
+  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  ASSERT_THAT(proto.user_size(), Eq(1));
+  EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey)));
+  EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(kLastKeyVersion));
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
@@ -365,13 +527,44 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
   const std::vector<uint8_t> kKey4 = {3, 4};
 
+  base::HistogramTester histogram_tester;
+  backend()->StoreKeys(kGaiaId1, {kKey1}, /*last_key_version=*/7);
+  backend()->StoreKeys(kGaiaId2, {kKey2}, /*last_key_version=*/8);
+  // Keys for |kGaiaId2| overridden, so |kKey2| should be lost.
+  backend()->StoreKeys(kGaiaId2, {kKey3, kKey4}, /*last_key_version=*/9);
+  histogram_tester.ExpectUniqueSample("Sync.TrustedVaultFileWriteSuccess",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/3);
+
+  // Read the file from disk.
+  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  ASSERT_THAT(proto.user_size(), Eq(2));
+  EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
+  EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(7));
+  EXPECT_THAT(proto.user(1).vault_key(),
+              ElementsAre(KeyMaterialEq(kKey3), KeyMaterialEq(kKey4)));
+  EXPECT_THAT(proto.user(1).last_vault_key_version(), Eq(9));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeysInDeprecatedFile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSyncTrustedVaultUseMD5HashedFile);
+
+  const std::string kGaiaId1 = "user1";
+  const std::string kGaiaId2 = "user2";
+  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
+  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
+  const std::vector<uint8_t> kKey3 = {2, 3, 4};
+  const std::vector<uint8_t> kKey4 = {3, 4};
+
   backend()->StoreKeys(kGaiaId1, {kKey1}, /*last_key_version=*/7);
   backend()->StoreKeys(kGaiaId2, {kKey2}, /*last_key_version=*/8);
   // Keys for |kGaiaId2| overridden, so |kKey2| should be lost.
   backend()->StoreKeys(kGaiaId2, {kKey3, kKey4}, /*last_key_version=*/9);
 
   // Read the file from disk.
-  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+  sync_pb::LocalTrustedVault proto =
+      ReadLocalEncryptedTrustedVaultFile(deprecated_file_path());
   ASSERT_THAT(proto.user_size(), Eq(2));
   EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
   EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(7));
@@ -466,7 +659,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
 
   // Instantiate a second backend to read the file.
   auto other_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path(), std::make_unique<testing::NiceMock<MockDelegate>>(),
+      file_path(), deprecated_file_path(),
+      std::make_unique<testing::NiceMock<MockDelegate>>(),
       std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>());
   other_backend->ReadDataFromDisk();
 
@@ -562,7 +756,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic browser restart and reset primary account.
   auto new_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path(),
+      file_path(), deprecated_file_path(),
       /*delegate=*/std::make_unique<testing::NiceMock<MockDelegate>>(),
       /*connection=*/nullptr);
   new_backend->ReadDataFromDisk();
@@ -671,13 +865,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       .Run(TrustedVaultRegistrationStatus::kLocalDataObsolete);
 
   // Verify persisted file state.
-  std::string ciphertext;
-  std::string decrypted_content;
-  sync_pb::LocalTrustedVault proto;
-  EXPECT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
-  EXPECT_THAT(ciphertext, Ne(""));
-  EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
-  EXPECT_TRUE(proto.ParseFromString(decrypted_content));
+  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(1));
   // Ensure that the failure is remembered, so there are no retries. This is a
   // regression test for crbug.com/1358015.
