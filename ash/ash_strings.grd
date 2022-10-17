@@ -2078,6 +2078,9 @@ Style notes:
       <message name="IDS_ASH_DESKS_CLOSE_ALL_UNDONE_NOTIFICATION" desc="ChromeVox announcement that is read when the user presses the button to undo desk removal.">
         Desk and windows reopened
       </message>
+      <message name="IDS_ASH_DESKS_NAME_HIGHLIGHT_NOTIFICATION" desc="Alert spoken by screen readers when user tabs to the name view of a virtual desk.">
+        Press enter or search + space to select the text for editing.
+      </message>
 
       <!-- Status tray charging strings. -->
       <message name="IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE" desc="The title of a notification indicating that a low-current USB charger has been connected.">
