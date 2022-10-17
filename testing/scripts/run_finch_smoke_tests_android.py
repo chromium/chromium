@@ -542,8 +542,8 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
           full_activity_name,
           '-d',
           url])
-    logger.info('Waiting 10 seconds')
-    time.sleep(10)
+    logger.info('Waiting 5 seconds')
+    time.sleep(5)
 
   def _wait_for_local_state_file(self, local_state_file):
     """Wait for local state file to be generated"""
