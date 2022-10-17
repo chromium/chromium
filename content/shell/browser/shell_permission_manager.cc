@@ -59,7 +59,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::VR:
     case PermissionType::AR:
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
-    case PermissionType::WINDOW_PLACEMENT:
+    case PermissionType::WINDOW_MANAGEMENT:
     case PermissionType::LOCAL_FONTS:
     case PermissionType::DISPLAY_CAPTURE:
       return false;

@@ -2188,7 +2188,7 @@ void BrowserView::UpdateBorderlessModeEnabled() {
             ->GetBrowserContext()
             ->GetPermissionController()
             ->GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::WINDOW_PLACEMENT, url)
+                blink::PermissionType::WINDOW_MANAGEMENT, url)
             .status;
 
     window_management_permission_granted_ =
@@ -2230,14 +2230,14 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
   UpdateWindowManagementPermission(
       controller
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::WINDOW_PLACEMENT, url)
+              blink::PermissionType::WINDOW_MANAGEMENT, url)
           .status);
 
   // It is safe to bind base::Unretained(this) because WebContents is
   // owned by BrowserView.
   window_management_subscription_id_ =
       controller->SubscribePermissionStatusChange(
-          blink::PermissionType::WINDOW_PLACEMENT, rfh->GetProcess(), url,
+          blink::PermissionType::WINDOW_MANAGEMENT, rfh->GetProcess(), url,
           base::BindRepeating(&BrowserView::UpdateWindowManagementPermission,
                               base::Unretained(this)));
 }

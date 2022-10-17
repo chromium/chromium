@@ -502,7 +502,7 @@ void FullscreenController::EnterFullscreenModeInternal(
           requesting_frame->GetBrowserContext()
                   ->GetPermissionController()
                   ->GetPermissionStatusForCurrentDocument(
-                      blink::PermissionType::WINDOW_PLACEMENT,
+                      blink::PermissionType::WINDOW_MANAGEMENT,
                       requesting_frame) !=
               blink::mojom::PermissionStatus::GRANTED) {
         display_id = display::kInvalidDisplayId;

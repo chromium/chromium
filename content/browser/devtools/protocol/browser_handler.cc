@@ -207,7 +207,7 @@ Response PermissionDescriptorToPermissionType(
   } else if (name == "nfc") {
     *permission_type = PermissionType::NFC;
   } else if (name == "window-placement") {
-    *permission_type = PermissionType::WINDOW_PLACEMENT;
+    *permission_type = PermissionType::WINDOW_MANAGEMENT;
   } else if (name == "local-fonts") {
     *permission_type = PermissionType::LOCAL_FONTS;
   } else if (name == "display-capture") {

@@ -151,7 +151,7 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
       *out = PermissionType::CAMERA_PAN_TILT_ZOOM;
       break;
     case ContentSettingsType::WINDOW_MANAGEMENT:
-      *out = PermissionType::WINDOW_PLACEMENT;
+      *out = PermissionType::WINDOW_MANAGEMENT;
       break;
     case ContentSettingsType::LOCAL_FONTS:
       *out = PermissionType::LOCAL_FONTS;
@@ -282,7 +282,7 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::STORAGE_ACCESS;
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
       return ContentSettingsType::CAMERA_PAN_TILT_ZOOM;
-    case PermissionType::WINDOW_PLACEMENT:
+    case PermissionType::WINDOW_MANAGEMENT:
       return ContentSettingsType::WINDOW_MANAGEMENT;
     case PermissionType::LOCAL_FONTS:
       return ContentSettingsType::LOCAL_FONTS;

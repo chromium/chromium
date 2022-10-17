@@ -423,7 +423,7 @@ bool IsWindowManagementGranted(RenderFrameHost* host) {
   DCHECK(permission_controller);
 
   return permission_controller->GetPermissionStatusForCurrentDocument(
-             blink::PermissionType::WINDOW_PLACEMENT, host) ==
+             blink::PermissionType::WINDOW_MANAGEMENT, host) ==
          blink::mojom::PermissionStatus::GRANTED;
 }
 

@@ -341,7 +341,7 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::AR:
       case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::CAMERA_PAN_TILT_ZOOM:
-      case PermissionType::WINDOW_PLACEMENT:
+      case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
       case PermissionType::DISPLAY_CAPTURE:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
@@ -577,7 +577,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::AR:
       case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::CAMERA_PAN_TILT_ZOOM:
-      case PermissionType::WINDOW_PLACEMENT:
+      case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
       case PermissionType::DISPLAY_CAPTURE:
         NOTIMPLEMENTED() << "CancelPermission not implemented for "

@@ -75,7 +75,7 @@ std::string GetPermissionString(PermissionType permission) {
       return "StorageAccess";
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
       return "CameraPanTiltZoom";
-    case PermissionType::WINDOW_PLACEMENT:
+    case PermissionType::WINDOW_MANAGEMENT:
       return "WindowPlacement";
     case PermissionType::LOCAL_FONTS:
       return "LocalFonts";
@@ -191,7 +191,7 @@ absl::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
     case PermissionName::STORAGE_ACCESS:
       return PermissionType::STORAGE_ACCESS_GRANT;
     case PermissionName::WINDOW_MANAGEMENT:
-      return PermissionType::WINDOW_PLACEMENT;
+      return PermissionType::WINDOW_MANAGEMENT;
     case PermissionName::LOCAL_FONTS:
       return PermissionType::LOCAL_FONTS;
     case PermissionName::DISPLAY_CAPTURE:
