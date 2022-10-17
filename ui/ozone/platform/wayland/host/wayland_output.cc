@@ -141,19 +141,8 @@ const std::string& WaylandOutput::description() const {
   return xdg_output_ ? xdg_output_->description() : description_;
 }
 
-int64_t WaylandOutput::display_id() const {
-  return aura_output_ && aura_output_->display_id().has_value()
-             ? aura_output_->display_id().value()
-             : output_id_;
-}
-
 const std::string& WaylandOutput::name() const {
   return xdg_output_ ? xdg_output_->name() : name_;
-}
-
-bool WaylandOutput::IsReady() const {
-  return !physical_size_.IsEmpty() &&
-         (!aura_output_ || aura_output_->IsReady());
 }
 
 zaura_output* WaylandOutput::get_zaura_output() {
@@ -178,15 +167,9 @@ void WaylandOutput::TriggerDelegateNotifications() {
       scale_factor_ = max_physical_side / max_logical_side;
     }
   }
-
-  // Wait until the aura output receives the display id.
-  if (aura_output_ && !aura_output_->IsReady())
-    return;
-
-  delegate_->OnOutputHandleMetrics(output_id_, display_id(), origin(),
-                                   logical_size(), physical_size_, insets(),
-                                   scale_factor_, panel_transform_,
-                                   logical_transform(), description());
+  delegate_->OnOutputHandleMetrics(
+      output_id_, origin(), logical_size(), physical_size_, insets(),
+      scale_factor_, panel_transform_, logical_transform(), description());
 }
 
 // static
