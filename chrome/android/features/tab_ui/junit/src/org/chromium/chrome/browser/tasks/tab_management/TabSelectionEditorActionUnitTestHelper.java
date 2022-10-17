@@ -12,6 +12,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -89,12 +90,15 @@ public class TabSelectionEditorActionUnitTestHelper {
      * @param filter a mocked {@link TabGroupModelFilter}.
      * @param selectionDelegate a mocked {@link SelectionDelegate}.
      * @param tabIdGroups defining the tab structure.
+     * @param deterministicSetOrder allow arbitrary selection order.
      */
     public static TabListHolder configureTabs(MockTabModel tabModel, TabGroupModelFilter filter,
-            SelectionDelegate<Integer> selectionDelegate, List<TabIdGroup> tabIdGroups) {
+            SelectionDelegate<Integer> selectionDelegate, List<TabIdGroup> tabIdGroups,
+            boolean deterministicSetOrder) {
         List<Tab> selectedTabs = new ArrayList<>();
         List<Tab> selectedAndRelatedTabs = new ArrayList<>();
-        Set<Integer> selectedTabIds = new LinkedHashSet<>();
+        Set<Integer> selectedTabIds =
+                deterministicSetOrder ? new LinkedHashSet<Integer>() : new HashSet<Integer>();
         for (TabIdGroup group : tabIdGroups) {
             List<Tab> groupTabs = new ArrayList<Tab>();
             for (int tabId : group.getTabIds()) {
