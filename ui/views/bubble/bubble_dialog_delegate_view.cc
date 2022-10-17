@@ -682,10 +682,11 @@ void BubbleDialogDelegate::SetArrowWithoutResizing(BubbleBorder::Arrow arrow) {
 gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   // TODO(tluk) eliminate the need for GetAnchorRect() to return an empty rect
   // if neither an |anchor_rect_| or an anchor view have been set.
-  if (!GetAnchorView())
+  View* anchor_view = GetAnchorView();
+  if (!anchor_view)
     return anchor_rect_.value_or(gfx::Rect());
 
-  anchor_rect_ = GetAnchorView()->GetAnchorBoundsInScreen();
+  anchor_rect_ = anchor_view->GetAnchorBoundsInScreen();
 
 #if !BUILDFLAG(IS_MAC)
   // GetAnchorBoundsInScreen returns values that take anchor widget's
@@ -693,8 +694,8 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   // apply transforms on windows such as ChromeOS overview mode will see bubbles
   // offset.
   // TODO(sammiequon): Investigate if we can remove |anchor_widget_| and just
-  // replace its calls with GetAnchorView()->GetWidget().
-  DCHECK_EQ(anchor_widget_, GetAnchorView()->GetWidget());
+  // replace its calls with anchor_view->GetWidget().
+  DCHECK_EQ(anchor_widget_, anchor_view->GetWidget());
   if (anchor_widget_) {
     gfx::Transform transform =
         anchor_widget_->GetNativeWindow()->layer()->GetTargetTransform();
@@ -703,6 +704,15 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
           -gfx::ToRoundedVector2d(transform.To2dTranslation()));
   }
 #endif
+
+  // Remove additional whitespace padding that was added to the view
+  // so that anchor_rect centers on the anchor and not skewed by the whitespace
+  BubbleFrameView* frame_view = GetBubbleFrameView();
+  if (frame_view && frame_view->GetDisplayVisibleArrow()) {
+    gfx::Insets* padding = anchor_view->GetProperty(kInternalPaddingKey);
+    if (padding != nullptr)
+      anchor_rect_->Inset(*padding);
+  }
 
   return anchor_rect_.value();
 }
