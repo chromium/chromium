@@ -489,13 +489,15 @@ function addStandardStats(data) {
         document.getElementById(peerConnectionElement.id + '-table-container');
     const activeConnectionClass = 'stats-table-active-connection';
     statsContainer.childNodes.forEach(node => {
-      if (node.nodeName !== 'DETAILS') {
+      if (node.nodeName !== 'DETAILS' || !node.children[1]) {
         return;
       }
-      const innerText = node.firstElementChild.innerText;
-      if (innerText.startsWith(activeCandidatePair.id)
-          || innerText.startsWith(localCandidate.id)
-          || innerText.startsWith(remoteCandidate.id)) {
+      const ids = [
+        peerConnectionElement.id + '-table-' + activeCandidatePair.id,
+        peerConnectionElement.id + '-table-' + localCandidate.id,
+        peerConnectionElement.id + '-table-' + remoteCandidate.id,
+      ];
+      if (ids.includes(node.children[1].id)) {
         node.firstElementChild.classList.add(activeConnectionClass);
       } else {
         node.firstElementChild.classList.remove(activeConnectionClass);
