@@ -5,6 +5,8 @@
 source_set("cells") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "price_notifications_price_chip_view.h",
+    "price_notifications_price_chip_view.mm",
     "price_notifications_table_view_item.h",
     "price_notifications_table_view_item.mm",
     "price_notifications_track_button.h",
@@ -16,6 +18,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/price_notifications:constants",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",

@@ -69,6 +69,12 @@ void MaybeSetUITextFieldScaledFont(BOOL maybe,
   }
 }
 
+UIFont* CreateDynamicFont(UIFontTextStyle style, UIFontWeight weight) {
+  UIFontDescriptor* fontDescriptor =
+      [UIFontDescriptor preferredFontDescriptorWithTextStyle:style];
+  return [UIFont systemFontOfSize:fontDescriptor.pointSize weight:weight];
+}
+
 UIImage* CaptureViewWithOption(UIView* view,
                                CGFloat scale,
                                CaptureViewOption option) {

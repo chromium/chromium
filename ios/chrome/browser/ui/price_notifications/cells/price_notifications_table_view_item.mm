@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 
+#import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -35,6 +38,8 @@ const CGFloat kCellContentSpacing = 14;
 
   tableCell.titleLabel.text = self.title;
   tableCell.URLLabel.text = self.entryURL;
+  [tableCell.priceNotificationsChip setPriceDrop:self.currentPrice
+                                   previousPrice:self.previousPrice];
   tableCell.tracking = self.tracking;
   tableCell.accessibilityTraits |= UIAccessibilityTraitButton;
 }
@@ -60,19 +65,23 @@ const CGFloat kCellContentSpacing = 14;
     // need to be adapted to integrate the UI elements in to the table cell.
 
     _titleLabel = [[UILabel alloc] init];
-    _URLLabel = [[UILabel alloc] init];
-    _trackButton = [[PriceNotificationsTrackButton alloc] init];
-
     _titleLabel.font =
-        [self preferredFontWithTextStyle:UIFontTextStyleSubheadline
-                                  weight:UIFontWeightSemibold];
+        CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
     _titleLabel.adjustsFontForContentSizeCategory = YES;
+    _URLLabel = [[UILabel alloc] init];
     _URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _URLLabel.adjustsFontForContentSizeCategory = YES;
     _URLLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _trackButton = [[PriceNotificationsTrackButton alloc] init];
+    _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
+    _priceNotificationsChip.translatesAutoresizingMaskIntoConstraints = NO;
 
-    UIStackView* verticalStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.titleLabel, self.URLLabel ]];
+    // Use stack views to layout the subviews except for the Price Notification
+    // Image.
+    UIStackView* verticalStack =
+        [[UIStackView alloc] initWithArrangedSubviews:@[
+          self.titleLabel, self.URLLabel, self.priceNotificationsChip
+        ]];
     verticalStack.axis = UILayoutConstraintAxisVertical;
     verticalStack.distribution = UIStackViewDistributionEqualSpacing;
     verticalStack.alignment = UIStackViewAlignmentLeading;
@@ -107,6 +116,8 @@ const CGFloat kCellContentSpacing = 14;
       [horizontalStack.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
                                       constant:kCellContentSpacing],
+      [horizontalStack.centerYAnchor
+          constraintEqualToAnchor:self.contentView.centerYAnchor],
       [horizontalStack.bottomAnchor
           constraintGreaterThanOrEqualToAnchor:self.contentView.bottomAnchor
                                       constant:-kCellContentSpacing],
@@ -124,19 +135,6 @@ const CGFloat kCellContentSpacing = 14;
 
   self.trackButton.hidden = NO;
   _tracking = tracking;
-}
-
-#pragma mark - Helpers
-
-// Creates a dynamically scablable custom font based on the given parameters.
-- (UIFont*)preferredFontWithTextStyle:(UIFontTextStyle)style
-                               weight:(UIFontWeight)weight {
-  UIFontMetrics* fontMetrics = [[UIFontMetrics alloc] initForTextStyle:style];
-  UIFontDescriptor* fontDescriptor =
-      [UIFontDescriptor preferredFontDescriptorWithTextStyle:style];
-  UIFont* font = [UIFont systemFontOfSize:fontDescriptor.pointSize
-                                   weight:weight];
-  return [fontMetrics scaledFontForFont:font];
 }
 
 @end

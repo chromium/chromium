@@ -16,9 +16,11 @@ group("resources") {
     ":darker_scrim_background_color",
     ":disabled_tint_color",
     ":favicon_background_color",
+    ":green_100_color",
     ":green_500_color",
     ":green_50_color",
     ":green_700_color",
+    ":green_800_color",
     ":green_color",
     ":grey_100_color",
     ":grey_200_color",
@@ -109,12 +111,20 @@ colorset("green_50_color") {
   sources = [ "green_50_color.colorset/Contents.json" ]
 }
 
+colorset("green_100_color") {
+  sources = [ "green_100_color.colorset/Contents.json" ]
+}
+
 colorset("green_500_color") {
   sources = [ "green_500_color.colorset/Contents.json" ]
 }
 
 colorset("green_700_color") {
   sources = [ "green_700_color.colorset/Contents.json" ]
+}
+
+colorset("green_800_color") {
+  sources = [ "green_800_color.colorset/Contents.json" ]
 }
 
 colorset("grey_50_color") {
