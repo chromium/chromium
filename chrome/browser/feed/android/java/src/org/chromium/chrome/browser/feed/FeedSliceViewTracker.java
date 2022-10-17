@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.feed;
 
+import android.app.Activity;
 import android.graphics.Rect;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -13,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 
 import java.util.ArrayList;
@@ -26,6 +29,8 @@ import java.util.HashSet;
 public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener {
     private static final String TAG = "FeedSliceViewTracker";
     private static final float DEFAULT_VIEW_LOG_THRESHOLD = .66f;
+    private static final float GOOD_VISITS_EXPOSURE_THRESHOLD = 0.5f;
+    private static final float GOOD_VISITS_COVERAGE_THRESHOLD = 0.25f;
 
     private class VisibilityObserver {
         final float mVisibilityThreshold;
@@ -37,6 +42,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         }
     }
 
+    private final Activity mActivity;
     @Nullable
     private RecyclerView mRootView;
     @Nullable
@@ -51,28 +57,50 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     // changes. Each item in the waicther list consists of the view threshold percentage and the
     // callback.
     private HashMap<String, ArrayList<VisibilityObserver>> mWatchedSliceMap = new HashMap<>();
+    private boolean mTrackTimeForGoodVisits;
+    // Thresholds for counting a view as visible for calculating time spent in feed for good visits.
+    private float mGoodVisitExposureThreshold;
+    private float mGoodVisitCoverageThreshold;
+    // Timestamp for keeping track of time spent in feed for good visits.
+    private long mLastGoodVisibleTime;
 
     /** Notified the first time slices are visible */
     public interface Observer {
         // Invoked the first time a slice is 66% visible.
         void sliceVisible(String sliceId);
+        // Invoked any time at least one slice is X% exposed and all visible content slices cover Y%
+        // of the viewport (see Good Visits threshold params).
+        void reportContentSliceVisibleTime(long elapsedMs);
         // Invoked when feed content is first visible. This can happens as soon as an xsurface view
         // is partially visible.
         void feedContentVisible();
     }
 
-    public FeedSliceViewTracker(@NonNull RecyclerView rootView,
+    public FeedSliceViewTracker(@NonNull RecyclerView rootView, @NonNull Activity activity,
             @NonNull NtpListContentManager contentManager, @Nullable ListLayoutHelper layoutHelper,
             @NonNull Observer observer) {
+        mActivity = activity;
         mRootView = rootView;
         mContentManager = contentManager;
         mLayoutHelper = layoutHelper;
         mObserver = observer;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CLIENT_GOOD_VISITS)) {
+            mTrackTimeForGoodVisits = true;
+            mGoodVisitExposureThreshold =
+                    (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                            ChromeFeatureList.FEED_CLIENT_GOOD_VISITS, "slice_exposure_threshold",
+                            GOOD_VISITS_EXPOSURE_THRESHOLD);
+            mGoodVisitCoverageThreshold =
+                    (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                            ChromeFeatureList.FEED_CLIENT_GOOD_VISITS, "slice_coverage_threshold",
+                            GOOD_VISITS_COVERAGE_THRESHOLD);
+        }
     }
 
     /** Attaches the tracker to the root view. */
     public void bind() {
         mRootView.getViewTreeObserver().addOnPreDrawListener(this);
+        mLastGoodVisibleTime = 0L;
     }
 
     /** Detaches the tracker from the view. */
@@ -80,6 +108,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         if (mRootView != null && mRootView.getViewTreeObserver().isAlive()) {
             mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
         }
+        reportTimeForGoodVisitsIfNeeded();
     }
 
     /** Stop observing rootView. Prevents further calls to observer. */
@@ -146,6 +175,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
 
         int firstPosition = mLayoutHelper.findFirstVisibleItemPosition();
         int lastPosition = mLayoutHelper.findLastVisibleItemPosition();
+        boolean countTimeForGoodVisits = false;
         for (int i = firstPosition;
                 i <= lastPosition && i < mContentManager.getItemCount() && i >= 0; ++i) {
             String contentKey = mContentManager.getContent(i).getKey();
@@ -184,6 +214,12 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
                 }
             }
 
+            if (mTrackTimeForGoodVisits) {
+                countTimeForGoodVisits = countTimeForGoodVisits
+                        || isViewVisible(childView, mGoodVisitExposureThreshold)
+                        || isViewCoveringViewport(childView, mGoodVisitCoverageThreshold);
+            }
+
             if (mContentKeysVisible.contains(contentKey)
                     || !isViewVisible(childView, DEFAULT_VIEW_LOG_THRESHOLD)) {
                 continue;
@@ -192,16 +228,53 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
             mContentKeysVisible.add(contentKey);
             mObserver.sliceVisible(contentKey);
         }
+
+        if (mTrackTimeForGoodVisits) {
+            reportTimeForGoodVisitsIfNeeded();
+            if (countTimeForGoodVisits) {
+                mLastGoodVisibleTime = SystemClock.elapsedRealtime();
+            }
+        }
+
         return true;
+    }
+
+    private void reportTimeForGoodVisitsIfNeeded() {
+        // Report elapsed time since we last saw that content was visible enough.
+        if (mLastGoodVisibleTime != 0L) {
+            mObserver.reportContentSliceVisibleTime(
+                    SystemClock.elapsedRealtime() - mLastGoodVisibleTime);
+            mLastGoodVisibleTime = 0L;
+        }
     }
 
     @VisibleForTesting
     boolean isViewVisible(View childView, float threshold) {
-        Rect rect = new Rect(0, 0, childView.getWidth(), childView.getHeight());
-        int viewArea = rect.width() * rect.height();
+        int viewArea = getViewArea(childView);
         if (viewArea <= 0) return false;
-        if (!mRootView.getChildVisibleRect(childView, rect, null)) return false;
-        int visibleArea = rect.width() * rect.height();
-        return (float) visibleArea / viewArea >= threshold;
+        return (float) getVisibleArea(childView) / viewArea >= threshold;
+    }
+
+    @VisibleForTesting
+    boolean isViewCoveringViewport(View childView, float threshold) {
+        int viewportArea = getViewportArea();
+        if (viewportArea <= 0) return false;
+        return (float) getVisibleArea(childView) / viewportArea >= threshold;
+    }
+
+    private int getViewArea(View childView) {
+        return childView.getWidth() * childView.getHeight();
+    }
+
+    private int getViewportArea() {
+        Rect viewport = new Rect();
+        mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(viewport);
+        return viewport.width() * viewport.height();
+    }
+
+    private int getVisibleArea(View childView) {
+        Rect rect = new Rect();
+        if (!mRootView.getChildVisibleRect(childView, rect, null)) return 0;
+        return rect.width() * rect.height();
     }
 }

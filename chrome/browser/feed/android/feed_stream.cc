@@ -12,6 +12,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
 #include "chrome/browser/feed/android/jni_headers/FeedStream_jni.h"
 #include "chrome/browser/feed/android/jni_translation.h"
@@ -328,6 +329,16 @@ void FeedStream::InvalidateContentCacheFor(JNIEnv* env,
     return;
   feed_stream_api_->InvalidateContentCacheFor(
       (static_cast<StreamKind>(stream_kind)));
+}
+
+void FeedStream::ReportContentSliceVisibleTimeForGoodVisits(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    jlong elapsed_ms) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportContentSliceVisibleTimeForGoodVisits(
+      base::Milliseconds(elapsed_ms));
 }
 
 }  // namespace android

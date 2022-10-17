@@ -718,7 +718,7 @@ public class FeedStream implements Stream {
 
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
-        mSliceViewTracker = new FeedSliceViewTracker(rootView, manager,
+        mSliceViewTracker = new FeedSliceViewTracker(rootView, mActivity, manager,
                 renderer.getListLayoutHelper(), new FeedStream.ViewTrackerObserver());
         mSliceViewTracker.bind();
 
@@ -1273,6 +1273,11 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().reportSliceViewed(mNativeFeedStream, FeedStream.this, sliceId);
         }
         @Override
+        public void reportContentSliceVisibleTime(long elapsedMs) {
+            FeedStreamJni.get().reportContentSliceVisibleTimeForGoodVisits(
+                    mNativeFeedStream, FeedStream.this, elapsedMs);
+        }
+        @Override
         public void feedContentVisible() {
             FeedStreamJni.get().reportFeedViewed(mNativeFeedStream, FeedStream.this);
         }
@@ -1369,5 +1374,7 @@ public class FeedStream implements Stream {
         void resetInfoCardStates(long nativeFeedStream, FeedStream caller, int type);
         void invalidateContentCacheFor(
                 long nativeFeedStream, FeedStream caller, @StreamType int feedToInvalidate);
+        void reportContentSliceVisibleTimeForGoodVisits(
+                long nativeFeedStream, FeedStream caller, long elapsedMs);
     }
 }
