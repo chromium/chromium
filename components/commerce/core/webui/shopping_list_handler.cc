@@ -13,6 +13,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -72,12 +73,14 @@ ShoppingListHandler::ShoppingListHandler(
     bookmarks::BookmarkModel* bookmark_model,
     ShoppingService* shopping_service,
     PrefService* prefs,
+    feature_engagement::Tracker* tracker,
     const std::string& locale)
     : remote_page_(std::move(remote_page)),
       receiver_(this, std::move(receiver)),
       bookmark_model_(bookmark_model),
       shopping_service_(shopping_service),
       pref_service_(prefs),
+      tracker_(tracker),
       locale_(locale) {
   if (base::FeatureList::IsEnabled(kShoppingList)) {
     scoped_observation_.Observe(bookmark_model);
@@ -98,6 +101,11 @@ void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
 
   std::vector<BookmarkProductInfoPtr> info_list =
       BookmarkListToMojoList(*bookmark_model_, bookmarks, locale_);
+
+  if (!info_list.empty()) {
+    // Record usage for price tracking promo.
+    tracker_->NotifyEvent("price_tracking_side_panel_shown");
+  }
 
   std::move(callback).Run(std::move(info_list));
 }

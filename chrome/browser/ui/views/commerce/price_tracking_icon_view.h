@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/gfx/vector_icon_types.h"
 
+class Browser;
 class Profile;
 
 // This icon appears in the location bar when the current page qualifies for
@@ -19,7 +20,7 @@ class PriceTrackingIconView : public PageActionIconView {
  public:
   PriceTrackingIconView(IconLabelBubbleView::Delegate* parent_delegate,
                         Delegate* delegate,
-                        Profile* profile);
+                        Browser* browser);
   ~PriceTrackingIconView() override;
 
   // PageActionIconView:
@@ -46,7 +47,8 @@ class PriceTrackingIconView : public PageActionIconView {
   bool IsPriceTracking() const;
   bool ShouldShowFirstUseExperienceBubble() const;
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<Profile> profile_;
   PriceTrackingBubbleCoordinator bubble_coordinator_;
 
   raw_ptr<const gfx::VectorIcon> icon_;

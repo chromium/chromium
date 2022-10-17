@@ -158,10 +158,10 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                                        params.page_action_icon_delegate));
         break;
       case PageActionIconType::kPriceTracking:
-        add_page_action_icon(type, std::make_unique<PriceTrackingIconView>(
-                                       params.icon_label_bubble_delegate,
-                                       params.page_action_icon_delegate,
-                                       params.browser->profile()));
+        add_page_action_icon(
+            type, std::make_unique<PriceTrackingIconView>(
+                      params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate, params.browser));
         break;
       case PageActionIconType::kPwaInstall:
         DCHECK(params.command_updater);

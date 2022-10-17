@@ -185,6 +185,19 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHPriceTrackingInSidePanelFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Show the promo once a year if the price tracking IPH was not triggered.
+    config->trigger = EventConfig("iph_price_tracking_side_panel_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("price_tracking_side_panel_shown",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
