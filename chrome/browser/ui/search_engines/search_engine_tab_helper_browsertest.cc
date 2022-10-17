@@ -36,6 +36,29 @@ using net::test_server::HttpResponse;
 
 namespace {
 
+std::unique_ptr<HttpResponse> HandleRequest(const std::string& match_path,
+                                            const std::string& osdd_xml_url,
+                                            const HttpRequest& request) {
+  if (!match_path.empty() && request.GetURL().path() != match_path)
+    return nullptr;
+
+  std::string html = base::StringPrintf(
+      "<html>"
+      "<head>"
+      "  <link rel='search' type='application/opensearchdescription+xml'"
+      "      href='%s'"
+      "      title='ExampleSearch'>"
+      "</head>"
+      "</html>",
+      osdd_xml_url.c_str());
+
+  std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content(html);
+  http_response->set_content_type("text/html");
+  return std::move(http_response);
+}
+
 class TemplateURLServiceObserver {
  public:
   TemplateURLServiceObserver(TemplateURLService* service, base::RunLoop* loop)
@@ -85,25 +108,6 @@ class SearchEngineTabHelperBrowserTest : public InProcessBrowserTest {
   ~SearchEngineTabHelperBrowserTest() override = default;
 
  private:
-  std::unique_ptr<HttpResponse> HandleRequest(const GURL& osdd_xml_url,
-                                              const HttpRequest& request) {
-    std::string html = base::StringPrintf(
-        "<html>"
-        "<head>"
-        "  <link rel='search' type='application/opensearchdescription+xml'"
-        "      href='%s'"
-        "      title='ExampleSearch'>"
-        "</head>"
-        "</html>",
-        osdd_xml_url.spec().c_str());
-
-    std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
-    http_response->set_code(net::HTTP_OK);
-    http_response->set_content(html);
-    http_response->set_content_type("text/html");
-    return std::move(http_response);
-  }
-
   // Starts a test server that serves a page pointing to a opensearch descriptor
   // from a file:// url.
   bool StartTestServer() {
@@ -111,8 +115,7 @@ class SearchEngineTabHelperBrowserTest : public InProcessBrowserTest {
         base::FilePath(),
         base::FilePath().AppendASCII("simple_open_search.xml"));
     embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&SearchEngineTabHelperBrowserTest::HandleRequest,
-                            base::Unretained(this), file_url));
+        base::BindRepeating(&HandleRequest, std::string(), file_url.spec()));
     return embedded_test_server()->Start();
   }
 
@@ -163,7 +166,9 @@ class SearchEngineTabHelperPrerenderingBrowserTest
     : public InProcessBrowserTest {
  public:
   SearchEngineTabHelperPrerenderingBrowserTest()
-      : prerender_helper_(base::BindRepeating(
+      : osdd_seeding_path_("/"),
+        osdd_path_("/osdd/keyword.xml"),
+        prerender_helper_(base::BindRepeating(
             &SearchEngineTabHelperPrerenderingBrowserTest::GetWebContents,
             base::Unretained(this))) {}
   ~SearchEngineTabHelperPrerenderingBrowserTest() override = default;
@@ -174,6 +179,10 @@ class SearchEngineTabHelperPrerenderingBrowserTest
   }
 
   void SetUpOnMainThread() override {
+    // Note that the URL's path length should not be larger than 1.
+    // See SearchEngineTabHelper::GenerateKeywordFromNavigationEntry().
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&HandleRequest, osdd_seeding_path_, osdd_path_));
     ASSERT_TRUE(test_server_handle_ =
                     embedded_test_server()->StartAndReturnHandle());
   }
@@ -185,6 +194,9 @@ class SearchEngineTabHelperPrerenderingBrowserTest
   content::test::PrerenderTestHelper* prerender_helper() {
     return &prerender_helper_;
   }
+
+  const std::string& osdd_seeding_path() { return osdd_seeding_path_; }
+  const std::string& osdd_path() { return osdd_path_; }
 
   // Adds a tab with TestSearchEngineTabHelper which is a customized
   // SearchEngineTabHelper.
@@ -206,7 +218,9 @@ class SearchEngineTabHelperPrerenderingBrowserTest
     }
   }
 
- protected:
+ private:
+  const std::string osdd_seeding_path_;
+  const std::string osdd_path_;
   content::test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
 };
@@ -252,5 +266,30 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
   EXPECT_NE(template_urls, url_service->GetTemplateURLs());
 }
 
-// TODO(http://crbug.com/1270519): Add a test for prerendering scenarios there
-// the OpenSearchDescriptionDocumentHandler mojo calls are deferred.
+IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
+                       DeferOSDDRegistrationInPrerendering) {
+  // Navigate to a prerendering initiator page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Prerender a page that contains a opensearch descriptor.
+  auto prerender_url = embedded_test_server()->GetURL(osdd_seeding_path());
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+
+  // No request for the osdd url was made.
+  // Note: We may want to wait a certain event here to ensure there are no
+  // registrations under goting. Otherwise, this may pass even if the request
+  // isn't deferred.
+  auto osdd_url = embedded_test_server()->GetURL(osdd_path());
+  EXPECT_EQ(0, prerender_helper()->GetRequestCount(osdd_url));
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Makes sure that the page is from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // A request for the osdd url was made after the activation.
+  prerender_helper()->WaitForRequest(osdd_url, 1);
+}
