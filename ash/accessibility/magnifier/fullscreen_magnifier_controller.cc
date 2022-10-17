@@ -648,7 +648,6 @@ void FullscreenMagnifierController::OnMouseMove(
   int margin = kCursorPanningMargin / scale_;  // No need to consider DPI.
 
   // Edge mouse following mode.
-  // TODO(https://crbug.com/1178027): Add continuous mouse following mode.
   int x_margin = margin;
   int y_margin = margin;
 
