@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -167,11 +168,14 @@ std::unique_ptr<SearchController> CreateSearchController(
   }
 
   size_t os_settings_search_group_id = controller->AddGroup(kGenericMaxResults);
+  auto* os_settings_manager =
+      ash::settings::OsSettingsManagerFactory::GetForProfile(profile);
   controller->AddProvider(
       os_settings_search_group_id,
       std::make_unique<OsSettingsProvider>(
           profile,
-          ash::settings::OsSettingsManagerFactory::GetForProfile(profile)));
+          os_settings_manager ? os_settings_manager->search_handler() : nullptr,
+          os_settings_manager ? os_settings_manager->hierarchy() : nullptr));
 
   if (ash::features::IsProductivityLauncherEnabled() &&
       base::GetFieldTrialParamByFeatureAsBool(

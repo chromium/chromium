@@ -22,7 +22,6 @@ class Profile;
 
 namespace ash::settings {
 class Hierarchy;
-class OsSettingsManager;
 class SearchHandler;
 }  // namespace ash::settings
 
@@ -60,7 +59,8 @@ class OsSettingsProvider : public SearchProvider,
                            public ash::settings::mojom::SearchResultsObserver {
  public:
   OsSettingsProvider(Profile* profile,
-                     ash::settings::OsSettingsManager* settings_manager);
+                     ash::settings::SearchHandler* search_handler,
+                     const ash::settings::Hierarchy* hierarchy);
   ~OsSettingsProvider() override;
 
   OsSettingsProvider(const OsSettingsProvider&) = delete;
@@ -117,7 +117,6 @@ class OsSettingsProvider : public SearchProvider,
   float min_score_for_alternates_ = 0.4f;
 
   Profile* const profile_;
-  ash::settings::OsSettingsManager* const settings_manager_;
   ash::settings::SearchHandler* search_handler_;
   const ash::settings::Hierarchy* hierarchy_;
   apps::AppServiceProxy* app_service_proxy_;

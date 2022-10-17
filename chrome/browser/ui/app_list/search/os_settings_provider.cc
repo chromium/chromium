@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -162,14 +161,12 @@ void OsSettingsResult::Open(int event_flags) {
 
 OsSettingsProvider::OsSettingsProvider(
     Profile* profile,
-    ash::settings::OsSettingsManager* settings_manager)
-    : profile_(profile), settings_manager_(settings_manager) {
+    ash::settings::SearchHandler* search_handler,
+    const ash::settings::Hierarchy* hierarchy)
+    : profile_(profile),
+      search_handler_(search_handler),
+      hierarchy_(hierarchy) {
   DCHECK(profile_);
-
-  if (settings_manager_) {
-    search_handler_ = settings_manager_->search_handler();
-    hierarchy_ = settings_manager_->hierarchy();
-  }
 
   // |search_handler_| can be nullptr in the case that the new OS settings
   // search chrome flag is disabled. If it is, we should effectively disable the
