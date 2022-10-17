@@ -48,7 +48,7 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
     }
 
     @Override
-    public void performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs) {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
 
         if (tabs.size() == 1) {
@@ -58,6 +58,7 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
             getTabModelSelector().getCurrentModel().closeMultipleTabs(tabs, true);
         }
         RecordUserAction.record("TabMultiSelectV2.CloseTabs");
+        return true;
     }
 
     @Override

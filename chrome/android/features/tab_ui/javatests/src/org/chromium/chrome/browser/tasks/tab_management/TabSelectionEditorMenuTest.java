@@ -132,7 +132,9 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         }
 
         @Override
-        public void performAction(List<Tab> tabs) {}
+        public boolean performAction(List<Tab> tabs) {
+            return true;
+        }
 
         @Override
         public boolean shouldHideEditorAfterAction() {

@@ -51,7 +51,7 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
     }
 
     @Override
-    public void performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs) {
         assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
         assert !editorSupportsActionOnRelatedTabs()
@@ -65,6 +65,7 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
         }
         RecordUserAction.record("TabMultiSelectV2.UngroupTabs");
         RecordUserAction.record("TabGridDialog.RemoveFromGroup.TabMultiSelect");
+        return true;
     }
 
     @Override

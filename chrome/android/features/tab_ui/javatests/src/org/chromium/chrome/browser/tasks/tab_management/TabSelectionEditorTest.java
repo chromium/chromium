@@ -607,8 +607,12 @@ public class TabSelectionEditorTest {
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testToolbarMenuItem_ShareActionView() throws IOException {
         Intents.init();
-        prepareBlankTab(3, false);
+        prepareBlankTab(1, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
+
+        final String httpsCanonicalUrl =
+                sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
+        sActivityTestRule.loadUrl(httpsCanonicalUrl);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<TabSelectionEditorAction> actions = new ArrayList<>();
@@ -624,13 +628,13 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyToolbarActionViewWithText(shareId, "Share tabs");
         mRobot.resultRobot.verifyToolbarActionViewDisabled(shareId);
 
-        mRobot.actionRobot.clickItemAtAdapterPosition(0).clickItemAtAdapterPosition(2);
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
 
         mRobot.resultRobot.verifyToolbarActionViewEnabled(shareId).verifyToolbarSelectionText(
-                "2 tabs");
+                "1 tab");
 
         View share = mTabSelectionEditorLayout.getToolbar().findViewById(shareId);
-        assertEquals("Share 2 selected tabs", share.getContentDescription());
+        assertEquals("Share 1 selected tab", share.getContentDescription());
 
         mRobot.actionRobot.clickToolbarActionView(shareId);
 
@@ -681,9 +685,8 @@ public class TabSelectionEditorTest {
 
         String sharedUrls[] = shareParamsCaptorValue.getTextAndUrl().split("\\r?\\n");
 
-        assertEquals(2, sharedUrls.length);
-        assertEquals("1. about:blank", sharedUrls[0]);
-        assertEquals("2. " + httpsCanonicalUrl, sharedUrls[1]);
+        assertEquals(1, sharedUrls.length);
+        assertEquals(httpsCanonicalUrl, sharedUrls[0]);
     }
 
     @Test
@@ -693,6 +696,7 @@ public class TabSelectionEditorTest {
         ArrayList<String> urls = new ArrayList<String>();
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL));
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTP_CANONICAL_URL));
+        urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
 
         prepareTabGroupWithUrls(urls, false);
@@ -723,21 +727,30 @@ public class TabSelectionEditorTest {
 
         String sharedUrls[] = shareParamsCaptorValue.getTextAndUrl().split("\\r?\\n");
 
-        assertEquals(5, sharedUrls.length);
+        assertEquals(4, sharedUrls.length);
         assertEquals("1. " + urls.get(0), sharedUrls[0]);
         assertEquals("2. " + urls.get(1), sharedUrls[1]);
         assertEquals("3. " + urls.get(2), sharedUrls[2]);
-        assertEquals("4. about:blank", sharedUrls[3]);
-        assertEquals("5. about:blank", sharedUrls[4]);
+        assertEquals("4. " + urls.get(3), sharedUrls[3]);
     }
 
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testToolbarMenuItem_ShareActionTabsWithGroups() throws IOException {
-        prepareBlankTab(1, false);
-        prepareBlankTabGroup(3, false);
+        prepareBlankTab(2, false);
+
+        final String httpsCanonicalUrl =
+                sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
+        sActivityTestRule.loadUrl(httpsCanonicalUrl);
+
         prepareBlankTabGroup(2, false);
+
+        ArrayList<String> urls = new ArrayList<String>();
+        urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTP_CANONICAL_URL));
+        urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
+        prepareTabGroupWithUrls(urls, false);
+
         List<Tab> tabs = getTabsInCurrentTabModelFilter();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -750,11 +763,10 @@ public class TabSelectionEditorTest {
             mTabSelectionEditorController.show(tabs);
         });
 
-        mRobot.actionRobot.clickItemAtAdapterPosition(0).clickItemAtAdapterPosition(2);
-
-        final String httpsCanonicalUrl =
-                sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        sActivityTestRule.loadUrl(httpsCanonicalUrl);
+        mRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickItemAtAdapterPosition(2)
+                .clickItemAtAdapterPosition(3);
 
         final int shareId = R.id.tab_selection_editor_share_menu_item;
         mRobot.actionRobot.clickToolbarActionView(shareId);
@@ -768,9 +780,9 @@ public class TabSelectionEditorTest {
         String sharedUrls[] = shareParamsCaptorValue.getTextAndUrl().split("\\r?\\n");
 
         assertEquals(3, sharedUrls.length);
-        assertEquals("1. about:blank", sharedUrls[0]);
-        assertEquals("2. about:blank", sharedUrls[1]);
-        assertEquals("3. " + httpsCanonicalUrl, sharedUrls[2]);
+        assertEquals("1. " + httpsCanonicalUrl, sharedUrls[0]);
+        assertEquals("2. " + urls.get(0), sharedUrls[1]);
+        assertEquals("3. " + urls.get(1), sharedUrls[2]);
     }
 
     @Test

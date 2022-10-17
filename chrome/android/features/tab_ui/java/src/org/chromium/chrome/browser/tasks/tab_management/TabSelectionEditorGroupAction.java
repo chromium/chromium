@@ -54,7 +54,7 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
     }
 
     @Override
-    public void performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs) {
         assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
 
@@ -68,6 +68,7 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
 
         RecordUserAction.record("TabMultiSelectV2.GroupTabs");
         RecordUserAction.record("TabGroup.Created.TabMultiSelect");
+        return true;
     }
 
     @Override
