@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/background_service/test/test_download_service.h"
@@ -191,6 +192,7 @@ class PluginVmInstallerTestBase : public testing::Test {
     ash::DlcserviceClient::InitializeFake();
     fake_dlcservice_client_ =
         static_cast<ash::FakeDlcserviceClient*>(ash::DlcserviceClient::Get());
+    ash::FakeSpacedClient::InitializeFake();
   }
 
   void TearDown() override {
@@ -203,6 +205,7 @@ class PluginVmInstallerTestBase : public testing::Test {
     ash::DebugDaemonClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::DlcserviceClient::Shutdown();
+    ash::FakeSpacedClient::Shutdown();
   }
 
   void SetPluginVmImagePref(std::string url, std::string hash) {
