@@ -29,7 +29,9 @@ static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
     return nullptr;
   }
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
-  rule_set->AddStyleRule(style_rule, kRuleHasNoSpecialState);
+  MediaQueryEvaluator* medium =
+      MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
+  rule_set->AddStyleRule(style_rule, *medium, kRuleHasNoSpecialState);
   return rule_set;
 }
 
@@ -298,11 +300,12 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     sheet->ParserAddNamespace("bar", "http://example.org/bar");
     if (defaultNamespace)
       sheet->ParserAddNamespace(g_null_atom, *defaultNamespace);
-    RuleSet& rules = sheet->EnsureRuleSet(
-        MediaQueryEvaluator(GetDocument().GetFrame()), kRuleHasNoSpecialState);
+    MediaQueryEvaluator* medium =
+        MakeGarbageCollected<MediaQueryEvaluator>(GetDocument().GetFrame());
+    RuleSet& rules = sheet->EnsureRuleSet(*medium, kRuleHasNoSpecialState);
     auto* rule = To<StyleRule>(CSSParser::ParseRule(
         sheet->ParserContext(), sheet, selector + " { color: green }"));
-    rules.AddStyleRule(rule, kRuleHasNoSpecialState);
+    rules.AddStyleRule(rule, *medium, kRuleHasNoSpecialState);
 
     MatchResult result;
     auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
@@ -444,6 +447,41 @@ TEST_F(ElementRuleCollectorTest, NestingAtToplevelMatchesNothing) {
 
   Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
   EXPECT_EQ(0u, foo_rules.size());
+}
+
+TEST_F(ElementRuleCollectorTest, NestedRulesInMediaQuery) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="foo"><div id="bar" class="c"></div></div>
+    <div id="baz"></div>
+  )HTML");
+  String rule = R"CSS(
+    #foo {
+        color: oldlace;
+        @media screen {
+            & .c { color: palegoldenrod; }
+        }
+    }
+  )CSS";
+  RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
+  ASSERT_NE(nullptr, rule_set);
+
+  Element* foo = GetDocument().getElementById("foo");
+  Element* bar = GetDocument().getElementById("bar");
+  Element* baz = GetDocument().getElementById("baz");
+  ASSERT_NE(nullptr, foo);
+  ASSERT_NE(nullptr, bar);
+  ASSERT_NE(nullptr, baz);
+
+  Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
+  ASSERT_EQ(1u, foo_rules.size());
+  EXPECT_EQ("#foo", foo_rules[0].GetRuleData()->Selector().SelectorText());
+
+  Vector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
+  ASSERT_EQ(1u, bar_rules.size());
+  EXPECT_EQ("& .c", bar_rules[0].GetRuleData()->Selector().SelectorText());
+
+  Vector<MatchedRule> baz_rules = GetAllMatchedRules(baz, rule_set);
+  EXPECT_EQ(0u, baz_rules.size());
 }
 
 }  // namespace blink

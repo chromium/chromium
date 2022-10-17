@@ -23,8 +23,10 @@ void CSSGlobalRuleSet::InitWatchedSelectorsRuleSet(Document& document) {
   if (!watched_selectors.size())
     return;
   watched_selectors_rule_set_ = MakeGarbageCollected<RuleSet>();
+  MediaQueryEvaluator* medium =
+      MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
   for (unsigned i = 0; i < watched_selectors.size(); ++i) {
-    watched_selectors_rule_set_->AddStyleRule(watched_selectors[i],
+    watched_selectors_rule_set_->AddStyleRule(watched_selectors[i], *medium,
                                               kRuleHasNoSpecialState);
   }
 }

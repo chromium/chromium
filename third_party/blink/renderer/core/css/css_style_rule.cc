@@ -101,7 +101,7 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
   // If we have any nested rules, update their parent selector(s) to point to
   // our newly created StyleRule instead of the old one.
   if (style_rule_->ChildRules()) {
-    for (StyleRule* child_rule : *style_rule_->ChildRules()) {
+    for (StyleRuleBase* child_rule : *style_rule_->ChildRules()) {
       child_rule->Reparent(style_rule_, new_style_rule);
     }
   }

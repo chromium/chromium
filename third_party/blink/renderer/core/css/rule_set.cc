@@ -502,8 +502,8 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
     StyleRuleBase* rule = rules[i].Get();
 
     if (auto* style_rule = DynamicTo<StyleRule>(rule)) {
-      AddStyleRule(style_rule, add_rule_flags, container_query, cascade_layer,
-                   style_scope);
+      AddStyleRule(style_rule, medium, add_rule_flags, container_query,
+                   cascade_layer, style_scope);
     } else if (auto* page_rule = DynamicTo<StyleRulePage>(rule)) {
       page_rule->SetCascadeLayer(cascade_layer);
       AddPageRule(page_rule);
@@ -613,6 +613,7 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
 }
 
 void RuleSet::AddStyleRule(StyleRule* style_rule,
+                           const MediaQueryEvaluator& medium,
                            AddRuleFlags add_rule_flags,
                            const ContainerQuery* container_query,
                            CascadeLayer* cascade_layer,
@@ -626,10 +627,8 @@ void RuleSet::AddStyleRule(StyleRule* style_rule,
 
   // Nested rules are taken to be added immediately after their parent rule.
   if (style_rule->ChildRules() != nullptr) {
-    for (StyleRule* child_rule : *style_rule->ChildRules()) {
-      AddStyleRule(child_rule, add_rule_flags, container_query, cascade_layer,
-                   style_scope);
-    }
+    AddChildRules(*style_rule->ChildRules(), medium, add_rule_flags,
+                  container_query, cascade_layer, style_scope);
   }
 }
 

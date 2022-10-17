@@ -69,8 +69,9 @@ CSSSelectorList* CSSParser::ParsePageSelector(
 StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,
                                     StyleSheetContents* style_sheet,
                                     const String& rule) {
-  return CSSParserImpl::ParseRule(rule, context, style_sheet,
-                                  CSSParserImpl::kAllowImportRules);
+  return CSSParserImpl::ParseRule(
+      rule, context, /*parent_rule_for_nesting=*/nullptr, style_sheet,
+      CSSParserImpl::kAllowImportRules);
 }
 
 ParseSheetResult CSSParser::ParseSheet(
@@ -222,7 +223,8 @@ std::unique_ptr<Vector<double>> CSSParser::ParseKeyframeKeyList(
 StyleRuleKeyframe* CSSParser::ParseKeyframeRule(const CSSParserContext* context,
                                                 const String& rule) {
   StyleRuleBase* keyframe = CSSParserImpl::ParseRule(
-      rule, context, nullptr, CSSParserImpl::kKeyframeRules);
+      rule, context, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      CSSParserImpl::kKeyframeRules);
   return To<StyleRuleKeyframe>(keyframe);
 }
 

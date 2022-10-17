@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "css_at_rule_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_source_data.h"
@@ -74,7 +75,8 @@ class CORE_EXPORT CSSParserImpl {
     kKeyframeRules,
     kFontFeatureRules,
     kTryRules,
-    kNoRules,  // For parsing at-rules inside declaration lists
+    kNoRules,                // For parsing at-rules inside declaration lists
+    kConditionalGroupRules,  // @media etc., see [css-conditional-3]
   };
 
   // Represents the start and end offsets of a CSSParserTokenRange.
@@ -116,6 +118,7 @@ class CORE_EXPORT CSSParserImpl {
                                    const CSSParserContext*);
   static StyleRuleBase* ParseRule(const String&,
                                   const CSSParserContext*,
+                                  StyleRule* parent_rule_for_nesting,
                                   StyleSheetContents*,
                                   AllowedRulesType);
   static ParseSheetResult ParseStyleSheet(
@@ -166,18 +169,31 @@ class CORE_EXPORT CSSParserImpl {
 
   // Returns whether the first encountered rule was valid
   template <typename T>
-  bool ConsumeRuleList(CSSParserTokenStream&, RuleListType, T callback);
+  bool ConsumeRuleList(CSSParserTokenStream&,
+                       RuleListType,
+                       StyleRule* parent_rule_for_nesting,
+                       T callback);
 
   // These functions update the range/stream they're given
-  StyleRuleBase* ConsumeAtRule(CSSParserTokenStream&, AllowedRulesType);
-  StyleRuleBase* ConsumeQualifiedRule(CSSParserTokenStream&, AllowedRulesType);
+  StyleRuleBase* ConsumeAtRule(CSSParserTokenStream&,
+                               AllowedRulesType,
+                               StyleRule* parent_rule_for_nesting);
+  StyleRuleBase* ConsumeAtRuleContents(CSSAtRuleID id,
+                                       CSSParserTokenStream& stream,
+                                       AllowedRulesType allowed_rules,
+                                       StyleRule* parent_rule_for_nesting);
+  StyleRuleBase* ConsumeQualifiedRule(CSSParserTokenStream&,
+                                      AllowedRulesType,
+                                      StyleRule* parent_rule_for_nesting);
 
   static StyleRuleCharset* ConsumeCharsetRule(CSSParserTokenStream&);
   StyleRuleImport* ConsumeImportRule(const AtomicString& prelude_uri,
                                      CSSParserTokenStream&);
   StyleRuleNamespace* ConsumeNamespaceRule(CSSParserTokenStream&);
-  StyleRuleMedia* ConsumeMediaRule(CSSParserTokenStream&);
-  StyleRuleSupports* ConsumeSupportsRule(CSSParserTokenStream&);
+  StyleRuleMedia* ConsumeMediaRule(CSSParserTokenStream& stream,
+                                   StyleRule* parent_rule_for_nesting);
+  StyleRuleSupports* ConsumeSupportsRule(CSSParserTokenStream& stream,
+                                         StyleRule* parent_rule_for_nesting);
   StyleRuleFontFace* ConsumeFontFaceRule(CSSParserTokenStream&);
   StyleRuleFontPaletteValues* ConsumeFontPaletteValuesRule(
       CSSParserTokenStream&);
@@ -187,7 +203,8 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleProperty* ConsumePropertyRule(CSSParserTokenStream&);
   StyleRuleCounterStyle* ConsumeCounterStyleRule(CSSParserTokenStream&);
   StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&);
-  StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream&);
+  StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream& stream,
+                                           StyleRule* parent_rule_for_nesting);
   StyleRuleBase* ConsumeLayerRule(CSSParserTokenStream&);
   StyleRulePositionFallback* ConsumePositionFallbackRule(CSSParserTokenStream&);
   StyleRuleTry* ConsumeTryRule(CSSParserTokenStream&);

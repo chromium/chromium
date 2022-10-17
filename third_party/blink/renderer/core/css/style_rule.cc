@@ -423,12 +423,42 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
-void StyleRule::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
-  for (CSSSelector* s = SelectorArray(); s; s = CSSSelectorList::Next(*s)) {
-    if (s->Match() == CSSSelector::kPseudoClass &&
-        s->GetPseudoType() == CSSSelector::kPseudoParent) {
-      s->Reparent(old_parent, new_parent);
-    }
+void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
+  switch (GetType()) {
+    case kStyle:
+      for (CSSSelector* s = DynamicTo<StyleRule>(this)->SelectorArray(); s;
+           s = CSSSelectorList::Next(*s)) {
+        if (s->Match() == CSSSelector::kPseudoClass &&
+            s->GetPseudoType() == CSSSelector::kPseudoParent) {
+          s->Reparent(old_parent, new_parent);
+        }
+      }
+      break;
+    case kScope:
+    case kLayerBlock:
+    case kContainer:
+    case kMedia:
+    case kSupports:
+      for (StyleRuleBase* child :
+           DynamicTo<StyleRuleGroup>(this)->ChildRules()) {
+        child->Reparent(old_parent, new_parent);
+      }
+      break;
+    case kPage:
+    case kProperty:
+    case kFontFace:
+    case kFontPaletteValues:
+    case kImport:
+    case kKeyframes:
+    case kLayerStatement:
+    case kNamespace:
+    case kCounterStyle:
+    case kPositionFallback:
+    case kTry:
+    case kKeyframe:
+    case kCharset:
+      // Cannot have any child rules.
+      break;
   }
 }
 

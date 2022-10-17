@@ -106,6 +106,12 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   CSSRule* CreateCSSOMWrapper(wtf_size_t position_hint,
                               CSSRule* parent_rule) const;
 
+  // Move this rule from being a child of old_parent (which is only given for
+  // sake of DCHECK) to being a child of new_parent, updating parent pointers
+  // in the selector. This happens only when we need to reallocate a StyleRule
+  // because its selector changed.
+  void Reparent(StyleRule* old_parent, StyleRule* new_parent);
+
   void Trace(Visitor*) const;
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void FinalizeGarbageCollectedObject();
@@ -241,25 +247,20 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
-  const HeapVector<Member<StyleRule>>* ChildRules() const {
+  const HeapVector<Member<StyleRuleBase>>* ChildRules() const {
     return child_rules_.Get();
   }
-  void AddChildRule(StyleRule* child) {
+  void AddChildRule(StyleRuleBase* child) {
     // Allocate the child rule vector only when we need it,
     // since most rules won't have children (almost by definition).
     if (child_rules_ == nullptr) {
-      child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRule>>>();
+      child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRuleBase>>>();
     }
     child_rules_->push_back(child);
   }
 
-  // Move this rule from being a child of old_parent (which is only given for
-  // sake of DCHECK) to being a child of new_parent, updating parent pointers
-  // in the selector. This happens only when we need to reallocate a StyleRule
-  // because its selector changed.
-  void Reparent(StyleRule* old_parent, StyleRule* new_parent);
-
  private:
+  friend class StyleRuleBase;
   friend class CSSLazyParsingTest;
   bool HasParsedProperties() const;
 
@@ -273,7 +274,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
   mutable Member<CSSPropertyValueSet> properties_;
   mutable Member<CSSLazyPropertyParser> lazy_property_parser_;
-  Member<HeapVector<Member<StyleRule>>> child_rules_;
+  Member<HeapVector<Member<StyleRuleBase>>> child_rules_;
 };
 
 class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {
