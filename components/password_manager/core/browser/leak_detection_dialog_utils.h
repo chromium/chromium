@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/types/strong_alias.h"
+#include "build/branding_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -93,10 +94,22 @@ metrics_util::LeakDialogType GetLeakDialogType(CredentialLeakType leak_type);
 GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer =
                                PasswordCheckupReferrer::kLeakDetectionDialog);
 
+// Returns whether to use the naming for unified password manager.
+bool UsesPasswordManagerUpdatedNaming();
+
+// Returns whether to use Google Chrome branded strings.
+constexpr bool UsesPasswordManagerGoogleBranding() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return true;
+#else
+  return false;
+#endif
+}
+
 // Captures common traits needed for a leak dialog.
 class LeakDialogTraits {
  public:
-  explicit LeakDialogTraits(CredentialLeakType leak_type);
+  LeakDialogTraits() = default;
 
   virtual ~LeakDialogTraits() = default;
 
@@ -117,21 +130,6 @@ class LeakDialogTraits {
 
   // Checks whether the dialog should show cancel button.
   virtual bool ShouldShowCancelButton() const = 0;
-
- protected:
-  bool uses_password_manager_updated_naming() const {
-    return uses_password_manager_updated_naming_;
-  }
-
-  bool uses_password_manager_google_branding() const {
-    return uses_password_manager_google_branding_;
-  }
-
- private:
-  // Set iff Unified Password Manager / Updated branding strings are used.
-  const bool uses_password_manager_updated_naming_;
-  // Set iff Google Chrome Branding strings are used.
-  const bool uses_password_manager_google_branding_;
 };
 
 // Creates a dialog traits object.
@@ -141,8 +139,7 @@ std::unique_ptr<LeakDialogTraits> CreateDialogTraits(
 template <metrics_util::LeakDialogType kDialogType>
 class LeakDialogTraitsImp : public LeakDialogTraits {
  public:
-  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
-      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp() = default;
   LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
   LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
 
@@ -159,8 +156,7 @@ template <>
 class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckup>
     : public LeakDialogTraits {
  public:
-  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
-      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp() = default;
   LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
   LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
 
@@ -173,9 +169,9 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckup>
   }
 
   std::u16string GetDescription() const override {
-    if (uses_password_manager_updated_naming()) {
+    if (UsesPasswordManagerUpdatedNaming()) {
       return l10n_util::GetStringUTF16(
-          uses_password_manager_google_branding()
+          UsesPasswordManagerGoogleBranding()
               ? IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
               : IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
     } else {
@@ -185,7 +181,7 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckup>
   }
 
   std::u16string GetTitle() const override {
-    return l10n_util::GetStringUTF16(uses_password_manager_updated_naming()
+    return l10n_util::GetStringUTF16(UsesPasswordManagerUpdatedNaming()
                                          ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
                                          : IDS_CREDENTIAL_LEAK_TITLE_CHECK);
   }
@@ -200,8 +196,7 @@ template <>
 class LeakDialogTraitsImp<metrics_util::LeakDialogType::kChange>
     : public LeakDialogTraits {
  public:
-  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
-      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp() = default;
   LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
   LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
 
@@ -214,9 +209,9 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kChange>
   }
 
   std::u16string GetDescription() const override {
-    if (uses_password_manager_updated_naming()) {
+    if (UsesPasswordManagerUpdatedNaming()) {
       return l10n_util::GetStringUTF16(
-          uses_password_manager_google_branding()
+          UsesPasswordManagerGoogleBranding()
               ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED
               : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED);
     } else {
@@ -239,8 +234,7 @@ template <>
 class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckupAndChange>
     : public LeakDialogTraits {
  public:
-  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
-      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp() = default;
   LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
   LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
 
@@ -253,9 +247,9 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckupAndChange>
   }
 
   std::u16string GetDescription() const override {
-    if (uses_password_manager_updated_naming())
+    if (UsesPasswordManagerUpdatedNaming())
       return l10n_util::GetStringUTF16(
-          uses_password_manager_google_branding()
+          UsesPasswordManagerGoogleBranding()
               ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
               : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
     else
@@ -264,7 +258,7 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckupAndChange>
   }
 
   std::u16string GetTitle() const override {
-    return l10n_util::GetStringUTF16(uses_password_manager_updated_naming()
+    return l10n_util::GetStringUTF16(UsesPasswordManagerUpdatedNaming()
                                          ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
                                          : IDS_CREDENTIAL_LEAK_TITLE_CHECK);
   }
@@ -279,8 +273,7 @@ template <>
 class LeakDialogTraitsImp<metrics_util::LeakDialogType::kChangeAutomatically>
     : public LeakDialogTraits {
  public:
-  explicit LeakDialogTraitsImp(CredentialLeakType leak_type)
-      : LeakDialogTraits(leak_type) {}
+  LeakDialogTraitsImp() = default;
   LeakDialogTraitsImp(const LeakDialogTraitsImp&) = delete;
   LeakDialogTraitsImp& operator=(const LeakDialogTraitsImp&) = delete;
 
@@ -294,7 +287,7 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kChangeAutomatically>
 
   std::u16string GetDescription() const override {
     return l10n_util::GetStringUTF16(
-        uses_password_manager_updated_naming()
+        UsesPasswordManagerUpdatedNaming()
             ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE_GPM
             : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE);
   }

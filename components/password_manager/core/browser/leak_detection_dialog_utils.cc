@@ -84,42 +84,25 @@ std::u16string GetCancelButtonLabel(CredentialLeakType leak_type) {
 }
 
 std::u16string GetDescription(CredentialLeakType leak_type) {
-#if BUILDFLAG(IS_IOS)
-  const bool uses_password_manager_updated_naming =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
-  const bool uses_password_manager_google_branding = true;
-#elif BUILDFLAG(IS_ANDROID)
-  const bool uses_password_manager_updated_naming =
-      password_manager::features::UsesUnifiedPasswordManagerBranding();
-  const bool uses_password_manager_google_branding =
-      password_manager_util::UsesPasswordManagerGoogleBranding(
-          IsSyncingPasswordsNormally(leak_type));
-#else
-  const bool uses_password_manager_updated_naming = true;
-  const bool uses_password_manager_google_branding =
-      password_manager_util::UsesPasswordManagerGoogleBranding(
-          IsSyncingPasswordsNormally(leak_type));
-#endif
-  if (uses_password_manager_updated_naming) {
+  if (UsesPasswordManagerUpdatedNaming()) {
     if (ShouldShowAutomaticChangePasswordButton(leak_type)) {
       return l10n_util::GetStringUTF16(
           IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE_GPM);
     }
     if (!ShouldCheckPasswords(leak_type)) {
       return l10n_util::GetStringUTF16(
-          uses_password_manager_google_branding
+          UsesPasswordManagerGoogleBranding()
               ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED
               : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED);
     }
     if (password_manager::IsPasswordSaved(leak_type)) {
       return l10n_util::GetStringUTF16(
-          uses_password_manager_google_branding
+          UsesPasswordManagerGoogleBranding()
               ? IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
               : IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
     }
     return l10n_util::GetStringUTF16(
-        uses_password_manager_google_branding
+        UsesPasswordManagerGoogleBranding()
             ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
             : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
   } else {
@@ -145,18 +128,7 @@ std::u16string GetTitle(CredentialLeakType leak_type) {
     return l10n_util::GetStringUTF16(
         IDS_CREDENTIAL_LEAK_TITLE_CHANGE_AUTOMATICALLY);
   }
-
-#if BUILDFLAG(IS_IOS)
-  const bool uses_password_manager_updated_naming =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
-#elif BUILDFLAG(IS_ANDROID)
-  const bool uses_password_manager_updated_naming =
-      password_manager::features::UsesUnifiedPasswordManagerBranding();
-#else
-  const bool uses_password_manager_updated_naming = true;
-#endif
-  if (uses_password_manager_updated_naming) {
+  if (UsesPasswordManagerUpdatedNaming()) {
     return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)
                                          ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
                                          : IDS_CREDENTIAL_LEAK_TITLE_CHANGE);
@@ -231,42 +203,30 @@ GURL GetPasswordCheckupURL(PasswordCheckupReferrer referrer) {
   return net::AppendQueryParameter(url, "utm_campaign", campaign);
 }
 
-LeakDialogTraits::LeakDialogTraits(CredentialLeakType leak_type)
-    :
+bool UsesPasswordManagerUpdatedNaming() {
 #if BUILDFLAG(IS_IOS)
-      uses_password_manager_updated_naming_(base::FeatureList::IsEnabled(
-          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)),
-      uses_password_manager_google_branding_(true)
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
 #elif BUILDFLAG(IS_ANDROID)
-      uses_password_manager_updated_naming_(
-          password_manager::features::UsesUnifiedPasswordManagerBranding()),
-      uses_password_manager_google_branding_(
-          password_manager_util::UsesPasswordManagerGoogleBranding(
-              IsSyncingPasswordsNormally(leak_type)))
+  return password_manager::features::UsesUnifiedPasswordManagerBranding();
 #else
-      uses_password_manager_updated_naming_(true),
-      uses_password_manager_google_branding_(
-          password_manager_util::UsesPasswordManagerGoogleBranding(
-              IsSyncingPasswordsNormally(leak_type)))
+  return true;
 #endif
-{
 }
 
 std::unique_ptr<LeakDialogTraits> CreateDialogTraits(
     CredentialLeakType leak_type) {
   switch (password_manager::GetLeakDialogType(leak_type)) {
     case LeakDialogType::kChange:
-      return std::make_unique<LeakDialogTraitsImp<LeakDialogType::kChange>>(
-          leak_type);
+      return std::make_unique<LeakDialogTraitsImp<LeakDialogType::kChange>>();
     case LeakDialogType::kCheckup:
-      return std::make_unique<LeakDialogTraitsImp<LeakDialogType::kCheckup>>(
-          leak_type);
+      return std::make_unique<LeakDialogTraitsImp<LeakDialogType::kCheckup>>();
     case LeakDialogType::kCheckupAndChange:
       return std::make_unique<
-          LeakDialogTraitsImp<LeakDialogType::kCheckupAndChange>>(leak_type);
+          LeakDialogTraitsImp<LeakDialogType::kCheckupAndChange>>();
     case LeakDialogType::kChangeAutomatically:
       return std::make_unique<
-          LeakDialogTraitsImp<LeakDialogType::kChangeAutomatically>>(leak_type);
+          LeakDialogTraitsImp<LeakDialogType::kChangeAutomatically>>();
   }
 }
 

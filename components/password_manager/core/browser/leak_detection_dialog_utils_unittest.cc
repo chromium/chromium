@@ -28,8 +28,17 @@ using password_manager::metrics_util::LeakDialogType;
 namespace password_manager {
 
 namespace {
+
+constexpr int GetLeakChangePasswordMessage() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED;
+#else
+  return IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED;
+#endif
+}
+
 // Contains information that should be displayed on the leak dialog for
-// specified |leak_type|.
+// specified `leak_type`.
 const struct {
   // Specifies the test case.
   CredentialLeakType leak_type;
@@ -45,44 +54,47 @@ const struct {
                     IsReused(false),
                     IsSyncing(false),
                     HasChangeScript(false)),
-     IDS_OK, IDS_CLOSE,
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
-#elif !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-     IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED,
-#endif
+     IDS_OK, IDS_CLOSE, GetLeakChangePasswordMessage(),
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
     {CreateLeakType(IsSaved(false),
                     IsReused(false),
                     IsSyncing(true),
                     HasChangeScript(false)),
-     IDS_OK, IDS_CLOSE, IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
+     IDS_OK, IDS_CLOSE, GetLeakChangePasswordMessage(),
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
     {CreateLeakType(IsSaved(false),
                     IsReused(true),
                     IsSyncing(true),
                     HasChangeScript(false)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
      IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
+#else
+     IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED,
+#endif
      IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM, true, true},
     {CreateLeakType(IsSaved(false),
                     IsReused(false),
                     IsSyncing(true),
                     HasChangeScript(true)),
-     IDS_OK, IDS_CLOSE, IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
+     IDS_OK, IDS_CLOSE, GetLeakChangePasswordMessage(),
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
     {CreateLeakType(IsSaved(true),
                     IsReused(false),
                     IsSyncing(true),
                     HasChangeScript(false)),
-     IDS_OK, IDS_CLOSE, IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED,
+     IDS_OK, IDS_CLOSE, GetLeakChangePasswordMessage(),
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
     {CreateLeakType(IsSaved(true),
                     IsReused(true),
                     IsSyncing(true),
                     HasChangeScript(false)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
      IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
+#else
+     IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED,
+#endif
      IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM, true, true},
 };
 
