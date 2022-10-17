@@ -4,6 +4,7 @@
 
 #include "ui/views/view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
