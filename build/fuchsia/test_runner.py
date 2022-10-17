@@ -256,20 +256,11 @@ def main():
   if not args.out_dir:
     raise ValueError("out-dir must be specified.")
 
+  if args.code_coverage and args.component_version != "2":
+    parser.error('--code-coverage requires --component-version=2')
+
   if args.component_version == "2":
     args.use_run_test_component = False
-
-  if (args.code_coverage and args.component_version != "2"
-      and not args.use_run_test_component):
-    if args.enable_test_server:
-      # TODO(1254563): Tests that need access to the test server cannot be run
-      # as test component under CFv1. Because code coverage requires it, force
-      # the test to run as a test component. It is expected that test that tries
-      # to use the external test server will fail.
-      args.use_run_test_component = True
-    else:
-      raise ValueError('Collecting code coverage info requires using '
-                       'run-test-component.')
 
   ConfigureLogging(args)
 

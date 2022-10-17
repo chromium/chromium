@@ -184,6 +184,7 @@ def RunTestPackage(target, ffx_session, package_paths, package_name,
 
   Returns the exit code of the remote package process."""
 
+  assert not args.code_coverage or ffx_session
   kernel_logger = _AttachKernelLogReader(target)
   try:
     # Spin up a thread to asynchronously dump the system log to stdout
@@ -211,15 +212,6 @@ def RunTestPackage(target, ffx_session, package_paths, package_name,
       if ffx_session:
         process = ffx_session.test_run(target.GetFfxTarget(), component_uri,
                                        package_args)
-      elif args.code_coverage:
-        # TODO(crbug.com/1156768): Deprecate runtests.
-        # runtests requires specifying an output directory and a double dash
-        # before the argument list.
-        command = ['runtests', '-o', '/tmp', component_uri]
-        if args.test_realm_label:
-          command += ['--realm-label', args.test_realm_label]
-        command += ['--']
-        command.extend(package_args)
       elif args.use_run_test_component:
         command = ['run-test-component']
         if args.test_realm_label:
