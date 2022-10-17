@@ -1789,6 +1789,17 @@ ProfileManager::ProfileInfo::FromUnownedProfile(Profile* profile) {
   // ProfileInfo's constructor is private, can't make_unique().
   std::unique_ptr<ProfileInfo> info(new ProfileInfo());
   info->unowned_profile_ = profile;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros primary profile should not be destroyed, this KeepAlive will be
+  // set and not expected to be removed at any point. On Secondary profiles, we
+  // do not set it to allow the profiles to be destroyed.
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose) &&
+      Profile::IsMainProfilePath(info->unowned_profile_->GetPath())) {
+    info->keep_alives[ProfileKeepAliveOrigin::kLacrosMainProfile] = 1;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   return info;
 }
 

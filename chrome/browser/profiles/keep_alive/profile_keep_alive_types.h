@@ -122,7 +122,12 @@ enum class ProfileKeepAliveOrigin {
   // something to show after the profile is destroyed. macOS-specific.
   kHistoryMenuBridge = 28,
 
-  kMaxValue = kHistoryMenuBridge,
+  // Protect Lacros Main Profile from being destroyed. Value expected to be set
+  // for main profile and never removed. Lacros main profile shouldn't be
+  // destroyed.
+  kLacrosMainProfile = 29,
+
+  kMaxValue = kLacrosMainProfile,
 };
 
 std::ostream& operator<<(std::ostream& out,
