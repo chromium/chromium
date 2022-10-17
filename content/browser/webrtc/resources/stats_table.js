@@ -32,9 +32,6 @@ export class StatsTable {
    *     the value.
    */
   addStatsReport(peerConnectionElement, report) {
-    if (report.type === 'codec') {
-      return;
-    }
     const statsTable = this.ensureStatsTable_(peerConnectionElement, report);
 
     if (['outbound-rtp', 'inbound-rtp'].includes(report.type)

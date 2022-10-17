@@ -103,8 +103,8 @@ const statsNameBlockList = {
 };
 
 function isStandardReportBlocklisted(report) {
-  // Codec stats reflect what has been negotiated. There are LOTS of them and
-  // they don't change over time on their own.
+  // Codec stats reflect what has been negotiated. They don't contain
+  // information that is useful in graphs.
   if (report.type === 'codec') {
     return true;
   }
