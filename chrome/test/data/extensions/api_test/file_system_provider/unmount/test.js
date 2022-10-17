@@ -23,7 +23,7 @@ var SECOND_FILE_SYSTEM_ID = 'ice-cream';
  * @param {function()} callback Success callback.
  */
 function setUp(callback) {
-  Promise.race([
+  Promise.all([
     new Promise(function(fulfill, reject) {
       chrome.fileSystemProvider.mount(
           {fileSystemId: FIRST_FILE_SYSTEM_ID, displayName: 'vanilla.zip'},
