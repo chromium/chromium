@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -275,9 +276,9 @@ const WebAppRegistrar* WebAppFileHandlerManager::GetRegistrar() const {
 void WebAppFileHandlerManager::SyncOsIntegrationState() {
   if (GetRegistrar()) {
     for (AppId& id : GetRegistrar()->GetAppIds()) {
-      UpdateFileHandlerOsIntegration(
-          WebAppProvider::GetForLocalAppsUnchecked(profile_), id,
-          base::DoNothing());
+      WebAppProvider::GetForLocalAppsUnchecked(profile_)
+          ->scheduler()
+          .UpdateFileHandlerOsIntegration(id, base::DoNothing());
     }
   }
 }

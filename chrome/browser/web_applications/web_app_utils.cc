@@ -472,63 +472,6 @@ void PersistProtocolHandlersUserChoice(
       std::move(update_finished_callback));
 }
 
-void PersistFileHandlersUserChoice(Profile* profile,
-                                   const AppId& app_id,
-                                   bool allowed,
-                                   base::OnceClosure update_finished_callback) {
-  WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider);
-  provider->sync_bridge().SetAppFileHandlerApprovalState(
-      app_id,
-      allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed);
-
-  UpdateFileHandlerOsIntegration(provider, app_id,
-                                 std::move(update_finished_callback));
-}
-
-void UpdateFileHandlerOsIntegration(
-    WebAppProvider* provider,
-    const AppId& app_id,
-    base::OnceClosure update_finished_callback) {
-  bool enabled =
-      provider->os_integration_manager().IsFileHandlingAPIAvailable(app_id) &&
-      !provider->registrar().IsAppFileHandlerPermissionBlocked(app_id);
-
-  if (enabled ==
-      provider->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id)) {
-    std::move(update_finished_callback).Run();
-    return;
-  }
-
-  FileHandlerUpdateAction action = enabled ? FileHandlerUpdateAction::kUpdate
-                                           : FileHandlerUpdateAction::kRemove;
-
-#if BUILDFLAG(IS_MAC)
-  // On Mac, the file handlers are encoded in the app shortcut. First
-  // unregister the file handlers (verifying that it finishes synchronously),
-  // then update the shortcut.
-  Result unregister_file_handlers_result = Result::kError;
-  provider->os_integration_manager().UpdateFileHandlers(
-      app_id, action,
-      base::BindOnce([](Result* result_out,
-                        Result actual_result) { *result_out = actual_result; },
-                     &unregister_file_handlers_result));
-  DCHECK_EQ(Result::kOk, unregister_file_handlers_result);
-  provider->os_integration_manager().UpdateShortcuts(
-      app_id, /*old_name=*/{}, std::move(update_finished_callback));
-#else
-  provider->os_integration_manager().UpdateFileHandlers(
-      app_id, action,
-      base::BindOnce([](base::OnceClosure closure,
-                        Result ignored) { std::move(closure).Run(); },
-                     std::move(update_finished_callback)));
-#endif
-
-  DCHECK_EQ(
-      enabled,
-      provider->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id));
-}
-
 bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
                                              WebAppSources specified_sources) {
   bool has_any_specified_sources = (sources & specified_sources).any();

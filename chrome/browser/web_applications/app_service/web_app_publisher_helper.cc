@@ -58,6 +58,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -1166,9 +1167,8 @@ void WebAppPublisherHelper::SetPermission(const std::string& app_id,
   if (permission->permission_type == apps::PermissionType::kFileHandling) {
     if (permission->value &&
         absl::holds_alternative<bool>(permission->value->value)) {
-      PersistFileHandlersUserChoice(profile_, app_id,
-                                    absl::get<bool>(permission->value->value),
-                                    base::DoNothing());
+      provider_->scheduler().PersistFileHandlersUserChoice(
+          app_id, absl::get<bool>(permission->value->value), base::DoNothing());
     }
     return;
   }
@@ -1922,8 +1922,8 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
     bool allowed,
     bool remember_user_choice) {
   if (remember_user_choice) {
-    PersistFileHandlersUserChoice(profile(), app_id, allowed,
-                                  base::DoNothing());
+    provider_->scheduler().PersistFileHandlersUserChoice(app_id, allowed,
+                                                         base::DoNothing());
   }
 
   if (!allowed) {

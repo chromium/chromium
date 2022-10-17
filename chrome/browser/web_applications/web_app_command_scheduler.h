@@ -27,6 +27,8 @@ class WebAppCommandScheduler {
   explicit WebAppCommandScheduler(WebAppProvider* provider);
   ~WebAppCommandScheduler();
 
+  void Shutdown();
+
   // User initiated install that uses current `WebContents` to fetch manifest
   // and install the web app.
   void FetchManifestAndInstall(webapps::WebappInstallSource install_surface,
@@ -36,11 +38,19 @@ class WebAppCommandScheduler {
                                OnceInstallCallback callback,
                                bool use_fallback);
 
+  void PersistFileHandlersUserChoice(const AppId& app_id,
+                                     bool allowed,
+                                     base::OnceClosure callback);
+
+  void UpdateFileHandlerOsIntegration(const AppId& app_id,
+                                      base::OnceClosure callback);
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 
  private:
   raw_ptr<WebAppProvider> provider_;
+  bool is_in_shutdown_ = false;
 
   base::WeakPtrFactory<WebAppCommandScheduler> weak_ptr_factory_{this};
 };

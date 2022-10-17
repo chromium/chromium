@@ -217,6 +217,7 @@ WebAppCommandScheduler& WebAppProvider::scheduler() {
 }
 
 void WebAppProvider::Shutdown() {
+  command_scheduler_->Shutdown();
   command_manager_->Shutdown();
   ui_manager_->Shutdown();
   externally_managed_app_manager_->Shutdown();

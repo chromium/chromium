@@ -25,6 +25,12 @@ class WebAppCommandSchedulerTest : public WebAppTest {
 
   FakeWebAppProvider* provider() { return provider_; }
 
+  void WaitForProviderReady() {
+    base::RunLoop run_loop;
+    provider()->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  private:
   FakeWebAppProvider* provider_;
 };
@@ -40,9 +46,7 @@ TEST_F(WebAppCommandSchedulerTest, FetchManifestAndInstall) {
   provider()->StartWithSubsystems();
   EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
 
-  base::RunLoop run_loop;
-  provider()->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  WaitForProviderReady();
   EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
   base::Value::Dict log =
       provider()->command_manager().ToDebugValue().TakeDict();
@@ -52,6 +56,64 @@ TEST_F(WebAppCommandSchedulerTest, FetchManifestAndInstall) {
   EXPECT_EQ(*command_queue->front().GetDict().FindDict("value")->FindString(
                 "command_name"),
             "FetchManifestAndInstallCommand");
+}
+
+TEST_F(WebAppCommandSchedulerTest, PersistFileHandlersUserChoice) {
+  EXPECT_FALSE(provider()->is_registry_ready());
+  provider()->scheduler().PersistFileHandlersUserChoice(
+      "app id", /*allowed=*/true, base::DoNothing());
+
+  provider()->StartWithSubsystems();
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
+
+  WaitForProviderReady();
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
+  base::Value::Dict log =
+      provider()->command_manager().ToDebugValue().TakeDict();
+  base::Value::List* command_queue = log.FindList("command_queue");
+
+  EXPECT_EQ(command_queue->size(), 1u);
+
+  base::Value::Dict* command_log =
+      command_queue->front().GetDict().FindDict("value");
+  EXPECT_EQ(*command_log->FindString("name"), "UpdateFileHandlerCommand");
+  EXPECT_EQ(*command_log->FindString("user_choice_to_remember"), "allow");
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
+
+  provider()->Shutdown();
+  // commands don't get scheduled after shutdown.
+  provider()->scheduler().PersistFileHandlersUserChoice(
+      "app id", /*allowed=*/true, base::DoNothing());
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
+}
+
+TEST_F(WebAppCommandSchedulerTest, UpdateFileHandlerOsIntegration) {
+  EXPECT_FALSE(provider()->is_registry_ready());
+  provider()->scheduler().UpdateFileHandlerOsIntegration("app id",
+                                                         base::DoNothing());
+
+  provider()->StartWithSubsystems();
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
+
+  WaitForProviderReady();
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
+  base::Value::Dict log =
+      provider()->command_manager().ToDebugValue().TakeDict();
+  base::Value::List* command_queue = log.FindList("command_queue");
+
+  EXPECT_EQ(command_queue->size(), 1u);
+
+  base::Value::Dict* command_log =
+      command_queue->front().GetDict().FindDict("value");
+  EXPECT_EQ(*command_log->FindString("name"), "UpdateFileHandlerCommand");
+  EXPECT_EQ(command_log->FindString("user_choice_to_remember"), nullptr);
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
+
+  provider()->Shutdown();
+  // commands don't get scheduled after shutdown.
+  provider()->scheduler().PersistFileHandlersUserChoice(
+      "app id", /*allowed=*/true, base::DoNothing());
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
 }
 
 }  // namespace

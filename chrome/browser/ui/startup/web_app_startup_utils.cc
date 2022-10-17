@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -308,8 +309,10 @@ class StartupWebAppCreator
                                           allowed, std::move(persist_callback));
       } else {
         DCHECK(!file_launch_infos_.empty());
-        PersistFileHandlersUserChoice(profile_, app_id_, allowed,
-                                      std::move(persist_callback));
+        WebAppProvider::GetForWebApps(profile_)
+            ->scheduler()
+            .PersistFileHandlersUserChoice(app_id_, allowed,
+                                           std::move(persist_callback));
       }
     } else {
       std::move(persist_callback).Run();

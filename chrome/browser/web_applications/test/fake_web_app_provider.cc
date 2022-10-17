@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -235,6 +236,8 @@ void FakeWebAppProvider::ShutDownUiManagerForTesting() {
 }
 
 void FakeWebAppProvider::Shutdown() {
+  if (command_scheduler_)
+    command_scheduler_->Shutdown();
   if (command_manager_)
     command_manager_->Shutdown();
   if (ui_manager_)
