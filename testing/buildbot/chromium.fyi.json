@@ -5654,7 +5654,6 @@
         "args": [
           "--num-retries=3",
           "--skipped=always",
-          "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--flag-specific=skia-vulkan-swiftshader",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -96478,6 +96477,7 @@
       {
         "args": [
           "--flag-specific=highdpi",
+          "--skipped=always",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -96515,6 +96515,7 @@
       {
         "args": [
           "--flag-specific=highdpi",
+          "--skipped=always",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -96755,7 +96756,6 @@
         "args": [
           "--num-retries=3",
           "--skipped=always",
-          "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--flag-specific=skia-vulkan-swiftshader",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -104519,6 +104519,7 @@
       {
         "args": [
           "--flag-specific=highdpi",
+          "--skipped=always",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -104558,6 +104559,7 @@
       {
         "args": [
           "--flag-specific=highdpi",
+          "--skipped=always",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -104840,7 +104842,6 @@
         "args": [
           "--num-retries=3",
           "--skipped=always",
-          "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--flag-specific=skia-vulkan-swiftshader",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"

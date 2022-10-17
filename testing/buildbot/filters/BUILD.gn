@@ -45,9 +45,7 @@ source_set("blink_platform_unittests") {
 source_set("blink_web_tests_filter") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-  ]
+  data = []
 }
 
 source_set("browser_tests_filters") {

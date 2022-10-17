@@ -1305,6 +1305,7 @@
         # running Layout Tests with forced device scale factor.
         'args': [
           '--flag-specific=highdpi',
+          '--skipped=always',
 
           # layout test failures are retried 3 times when '--test-list' is not
           # passed, but 0 times when '--test-list' is passed. We want to always
@@ -1337,6 +1338,7 @@
         # running Layout Tests with forced device scale factor.
         'args': [
           '--flag-specific=highdpi',
+          '--skipped=always',
 
           # layout test failures are retried 3 times when '--test-list' is not
           # passed, but 0 times when '--test-list' is passed. We want to always
@@ -4755,7 +4757,6 @@
         'args': [
           '--num-retries=3',
           '--skipped=always',
-          '--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter',
           '--flag-specific=skia-vulkan-swiftshader',
         ],
         'isolate_name': 'blink_web_tests',

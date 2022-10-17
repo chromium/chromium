@@ -43,7 +43,8 @@
           "--enable-features=Vulkan",
           "--use-vulkan=swiftshader",
           "--disable-vulkan-fallback-to-gl-for-testing"
-    ]
+    ],
+    "smoke_file": "SmokeTests/skia-vulkan-swiftshader"
   },
   {
     "name": "webgpu",
