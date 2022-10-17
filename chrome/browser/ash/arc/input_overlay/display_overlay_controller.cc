@@ -351,6 +351,11 @@ void DisplayOverlayController::AddButtonForAddActionTap() {
   auto* parent_view = overlay_widget->GetContentsView();
   DCHECK(parent_view);
   add_action_tap_ = parent_view->AddChildView(std::move(add_action_tap));
+  add_action_tap_->SetButtonTextColor(cros_styles::ResolveColor(
+      cros_styles::ColorName::kButtonLabelColorPrimary, IsDarkModeEnabled()));
+  add_action_tap_->SetBackgroundColor(cros_styles::ResolveColor(
+      cros_styles::ColorName::kButtonBackgroundColorPrimary,
+      IsDarkModeEnabled()));
   add_action_tap_->SetPosition(
       gfx::Point(parent_view->width() - add_action_tap_->width(), 0));
 }
@@ -380,6 +385,11 @@ void DisplayOverlayController::AddButtonForAddActionMove() {
   auto* parent_view = overlay_widget->GetContentsView();
   DCHECK(parent_view);
   add_action_move_ = parent_view->AddChildView(std::move(add_action_move));
+  add_action_move_->SetButtonTextColor(cros_styles::ResolveColor(
+      cros_styles::ColorName::kButtonLabelColorPrimary, IsDarkModeEnabled()));
+  add_action_move_->SetBackgroundColor(cros_styles::ResolveColor(
+      cros_styles::ColorName::kButtonBackgroundColorPrimary,
+      IsDarkModeEnabled()));
   add_action_move_->SetPosition(
       gfx::Point(parent_view->width() - add_action_move_->width(),
                  add_action_tap_->height()));

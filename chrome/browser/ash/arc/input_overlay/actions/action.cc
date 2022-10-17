@@ -346,15 +346,9 @@ void Action::PrepareToBindPosition(std::unique_ptr<Position> position) {
 
 void Action::RestoreToDefault() {
   bool restored = false;
-  if (beta_) {
+  if (beta_ && GetCurrentDisplayedPosition() != original_positions_[0]) {
     pending_position_.reset();
-    if (!original_positions_.empty()) {
-      pending_position_ = std::make_unique<Position>(original_positions_[0]);
-    } else {
-      // TODO(cuicuiruan): ActionMove by mouse may have empty position.
-      // Implement this once UX/UI confirmed.
-      NOTREACHED();
-    }
+    pending_position_ = std::make_unique<Position>(original_positions_[0]);
     restored = true;
   }
   if (GetCurrentDisplayedInput() != *original_input_) {
@@ -387,6 +381,9 @@ bool Action::IsOverlapped(const InputElement& input_element) {
 }
 
 const Position& Action::GetCurrentDisplayedPosition() {
+  // TODO(b/229912890): When mouse overlay is involved, |original_positions_|
+  // may be empty. Add the situation for empty |original_positions_| when
+  // supporting mouse.
   DCHECK(!original_positions_.empty());
 
   return pending_position_

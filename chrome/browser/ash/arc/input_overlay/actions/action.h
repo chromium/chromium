@@ -207,7 +207,8 @@ class Action {
   raw_ptr<ActionView> action_view_ = nullptr;
 
  private:
-  // TODO(cuicuiruan): This can be removed when removing the flag.
+  // TODO(cuicuiruan): This can be removed when removing the flag. If |beta_| is
+  // true, then we care about the position change.
   bool beta_;
 };
 

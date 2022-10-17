@@ -95,6 +95,21 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   return actions;
 }
 
+// Return an Action which is not |target_action| and has input overlapped with
+// |input_element| in |actions|.
+Action* FindActionWithOverlapInputElement(
+    std::vector<std::unique_ptr<Action>>& actions,
+    Action* target_action,
+    const InputElement& input_element) {
+  for (auto& action : actions) {
+    if (action.get() == target_action)
+      continue;
+    if (action->IsOverlapped(input_element))
+      return action.get();
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // Calculate the window content bounds (excluding caption if it exists) in the
@@ -195,14 +210,13 @@ void TouchInjector::OnInputBindingChange(
     std::unique_ptr<InputElement> input_element) {
   if (display_overlay_controller_)
     display_overlay_controller_->RemoveEditMessage();
-  Action* overlapped_action = nullptr;
-  for (auto& action : actions_) {
-    if (action.get() == target_action)
-      continue;
-    if (action->IsOverlapped(*input_element)) {
-      overlapped_action = action.get();
-      break;
-    }
+  auto* overlapped_action = FindActionWithOverlapInputElement(
+      actions_, target_action, *input_element);
+
+  // Check if there is conflict in pending list.
+  if (beta_ && !pending_add_actions_.empty() && !overlapped_action) {
+    overlapped_action = FindActionWithOverlapInputElement(
+        pending_add_actions_, target_action, *input_element);
   }
 
   // Partially unbind or completely unbind the |overlapped_action| if it
