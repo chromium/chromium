@@ -290,6 +290,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.HfpMicSuperResolutionStatus.{Device}"
+    enum="CrasHfpMicSuperResolutionStatus" expires_after="2023-09-30">
+  <owner>cranelw@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Record the status of Super Resolution for the bluetooth microphone audio. It
+    is recorded when the device is opened.
+  </summary>
+  <token key="Device">
+    <variant name="BluetoothNarrowBandMic"/>
+    <variant name="BluetoothWideBandMic"/>
+  </token>
+</histogram>
+
 <histogram name="Cras.HfpScoConnectionError" enum="CrasHfpScoError"
     expires_after="2022-12-01">
   <owner>enshuo@chromium.org</owner>

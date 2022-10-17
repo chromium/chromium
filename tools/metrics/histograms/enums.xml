@@ -21000,6 +21000,18 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="HFP_CODEC_ID_MSBC"/>
 </enum>
 
+<enum name="CrasHfpMicSuperResolutionStatus">
+  <summary>
+    List of status types of Super Resolution for the bluetooth microphone audio.
+    This list should be aligned with CRAS:
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="CRAS_METRICS_HFP_MIC_SR_ENABLE_SUCCESS"/>
+  <int value="1" label="CRAS_METRICS_HFP_MIC_SR_ENABLE_FAILED"/>
+  <int value="2" label="CRAS_METRICS_HFP_MIC_SR_FEATURE_DISABLED"/>
+  <int value="3" label="CRAS_METRICS_HFP_MIC_SR_DLC_UNAVAILABLE"/>
+</enum>
+
 <enum name="CrasHfpScoError">
   <summary>
     List of results(success or error code) of setting up a SCO connection for
