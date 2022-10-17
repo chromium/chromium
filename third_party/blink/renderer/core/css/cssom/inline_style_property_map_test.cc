@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 
 namespace blink {
 
@@ -16,7 +17,9 @@ TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
   // Test that trying to reify any longhands with a CSSPendingSubstitutionValue
   // does not cause a crash.
 
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   Element* div = document->CreateRawElement(html_names::kDivTag);
   InlineStylePropertyMap map(div);
 

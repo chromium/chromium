@@ -30,7 +30,9 @@ NullExecutionContext::NullExecutionContext(
               base::UnguessableToken::Create(),
               v8::MicrotaskQueue::New(v8::Isolate::GetCurrent(),
                                       v8::MicrotasksPolicy::kScoped))),
-      scheduler_(std::move(scheduler)) {}
+      scheduler_(std::move(scheduler)) {
+  SetPolicyContainer(PolicyContainer::CreateEmpty());
+}
 
 NullExecutionContext::~NullExecutionContext() {}
 

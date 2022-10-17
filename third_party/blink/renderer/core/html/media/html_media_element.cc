@@ -2510,7 +2510,7 @@ void HTMLMediaElement::SetOfficialPlaybackPosition(double position) const {
   // needed, the update is applied in the next call to
   // officialPlaybackPosition().
   official_playback_position_needs_update_ = false;
-  GetDocument().GetAgent()->event_loop()->EnqueueMicrotask(
+  GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
       WTF::BindOnce(&HTMLMediaElement::RequireOfficialPlaybackPositionUpdate,
                     WrapWeakPersistent(this)));
 }

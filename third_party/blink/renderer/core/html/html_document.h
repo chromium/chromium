@@ -40,7 +40,7 @@ class CORE_EXPORT HTMLDocument : public Document {
       DocumentClassFlags extended_document_classes = kDefaultDocumentClass);
   ~HTMLDocument() override;
 
-  static HTMLDocument* CreateForTest();
+  static HTMLDocument* CreateForTest(ExecutionContext& execution_context);
 
   void AddNamedItem(const AtomicString& name);
   void RemoveNamedItem(const AtomicString& name);

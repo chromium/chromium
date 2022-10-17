@@ -232,7 +232,7 @@ void ScriptWebBundle::WillReleaseBundleLoaderAndUnregister() {
   element_ = nullptr;
   if (element_document_) {
     auto task = std::make_unique<ReleaseResourceTask>(*this);
-    element_document_->GetAgent()->event_loop()->EnqueueMicrotask(
+    element_document_->GetAgent().event_loop()->EnqueueMicrotask(
         WTF::BindOnce(&ReleaseResourceTask::Run, std::move(task)));
   } else {
     ReleaseBundleLoaderAndUnregister();

@@ -62,8 +62,10 @@ DOMPatchSupport::DOMPatchSupport(DOMEditor* dom_editor, Document& document)
 
 void DOMPatchSupport::PatchDocument(const String& markup) {
   Document* new_document = nullptr;
-  DocumentInit init = DocumentInit::Create().WithExecutionContext(
-      GetDocument().GetExecutionContext());
+  DocumentInit init =
+      DocumentInit::Create()
+          .WithExecutionContext(GetDocument().GetExecutionContext())
+          .WithAgent(GetDocument().GetAgent());
   if (IsA<HTMLDocument>(GetDocument()))
     new_document = MakeGarbageCollected<HTMLDocument>(init);
   else if (GetDocument().IsSVGDocument())

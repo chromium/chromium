@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -16,14 +17,18 @@ namespace blink {
 // https://html.spec.whatwg.org/C/#dom-tr-rowindex
 
 TEST(HTMLTableRowElementTest, rowIndex_notInTable) {
-  auto* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   auto* row = MakeGarbageCollected<HTMLTableRowElement>(*document);
   EXPECT_EQ(-1, row->rowIndex())
       << "rows not in tables should have row index -1";
 }
 
 TEST(HTMLTableRowElementTest, rowIndex_directChildOfTable) {
-  auto* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   auto* table = MakeGarbageCollected<HTMLTableElement>(*document);
   auto* row = MakeGarbageCollected<HTMLTableRowElement>(*document);
   table->AppendChild(row);
@@ -32,7 +37,9 @@ TEST(HTMLTableRowElementTest, rowIndex_directChildOfTable) {
 }
 
 TEST(HTMLTableRowElementTest, rowIndex_inUnrelatedElementInTable) {
-  auto* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   auto* table = MakeGarbageCollected<HTMLTableElement>(*document);
   // Almost any element will do; what's pertinent is that this is not
   // THEAD, TBODY or TFOOT.

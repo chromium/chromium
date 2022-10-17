@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -41,7 +42,9 @@ TEST_F(CustomElementUpgradeSorterTest, inOtherDocument_notInSet) {
   Element* element =
       GetDocument().CreateElementForBinding("a-a", nullptr, no_exceptions);
 
-  auto* other_document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* other_document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   other_document->AppendChild(element);
   EXPECT_EQ(other_document, element->ownerDocument())
       << "sanity: another document should have adopted an element on append";

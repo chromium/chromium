@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
@@ -457,7 +458,9 @@ TEST_F(ComputedStyleTest, BorderStyle) {
   } while (false)
 
 TEST_F(ComputedStyleTest, AnimationFlags) {
-  Persistent<Document> document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Persistent<Document> document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   TEST_ANIMATION_FLAG(HasCurrentTransformAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentScaleAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentRotateAnimation, kNonInherited);
@@ -818,11 +821,13 @@ TEST_F(ComputedStyleTest, InitialVariableNames) {
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
+  ScopedNullExecutionContext execution_context;
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty("--x", *CreateLengthRegistration("--x", 1));
   registry->RegisterProperty("--y", *CreateLengthRegistration("--y", 2));
-  style->SetInitialData(
-      StyleInitialData::Create(*Document::CreateForTest(), *registry));
+  style->SetInitialData(StyleInitialData::Create(
+      *Document::CreateForTest(execution_context.GetExecutionContext()),
+      *registry));
 
   EXPECT_EQ(2u, style->GetVariableNames().size());
   EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
@@ -881,11 +886,13 @@ TEST_F(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
+  ScopedNullExecutionContext execution_context;
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty("--b", *CreateLengthRegistration("--b", 1));
   registry->RegisterProperty("--e", *CreateLengthRegistration("--e", 2));
-  style->SetInitialData(
-      StyleInitialData::Create(*Document::CreateForTest(), *registry));
+  style->SetInitialData(StyleInitialData::Create(
+      *Document::CreateForTest(execution_context.GetExecutionContext()),
+      *registry));
 
   const bool inherited = true;
   style->SetVariableData("--a", CreateVariableData("foo"), inherited);
@@ -942,11 +949,13 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
+  ScopedNullExecutionContext execution_context;
   {
     PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
     registry->RegisterProperty("--x", *CreateLengthRegistration("--x", 1));
-    style->SetInitialData(
-        StyleInitialData::Create(*Document::CreateForTest(), *registry));
+    style->SetInitialData(StyleInitialData::Create(
+        *Document::CreateForTest(execution_context.GetExecutionContext()),
+        *registry));
   }
   EXPECT_EQ(style->GetVariableNames().size(), 1u);
   EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
@@ -956,8 +965,9 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
     PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
     registry->RegisterProperty("--y", *CreateLengthRegistration("--y", 2));
     registry->RegisterProperty("--z", *CreateLengthRegistration("--z", 3));
-    style->SetInitialData(
-        StyleInitialData::Create(*Document::CreateForTest(), *registry));
+    style->SetInitialData(StyleInitialData::Create(
+        *Document::CreateForTest(execution_context.GetExecutionContext()),
+        *registry));
   }
   EXPECT_EQ(style->GetVariableNames().size(), 2u);
   EXPECT_TRUE(style->GetVariableNames().Contains("--y"));
@@ -1211,7 +1221,9 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   }
 
 TEST_F(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
-  Persistent<Document> document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Persistent<Document> document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   TEST_STYLE_VALUE_NO_DIFF(StrokeOpacity);
   TEST_STYLE_VALUE_NO_DIFF(StrokeMiterLimit);
   TEST_STYLE_VALUE_NO_DIFF(StrokeWidth);
@@ -1223,7 +1235,9 @@ TEST_F(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
 }
 
 TEST_F(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
-  Persistent<Document> document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Persistent<Document> document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   TEST_STYLE_VALUE_NO_DIFF(FloodColor);
   TEST_STYLE_VALUE_NO_DIFF(FloodOpacity);
   TEST_STYLE_VALUE_NO_DIFF(LightingColor);

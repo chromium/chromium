@@ -39,7 +39,7 @@ namespace css_test_helpers {
 TestStyleSheet::~TestStyleSheet() = default;
 
 TestStyleSheet::TestStyleSheet() {
-  document_ = Document::CreateForTest();
+  document_ = Document::CreateForTest(execution_context_.GetExecutionContext());
   style_sheet_ = CreateStyleSheet(*document_);
 }
 

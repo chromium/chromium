@@ -116,6 +116,7 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
                                  .WithURL(window->Url())
                                  .WithTypeFrom("text/html")
                                  .WithExecutionContext(window)
+                                 .WithAgent(*window->GetAgent())
                                  .CreateDocument();
   Element* element = inert_document->CreateElementForBinding(
       AtomicString(local_name), exception_state);

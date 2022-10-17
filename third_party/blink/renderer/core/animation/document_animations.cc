@@ -102,7 +102,7 @@ void DocumentAnimations::UpdateAnimationTimingForAnimationFrame() {
   // This is to ensure that any microtasks queued up as a result of resolving or
   // rejecting Promise objects as part of updating timelines run their callbacks
   // prior to dispatching animation events and generating the next main frame.
-  document_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
+  document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
 }
 
 bool DocumentAnimations::NeedsAnimationTimingUpdate() {
@@ -285,7 +285,7 @@ void DocumentAnimations::RemoveReplacedAnimations(
     }
   }
   scoped_refptr<scheduler::EventLoop> event_loop =
-      document_->GetAgent()->event_loop();
+      document_->GetAgent().event_loop();
 
   // The list of animations for removal is constructed in reverse composite
   // ordering for efficiency. Flip the ordering to ensure that events are

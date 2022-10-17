@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -63,7 +64,8 @@ class StyleTraversalRootTest : public testing::Test {
  protected:
   enum ElementIndex { kA, kB, kC, kD, kE, kF, kG, kElementCount };
   void SetUp() final {
-    document_ = Document::CreateForTest();
+    document_ =
+        Document::CreateForTest(execution_context_.GetExecutionContext());
     elements_ = MakeGarbageCollected<HeapVector<Member<Element>, 7>>();
     for (size_t i = 0; i < kElementCount; i++) {
       elements_->push_back(GetDocument().CreateRawElement(html_names::kDivTag));
@@ -89,6 +91,7 @@ class StyleTraversalRootTest : public testing::Test {
   Element* DivElement(ElementIndex index) { return elements_->at(index); }
 
  private:
+  ScopedNullExecutionContext execution_context_;
   Persistent<Document> document_;
   Persistent<HeapVector<Member<Element>, 7>> elements_;
 };

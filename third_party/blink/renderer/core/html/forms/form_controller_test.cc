@@ -11,12 +11,14 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 TEST(DocumentStateTest, ToStateVectorConnected) {
-  auto& doc = *Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto& doc = *Document::CreateForTest(execution_context.GetExecutionContext());
   Element* html = doc.CreateRawElement(html_names::kHTMLTag);
   doc.appendChild(html);
   Node* body = html->appendChild(doc.CreateRawElement(html_names::kBodyTag));

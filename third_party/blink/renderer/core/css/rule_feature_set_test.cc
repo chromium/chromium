@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -35,7 +36,8 @@ class RuleFeatureSetTest : public testing::Test {
   RuleFeatureSetTest() = default;
 
   void SetUp() override {
-    document_ = HTMLDocument::CreateForTest();
+    document_ =
+        HTMLDocument::CreateForTest(execution_context_.GetExecutionContext());
     auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document_);
     html->AppendChild(MakeGarbageCollected<HTMLBodyElement>(*document_));
     document_->AppendChild(html);
@@ -696,6 +698,9 @@ class RuleFeatureSetTest : public testing::Test {
     return HasRefCountForInvalidationSet(
         rule_feature_set.pseudo_invalidation_sets_, key, ref_count);
   }
+
+ protected:
+  ScopedNullExecutionContext execution_context_;
 
  private:
   RuleFeatureSet rule_feature_set_;
@@ -2065,7 +2070,8 @@ class RuleFeatureSetScopeRefTest
   void CollectTo(const char* text,
                  RuleFeatureSet& set,
                  StyleRule* parent_rule_for_nesting = nullptr) const override {
-    Document* document = Document::CreateForTest();
+    Document* document =
+        Document::CreateForTest(execution_context_.GetExecutionContext());
     StyleRuleBase* rule = css_test_helpers::ParseRule(*document, text);
     ASSERT_TRUE(rule);
 

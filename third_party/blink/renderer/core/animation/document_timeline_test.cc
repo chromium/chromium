@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -206,7 +207,9 @@ TEST_F(AnimationDocumentTimelineTest, CurrentTimeSeconds) {
   EXPECT_EQ(2, timeline->CurrentTimeSeconds());
   EXPECT_EQ(2000, timeline->CurrentTimeMilliseconds());
 
-  auto* document_without_frame = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document_without_frame =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   auto* inactive_timeline = MakeGarbageCollected<DocumentTimeline>(
       document_without_frame, base::TimeDelta(), platform_timing);
 

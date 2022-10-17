@@ -746,7 +746,7 @@ void Fullscreen::DidResolveEnterFullscreenRequest(Document& document,
   // but must still not synchronously change the fullscreen element. Instead
   // enqueue a microtask to continue.
   if (RequestFullscreenScope::RunningRequestFullscreen()) {
-    document.GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+    document.GetAgent().event_loop()->EnqueueMicrotask(WTF::BindOnce(
         [](Document* document, bool granted) {
           DCHECK(document);
           DidResolveEnterFullscreenRequest(*document, granted);
@@ -971,7 +971,7 @@ ScriptPromise Fullscreen::ExitFullscreen(Document& doc,
     // Note: We are past the "in parallel" point, and |ContinueExitFullscreen()|
     // will change script-observable state (document.fullscreenElement)
     // synchronously, so we have to continue asynchronously.
-    doc.GetAgent()->event_loop()->EnqueueMicrotask(
+    doc.GetAgent().event_loop()->EnqueueMicrotask(
         WTF::BindOnce(ContinueExitFullscreen, WrapPersistent(&doc),
                       WrapPersistent(resolver), false /* resize */));
   }

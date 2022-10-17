@@ -8547,7 +8547,7 @@ TEST_F(WebFrameTest, FullscreenNestedExit) {
   Fullscreen::RequestFullscreen(*iframe_body);
 
   web_view_impl->DidEnterFullscreen();
-  top_doc->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
+  top_doc->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
   UpdateAllLifecyclePhases(web_view_impl);
 
   // We are now in nested fullscreen, with both documents having a non-empty

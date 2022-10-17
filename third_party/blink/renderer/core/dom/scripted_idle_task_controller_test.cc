@@ -181,30 +181,14 @@ class MockIdleTask : public IdleTask {
 };
 }  // namespace
 
-class ScopedNullExecutionContext {
- public:
-  explicit ScopedNullExecutionContext(
-      MockScriptedIdleTaskControllerScheduler* scheduler)
-      : execution_context_(MakeGarbageCollected<NullExecutionContext>(
-            std::make_unique<IdleTaskControllerFrameScheduler>(scheduler))) {}
-
-  ~ScopedNullExecutionContext() {
-    execution_context_->NotifyContextDestroyed();
-  }
-
-  ExecutionContext* GetExecutionContext() { return execution_context_; }
-
- private:
-  Persistent<ExecutionContext> execution_context_;
-};
-
 TEST(ScriptedIdleTaskControllerTest, RunCallback) {
   MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield(false));
   ScopedSchedulerOverrider scheduler_overrider(&scheduler,
                                                scheduler.TaskRunner());
-  ScopedNullExecutionContext execution_context(&scheduler);
+  ScopedNullExecutionContext execution_context(
+      std::make_unique<IdleTaskControllerFrameScheduler>(&scheduler));
   ScriptedIdleTaskController* controller = ScriptedIdleTaskController::Create(
-      execution_context.GetExecutionContext());
+      &execution_context.GetExecutionContext());
 
   Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());
   IdleRequestOptions* options = IdleRequestOptions::Create();
@@ -223,9 +207,10 @@ TEST(ScriptedIdleTaskControllerTest, DontRunCallbackWhenAskedToYield) {
   MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield(true));
   ScopedSchedulerOverrider scheduler_overrider(&scheduler,
                                                scheduler.TaskRunner());
-  ScopedNullExecutionContext execution_context(&scheduler);
+  ScopedNullExecutionContext execution_context(
+      std::make_unique<IdleTaskControllerFrameScheduler>(&scheduler));
   ScriptedIdleTaskController* controller = ScriptedIdleTaskController::Create(
-      execution_context.GetExecutionContext());
+      &execution_context.GetExecutionContext());
 
   Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());
   IdleRequestOptions* options = IdleRequestOptions::Create();
@@ -244,9 +229,10 @@ TEST(ScriptedIdleTaskControllerTest, RunCallbacksAsyncWhenUnpaused) {
   MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield(true));
   ScopedSchedulerOverrider scheduler_overrider(&scheduler,
                                                scheduler.TaskRunner());
-  ScopedNullExecutionContext execution_context(&scheduler);
+  ScopedNullExecutionContext execution_context(
+      std::make_unique<IdleTaskControllerFrameScheduler>(&scheduler));
   ScriptedIdleTaskController* controller = ScriptedIdleTaskController::Create(
-      execution_context.GetExecutionContext());
+      &execution_context.GetExecutionContext());
 
   // Register an idle task with a deadline.
   Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());

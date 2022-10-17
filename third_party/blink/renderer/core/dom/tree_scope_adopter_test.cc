@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -15,8 +16,9 @@ namespace blink {
 // TODO(hayato): It's hard to see what's happening in these tests.
 // It would be better to refactor these tests.
 TEST(TreeScopeAdopterTest, SimpleMove) {
-  auto* doc1 = Document::CreateForTest();
-  auto* doc2 = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* doc1 = Document::CreateForTest(execution_context.GetExecutionContext());
+  auto* doc2 = Document::CreateForTest(execution_context.GetExecutionContext());
 
   Element* html1 = doc1->CreateRawElement(html_names::kHTMLTag);
   doc1->AppendChild(html1);

@@ -35,6 +35,7 @@ Document* DOMParser::parseFromString(const String& str,
                       .WithURL(window_->Url())
                       .WithTypeFrom(type)
                       .WithExecutionContext(window_)
+                      .WithAgent(*window_->GetAgent())
                       .CreateDocument();
   doc->setAllowDeclarativeShadowRoots(options->hasIncludeShadowRoots() &&
                                       options->includeShadowRoots());

@@ -200,7 +200,7 @@ void HTMLParserScriptRunner::
 
   if (!IsExecutingScript()) {
     // TODO(kouhei, hiroshige): Investigate why we need checkpoint here.
-    document_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
+    document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
     // The parser cannot be unblocked as a microtask requested another
     // resource
     if (!document_->IsScriptExecutionReady())
@@ -248,7 +248,7 @@ void HTMLParserScriptRunner::ExecutePendingDeferredScriptAndDispatchEvent(
 
   if (!IsExecutingScript()) {
     // TODO(kouhei, hiroshige): Investigate why we need checkpoint here.
-    document_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
+    document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
   }
 
   DoExecuteScript(pending_script, *document_);
@@ -516,7 +516,7 @@ void HTMLParserScriptRunner::ProcessScriptElementInternal(
     // JavaScript execution context stack is empty, then perform a microtask
     // checkpoint. ...</spec>
     if (!IsExecutingScript())
-      document_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
+      document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
 
     // <spec>... Let the old insertion point have the same value as the current
     // insertion point. Let the insertion point be just before the next input

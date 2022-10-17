@@ -66,14 +66,16 @@ DocumentInit::DocumentInit(const DocumentInit&) = default;
 
 DocumentInit::~DocumentInit() = default;
 
-DocumentInit& DocumentInit::ForTest(ExecutionContext* execution_context) {
+DocumentInit& DocumentInit::ForTest(ExecutionContext& execution_context) {
   DCHECK(!execution_context_);
   DCHECK(!window_);
+  DCHECK(!agent_);
 #if DCHECK_IS_ON()
   DCHECK(!for_test_);
   for_test_ = true;
 #endif
-  execution_context_ = execution_context;
+  execution_context_ = &execution_context;
+  agent_ = execution_context.GetAgent();
   return *this;
 }
 
@@ -95,14 +97,30 @@ DocumentInit& DocumentInit::WithWindow(LocalDOMWindow* window,
                                        Document* owner_document) {
   DCHECK(!window_);
   DCHECK(!execution_context_);
+  DCHECK(!agent_);
 #if DCHECK_IS_ON()
   DCHECK(!for_test_);
 #endif
   DCHECK(window);
   window_ = window;
   execution_context_ = window;
+  agent_ = window->GetAgent();
   owner_document_ = owner_document;
   return *this;
+}
+
+DocumentInit& DocumentInit::WithAgent(Agent& agent) {
+  DCHECK(!agent_);
+#if DCHECK_IS_ON()
+  DCHECK(!for_test_);
+#endif
+  agent_ = &agent;
+  return *this;
+}
+
+Agent& DocumentInit::GetAgent() const {
+  DCHECK(agent_);
+  return *agent_;
 }
 
 DocumentInit& DocumentInit::WithToken(const DocumentToken& token) {
@@ -206,6 +224,7 @@ DocumentInit& DocumentInit::WithExecutionContext(
     ExecutionContext* execution_context) {
   DCHECK(!execution_context_);
   DCHECK(!window_);
+  DCHECK(!agent_);
 #if DCHECK_IS_ON()
   DCHECK(!for_test_);
 #endif
@@ -270,7 +289,8 @@ DocumentInit& DocumentInit::WithUkmSourceId(ukm::SourceId ukm_source_id) {
 
 Document* DocumentInit::CreateDocument() const {
 #if DCHECK_IS_ON()
-  DCHECK(execution_context_ || for_test_);
+  DCHECK(execution_context_);
+  DCHECK(agent_);
 #endif
   switch (type_) {
     case Type::kHTML:

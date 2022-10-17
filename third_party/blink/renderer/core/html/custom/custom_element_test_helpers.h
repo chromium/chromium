@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition_builder.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -152,8 +153,10 @@ class CreateElement {
 
   operator Element*() const {
     Document* document = document_;
-    if (!document)
-      document = HTMLDocument::CreateForTest();
+    if (!document) {
+      document =
+          HTMLDocument::CreateForTest(execution_context_.GetExecutionContext());
+    }
     NonThrowableExceptionState no_exceptions;
     Element* element = document->CreateElement(
         QualifiedName(g_null_atom, local_name_, namespace_uri_),
@@ -164,6 +167,7 @@ class CreateElement {
   }
 
  private:
+  ScopedNullExecutionContext execution_context_;
   Document* document_ = nullptr;
   AtomicString namespace_uri_;
   AtomicString local_name_;

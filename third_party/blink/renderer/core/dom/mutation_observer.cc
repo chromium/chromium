@@ -305,13 +305,13 @@ void MutationObserver::ObservationEnded(
 // static
 void MutationObserver::EnqueueSlotChange(HTMLSlotElement& slot) {
   DCHECK(IsMainThread());
-  MutationObserverAgentData::From(*slot.GetDocument().GetAgent())
+  MutationObserverAgentData::From(slot.GetDocument().GetAgent())
       .EnqueueSlotChange(slot);
 }
 
 // static
 void MutationObserver::CleanSlotChangeList(Document& document) {
-  MutationObserverAgentData::From(*document.GetAgent())
+  MutationObserverAgentData::From(document.GetAgent())
       .CleanSlotChangeList(document);
 }
 

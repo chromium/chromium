@@ -1154,7 +1154,7 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
   csp->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
 
   const KURL example_url("http://example.com");
-  auto* document = Document::CreateForTest();
+  auto* document = Document::CreateForTest(*execution_context);
   String source;
   String context_url;
   String nonce;

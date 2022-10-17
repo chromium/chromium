@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -15,7 +16,8 @@ namespace blink {
 class TreeScopeTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    document_ = Document::CreateForTest();
+    document_ =
+        Document::CreateForTest(execution_context_.GetExecutionContext());
     Element* html = document_->CreateRawElement(html_names::kHTMLTag);
     document_->AppendChild(html);
     body_ = document_->CreateRawElement(html_names::kBodyTag);
@@ -23,8 +25,12 @@ class TreeScopeTest : public ::testing::Test {
   }
   Document* GetDocument() { return document_; }
   Element* GetBody() { return body_; }
+  ExecutionContext& GetExecutionContext() {
+    return execution_context_.GetExecutionContext();
+  }
 
  private:
+  ScopedNullExecutionContext execution_context_;
   Persistent<Document> document_;
   Persistent<Element> body_;
 };
@@ -99,7 +105,7 @@ TEST_F(TreeScopeTest, CommonAncestorOfTreesAtDifferentDepths) {
 }
 
 TEST_F(TreeScopeTest, CommonAncestorOfTreesInDifferentDocuments) {
-  auto* document2 = Document::CreateForTest();
+  auto* document2 = Document::CreateForTest(GetExecutionContext());
   EXPECT_EQ(nullptr, GetDocument()->CommonAncestorTreeScope(*document2));
   EXPECT_EQ(nullptr, document2->CommonAncestorTreeScope(*GetDocument()));
 }

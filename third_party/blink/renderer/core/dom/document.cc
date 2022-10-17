@@ -677,12 +677,13 @@ Document* Document::Create(Document& document) {
   Document* new_document = MakeGarbageCollected<Document>(
       DocumentInit::Create()
           .WithExecutionContext(document.GetExecutionContext())
+          .WithAgent(document.GetAgent())
           .WithURL(BlankURL()));
   new_document->SetContextFeatures(document.GetContextFeatures());
   return new_document;
 }
 
-Document* Document::CreateForTest(ExecutionContext* execution_context) {
+Document* Document::CreateForTest(ExecutionContext& execution_context) {
   return MakeGarbageCollected<Document>(
       DocumentInit::Create().ForTest(execution_context));
 }
@@ -703,7 +704,7 @@ Document::Document(const DocumentInit& initializer,
       pending_sheet_layout_(kNoLayoutWithPendingSheets),
       dom_window_(initializer.GetWindow()),
       execution_context_(initializer.GetExecutionContext()),
-      agent_(execution_context_ ? execution_context_->GetAgent() : nullptr),
+      agent_(initializer.GetAgent()),
       context_features_(ContextFeatures::DefaultSwitch()),
       http_refresh_scheduler_(MakeGarbageCollected<HttpRefreshScheduler>(this)),
       well_formed_(false),
@@ -816,6 +817,7 @@ Document::Document(const DocumentInit& initializer,
               ? MakeGarbageCollected<RenderBlockingResourceManager>(*this)
               : nullptr),
       data_(MakeGarbageCollected<DocumentData>(GetExecutionContext())) {
+  DCHECK(agent_);
   if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution))
     script_runner_delayer_->Activate();
 
@@ -4792,6 +4794,7 @@ void Document::UnobserveForIntrinsicSize(Element* element) {
 Document* Document::CloneDocumentWithoutChildren() const {
   DocumentInit init = DocumentInit::Create()
                           .WithExecutionContext(execution_context_.Get())
+                          .WithAgent(GetAgent())
                           .WithURL(Url());
   if (IsA<XMLDocument>(this)) {
     if (IsXHTMLDocument())
@@ -6911,8 +6914,8 @@ ExecutionContext* Document::GetExecutionContext() const {
   return execution_context_.Get();
 }
 
-Agent* Document::GetAgent() const {
-  return agent_.Get();
+Agent& Document::GetAgent() const {
+  return *agent_;
 }
 
 Attr* Document::createAttribute(const AtomicString& name,
@@ -7979,11 +7982,13 @@ Document& Document::EnsureTemplateDocument() {
     template_document_ = MakeGarbageCollected<HTMLDocument>(
         DocumentInit::Create()
             .WithExecutionContext(execution_context_.Get())
+            .WithAgent(GetAgent())
             .WithURL(BlankURL()));
   } else {
     template_document_ = MakeGarbageCollected<Document>(
         DocumentInit::Create()
             .WithExecutionContext(execution_context_.Get())
+            .WithAgent(GetAgent())
             .WithURL(BlankURL()));
   }
 

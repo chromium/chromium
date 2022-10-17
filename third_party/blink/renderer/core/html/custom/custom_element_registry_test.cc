@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_descriptor.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -77,7 +78,9 @@ TEST_F(CustomElementRegistryTest,
   Element* element = CreateElement("a-a").InDocument(&GetDocument());
   Registry().AddCandidate(*element);
 
-  auto* other_document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* other_document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   other_document->AppendChild(element);
   EXPECT_EQ(other_document, element->ownerDocument())
       << "sanity: another document should have adopted an element on append";
@@ -397,7 +400,9 @@ TEST_F(CustomElementRegistryTest, adoptedCallback) {
       static_cast<LogUpgradeDefinition*>(Registry().DefinitionForName("a-a"));
 
   definition->Clear();
-  auto* other_document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* other_document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   {
     CEReactionsScope reactions;
     other_document->adoptNode(element, ASSERT_NO_EXCEPTION);

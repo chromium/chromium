@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -42,6 +43,7 @@ class TestStyleSheet {
   CSSRuleList* CssRules();
 
  private:
+  ScopedNullExecutionContext execution_context_;
   Persistent<Document> document_;
   Persistent<CSSStyleSheet> style_sheet_;
 };

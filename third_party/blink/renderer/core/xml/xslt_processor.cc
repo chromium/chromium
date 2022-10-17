@@ -105,7 +105,8 @@ Document* XSLTProcessor::CreateDocumentFromSource(
       DocumentInit::Create()
           .WithURL(url)
           .WithTypeFrom(mime_type)
-          .WithExecutionContext(owner_document->GetExecutionContext());
+          .WithExecutionContext(owner_document->GetExecutionContext())
+          .WithAgent(owner_document->GetAgent());
   Document* document = init.CreateDocument();
   auto parsed_source_encoding = source_encoding.empty()
                                     ? UTF8Encoding()

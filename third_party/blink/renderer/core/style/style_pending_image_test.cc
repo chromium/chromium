@@ -6,12 +6,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 
 namespace blink {
 
 TEST(StylePendingImageTest, IsEqual) {
   using css_test_helpers::ParseValue;
-  auto* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   const CSSValue* value1 = ParseValue(*document, "<image>", "url('#a')");
   const CSSValue* value2 = ParseValue(*document, "<image>", "url('#a')");
   const CSSValue* value3 = ParseValue(*document, "<image>", "url('#b')");

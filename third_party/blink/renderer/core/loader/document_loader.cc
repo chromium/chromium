@@ -1632,7 +1632,7 @@ void DocumentLoader::DetachFromFrame(bool flush_microtask_queue) {
     // microtasks with a v8::Context, remove this hack.
     frame_->GetDocument()
         ->GetAgent()
-        ->event_loop()
+        .event_loop()
         ->PerformMicrotaskCheckpoint();
   }
   ScriptForbiddenScope forbid_scripts;

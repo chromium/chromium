@@ -41,6 +41,7 @@
 
 namespace blink {
 
+class Agent;
 class Document;
 class ExecutionContext;
 class LocalDOMWindow;
@@ -90,7 +91,7 @@ class CORE_EXPORT DocumentInit final {
     kUnspecified
   };
 
-  DocumentInit& ForTest(ExecutionContext* execution_context = nullptr);
+  DocumentInit& ForTest(ExecutionContext& execution_context);
 
   // Actually constructs the Document based on the provided state.
   Document* CreateDocument() const;
@@ -104,6 +105,9 @@ class CORE_EXPORT DocumentInit final {
 
   DocumentInit& WithToken(const DocumentToken& token);
   const DocumentToken& GetToken() const;
+
+  DocumentInit& WithAgent(Agent& agent);
+  Agent& GetAgent() const;
 
   DocumentInit& ForInitialEmptyDocument(bool empty);
   bool IsInitialEmptyDocument() const { return is_initial_empty_document_; }
@@ -159,6 +163,7 @@ class CORE_EXPORT DocumentInit final {
   ExecutionContext* execution_context_ = nullptr;
   KURL url_;
   Document* owner_document_ = nullptr;
+  Agent* agent_ = nullptr;
 
   // Whether we should treat the new document as "srcdoc" document. This
   // affects security checks, since srcdoc's content comes directly from

@@ -216,7 +216,7 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
   void SimulateAwaitReady() { SimulateFrame(last_frame_time); }
 
   void SimulateMicrotask() {
-    GetDocument().GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
+    GetDocument().GetAgent().event_loop()->PerformMicrotaskCheckpoint();
   }
 
   void SimulateFrameForScrollAnimations() {

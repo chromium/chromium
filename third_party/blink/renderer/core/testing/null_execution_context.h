@@ -14,11 +14,10 @@
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
-
-class FrameScheduler;
 
 class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
                              public ExecutionContext {
@@ -78,6 +77,27 @@ class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
 
   // A fake token identifying this execution context.
   const LocalFrameToken token_;
+};
+
+class ScopedNullExecutionContext {
+ public:
+  ScopedNullExecutionContext()
+      : execution_context_(MakeGarbageCollected<NullExecutionContext>()) {}
+
+  explicit ScopedNullExecutionContext(std::unique_ptr<FrameScheduler> scheduler)
+      : execution_context_(
+            MakeGarbageCollected<NullExecutionContext>(std::move(scheduler))) {}
+
+  ~ScopedNullExecutionContext() {
+    execution_context_->NotifyContextDestroyed();
+  }
+
+  NullExecutionContext& GetExecutionContext() const {
+    return *execution_context_;
+  }
+
+ private:
+  Persistent<NullExecutionContext> execution_context_;
 };
 
 }  // namespace blink

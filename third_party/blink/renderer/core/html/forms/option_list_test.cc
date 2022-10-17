@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -23,7 +24,8 @@ AtomicString Id(const HTMLOptionElement* option) {
 class OptionListTest : public testing::Test {
  protected:
   void SetUp() override {
-    auto* document = HTMLDocument::CreateForTest();
+    auto* document =
+        HTMLDocument::CreateForTest(execution_context_.GetExecutionContext());
     auto* select = MakeGarbageCollected<HTMLSelectElement>(*document);
     document->AppendChild(select);
     select_ = select;
@@ -31,6 +33,7 @@ class OptionListTest : public testing::Test {
   HTMLSelectElement& Select() const { return *select_; }
 
  private:
+  ScopedNullExecutionContext execution_context_;
   Persistent<HTMLSelectElement> select_;
 };
 

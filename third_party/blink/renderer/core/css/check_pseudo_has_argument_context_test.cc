@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -416,7 +417,9 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalType) {
 TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase1) {
   // CheckPseudoHasArgumentTraversalScope::kSubtree
 
-  auto* document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   document->write(R"HTML(
     <!DOCTYPE html>
     <main id=main>
@@ -472,7 +475,9 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase1) {
 TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase2) {
   // CheckPseudoHasArgumentTraversalScope::kAllNextSiblings
 
-  auto* document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   document->write(R"HTML(
     <!DOCTYPE html>
     <main id=main>
@@ -505,7 +510,9 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase2) {
 TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase3) {
   // CheckPseudoHasArgumentTraversalScope::kOneNextSiblingSubtree
 
-  auto* document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   document->write(R"HTML(
     <!DOCTYPE html>
     <main id=main>
@@ -571,7 +578,9 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase3) {
 TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase4) {
   // CheckPseudoHasArgumentTraversalScope::kAllNextSiblingSubtrees
 
-  auto* document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   document->write(R"HTML(
     <!DOCTYPE html>
     <main id=main>
@@ -625,7 +634,9 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase4) {
 TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase5) {
   // CheckPseudoHasArgumentTraversalScope::kOneNextSibling
 
-  auto* document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   document->write(R"HTML(
     <!DOCTYPE html>
     <main id=main>
@@ -661,7 +672,9 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase5) {
 TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase6) {
   // CheckPseudoHasArgumentTraversalScope::kFixedDepthDescendants
 
-  auto* document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   document->write(R"HTML(
     <!DOCTYPE html>
     <main id=main>
@@ -714,7 +727,9 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase6) {
 TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase7) {
   // CheckPseudoHasArgumentTraversalScope::kOneNextSiblingFixedDepthDescendants
 
-  auto* document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   document->write(R"HTML(
     <!DOCTYPE html>
     <main id=main>
@@ -780,7 +795,9 @@ TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase7) {
 TEST_F(CheckPseudoHasArgumentContextTest, TestTraversalIteratorCase8) {
   // CheckPseudoHasArgumentTraversalScope::kAllNextSiblingsFixedDepthDescendants
 
-  auto* document = HTMLDocument::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   document->write(R"HTML(
     <!DOCTYPE html>
     <main id=main>

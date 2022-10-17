@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -224,7 +225,9 @@ TEST_F(RangeTest, updateOwnerDocumentIfNeeded) {
   auto* range = MakeGarbageCollected<Range>(GetDocument(), Position(bar, 0),
                                             Position(foo, 1));
 
-  auto* another_document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  auto* another_document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   another_document->AppendChild(foo);
 
   EXPECT_EQ(bar, range->startContainer());

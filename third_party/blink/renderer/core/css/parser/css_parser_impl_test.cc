@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -200,15 +201,18 @@ TEST(CSSParserImplTest, AtContainerOffsets) {
 }
 
 TEST(CSSParserImplTest, AtContainerDisabled) {
+  ScopedNullExecutionContext execution_context;
   String rule = "@container (max-width: 100px) { }";
   {
     ScopedCSSContainerQueriesForTest scoped_feature(true);
-    Document* document = Document::CreateForTest();
+    Document* document =
+        Document::CreateForTest(execution_context.GetExecutionContext());
     EXPECT_TRUE(css_test_helpers::ParseRule(*document, rule));
   }
   {
     ScopedCSSContainerQueriesForTest scoped_feature(false);
-    Document* document = Document::CreateForTest();
+    Document* document =
+        Document::CreateForTest(execution_context.GetExecutionContext());
     EXPECT_FALSE(css_test_helpers::ParseRule(*document, rule));
   }
 }
@@ -358,7 +362,9 @@ TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
 
 TEST(CSSParserImplTest, InvalidLayerRules) {
   using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
 
   // At most one layer name in an @layer block rule
   EXPECT_FALSE(ParseRule(*document, "@layer foo, bar { }"));
@@ -382,7 +388,9 @@ TEST(CSSParserImplTest, InvalidLayerRules) {
 
 TEST(CSSParserImplTest, ValidLayerBlockRule) {
   using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
 
   // Basic named layer
   {
@@ -415,7 +423,9 @@ TEST(CSSParserImplTest, ValidLayerBlockRule) {
 
 TEST(CSSParserImplTest, ValidLayerStatementRule) {
   using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
 
   {
     String rule = "@layer foo;";
@@ -455,7 +465,9 @@ TEST(CSSParserImplTest, ValidLayerStatementRule) {
 
 TEST(CSSParserImplTest, NestedLayerRules) {
   using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
 
   // Block rule as a child rule.
   {
@@ -516,7 +528,9 @@ TEST(CSSParserImplTest, NestedLayerRules) {
 
 TEST(CSSParserImplTest, LayeredImportRules) {
   using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
 
   {
     String rule = "@import url(foo.css) layer;";
@@ -549,7 +563,9 @@ TEST(CSSParserImplTest, LayeredImportRules) {
 
 TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
   using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
 
   // Invalid layer declarations in @import rules should not make the entire rule
   // invalid. They should be parsed as <general-enclosed> and have no effect.
@@ -581,7 +597,9 @@ TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
 
 TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
   using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
 
   // If an @import rule has more than one layer keyword/function, only the first
   // one is parsed as layer, and the remaining ones are parsed as
@@ -707,7 +725,9 @@ TEST(CSSParserImplTest, FontPaletteValuesDisabled) {
   // @font-palette-values rules should be ignored when the feature is disabled.
 
   using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   EXPECT_FALSE(ParseRule(*document, "@font-palette-values foo;"));
   EXPECT_FALSE(ParseRule(*document, "@font-palette-values foo { }"));
   EXPECT_FALSE(ParseRule(*document, "@font-palette-values foo.bar { }"));
@@ -717,7 +737,9 @@ TEST(CSSParserImplTest, FontPaletteValuesDisabled) {
 TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
   ScopedFontPaletteForTest enabled_scope(true);
   using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   String rule = R"CSS(@font-palette-values --myTestPalette {
     font-family: testFamily;
     base-palette: 0;

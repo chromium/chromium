@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -64,8 +65,9 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullParameter) {
 
 TEST_F(ScrollTimelineUtilTest,
        ToCompositorScrollTimelineDocumentTimelineParameter) {
-  DocumentTimeline* timeline =
-      MakeGarbageCollected<DocumentTimeline>(Document::CreateForTest());
+  ScopedNullExecutionContext execution_context;
+  DocumentTimeline* timeline = MakeGarbageCollected<DocumentTimeline>(
+      Document::CreateForTest(execution_context.GetExecutionContext()));
   EXPECT_EQ(ToCompositorScrollTimeline(timeline), nullptr);
 }
 

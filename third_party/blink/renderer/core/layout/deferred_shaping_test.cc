@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -553,7 +554,9 @@ TEST_F(DeferredShapingTest, NoDeferForAutoSizing) {
 }
 
 TEST_F(DeferredShapingTest, ScrollIntoViewInInactiveDocument) {
-  Document* doc = Document::CreateForTest();
+  ScopedNullExecutionContext execution_context;
+  Document* doc =
+      Document::CreateForTest(execution_context.GetExecutionContext());
   Node* root = doc->appendChild(doc->CreateRawElement(html_names::kHTMLTag));
   To<Element>(root)->scrollIntoView();
   // PASS if no crash.

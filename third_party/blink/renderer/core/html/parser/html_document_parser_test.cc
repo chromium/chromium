@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
 #include "third_party/blink/renderer/core/loader/no_state_prefetch_client.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -349,7 +350,12 @@ TEST_F(HTMLDocumentParserWithThreadedTokenizerTest,
 
 TEST_F(HTMLDocumentParserWithThreadedTokenizerTest,
        EmptyDocumentDoesNotUseBackgroundTokenizer) {
-  DocumentInit init = DocumentInit::Create().ForInitialEmptyDocument(true);
+  ScopedNullExecutionContext execution_context;
+  DocumentInit init =
+      DocumentInit::Create()
+          .ForInitialEmptyDocument(true)
+          .WithExecutionContext(&execution_context.GetExecutionContext())
+          .WithAgent(*execution_context.GetExecutionContext().GetAgent());
   HTMLDocument* empty_doc = MakeGarbageCollected<HTMLDocument>(init);
   ASSERT_TRUE(empty_doc->IsInitialEmptyDocument());
   HTMLDocumentParser* parser = MakeGarbageCollected<HTMLDocumentParser>(

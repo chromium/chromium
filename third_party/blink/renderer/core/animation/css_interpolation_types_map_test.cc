@@ -20,8 +20,9 @@ TEST(CSSInterpolationTypesMapTest, RegisteredCustomProperty) {
   execution_context->GetSecurityContext().SetDocumentPolicy(
       DocumentPolicy::CreateWithHeaderPolicy({}));
 
-  DocumentInit init =
-      DocumentInit::Create().WithExecutionContext(execution_context);
+  DocumentInit init = DocumentInit::Create()
+                          .WithExecutionContext(execution_context)
+                          .WithAgent(*execution_context->GetAgent());
   auto* document1 = MakeGarbageCollected<Document>(init);
   auto* document2 = MakeGarbageCollected<Document>(init);
 

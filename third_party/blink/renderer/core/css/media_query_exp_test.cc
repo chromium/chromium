@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -404,9 +405,11 @@ TEST(MediaQueryExpTest, UnitFlags) {
             LeftExp("width", LtCmp(CqhValue(10.0))).GetUnitFlags());
 
   // width < calc(10em + 10dvh)
+  ScopedNullExecutionContext execution_context;
   const auto* calc_value =
       DynamicTo<CSSPrimitiveValue>(css_test_helpers::ParseValue(
-          *Document::CreateForTest(), "<length>", "calc(10em + 10dvh)"));
+          *Document::CreateForTest(execution_context.GetExecutionContext()),
+          "<length>", "calc(10em + 10dvh)"));
   ASSERT_TRUE(calc_value);
   EXPECT_EQ(
       static_cast<unsigned>(MediaQueryExpValue::UnitFlags::kFontRelative |

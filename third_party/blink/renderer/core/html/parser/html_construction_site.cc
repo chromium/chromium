@@ -982,7 +982,7 @@ Element* HTMLConstructionSite::CreateElement(
     // checkpoints, but note the spec is different--it talks about the
     // JavaScript stack, not the script nesting level.
     if (0u == reentry_permit_->ScriptNestingLevel())
-      document.GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
+      document.GetAgent().event_loop()->PerformMicrotaskCheckpoint();
 
     // "6.3 Push a new element queue onto the custom element
     // reactions stack."
