@@ -82,13 +82,6 @@ AppListItem* AppListModel::AddItem(std::unique_ptr<AppListItem> item) {
   return AddItemToRootListAndNotify(std::move(item), ReparentItemReason::kAdd);
 }
 
-void AppListModel::AddPageBreakItemAfter(const AppListItem* previous_item) {
-  AppListItem* page_break_item =
-      top_level_item_list()->AddPageBreakItemAfter(previous_item);
-  for (auto& observer : observers_)
-    observer.OnAppListItemAdded(page_break_item);
-}
-
 void AppListModel::SetItemMetadata(const std::string& id,
                                    std::unique_ptr<AppListItemMetadata> data) {
   AppListItem* item = FindItem(id);

@@ -156,8 +156,6 @@ class ScrollableAppsGridViewTest : public AshTestBase {
            index_range->last_index == last_index;
   }
 
-  void AddPageBreakItem() { GetAppListTestHelper()->AddPageBreakItem(); }
-
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
@@ -166,22 +164,6 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   ScrollableAppsGridView* apps_grid_view_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
 };
-
-TEST_F(ScrollableAppsGridViewTest, PageBreaksDoNotCauseExtraRowsInLayout) {
-  AddAppListItem("1");
-  AddAppListItem("2");
-  AddAppListItem("3");
-  AddAppListItem("4");
-  AddPageBreakItem();
-  AddAppListItem("5");
-  ShowAppList();
-
-  ScrollableAppsGridView* view = GetScrollableAppsGridView();
-  const int tile_height = view->app_list_config()->grid_tile_height();
-  const gfx::Size grid_size = view->GetTileGridSize();
-  // The layout is one tile tall because it has only one row.
-  EXPECT_EQ(grid_size.height(), tile_height);
-}
 
 TEST_F(ScrollableAppsGridViewTest, ClickOnApp) {
   AddAppListItem("id");
@@ -249,10 +231,8 @@ TEST_F(ScrollableAppsGridViewTest, SearchBoxHasFocusAfterDrag) {
 
 TEST_F(ScrollableAppsGridViewTest, ItemIndicesForMove) {
   AddAppListItem("aaa");  // App list item index 0, visual index 0,0.
-  AddPageBreakItem();     // Not visible.
-  AddAppListItem("bbb");  // App list item index 2, visual index 0,1.
-  AddPageBreakItem();     // Not visible.
-  AddAppListItem("ccc");  // App list item index 4, visual index 0,2.
+  AddAppListItem("bbb");  // App list item index 1, visual index 0,1.
+  AddAppListItem("ccc");  // App list item index 2, visual index 0,2.
   ShowAppList();
 
   auto* view = GetScrollableAppsGridView();
@@ -281,27 +261,26 @@ TEST_F(ScrollableAppsGridViewTest, ItemIndicesForMove) {
   // Target is after "aaa".
   EXPECT_EQ(1,
             structure->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 1)));
-  // Target is after "aaa" + break + "bbb".
-  EXPECT_EQ(3,
+  // Target is after "aaa" + "bbb".
+  EXPECT_EQ(2,
             structure->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 2)));
-  // Target is after "aaa" + break + "bbb" + break + "ccc".
-  EXPECT_EQ(5,
+  // Target is after "aaa" + "bbb" + "ccc".
+  EXPECT_EQ(3,
             structure->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 3)));
 }
 
 TEST_F(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
-  // Simulate data from another device that has a page break after 20 items.
+  // Simulate data from another device.
   PopulateApps(20);
-  AddPageBreakItem();
   AddAppListItem("aaa");
   AddAppListItem("bbb");
   ShowAppList();
 
   // "aaa" and "bbb" are the last two items.
   AppListItemList* item_list = app_list_test_model_->top_level_item_list();
-  ASSERT_EQ(23u, item_list->item_count());
-  ASSERT_EQ("aaa", item_list->item_at(21)->id());
-  ASSERT_EQ("bbb", item_list->item_at(22)->id());
+  ASSERT_EQ(22u, item_list->item_count());
+  ASSERT_EQ("aaa", item_list->item_at(20)->id());
+  ASSERT_EQ("bbb", item_list->item_at(21)->id());
 
   // Scroll down to the "aaa" item.
   auto* apps_grid_view = GetScrollableAppsGridView();
@@ -319,8 +298,8 @@ TEST_F(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
   generator->ReleaseLeftButton();
 
   // The last 2 items were reordered.
-  EXPECT_EQ("bbb", item_list->item_at(21)->id()) << item_list->ToString();
-  EXPECT_EQ("aaa", item_list->item_at(22)->id()) << item_list->ToString();
+  EXPECT_EQ("bbb", item_list->item_at(20)->id()) << item_list->ToString();
+  EXPECT_EQ("aaa", item_list->item_at(21)->id()) << item_list->ToString();
 }
 
 TEST_F(ScrollableAppsGridViewTest, AutoScrollDown) {

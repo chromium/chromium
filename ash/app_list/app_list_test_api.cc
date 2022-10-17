@@ -517,11 +517,6 @@ void AppListTestApi::MoveItemToPosition(const std::string& item_id,
   item_list->MoveItem(from_index, to_index);
 }
 
-void AppListTestApi::AddPageBreakItemAfterId(const std::string& item_id) {
-  auto* model = GetAppListModel();
-  model->AddPageBreakItemAfter(model->FindItem(item_id));
-}
-
 int AppListTestApi::GetTopListItemCount() {
   return GetAppListModel()->top_level_item_list()->item_count();
 }

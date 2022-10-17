@@ -282,22 +282,6 @@ TEST_F(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
 }
 
-// Test that spacing between pages is removed when the remove empty space flag
-// is enabled.
-TEST_F(PagedAppsGridViewTest, TestPaging) {
-  GetAppListTestHelper()->AddAppItems(1);
-  GetAppListTestHelper()->AddPageBreakItem();
-  GetAppListTestHelper()->AddAppItems(1);
-  GetAppListTestHelper()->AddPageBreakItem();
-  GetAppListTestHelper()->AddAppItems(1);
-
-  EXPECT_EQ(1, GetAppListTestHelper()
-                   ->GetRootPagedAppsGridView()
-                   ->pagination_model()
-                   ->total_pages());
-  EXPECT_EQ(3, grid_test_api_->AppsOnPage(0));
-}
-
 // Test that an app cannot be dragged to create a new page when the remove empty
 // space flag is enabled.
 TEST_F(PagedAppsGridViewTest, DragItemToNextPage) {

@@ -142,29 +142,7 @@ void PagedViewStructure::SaveToMetadata() {
       ++i;
       ++item_index;
     }
-
-    // When removing launcher spaces is enabled, all launcher pages expect for
-    // the last one should be full (i.e. no empty spaces). Therefore page break
-    // items are useless. It is why we should only create page break items when
-    // the feature flag is disabled.
-    if (!features::IsProductivityLauncherEnabled() &&
-        item_index < item_list->item_count() &&
-        !item_list->item_at(item_index)->is_page_break()) {
-      // Remove AppListItemListObserver temporarily to avoid |pages_| being
-      // reloaded.
-      item_list->RemoveObserver(apps_grid_view_);
-
-      // There's no "page break" item at the end of current page, so add one to
-      // push overflowing items to next page.
-      model->AddPageBreakItemAfter(item_list->item_at(item_index - 1));
-      item_list->AddObserver(apps_grid_view_);
-    }
   }
-
-  // Note that we do not remove redundant "page break" items here because the
-  // item list we can access here may not be complete (e.g. Devices that do not
-  // support ARC++ or Crostini apps filter out those items.). We leave this
-  // operation to AppListSyncableService which has complete item list.
 }
 
 void PagedViewStructure::Move(AppListItemView* view,

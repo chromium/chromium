@@ -111,9 +111,6 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   bool is_folder() const { return metadata_->is_folder; }
 
-  void set_is_page_break(bool is_page_break) {
-    metadata_->is_page_break = is_page_break;
-  }
   bool is_page_break() const { return metadata_->is_page_break; }
 
   bool has_notification_badge() const { return has_notification_badge_; }

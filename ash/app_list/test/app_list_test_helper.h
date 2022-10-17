@@ -126,9 +126,6 @@ class AppListTestHelper {
                                    IconColorType color_type,
                                    bool set_name);
 
-  // Adds a page break item to the app list model.
-  void AddPageBreakItem();
-
   // Adds `num_results` to continue section in the app list.
   void AddContinueSuggestionResults(int num_results);
 

@@ -191,12 +191,6 @@ void AppListTestHelper::AddAppItemsWithColorAndName(int num_apps,
   }
 }
 
-void AppListTestHelper::AddPageBreakItem() {
-  auto page_break_item = std::make_unique<AppListItem>(base::GenerateGUID());
-  page_break_item->set_is_page_break(true);
-  AppListModelProvider::Get()->model()->AddItem(std::move(page_break_item));
-}
-
 void AppListTestHelper::AddContinueSuggestionResults(int num_results) {
   for (int i = 0; i < num_results; i++) {
     auto result = std::make_unique<TestSearchResult>();

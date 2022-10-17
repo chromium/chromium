@@ -72,9 +72,6 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   // external classes. Fixing this issue can eliminate such confusion.
   bool SetItemPosition(AppListItem* item, syncer::StringOrdinal new_position);
 
-  // Add a "page break" item right after the specified item in item list.
-  AppListItem* AddPageBreakItemAfter(const AppListItem* previous_item);
-
   AppListItem* item_at(size_t index) {
     DCHECK_LT(index, app_list_items_.size());
     return app_list_items_[index].get();
