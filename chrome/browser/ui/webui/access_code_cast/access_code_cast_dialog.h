@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_DIALOG_H_
 
+#include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -59,6 +60,13 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // Blocks the widget automatically closing
+  // when focus changes. This is to counter flaky tests.
+  static void ShouldBlockWidgetActivationChangedForTest(bool should_block) {
+    CHECK_IS_TEST();
+    block_widget_activation_changed_for_test_ = should_block;
+  }
 
   base::WeakPtr<AccessCodeCastDialog> GetWeakPtr();
 
@@ -115,6 +123,8 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   const raw_ptr<Profile> context_;
   base::Time dialog_creation_timestamp_;
   bool closing_dialog_ = false;
+
+  static bool block_widget_activation_changed_for_test_;
 
   base::WeakPtrFactory<AccessCodeCastDialog> weak_ptr_factory_{this};
 };
