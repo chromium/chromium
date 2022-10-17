@@ -50,6 +50,8 @@ class SkColorSpace;
 
 namespace blink {
 
+struct DecodedImageMetaData;
+
 #if SK_B32_SHIFT
 inline skcms_PixelFormat XformColorFormat() {
   return skcms_PixelFormat_RGBA_8888;
@@ -362,6 +364,10 @@ class PLATFORM_EXPORT ImageDecoder {
 
   ImageOrientation Orientation() const { return orientation_; }
   gfx::Size DensityCorrectedSize() const { return density_corrected_size_; }
+
+  // Updates orientation, pixel density etc based on |metadata|.
+  void ApplyMetadata(const DecodedImageMetaData& metadata,
+                     const gfx::Size& physical_size);
 
   bool IgnoresColorSpace() const { return color_behavior_.IsIgnore(); }
   const ColorBehavior& GetColorBehavior() const { return color_behavior_; }

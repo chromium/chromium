@@ -34,6 +34,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
+#include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 #include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
@@ -96,6 +98,32 @@ wtf_size_t CalculateMaxDecodedBytes(
 
   // ImageDecoder::kHighBitDepthToHalfFloat
   return std::min(8 * num_pixels, max_decoded_bytes);
+}
+
+// Compute the density corrected size based on |metadata| and the physical size
+// of the associated image.
+gfx::Size ExtractDensityCorrectedSize(const DecodedImageMetaData& metadata,
+                                      const gfx::Size& physical_size) {
+  const unsigned kDefaultResolution = 72;
+  const unsigned kResolutionUnitDpi = 2;
+
+  if (metadata.resolution_unit != kResolutionUnitDpi ||
+      metadata.resolution.IsEmpty() || metadata.size.IsEmpty()) {
+    return physical_size;
+  }
+  CHECK(!metadata.resolution.IsEmpty());
+
+  // Division by zero is not possible since we check for empty resolution
+  // earlier.
+  gfx::SizeF size_from_resolution(
+      physical_size.width() * kDefaultResolution / metadata.resolution.width(),
+      physical_size.height() * kDefaultResolution /
+          metadata.resolution.height());
+
+  if (gfx::ToRoundedSize(size_from_resolution) == metadata.size)
+    return metadata.size;
+
+  return physical_size;
 }
 
 inline bool MatchesJPEGSignature(const char* contents) {
@@ -778,6 +806,14 @@ wtf_size_t ImageDecoder::FindRequiredPreviousFrame(wtf_size_t frame_index,
       NOTREACHED();
       return kNotFound;
   }
+}
+
+void ImageDecoder::ApplyMetadata(const DecodedImageMetaData& metadata,
+                                 const gfx::Size& physical_size) {
+  DCHECK(IsDecodedSizeAvailable());
+  orientation_ = metadata.orientation;
+  density_corrected_size_ =
+      ExtractDensityCorrectedSize(metadata, physical_size);
 }
 
 ImagePlanes::ImagePlanes() {

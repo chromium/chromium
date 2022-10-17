@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "ui/gfx/geometry/size_conversions.h"
 
 extern "C" {
 #include <stdio.h>  // jpeglib.h needs stdio FILE.
@@ -213,30 +212,6 @@ void skip_input_data(j_decompress_ptr jd, long num_bytes);
 void term_source(j_decompress_ptr jd);
 void error_exit(j_common_ptr cinfo);
 void emit_message(j_common_ptr cinfo, int msg_level);
-
-static gfx::Size ExtractDensityCorrectedSize(
-    const DecodedImageMetaData& metadata,
-    const gfx::Size& physical_size) {
-  const unsigned kDefaultResolution = 72;
-  const unsigned kresolution_unitDPI = 2;
-
-  if (metadata.resolution_unit != kresolution_unitDPI || metadata.resolution.IsEmpty() || metadata.size.IsEmpty())
-    return physical_size;
-
-  CHECK(metadata.resolution.width());
-  CHECK(metadata.resolution.height());
-
-  // Division by zero is not possible since we check for empty resolution earlier.
-  gfx::SizeF size_from_resolution(
-      physical_size.width() * kDefaultResolution / metadata.resolution.width(),
-      physical_size.height() * kDefaultResolution /
-          metadata.resolution.height());
-
-  if (gfx::ToRoundedSize(size_from_resolution) == metadata.size)
-    return metadata.size;
-
-  return physical_size;
-}
 
 static bool IsExifData(jpeg_saved_marker_ptr marker) {
   // For EXIF data, the APP1 block is followed by 'E', 'x', 'i', 'f', '\0',
@@ -526,9 +501,8 @@ class JPEGImageReader final {
 
         DecodedImageMetaData metadata;
         ReadImageMetaData(Info(), metadata);
-        decoder_->SetOrientation(metadata.orientation);
-        decoder_->SetDensityCorrectedSize(ExtractDensityCorrectedSize(
-            metadata, gfx::Size(info_.output_width, info_.output_height)));
+        decoder_->ApplyMetadata(
+            metadata, gfx::Size(info_.output_width, info_.output_height));
 
         // Allow color management of the decoded RGBA pixels if possible.
         if (!decoder_->IgnoresColorSpace()) {
