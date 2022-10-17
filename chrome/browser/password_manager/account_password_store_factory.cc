@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_data_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
@@ -159,9 +158,7 @@ AccountPasswordStoreFactory* AccountPasswordStoreFactory::GetInstance() {
 AccountPasswordStoreFactory::AccountPasswordStoreFactory()
     : RefcountedBrowserContextKeyedServiceFactory(
           "AccountPasswordStore",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(WebDataServiceFactory::GetInstance());
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
 AccountPasswordStoreFactory::~AccountPasswordStoreFactory() = default;
 

@@ -21,7 +21,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "ios/web_view/internal/app/application_context.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
-#include "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -55,9 +54,7 @@ WebViewPasswordStoreFactory* WebViewPasswordStoreFactory::GetInstance() {
 WebViewPasswordStoreFactory::WebViewPasswordStoreFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "PasswordStore",
-          BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(WebViewWebDataServiceWrapperFactory::GetInstance());
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
 WebViewPasswordStoreFactory::~WebViewPasswordStoreFactory() {}
 

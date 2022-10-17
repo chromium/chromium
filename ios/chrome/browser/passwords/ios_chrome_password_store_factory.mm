@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_password_store_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -62,7 +61,6 @@ IOSChromePasswordStoreFactory::IOSChromePasswordStoreFactory()
           "PasswordStore",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
-  DependsOn(ios::WebDataServiceFactory::GetInstance());
 }
 
 IOSChromePasswordStoreFactory::~IOSChromePasswordStoreFactory() {}

@@ -16,7 +16,6 @@
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -55,7 +54,6 @@ PasswordStoreFactory::PasswordStoreFactory()
           "PasswordStore",
           ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(AffiliationServiceFactory::GetInstance());
-  DependsOn(WebDataServiceFactory::GetInstance());
 }
 
 PasswordStoreFactory::~PasswordStoreFactory() = default;
