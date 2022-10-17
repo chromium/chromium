@@ -9,7 +9,6 @@
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
-#include "services/network/public/mojom/web_client_hints_types.mojom.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
@@ -65,14 +64,12 @@ void AwClientHintsControllerDelegate::PersistClientHints(
 }
 
 void AwClientHintsControllerDelegate::SetAdditionalClientHints(
-    const std::vector<network::mojom::WebClientHintsType>&) {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
+    const std::vector<network::mojom::WebClientHintsType>& hints) {
+  additional_hints_ = hints;
 }
 
 void AwClientHintsControllerDelegate::ClearAdditionalClientHints() {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
+  additional_hints_.clear();
 }
 
 void AwClientHintsControllerDelegate::SetMostRecentMainFrameViewportSize(

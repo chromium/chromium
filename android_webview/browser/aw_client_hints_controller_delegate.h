@@ -7,7 +7,7 @@
 
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
-#include "services/network/public/mojom/web_client_hints_types.mojom-forward.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -55,7 +55,7 @@ class AwClientHintsControllerDelegate
                               client_hints) override;
 
   void SetAdditionalClientHints(
-      const std::vector<network::mojom::WebClientHintsType>&) override;
+      const std::vector<network::mojom::WebClientHintsType>& hints) override;
 
   void ClearAdditionalClientHints() override;
 
@@ -65,6 +65,7 @@ class AwClientHintsControllerDelegate
   gfx::Size GetMostRecentMainFrameViewportSize() override;
 
  private:
+  std::vector<network::mojom::WebClientHintsType> additional_hints_;
   raw_ptr<PrefService> pref_service_;
   gfx::Size viewport_size_;
 };

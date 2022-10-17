@@ -62,13 +62,16 @@ TEST_F(AwClientHintsControllerDelegateTest, PersistClientHints) {
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, SetAdditionalClientHints) {
-  // TODO(crbug.com/921655): Actually test function once implemented.
-  client_hints_controller_delegate_->SetAdditionalClientHints({});
+  client_hints_controller_delegate_->SetAdditionalClientHints(
+      {network::mojom::WebClientHintsType::kDeviceMemory});
+  // TODO(crbug.com/921655): Test with GetAllowedClientHintsFromSource
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, ClearAdditionalClientHints) {
-  // TODO(crbug.com/921655): Actually test function once implemented.
+  client_hints_controller_delegate_->SetAdditionalClientHints(
+      {network::mojom::WebClientHintsType::kDeviceMemory});
   client_hints_controller_delegate_->ClearAdditionalClientHints();
+  // TODO(crbug.com/921655): Test with GetAllowedClientHintsFromSource
 }
 
 TEST_F(AwClientHintsControllerDelegateTest,
