@@ -79,8 +79,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         mPropertyModel.set(CLICK_LISTENER, v -> {
             if (mTabSelectingListener != null
                     && mTabModelSelector.getCurrentTabId() != TabList.INVALID_TAB_INDEX) {
-                selectTheCurrentTab();
                 StartSurfaceUserData.setOpenedFromStart(mTabModelSelector.getCurrentTab());
+                selectTheCurrentTab();
             }
         });
         mPropertyModel.addObserver((source, key) -> {
