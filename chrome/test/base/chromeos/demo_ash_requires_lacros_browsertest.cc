@@ -45,8 +45,7 @@ class DemoAshRequiresLacrosTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DemoAshRequiresLacrosTest, NewTab) {
   if (ash_starter_.HasLacrosArgument()) {
-    crosapi::BrowserManager::Get()->NewTab(
-        /*should_trigger_session_restore=*/false);
+    crosapi::BrowserManager::Get()->NewTab();
     // Assert Lacros is running.
     ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
     // browser() returns an Ash browser instance.

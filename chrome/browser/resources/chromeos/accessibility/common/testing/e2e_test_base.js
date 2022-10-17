@@ -49,7 +49,7 @@ E2ETestBase = class extends AccessibilityTestBase {
     GEN(`
     TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
     if (ash_starter()->HasLacrosArgument()) {
-      crosapi::BrowserManager::Get()->NewTab(false);
+      crosapi::BrowserManager::Get()->NewTab();
       ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
     }
       `);

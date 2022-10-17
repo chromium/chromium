@@ -487,8 +487,8 @@ void BrowserManager::NewGuestWindow() {
   PerformOrEnqueue(BrowserAction::NewGuestWindow(target_display_id));
 }
 
-void BrowserManager::NewTab(bool should_trigger_session_restore) {
-  PerformOrEnqueue(BrowserAction::NewTab(should_trigger_session_restore));
+void BrowserManager::NewTab() {
+  PerformOrEnqueue(BrowserAction::NewTab());
 }
 
 void BrowserManager::Launch() {

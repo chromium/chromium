@@ -171,7 +171,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Similar to NewWindow(), but opens a tab instead if there already is a
   // window. See crosapi::mojom::BrowserService::NewTab for more details.
-  void NewTab(bool should_trigger_session_restore);
+  void NewTab();
 
   // Similar to NewWindow and NewTab. If a suitable window exists, a new tab is
   // added. Otherwise a new window is created with session restore (no new tab

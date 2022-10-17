@@ -36,8 +36,7 @@ class BrowserAction {
       bool incognito,
       bool should_trigger_session_restore,
       int64_t target_display_id);
-  static std::unique_ptr<BrowserAction> NewTab(
-      bool should_trigger_session_restore);
+  static std::unique_ptr<BrowserAction> NewTab();
   static std::unique_ptr<BrowserAction> Launch(int64_t target_display_id);
   static std::unique_ptr<BrowserAction> NewWindowForDetachingTab(
       base::StringPiece16 tab_id_str,

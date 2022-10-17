@@ -79,16 +79,11 @@ class NewWindowForDetachingTabAction final : public BrowserAction {
 
 class NewTabAction final : public BrowserAction {
  public:
-  explicit NewTabAction(bool should_trigger_session_restore)
-      : BrowserAction(true),
-        should_trigger_session_restore_(should_trigger_session_restore) {}
+  NewTabAction() : BrowserAction(true) {}
 
   void Perform(const VersionedBrowserService& service) override {
-    service.service->NewTab(should_trigger_session_restore_, base::DoNothing());
+    service.service->NewTabWithoutParameter(base::DoNothing());
   }
-
- private:
-  const bool should_trigger_session_restore_;
 };
 
 class LaunchAction final : public BrowserAction {
@@ -100,8 +95,7 @@ class LaunchAction final : public BrowserAction {
     if (service.interface_version < mojom::BrowserService::kLaunchMinVersion) {
       LOG(WARNING)
           << "Lacros too old for Launch action - falling back to NewTab";
-      service.service->NewTab(/*should_trigger_session_restore=*/true,
-                              base::DoNothing());
+      service.service->NewTabWithoutParameter(base::DoNothing());
       return;
     }
     service.service->Launch(target_display_id_, base::DoNothing());
@@ -310,9 +304,8 @@ std::unique_ptr<BrowserAction> BrowserAction::NewWindow(
 }
 
 // static
-std::unique_ptr<BrowserAction> BrowserAction::NewTab(
-    bool should_trigger_session_restore) {
-  return std::make_unique<NewTabAction>(should_trigger_session_restore);
+std::unique_ptr<BrowserAction> BrowserAction::NewTab() {
+  return std::make_unique<NewTabAction>();
 }
 
 // static
