@@ -63,9 +63,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   // priorities will be [.., base, target, A, B].
   // If both target and base have kUserPriorityNone,
   // set the target's user priority to kUserPriorityMin.
+  // If base is nullptr, assign a minimal priority to `target`.
   // Do nothing if target already has a higher user priority.
   virtual void SetUserPriorityHigherThan(const AudioDevice& target,
-                                         const AudioDevice& base) = 0;
+                                         const AudioDevice* base) = 0;
   // Reads the user priority from prefs.
   virtual int GetUserPriority(const AudioDevice& device) = 0;
 

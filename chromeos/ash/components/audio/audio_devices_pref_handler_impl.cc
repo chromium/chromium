@@ -231,9 +231,12 @@ bool AudioDevicesPrefHandlerImpl::GetDeviceActive(const AudioDevice& device,
 
 void AudioDevicesPrefHandlerImpl::SetUserPriorityHigherThan(
     const AudioDevice& target,
-    const AudioDevice& base) {
+    const AudioDevice* base) {
   int t = GetUserPriority(target);
-  int b = GetUserPriority(base);
+  int b = 0;
+  if (base) {
+    b = GetUserPriority(*base);
+  }
 
   // Don't need to update the user priority of `target` if it's already has
   // higher priority than base.
@@ -246,15 +249,19 @@ void AudioDevicesPrefHandlerImpl::SetUserPriorityHigherThan(
                       : output_device_user_priority_settings_;
 
   if (t != kUserPriorityNone) {
-    for (auto it = priority_prefs.begin(); it != priority_prefs.end(); ++it) {
-      if (it->second.GetInt() > t && it->second.GetInt() <= b)
-        it->second = base::Value(it->second.GetInt() - 1);
+    // before: [. . . t - - - b . . .]
+    // after:  [. . . - - - b t . . .]
+    for (auto it : priority_prefs) {
+      if (it.second.GetInt() > t && it.second.GetInt() <= b)
+        it.second = base::Value(it.second.GetInt() - 1);
     }
     priority_prefs.Set(target_id, b);
   } else {
-    for (auto it = priority_prefs.begin(); it != priority_prefs.end(); ++it) {
-      if (it->second.GetInt() > b)
-        it->second = base::Value(it->second.GetInt() + 1);
+    // before: [. . . b + + +]
+    // after : [. . . b t + + +]
+    for (auto it : priority_prefs) {
+      if (it.second.GetInt() > b)
+        it.second = base::Value(it.second.GetInt() + 1);
     }
     priority_prefs.Set(target_id, b + 1);
   }
@@ -266,8 +273,7 @@ void AudioDevicesPrefHandlerImpl::SetUserPriorityHigherThan(
   }
 }
 
-int AudioDevicesPrefHandlerImpl::GetUserPriority(
-    const AudioDevice& device) {
+int AudioDevicesPrefHandlerImpl::GetUserPriority(const AudioDevice& device) {
   if (device.is_input) {
     return input_device_user_priority_settings_
         .FindInt(GetDeviceIdString(device))

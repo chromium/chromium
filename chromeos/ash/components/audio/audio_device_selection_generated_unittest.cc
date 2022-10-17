@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Generated test cases from cl/479121699.
+// Generated test cases from cl/480876614.
 // DO NOT EDIT.
 
 #include "chromeos/ash/components/audio/audio_device_selection_test_base.h"
@@ -1374,6 +1374,96 @@ TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM5Output) {
   Plug(hdmi2);
   // Devices: [internal1* hdmi2] headphone3
   // List: hdmi2 < internal1 < headphone3
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+}
+
+TEST_F(AudioDeviceSelectionGeneratedTest, HdmiReplugUsbOutput) {
+  AudioNode usb1 = NewOutputNode("USB");
+  AudioNode hdmi2 = NewOutputNode("HDMI");
+
+  Plug(usb1);
+  // Devices: [usb1*] hdmi2
+  // List: usb1
+  EXPECT_EQ(ActiveOutputNodeId(), usb1.id);
+
+  Plug(hdmi2);
+  // Devices: [usb1* hdmi2]
+  // List: usb1
+  EXPECT_EQ(ActiveOutputNodeId(), usb1.id);
+
+  Select(hdmi2);
+  // Devices: [usb1 hdmi2*]
+  // List: usb1 < hdmi2
+  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+
+  Unplug(usb1);
+  // Devices: [hdmi2*] usb1
+  // List: usb1 < hdmi2
+  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+
+  Plug(usb1);
+  // Devices: [usb1 hdmi2*]
+  // List: usb1 < hdmi2
+  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+}
+
+TEST_F(AudioDeviceSelectionGeneratedTest, InternalReplugUsbInput) {
+  AudioNode internal1 = NewInputNode("INTERNAL_MIC");
+  AudioNode usb2 = NewInputNode("USB");
+
+  Plug(internal1);
+  // Devices: [internal1*] usb2
+  // List: internal1
+  EXPECT_EQ(ActiveInputNodeId(), internal1.id);
+
+  Plug(usb2);
+  // Devices: [internal1 usb2*]
+  // List: internal1 < usb2
+  EXPECT_EQ(ActiveInputNodeId(), usb2.id);
+
+  Select(internal1);
+  // Devices: [internal1* usb2]
+  // List: usb2 < internal1
+  EXPECT_EQ(ActiveInputNodeId(), internal1.id);
+
+  Unplug(usb2);
+  // Devices: [internal1*] usb2
+  // List: usb2 < internal1
+  EXPECT_EQ(ActiveInputNodeId(), internal1.id);
+
+  Plug(usb2);
+  // Devices: [internal1* usb2]
+  // List: usb2 < internal1
+  EXPECT_EQ(ActiveInputNodeId(), internal1.id);
+}
+
+TEST_F(AudioDeviceSelectionGeneratedTest, InternalReplugUsbOutput) {
+  AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
+  AudioNode usb2 = NewOutputNode("USB");
+
+  Plug(internal1);
+  // Devices: [internal1*] usb2
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Plug(usb2);
+  // Devices: [internal1 usb2*]
+  // List: internal1 < usb2
+  EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
+
+  Select(internal1);
+  // Devices: [internal1* usb2]
+  // List: usb2 < internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Unplug(usb2);
+  // Devices: [internal1*] usb2
+  // List: usb2 < internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Plug(usb2);
+  // Devices: [internal1* usb2]
+  // List: usb2 < internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 

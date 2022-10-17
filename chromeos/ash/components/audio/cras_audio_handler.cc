@@ -1377,10 +1377,8 @@ bool CrasAudioHandler::ChangeActiveDevice(
           chromeos::features::kRobustAudioDeviceSelectLogic)) {
     const AudioDevice* current_active_device =
         GetDeviceFromId(current_active_node_id);
-    if (current_active_device != nullptr) {
-      audio_pref_handler_->SetUserPriorityHigherThan(new_active_device,
-                                                     *current_active_device);
-    }
+    audio_pref_handler_->SetUserPriorityHigherThan(new_active_device,
+                                                   current_active_device);
   }
 
   // Set the current active input/output device to the new_active_device.

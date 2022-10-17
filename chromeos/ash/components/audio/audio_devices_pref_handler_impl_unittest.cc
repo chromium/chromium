@@ -482,30 +482,42 @@ TEST_P(AudioDevicesPrefHandlerTest, UserPriority) {
   EXPECT_EQ(kUserPriorityNone, GetUserPriority(device));
 
   AudioDevice device2 = GetSecondaryDeviceWithVersion(2);
-  audio_pref_handler_->SetUserPriorityHigherThan(device2, device);
+  audio_pref_handler_->SetUserPriorityHigherThan(device2, &device);
   EXPECT_EQ(kUserPriorityNone, GetUserPriority(device));
   EXPECT_EQ(kUserPriorityMin, GetUserPriority(device2));
 
-  audio_pref_handler_->SetUserPriorityHigherThan(device, device2);
+  audio_pref_handler_->SetUserPriorityHigherThan(device, &device2);
   EXPECT_EQ(2, GetUserPriority(device));
   EXPECT_EQ(kUserPriorityMin, GetUserPriority(device2));
 
   AudioDevice device3 = GetDeviceWithSpecialCharactersWithVersion(2);
 
-  audio_pref_handler_->SetUserPriorityHigherThan(device3, device2);
+  audio_pref_handler_->SetUserPriorityHigherThan(device3, &device2);
   EXPECT_EQ(2, GetUserPriority(device3));
   EXPECT_EQ(3, GetUserPriority(device));
   EXPECT_EQ(kUserPriorityMin, GetUserPriority(device2));
 
-  audio_pref_handler_->SetUserPriorityHigherThan(device, device3);
+  audio_pref_handler_->SetUserPriorityHigherThan(device, &device3);
   EXPECT_EQ(2, GetUserPriority(device3));
   EXPECT_EQ(3, GetUserPriority(device));
   EXPECT_EQ(kUserPriorityMin, GetUserPriority(device2));
 
-  audio_pref_handler_->SetUserPriorityHigherThan(device3, device);
+  audio_pref_handler_->SetUserPriorityHigherThan(device3, &device);
   EXPECT_EQ(3, GetUserPriority(device3));
   EXPECT_EQ(2, GetUserPriority(device));
   EXPECT_EQ(kUserPriorityMin, GetUserPriority(device2));
+}
+
+TEST_P(AudioDevicesPrefHandlerTest, UserPrioritySingle) {
+  AudioDevice device = GetDeviceWithVersion(2);
+  AudioDevice device2 = GetSecondaryDeviceWithVersion(2);
+  audio_pref_handler_->SetUserPriorityHigherThan(device, nullptr);
+  EXPECT_EQ(kUserPriorityMin, GetUserPriority(device));
+
+  audio_pref_handler_->SetUserPriorityHigherThan(device2, nullptr);
+  EXPECT_LT(GetUserPriority(device2), GetUserPriority(device));
+  EXPECT_NE(kUserPriorityNone, GetUserPriority(device2));
+  EXPECT_NE(kUserPriorityNone, GetUserPriority(device));
 }
 
 }  // namespace ash
