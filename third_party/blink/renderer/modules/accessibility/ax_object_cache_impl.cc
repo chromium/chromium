@@ -1801,6 +1801,14 @@ AXID AXObjectCacheImpl::GenerateAXID() const {
   return obj_id;
 }
 
+void AXObjectCacheImpl::AddAriaNotification(
+    Node* node,
+    const String announcement,
+    const AriaNotificationOptions* options) {
+  aria_notifications_.push_back(
+      MakeGarbageCollected<AriaNotification>(node, announcement, options));
+}
+
 void AXObjectCacheImpl::AddToFixedOrStickyNodeList(const AXObject* object) {
   DCHECK(object);
   DCHECK(!object->IsDetached());
@@ -4474,6 +4482,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(nodes_with_spelling_or_grammar_markers_);
   visitor->Trace(ax_tree_source_);
   visitor->Trace(dirty_objects_);
+  visitor->Trace(aria_notifications_);
   AXObjectCache::Trace(visitor);
 }
 

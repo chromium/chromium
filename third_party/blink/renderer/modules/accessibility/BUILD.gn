@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("accessibility") {
   sources = [
+    "aria_notification.cc",
+    "aria_notification.h",
     "ax_enums.cc",
     "ax_enums.h",
     "ax_image_map_link.cc",

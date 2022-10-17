@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script type="text/javascript" src="../resources/js-test.js"></script>
+</head>
+<body>
+  <div id="atomic"></div>
+  <script>
+    test(function() {
+      document.ariaNotify('hello');
+      document.ariaNotify('hello', { 'insertion_mode': 'queue', 'label': 'doc' });
+      assert_throws_js(TypeError, () => document.ariaNotify());
+      document.getElementById('atomic').ariaNotify('hello');
+      document.getElementById('atomic').ariaNotify('hello', { 'insertion_mode': 'queue', 'label': 'doc' });
+      assert_throws_js(TypeError, () => document.getElementById('atomic').ariaNotify());
+    });
+  </script>
+</body>
+</html>

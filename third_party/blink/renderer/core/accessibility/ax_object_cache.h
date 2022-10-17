@@ -45,6 +45,7 @@ struct AXTreeUpdate;
 
 namespace blink {
 
+class AriaNotificationOptions;
 class AXObject;
 class AbstractInlineTextBox;
 class AccessibleNode;
@@ -187,6 +188,10 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual AXObject* ObjectFromAXID(AXID) const = 0;
 
   virtual AXID GenerateAXID() const = 0;
+
+  virtual void AddAriaNotification(Node*,
+                                   const String,
+                                   const AriaNotificationOptions*) = 0;
 
   typedef AXObjectCache* (*AXObjectCacheCreateFunction)(Document&,
                                                         const ui::AXMode&);

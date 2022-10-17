@@ -1,0 +1,8 @@
+enum AriaNotificationInsertionMode { "queue", "stack", "clear" };
+
+dictionary AriaNotificationOptions {
+  AriaNotificationInsertionMode insertionMode = "queue";
+  boolean interruptCurrent = false;
+  boolean preventInterrupt = false;
+  DOMString label = "";
+};

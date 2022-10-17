@@ -39,10 +39,12 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/blink_ax_tree_source.h"
 #include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
@@ -319,6 +321,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   void RemoveAXID(AXObject*);
 
   AXID GenerateAXID() const override;
+
+  void AddAriaNotification(Node*,
+                           const String,
+                           const AriaNotificationOptions*) override;
 
   // Counts the number of times the document has been modified. Some attribute
   // values are cached as long as the modification count hasn't changed.
@@ -842,6 +848,9 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // A set of currently active event intents.
   BlinkAXEventIntentsSet active_event_intents_;
+
+  // A set of aria notifications that have yet to be added to ax_tree_data.
+  HeapVector<Member<AriaNotification>> aria_notifications_;
 
   bool is_frozen_ = false;  // Used with Freeze(), Thaw() and IsFrozen() above.
 

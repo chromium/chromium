@@ -541,6 +541,10 @@
       status: {"Android": "", "default": "experimental"},
     },
     {
+      name: "ConfirmationOfAction",
+      status: "test",
+    },
+    {
       name: "ConsolidatedMovementXY",
       public: true,
     },

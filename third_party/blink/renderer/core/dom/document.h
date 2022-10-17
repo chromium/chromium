@@ -124,6 +124,7 @@ namespace blink {
 class Agent;
 class AnchorElementInteractionTracker;
 class AnimationClock;
+class AriaNotificationOptions;
 class AXContext;
 class AXObjectCache;
 class Attr;
@@ -1223,6 +1224,8 @@ class CORE_EXPORT Document : public ContainerNode,
   ScriptPromise hasRedemptionRecord(ScriptState* script_state,
                                     const String& issuer,
                                     ExceptionState&);
+
+  void ariaNotify(const String announcement, const AriaNotificationOptions*);
 
   // The following implements the rule from HTML 4 for what valid names are.
   // To get this right for all the XML cases, we probably have to improve this
