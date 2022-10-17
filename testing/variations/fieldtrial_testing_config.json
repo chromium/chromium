@@ -3686,33 +3686,6 @@
                     "disable_features": [
                         "NtpShoppingTasksModule"
                     ]
-                },
-                {
-                    "name": "Recipes_SAPIV2_20220415",
-                    "params": {
-                        "NtpModulesLoadTimeoutMillisecondsParam": "3000",
-                        "use_sapi_v2": "true"
-                    },
-                    "enable_features": [
-                        "NtpModulesLoadTimeoutMilliseconds",
-                        "NtpRecipeTasksModule"
-                    ],
-                    "disable_features": [
-                        "NtpShoppingTasksModule"
-                    ]
-                },
-                {
-                    "name": "Recipes_SAPIV2_Control_20220415",
-                    "params": {
-                        "NtpModulesLoadTimeoutMillisecondsParam": "3000"
-                    },
-                    "enable_features": [
-                        "NtpModulesLoadTimeoutMilliseconds",
-                        "NtpRecipeTasksModule"
-                    ],
-                    "disable_features": [
-                        "NtpShoppingTasksModule"
-                    ]
                 }
             ]
         }
