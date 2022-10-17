@@ -30,7 +30,6 @@
 #include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
@@ -50,9 +49,6 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -283,8 +279,6 @@ WebstoreInstaller::WebstoreInstaller(Profile* profile,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(web_contents);
 
-  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-                 content::Source<CrxInstaller>(nullptr));
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
 
@@ -341,20 +335,14 @@ void WebstoreInstaller::Start() {
   DownloadNextPendingModule();
 }
 
-void WebstoreInstaller::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR, type);
-
-  CrxInstaller* crx_installer = content::Source<CrxInstaller>(source).ptr();
-  CHECK(crx_installer);
-  if (crx_installer != crx_installer_.get())
+void WebstoreInstaller::OnInstallerDone(
+    const absl::optional<CrxInstallError>& error) {
+  if (!error) {
     return;
+  }
 
   // TODO(rdevlin.cronin): Continue removing std::string errors and
   // replacing with std::u16string. See crbug.com/71980.
-  const extensions::CrxInstallError* error =
-      content::Details<const extensions::CrxInstallError>(details).ptr();
   const std::string utf8_error = base::UTF16ToUTF8(error->message());
   crx_installer_ = nullptr;
   // ReportFailure releases a reference to this object so it must be the
@@ -726,6 +714,8 @@ void WebstoreInstaller::StartCrxInstaller(const DownloadItem& download) {
   crx_installer_->set_expected_id(approval->extension_id);
   crx_installer_->set_is_gallery_install(true);
   crx_installer_->set_allow_silent_install(true);
+  crx_installer_->set_installer_callback(base::BindOnce(
+      &WebstoreInstaller::OnInstallerDone, weak_ptr_factory_.GetWeakPtr()));
 
   crx_installer_->InstallCrx(download.GetFullPath());
 }

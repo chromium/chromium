@@ -22,8 +22,6 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -47,8 +45,7 @@ class Extension;
 class Manifest;
 
 // Downloads and installs extensions from the web store.
-class WebstoreInstaller : public content::NotificationObserver,
-                          public ExtensionRegistryObserver,
+class WebstoreInstaller : public ExtensionRegistryObserver,
                           public download::DownloadItem::Observer,
                           public base::RefCountedThreadSafe<
                               WebstoreInstaller,
@@ -195,11 +192,6 @@ class WebstoreInstaller : public content::NotificationObserver,
   // Starts downloading and installing the extension.
   void Start();
 
-  // content::NotificationObserver.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // ExtensionRegistryObserver.
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const Extension* extension,
@@ -265,7 +257,9 @@ class WebstoreInstaller : public content::NotificationObserver,
   // Records stats regarding an interrupted webstore download item.
   void RecordInterrupt(const download::DownloadItem* download) const;
 
-  content::NotificationRegistrar registrar_;
+  // Called when crx_installer_->InstallCrx() finishes.
+  void OnInstallerDone(const absl::optional<CrxInstallError>& error);
+
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
   base::WeakPtr<content::WebContents> web_contents_;
@@ -290,6 +284,8 @@ class WebstoreInstaller : public content::NotificationObserver,
   // depedences).
   int total_modules_ = 0;
   bool download_started_ = false;
+
+  base::WeakPtrFactory<WebstoreInstaller> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions
