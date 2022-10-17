@@ -40,10 +40,10 @@ source_set("configs") {
   # Includes Ash Chrome and Lacros Chrome
   if (is_chromeos) {
     sources += [
-      "chrome_untrusted_web_ui_configs_chromeos.cc",
-      "chrome_untrusted_web_ui_configs_chromeos.h",
-      "chrome_web_ui_configs_chromeos.cc",
-      "chrome_web_ui_configs_chromeos.h",
+      "chromeos/chrome_untrusted_web_ui_configs_chromeos.cc",
+      "chromeos/chrome_untrusted_web_ui_configs_chromeos.h",
+      "chromeos/chrome_web_ui_configs_chromeos.cc",
+      "chromeos/chrome_web_ui_configs_chromeos.h",
     ]
     deps += [ "//build:chromeos_buildflags" ]
   }

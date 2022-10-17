@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs_chromeos.h"
+#include "chrome/browser/ui/webui/chromeos/chrome_untrusted_web_ui_configs_chromeos.h"
 
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/webui_config_map.h"
