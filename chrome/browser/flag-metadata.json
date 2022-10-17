@@ -4520,12 +4520,12 @@
   {
     "name": "media-app-photos-integration-image",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 115
   },
   {
     "name": "media-app-photos-integration-video",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 115
   },
   {
     "name": "media-router-cast-allow-all-ips",
