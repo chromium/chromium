@@ -313,9 +313,10 @@ IN_PROC_BROWSER_TEST_P(
       {}, {}, {}, FROM_HERE);
 }
 
+// TODO(https://crbug.com/1296306): Disabled due to being flaky.
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
-    DoNotCacheWithDedicatedWorkerWithClosedWebTransportAndDocumentWithBroadcastChannel) {
+    DISABLED_DoNotCacheWithDedicatedWorkerWithClosedWebTransportAndDocumentWithBroadcastChannel) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
