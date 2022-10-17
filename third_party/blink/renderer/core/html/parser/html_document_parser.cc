@@ -1623,14 +1623,16 @@ void HTMLDocumentParser::ScanInBackground(const String& source) {
               GetDocument()->GetTaskRunner(TaskType::kInternalLoading)));
 
       background_scan_fn_ = CrossThreadBindRepeating(
-          [](base::WeakPtr<HTMLPreloadScanner> scanner, const KURL& url,
-             const String& data) {
+          [](base::WeakPtr<HTMLPreloadScanner> scanner,
+             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+             const KURL& url, const String& data) {
             PostCrossThreadTask(
-                *GetPreloadScannerThread()->GetTaskRunner(), FROM_HERE,
+                *task_runner, FROM_HERE,
                 CrossThreadBindOnce(&HTMLPreloadScanner::ScanInBackground,
                                     std::move(scanner), data, url));
           },
-          background_scanner_->AsWeakPtr());
+          background_scanner_->AsWeakPtr(),
+          GetPreloadScannerThread()->GetTaskRunner());
     }
 
     if (background_scan_fn_)
