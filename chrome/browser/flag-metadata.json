@@ -2393,7 +2393,7 @@
   {
     "name": "enable-generic-sensor-extra-classes",
     "owners": [ "reillyg@chromium.org", "raphael.kubo.da.costa@intel.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 112
   },
   {
     "name": "enable-get-display-media-set",
