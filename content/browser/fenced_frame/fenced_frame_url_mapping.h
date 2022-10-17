@@ -247,10 +247,11 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       const GURL& url,
       const ReportingMetadata& reporting_metadata = ReportingMetadata());
 
-  // Assign ad auction data as well as an ordered list of ad component URLs,
-  // provided by a bidder running an auction, to the existing entry associated
-  // with the placeholder |urn_uuid|. These will to be made available to any
-  // fenced frame navigated to the returned URN, via the InterestGroup API.
+  // Move pending mapped |urn_uuid| from `pending_urn_uuid_to_url_map_` to
+  // `urn_uuid_to_url_map_`. Then assign ad auction data as well as an ordered
+  // list of ad component URLs, provided by a bidder running an auction, to the
+  // entry associated with the |urn_uuid|. These will to be made available to
+  // any fenced frame navigated to the returned URN, via the InterestGroup API.
   //
   // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
   void AssignFencedFrameURLAndInterestGroupInfo(
@@ -260,18 +261,17 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       std::vector<GURL> ad_component_urls,
       const ReportingMetadata& reporting_metadata = ReportingMetadata());
 
-  // Generate a URN that is mapped to a default constructed `MapInfo` without a
-  // specified URL. This method will fail and return absl::nullopt if number of
-  // mappings has reached limit. As the result, ad auction will be terminated up
-  // front. If success, info provided by auction bidder will later be assigned
-  // using `AssignFencedFrameURLAndInterestGroupInfo`.
-  absl::optional<GURL> GeneratePlaceholderURN();
-
-  // Generate a URN that is not yet mapped to a URL. Used by the Shared Storage
-  // API to return the URN for `sharedStorage.runURLSelectionOperation` before
-  // the URL selection decision is made. This method will fail and return
-  // absl::nullopt if number of mappings has reached limit. As a result,
-  // `selectURL()` will be terminated up front and an error is reported.
+  // Generate a URN that is not yet mapped to a URL.
+  // * For Shared Storage, it will be returned by
+  // `sharedStorage.runURLSelectionOperation` before the URL selection decision
+  // is made.
+  // * For FLEDGE, it will be moved from `pending_urn_uuid_to_url_map_` to
+  // `urn_uuid_to_url_map_` when ad auction completes. Info provided by auction
+  // bidder will be assigned using `AssignFencedFrameURLAndInterestGroupInfo`.
+  //
+  // This method will fail and return absl::nullopt if number of
+  // mappings has reached limit. Ad auction and `selectURL()` will be terminated
+  // up front and an error will be reported.
   absl::optional<GURL> GeneratePendingMappedURN();
 
   // Register an observer for `urn_uuid`. The observer will be notified with the

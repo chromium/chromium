@@ -105,16 +105,6 @@ void ValidatePendingAdComponentsMap(
   }
 }
 
-GURL GenerateAndVerifyPlaceholderURN(
-    FencedFrameURLMapping* fenced_frame_url_mapping) {
-  absl::optional<GURL> placeholder_urn =
-      fenced_frame_url_mapping->GeneratePlaceholderURN();
-  EXPECT_TRUE(placeholder_urn.has_value());
-  EXPECT_TRUE(placeholder_urn->is_valid());
-
-  return placeholder_urn.value();
-}
-
 GURL GenerateAndVerifyPendingMappedURN(
     FencedFrameURLMapping* fenced_frame_url_mapping) {
   absl::optional<GURL> pending_urn =
@@ -264,7 +254,7 @@ TEST(FencedFrameURLMappingTest,
   std::string interest_group_name = "bars";
   std::vector<GURL> ad_component_urls;
 
-  auto urn_uuid = GenerateAndVerifyPlaceholderURN(&fenced_frame_url_mapping);
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
       urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
@@ -301,7 +291,7 @@ TEST(FencedFrameURLMappingTest,
   std::string interest_group_name = "bars";
   std::vector<GURL> ad_component_urls{GURL("https://bar.test")};
 
-  auto urn_uuid = GenerateAndVerifyPlaceholderURN(&fenced_frame_url_mapping);
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
       urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
@@ -343,7 +333,7 @@ TEST(FencedFrameURLMappingTest,
         GURL(base::StringPrintf("https://%zu.test/", i)));
   }
 
-  auto urn_uuid = GenerateAndVerifyPlaceholderURN(&fenced_frame_url_mapping);
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
       urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
@@ -383,7 +373,7 @@ TEST(FencedFrameURLMappingTest,
   std::vector<GURL> ad_component_urls(blink::kMaxAdAuctionAdComponents,
                                       GURL("https://bar.test/"));
 
-  auto urn_uuid = GenerateAndVerifyPlaceholderURN(&fenced_frame_url_mapping);
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
       urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
@@ -421,7 +411,7 @@ TEST(FencedFrameURLMappingTest, SubstituteFencedFrameURLs) {
   std::vector<GURL> ad_component_urls{
       GURL("https://bar.test/page?${REPLACED}")};
 
-  auto urn_uuid = GenerateAndVerifyPlaceholderURN(&fenced_frame_url_mapping);
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
       urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
@@ -533,7 +523,7 @@ TEST(FencedFrameURLMappingTest, ReportingMetadataSuccessWithInterestGroupInfo) {
   std::string interest_group_name = "bars";
   std::vector<GURL> ad_component_urls;
 
-  auto urn_uuid = GenerateAndVerifyPlaceholderURN(&fenced_frame_url_mapping);
+  auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
       urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
@@ -552,12 +542,13 @@ TEST(FencedFrameURLMappingTest, ReportingMetadataSuccessWithInterestGroupInfo) {
                          ["mouse interaction"]);
 }
 
-// Test that number of urn mappings limit is enforced for FLEDGE use cases.
+// Test that number of urn mappings limit is enforced for pending mapped urn
+// generation.
 TEST(FencedFrameURLMappingTest, ExceedNumOfUrnMappingsLimitFailsAddURL) {
   FencedFrameURLMapping fenced_frame_url_mapping;
 
-  // Able to generate placeholder URN when map is not full.
-  EXPECT_TRUE(fenced_frame_url_mapping.GeneratePlaceholderURN().has_value());
+  // Able to generate pending mapped URN when map is not full.
+  EXPECT_TRUE(fenced_frame_url_mapping.GeneratePendingMappedURN().has_value());
 
   // Able to add urn mapping when map is not full.
   const GURL test_url("https://test.test");
@@ -571,33 +562,14 @@ TEST(FencedFrameURLMappingTest, ExceedNumOfUrnMappingsLimitFailsAddURL) {
   GURL url("https://a.test");
   fenced_frame_url_mapping_test_peer.FillMap(url);
 
-  // Cannot generate placeholder URN when map is full.
-  EXPECT_FALSE(fenced_frame_url_mapping.GeneratePlaceholderURN().has_value());
+  // Cannot generate pending mapped URN when map is full.
+  EXPECT_FALSE(fenced_frame_url_mapping.GeneratePendingMappedURN().has_value());
 
   // Subsequent additions of urn mapping should fail when map is full.
   const GURL extra_url("https://extra.test");
   absl::optional<GURL> extra_urn_uuid =
       fenced_frame_url_mapping.AddFencedFrameURL(extra_url);
   EXPECT_FALSE(extra_urn_uuid.has_value());
-}
-
-// Test that number of urn mappings limit is enforced for shared storage use
-// cases.
-TEST(FencedFrameURLMappingTest,
-     ExceedNumOfUrnMappingsLimitFailsGeneratePendingMappedURN) {
-  FencedFrameURLMapping fenced_frame_url_mapping;
-
-  // Able to insert pending mapped URN when map is not full.
-  EXPECT_TRUE(fenced_frame_url_mapping.GeneratePendingMappedURN().has_value());
-
-  // Fill the map until its size reaches the limit.
-  FencedFrameURLMappingTestPeer fenced_frame_url_mapping_test_peer(
-      &fenced_frame_url_mapping);
-  GURL url("https://a.test");
-  fenced_frame_url_mapping_test_peer.FillMap(url);
-
-  // Subsequent insertions of pending mapped URN should fail when map is full.
-  EXPECT_FALSE(fenced_frame_url_mapping.GeneratePendingMappedURN().has_value());
 }
 
 }  // namespace content

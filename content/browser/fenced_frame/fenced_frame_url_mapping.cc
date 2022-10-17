@@ -235,15 +235,20 @@ void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     AdAuctionData ad_auction_data,
     std::vector<GURL> ad_component_urls,
     const ReportingMetadata& reporting_metadata) {
-  // The placeholder urn::uuid should have been mapped already.
-  DCHECK(IsMapped(urn_uuid));
+  // Move pending mapped urn::uuid to `urn_uuid_to_url_map_`.
+  auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
+  DCHECK(pending_it != pending_urn_uuid_to_url_map_.end());
+  pending_urn_uuid_to_url_map_.erase(pending_it);
+
+  bool emplaced = false;
+  std::tie(std::ignore, emplaced) = urn_uuid_to_url_map_.emplace(urn_uuid, url);
+  DCHECK(emplaced);
   auto& map_info = urn_uuid_to_url_map_[urn_uuid];
 
-  // The placeholder urn::uuid should be mapped to an empty URL.
-  DCHECK(map_info.mapped_url.is_empty());
+  // The urn::uuid should be mapped to the given url.
+  DCHECK(map_info.mapped_url == url);
 
-  // Assign mapped URL and interest group info.
-  map_info.mapped_url = url;
+  // Assign interest group info.
   map_info.ad_auction_data = std::move(ad_auction_data);
   std::vector<MapInfo> ad_component_configs;
   ad_component_configs.reserve(ad_component_urls.size());
@@ -254,27 +259,14 @@ void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   map_info.reporting_metadata = reporting_metadata;
 }
 
-absl::optional<GURL> FencedFrameURLMapping::GeneratePlaceholderURN() {
-  if (IsFull()) {
-    return absl::nullopt;
-  }
-
-  GURL urn_uuid = GenerateURN();
-  DCHECK(!IsMapped(urn_uuid));
-  DCHECK(!IsPendingMapped(urn_uuid));
-
-  urn_uuid_to_url_map_.emplace(urn_uuid, MapInfo());
-  return urn_uuid;
-}
-
 absl::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
-  GURL urn_uuid = GenerateURN();
-  DCHECK(!IsMapped(urn_uuid));
-  DCHECK(!IsPendingMapped(urn_uuid));
-
   if (IsFull()) {
     return absl::nullopt;
   }
+
+  GURL urn_uuid = GenerateURN();
+  DCHECK(!IsMapped(urn_uuid));
+  DCHECK(!IsPendingMapped(urn_uuid));
 
   pending_urn_uuid_to_url_map_.emplace(
       urn_uuid, std::set<raw_ptr<MappingResultObserver>>());

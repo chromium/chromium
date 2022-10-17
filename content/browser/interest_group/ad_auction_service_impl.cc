@@ -228,9 +228,9 @@ void AdAuctionServiceImpl::RunAdAuction(
 
   FencedFrameURLMapping& fenced_frame_urls_map =
       GetFrame()->GetPage().fenced_frame_urls_map();
-  auto urn_uuid = fenced_frame_urls_map.GeneratePlaceholderURN();
+  auto urn_uuid = fenced_frame_urls_map.GeneratePendingMappedURN();
 
-  // If placeholder URN cannot be generated due to number of mappings has
+  // If pending mapped URN cannot be generated due to number of mappings has
   // reached limit, stop the auction.
   if (!urn_uuid.has_value()) {
     std::move(callback).Run(/*manually_aborted=*/false, absl::nullopt);
