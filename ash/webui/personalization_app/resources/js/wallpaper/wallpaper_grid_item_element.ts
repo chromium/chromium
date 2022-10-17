@@ -72,10 +72,12 @@ export class WallpaperGridItem extends PolymerElement {
 
   /**
    * The source for the image to render for the grid item. Will display a
-   * placeholder loading animation if src is undefined.
-   * If |src| is an array, will display the first two images side by side.
+   * placeholder loading animation if `src` is undefined or null.
+   * `src` will be undefined if the attribute is not set, but can also be
+   * explicitly set to null to force showing a placeholder animation.
+   * If `src` is an array, will display the first two images side by side.
    */
-  src: Url|Url[]|undefined;
+  src: Url|Url[]|null|undefined;
 
   /** The index of the grid item within its parent grid. */
   index: number;

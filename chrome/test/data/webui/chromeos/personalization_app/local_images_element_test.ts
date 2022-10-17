@@ -5,8 +5,8 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {kDefaultImageSymbol, LocalImages} from 'chrome://personalization/js/personalization_app.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {kDefaultImageSymbol, LocalImages, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -23,21 +23,19 @@ suite('LocalImagesTest', function() {
   /**
    * Get all currently visible photo loading placeholders.
    */
-  function getLoadingPlaceholders(): HTMLElement[] {
+  function getLoadingPlaceholders(): WallpaperGridItem[] {
     if (!localImagesElement) {
       return [];
     }
-    const selectors = [
-      '.photo-container:not([hidden])',
-      '.photo-inner-container.placeholder:not([style*="display: none"])',
-    ];
+
     return Array.from(
-        localImagesElement.shadowRoot!.querySelectorAll(selectors.join(' ')));
+        localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
+            `${WallpaperGridItem.is}[placeholder]:not([hidden])`));
   }
 
-  function getDefaultImageHtmlElement(): HTMLElement|null {
-    return localImagesElement!.shadowRoot!.querySelector(
-        `.photo-inner-container[data-id="${kDefaultImageSymbol.toString()}"]`);
+  function getDefaultImageHtmlElement(): WallpaperGridItem|null {
+    return localImagesElement!.shadowRoot!.querySelector<WallpaperGridItem>(
+        `${WallpaperGridItem.is}[data-id="${kDefaultImageSymbol.toString()}"]`);
   }
 
   setup(() => {
@@ -52,7 +50,7 @@ suite('LocalImagesTest', function() {
     await flushTasks();
   });
 
-  test('displays a loading placeholder for unloaded local images', async () => {
+  test('displays a tile with no src for unloaded local images', async () => {
     personalizationStore.data.wallpaper.local = {
       images: wallpaperProvider.localImages,
       data: wallpaperProvider.localImageData,
@@ -68,21 +66,23 @@ suite('LocalImagesTest', function() {
     // Iron-list creates some extra dom elements as a scroll buffer and
     // hides them.  Only select visible elements here to get the real ones.
     let loadingPlaceholders = getLoadingPlaceholders();
+
     // Counts as loading if store.loading.local.data does not contain an
     // entry for the image. Therefore should be 2 loading tiles.
-    assertEquals(2, loadingPlaceholders.length);
+    assertEquals(2, loadingPlaceholders.length, 'first time 2 placeholders');
 
     personalizationStore.data.wallpaper.loading.local = {
       images: false,
-      data: {'LocalImage0.png': true, 'LocalImage1.png': true},
+      data: {
+        'LocalImage0.png': true,
+        'LocalImage1.png': true,
+      },
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(localImagesElement);
 
-
     loadingPlaceholders = getLoadingPlaceholders();
-    // Still 2 loading tiles.
-    assertEquals(2, loadingPlaceholders.length);
+    assertEquals(2, loadingPlaceholders.length, 'still 2 placeholders');
 
     personalizationStore.data.wallpaper.loading.local = {
       images: false,
@@ -92,7 +92,7 @@ suite('LocalImagesTest', function() {
     await waitAfterNextRender(localImagesElement);
 
     loadingPlaceholders = getLoadingPlaceholders();
-    assertEquals(1, loadingPlaceholders.length);
+    assertEquals(1, loadingPlaceholders.length, 'Only one loading placeholder');
   });
 
   test(
@@ -113,10 +113,9 @@ suite('LocalImagesTest', function() {
             localImagesElement.shadowRoot!.querySelector('iron-list');
         assertTrue(!!ironList);
 
-        // Both items are sent. No images are rendered yet because they are not
-        // done loading thumbnails.
-        assertEquals(2, ironList.items!.length);
-        assertEquals(0, ironList.shadowRoot!.querySelectorAll('img').length);
+        // Both items are sent.
+        assertEquals(
+            2, ironList.items!.length, 'both images are sent to iron-list');
 
         // Set loading finished for first thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -124,10 +123,14 @@ suite('LocalImagesTest', function() {
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
+
         assertEquals(2, ironList.items!.length);
-        let imgTags = localImagesElement.shadowRoot!.querySelectorAll('img');
-        assertEquals(1, imgTags.length);
-        assertEquals('data:image/png;base64,localimage0data', imgTags![0]!.src);
+        let gridItems =
+            localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
+                `${WallpaperGridItem.is}:not([placeholder]):not([hidden])`);
+        assertEquals(1, gridItems.length);
+        assertDeepEquals(
+            {url: 'data:image/png;base64,localimage0data'}, gridItems![0]!.src);
 
         // Set loading failed for second thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -135,61 +138,64 @@ suite('LocalImagesTest', function() {
           'LocalImage1.png': false,
         };
         personalizationStore.data.wallpaper.local.data = {
-          'LocalImage0.png': 'data:image/png;base64,localimage0data',
+          'LocalImage0.png': {url: 'data:image/png;base64,localimage0data'},
           'LocalImage1.png': null,
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
+
         // Still only first thumbnail displayed.
-        imgTags = localImagesElement.shadowRoot!.querySelectorAll('img');
-        assertEquals(1, imgTags.length);
-        assertEquals('data:image/png;base64,localimage0data', imgTags![0]!.src);
+        gridItems =
+            localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
+                `${WallpaperGridItem.is}:not([placeholder]):not([hidden])`);
+        assertEquals(
+            1, gridItems.length, 'still only first thumbnail displayed');
+        assertDeepEquals(
+            {url: 'data:image/png;base64,localimage0data'}, gridItems![0]!.src);
       });
 
-  test(
-      'sets aria-selected attribute if image name matches currently selected',
-      async () => {
-        personalizationStore.data.wallpaper.local = {
-          images: [
-            {path: '/test/LocalImage0.png'},
-            {path: '/test/LocalImage1.png'},
-          ],
-          data: {
-            '/test/LocalImage0.png':
-                {url: 'data:image/png;base64,localimage0data'},
-            '/test/LocalImage1.png':
-                {url: 'data:image/png;base64,localimage1data'},
-          },
-        };
-        // Done loading.
-        personalizationStore.data.wallpaper.loading.local = {
-          images: false,
-          data:
-              {'/test/LocalImage0.png': false, '/test/LocalImage1.png': false},
-        };
+  test('sets selected if image name matches currently selected', async () => {
+    personalizationStore.data.wallpaper.local = {
+      images: [
+        {path: '/test/LocalImage0.png'},
+        {path: '/test/LocalImage1.png'},
+      ],
+      data: {
+        '/test/LocalImage0.png': {url: 'data:image/png;base64,localimage0data'},
+        '/test/LocalImage1.png': {url: 'data:image/png;base64,localimage1data'},
+      },
+    };
+    // Done loading.
+    personalizationStore.data.wallpaper.loading.local = {
+      images: false,
+      data: {
+        '/test/LocalImage0.png': false,
+        '/test/LocalImage1.png': false,
+      },
+    };
 
-        localImagesElement = initElement(LocalImages, {hidden: false});
-        await waitAfterNextRender(localImagesElement);
+    localImagesElement = initElement(LocalImages, {hidden: false});
+    await waitAfterNextRender(localImagesElement);
 
-        // iron-list pre-creates some extra DOM elements but marks them as
-        // hidden. Ignore them here to only get visible images.
-        const images = localImagesElement.shadowRoot!.querySelectorAll(
-            '.photo-container:not([hidden]) .photo-inner-container');
+    // iron-list pre-creates some extra DOM elements but marks them as
+    // hidden. Ignore them here to only get visible images.
+    const images =
+        localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
+            `${WallpaperGridItem.is}:not([hidden])`);
 
-        assertEquals(2, images.length);
-        // Every image is aria-selected false.
-        assertTrue(Array.from(images).every(
-            image => image.getAttribute('aria-selected') === 'false'));
+    assertEquals(2, images.length);
+    // Every image is not selected.
+    assertTrue(Array.from(images).every(image => !image.selected));
 
-        personalizationStore.data.wallpaper.currentSelected = {
-          key: '/test/LocalImage1.png',
-        };
-        personalizationStore.notifyObservers();
+    personalizationStore.data.wallpaper.currentSelected = {
+      key: '/test/LocalImage1.png',
+    };
+    personalizationStore.notifyObservers();
 
-        assertEquals(2, images.length);
-        assertEquals(images[0]!.getAttribute('aria-selected'), 'false');
-        assertEquals(images[1]!.getAttribute('aria-selected'), 'true');
-      });
+    assertEquals(2, images.length);
+    assertFalse(images[0]!.selected!);
+    assertTrue(images[1]!.selected!);
+  });
 
   test('images have proper aria label when loaded', async () => {
     personalizationStore.data.wallpaper.local = {
@@ -199,7 +205,10 @@ suite('LocalImagesTest', function() {
     // Done loading.
     personalizationStore.data.wallpaper.loading.local = {
       images: false,
-      data: {'LocalImage0.png': false, 'LocalImage1.png': false},
+      data: {
+        'LocalImage0.png': false,
+        'LocalImage1.png': false,
+      },
     };
 
     localImagesElement = initElement(LocalImages, {hidden: false});
@@ -207,20 +216,42 @@ suite('LocalImagesTest', function() {
 
     // iron-list pre-creates some extra DOM elements but marks them as
     // hidden. Ignore them here to only get visible images.
-    const images = localImagesElement.shadowRoot!.querySelectorAll(
-        '.photo-container:not([hidden]) .photo-inner-container');
+    const images =
+        localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
+            `${WallpaperGridItem.is}:not([hidden])`);
 
     assertEquals(2, images.length);
-    // Every image is aria-selected false.
-    assertTrue(Array.from(images).every(
-        image => image.getAttribute('aria-selected') === 'false'));
     // Every image has aria-label set.
     assertEquals(
         images[0]!.getAttribute('aria-label'),
-        wallpaperProvider.localImages![0]!.path);
+        wallpaperProvider.localImages![0]!.path, 'image 0 has aria label');
     assertEquals(
         images[1]!.getAttribute('aria-label'),
-        wallpaperProvider.localImages![1]!.path);
+        wallpaperProvider.localImages![1]!.path, 'image 1 has aria label');
+  });
+
+  test('default image has proper aria label', async () => {
+    personalizationStore.data.wallpaper.local = {
+      images: [kDefaultImageSymbol],
+      data: {[kDefaultImageSymbol]: wallpaperProvider.defaultImageThumbnail},
+    };
+
+    personalizationStore.data.wallpaper.loading.local = {
+      images: false,
+      data: {[kDefaultImageSymbol]: false},
+    };
+
+    localImagesElement = initElement(LocalImages, {hidden: false});
+    await waitAfterNextRender(localImagesElement);
+
+    const images =
+        localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
+            `${WallpaperGridItem.is}:not([hidden])`);
+
+    assertEquals(1, images.length, 'only default image is present');
+    assertEquals(
+        images[0]!.getAttribute('aria-label'), 'Default Wallpaper',
+        'default image has correct aria label');
   });
 
   test('click default image thumbnail resets wallpaper', async () => {
@@ -244,7 +275,7 @@ suite('LocalImagesTest', function() {
   test('default image thumbnail hidden when fails to load', async () => {
     personalizationStore.data.wallpaper.local = {
       images: [kDefaultImageSymbol],
-      data: {[kDefaultImageSymbol]: ''},
+      data: {[kDefaultImageSymbol]: {url: ''}},
     };
 
     localImagesElement = initElement(LocalImages, {hidden: false});

@@ -26,7 +26,7 @@ import {isPngDataUrl, isSelectionEvent} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 import {getTemplate} from './local_images_element.html.js';
-import {getLoadingPlaceholderAnimationDelay, getPathOrSymbol, isDefaultImage, isFilePath} from './utils.js';
+import {getPathOrSymbol, isDefaultImage, isFilePath} from './utils.js';
 import {fetchLocalData, getDefaultImageThumbnail, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -161,29 +161,31 @@ export class LocalImages extends WithPersonalizationStore {
     }
   }
 
-  private getAriaSelected_(
+  private isImageSelected_(
       image: FilePath|DefaultImageSymbol|null,
       currentSelected: LocalImages['currentSelected_'],
-      pendingSelected: LocalImages['pendingSelected_']): 'true'|'false' {
+      pendingSelected: LocalImages['pendingSelected_']): boolean {
     if (!image || (!currentSelected && !pendingSelected)) {
-      return 'false';
+      return false;
     }
     if (isDefaultImage(image)) {
-      return ((isDefaultImage(pendingSelected)) ||
-              (!pendingSelected && !!currentSelected &&
-               currentSelected.type === WallpaperType.kDefault))
-                 .toString() as 'true' |
-          'false';
+      return (
+          (isDefaultImage(pendingSelected)) ||
+          (!pendingSelected && !!currentSelected &&
+           currentSelected.type === WallpaperType.kDefault));
     }
-    return (isFilePath(pendingSelected) &&
-                image.path === pendingSelected.path ||
-            !!currentSelected && image.path === currentSelected.key &&
-                !pendingSelected)
-               .toString() as 'true' |
-        'false';
+    return (
+        isFilePath(pendingSelected) && image.path === pendingSelected.path ||
+        !!currentSelected && image.path === currentSelected.key &&
+            !pendingSelected);
   }
 
-  private getAriaLabel_(image: FilePath|DefaultImageSymbol|null): string {
+  private getAriaLabel_(
+      image: FilePath|DefaultImageSymbol|null,
+      imageDataLoading: LocalImages['imageDataLoading_']): string {
+    if (this.isImageLoading_(image, imageDataLoading)) {
+      return this.i18n('ariaLabelLoading');
+    }
     if (isDefaultImage(image)) {
       return this.i18n('defaultWallpaper');
     }
@@ -207,32 +209,25 @@ export class LocalImages extends WithPersonalizationStore {
         imageDataLoading[key] === true;
   }
 
-  private getLoadingPlaceholderAnimationDelay_(index: number): string {
-    return getLoadingPlaceholderAnimationDelay(index);
-  }
-
-  private isImageReady_(
+  private getImageData_(
       image: FilePath|DefaultImageSymbol|null,
       imageData: LocalImages['imageData_'],
-      imageDataLoading: LocalImages['imageDataLoading_']): boolean {
-    if (!image || !imageData || !imageDataLoading) {
-      return false;
+      imageDataLoading: LocalImages['imageDataLoading_']): Url|null {
+    if (!image || this.isImageLoading_(image, imageDataLoading)) {
+      return null;
     }
-    const key = getPathOrSymbol(image);
-    return isPngDataUrl(imageData[key]) && imageDataLoading[key] === false;
+    const data = imageData[getPathOrSymbol(image)];
+    // Return a "fail" url that will not load.
+    if (!isPngDataUrl(data)) {
+      return {url: ''};
+    }
+    return data;
   }
 
-  private getImageData_(
-      image: FilePath|DefaultImageSymbol,
-      imageData: LocalImages['imageData_']): string {
-    if (!isPngDataUrl(imageData[getPathOrSymbol(image)])) {
-      console.error('Requested image data of an image that failed to load');
+  private getImageDataId_(image: FilePath|DefaultImageSymbol|null): string {
+    if (!image) {
       return '';
     }
-    return imageData[getPathOrSymbol(image)].url;
-  }
-
-  private getImageDataId_(image: FilePath|DefaultImageSymbol): string {
     return isFilePath(image) ? image.path : image.toString();
   }
 
