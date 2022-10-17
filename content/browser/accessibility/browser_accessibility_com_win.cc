@@ -725,31 +725,25 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
   if (!key_bindings || !n_bindings)
     return E_INVALIDARG;
 
-  const std::vector<ax::mojom::Action> actions = owner()->GetSupportedActions();
-  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size())) {
-    *key_bindings = nullptr;
-    return E_INVALIDARG;
-  }
-  n_bindings = 0;
-  int action;
-  std::u16string key_binding_string;
-  if (action_index == 0 &&
-      owner()->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
-                               &action)) {
-    if (owner()->GetString16Attribute(ax::mojom::StringAttribute::kAccessKey,
-                                      &key_binding_string))
-      *n_bindings = 1;
-  }
+  *key_bindings = nullptr;
+  *n_bindings = 0;
 
-  if (n_bindings == 0) {
-    *key_bindings = nullptr;
+  const std::vector<ax::mojom::Action> actions = owner()->GetSupportedActions();
+  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size()))
+    return E_INVALIDARG;
+
+  // Only the default action, in index 0, may have a key binding. If it does,
+  // it will be stored in the attribute kAccessKey.
+  std::u16string key_binding_string;
+  if (action_index != 0 || !owner()->HasDefaultActionVerb() ||
+      !owner()->GetString16Attribute(ax::mojom::StringAttribute::kAccessKey,
+                                     &key_binding_string)) {
     return S_FALSE;
   }
 
+  *n_bindings = 1;
   *key_bindings = static_cast<BSTR*>(CoTaskMemAlloc(sizeof(BSTR)));
   (*key_bindings)[0] = SysAllocString(base::as_wcstr(key_binding_string));
-
-  DCHECK(key_bindings);
   return S_OK;
 }
 
