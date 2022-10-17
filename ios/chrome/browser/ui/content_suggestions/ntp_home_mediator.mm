@@ -398,7 +398,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)updateAccountImage {
   UIImage* image = nil;
   // Fetches user's identity from Authentication Service.
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
     // Only show an avatar if the user is signed in.
