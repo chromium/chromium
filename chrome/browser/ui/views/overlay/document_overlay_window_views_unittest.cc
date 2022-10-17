@@ -76,6 +76,7 @@ class TestDocumentPictureInPictureWindowController
   }
 
   void destroy() { child_web_contents_ = nullptr; }
+  absl::optional<gfx::Rect> GetWindowBounds() override { return absl::nullopt; }
 
  private:
   raw_ptr<content::WebContents> web_contents_;
