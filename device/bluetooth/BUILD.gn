@@ -446,6 +446,8 @@ component("bluetooth") {
         "floss/bluetooth_low_energy_scan_session_floss.h",
         "floss/bluetooth_pairing_floss.cc",
         "floss/bluetooth_pairing_floss.h",
+        "floss/bluetooth_remote_gatt_characteristic_floss.cc",
+        "floss/bluetooth_remote_gatt_characteristic_floss.h",
         "floss/bluetooth_remote_gatt_service_floss.cc",
         "floss/bluetooth_remote_gatt_service_floss.h",
         "floss/bluetooth_socket_floss.cc",

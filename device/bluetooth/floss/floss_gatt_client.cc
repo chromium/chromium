@@ -280,20 +280,30 @@ void FlossGattClient::WriteDescriptor(ResponseCallback<Void> callback,
                        remote_device, handle, auth_required, data);
 }
 
-void FlossGattClient::RegisterForNotification(ResponseCallback<Void> callback,
-                                              const std::string& remote_device,
-                                              const int32_t handle) {
+void FlossGattClient::RegisterForNotification(
+    ResponseCallback<GattStatus> callback,
+    const std::string& remote_device,
+    const int32_t handle) {
   const bool enable_notification = true;
-  CallGattMethod<Void>(std::move(callback), gatt::kRegisterForNotification,
-                       client_id_, remote_device, handle, enable_notification);
+  CallGattMethod<Void>(
+      base::BindOnce(&FlossGattClient::OnRegisterNotificationResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     enable_notification),
+      gatt::kRegisterForNotification, client_id_, remote_device, handle,
+      enable_notification);
 }
 
-void FlossGattClient::UnregisterNotification(ResponseCallback<Void> callback,
-                                             const std::string& remote_device,
-                                             const int32_t handle) {
+void FlossGattClient::UnregisterNotification(
+    ResponseCallback<GattStatus> callback,
+    const std::string& remote_device,
+    const int32_t handle) {
   const bool enable_notification = false;
-  CallGattMethod<Void>(std::move(callback), gatt::kRegisterForNotification,
-                       client_id_, remote_device, handle, enable_notification);
+  CallGattMethod<Void>(
+      base::BindOnce(&FlossGattClient::OnRegisterNotificationResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     enable_notification),
+      gatt::kRegisterForNotification, client_id_, remote_device, handle,
+      enable_notification);
 }
 
 void FlossGattClient::ReadRemoteRssi(ResponseCallback<Void> callback,
@@ -509,6 +519,21 @@ void FlossGattClient::GattServiceChanged(std::string address) {
   for (auto& observer : observers_) {
     observer.GattServiceChanged(address);
   }
+}
+
+// TODO(b/193685841) - Floss currently doesn't emit a callback when
+// a notification registers. Once a callback is available, we should report that
+// via the callback here instead.
+void FlossGattClient::OnRegisterNotificationResponse(
+    ResponseCallback<GattStatus> callback,
+    bool is_registering,
+    DBusResult<Void> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(GattStatus::kError);
+    return;
+  }
+
+  std::move(callback).Run(GattStatus::kSuccess);
 }
 
 }  // namespace floss
