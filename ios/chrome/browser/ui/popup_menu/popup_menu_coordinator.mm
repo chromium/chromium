@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
@@ -385,11 +386,11 @@ enum class IOSOverflowMenuActionType {
     if (IsNewOverflowMenuEnabled()) {
       if (@available(iOS 15, *)) {
         self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
-        self.overflowMenuMediator.dispatcher =
-            static_cast<id<ActivityServiceCommands, ApplicationCommands,
-                           BrowserCommands, BrowserCoordinatorCommands,
-                           FindInPageCommands, TextZoomCommands>>(
-                self.browser->GetCommandDispatcher());
+        self.overflowMenuMediator.dispatcher = static_cast<
+            id<ActivityServiceCommands, ApplicationCommands, BrowserCommands,
+               BrowserCoordinatorCommands, FindInPageCommands,
+               PriceNotificationsCommands, TextZoomCommands>>(
+            self.browser->GetCommandDispatcher());
         self.overflowMenuMediator.bookmarksCommandsHandler = HandlerForProtocol(
             self.browser->GetCommandDispatcher(), BookmarksCommands);
         self.overflowMenuMediator.pageInfoCommandsHandler = HandlerForProtocol(
@@ -523,10 +524,10 @@ enum class IOSOverflowMenuActionType {
 
   self.actionHandler = [[PopupMenuActionHandler alloc] init];
   self.actionHandler.baseViewController = self.baseViewController;
-  self.actionHandler.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, FindInPageCommands,
-                     LoadQueryCommands, TextZoomCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.actionHandler.dispatcher = static_cast<
+      id<ApplicationCommands, BrowserCommands, FindInPageCommands,
+         LoadQueryCommands, PriceNotificationsCommands, TextZoomCommands>>(
+      self.browser->GetCommandDispatcher());
   self.actionHandler.bookmarksCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
   self.actionHandler.browserCoordinatorCommandsHandler = HandlerForProtocol(

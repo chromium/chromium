@@ -27,6 +27,7 @@ class BrowserPolicyConnectorIOS;
 class OverlayPresenter;
 @protocol PageInfoCommands;
 @protocol PopupMenuCommands;
+@protocol PriceNotificationsCommands;
 class PrefService;
 @protocol FindInPageCommands;
 @protocol TextZoomCommands;
@@ -52,6 +53,7 @@ class FollowBrowserAgent;
                               BrowserCommands,
                               BrowserCoordinatorCommands,
                               FindInPageCommands,
+                              PriceNotificationsCommands,
                               TextZoomCommands>
     dispatcher;
 
