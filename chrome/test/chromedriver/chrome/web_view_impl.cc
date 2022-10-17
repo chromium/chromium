@@ -514,6 +514,10 @@ Status WebViewImpl::Resume(const Timeout* timeout) {
                                          timeout);
 }
 
+Status WebViewImpl::StartBidiServer(std::string bidi_mapper_script) {
+  return client_->StartBidiServer(std::move(bidi_mapper_script));
+}
+
 Status WebViewImpl::PostBidiCommand(base::Value::Dict command) {
   return client_->PostBidiCommand(std::move(command));
 }

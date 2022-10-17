@@ -33,7 +33,13 @@ class DevToolsClient {
   virtual const std::string& TunnelSessionId() const = 0;
 
   // Set the session id used for CDP traffic tunneling
-  virtual void SetTunnelSessionId(const std::string& session_id) = 0;
+  virtual Status SetTunnelSessionId(std::string session_id) = 0;
+
+  // Start a BiDi Server in the connected target
+  // Precondition: IsMainPage()
+  // Precondition: IsConnected()
+  // Precondition: BiDi tunnel for CDP traffic is not set.
+  virtual Status StartBidiServer(std::string bidi_mapper_script) = 0;
 
   virtual bool WasCrashed() = 0;
 

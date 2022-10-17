@@ -160,16 +160,7 @@ void Session::SwitchFrameInternal(bool for_top_frame) {
   }
 }
 
-bool Session::BidiMapperIsLaunched() const {
-  return bidi_mapper_is_launched_;
-}
-
 void Session::OnBidiResponse(base::Value::Dict payload) {
-  if (payload.FindBool("launched").value_or(false)) {
-    bidi_mapper_is_launched_ = true;
-    return;
-  }
-
   // If there is no active bidi connections the events will be accumulated.
   bidi_response_queue_.push(std::move(payload));
   for (; bidi_response_queue_.size() > kBidiQueueCapacity;

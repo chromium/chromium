@@ -27,8 +27,13 @@ const std::string& StubDevToolsClient::TunnelSessionId() const {
   return tunnel_session_id_;
 }
 
-void StubDevToolsClient::SetTunnelSessionId(const std::string& session_id) {
-  tunnel_session_id_ = session_id;
+Status StubDevToolsClient::SetTunnelSessionId(std::string session_id) {
+  tunnel_session_id_ = std::move(session_id);
+  return Status{kOk};
+}
+
+Status StubDevToolsClient::StartBidiServer(std::string bidi_mapper_script) {
+  return Status{kOk};
 }
 
 bool StubDevToolsClient::IsNull() const {

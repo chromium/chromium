@@ -365,54 +365,11 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     if (status.IsError())
       return status;
     session->bidi_mapper_web_view_id = session->window;
-    ChromeImpl* chrome = static_cast<ChromeImpl*>(session->chrome.get());
-    DevToolsClient* client = chrome->Client();
 
-    {
-      base::Value::Dict body;
-      body.Set("bindingName", "cdp");
-      body.Set("targetId", session->window);
-      client->SendCommandAndIgnoreResponse("Target.exposeDevToolsProtocol",
-                                           body);
-    }
-
-    {
-      std::unique_ptr<base::Value> result;
-      base::Value::Dict body;
-      body.Set("name", "sendBidiResponse");
-      web_view->SendCommandAndGetResult("Runtime.addBinding", body, &result);
-    }
-
-    status = EvaluateScriptAndIgnoreResult(session, kMapperScript);
-    if (status.IsError())
+    status = web_view->StartBidiServer(kMapperScript);
+    if (status.IsError()) {
       return status;
-
-    {
-      std::unique_ptr<base::Value> result;
-      base::Value::Dict body;
-      std::string window_id;
-      if (!base::JSONWriter::Write(session->window, &window_id)) {
-        return Status(kUnknownError,
-                      "cannot serialize be window id: " + session->window);
-      }
-      body.Set("expression", "window.setSelfTargetId(" + window_id + ")");
-      status =
-          web_view->SendCommandAndGetResult("Runtime.evaluate", body, &result);
-      if (status.IsError())
-        return status;
     }
-
-    base::RepeatingCallback<Status(bool*)> bidi_mapper_is_launched =
-        base::BindRepeating(
-            [](Session* session, bool* condition_is_met) {
-              *condition_is_met = session->BidiMapperIsLaunched();
-              return Status{kOk};
-            },
-            base::Unretained(session));
-    // Assume that BiDiMapper initialization requires the same time as a regular
-    // script
-    web_view->HandleEventsUntil(bidi_mapper_is_launched,
-                                Timeout(session->script_timeout));
 
     {
       // Create a new tab because the default one is occupied by the BiDiMapper
