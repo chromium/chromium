@@ -28,7 +28,7 @@ class SyncService;
 // Consumer for this mediator.
 @property(nonatomic, weak) id<SigninScreenConsumer> consumer;
 // The identity currently selected.
-@property(nonatomic, strong, readwrite) id<SystemIdentity> selectedIdentity;
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 // Contains the user choice for UMA reporting. This value is set to the default
 // value when the coordinator is initialized.
 @property(nonatomic, assign) BOOL UMAReportingUserChoice;

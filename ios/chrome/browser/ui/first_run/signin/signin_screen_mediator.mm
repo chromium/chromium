@@ -150,7 +150,7 @@
         completion();
     }];
   };
-  ChromeIdentity* primaryIdentity =
+  id<SystemIdentity> primaryIdentity =
       self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin);
   if (primaryIdentity && ![primaryIdentity isEqual:self.selectedIdentity]) {
@@ -271,7 +271,7 @@
   }
 }
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   if ([_selectedIdentity isEqual:selectedIdentity]) {
     return;
   }
