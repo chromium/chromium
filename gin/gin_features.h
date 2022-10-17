@@ -13,7 +13,6 @@
 namespace features {
 
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactCodeSpaceWithStack);
-GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactMaps);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactWithStack);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplug);
 GIN_EXPORT extern const base::FeatureParam<int>
@@ -46,7 +45,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsScriptAblation);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8Sparkplug);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SparkplugNeedsShortBuiltinCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboFastApiCalls);
-GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseMapSpace);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8DelayMemoryReducer);
 GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kV8MemoryReducerStartDelay;
