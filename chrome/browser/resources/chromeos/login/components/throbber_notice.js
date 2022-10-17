@@ -2,30 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.m.js';
+
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {OobeI18nBehaviorInterface}
  */
-const ThrobberNoticeBase = Polymer.mixinBehaviors([OobeI18nBehavior],
-                                                  Polymer.Element);
+const ThrobberNoticeBase = mixinBehaviors([OobeI18nBehavior], PolymerElement);
 
+/** @polymer */
 class ThrobberNotice extends ThrobberNoticeBase {
 
   static get is() {
     return 'throbber-notice';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {textKey: String};
-  }
-
-  constructor() {
-    super();
   }
 
   /**

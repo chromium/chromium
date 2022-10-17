@@ -42,7 +42,7 @@ group("closure_compile") {
     ":progress_list_item",
     ":security_token_pin",
     ":test_util.m",
-    ":throbber_notice.m",
+    ":throbber_notice",
     ":web_view_helper.m",
     ":web_view_loader.m",
   ]
@@ -64,7 +64,6 @@ group("polymer3_elements") {
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
                   ":oobe_slide_module",
-                  ":throbber_notice_module",
                 ] + [ ":modulize" ]
 }
 
@@ -248,10 +247,10 @@ js_library("security_token_pin") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("throbber_notice.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.m.js" ]
+js_library("throbber_notice") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.js" ]
   deps = [ "./behaviors:oobe_i18n_behavior.m" ]
-  extra_deps = [ ":throbber_notice_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("test_util.m") {
@@ -320,15 +319,6 @@ polymer_modulizer("oobe_slide") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("throbber_notice") {
-  js_file = "throbber_notice.js"
-  html_file = "throbber_notice.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 js_modulizer("modulize") {
   input_files = [
     "display_manager_types.js",
@@ -355,5 +345,6 @@ html_to_js("web_components") {
     "oobe_i18n_dropdown.js",
     "progress_list_item.js",
     "security_token_pin.js",
+    "throbber_notice.js",
   ]
 }

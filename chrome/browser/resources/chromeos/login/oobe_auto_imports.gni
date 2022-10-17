@@ -122,6 +122,7 @@ oobe_migrated_imports = [
   "chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.html",
   "chrome/browser/resources/chromeos/login/components/progress_list_item.html",
   "chrome/browser/resources/chromeos/login/components/security_token_pin.html",
+  "chrome/browser/resources/chromeos/login/components/throbber_notice.html",
   "chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.html",
   "ash/webui/common/resources/quick_unlock/lock_screen_constants.html",
   "ash/webui/common/resources/quick_unlock/pin_keyboard.html",
