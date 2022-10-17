@@ -15,12 +15,14 @@ const NGGridPlacementData& NGGridNode::CachedPlacementData() const {
 
 GridItems NGGridNode::ConstructGridItems(
     const NGGridPlacementData& placement_data,
+    HeapVector<Member<LayoutBox>>* oof_children,
     bool* has_nested_subgrid) const {
   DCHECK(has_nested_subgrid);
 
-  return ConstructGridItems(
-      placement_data, Style(), placement_data.HasStandaloneAxis(kForColumns),
-      placement_data.HasStandaloneAxis(kForRows), has_nested_subgrid);
+  return ConstructGridItems(placement_data, Style(),
+                            placement_data.HasStandaloneAxis(kForColumns),
+                            placement_data.HasStandaloneAxis(kForRows),
+                            oof_children, has_nested_subgrid);
 }
 
 GridItems NGGridNode::ConstructGridItems(
@@ -28,6 +30,7 @@ GridItems NGGridNode::ConstructGridItems(
     const ComputedStyle& root_grid_style,
     bool must_consider_grid_items_for_column_sizing,
     bool must_consider_grid_items_for_row_sizing,
+    HeapVector<Member<LayoutBox>>* oof_children,
     bool* has_nested_subgrid) const {
   if (has_nested_subgrid)
     *has_nested_subgrid = false;
@@ -59,8 +62,11 @@ GridItems NGGridNode::ConstructGridItems(
     const int initial_order = ComputedStyleInitialValues::InitialOrder();
 
     for (auto child = FirstChild(); child; child = child.NextSibling()) {
-      if (child.IsOutOfFlowPositioned())
+      if (child.IsOutOfFlowPositioned()) {
+        if (oof_children)
+          oof_children->emplace_back(child.GetLayoutBox());
         continue;
+      }
 
       auto* grid_item = MakeGarbageCollected<GridItemData>(
           To<NGBlockNode>(child), root_grid_style,

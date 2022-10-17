@@ -42,8 +42,9 @@ class NGGridLayoutAlgorithmTest
     const auto& node = algorithm.Node();
 
     bool has_nested_subgrid;
-    auto grid_items =
-        node.ConstructGridItems(algorithm.PlacementData(), &has_nested_subgrid);
+    auto grid_items = node.ConstructGridItems(algorithm.PlacementData(),
+                                              /* oof_children */ nullptr,
+                                              &has_nested_subgrid);
 
     LayoutUnit unused_intrinsic_block_size;
     algorithm.ComputeGridGeometry(node.CachedPlacementData(), &grid_items,
