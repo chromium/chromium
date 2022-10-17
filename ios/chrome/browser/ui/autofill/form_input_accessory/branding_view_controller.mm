@@ -55,8 +55,6 @@ constexpr base::TimeDelta kMinTimeIntervalBetweenAnimations = base::Seconds(3);
       NOTREACHED();
       break;
   }
-  UIImage* logo = [[UIImage imageNamed:logoName]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
   UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
   if (@available(iOS 15.0, *)) {
     UIButtonConfiguration* buttonConfig =
@@ -67,12 +65,10 @@ constexpr base::TimeDelta kMinTimeIntervalBetweenAnimations = base::Seconds(3);
   } else {
     button.imageEdgeInsets = UIEdgeInsetsMake(0, kLeadingInset, 0, 0);
   }
-  [button setImage:logo forState:UIControlStateNormal];
-  [button setImage:logo forState:UIControlStateHighlighted];
-  button.imageView.contentMode = UIViewContentModeScaleAspectFit;
   button.isAccessibilityElement = NO;  // Prevents VoiceOver users from tap.
   button.translatesAutoresizingMaskIntoConstraints = NO;
   self.view = button;
+  [self configureBrandingWithImageName:logoName];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -88,6 +84,22 @@ constexpr base::TimeDelta kMinTimeIntervalBetweenAnimations = base::Seconds(3);
         [weakSelf performPopAnimation];
       }),
       kAnimationWaitTime);
+}
+
+#pragma mark - UITraitEnvironment
+
+// UIImages with rendering mode UIImageRenderingModeAlwaysOriginal do not
+// automatically respond when the user interface mode changes. To fix this, the
+// view controller should get notified on these changes and update the image
+// accordingly. Similar issue and fix as crbug.com/998090.
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (self.traitCollection.userInterfaceStyle !=
+          previousTraitCollection.userInterfaceStyle &&
+      autofill::features::GetAutofillBrandingType() ==
+          autofill::features::AutofillBrandingType::kMonotone) {
+    [self configureBrandingWithImageName:@"monotone_branding_icon"];
+  }
 }
 
 #pragma mark - Accessors
@@ -112,6 +124,17 @@ constexpr base::TimeDelta kMinTimeIntervalBetweenAnimations = base::Seconds(3);
 }
 
 #pragma mark - Private
+
+// Add the branding image with the correct size, and make sure it persists
+// across different button states.
+- (void)configureBrandingWithImageName:(NSString*)name {
+  UIImage* logo = [[UIImage imageNamed:name]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+  UIButton* button = (UIButton*)self.view;
+  [button setImage:logo forState:UIControlStateNormal];
+  [button setImage:logo forState:UIControlStateHighlighted];
+  button.imageView.contentMode = UIViewContentModeScaleAspectFit;
+}
 
 // Performs the "pop" animation. This includes a quick enlarging of the icon
 // and shrinking it back to the original size, and if finishes successfully,
