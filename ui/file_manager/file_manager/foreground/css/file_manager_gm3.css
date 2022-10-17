@@ -177,7 +177,8 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
   width: 20px;
 }
 
-#directory-tree .tree-row[active] > .file-row > .item-icon {
+#directory-tree .tree-item:not([disabled])
+  .tree-row[active] > .file-row > .item-icon {
   background-color: var(--cros-icon-color-selection);
 }
 
@@ -246,12 +247,12 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
   display: block;
 }
 
-html:not(.col-resize) #directory-tree
+html:not(.col-resize) #directory-tree .tree-item:not([disabled])
     .tree-row:not([active]):not([selected]):hover > .file-row {
   background-color: var(--cros-ripple-color);
 }
 
-html.pointer-active #directory-tree
+html.pointer-active #directory-tree .tree-item:not([disabled])
     .tree-row:not([active]):not([selected]) > .file-row:active {
   background-color: var(--cros-ripple-color);
 }
@@ -277,9 +278,14 @@ html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row
   border: 2px solid var(--cros-focus-ring-color);
 }
 
-#directory-tree .tree-row[active] > .file-row {
+#directory-tree .tree-item:not([disabled]) .tree-row[active] > .file-row {
   background-color: var(--cros-highlight-color);
   color: var(--cros-text-color-selection);
+}
+
+#directory-tree .tree-item[disabled] > .tree-row {
+  cursor: default;
+  opacity: var(--cros-disabled-opacity);
 }
 
 #directory-tree .tree-row > .align-right-icon {

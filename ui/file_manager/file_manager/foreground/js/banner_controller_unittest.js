@@ -4,6 +4,7 @@
 
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {installMockChrome, MockChromeFileManagerPrivateDirectoryChanged, MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -393,7 +394,8 @@ export function setUp() {
     },
   });
   const crostini = /** @type {!Crostini} */ ({});
-  controller = new BannerController(directoryModel, volumeManager, crostini);
+  controller = new BannerController(
+      directoryModel, volumeManager, crostini, DialogType.SELECT_SAVEAS_FILE);
   controller.disableBannerLoadingForTesting();
 
   mockDate = mockDateNow();

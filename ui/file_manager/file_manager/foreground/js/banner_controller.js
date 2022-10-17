@@ -6,6 +6,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {AsyncUtil} from '../../common/js/async_util.js';
+import {DialogType} from '../../common/js/dialog_type.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
@@ -17,6 +18,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
+import {TAG_NAME as DlpRestrictedBannerName} from './ui/banners/dlp_restricted_banner.js';
 import {TAG_NAME as DriveLowIndividualSpaceBanner} from './ui/banners/drive_low_individual_space_banner.js';
 import {TAG_NAME as DriveOfflinePinningBannerTagName} from './ui/banners/drive_offline_pinning_banner.js';
 import {TAG_NAME as DriveOutOfIndividualSpaceBanner} from './ui/banners/drive_out_of_individual_space_banner.js';
@@ -84,8 +86,9 @@ export class BannerController extends EventTarget {
    * @param {!DirectoryModel} directoryModel
    * @param {!VolumeManager} volumeManager
    * @param {!Crostini} crostini
+   * @param {!DialogType} dialogType
    */
-  constructor(directoryModel, volumeManager, crostini) {
+  constructor(directoryModel, volumeManager, crostini, dialogType) {
     super();
 
     /**
@@ -180,6 +183,13 @@ export class BannerController extends EventTarget {
     this.volumeManager_ = volumeManager;
 
     /**
+     * The dialog type, used to determine whether certain banners should be
+     * shown or not.
+     * @private {!DialogType}
+     */
+    this.dialogType_ = dialogType;
+
+    /**
      * The container where all the banners will be appended to.
      * @private {?Element}
      */
@@ -192,7 +202,7 @@ export class BannerController extends EventTarget {
     this.disableBannerLoading_ = false;
 
     /**
-     * Whether banners should be completely disable, useful to remove banners
+     * Whether banners should be completely disabled, useful to remove banners
      * during integration tests or tast tests.
      * @private {boolean}
      */
@@ -282,6 +292,7 @@ export class BannerController extends EventTarget {
         PhotosWelcomeBannerTagName,
       ]);
       this.setStateBannersInOrder([
+        DlpRestrictedBannerName,
         InvalidUSBFileSystemBanner,
         SharedWithCrostiniPluginVmBanner,
         TrashBannerTagName,
@@ -341,6 +352,14 @@ export class BannerController extends EventTarget {
       this.registerCustomBannerFilter_(InvalidUSBFileSystemBanner, {
         shouldShow: () => !!(this.currentVolume_ && this.currentVolume_.error),
         context: () => ({error: this.currentVolume_.error}),
+      });
+
+      // Register a custom filter that checks if DLP restricted banner should
+      // be shown.
+      this.registerCustomBannerFilter_(DlpRestrictedBannerName, {
+        // TODO(crbug.com/1358062): Correctly handle file open dialogs.
+        shouldShow: () => (this.volumeManager_.hasDisabledVolumes()),
+        context: () => ({type: this.dialogType_}),
       });
     }
 

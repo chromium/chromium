@@ -642,4 +642,14 @@ export class VolumeManagerImpl extends EventTarget {
       callEach(request.errorCallbacks, this, [status]);
     }
   }
+
+  /** @override */
+  hasDisabledVolumes() {
+    return false;
+  }
+
+  /** @override */
+  isDisabled(volume) {
+    return false;
+  }
 }

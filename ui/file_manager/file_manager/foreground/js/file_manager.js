@@ -7,7 +7,7 @@ import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {getPreferences} from '../../common/js/api.js';
+import {getDialogCaller, getDlpBlockedComponents, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
@@ -726,7 +726,8 @@ export class FileManager extends EventTarget {
     this.ui_.listContainer.endBatchUpdates();
 
     const bannerController = new BannerController(
-        this.directoryModel_, this.volumeManager_, assert(this.crostini_));
+        this.directoryModel_, this.volumeManager_, assert(this.crostini_),
+        this.dialogType);
     this.ui_.initBanners(bannerController);
     bannerController.initialize();
 
@@ -848,8 +849,8 @@ export class FileManager extends EventTarget {
   initializeCore() {
     this.initGeneral_();
     this.initSettingsPromise_ = this.startInitSettings_();
-    this.initBackgroundPagePromise_ = this.startInitBackgroundPage_();
-    this.initBackgroundPagePromise_.then(() => this.initVolumeManager_());
+    this.initBackgroundPagePromise_ =
+        this.startInitBackgroundPage_().then(() => this.initVolumeManager_());
 
     window.addEventListener('pagehide', this.onUnload_.bind(this));
   }
@@ -958,10 +959,13 @@ export class FileManager extends EventTarget {
    * Initializes the VolumeManager instance.
    * @private
    */
-  initVolumeManager_() {
+  async initVolumeManager_() {
     const allowedPaths = this.getAllowedPaths_();
     const writableOnly =
         this.launchParams_.type === DialogType.SELECT_SAVEAS_FILE;
+    const disabledVolumes =
+        /** @type {!Array<!VolumeManagerCommon.VolumeType>} */ (
+            await this.getDisabledVolumes_());
 
     // FilteredVolumeManager hides virtual file system related event and data
     // even depends on the value of |supportVirtualPath|. If it is
@@ -975,7 +979,7 @@ export class FileManager extends EventTarget {
     this.volumeManager_ = new FilteredVolumeManager(
         allowedPaths, writableOnly,
         this.fileBrowserBackground_.getVolumeManager(),
-        this.launchParams_.volumeFilter);
+        this.launchParams_.volumeFilter, disabledVolumes);
   }
 
   /**
@@ -1175,6 +1179,29 @@ export class FileManager extends EventTarget {
   }
 
   /**
+   * Based on the dialog type and dialog caller, sets the list of volumes
+   * that should be disabled according to Data Leak Prevention rules.
+   * @return {Promise<!Array<!VolumeManagerCommon.VolumeType>>}
+   */
+  async getDisabledVolumes_() {
+    if (this.dialogType !== DialogType.SELECT_SAVEAS_FILE ||
+        !util.isDlpEnabled()) {
+      return [];
+    }
+    const caller = await getDialogCaller();
+    if (!caller.url) {
+      return [];
+    }
+    const dlpBlockedComponents = await getDlpBlockedComponents(caller.url);
+    const disabledVolumes = [];
+    for (const c of dlpBlockedComponents) {
+      disabledVolumes.push(
+          /** @type {!VolumeManagerCommon.VolumeType }*/ (c));
+    }
+    return disabledVolumes;
+  }
+
+  /**
    * @return {!Promise<void>}
    * @private
    */
@@ -1231,7 +1258,9 @@ export class FileManager extends EventTarget {
         this.onCrostiniChanged_.bind(this));
     this.crostiniController_ = new CrostiniController(
         assert(this.crostini_), this.directoryModel_,
-        assert(this.directoryTree));
+        assert(this.directoryTree),
+        this.volumeManager_.isDisabled(
+            VolumeManagerCommon.VolumeType.CROSTINI));
     await this.crostiniController_.redraw();
     // Never show toast in an open-file dialog.
     const maybeShowToast = this.dialogType === DialogType.FULL_PAGE;
@@ -1240,7 +1269,9 @@ export class FileManager extends EventTarget {
 
     if (util.isGuestOsEnabled()) {
       this.guestOsController_ = new GuestOsController(
-          this.directoryModel_, assert(this.directoryTree));
+          this.directoryModel_, assert(this.directoryTree),
+          this.volumeManager_.isDisabled(
+              VolumeManagerCommon.VolumeType.GUEST_OS));
       await this.guestOsController_.refresh();
     }
   }
@@ -1676,6 +1707,8 @@ export class FileManager extends EventTarget {
             new FakeEntryImpl(
                 str('DRIVE_DIRECTORY_LABEL'),
                 VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT));
+        this.fakeDriveItem_.disabled = this.volumeManager_.isDisabled(
+            VolumeManagerCommon.VolumeType.DRIVE);
       }
       this.directoryTree.dataModel.fakeDriveItem = this.fakeDriveItem_;
       return;

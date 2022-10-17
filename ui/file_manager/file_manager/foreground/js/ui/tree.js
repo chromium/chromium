@@ -146,7 +146,7 @@ Tree.prototype = {
    */
   handleClick(e) {
     const treeItem = findTreeItem(/** @type {!Node} */ (e.target));
-    if (treeItem) {
+    if (treeItem && !treeItem.disabled) {
       treeItem.handleClick(e);
     }
   },
@@ -163,7 +163,7 @@ Tree.prototype = {
    */
   handleDblClick(e) {
     const treeItem = findTreeItem(/** @type {!Node} */ (e.target));
-    if (treeItem) {
+    if (treeItem && !treeItem.disabled) {
       treeItem.expanded = !treeItem.expanded;
     }
   },
@@ -186,13 +186,23 @@ Tree.prototype = {
 
     const rtl = getComputedStyle(item).direction === 'rtl';
 
+    const selectableItems = [];
+    for (const item of this.items) {
+      if (!item.disabled) {
+        selectableItems.push(item);
+      }
+    }
+    if (selectableItems.length === 0) {
+      return;
+    }
+
     switch (e.key) {
       case 'ArrowUp':
-        itemToSelect =
-            item ? getPrevious(item) : this.items[this.items.length - 1];
+        itemToSelect = item ? getPrevious(item) :
+                              selectableItems[selectableItems.length - 1];
         break;
       case 'ArrowDown':
-        itemToSelect = item ? getNext(item) : this.items[0];
+        itemToSelect = item ? getNext(item) : selectableItems[0];
         break;
       case 'ArrowLeft':
       case 'ArrowRight':
@@ -216,10 +226,10 @@ Tree.prototype = {
         }
         break;
       case 'Home':
-        itemToSelect = this.items[0];
+        itemToSelect = selectableItems[0];
         break;
       case 'End':
-        itemToSelect = this.items[this.items.length - 1];
+        itemToSelect = selectableItems[selectableItems.length - 1];
         break;
     }
 
@@ -374,6 +384,17 @@ TreeItem.prototype = {
         item.setDepth_(depth + 1);
       }
     }
+  },
+
+  /**
+   * Whether this tree item is disabled for selection.
+   * @type {boolean}
+   */
+  get disabled() {
+    return this.hasAttribute('disabled');
+  },
+  set disabled(b) {
+    this.toggleAttribute('disabled', b);
   },
 
   /**
@@ -700,7 +721,7 @@ TreeItem.prototype = {
 };
 
 /**
- * Helper function that returns the next visible tree item.
+ * Helper function that returns the next visible and not disabled tree item.
  * @param {TreeItem} item The tree item.
  * @return {TreeItem} The found item or null.
  */
@@ -716,7 +737,8 @@ function getNext(item) {
 }
 
 /**
- * Another helper function that returns the next visible tree item.
+ * Another helper function that returns the next visible and not disabled tree
+ * item.
  * @param {TreeItem} item The tree item.
  * @return {TreeItem} The found item or null.
  */
@@ -727,18 +749,24 @@ function getNextHelper(item) {
 
   const nextSibling = item.nextElementSibling;
   if (nextSibling) {
+    if (nextSibling.disabled) {
+      return getNextHelper(assertInstanceof(nextSibling, TreeItem));
+    }
     return assertInstanceof(nextSibling, TreeItem);
   }
   return getNextHelper(item.parentItem);
 }
 
 /**
- * Helper function that returns the previous visible tree item.
+ * Helper function that returns the previous visible and not disabled tree item.
  * @param {TreeItem} item The tree item.
  * @return {TreeItem} The found item or null.
  */
 function getPrevious(item) {
-  const previousSibling = item.previousElementSibling;
+  let previousSibling = item.previousElementSibling;
+  while (previousSibling && previousSibling.disabled) {
+    previousSibling = previousSibling.previousElementSibling;
+  }
   if (previousSibling) {
     return getLastHelper(assertInstanceof(previousSibling, TreeItem));
   }
@@ -746,7 +774,8 @@ function getPrevious(item) {
 }
 
 /**
- * Helper function that returns the last visible tree item in the subtree.
+ * Helper function that returns the last visible and not disabled tree item in
+ * the subtree.
  * @param {TreeItem} item The item to find the last visible item for.
  * @return {TreeItem} The found item or null.
  */

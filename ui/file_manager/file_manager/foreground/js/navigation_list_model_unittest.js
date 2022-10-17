@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
@@ -181,9 +181,37 @@ export function testNoRecentOrLinuxFiles() {
       '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
       (model.item(0)).entry.fullPath);
   assertEquals('My files', model.item(1).label);
+  const driveItem = /** @type {!NavigationModelVolumeItem} */ (model.item(2));
+  assertEquals('drive', driveItem.volumeInfo.volumeId);
+  assertFalse(driveItem.disabled);
+}
+
+/**
+ * Tests model with a disabled Drive volume.
+ */
+export function testDisabledVolumes() {
+  const volumeManager = new MockVolumeManager();
+  volumeManager.isDisabled = (volume) => {
+    return (volume === VolumeManagerCommon.VolumeType.DRIVE);
+  };
+
+  const shortcutListModel = new MockFolderShortcutDataModel(
+      [MockFileEntry.create(drive, '/root/shortcut')]);
+  const recentItem = null;
+
+  const model = new NavigationListModel(
+      volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
+      directoryModel, androidAppListModel, DialogType.FULL_PAGE);
+
+  assertEquals(3, model.length);
   assertEquals(
-      'drive', /** @type {!NavigationModelVolumeItem} */
-      (model.item(2)).volumeInfo.volumeId);
+      '/root/shortcut', /** @type {!NavigationModelShortcutItem} */
+      (model.item(0)).entry.fullPath);
+  assertEquals('My files', model.item(1).label);
+
+  const driveItem = /** @type {!NavigationModelVolumeItem} */ (model.item(2));
+  assertEquals('drive', driveItem.volumeInfo.volumeId);
+  assertTrue(driveItem.disabled);
 }
 
 /**

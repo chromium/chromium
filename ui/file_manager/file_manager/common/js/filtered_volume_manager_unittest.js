@@ -85,9 +85,13 @@ export function testVolumeDefaultFilter(done) {
    * volumes from the files app UI.
    */
   const filteredVolumeManager = new FilteredVolumeManager(
-      AllowedPaths.ANY_PATH_OR_URL, false, Promise.resolve(volumeManager), []);
+      AllowedPaths.ANY_PATH_OR_URL, false, Promise.resolve(volumeManager), [],
+      []);
 
   filteredVolumeManager.ensureInitialized(() => {
+    // Check: hasDisabledVolumes() should return false.
+    assertFalse(filteredVolumeManager.hasDisabledVolumes());
+
     // Check: getFuseBoxOnlyFilterEnabled should return false.
     assertFalse(filteredVolumeManager.getFuseBoxOnlyFilterEnabled());
 
@@ -174,9 +178,12 @@ export function testVolumeFuseboxOnlyFilter(done) {
    */
   const filteredVolumeManager = new FilteredVolumeManager(
       AllowedPaths.ANY_PATH_OR_URL, false, Promise.resolve(volumeManager),
-      ['fusebox-only']);
+      ['fusebox-only'], []);
 
   filteredVolumeManager.ensureInitialized(() => {
+    // Check: hasDisabledVolumes() should return false.
+    assertFalse(filteredVolumeManager.hasDisabledVolumes());
+
     // Check: getFuseBoxOnlyFilterEnabled should return true.
     assertTrue(filteredVolumeManager.getFuseBoxOnlyFilterEnabled());
 
@@ -284,9 +291,12 @@ export function testVolumeMediaStoreFilesOnlyFilter(done) {
    */
   const filteredVolumeManager = new FilteredVolumeManager(
       AllowedPaths.ANY_PATH_OR_URL, false, Promise.resolve(volumeManager),
-      ['media-store-files-only']);
+      ['media-store-files-only'], []);
 
   filteredVolumeManager.ensureInitialized(() => {
+    // Check: hasDisabledVolumes() should return false.
+    assertFalse(filteredVolumeManager.hasDisabledVolumes());
+
     // Check: getFuseBoxOnlyFilterEnabled should return false.
     assertFalse(filteredVolumeManager.getFuseBoxOnlyFilterEnabled());
 
@@ -305,6 +315,64 @@ export function testVolumeMediaStoreFilesOnlyFilter(done) {
     info = filteredVolumeManager.volumeInfoList.item(1);
     assert(info, 'volume[1] REMOVABLE expected');
     assertEquals(VolumeManagerCommon.VolumeType.REMOVABLE, info.volumeType);
+
+    done();
+  });
+}
+
+/**
+ * Tests the disabled volume related functions.
+ */
+export function testDisabledVolumes(done) {
+  // Create mock volume manager.
+  const volumeManager = createMockVolumeManager();
+
+  // Get `DRIVE` volume.
+  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DRIVE);
+  assert(driveVolumeInfo);
+
+  // Get `DOWNLOADS` volume.
+  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOWNLOADS);
+  assert(downloadsVolumeInfo);
+
+  // Add `MTP` volume.
+  const mtpVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.MTP, 'mtpNormalVolumeId',
+      'MTP normal volume', 'mtp-path');
+  volumeManager.volumeInfoList.add(mtpVolumeInfo);
+
+  // Add `MTP` fusebox volume.
+  const mtpFuseBoxVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.MTP, 'mtpFuseBoxVolumeId',
+      'MTP fusebox volume', 'fusebox/mtp-path');
+  volumeManager.volumeInfoList.add(mtpFuseBoxVolumeInfo);
+
+  // Add `DOCUMENTS_PROVIDER` volume.
+  const documentsProviderVolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
+      'Documents provider normal volume', 'documents-provider-path');
+  volumeManager.volumeInfoList.add(documentsProviderVolumeInfo);
+
+  // Check: volumeManager.volumeInfoList should have 5 volumes.
+  assertEquals(5, volumeManager.volumeInfoList.length);
+
+  const filteredVolumeManager = new FilteredVolumeManager(
+      AllowedPaths.ANY_PATH_OR_URL, false, Promise.resolve(volumeManager), [],
+      [VolumeManagerCommon.VolumeType.DRIVE]);
+
+  filteredVolumeManager.ensureInitialized(() => {
+    // Check: hasDisabledVolumes() should return true.
+    assertTrue(filteredVolumeManager.hasDisabledVolumes());
+
+    // Check: isDisabled() should return true for DRIVE.
+    assertTrue(
+        filteredVolumeManager.isDisabled(VolumeManagerCommon.VolumeType.DRIVE));
+
+    // Check: isDisabled() should return false for REMOVABLE.
+    assertFalse(filteredVolumeManager.isDisabled(
+        VolumeManagerCommon.VolumeType.REMOVABLE));
 
     done();
   });

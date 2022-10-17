@@ -272,6 +272,20 @@ export class MockVolumeManager {
   dispatchEvent(event) {
     throw new Error('Not implemented');
   }
+
+  /**
+   * @return {boolean}
+   */
+  hasDisabledVolumes() {
+    return false;
+  }
+
+  /**
+   * @return {boolean}
+   */
+  isDisabled(volume) {
+    return false;
+  }
 }
 
 /** @private {?VolumeManager} */

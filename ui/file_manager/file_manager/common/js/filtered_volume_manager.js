@@ -93,8 +93,12 @@ export class FilteredVolumeManager extends EventTarget {
    *     when the VolumeManager has been initialized.
    * @param {!Array<string>} volumeFilter Array of Files app mode dependent
    *     volume filter names from Files app launch params, [] typically.
+   * @param {!Array<!VolumeManagerCommon.VolumeType>} disabledVolumes List of
+   *     volumes that should be visible but can't be selected.
    */
-  constructor(allowedPaths, writableOnly, volumeManagerGetter, volumeFilter) {
+  constructor(
+      allowedPaths, writableOnly, volumeManagerGetter, volumeFilter,
+      disabledVolumes) {
     super();
 
     this.allowedPaths_ = allowedPaths;
@@ -139,6 +143,12 @@ export class FilteredVolumeManager extends EventTarget {
     this.isFuseBoxDebugEnabled_ = util.isFuseBoxDebugEnabled();
 
     /**
+     * List of disabled volumes.
+     * @private @const {!Array<!VolumeManagerCommon.VolumeType>}
+     */
+    this.disabledVolumes_ = disabledVolumes;
+
+    /**
      * Tracks async initialization of volume manager.
      * @private @const {!Promise<void> }
      */
@@ -153,6 +163,13 @@ export class FilteredVolumeManager extends EventTarget {
   /** @override */
   getMediaStoreFilesOnlyFilterEnabled() {
     return this.isMediaStoreOnly_;
+  }
+
+  /**
+   * @return {!Array<!VolumeManagerCommon.VolumeType>}
+   */
+  get disabledVolumes() {
+    return this.disabledVolumes_;
   }
 
   /**
@@ -529,5 +546,15 @@ export class FilteredVolumeManager extends EventTarget {
     } else {
       return null;
     }
+  }
+
+  /** @override */
+  hasDisabledVolumes() {
+    return this.disabledVolumes_.length > 0;
+  }
+
+  /** @override */
+  isDisabled(volume) {
+    return this.disabledVolumes_.includes(volume);
   }
 }

@@ -155,6 +155,19 @@ export class VolumeManager {
    * Callback passed the default display root.
    */
   getDefaultDisplayRoot(callback) {}
+
+  /**
+   * Checks if any volumes are disabled for selection.
+   * @return {boolean} Whether any volumes are disabled for selection.
+   */
+  hasDisabledVolumes() {}
+
+  /**
+   * Checks whether the given volume is disabled for selection.
+   * @param {!VolumeManagerCommon.VolumeType} volume Volume to check.
+   * @return {boolean} Whether the volume is disabled or not.
+   */
+  isDisabled(volume) {}
 }
 
 /**

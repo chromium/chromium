@@ -24,8 +24,10 @@ export class CrostiniController {
    * @param {!Crostini} crostini Crostini background object.
    * @param {!DirectoryModel} directoryModel DirectoryModel.
    * @param {!DirectoryTree} directoryTree DirectoryTree.
+   * @param {boolean} disabled Whether the Crostini item should be disabled.
+   *     Defaults to false.
    */
-  constructor(crostini, directoryModel, directoryTree) {
+  constructor(crostini, directoryModel, directoryTree, disabled = false) {
     /** @private @const */
     this.crostini_ = crostini;
 
@@ -40,6 +42,11 @@ export class CrostiniController {
 
     /** @private */
     this.entrySharedWithPluginVm_ = false;
+
+    /**
+     * @private @const {boolean}
+     */
+    this.disabled_ = disabled;
   }
 
   /**
@@ -47,14 +54,18 @@ export class CrostiniController {
    */
   async redraw() {
     // Setup Linux files fake root.
-    this.directoryTree_.dataModel.linuxFilesItem =
-        this.crostini_.isEnabled(constants.DEFAULT_CROSTINI_VM) ?
-        new NavigationModelFakeItem(
-            str('LINUX_FILES_ROOT_LABEL'), NavigationModelItemType.CROSTINI,
-            new FakeEntryImpl(
-                str('LINUX_FILES_ROOT_LABEL'),
-                VolumeManagerCommon.RootType.CROSTINI)) :
-        null;
+    let crostiniNavigationModelItem;
+    if (this.crostini_.isEnabled(constants.DEFAULT_CROSTINI_VM)) {
+      crostiniNavigationModelItem = new NavigationModelFakeItem(
+          str('LINUX_FILES_ROOT_LABEL'), NavigationModelItemType.CROSTINI,
+          new FakeEntryImpl(
+              str('LINUX_FILES_ROOT_LABEL'),
+              VolumeManagerCommon.RootType.CROSTINI));
+      crostiniNavigationModelItem.disabled = this.disabled_;
+    } else {
+      crostiniNavigationModelItem = null;
+    }
+    this.directoryTree_.dataModel.linuxFilesItem = crostiniNavigationModelItem;
     // Redraw the tree to ensure 'Linux files' is added/removed.
     this.directoryTree_.redraw(false);
   }

@@ -65,6 +65,11 @@ export class NavigationModelItem {
     this.type_ = type;
 
     /**
+     * @type {boolean} whether this item is disabled for selection.
+     */
+    this.disabled_ = false;
+
+    /**
      * @type {NavigationSection} section which this item belongs to.
      */
     this.section_ = NavigationSection.TOP;
@@ -79,6 +84,16 @@ export class NavigationModelItem {
 
   get type() {
     return this.type_;
+  }
+
+  /** @return {boolean} */
+  get disabled() {
+    return this.disabled_;
+  }
+
+  /** @param {boolean} disabled */
+  set disabled(disabled) {
+    this.disabled_ = disabled;
   }
 
   /** @return {NavigationSection} */
@@ -715,6 +730,8 @@ export class NavigationListModel extends EventTarget {
     // Add Drive.
     let hasDrive = false;
     for (const driveItem of getVolumes(VolumeManagerCommon.VolumeType.DRIVE)) {
+      driveItem.disabled =
+          this.volumeManager_.isDisabled(VolumeManagerCommon.VolumeType.DRIVE);
       this.navigationItems_.push(driveItem);
       driveItem.section = NavigationSection.CLOUD;
       hasDrive = true;
@@ -758,12 +775,15 @@ export class NavigationListModel extends EventTarget {
 
     // Add REMOVABLE volumes and partitions.
     const removableModels = new Map();
+    const disableRemovables = this.volumeManager_.isDisabled(
+        VolumeManagerCommon.VolumeType.REMOVABLE);
     for (const [devicePath, removableGroup] of groupRemovables().entries()) {
       if (removableGroup.length == 1 &&
           !util.isSinglePartitionFormatEnabled()) {
         // Add unpartitioned removable device as a regular volume.
         this.navigationItems_.push(removableGroup[0]);
         removableGroup[0].section = NavigationSection.REMOVABLE;
+        removableGroup[0].disabled = disableRemovables;
         continue;
       }
 
@@ -773,6 +793,7 @@ export class NavigationListModel extends EventTarget {
       if (this.removableModels_.has(devicePath)) {
         // Removable model has been seen before. Use the same reference.
         removableModel = this.removableModels_.get(devicePath);
+        removableModel.disabled = disableRemovables;
         removableEntry = removableModel.entry;
       } else {
         // Create an EntryList for new removable group.
@@ -785,6 +806,7 @@ export class NavigationListModel extends EventTarget {
         removableModel = new NavigationModelFakeItem(
             removableEntry.label, NavigationModelItemType.ENTRY_LIST,
             removableEntry);
+        removableModel.disabled = disableRemovables;
         removableModel.section = NavigationSection.REMOVABLE;
       }
 

@@ -863,6 +863,7 @@ export class SubDirectoryItem extends DirectoryItem {
 
     this.dirEntry_ = dirEntry;
     this.entry = dirEntry;
+    this.disabled = parentDirItem.disabled;
     this.delayExpansion = parentDirItem.delayExpansion;
 
     if (this.delayExpansion) {
@@ -974,6 +975,7 @@ export class EntryListItem extends DirectoryItem {
     this.dirEntry_ = modelItem.entry;
     this.modelItem_ = modelItem;
     this.rootType_ = rootType;
+    this.disabled = modelItem.disabled;
 
     if (rootType === VolumeManagerCommon.RootType.REMOVABLE) {
       this.setupEjectButton_(this.rowElement);
@@ -1112,6 +1114,7 @@ class VolumeItem extends DirectoryItem {
 
     this.modelItem_ = modelItem;
     this.volumeInfo_ = modelItem.volumeInfo;
+    this.disabled = modelItem.disabled;
 
     // Provided volumes should delay the expansion of child nodes
     // for performance reasons.
@@ -1646,6 +1649,7 @@ export class ShortcutItem extends FilesTreeItem {
 
     this.dirEntry_ = modelItem.entry;
     this.modelItem_ = modelItem;
+    this.disabled = modelItem.disabled;
 
     const icon = this.querySelector('.icon');
     icon.classList.add('item-icon');
@@ -1772,6 +1776,7 @@ class AndroidAppItem extends FilesTreeItem {
     }
 
     this.modelItem_ = modelItem;
+    this.disabled = modelItem.disabled;
 
     const icon = this.querySelector('.icon');
     icon.classList.add('item-icon');
@@ -1851,6 +1856,7 @@ export class FakeItem extends FilesTreeItem {
     this.dirEntry_ = modelItem.entry;
     this.modelItem_ = modelItem;
     this.rootType_ = rootType;
+    this.disabled = modelItem.disabled;
 
     const icon = this.querySelector('.icon');
     icon.classList.add('item-icon');
