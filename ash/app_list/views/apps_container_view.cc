@@ -382,15 +382,14 @@ void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds) {
       CalculateAvailableBoundsForAppsGrid(contents_bounds);
 
   std::unique_ptr<AppListConfig> new_config =
-      AppListConfigProvider::Get().CreateForFullscreenAppList(
+      AppListConfigProvider::Get().CreateForTabletAppList(
           display::Screen::GetScreen()
               ->GetDisplayNearestView(GetWidget()->GetNativeView())
               .work_area()
               .size(),
-          grid_layout.rows, grid_layout.columns, available_bounds.size(),
-          app_list_config_.get());
+          grid_layout.columns, available_bounds.size(), app_list_config_.get());
 
-  // `CreateForFullscreenAppList()` will create a new config only if it differs
+  // `CreateForTabletAppList()` will create a new config only if it differs
   // from the current `app_list_config_`. Nothing to do if the old
   // `AppListConfig` can be used for the updated apps container bounds.
   if (!new_config)

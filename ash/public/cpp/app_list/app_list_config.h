@@ -234,6 +234,7 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // Current config scale values - should be different from 1 for
   // AppListConfigType::kShared only.
+  // TODO(crbug.com/1374423): Revisit to see if scale_y_ is still needed.
   const float scale_x_;
   const float scale_y_;
 

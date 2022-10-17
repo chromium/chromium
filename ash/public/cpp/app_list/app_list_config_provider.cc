@@ -69,16 +69,15 @@ AppListConfig* AppListConfigProvider::GetConfigForType(AppListConfigType type,
   return result;
 }
 
-std::unique_ptr<AppListConfig>
-AppListConfigProvider::CreateForFullscreenAppList(
+std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForTabletAppList(
     const gfx::Size& display_work_area_size,
-    int grid_rows,
     int grid_columns,
     const gfx::Size& available_size,
     const AppListConfig* current_config) {
   const AppListConfig& base_config =
       GetBaseConfigForDisplaySize(display_work_area_size);
 
+  // TODO(crbug.com/1374423): Clean up scale_y below.
   float scale_x = 1;
   float scale_y = 1;
   float inner_tile_scale_y = 1;
@@ -87,30 +86,6 @@ AppListConfigProvider::CreateForFullscreenAppList(
       kMinimumTileHeightAfterConfigScale / base_config.grid_tile_height();
 
   const int min_grid_width = grid_columns * base_config.grid_tile_width();
-
-  // `scale_y` does not change when productivity launcher is enabled. Instead,
-  // the number of rows will be reduced to fit the grid vertically.
-  if (!features::IsProductivityLauncherEnabled()) {
-    const int min_grid_height = grid_rows * base_config.grid_tile_height();
-    if (available_size.height() < min_grid_height) {
-      scale_y = std::max(
-          min_config_scale,
-          static_cast<float>(available_size.height()) / min_grid_height);
-
-      // Adjust scale to reflect the fact the app list item title height does
-      // not get scaled. The adjustment is derived from: s * x + c = S * (x + c)
-      // and t = x + c With: S - the target grid scale,
-      //       x - scalable part of the tile (total title padding),
-      //       c - constant part of the tile,
-      //       t - tile height, and
-      //       s - the adjusted scale.
-      const int total_title_padding = base_config.grid_title_bottom_padding() +
-                                      base_config.grid_title_top_padding();
-      inner_tile_scale_y = (base_config.grid_tile_height() * (scale_y - 1) +
-                            total_title_padding) /
-                           total_title_padding;
-    }
-  }
 
   if (available_size.width() < min_grid_width) {
     scale_x =

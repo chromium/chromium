@@ -59,15 +59,15 @@ class ASH_PUBLIC_EXPORT AppListConfigProvider {
   // based on the app list display, and available size for the apps grid.
   // Returns nullptr if the new app list config is the same as `current_config`.
   // `work_area_size`: The work area size of the display showing the app list.
-  // `grid_rows`: The number of rows the root apps grid has.
-  // `grid_columns`: The number of columns the root apps grid has.
+  // `grid_columns`: The number of columns the root apps grid has. Note that the
+  // number of rows will be reduced to fit the grid vertically.
+
   // `available_size`: The size of the space available for the root apps grid
   // layout.
   // `current_config`: If not null, the app list config currently used by the
   //     app list.
-  std::unique_ptr<AppListConfig> CreateForFullscreenAppList(
+  std::unique_ptr<AppListConfig> CreateForTabletAppList(
       const gfx::Size& display_work_area_size,
-      int grid_rows,
       int grid_columns,
       const gfx::Size& available_size,
       const AppListConfig* current_config);
