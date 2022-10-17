@@ -853,8 +853,6 @@ void FileSystemManagerImpl::ContinueTruncate(
     return;
   }
 
-  // TODO(https://crbug.com/1221308): function will use StorageKey for the
-  // receiver frame/worker in future CL
   OperationID op_id =
       fs_op_runner->Truncate(url, length,
                              base::BindOnce(&FileSystemManagerImpl::DidFinish,
@@ -915,10 +913,9 @@ void FileSystemManagerImpl::CreateSnapshotFile(
     const GURL& file_path,
     CreateSnapshotFileCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // TODO(https://crbug.com/1221308): function will use StorageKey for the
-  // receiver frame/worker in future CL
-  FileSystemURL url(context_->CrackURL(
-      file_path, blink::StorageKey(url::Origin::Create(file_path))));
+
+  FileSystemURL url(
+      context_->CrackURL(file_path, receivers_.current_context()));
 
   // Make sure if this file can be read by the renderer as this is
   // called when the renderer is about to create a new File object
