@@ -131,6 +131,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabAudioMutingFeature,
     &kIPHPasswordsAccountStorageFeature,
     &kIPHPerformanceNewBadgeFeature,
+    &kIPHPriceTrackingPageActionIconLabelFeature,
     &kIPHReadingListDiscoveryFeature,
     &kIPHReadingListEntryPointFeature,
     &kIPHReadingListInSidePanelFeature,

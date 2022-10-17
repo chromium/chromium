@@ -34979,6 +34979,8 @@ should be able to be added at any place in this file.
   <suffix name="PriceDropNTP" label="For PriceDropNTP feature."/>
   <suffix name="PriceTrackingInSidePanel"
       label="For PriceTrackingInSidePanelFeature feature."/>
+  <suffix name="PriceTrackingPageActionIconLabel"
+      label="For price tracking page action icon label triggering."/>
   <suffix name="ProfileSwitch"
       label="In product help for switching profiles using the profile menu."/>
   <suffix name="PwaInstallAvailableFeature"
