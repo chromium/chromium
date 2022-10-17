@@ -128,7 +128,8 @@ void AgentGroupSchedulerImpl::RemoveAgent(Agent* agent) {
 }
 
 void AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint() {
-  for (Agent* agent : *agents_) {
+  HeapHashSet<WeakMember<Agent>> agents(*agents_);
+  for (Agent* agent : agents) {
     agent->PerformMicrotaskCheckpoint();
   }
 }

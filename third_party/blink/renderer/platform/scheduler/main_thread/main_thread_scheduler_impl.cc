@@ -1117,8 +1117,10 @@ void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
   // does not have that concept yet.
   // TODO(dtapuska): Move this to EndAgentGroupSchedulerScope so that we only
   // run the microtask checkpoint for a given AgentGroupScheduler.
+  WTF::HashSet<AgentGroupSchedulerImpl*> agent_group_schedulers(
+      main_thread_only().agent_group_schedulers);
   for (AgentGroupSchedulerImpl* agent_group_scheduler :
-       main_thread_only().agent_group_schedulers) {
+       agent_group_schedulers) {
     agent_group_scheduler->PerformMicrotaskCheckpoint();
   }
 }
