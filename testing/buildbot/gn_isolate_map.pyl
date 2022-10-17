@@ -1653,8 +1653,8 @@
     "label": "//sql:sql_unittests",
     "type": "console_test_launcher",
   },
-  "strip_chrome_binary": {
-    "label": "//chrome:strip_chrome_binary",
+  "strip_lacros_files": {
+    "label": "//chrome:strip_lacros_files",
     "type": "additional_compile_target",
   },
   "storage_unittests": {

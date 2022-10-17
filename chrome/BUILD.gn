@@ -1847,11 +1847,68 @@ if (is_linux || is_chromeos) {
 }
 
 if (is_chromeos_lacros && is_official_build) {
+  # This target is responsible for stripping symbols out of lacros files.
+  # Adding/removing targets here, you also need a corresponding change
+  # in src-internal for the release builder.
+  group("strip_lacros_files") {
+    deps = [
+      ":strip_chrome_binary",
+      ":strip_chrome_crashpad_handler",
+      ":strip_libegl_so",
+      ":strip_libglesv2_so",
+    ]
+    if (target_cpu == "x64") {
+      deps += [ ":strip_nacl_helper" ]
+    } else if (target_cpu == "arm") {
+      deps += [
+        ":strip_nacl_helper",
+        ":strip_nacl_helper_bootstrap",
+      ]
+    } else {
+      assert(target_cpu == "arm64")
+      #TODO(crbug.com/1365963): Add nacl.
+    }
+  }
+
   # This will strip chrome binary and produce chrome.debug with symbols.
   strip_binary("strip_chrome_binary") {
     binary_input = "$root_out_dir/chrome"
     symbol_output = "$root_out_dir/chrome.debug"
     stripped_binary_output = "$root_out_dir/chrome.stripped"
     deps = [ ":chrome" ]
+  }
+  strip_binary("strip_chrome_crashpad_handler") {
+    binary_input = "$root_out_dir/chrome_crashpad_handler"
+    symbol_output = "$root_out_dir/chrome_crashpad_handler.debug"
+    stripped_binary_output = "$root_out_dir/chrome_crashpad_handler.stripped"
+    deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
+  }
+  strip_binary("strip_libegl_so") {
+    binary_input = "$root_out_dir/libEGL.so"
+    symbol_output = "$root_out_dir/libEGL.so.debug"
+    stripped_binary_output = "$root_out_dir/libEGL.so.stripped"
+    deps = [ "//third_party/angle:libEGL" ]
+  }
+  strip_binary("strip_libglesv2_so") {
+    binary_input = "$root_out_dir/libGLESv2.so"
+    symbol_output = "$root_out_dir/libGLESv2.so.debug"
+    stripped_binary_output = "$root_out_dir/libGLESv2.so.stripped"
+    deps = [ "//third_party/angle:libGLESv2" ]
+  }
+  if (target_cpu != "arm64") {
+    strip_binary("strip_nacl_helper") {
+      binary_input = "$root_out_dir/nacl_helper"
+      symbol_output = "$root_out_dir/nacl_helper.debug"
+      stripped_binary_output = "$root_out_dir/nacl_helper.stripped"
+      deps = [ "//components/nacl/loader:nacl_helper" ]
+    }
+  }
+  if (target_cpu == "arm") {
+    strip_binary("strip_nacl_helper_bootstrap") {
+      binary_input = "$root_out_dir/nacl_helper_bootstrap"
+      symbol_output = "$root_out_dir/nacl_helper_bootstrap.debug"
+      stripped_binary_output = "$root_out_dir/nacl_helper_bootstrap.stripped"
+      deps = [ "//native_client/src/trusted/service_runtime/linux:bootstrap" ]
+    }
   }
 }

@@ -193,7 +193,7 @@
           'chrome',
           'linux_symbols',
           'symupload',
-          'strip_chrome_binary',
+          'strip_lacros_files',
         ],
         'mixins': [
           'chrome-swarming-pool',
@@ -213,7 +213,7 @@
           'chrome',
           'linux_symbols',
           'symupload',
-          'strip_chrome_binary',
+          'strip_lacros_files',
         ],
         'mixins': [
           'chrome-swarming-pool',
@@ -228,7 +228,7 @@
           'chrome',
           'linux_symbols',
           'symupload',
-          'strip_chrome_binary'
+          'strip_lacros_files'
         ],
         'mixins': [
           'chrome-swarming-pool',
@@ -246,7 +246,7 @@
           'chrome',
           'linux_symbols',
           'symupload',
-          'strip_chrome_binary'
+          'strip_lacros_files'
         ],
         'mixins': [
           'chrome-swarming-pool',
@@ -261,7 +261,7 @@
           'chrome',
           'linux_symbols',
           'symupload',
-          'strip_chrome_binary'
+          'strip_lacros_files'
         ],
         'mixins': [
           'chrome-swarming-pool',
@@ -276,7 +276,7 @@
           'chrome',
           'linux_symbols',
           'symupload',
-          'strip_chrome_binary'
+          'strip_lacros_files'
         ],
         'mixins': [
           'chrome-swarming-pool',

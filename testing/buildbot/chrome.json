@@ -1766,7 +1766,7 @@
       "chrome",
       "linux_symbols",
       "symupload",
-      "strip_chrome_binary"
+      "strip_lacros_files"
     ],
     "gtest_tests": [
       {
@@ -1866,7 +1866,7 @@
       "chrome",
       "linux_symbols",
       "symupload",
-      "strip_chrome_binary"
+      "strip_lacros_files"
     ],
     "skylab_tests": [
       {
@@ -2004,7 +2004,7 @@
       "chrome",
       "linux_symbols",
       "symupload",
-      "strip_chrome_binary"
+      "strip_lacros_files"
     ],
     "gtest_tests": [
       {
@@ -2073,7 +2073,7 @@
       "chrome",
       "linux_symbols",
       "symupload",
-      "strip_chrome_binary"
+      "strip_lacros_files"
     ],
     "skylab_tests": [
       {
@@ -2147,7 +2147,7 @@
       "chrome",
       "linux_symbols",
       "symupload",
-      "strip_chrome_binary"
+      "strip_lacros_files"
     ],
     "isolated_scripts": [
       {
@@ -2178,7 +2178,7 @@
       "chrome",
       "linux_symbols",
       "symupload",
-      "strip_chrome_binary"
+      "strip_lacros_files"
     ],
     "skylab_tests": [
       {
