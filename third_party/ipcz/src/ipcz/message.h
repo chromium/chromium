@@ -322,7 +322,7 @@ class IPCZ_ALIGN(8) Message {
   // NOTE: It is invalid to call this on a message for which
   // `CanTransmitOn(transport)` does not return true, and doing so results in
   // unspecified behavior.
-  bool Serialize(const DriverTransport& transport);
+  void Serialize(const DriverTransport& transport);
 
   // Validates and deserializes a Message of an unrecognized type. DriverObjects
   // are deserialized and much of the message structure is validated, but the

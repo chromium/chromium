@@ -86,7 +86,7 @@ DriverObject::SerializedDimensions DriverObject::GetSerializedDimensions(
   return dimensions;
 }
 
-bool DriverObject::Serialize(const DriverTransport& transport,
+void DriverObject::Serialize(const DriverTransport& transport,
                              absl::Span<uint8_t> data,
                              absl::Span<IpczDriverHandle> handles) {
   size_t num_bytes = data.size();
@@ -94,11 +94,8 @@ bool DriverObject::Serialize(const DriverTransport& transport,
   IpczResult result = driver_->Serialize(
       handle_, transport.driver_object().handle(), IPCZ_NO_FLAGS, nullptr,
       data.data(), &num_bytes, handles.data(), &num_handles);
-  if (result == IPCZ_RESULT_OK) {
-    release();
-    return true;
-  }
-  return false;
+  ABSL_ASSERT(result == IPCZ_RESULT_OK);
+  release();
 }
 
 // static

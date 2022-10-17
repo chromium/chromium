@@ -102,12 +102,7 @@ IpczResult DriverTransport::Deactivate() {
 
 IpczResult DriverTransport::Transmit(Message& message) {
   ABSL_ASSERT(message.CanTransmitOn(*this));
-  if (!message.Serialize(*this)) {
-    // If serialization fails despite the object appearing to be serializable,
-    // we have to assume the transport is in a dysfunctional state and will be
-    // torn down by the driver soon. Discard the transmission.
-    return IPCZ_RESULT_FAILED_PRECONDITION;
-  }
+  message.Serialize(*this);
 
   const absl::Span<const uint8_t> data = message.data_view();
   const absl::Span<const IpczDriverHandle> handles =

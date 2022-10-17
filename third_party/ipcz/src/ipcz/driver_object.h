@@ -58,7 +58,7 @@ class DriverObject {
   // transmissible by the driver without further serialization. Must only be
   // called on valid objects which are known to be serializable and
   // transmissible over `transport`.
-  bool Serialize(const DriverTransport& transport,
+  void Serialize(const DriverTransport& transport,
                  absl::Span<uint8_t> data,
                  absl::Span<IpczDriverHandle> handles);
 
