@@ -15,10 +15,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -2061,6 +2063,52 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
+  base::HistogramTester histograms;
+  TestPasswordManagerClient client;
+  ON_CALL(*client.GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+  NiceMock<MockAutofillClient> autofill_client;
+  client.SetBiometricAuthenticator(authenticator_);
+
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Show the popup.
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      base::i18n::RIGHT_TO_LEFT, std::u16string(), 0, gfx::RectF());
+
+  // The authenticator exists and is available.
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  base::OnceCallback<void(bool)> auth_callback;
+  EXPECT_CALL(*authenticator_.get(), AuthenticateWithMessage)
+      .WillOnce(MoveArg<2>(&auth_callback));
+
+  // Accept the suggestion to start the filing process which tries to
+  // reauthenticate the user.
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, test_username_),
+      1);
+
+  // Simulate successful authentication and expect successful filling.
+  EXPECT_CALL(*client.mock_driver(),
+              FillSuggestion(test_username_, test_password_));
+  std::move(auth_callback).Run(true);
+
+  // Verify reported metrics.
+  const int64_t kMockElapsedTime =
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
+  histograms.ExpectUniqueSample(
+      "PasswordManager.PasswordFilling.AuthenticationResult", true, 1);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.PasswordFilling.AuthenticationTime", kMockElapsedTime,
+      1);
+}
+#endif
 
 TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   TestPasswordManagerClient client;
