@@ -5,6 +5,8 @@
 import './commerce/shopping_list.js';
 import './power_bookmark_chip.js';
 import './power_bookmark_row.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
@@ -43,13 +45,9 @@ export class PowerBookmarksListElement extends PolymerElement {
         value: true,
       },
 
-      activeFolder_: {
-        type: Object,
-      },
-
-      depth_: {
-        type: Number,
-        value: 0,
+      activeFolderPath_: {
+        type: Array,
+        value: () => [],
       },
 
       showPriceTracking_: {
@@ -67,8 +65,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private productInfos_ = new Map<string, BookmarkProductInfo>();
   private shoppingListenerIds_: number[] = [];
   private compact_: boolean;
-  private activeFolder_: chrome.bookmarks.BookmarkTreeNode|undefined;
-  private depth_: number;
+  private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
   private descriptions_ = new Map<string, string>();
   private showPriceTracking_: boolean;
 
@@ -150,8 +147,10 @@ export class PowerBookmarksListElement extends PolymerElement {
    * Returns a list of bookmarks and folders to display to the user.
    */
   private getShownBookmarks_(): chrome.bookmarks.BookmarkTreeNode[] {
-    if (this.activeFolder_) {
-      return this.activeFolder_.children!;
+    const activeFolder =
+        this.activeFolderPath_[this.activeFolderPath_.length - 1];
+    if (activeFolder) {
+      return activeFolder.children!;
     }
     return this.topLevelBookmarks_;
   }
@@ -167,11 +166,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     if (event.detail.bookmark.children) {
-      this.activeFolder_ = event.detail.bookmark;
-      this.depth_++;
+      this.push('activeFolderPath_', event.detail.bookmark);
     } else {
       this.bookmarksApi_.openBookmark(
-          event.detail.bookmark.id, this.depth_, {
+          event.detail.bookmark.id, this.activeFolderPath_.length, {
             middleButton: false,
             altKey: event.detail.event.altKey,
             ctrlKey: event.detail.event.ctrlKey,
@@ -180,6 +178,13 @@ export class PowerBookmarksListElement extends PolymerElement {
           },
           ActionSource.kBookmark);
     }
+  }
+
+  /**
+   * Moves the displayed folders up one level when the back button is clicked.
+   */
+  private onBackClicked_() {
+    this.pop('activeFolderPath_');
   }
 
   /**
