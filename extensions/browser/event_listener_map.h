@@ -70,6 +70,7 @@ class EventListener {
       const std::string& event_name,
       const std::string& extension_id,
       content::RenderProcessHost* process,
+      content::BrowserContext* browser_context,
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
       int worker_thread_id,
@@ -95,14 +96,11 @@ class EventListener {
   // Modifies this listener to be a lazy listener, clearing process references.
   void MakeLazy();
 
-  // Returns the browser context associated with the listener, or NULL if
-  // IsLazy.
-  content::BrowserContext* GetBrowserContext() const;
-
   const std::string& event_name() const { return event_name_; }
   const std::string& extension_id() const { return extension_id_; }
   const GURL& listener_url() const { return listener_url_; }
   content::RenderProcessHost* process() const { return process_; }
+  content::BrowserContext* browser_context() const { return browser_context_; }
   base::DictionaryValue* filter() const { return filter_.get(); }
   EventFilter::MatcherID matcher_id() const { return matcher_id_; }
   void set_matcher_id(EventFilter::MatcherID id) { matcher_id_ = id; }
@@ -116,6 +114,7 @@ class EventListener {
                 const std::string& extension_id,
                 const GURL& listener_url,
                 content::RenderProcessHost* process,
+                content::BrowserContext* browser_context,
                 bool is_for_service_worker,
                 int64_t service_worker_version_id,
                 int worker_thread_id,
@@ -125,6 +124,7 @@ class EventListener {
   const std::string extension_id_;
   const GURL listener_url_;
   raw_ptr<content::RenderProcessHost> process_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
   const bool is_for_service_worker_ = false;
 
@@ -219,7 +219,8 @@ class EventListenerMap {
   void LoadUnfilteredLazyListeners(const std::string& extension_id,
                                    const std::set<std::string>& event_names);
   // Similar as above, but applies to extension service workers.
-  void LoadUnfilteredWorkerListeners(const std::string& extension_id,
+  void LoadUnfilteredWorkerListeners(content::BrowserContext* browser_context,
+                                     const std::string& extension_id,
                                      const std::set<std::string>& event_names);
 
   // Adds filtered lazy listeners as described their serialised descriptions.
@@ -227,7 +228,8 @@ class EventListenerMap {
   // listeners.
   // |filtered| contains a map from event names to filters, each pairing
   // defining a lazy filtered listener.
-  void LoadFilteredLazyListeners(const std::string& extension_id,
+  void LoadFilteredLazyListeners(content::BrowserContext* browser_context,
+                                 const std::string& extension_id,
                                  bool is_for_service_worker,
                                  const base::DictionaryValue& filtered);
 

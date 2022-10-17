@@ -30,10 +30,17 @@ std::unique_ptr<EventListener> EventListener::ForExtension(
     const std::string& extension_id,
     content::RenderProcessHost* process,
     std::unique_ptr<base::DictionaryValue> filter) {
-  return base::WrapUnique(
-      new EventListener(event_name, extension_id, GURL(), process, false,
-                        blink::mojom::kInvalidServiceWorkerVersionId,
-                        kMainThreadId, std::move(filter)));
+  // The process parameter is nullptr when creating lazy listener.
+  // TODO(richardzh): Update lazy listener creation to either calling
+  // ForExtensionServiceWorker instead, or update this method signature to add a
+  // BrowserContext parameter.
+  content::BrowserContext* browser_context =
+      process ? process->GetBrowserContext() : nullptr;
+
+  return base::WrapUnique(new EventListener(
+      event_name, extension_id, GURL(), process, browser_context, false,
+      blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
+      std::move(filter)));
 }
 
 // static
@@ -48,26 +55,33 @@ std::unique_ptr<EventListener> EventListener::ForURL(
   // we dispatched events to processes more intelligently this could be avoided.
   return base::WrapUnique(new EventListener(
       event_name, ExtensionId(), url::Origin::Create(listener_url).GetURL(),
-      process, false, blink::mojom::kInvalidServiceWorkerVersionId,
-      kMainThreadId, std::move(filter)));
+      process, process->GetBrowserContext(), false,
+      blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
+      std::move(filter)));
 }
 
 std::unique_ptr<EventListener> EventListener::ForExtensionServiceWorker(
     const std::string& event_name,
     const std::string& extension_id,
     content::RenderProcessHost* process,
+    content::BrowserContext* browser_context,
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
     int worker_thread_id,
     std::unique_ptr<base::DictionaryValue> filter) {
   return base::WrapUnique(new EventListener(
-      event_name, extension_id, service_worker_scope, process, true,
-      service_worker_version_id, worker_thread_id, std::move(filter)));
+      event_name, extension_id, service_worker_scope, process, browser_context,
+      true, service_worker_version_id, worker_thread_id, std::move(filter)));
 }
 
 EventListener::~EventListener() {}
 
 bool EventListener::Equals(const EventListener* other) const {
+  // TODO(richardzh): compare browser_context_. We are making a change with two
+  // steps here. The first step is simply add the browser_context_ member. The
+  // next step is to compare this member and create separate lazy listeners for
+  // regular and incognito(split) context.
+
   // We don't check matcher_id equality because we want a listener with a
   // filter that hasn't been added to EventFilter to match one that is
   // equivalent but has.
@@ -86,10 +100,10 @@ std::unique_ptr<EventListener> EventListener::Copy() const {
   if (filter_)
     filter_copy = base::DictionaryValue::From(
         base::Value::ToUniquePtrValue(filter_->Clone()));
-  return base::WrapUnique(
-      new EventListener(event_name_, extension_id_, listener_url_, process_,
-                        is_for_service_worker_, service_worker_version_id_,
-                        worker_thread_id_, std::move(filter_copy)));
+  return base::WrapUnique(new EventListener(
+      event_name_, extension_id_, listener_url_, process_, browser_context_,
+      is_for_service_worker_, service_worker_version_id_, worker_thread_id_,
+      std::move(filter_copy)));
 }
 
 bool EventListener::IsLazy() const {
@@ -107,14 +121,11 @@ void EventListener::MakeLazy() {
   process_ = nullptr;
 }
 
-content::BrowserContext* EventListener::GetBrowserContext() const {
-  return process_ ? process_->GetBrowserContext() : nullptr;
-}
-
 EventListener::EventListener(const std::string& event_name,
                              const std::string& extension_id,
                              const GURL& listener_url,
                              content::RenderProcessHost* process,
+                             content::BrowserContext* browser_context,
                              bool is_for_service_worker,
                              int64_t service_worker_version_id,
                              int worker_thread_id,
@@ -123,6 +134,7 @@ EventListener::EventListener(const std::string& event_name,
       extension_id_(extension_id),
       listener_url_(listener_url),
       process_(process),
+      browser_context_(browser_context),
       is_for_service_worker_(is_for_service_worker),
       service_worker_version_id_(service_worker_version_id),
       worker_thread_id_(worker_thread_id),
@@ -284,11 +296,12 @@ void EventListenerMap::LoadUnfilteredLazyListeners(
 }
 
 void EventListenerMap::LoadUnfilteredWorkerListeners(
+    content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::set<std::string>& event_names) {
   for (const auto& name : event_names) {
     AddListener(EventListener::ForExtensionServiceWorker(
-        name, extension_id, nullptr,
+        name, extension_id, nullptr, browser_context,
         // TODO(lazyboy): We need to store correct scopes of each worker into
         // ExtensionPrefs for events. This currently assumes all workers are
         // registered in the '/' scope. https://crbug.com/773103.
@@ -298,6 +311,7 @@ void EventListenerMap::LoadUnfilteredWorkerListeners(
 }
 
 void EventListenerMap::LoadFilteredLazyListeners(
+    content::BrowserContext* browser_context,
     const std::string& extension_id,
     bool is_for_service_worker,
     const DictionaryValue& filtered) {
@@ -312,7 +326,7 @@ void EventListenerMap::LoadFilteredLazyListeners(
           static_cast<const base::DictionaryValue*>(&filter_value);
       if (is_for_service_worker) {
         AddListener(EventListener::ForExtensionServiceWorker(
-            item.first, extension_id, nullptr,
+            item.first, extension_id, nullptr, browser_context,
             // TODO(lazyboy): We need to store correct scopes of each worker
             // into ExtensionPrefs for events. This currently assumes all
             // workers are registered in the '/' scope.

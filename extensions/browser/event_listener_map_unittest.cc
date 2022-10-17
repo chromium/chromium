@@ -109,7 +109,7 @@ class EventListenerMapTest : public ExtensionsTest {
       bool is_for_service_worker) {
     if (is_for_service_worker) {
       return EventListener::ForExtensionServiceWorker(
-          event_name, extension_id, nullptr,
+          event_name, extension_id, nullptr, process_->GetBrowserContext(),
           Extension::GetBaseURLFromExtensionId(extension_id),
           GetWorkerVersionId(true), GetWorkerThreadId(true), std::move(filter));
     }
@@ -159,8 +159,10 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
     const std::string& event_name,
     content::RenderProcessHost* process,
     std::unique_ptr<base::DictionaryValue> filter) {
+  content::BrowserContext* browser_context =
+      process ? process->GetBrowserContext() : nullptr;
   return EventListener::ForExtensionServiceWorker(
-      event_name, extension_id, process,
+      event_name, extension_id, process, browser_context,
       Extension::GetBaseURLFromExtensionId(extension_id),
       GetWorkerVersionId(false), GetWorkerThreadId(false), std::move(filter));
 }
@@ -168,7 +170,7 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
 void EventListenerMapTest::TestUnfilteredEventsGoToAllListeners(
     const EventListenerConstructor& constructor) {
   listeners_->AddListener(constructor.Run(
-      kEvent1Name, nullptr, std::make_unique<base::DictionaryValue>()));
+      kEvent1Name, process_.get(), std::make_unique<base::DictionaryValue>()));
   std::unique_ptr<Event> event(CreateNamedEvent(kEvent1Name));
   ASSERT_EQ(1u, listeners_->GetEventListeners(*event).size());
 }
@@ -272,16 +274,20 @@ TEST_F(EventListenerMapTest, LazyAndUnlazyListenersGetReturned) {
 void EventListenerMapTest::TestRemovingByProcess(
     const EventListenerConstructor& constructor) {
   listeners_->AddListener(constructor.Run(
-      kEvent1Name, nullptr, CreateHostSuffixFilter("google.com")));
+      kEvent1Name, process_.get(), CreateHostSuffixFilter("google.com")));
 
   listeners_->AddListener(constructor.Run(
-      kEvent1Name, process_.get(), CreateHostSuffixFilter("google.com")));
+      kEvent2Name, process_.get(), CreateHostSuffixFilter("google.com")));
 
   listeners_->RemoveListenersForProcess(process_.get());
 
-  std::unique_ptr<Event> event(CreateNamedEvent(kEvent1Name));
-  event->filter_info->url = GURL("http://www.google.com");
-  ASSERT_EQ(1u, listeners_->GetEventListeners(*event).size());
+  std::unique_ptr<Event> event1(CreateNamedEvent(kEvent1Name));
+  event1->filter_info->url = GURL("http://www.google.com");
+  ASSERT_EQ(0u, listeners_->GetEventListeners(*event1).size());
+
+  std::unique_ptr<Event> event2(CreateNamedEvent(kEvent2Name));
+  event2->filter_info->url = GURL("http://www.google.com");
+  ASSERT_EQ(0u, listeners_->GetEventListeners(*event2).size());
 }
 
 TEST_F(EventListenerMapTest, TestRemovingByProcessForExtension) {
@@ -302,18 +308,22 @@ TEST_F(EventListenerMapTest, TestRemovingByProcessForExtensionServiceWorker) {
 void EventListenerMapTest::TestRemovingByListener(
     const EventListenerConstructor& constructor) {
   listeners_->AddListener(constructor.Run(
-      kEvent1Name, nullptr, CreateHostSuffixFilter("google.com")));
+      kEvent1Name, process_.get(), CreateHostSuffixFilter("google.com")));
 
   listeners_->AddListener(constructor.Run(
-      kEvent1Name, process_.get(), CreateHostSuffixFilter("google.com")));
+      kEvent2Name, process_.get(), CreateHostSuffixFilter("google.com")));
 
   std::unique_ptr<EventListener> listener(constructor.Run(
       kEvent1Name, process_.get(), CreateHostSuffixFilter("google.com")));
   listeners_->RemoveListener(listener.get());
 
-  std::unique_ptr<Event> event(CreateNamedEvent(kEvent1Name));
-  event->filter_info->url = GURL("http://www.google.com");
-  ASSERT_EQ(1u, listeners_->GetEventListeners(*event).size());
+  std::unique_ptr<Event> event1(CreateNamedEvent(kEvent1Name));
+  event1->filter_info->url = GURL("http://www.google.com");
+  ASSERT_EQ(0u, listeners_->GetEventListeners(*event1).size());
+
+  std::unique_ptr<Event> event2(CreateNamedEvent(kEvent2Name));
+  event2->filter_info->url = GURL("http://www.google.com");
+  ASSERT_EQ(1u, listeners_->GetEventListeners(*event2).size());
 }
 
 TEST_F(EventListenerMapTest, TestRemovingByListenerForExtension) {
@@ -400,12 +410,12 @@ TEST_P(EventListenerMapWithContextTest, AddExistingFilteredListener) {
 void EventListenerMapTest::TestAddExistingUnfilteredListener(
     const EventListenerConstructor& constructor) {
   bool first_add = listeners_->AddListener(constructor.Run(
-      kEvent1Name, nullptr, std::make_unique<base::DictionaryValue>()));
+      kEvent1Name, process_.get(), std::make_unique<base::DictionaryValue>()));
   bool second_add = listeners_->AddListener(constructor.Run(
-      kEvent1Name, nullptr, std::make_unique<base::DictionaryValue>()));
+      kEvent1Name, process_.get(), std::make_unique<base::DictionaryValue>()));
 
   std::unique_ptr<EventListener> listener(constructor.Run(
-      kEvent1Name, nullptr, std::make_unique<base::DictionaryValue>()));
+      kEvent1Name, process_.get(), std::make_unique<base::DictionaryValue>()));
   bool first_remove = listeners_->RemoveListener(listener.get());
   bool second_remove = listeners_->RemoveListener(listener.get());
 
@@ -481,6 +491,7 @@ TEST_F(EventListenerMapTest, HasListenerForExtension) {
     if (is_for_service_worker) {
       return EventListener::ForExtensionServiceWorker(
           kEvent1Name, kExt1Id, lazy ? nullptr : process_.get(),
+          process_->GetBrowserContext(),
           Extension::GetBaseURLFromExtensionId(kExt1Id),
           GetWorkerVersionId(lazy), GetWorkerThreadId(lazy), std::move(filter));
     }
@@ -522,8 +533,8 @@ TEST_P(EventListenerMapWithContextTest, AddLazyListenersFromPreferences) {
 
   DictionaryValue filtered_listeners;
   filtered_listeners.Set(kEvent1Name, std::move(filter_list));
-  listeners_->LoadFilteredLazyListeners(kExt1Id, is_for_service_worker,
-                                        filtered_listeners);
+  listeners_->LoadFilteredLazyListeners(
+      browser_context(), kExt1Id, is_for_service_worker, filtered_listeners);
 
   // Matching filters.
   for (const TestCase& test_case : kTestCases) {
@@ -557,8 +568,10 @@ TEST_F(EventListenerMapTest, CorruptedExtensionPrefsShouldntCrash) {
   // kEvent1Name should be associated with a list, not a dictionary.
   filtered_listeners.Set(kEvent1Name, CreateHostSuffixFilter("google.com"));
 
-  listeners_->LoadFilteredLazyListeners(kExt1Id, false, filtered_listeners);
-  listeners_->LoadFilteredLazyListeners(kExt1Id, true, filtered_listeners);
+  listeners_->LoadFilteredLazyListeners(browser_context(), kExt1Id, false,
+                                        filtered_listeners);
+  listeners_->LoadFilteredLazyListeners(browser_context(), kExt1Id, true,
+                                        filtered_listeners);
 
   std::unique_ptr<Event> event(
       CreateEvent(kEvent1Name, GURL("http://www.google.com")));

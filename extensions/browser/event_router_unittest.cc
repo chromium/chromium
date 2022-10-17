@@ -102,8 +102,10 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
     const std::string& event_name,
     content::RenderProcessHost* process,
     std::unique_ptr<base::DictionaryValue> filter) {
+  content::BrowserContext* browser_context =
+      process ? process->GetBrowserContext() : nullptr;
   return EventListener::ForExtensionServiceWorker(
-      event_name, extension_id, process,
+      event_name, extension_id, process, browser_context,
       Extension::GetBaseURLFromExtensionId(extension_id),
       service_worker_version_id, worker_thread_id, std::move(filter));
 }
@@ -161,6 +163,21 @@ class EventRouterTest : public ExtensionsTest {
   EventRouterTest(const EventRouterTest&) = delete;
   EventRouterTest& operator=(const EventRouterTest&) = delete;
 
+  void SetUp() override {
+    ExtensionsTest::SetUp();
+    render_process_host_ =
+        std::make_unique<content::MockRenderProcessHost>(browser_context());
+  }
+
+  void TearDown() override {
+    render_process_host_.reset();
+    ExtensionsTest::TearDown();
+  }
+
+  content::RenderProcessHost* render_process_host() const {
+    return render_process_host_.get();
+  }
+
  protected:
   // Tests adding and removing observers from EventRouter.
   void RunEventRouterObserverTest(const EventListenerConstructor& constructor);
@@ -195,6 +212,8 @@ class EventRouterTest : public ExtensionsTest {
 
  private:
   base::HistogramTester histogram_tester_;
+
+  std::unique_ptr<content::RenderProcessHost> render_process_host_;
 };
 
 class EventRouterFilterTest : public ExtensionsTest,
@@ -279,8 +298,9 @@ TEST_F(EventRouterTest, GetBaseEventName) {
 void EventRouterTest::RunEventRouterObserverTest(
     const EventListenerConstructor& constructor) {
   EventRouter router(nullptr, nullptr);
-  std::unique_ptr<EventListener> listener = constructor.Run(
-      "event_name", nullptr, std::make_unique<base::DictionaryValue>());
+  std::unique_ptr<EventListener> listener =
+      constructor.Run("event_name", render_process_host(),
+                      std::make_unique<base::DictionaryValue>());
 
   // Add/remove works without any observers.
   router.OnListenerAdded(listener.get());
@@ -315,8 +335,9 @@ void EventRouterTest::RunEventRouterObserverTest(
   // Adding a listener with a sub-event notifies the main observer with
   // proper details.
   matching_observer.Reset();
-  std::unique_ptr<EventListener> sub_event_listener = constructor.Run(
-      "event_name/1", nullptr, std::make_unique<base::DictionaryValue>());
+  std::unique_ptr<EventListener> sub_event_listener =
+      constructor.Run("event_name/1", render_process_host(),
+                      std::make_unique<base::DictionaryValue>());
   router.OnListenerAdded(sub_event_listener.get());
   EXPECT_EQ(1, matching_observer.listener_added_count());
   EXPECT_EQ(0, matching_observer.listener_removed_count());
@@ -349,9 +370,9 @@ TEST_F(EventRouterTest, EventRouterObserverForServiceWorkers) {
 
 TEST_F(EventRouterTest, MultipleEventRouterObserver) {
   EventRouter router(nullptr, nullptr);
-  std::unique_ptr<EventListener> listener =
-      EventListener::ForURL("event_name", GURL("http://google.com/path"),
-                            nullptr, std::make_unique<base::DictionaryValue>());
+  std::unique_ptr<EventListener> listener = EventListener::ForURL(
+      "event_name", GURL("http://google.com/path"), render_process_host(),
+      std::make_unique<base::DictionaryValue>());
 
   // Add/remove works without any observers.
   router.OnListenerAdded(listener.get());
