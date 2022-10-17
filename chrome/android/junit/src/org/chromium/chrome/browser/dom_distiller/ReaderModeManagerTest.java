@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.infobar.ReaderModeInfoBarJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.messages.MessageDispatcher;
@@ -54,6 +55,8 @@ import java.util.concurrent.TimeoutException;
 
 /** This class tests the behavior of the {@link ReaderModeManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
 public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.DOM_DISILLER_URL);
@@ -243,6 +246,23 @@ public class ReaderModeManagerTest {
         assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
                 mManager.getDistillationStatus());
         verify(mMessageDispatcher).enqueueMessage(any(), any(), anyInt(), anyBoolean());
+        verifyNoMoreInteractions(mReaderModeInfobarJniMock);
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    @Features.EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE,
+            ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+            ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
+    public void
+    testUI_notTriggered_contextualPageActionUiEnabled() {
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+        assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
+                mManager.getDistillationStatus());
+        verify(mMessageDispatcher,
+                never().description("Message should be suppressed as the CPA UI will be shown"))
+                .enqueueMessage(
+                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
         verifyNoMoreInteractions(mReaderModeInfobarJniMock);
     }
 
