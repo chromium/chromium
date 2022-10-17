@@ -4738,5 +4738,29 @@ class LayoutInTestsTest(unittest.TestCase):
     errors = PRESUBMIT.CheckNoLayoutCallsInTests(mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))
 
+class AssertNoJsInIosTest(unittest.TestCase):
+    def testError(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('components/feature/ios/resources/script.js', []),
+            MockFile('ios/chrome/feature/resources/script.js', []),
+            MockFile('ios/web/feature/resources/script.js', [])
+        ]
+        errors = PRESUBMIT.CheckNoJsInIos(input_api, MockOutputApi())
+        self.assertEqual(3, len(errors))
+
+    def testNonError(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('chrome/resources/script.js', []),
+            MockFile('components/feature/ios/resources/script.ts', []),
+            MockFile('ios/chrome/feature/resources/script.ts', []),
+            MockFile('ios/web/feature/resources/script.ts', []),
+            MockFile('ios/third_party/script.js', []),
+            MockFile('third_party/ios/script.js', [])
+        ]
+        errors = PRESUBMIT.CheckNoJsInIos(input_api, MockOutputApi())
+        self.assertEqual(0, len(errors))
+
 if __name__ == '__main__':
   unittest.main()
