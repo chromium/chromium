@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
 
+#import "base/check.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
