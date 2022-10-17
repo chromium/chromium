@@ -80,14 +80,13 @@ void SplitCookiesIntoAllowedAndBlocked(
       [](const network::mojom::CookieOrLineWithAccessResultPtr&
              cookie_and_access_result) {
         return cookie_and_access_result->access_result.status
-            .HasOnlyExclusionReason(
-                net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+            .ExcludedByUserPreferences();
       });
   blocked->cookie_list.reserve(blocked_count);
 
   for (const auto& cookie_and_access_result : cookie_details->cookie_list) {
-    if (cookie_and_access_result->access_result.status.HasOnlyExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
+    if (cookie_and_access_result->access_result.status
+            .ExcludedByUserPreferences()) {
       blocked->cookie_list.emplace_back(
           std::move(cookie_and_access_result->cookie_or_line->get_cookie()));
     } else if (cookie_and_access_result->access_result.status.IsInclude()) {

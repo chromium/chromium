@@ -353,6 +353,14 @@ class NET_EXPORT CookieInclusionStatus {
       std::vector<ExclusionReason> reasons,
       std::vector<WarningReason> warnings = std::vector<WarningReason>());
 
+  // Returns true if the cookie was excluded because of user preferences.
+  // HasOnlyExclusionReason(EXCLUDE_USER_PREFERENCES) will not return true for
+  // third-party cookies blocked in sites in the same First-Party Set (note:
+  // this is not the same as the cookie being blocked in a same-party context,
+  // which takes the entire ancestor chain into account). See
+  // https://crbug.com/1366868.
+  bool ExcludedByUserPreferences() const;
+
  private:
   // Returns the `exclusion_reasons_` with the given `reasons` unset.
   ExclusionReasonBitset ExclusionReasonsWithout(

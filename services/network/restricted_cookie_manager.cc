@@ -479,8 +479,8 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     // warning reasons once samesite tightening up is rolled out.
     for (const auto& cookie_and_access_result : excluded_cookies) {
       if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
-          !cookie_and_access_result.access_result.status.HasOnlyExclusionReason(
-              net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
+          !cookie_and_access_result.access_result.status
+               .ExcludedByUserPreferences()) {
         continue;
       }
 

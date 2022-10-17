@@ -313,4 +313,14 @@ CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
   return status;
 }
 
+bool CookieInclusionStatus::ExcludedByUserPreferences() const {
+  if (HasOnlyExclusionReason(ExclusionReason::EXCLUDE_USER_PREFERENCES))
+    return true;
+  return exclusion_reasons_.count() == 2 &&
+         exclusion_reasons_[ExclusionReason::EXCLUDE_USER_PREFERENCES] &&
+         exclusion_reasons_
+             [ExclusionReason::
+                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET];
+}
+
 }  // namespace net
