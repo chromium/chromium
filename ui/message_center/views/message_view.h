@@ -109,6 +109,10 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   virtual void RemoveGroupNotification(const std::string& notification_id) {}
 
+  // Creates text for spoken feedback from the data contained in the
+  // notification.
+  std::u16string CreateAccessibleName(const Notification& notification);
+
   // Updates this view with the new data contained in the notification.
   virtual void UpdateWithNotification(const Notification& notification);
 

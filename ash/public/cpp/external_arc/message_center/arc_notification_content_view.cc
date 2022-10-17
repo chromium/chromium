@@ -335,7 +335,7 @@ void ArcNotificationContentView::Update(
       notification.should_show_snooze_button());
   UpdateControlButtonsVisibility();
 
-  accessible_name_ = notification.accessible_name();
+  accessible_name_ = message_view_->CreateAccessibleName(notification);
   UpdateSnapshot();
 }
 
