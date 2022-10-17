@@ -985,6 +985,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mStartSurfaceSupplier.get().setStartSurfaceState(
                         StartSurfaceState.NOT_SHOWN, NewTabPageLaunchOrigin.UNKNOWN);
             }
+
+            boolean shouldShowRegularOverviewMode = IntentUtils.safeGetBooleanExtra(
+                    intent, IntentHandler.EXTRA_OPEN_REGULAR_OVERVIEW_MODE, false);
+            if (shouldShowRegularOverviewMode && IntentHandler.wasIntentSenderChrome(intent)) {
+                mTabModelSelector.selectModel(/*incognito= */ false);
+                mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /*animate= */ false);
+            }
         }
     }
 

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.chromium.base.test.util.Batch.UNIT_TESTS;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.test.filters.SmallTest;
@@ -45,6 +46,8 @@ import java.util.Collection;
 
 /**
  * Robolectric tests for {@link IncognitoReauthCoordinatorFactory}.
+ *
+ * TODO(crbug.com/1227656): Remove parameterization to improve readability of the tests.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -67,6 +70,8 @@ public class IncognitoReauthCoordinatorFactoryTest {
     private IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegateMock;
     @Mock
     private LayoutManager mLayoutManagerMock;
+    @Mock
+    private Intent mIntentMock;
     @Mock
     private TabModel mIncognitoTabModelMock;
     @Mock
@@ -106,7 +111,8 @@ public class IncognitoReauthCoordinatorFactoryTest {
         mIncognitoReauthCoordinatorFactory = new IncognitoReauthCoordinatorFactory(mContextMock,
                 mTabModelSelectorMock, mModalDialogManagerMock, mIncognitoReauthManagerMock,
                 mSettingsLauncherMock, mTabSwitcherCustomViewManagerSupplier,
-                mIncognitoReauthTopToolbarDelegateMock, mLayoutManagerMock, mIsTabbedActivity);
+                mIncognitoReauthTopToolbarDelegateMock, mLayoutManagerMock, mIntentMock,
+                mIsTabbedActivity);
         mIncognitoReauthCoordinatorFactory.mIncognitoReauthMenuDelegateForTesting =
                 mIncognitoReauthMenuDelegateMock;
     }
@@ -138,7 +144,9 @@ public class IncognitoReauthCoordinatorFactoryTest {
             verify(mLayoutManagerMock, times(1))
                     .showLayout(eq(LayoutType.TAB_SWITCHER), /*animate= */ eq(false));
         } else {
-            // TODO(crbug.com/1227656): Add tests for iCCT.
+            doNothing().when(mContextMock).startActivity(mIntentMock);
+            seeOtherTabsRunnable.run();
+            verify(mContextMock, times(1)).startActivity(mIntentMock);
         }
     }
 
@@ -170,7 +178,9 @@ public class IncognitoReauthCoordinatorFactoryTest {
             verify(mLayoutManagerMock, times(1))
                     .showLayout(eq(LayoutType.TAB_SWITCHER), /*animate= */ eq(false));
         } else {
-            // TODO(crbug.com/1227656): Add tests for iCCT.
+            doNothing().when(mContextMock).startActivity(mIntentMock);
+            backPressRunnable.run();
+            verify(mContextMock, times(1)).startActivity(mIntentMock);
         }
     }
 

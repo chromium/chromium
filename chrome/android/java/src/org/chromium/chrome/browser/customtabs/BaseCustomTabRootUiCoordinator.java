@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.content.Intent;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -20,6 +22,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.reengagement.ReengagementActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -35,6 +38,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabContro
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -232,12 +236,18 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory() {
+        Intent showRegularOverviewIntent = new Intent(Intent.ACTION_MAIN);
+        showRegularOverviewIntent.setClass(mActivity, ChromeLauncherActivity.class);
+        showRegularOverviewIntent.putExtra(IntentHandler.EXTRA_OPEN_REGULAR_OVERVIEW_MODE, true);
+        IntentUtils.addTrustedIntentExtras(showRegularOverviewIntent);
+
         return new IncognitoReauthCoordinatorFactory(mActivity, mTabModelSelectorSupplier.get(),
                 mModalDialogManagerSupplier.get(), new IncognitoReauthManager(),
                 new SettingsLauncherImpl(),
                 /*tabSwitcherCustomViewManagerOneshotSupplier= */ null,
                 /*incognitoReauthTopToolbarDelegate= */ null,
                 /*layoutManager=*/null,
+                /*showRegularOverviewIntent= */ showRegularOverviewIntent,
                 /*isTabbedActivity= */ false);
     }
 
