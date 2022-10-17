@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -30,7 +29,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -265,10 +263,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, ContainerHeight) {
 class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     : public InProcessBrowserTest {
  public:
-  WebAppGlassBrowserFrameViewWindowControlsOverlayTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppWindowControlsOverlay);
-  }
+  WebAppGlassBrowserFrameViewWindowControlsOverlayTest() = default;
   WebAppGlassBrowserFrameViewWindowControlsOverlayTest(
       const WebAppGlassBrowserFrameViewWindowControlsOverlayTest&) = delete;
   WebAppGlassBrowserFrameViewWindowControlsOverlayTest& operator=(
@@ -344,7 +339,6 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
 };
 

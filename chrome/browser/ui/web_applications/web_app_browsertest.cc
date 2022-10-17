@@ -241,17 +241,6 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
   }
 };
 
-// A dedicated test fixture for WindowControlsOverlay, which requires a command
-// line switch to enable manifest parsing.
-class WebAppBrowserTest_WindowControlsOverlay : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_WindowControlsOverlay() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kWebAppWindowControlsOverlay};
-};
-
 // A dedicated test fixture for Borderless, which requires a command
 // line switch to enable manifest parsing.
 class WebAppBrowserTest_Borderless : public WebAppBrowserTest {
@@ -1952,7 +1941,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
   EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kNotPresent);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
                        DISABLE_POSIX(WindowControlsOverlay)) {
   GURL test_url = https_server()->GetURL(
       "/banners/"

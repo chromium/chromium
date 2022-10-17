@@ -5175,12 +5175,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RenderIdleTime) {
 class WebContentsImplBrowserTestWindowControlsOverlay
     : public WebContentsImplBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppWindowControlsOverlay);
-    WebContentsImplBrowserTest::SetUp();
-  }
-
   void ValidateTitlebarAreaCSSValue(const std::string& name,
                                     int expected_result) {
     SCOPED_TRACE(name);
@@ -5246,9 +5240,6 @@ class WebContentsImplBrowserTestWindowControlsOverlay
     TitleWatcher title_watcher(web_contents, u"ongeometrychange");
     std::ignore = title_watcher.WaitAndGetTitle();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,

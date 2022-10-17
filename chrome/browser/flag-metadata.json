@@ -2146,11 +2146,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "enable-desktop-pwas-window-controls-overlay",
-    "owners": [ "ambake@microsoft.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "enable-device-trust-connector",
     "owners": [ "rogerta", "seblalancette" ],
     "expiry_milestone": 110

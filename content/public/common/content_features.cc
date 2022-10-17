@@ -1184,11 +1184,6 @@ BASE_FEATURE(kVideoPlaybackQuality,
 // Enables future V8 VM features
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable window controls overlays for desktop PWAs
-BASE_FEATURE(kWebAppWindowControlsOverlay,
-             "WebAppWindowControlsOverlay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable WebAssembly baseline compilation (Liftoff).
 BASE_FEATURE(kWebAssemblyBaseline,
              "WebAssemblyBaseline",

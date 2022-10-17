@@ -11,7 +11,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -63,8 +62,6 @@ class WebAppWindowControlsOverlayBrowserTest
 
  private:
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kWebAppWindowControlsOverlay};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppWindowControlsOverlayBrowserTest,

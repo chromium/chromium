@@ -325,8 +325,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"TopicsAPI", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
           {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
-          {"WebAppWindowControlsOverlay",
-           features::kWebAppWindowControlsOverlay},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
           {"WGIGamepadTriggerRumble",
            features::kEnableWindowsGamingInputDataFetcher},

@@ -28,7 +28,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -331,10 +330,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, Fullscreen) {
 class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     : public InProcessBrowserTest {
  public:
-  WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppWindowControlsOverlay);
-  }
+  WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest() = default;
   WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest(
       const WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest&) = delete;
   WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest& operator=(
@@ -408,7 +404,6 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
 };
 

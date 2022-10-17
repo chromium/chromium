@@ -532,9 +532,6 @@ extern const char kDesktopPWAsSubAppsDescription[];
 extern const char kDesktopPWAsWebBundlesName[];
 extern const char kDesktopPWAsWebBundlesDescription[];
 
-extern const char kDesktopPWAsWindowControlsOverlayName[];
-extern const char kDesktopPWAsWindowControlsOverlayDescription[];
-
 extern const char kDesktopPWAsBorderlessName[];
 extern const char kDesktopPWAsBorderlessDescription[];
 

@@ -614,10 +614,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
   };
 
   WebAppFrameToolbarBrowserTest_WindowControlsOverlay() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{safe_browsing::kDownloadBubble,
-                              features::kWebAppWindowControlsOverlay},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   }
 
   void SetUp() override {

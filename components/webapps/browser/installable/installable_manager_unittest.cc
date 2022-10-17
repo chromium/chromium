@@ -331,20 +331,7 @@ TEST_F(InstallableManagerUnitTest, FallbackToBrowser) {
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-class InstallableManagerUnitTest_WindowControlsOverlay
-    : public InstallableManagerUnitTest {
- public:
-  InstallableManagerUnitTest_WindowControlsOverlay() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppWindowControlsOverlay}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(InstallableManagerUnitTest_WindowControlsOverlay,
-       SupportWindowControlsOverlay) {
+TEST_F(InstallableManagerUnitTest, SupportWindowControlsOverlay) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   manifest->display_override.push_back(
