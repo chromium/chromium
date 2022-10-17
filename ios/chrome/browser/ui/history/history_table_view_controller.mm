@@ -533,6 +533,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   if (!self.browser)
     return;
 
+  if (!self.historyService)
+    return;
+
   NSArray* toDeleteIndexPaths = self.tableView.indexPathsForSelectedRows;
 
   // Delete items from Browser History.
@@ -749,6 +752,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // previous query will be returned.
 - (void)fetchHistoryForQuery:(NSString*)query continuation:(BOOL)continuation {
   if (!self.browser)
+    return;
+
+  if (!self.historyService)
     return;
 
   self.loading = YES;
