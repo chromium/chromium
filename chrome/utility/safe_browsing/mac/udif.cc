@@ -465,14 +465,11 @@ bool UDIFParser::ParseBlkx() {
   }
 
   CFErrorRef error = nullptr;
-  base::ScopedCFTypeRef<CFDictionaryRef> plist(
-      base::mac::CFCast<CFDictionaryRef>(
-           CFPropertyListCreateWithData(kCFAllocatorDefault,
-                                        plist_data,
-                                        kCFPropertyListImmutable,
-                                        nullptr,
-                                        &error)),
-      base::scoped_policy::RETAIN);
+  base::ScopedCFTypeRef<CFPropertyListRef> plist(
+      CFPropertyListCreateWithData(kCFAllocatorDefault, plist_data,
+                                   kCFPropertyListImmutable, nullptr, &error));
+
+  CFDictionaryRef plist_dict = base::mac::CFCast<CFDictionaryRef>(plist.get());
   base::ScopedCFTypeRef<CFErrorRef> error_ref(error);
   if (error) {
     base::ScopedCFTypeRef<CFStringRef> error_string(
@@ -482,13 +479,13 @@ bool UDIFParser::ParseBlkx() {
     return false;
   }
 
-  if (!plist) {
+  if (!plist_dict) {
     DLOG(ERROR) << "Plist is not a dictionary";
     return false;
   }
 
   auto* resource_fork = base::mac::GetValueFromDictionary<CFDictionaryRef>(
-      plist.get(), CFSTR("resource-fork"));
+      plist_dict, CFSTR("resource-fork"));
   if (!resource_fork) {
     DLOG(ERROR) << "No resource-fork entry in plist";
     return false;
