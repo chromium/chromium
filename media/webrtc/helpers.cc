@@ -72,6 +72,11 @@ absl::optional<int> GetAgcStartupMinVolume() {
       ::features::kWebRtcAnalogAgcStartupMinVolume, "volume", 0);
 }
 
+bool DisallowInputVolumeAdjustment() {
+  return !base::FeatureList::IsEnabled(
+      ::features::kWebRtcAllowInputVolumeAdjustment);
+}
+
 void ConfigAgc2AdaptiveDigitalForHybridExperiment(
     ::webrtc::AudioProcessing::Config::GainController2::AdaptiveDigital&
         config) {
@@ -191,6 +196,16 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
     // Use the adaptive digital controller of AGC1 and disable that of AGC2.
     agc1_analog_config.enable_digital_adaptive = true;
     agc2_config.adaptive_digital.enabled = false;
+  }
+
+  if (DisallowInputVolumeAdjustment()) {
+    if (use_hybrid_agc) {
+      // Completely disable AGC1, which is only used as input volume controller.
+      apm_config.gain_controller1.enabled = false;
+    } else {
+      LOG(WARNING) << "Cannot disable input volume adjustment when AGC2 is "
+                      "disabled (not implemented).";
+    }
   }
 }
 

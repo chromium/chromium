@@ -26,6 +26,9 @@ BASE_DECLARE_FEATURE(kWebRtcAnalogAgcClippingControl);
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 BASE_DECLARE_FEATURE(kWebRtcAnalogAgcStartupMinVolume);
 
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+BASE_DECLARE_FEATURE(kWebRtcAllowInputVolumeAdjustment);
+
 }  // namespace features
 
 #endif  // MEDIA_WEBRTC_WEBRTC_FEATURES_H_

@@ -1796,6 +1796,9 @@ extern const char kWebrtcHybridAgcDescription[];
 extern const char kWebrtcAnalogAgcClippingControlName[];
 extern const char kWebrtcAnalogAgcClippingControlDescription[];
 
+extern const char kWebRtcAllowInputVolumeAdjustmentName[];
+extern const char kWebRtcAllowInputVolumeAdjustmentDescription[];
+
 extern const char kWebrtcHwDecodingName[];
 extern const char kWebrtcHwDecodingDescription[];
 

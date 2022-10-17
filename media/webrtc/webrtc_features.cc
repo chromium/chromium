@@ -55,4 +55,10 @@ BASE_FEATURE(kWebRtcAnalogAgcStartupMinVolume,
              "WebRtcAnalogAgcStartupMinVolume",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When disabled, any WebRTC Audio Processing Module input volume recommendation
+// is ignored and no adjustment takes place.
+BASE_FEATURE(kWebRtcAllowInputVolumeAdjustment,
+             "WebRtcAllowInputVolumeAdjustment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -3191,6 +3191,14 @@ const char kWebrtcAnalogAgcClippingControlName[] =
 const char kWebrtcAnalogAgcClippingControlDescription[] =
     "WebRTC Agc1 analog clipping controller to reduce saturation.";
 
+const char kWebRtcAllowInputVolumeAdjustmentName[] =
+    "Allow WebRTC to adjust the input volume.";
+const char kWebRtcAllowInputVolumeAdjustmentDescription[] =
+    "Allow the Audio Processing Module in WebRTC to adjust the input volume "
+    "during a real-time call. Disable if microphone muting or clipping issues "
+    "are observed when the browser is running and used for a real-time call. "
+    "This flag is experimental and may be removed at any time.";
+
 const char kWebrtcHwDecodingName[] = "WebRTC hardware video decoding";
 const char kWebrtcHwDecodingDescription[] =
     "Support in WebRTC for decoding video streams using platform hardware.";
