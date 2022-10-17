@@ -190,14 +190,9 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
                   profile)));
 #endif
 
-  if (!ps->Init(profile->GetPrefs(),
-                /*affiliated_match_helper=*/nullptr,
-                base::BindRepeating(&SyncEnabledOrDisabled, profile))) {
-    // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
-    // UI.
-    LOG(WARNING) << "Could not initialize password store.";
-    return nullptr;
-  }
+  ps->Init(profile->GetPrefs(),
+           /*affiliated_match_helper=*/nullptr,
+           base::BindRepeating(&SyncEnabledOrDisabled, profile));
 
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {

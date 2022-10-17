@@ -78,7 +78,7 @@ void InvokeCallbacksForSuspectedChanges(
 PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
     : backend_(std::move(backend)) {}
 
-bool PasswordStore::Init(
+void PasswordStore::Init(
     PrefService* prefs,
     std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper,
     base::RepeatingClosure sync_enabled_or_disabled_cb) {
@@ -99,7 +99,6 @@ bool PasswordStore::Init(
           base::BindRepeating(
               &PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence, this)),
       base::BindOnce(&PasswordStore::OnInitCompleted, this));
-  return true;
 }
 
 void PasswordStore::AddLogin(const PasswordForm& form,

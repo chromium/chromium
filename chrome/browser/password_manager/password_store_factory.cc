@@ -93,12 +93,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
       std::make_unique<AffiliatedMatchHelper>(affiliation_service);
 
-  if (!ps->Init(profile->GetPrefs(), std::move(affiliated_match_helper))) {
-    // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
-    // UI.
-    LOG(WARNING) << "Could not initialize password store.";
-    return nullptr;
-  }
+  ps->Init(profile->GetPrefs(), std::move(affiliated_match_helper));
 
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {

@@ -108,14 +108,9 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db)));
-  if (!ps->Init(browser_state->GetPrefs(),
-                /*affiliated_match_helper=*/nullptr,
-                base::BindRepeating(&SyncEnabledOrDisabled, browser_state))) {
-    // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
-    // UI.
-    LOG(WARNING) << "Could not initialize password store.";
-    return nullptr;
-  }
+  ps->Init(browser_state->GetPrefs(),
+           /*affiliated_match_helper=*/nullptr,
+           base::BindRepeating(&SyncEnabledOrDisabled, browser_state));
 
   return ps;
 }

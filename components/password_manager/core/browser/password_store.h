@@ -75,7 +75,7 @@ class PasswordStore : public PasswordStoreInterface {
   // invoked in UI thread (or sequence used to invoke Init()) when sync is
   // enabled or disabled. It is no longer invoked after ShutdownOnUIThread().
   // TODO(crbug.com/1218413): Move initialization into the core interface, too.
-  bool Init(
+  void Init(
       PrefService* prefs,
       std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper,
       base::RepeatingClosure sync_enabled_or_disabled_cb = base::DoNothing());
