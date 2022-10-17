@@ -38,6 +38,8 @@ using blink::mojom::SubAppsService;
 using blink::mojom::SubAppsServiceAddInfo;
 using blink::mojom::SubAppsServiceAddInfoPtr;
 using blink::mojom::SubAppsServiceAddResultCode;
+using blink::mojom::SubAppsServiceListInfo;
+using blink::mojom::SubAppsServiceListInfoPtr;
 using blink::mojom::SubAppsServiceListResultPtr;
 using blink::mojom::SubAppsServiceResult;
 
@@ -50,10 +52,13 @@ constexpr const char kSubDomain[] = "baz.foo.bar";
 constexpr const char kDifferentDomain[] = "www.different-domain.com";
 constexpr const char kParentAppPath[] = "/web_apps/basic.html";
 constexpr const char kSubAppPath[] = "/web_apps/standalone/basic.html";
+constexpr const char kSubAppName[] = "Site A";
 constexpr const char kSubAppPathMinimalUi[] =
     "/web_apps/standalone/basic.html?manifest=manifest_minimal_ui.json";
 constexpr const char kSubAppPath2[] = "/web_apps/minimal_ui/basic.html";
+constexpr const char kSubAppName2[] = "Site B";
 constexpr const char kSubAppPath3[] = "/web_apps/site_d/basic.html";
+constexpr const char kSubAppName3[] = "Site D";
 constexpr const char kSubAppPathInvalid[] = "/invalid/sub/app/path.html";
 
 }  // namespace
@@ -760,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, ListSuccess) {
   // Empty list before adding any sub-apps.
   SubAppsServiceListResultPtr result = CallList();
   EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
-  EXPECT_EQ(std::vector<std::string>{}, result->sub_app_ids);
+  EXPECT_EQ(std::vector<SubAppsServiceListInfoPtr>{}, result->sub_apps);
 
   UnhashedAppId unhashed_sub_app_id_1 =
       GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath));
@@ -779,16 +784,27 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, ListSuccess) {
                           SubAppsServiceAddResultCode::kSuccessNewInstall),
             CallAdd({{unhashed_sub_app_id_3, GetURL(kSubAppPath3)}}));
 
+  // We need to use a set for comparison because the ordering changes between
+  // invocations (due to embedded test server using a random port each time).
+  base::flat_set<SubAppsServiceListInfoPtr> expected_set;
+  expected_set.emplace(
+      SubAppsServiceListInfo::New(unhashed_sub_app_id_1, kSubAppName));
+  expected_set.emplace(
+      SubAppsServiceListInfo::New(unhashed_sub_app_id_2, kSubAppName2));
+  expected_set.emplace(
+      SubAppsServiceListInfo::New(unhashed_sub_app_id_3, kSubAppName3));
+
   result = CallList();
 
   // We see all three sub-apps now. We need to use UnorderedElementsAre because
   // the ordering changes between invocations (due to embedded test server using
   // a random port each time).
   EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
-  EXPECT_THAT(result->sub_app_ids,
-              testing::UnorderedElementsAre(GetURL(kSubAppPath).spec(),
-                                            GetURL(kSubAppPath2).spec(),
-                                            GetURL(kSubAppPath3).spec()));
+  base::flat_set<SubAppsServiceListInfoPtr> actual_set(
+      std::make_move_iterator(result->sub_apps.begin()),
+      std::make_move_iterator(result->sub_apps.end()));
+  // We see all three sub-apps now.
+  EXPECT_EQ(expected_set, actual_set);
 }
 
 // Verify that the list call doesn't return a non-sub-apps installed app.
@@ -804,14 +820,19 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   UnhashedAppId unhashed_sub_app_id_2 = GenerateAppIdUnhashed(
       /*manifest_id=*/absl::nullopt, GetURL(kSubAppPath2));
   // Sub-app install.
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_2,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
+  EXPECT_EQ(AddResultMojo(
+                unhashed_sub_app_id_2,
+                blink::mojom::SubAppsServiceAddResultCode::kSuccessNewInstall),
             CallAdd({{unhashed_sub_app_id_2, GetURL(kSubAppPath2)}}));
+
+  std::vector<SubAppsServiceListInfoPtr> expected_result;
+  expected_result.emplace_back(
+      SubAppsServiceListInfo::New(unhashed_sub_app_id_2, kSubAppName2));
+
   // Should only see the sub-app one here, not the standalone.
   SubAppsServiceListResultPtr result = CallList();
   EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
-  EXPECT_EQ(std::vector<std::string>{GetURL(kSubAppPath2).spec()},
-            result->sub_app_ids);
+  EXPECT_EQ(expected_result, result->sub_apps);
 }
 
 // List call returns failure if the parent app isn't installed.
@@ -822,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   SubAppsServiceListResultPtr result = CallList();
   EXPECT_EQ(SubAppsServiceResult::kFailure, result->code);
-  EXPECT_EQ(std::vector<std::string>(), result->sub_app_ids);
+  EXPECT_EQ(std::vector<SubAppsServiceListInfoPtr>{}, result->sub_apps);
 }
 
 // Remove works with one app.

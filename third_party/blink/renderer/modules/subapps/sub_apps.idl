@@ -25,6 +25,6 @@ enum SubAppsServiceAddResultCode {
   RuntimeEnabled=DesktopPWAsSubApps
 ] interface SubApps {
   [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsServiceAddResultCode>> add(record<DOMString, SubAppsAddOptions> sub_apps);
-  [CallWith=ScriptState, RaisesException] Promise<FrozenArray<DOMString>> list();
+  [CallWith=ScriptState, RaisesException] Promise<record<DOMString, SubAppsListInfo>> list();
   [CallWith=ScriptState, RaisesException] Promise<void> remove(DOMString app_id);
 };

@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -31,6 +32,8 @@ using blink::mojom::SubAppsServiceAddInfoPtr;
 using blink::mojom::SubAppsServiceAddResult;
 using blink::mojom::SubAppsServiceAddResultCode;
 using blink::mojom::SubAppsServiceAddResultPtr;
+using blink::mojom::SubAppsServiceListInfo;
+using blink::mojom::SubAppsServiceListInfoPtr;
 using blink::mojom::SubAppsServiceListResult;
 using blink::mojom::SubAppsServiceResult;
 
@@ -181,8 +184,9 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
   const AppId* parent_app_id = GetAppId(render_frame_host());
   if (!parent_app_id) {
     return std::move(result_callback)
-        .Run(SubAppsServiceListResult::New(SubAppsServiceResult::kFailure,
-                                           std::vector<UnhashedAppId>()));
+        .Run(SubAppsServiceListResult::New(
+            SubAppsServiceResult::kFailure,
+            std::vector<SubAppsServiceListInfoPtr>()));
   }
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   if (!provider->on_registry_ready().is_signaled()) {
@@ -195,16 +199,18 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
 
   WebAppRegistrar& registrar = provider->registrar();
 
-  std::vector<UnhashedAppId> sub_app_ids;
+  std::vector<SubAppsServiceListInfoPtr> sub_apps;
   for (const AppId& web_app_id : registrar.GetAllSubAppIds(*parent_app_id)) {
     const WebApp* web_app = registrar.GetAppById(web_app_id);
-    sub_app_ids.push_back(
-        GenerateAppIdUnhashed(web_app->manifest_id(), web_app->start_url()));
+    UnhashedAppId sub_app_id =
+        GenerateAppIdUnhashed(web_app->manifest_id(), web_app->start_url());
+    sub_apps.push_back(
+        SubAppsServiceListInfo::New(sub_app_id, web_app->untranslated_name()));
   }
 
   std::move(result_callback)
       .Run(SubAppsServiceListResult::New(SubAppsServiceResult::kSuccess,
-                                         std::move(sub_app_ids)));
+                                         std::move(sub_apps)));
 }
 
 void SubAppsServiceImpl::Remove(const UnhashedAppId& unhashed_app_id,

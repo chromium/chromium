@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_add_options.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_list_info.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -30,6 +30,7 @@ using mojom::blink::SubAppsServiceAddInfo;
 using mojom::blink::SubAppsServiceAddInfoPtr;
 using mojom::blink::SubAppsServiceAddResultCode;
 using mojom::blink::SubAppsServiceAddResultPtr;
+using mojom::blink::SubAppsServiceListInfoPtr;
 using mojom::blink::SubAppsServiceListResultPtr;
 using mojom::blink::SubAppsServiceResult;
 
@@ -80,6 +81,17 @@ Vector<SubAppsServiceAddInfoPtr> AddOptionsToMojo(
         unhashed_app_id, KURL(add_options->installUrl())));
   }
   return sub_apps_mojo;
+}
+
+HeapVector<std::pair<String, Member<SubAppsListInfo>>> ListResultsFromMojo(
+    Vector<SubAppsServiceListInfoPtr> sub_apps_mojo) {
+  HeapVector<std::pair<String, Member<SubAppsListInfo>>> subapps;
+  for (auto& sub_app : sub_apps_mojo) {
+    SubAppsListInfo* list_info = SubAppsListInfo::Create();
+    list_info->setAppName(std::move(sub_app->app_name));
+    subapps.emplace_back(std::move(sub_app->unhashed_app_id), list_info);
+  }
+  return subapps;
 }
 
 }  // namespace
@@ -186,7 +198,7 @@ ScriptPromise SubApps::list(ScriptState* script_state,
   GetService()->List(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver, SubAppsServiceListResultPtr result) {
         if (result->code == SubAppsServiceResult::kSuccess) {
-          resolver->Resolve(result->sub_app_ids);
+          resolver->Resolve(ListResultsFromMojo(std::move(result->sub_apps)));
         } else {
           resolver->Reject(V8ThrowDOMException::CreateOrDie(
               resolver->GetScriptState()->GetIsolate(),

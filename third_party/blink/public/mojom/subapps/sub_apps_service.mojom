@@ -44,7 +44,12 @@ struct SubAppsServiceAddResult {
 
 struct SubAppsServiceListResult {
   SubAppsServiceResult code;
-  array<string> sub_app_ids;
+  array<SubAppsServiceListInfo> sub_apps;
+};
+
+struct SubAppsServiceListInfo {
+  string unhashed_app_id;
+  string app_name;
 };
 
 // Sub Apps APIs allow installed PWAs to install shortcuts to their various
