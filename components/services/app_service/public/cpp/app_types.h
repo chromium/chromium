@@ -18,6 +18,7 @@
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/services/app_service/public/cpp/shortcut.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/protos/app_types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
@@ -230,6 +231,22 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
 };
 
 using AppPtr = std::unique_ptr<App>;
+
+COMPONENT_EXPORT(APP_TYPES)
+ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type);
+
+COMPONENT_EXPORT(APP_TYPES)
+ApplicationInstallReason ConvertInstallReasonToProtoApplicationInstallReason(
+    InstallReason install_reason);
+
+COMPONENT_EXPORT(APP_TYPES)
+ApplicationInstallSource ConvertInstallSourceToProtoApplicationInstallSource(
+    InstallSource install_source);
+
+COMPONENT_EXPORT(APP_TYPES)
+ApplicationUninstallSource
+ConvertUninstallSourceToProtoApplicationUninstallSource(
+    UninstallSource uninstall_source);
 
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.

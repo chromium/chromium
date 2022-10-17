@@ -68,7 +68,10 @@ component("app_types") {
 
   defines = [ "IS_APP_TYPES_IMPL" ]
 
-  public_deps = [ "//components/services/app_service/public/mojom" ]
+  public_deps = [
+    "//components/services/app_service/public/mojom",
+    "//components/services/app_service/public/protos",
+  ]
 
   deps = [
     ":icon_types",
