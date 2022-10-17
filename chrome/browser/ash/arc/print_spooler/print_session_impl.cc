@@ -189,20 +189,20 @@ bool IsPdfPluginLoaded(content::WebContents* web_contents) {
     return false;
   }
 
-  content::WebContents* contents_to_use =
-      printing::GetWebContentsToUse(web_contents);
-  if (contents_to_use == web_contents) {
-    VLOG(1) << "No plugin WebContents found yet.";
+  content::RenderFrameHost* plugin_frame =
+      printing::GetFullPagePlugin(web_contents);
+  if (!plugin_frame) {
+    VLOG(1) << "No plugin frame found yet.";
     return false;
   }
 
-  GURL url = contents_to_use->GetPrimaryMainFrame()->GetLastCommittedURL();
+  GURL url = plugin_frame->GetLastCommittedURL();
   if (!url.SchemeIs("chrome-extension")) {
     VLOG(1) << "Plugin frame URL not loaded yet.";
     return false;
   }
 
-  if (!contents_to_use->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+  if (!plugin_frame->IsDocumentOnLoadCompletedInMainFrame()) {
     VLOG(1) << "Plugin frame still loading.";
     return false;
   }
