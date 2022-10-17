@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
@@ -28,9 +29,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
 import org.chromium.chrome.test.util.browser.Features;
@@ -52,6 +55,8 @@ import java.util.List;
 @EnableFeatures({ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_DYNAMIC_SPACING})
 public class BaseCarouselSuggestionViewBinderUnitTest {
     static final int SUGGESTION_VERTICAL_PADDING = 123;
+    static final int SUGGESTION_SMALL_BOTTOM_PADDING = 31;
+
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
     @Mock
@@ -75,6 +80,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     private ModelList mTiles;
     private PropertyModel mModel;
     private Configuration mConfiguration;
+    private Context mContext;
 
     @Before
     public void setUp() {
@@ -85,6 +91,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         mTiles = new ModelList();
         mConfiguration = new Configuration();
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mContext = ContextUtils.getApplicationContext();
 
         when(mView.getHeaderTextView()).thenReturn(mHeaderTextView);
         when(mView.getHeaderView()).thenReturn(mHeaderView);
@@ -94,7 +101,11 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
         when(mResources.getDimensionPixelSize(eq(R.dimen.omnibox_carousel_suggestion_padding)))
                 .thenReturn(SUGGESTION_VERTICAL_PADDING);
+        when(mResources.getDimensionPixelSize(
+                     eq(R.dimen.omnibox_carousel_suggestion_small_bottom_padding)))
+                .thenReturn(SUGGESTION_SMALL_BOTTOM_PADDING);
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
+        when(mView.getContext()).thenReturn(mContext);
     }
 
     @Test
@@ -157,6 +168,28 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         verify(mView, times(1))
                 .setPaddingRelative(eq(0), eq(SUGGESTION_VERTICAL_PADDING), eq(0),
                         eq(SUGGESTION_VERTICAL_PADDING));
+        verify(mView, times(2)).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE})
+    @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    public void headerTitle_visibilityChangeAltersTopPadding_smallBottomPadding() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
+        mModel.set(BaseCarouselSuggestionViewProperties.SHOW_TITLE, true);
+        verify(mHeaderView, times(1)).setVisibility(eq(View.VISIBLE));
+        verify(mHeaderView, times(1)).setVisibility(anyInt());
+        verify(mView, times(1))
+                .setPaddingRelative(eq(0), eq(0), eq(0), eq(SUGGESTION_SMALL_BOTTOM_PADDING));
+        verify(mView, times(1)).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
+
+        mModel.set(BaseCarouselSuggestionViewProperties.SHOW_TITLE, false);
+        verify(mHeaderView, times(1)).setVisibility(eq(View.GONE));
+        verify(mHeaderView, times(2)).setVisibility(anyInt());
+        verify(mView, times(1))
+                .setPaddingRelative(eq(0), eq(SUGGESTION_VERTICAL_PADDING), eq(0),
+                        eq(SUGGESTION_SMALL_BOTTOM_PADDING));
         verify(mView, times(2)).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
     }
 

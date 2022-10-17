@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
@@ -40,14 +41,21 @@ public final class BaseCarouselSuggestionViewBinder {
         } else if (key == BaseCarouselSuggestionViewProperties.SHOW_TITLE) {
             final boolean showTitle = model.get(BaseCarouselSuggestionViewProperties.SHOW_TITLE);
             final View headerView = view.getHeaderView();
-            final int paddingVertical = view.getResources().getDimensionPixelSize(
+            boolean shouldShowSmallBottomMargin =
+                    OmniboxFeatures.shouldShowModernizeVisualUpdate(view.getContext())
+                    && OmniboxFeatures.shouldShowSmallBottomMargin();
+            final int topPadding = view.getResources().getDimensionPixelSize(
                     R.dimen.omnibox_carousel_suggestion_padding);
+            final int bottomPadding =
+                    view.getResources().getDimensionPixelSize(shouldShowSmallBottomMargin
+                                    ? R.dimen.omnibox_carousel_suggestion_small_bottom_padding
+                                    : R.dimen.omnibox_carousel_suggestion_padding);
             if (showTitle) {
                 headerView.setVisibility(View.VISIBLE);
-                view.setPaddingRelative(0, 0, 0, paddingVertical);
+                view.setPaddingRelative(0, 0, 0, bottomPadding);
             } else {
                 headerView.setVisibility(View.GONE);
-                view.setPaddingRelative(0, paddingVertical, 0, paddingVertical);
+                view.setPaddingRelative(0, topPadding, 0, bottomPadding);
             }
         } else if (key == SuggestionCommonProperties.DEVICE_FORM_FACTOR) {
             view.setItemSpacingPx(getItemSpacingPx(
