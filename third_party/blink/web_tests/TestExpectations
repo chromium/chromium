@@ -7081,8 +7081,6 @@ crbug.com/1357621 [ Linux ] external/wpt/webauthn/getcredential-abort.https.html
 crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default.html [ Failure Pass ]
 crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-writing-mode-rl.html [ Failure Pass ]
 
-crbug.com/1358051 external/wpt/longtask-timing/containerTypes.html [ Failure Pass ]
-
 # TODO(crbug.com/1358147): Re-enable this test
 virtual/plz-dedicated-worker/external/wpt/resource-timing/no-entries-for-cross-origin-css-fetched-memory-cache.sub.html [ Skip ]
 
@@ -7185,7 +7183,6 @@ crbug.com/1359788 virtual/orb-v01/external/wpt/fetch/corb/img-svg-doctype-html-m
 crbug.com/1359788 virtual/orb-v02/external/wpt/fetch/corb/img-svg-doctype-html-mimetype-svg.sub.html [ Failure ]
 
 # Sheriff 2022-09-29
-crbug.com/1368855 external/wpt/longtask-timing/containerNames.html [ Failure Pass ]
 crbug.com/1369642 [ Mac ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 
 # Temporarily expect timeouts related to post message blocking
