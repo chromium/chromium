@@ -837,7 +837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IncognitoInterstitial"
-    enum="IncognitoInterstitialActionType" expires_after="2022-11-08">
+    enum="IncognitoInterstitialActionType" expires_after="2023-10-17">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -847,7 +847,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IncognitoInterstitial.Settings"
-    enum="IncognitoInterstitialSettingsActionType" expires_after="2022-11-08">
+    enum="IncognitoInterstitialSettingsActionType" expires_after="2023-10-17">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
