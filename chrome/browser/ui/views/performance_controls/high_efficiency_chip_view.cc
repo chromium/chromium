@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -66,9 +68,12 @@ HighEfficiencyChipView::HighEfficiencyChipView(
   SetUpForInOutAnimation(kChipAnimationDuration);
   SetPaintLabelOverSolidBackground(true);
   SetProperty(views::kElementIdentifierKey, kHighEfficiencyChipElementId);
+  browser_->tab_strip_model()->AddObserver(this);
 }
 
-HighEfficiencyChipView::~HighEfficiencyChipView() = default;
+HighEfficiencyChipView::~HighEfficiencyChipView() {
+  browser_->tab_strip_model()->RemoveObserver(this);
+}
 
 void HighEfficiencyChipView::OnBubbleShown() {
   PauseAnimation();
@@ -77,6 +82,22 @@ void HighEfficiencyChipView::OnBubbleShown() {
 void HighEfficiencyChipView::OnBubbleHidden() {
   UnpauseAnimation();
   bubble_ = nullptr;
+}
+
+void HighEfficiencyChipView::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  content::WebContents* const web_contents = selection.old_contents;
+  if (!web_contents) {
+    return;
+  }
+
+  if (selection.active_tab_changed()) {
+    TabDiscardTabHelper* const tab_helper =
+        TabDiscardTabHelper::FromWebContents(web_contents);
+    tab_helper->SetChipHasBeenHidden();
+  }
 }
 
 void HighEfficiencyChipView::UpdateImpl() {
@@ -100,6 +121,8 @@ void HighEfficiencyChipView::UpdateImpl() {
         pref_service->SetInteger(prefs::kHighEfficiencyChipExpandedCount,
                                  times_rendered + 1);
       }
+    } else if (tab_helper->HasChipBeenHidden()) {
+      ResetSlideAnimation(false);
     }
 
     if (performance_manager::features::kHighEfficiencyModeDefaultState.Get()) {

@@ -70,9 +70,9 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
     environment_.TearDown();
   }
 
-  void SetTabDiscardState(bool is_discarded) {
+  void SetTabDiscardState(int tab_index, bool is_discarded) {
     TabDiscardTabHelper* tab_helper = TabDiscardTabHelper::FromWebContents(
-        browser()->tab_strip_model()->GetWebContentsAt(0));
+        browser()->tab_strip_model()->GetWebContentsAt(tab_index));
     std::unique_ptr<DiscardMockNavigationHandle> navigation_handle =
         std::make_unique<DiscardMockNavigationHandle>();
     navigation_handle.get()->SetWasDiscarded(is_discarded);
@@ -125,7 +125,7 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
 // updated it should be visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldShowForDiscardedPage) {
   SetHighEfficiencyModeEnabled(true);
-  SetTabDiscardState(true);
+  SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
 
@@ -136,7 +136,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldShowForDiscardedPage) {
 // enabled, we don't show the chip.
 TEST_F(HighEfficiencyChipViewTest, ShouldNotShowWhenPrefIsFalse) {
   SetHighEfficiencyModeEnabled(false);
-  SetTabDiscardState(true);
+  SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
 
@@ -147,7 +147,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotShowWhenPrefIsFalse) {
 // visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldNotShowForRegularPage) {
   SetHighEfficiencyModeEnabled(true);
-  SetTabDiscardState(false);
+  SetTabDiscardState(0, false);
 
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_FALSE(view->GetVisible());
@@ -156,7 +156,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotShowForRegularPage) {
 // When the page action chip is clicked, the dialog should open.
 TEST_F(HighEfficiencyChipViewTest, ShouldOpenDialogOnClick) {
   SetHighEfficiencyModeEnabled(true);
-  SetTabDiscardState(true);
+  SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_EQ(view->GetBubble(), nullptr);
@@ -171,7 +171,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldOpenDialogOnClick) {
 
 // When the dialog is closed, UMA metrics should be logged.
 TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsOnDialogDismiss) {
-  SetTabDiscardState(true);
+  SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_EQ(view->GetBubble(), nullptr);
@@ -191,7 +191,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsOnDialogDismiss) {
 
 // When the dialog is closed, the ink drop should hide.
 TEST_F(HighEfficiencyChipViewTest, ShouldShowAndHideInkDrop) {
-  SetTabDiscardState(true);
+  SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_EQ(GetInkDropState(), views::InkDropState::HIDDEN);
@@ -213,7 +213,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldShowAndHideInkDrop) {
 
 // A link should be rendered within the dialog.
 TEST_F(HighEfficiencyChipViewTest, ShouldRenderLinkInDialog) {
-  SetTabDiscardState(true);
+  SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
 
@@ -231,7 +231,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldRenderLinkInDialog) {
 
 // The memory savings should be rendered within the dialog.
 TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
-  SetTabDiscardState(true);
+  SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
 
@@ -252,12 +252,37 @@ TEST_F(HighEfficiencyChipViewTest, ShouldHideLabelAfterThreeTimes) {
   SetHighEfficiencyModeEnabled(true);
   // Open the tab 3 times with the label being visible.
   for (int i = 0; i < 3; i++) {
-    SetTabDiscardState(true);
+    SetTabDiscardState(0, true);
     EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
-    SetTabDiscardState(false);
+    SetTabDiscardState(0, false);
   }
 
   // On the 4th time, the label should be hidden.
-  SetTabDiscardState(true);
+  SetTabDiscardState(0, true);
+  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
+}
+
+// When a chip is expaneded with the label, if we navigate to another tab
+// and come back, the chip should be collapsed with the label hidden.
+TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
+  SetHighEfficiencyModeEnabled(true);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  AddTab(browser(), GURL("http://foo"));
+  EXPECT_EQ(2, tab_strip_model->GetTabCount());
+
+  SetTabDiscardState(0, true);
+  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
+
+  tab_strip_model->SelectNextTab();
+  PageActionIconView* view = GetPageActionIconView();
+  EXPECT_FALSE(view->GetVisible());
+
+  SetTabDiscardState(1, true);
+  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
+
+  tab_strip_model->SelectPreviousTab();
+  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
+
+  tab_strip_model->SelectNextTab();
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
