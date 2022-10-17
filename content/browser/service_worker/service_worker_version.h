@@ -885,10 +885,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
       scoped_refptr<ServiceWorkerRegistration> registration);
   void StartWorkerInternal();
 
-  // Stops the worker if it is idle (has no in-flight requests) or timed out
-  // ping.
-  void StopWorkerIfIdle();
-
   // Returns true if the service worker is known to have work to do because the
   // browser process initiated a request to the service worker which isn't done
   // yet.
