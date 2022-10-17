@@ -90,7 +90,7 @@ class AnsibleManagementService : public KeyedService,
   // Gets the input from the user-facing dialog to determine whether or not a
   // configuration task should be retried.
   void RetryConfiguration(const guest_os::GuestId& container_id);
-
+  void CancelConfiguration(const guest_os::GuestId& container_id);
   void CompleteConfiguration(const guest_os::GuestId& container_id,
                              bool success);
 
@@ -106,6 +106,8 @@ class AnsibleManagementService : public KeyedService,
                                       views::Widget* widget);
 
  private:
+  bool IsCancelled(const guest_os::GuestId& container_id);
+
   // Helper function to create the UI elements needed. We won't need to keep
   // track of this because it'll be self-destructing.
   void CreateUiElement(const guest_os::GuestId& container_id);

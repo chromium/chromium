@@ -177,7 +177,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
   }
 
   bool IsDefaultDialog(const guest_os::GuestId& container_id) {
-    return !HasAcceptButton(container_id) && !HasCancelButton(container_id) &&
+    return !HasAcceptButton(container_id) && HasCancelButton(container_id) &&
            HasDefaultStrings(container_id);
   }
 
@@ -279,6 +279,18 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
   ActiveView(crostini::DefaultContainerId())
       ->OnAnsibleSoftwareConfigurationFinished(crostini::DefaultContainerId(),
                                                true);
+
+  EXPECT_TRUE(HasNoView(crostini::DefaultContainerId()));
+}
+
+IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
+                       SuccessfulFlow_Cancel) {
+  ShowUi("default");
+
+  EXPECT_TRUE(HasView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsDefaultDialog(crostini::DefaultContainerId()));
+
+  ActiveView(crostini::DefaultContainerId())->Cancel();
 
   EXPECT_TRUE(HasNoView(crostini::DefaultContainerId()));
 }

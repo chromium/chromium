@@ -40,6 +40,12 @@ bool CrostiniAnsibleSoftwareConfigView::Accept() {
 }
 
 bool CrostiniAnsibleSoftwareConfigView::Cancel() {
+  if (state_ == State::CONFIGURING) {
+    // Cancel anything running/waiting on this specific configuration task.
+    crostini::AnsibleManagementService::GetForProfile(profile_)
+        ->CancelConfiguration(container_id_);
+  }
+  // Always close.
   crostini::AnsibleManagementService::GetForProfile(profile_)->RemoveObserver(
       this);
   crostini::AnsibleManagementService::GetForProfile(profile_)
@@ -179,12 +185,14 @@ void CrostiniAnsibleSoftwareConfigView::OnStateChanged() {
   progress_bar_->SetVisible(state_ == State::CONFIGURING);
   subtext_label_->SetText(GetSubtextLabel());
   SetButtons(state_ == State::CONFIGURING
-                 ? ui::DIALOG_BUTTON_NONE
+                 ? ui::DIALOG_BUTTON_CANCEL
                  : (state_ == State::ERROR
                         ? ui::DIALOG_BUTTON_OK
                         : ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
   // The cancel button, even when present, always uses the default text.
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_APP_OK));
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 l10n_util::GetStringUTF16(IDS_APP_CANCEL));
   DialogModelChanged();
   if (GetWidget())
     GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
