@@ -378,6 +378,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.WEB_RTC_METRONOME,
                     "Inject a metronome into webrtc to allow task coalescing, "
                             + " including synchronized decoding."),
+            Flag.baseFeature(BlinkFeatures.FAST_PATH_PAINT_PROPERTY_UPDATES,
+                    "If enabled, some paint property updates (e.g., transform "
+                            + "changes) will be applied directly instead of "
+                            + "using the property tree builder."),
             Flag.baseFeature(BlinkFeatures.THREADED_BODY_LOADER,
                     "If enabled, reads and decodes navigation body data off the main thread."),
             Flag.baseFeature("PreconnectOnRedirect"),
