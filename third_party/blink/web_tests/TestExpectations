@@ -7319,6 +7319,7 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/c
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/controls/paint-controls-webkit-appearance-none-custom-bg.html [ Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/controls/paint-controls-webkit-appearance-none.html [ Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/track/track-cue-rendering-rtl.html [ Skip ]
+crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/track/track-cue-rendering-vertical.html [ Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/video-currentTime-delay.html [ Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/video-layer-crash.html [ Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-frameserver/media/video-persistence.html [ Skip ]
