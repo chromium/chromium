@@ -301,11 +301,8 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsHandlerImpl::FindEntry(
     const net::SchemefulSite& site,
     const net::FirstPartySetsContextConfig& config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets))
-    return absl::nullopt;
-
-  if (!global_sets_.has_value()) {
-    // TODO(crbug.com/1366918) : Add metrics to see how often this occurs.
+  if (!base::FeatureList::IsEnabled(features::kFirstPartySets) ||
+      !global_sets_.has_value()) {
     return absl::nullopt;
   }
   return global_sets_->FindEntry(site, config);

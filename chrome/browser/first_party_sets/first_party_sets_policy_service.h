@@ -104,8 +104,11 @@ class FirstPartySetsPolicyService : public KeyedService {
   // - the list of First-Party Sets isn't initialized yet or
   // - `site` isn't in Chrome's list of First-Party Sets or
   // - this instance has not received the config yet
+  //
+  // This also logs metrics that track how often this is queried before this
+  // instance has received the config yet.
   absl::optional<net::FirstPartySetEntry> FindEntry(
-      const net::SchemefulSite& site) const;
+      const net::SchemefulSite& site);
 
   // Checks if ownership of `site` is managed by an enterprise.
   //
@@ -168,6 +171,10 @@ class FirstPartySetsPolicyService : public KeyedService {
   // Keeps track of whether this instance has ever been initialized fully. Must
   // not be reset in `ResetForTesting`.
   bool first_initialization_complete_for_testing_ = false;
+
+  // Tracks the number of queries to the First-Party Sets in the browser process
+  // are received before the `global_sets_` are initialized.
+  int num_queries_before_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

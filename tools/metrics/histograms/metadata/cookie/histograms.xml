@@ -442,6 +442,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.FirstPartySets.NumBrowserQueriesBeforeInitialization"
+    units="queries" expires_after="2023-10-13">
+  <owner>kaklilu@chromium.org</owner>
+  <owner>cfredric@chromium.org</owner>
+  <owner>chrome-first-party-sets@chromium.org</owner>
+  <summary>
+    This histogram keeps count of how many times the First-Party Sets were
+    queried in the browser process before the browser-global First-Party Sets
+    were initialized.
+
+    This metric is recorded by the FirstPartySetsPolicyService when it has
+    completed its initialization flow, which is blocked until the service
+    receives its configuration from the FirstPartySetsHandler after the
+    browser-global sets have been initialized.
+
+    Since each profile has its own instance of the FirstPartySetPolicyService
+    the client may record this metric more than once. This metric is recorded
+    for a profile even when First-Party Sets is disabled globally or for this
+    profile, and is recorded for all kinds of profiles.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.FromStorageWithValidLength" enum="BooleanValid"
     expires_after="2023-03-18">
   <owner>bingler@chromium.org</owner>
