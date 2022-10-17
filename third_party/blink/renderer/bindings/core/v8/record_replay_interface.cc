@@ -256,7 +256,7 @@ function Target_getStepOffsets() {
 function Target_getCurrentNetworkRequestEvent() {
   try {
     const obj = JSON.parse(getCurrentNetworkRequestEvent());
-    return obj;
+    return { data: obj };
   } catch (e) {
     log(`Error: getCurrentNetworkRequestEvent exception: ${e}`);
   }
