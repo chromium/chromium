@@ -452,7 +452,7 @@ AwBrowserContext::GetClientHintsControllerDelegate() {
   }
   if (!client_hints_controller_delegate_.get()) {
     client_hints_controller_delegate_ =
-        std::make_unique<AwClientHintsControllerDelegate>();
+        std::make_unique<AwClientHintsControllerDelegate>(GetPrefService());
   }
   return client_hints_controller_delegate_.get();
 }

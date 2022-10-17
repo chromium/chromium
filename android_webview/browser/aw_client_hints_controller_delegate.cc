@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 
 #include "base/notreached.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
@@ -16,14 +17,11 @@
 
 namespace android_webview {
 
-AwClientHintsControllerDelegate::AwClientHintsControllerDelegate() {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
-}
-AwClientHintsControllerDelegate::~AwClientHintsControllerDelegate() {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
-}
+AwClientHintsControllerDelegate::AwClientHintsControllerDelegate(
+    PrefService* pref_service)
+    : pref_service_(pref_service) {}
+
+AwClientHintsControllerDelegate::~AwClientHintsControllerDelegate() = default;
 
 network::NetworkQualityTracker*
 AwClientHintsControllerDelegate::GetNetworkQualityTracker() {
@@ -55,9 +53,7 @@ bool AwClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
 
 blink::UserAgentMetadata
 AwClientHintsControllerDelegate::GetUserAgentMetadata() {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
-  return blink::UserAgentMetadata();
+  return embedder_support::GetUserAgentMetadata(pref_service_);
 }
 
 void AwClientHintsControllerDelegate::PersistClientHints(

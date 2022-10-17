@@ -5,6 +5,8 @@
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 
 #include "base/memory/ref_counted.h"
+#include "components/embedder_support/user_agent_utils.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
@@ -15,12 +17,14 @@ namespace android_webview {
 class AwClientHintsControllerDelegateTest : public testing::Test {
  protected:
   void SetUp() override {
+    prefs_ = std::make_unique<TestingPrefServiceSimple>();
     client_hints_controller_delegate_ =
-        std::make_unique<AwClientHintsControllerDelegate>();
+        std::make_unique<AwClientHintsControllerDelegate>(prefs_.get());
   }
 
   std::unique_ptr<content::ClientHintsControllerDelegate>
       client_hints_controller_delegate_;
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
 };
 
 TEST_F(AwClientHintsControllerDelegateTest, GetNetworkQualityTracker) {
@@ -47,8 +51,7 @@ TEST_F(AwClientHintsControllerDelegateTest, AreThirdPartyCookiesBlocked) {
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, GetUserAgentMetadata) {
-  // TODO(crbug.com/921655): Actually test function once implemented.
-  EXPECT_EQ(blink::UserAgentMetadata(),
+  EXPECT_EQ(embedder_support::GetUserAgentMetadata(prefs_.get()),
             client_hints_controller_delegate_->GetUserAgentMetadata());
 }
 

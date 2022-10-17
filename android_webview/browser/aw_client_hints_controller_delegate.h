@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_CLIENT_HINTS_CONTROLLER_DELEGATE_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_CLIENT_HINTS_CONTROLLER_DELEGATE_H_
 
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-forward.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -32,7 +33,7 @@ namespace android_webview {
 class AwClientHintsControllerDelegate
     : public content::ClientHintsControllerDelegate {
  public:
-  AwClientHintsControllerDelegate();
+  explicit AwClientHintsControllerDelegate(PrefService* pref_service);
   ~AwClientHintsControllerDelegate() override;
 
   network::NetworkQualityTracker* GetNetworkQualityTracker() override;
@@ -64,6 +65,7 @@ class AwClientHintsControllerDelegate
   gfx::Size GetMostRecentMainFrameViewportSize() override;
 
  private:
+  raw_ptr<PrefService> pref_service_;
   gfx::Size viewport_size_;
 };
 
