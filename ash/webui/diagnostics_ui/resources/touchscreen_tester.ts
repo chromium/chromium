@@ -143,6 +143,25 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     this.drawingProvider.drawTrail(
         touchPt.x - 1, touchPt.y, touchPt.x, touchPt.y, pressure);
   }
+
+  /**
+   * Handle when a 'touchmove' event is fired from Touch API, or an existing
+   * touch moves from evdev.
+   * @param touchId The identifier of a touch.
+   * @param touchPt The coordinates of a touch point.
+   * @param pressure The pressure of a touch.
+   */
+  onDraw(touchId: number, touchPt: Point, pressure: number): void {
+    // Previous point of this touch.
+    const previousPt = this.touches.get(touchId);
+    if (previousPt) {
+      this.drawingProvider.drawTrail(
+          previousPt.x, previousPt.y, touchPt.x, touchPt.y, pressure);
+    }
+
+    // Update the coordinates of this touch.
+    this.touches.set(touchId, touchPt);
+  }
 }
 
 declare global {
