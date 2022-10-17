@@ -504,6 +504,27 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
   ExpectUKMCount(XHREntry::kEntryName, "IsAddToCart", 1);
 }
 
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, SkipAddToCart_FromComponent) {
+  bool is_populated =
+      commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
+          base::Version("0.0.0.1"), R"###(
+          {
+            "guitarcenter.com": {
+              "skip_add_to_cart_regex": "dummy-request"
+            }
+          }
+      )###",
+          "{}", "", "");
+  DCHECK(is_populated);
+
+  NavigateToURL("https://www.guitarcenter.com/");
+  SendXHR("/add-to-cart", "product: 123");
+  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
+
+  SendXHR("/add-to-cart/dummy-request-url", "product: 123");
+  WaitForUmaCount("Commerce.Carts.AddToCartByURL", 1);
+}
+
 // TODO(https://crbug/1310497, https://crbug.com/1362442): This test is flaky
 // on ChromeOS and Linux Asan.
 #if BUILDFLAG(IS_CHROMEOS)

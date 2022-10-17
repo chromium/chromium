@@ -18,6 +18,7 @@ constexpr char kMerchantCartURLType[] = "cart_url";
 constexpr char kMerchantCartURLRegexType[] = "cart_url_regex";
 constexpr char kMerchantCheckoutURLRegexType[] = "checkout_url_regex";
 constexpr char kMerchantPurchaseURLRegexType[] = "purchase_url_regex";
+constexpr char kSkipAddToCartRegexType[] = "skip_add_to_cart_regex";
 
 // CommerceGlobalHeuristics types.
 constexpr char kSkipProductPatternType[] = "sensitive_product_regex";
@@ -90,6 +91,7 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
   domain_cart_url_pattern_mapping_.clear();
   domain_checkout_url_pattern_mapping_.clear();
   domain_purchase_url_pattern_mapping_.clear();
+  domain_skip_add_to_cart_pattern_mapping_.clear();
   return true;
 }
 
@@ -175,6 +177,13 @@ const re2::RE2* CommerceHeuristicsData::GetPurchasePageURLPatternForDomain(
     const std::string& domain) {
   return GetCommerceHintHeuristicsRegex(domain_purchase_url_pattern_mapping_,
                                         kMerchantPurchaseURLRegexType, domain);
+}
+
+const re2::RE2* CommerceHeuristicsData::GetSkipAddToCartPatternForDomain(
+    const std::string& domain) {
+  return GetCommerceHintHeuristicsRegex(
+      domain_skip_add_to_cart_pattern_mapping_, kSkipAddToCartRegexType,
+      domain);
 }
 
 std::string CommerceHeuristicsData::GetProductIDExtractionJSON() {
