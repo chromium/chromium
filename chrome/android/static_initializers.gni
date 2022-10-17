@@ -20,25 +20,22 @@ if (current_toolchain == default_toolchain &&
     (!is_debug && !using_sanitizer && proprietary_codecs)) {
   # Comments show static_initializers according to
   # tools/linux/dump-static-initializers.py.
+  _chrome_count = 0
 
-  # TODO(https://crbug.com/1177849): Remove from tflite:
-  # tflite_engine.cc (initializer offset 0x34cb88c size 0x2c)
-  #   __ThumbV7PILongThunk__ZNSt3__18ios_base4InitC1Ev
-  #   __ThumbV7PILongThunk___cxa_atexit
-  expected_static_initializer_count = 1
-
-  # From v8 I think:
-  # token.cc (initializer offset 0x27f024c size 0x11c)
-  expected_static_initializer_count += 1
-
-  # This one is from //third_party/gvr-android-sdk
-  # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
-  expected_static_initializer_count += 1
-
-  if (build_with_internal_optimization_guide) {
-    # 000081d1 t _GLOBAL__I_000101
-    expected_static_initializer_count += 1
+  if (target_cpu == "arm64") {
+    # Caused by "outline atomics". https://crbug.com/1272795
+    # cpu_model.c: init_have_lse_atomics
+    _chrome_count += 1
   }
+
+  # iostream.cpp: _GLOBAL__I_000101
+  _chrome_count += 1
+
+  # v8/src/parsing/token.cc: _GLOBAL__sub_I_token.cc
+  _chrome_count += 1
+
+  # From //third_party/gvr-android-sdk: _GLOBAL__sub_I_base_logging.cc
+  _chrome_count += 1
 
   if (use_static_angle && !is_official_build &&
       (is_debug || dcheck_always_on)) {
@@ -46,10 +43,25 @@ if (current_toolchain == default_toolchain &&
     #
     # doc.cpp (initializer offset 0xcf9c6c size 0x138)
     # SPVRemapper.cpp (initializer offset 0xcf2924 size 0x64)
-    expected_static_initializer_count += 2
+    _chrome_count += 2
   }
   if (use_clang_coverage) {
     # InstrProfilingRuntime.cpp, Only in coverage builds, not production.
-    expected_static_initializer_count += 1
+    _chrome_count += 1
   }
+
+  _optimization_guide_count = 0
+
+  if (build_with_internal_optimization_guide) {
+    if (target_cpu == "arm64") {
+      # Caused by "outline atomics". https://crbug.com/1272795
+      # cpu_model.c: init_have_lse_atomics
+      _optimization_guide_count += 1
+    }
+
+    # iostream_init.h: _GLOBAL__I_000100
+    _optimization_guide_count += 1
+  }
+
+  expected_static_initializer_count = _chrome_count + _optimization_guide_count
 }

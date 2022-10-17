@@ -156,9 +156,6 @@ def main():
       _AnalyzeStaticInitializers(args.apk_or_aab, args.tool_prefix, True, '.',
                                  ignored_libs, no_initializers_libs)
       print()
-      print('If the above list is not useful, consider listing them with:')
-      print('    //tools/binary_size/diagnose_bloat.py')
-      print()
       print('For more information:')
       print('    https://chromium.googlesource.com/chromium/src/+/main/docs/'
             'static_initializers.md')

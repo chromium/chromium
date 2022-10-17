@@ -738,7 +738,7 @@ config("compiler") {
     ldflags += [ "-Wl,--no-rosegment" ]
   }
 
-  # TODO(crbug.com/1374347): Cleanup undefined symbol errors caught by 
+  # TODO(crbug.com/1374347): Cleanup undefined symbol errors caught by
   # --no-undefined-version.
   if (use_lld && !is_win && !is_mac && !is_ios) {
     ldflags += [ "-Wl,--undefined-version" ]
@@ -945,10 +945,6 @@ config("compiler_cpu_abi") {
           !(is_chromeos_lacros && is_chromeos_device)) {
         cflags += [ "--target=aarch64-linux-gnu" ]
         ldflags += [ "--target=aarch64-linux-gnu" ]
-      }
-      if (is_android) {
-        # Outline atomics crash on Exynos 9810. http://crbug.com/1272795
-        cflags += [ "-mno-outline-atomics" ]
       }
     } else if (current_cpu == "mipsel" && !is_nacl) {
       ldflags += [ "-Wl,--hash-style=sysv" ]
