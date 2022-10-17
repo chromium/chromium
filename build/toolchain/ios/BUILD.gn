@@ -34,10 +34,10 @@ ios_toolchain("ios_clang_arm64") {
   }
 }
 
-ios_toolchain("ios_clang_arm64_13_0") {
+ios_toolchain("ios_clang_arm64_13_4") {
   toolchain_args = {
     current_cpu = "arm64"
-    ios_deployment_target = "13.0"
+    ios_deployment_target = "13.4"
   }
 }
 
@@ -69,19 +69,19 @@ ios_toolchain("ios_clang_x64_fat_arm64") {
   }
 }
 
-ios_toolchain("ios_clang_x64_13_0") {
+ios_toolchain("ios_clang_x64_13_4") {
   toolchain_args = {
     current_cpu = "x64"
-    ios_deployment_target = "13.0"
+    ios_deployment_target = "13.4"
   }
 }
 
-ios_toolchain("ios_clang_x64_13_0_fat_arm64") {
+ios_toolchain("ios_clang_x64_13_4_fat_arm64") {
   toolchain_args = {
     current_cpu = "arm64"
     is_fat_secondary_toolchain = true
-    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_x64_13_0"
-    ios_deployment_target = "13.0"
+    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_x64_13_4"
+    ios_deployment_target = "13.4"
   }
 }
 

@@ -670,14 +670,14 @@ if (current_toolchain == default_toolchain) {
   if (ios_enable_search_widget_extension) {
     extension_bundle_data("search_widget_extension_bundle") {
       extension_target =
-          "//ios/chrome/search_widget_extension(${current_toolchain}_13_0)"
+          "//ios/chrome/search_widget_extension(${current_toolchain}_13_4)"
     }
   }
 
   if (ios_enable_content_widget_extension) {
     extension_bundle_data("content_widget_extension_bundle") {
       extension_target =
-          "//ios/chrome/content_widget_extension(${current_toolchain}_13_0)"
+          "//ios/chrome/content_widget_extension(${current_toolchain}_13_4)"
     }
   }
 

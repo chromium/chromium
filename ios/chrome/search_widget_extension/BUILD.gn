@@ -11,8 +11,8 @@ import("//ios/build/config.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//tools/grit/repack.gni")
 
-assert(ios_deployment_target == "13.0",
-       "search_widget_extension must target iOS 13.0")
+assert(ios_deployment_target == "13.4",
+       "search_widget_extension must target iOS 13.4")
 
 assert(
     ios_enable_search_widget_extension,
