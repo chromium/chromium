@@ -141,12 +141,10 @@ base::Value PointToDict(const gfx::Point& point) {
   return dict;
 }
 
-bool PointFromDict(const base::Value& dict, gfx::Point* point) {
+bool PointFromDict(const base::Value::Dict& dict, gfx::Point* point) {
   DCHECK(point);
-  if (!dict.is_dict())
-    return false;
-  absl::optional<int> x = dict.FindIntKey("x");
-  absl::optional<int> y = dict.FindIntKey("y");
+  absl::optional<int> x = dict.FindInt("x");
+  absl::optional<int> y = dict.FindInt("y");
   if (!x || !y) {
     return false;
   }
@@ -164,14 +162,12 @@ base::Value SkColor4fToDict(const SkColor4f color) {
   return dict;
 }
 
-bool SkColor4fFromDict(const base::Value& dict, SkColor4f* color) {
+bool SkColor4fFromDict(const base::Value::Dict& dict, SkColor4f* color) {
   DCHECK(color);
-  if (!dict.is_dict())
-    return false;
-  absl::optional<double> red = dict.FindDoubleKey("red");
-  absl::optional<double> green = dict.FindDoubleKey("green");
-  absl::optional<double> blue = dict.FindDoubleKey("blue");
-  absl::optional<double> alpha = dict.FindDoubleKey("alpha");
+  absl::optional<double> red = dict.FindDouble("red");
+  absl::optional<double> green = dict.FindDouble("green");
+  absl::optional<double> blue = dict.FindDouble("blue");
+  absl::optional<double> alpha = dict.FindDouble("alpha");
   if (!red || !green || !blue || !alpha)
     return false;
   color->fR = static_cast<float>(red.value());
@@ -183,13 +179,13 @@ bool SkColor4fFromDict(const base::Value& dict, SkColor4f* color) {
 
 // Many quads now store color as an SkColor4f, but older logs will still store
 // SkColors (which are ints). For backward compatibility's sake, read either.
-bool ColorFromDict(const base::Value& dict,
+bool ColorFromDict(const base::Value::Dict& dict,
                    base::StringPiece key,
                    SkColor4f* output_color) {
-  const base::Value* color_key = dict.FindDictKey(key);
+  const base::Value::Dict* color_key = dict.FindDict(key);
   SkColor4f color_4f;
   if (!color_key || !SkColor4fFromDict(*color_key, &color_4f)) {
-    absl::optional<int> color_int = dict.FindIntKey(key);
+    absl::optional<int> color_int = dict.FindInt(key);
     if (!color_int)
       return false;
     color_4f = SkColor4f::FromColor(static_cast<SkColor>(color_int.value()));
@@ -482,16 +478,14 @@ base::Value ShapeRectsToList(const cc::FilterOperation::ShapeRects& shape) {
   return list;
 }
 
-bool ShapeRectsFromList(const base::Value& list,
+bool ShapeRectsFromList(const base::Value::List& list,
                         cc::FilterOperation::ShapeRects* shape) {
   DCHECK(shape);
-  if (!list.is_list())
-    return false;
-  size_t size = list.GetList().size();
+  size_t size = list.size();
   cc::FilterOperation::ShapeRects data;
   data.resize(size);
   for (size_t ii = 0; ii < size; ++ii) {
-    const base::Value& dict_value = list.GetList()[ii];
+    const base::Value& dict_value = list[ii];
     if (!dict_value.is_dict())
       return false;
     if (!RectFromDict(dict_value.GetDict(), &data[ii]))
@@ -588,24 +582,24 @@ base::Value FilterOperationToDict(const cc::FilterOperation& filter) {
   return dict;
 }
 
-bool FilterOperationFromDict(const base::Value& dict,
+bool FilterOperationFromDict(const base::Value& dict_value,
                              cc::FilterOperation* out) {
   DCHECK(out);
-  if (!dict.is_dict()) {
+  if (!dict_value.is_dict()) {
     return false;
   }
 
-  absl::optional<int> type = dict.FindIntKey("type");
-  absl::optional<double> amount = dict.FindDoubleKey("amount");
-  absl::optional<double> outer_threshold =
-      dict.FindDoubleKey("outer_threshold");
-  const base::Value* drop_shadow_offset =
-      dict.FindDictKey("drop_shadow_offset");
-  const std::string* image_filter = dict.FindStringKey("image_filter");
-  const base::Value::List* matrix = dict.GetDict().FindList("matrix");
-  absl::optional<int> zoom_inset = dict.FindIntKey("zoom_inset");
-  const base::Value* shape = dict.FindListKey("shape");
-  absl::optional<int> blur_tile_mode = dict.FindIntKey("blur_tile_mode");
+  const base::Value::Dict& dict = dict_value.GetDict();
+  absl::optional<int> type = dict.FindInt("type");
+  absl::optional<double> amount = dict.FindDouble("amount");
+  absl::optional<double> outer_threshold = dict.FindDouble("outer_threshold");
+  const base::Value::Dict* drop_shadow_offset =
+      dict.FindDict("drop_shadow_offset");
+  const std::string* image_filter = dict.FindString("image_filter");
+  const base::Value::List* matrix = dict.FindList("matrix");
+  absl::optional<int> zoom_inset = dict.FindInt("zoom_inset");
+  const base::Value::List* shape = dict.FindList("shape");
+  absl::optional<int> blur_tile_mode = dict.FindInt("blur_tile_mode");
 
   cc::FilterOperation filter;
 
@@ -1459,7 +1453,7 @@ bool SolidColorDrawQuadFromDict(const base::Value& dict,
     return false;
 
   SkColor4f t_color;
-  if (!ColorFromDict(dict, "color", &t_color))
+  if (!ColorFromDict(dict.GetDict(), "color", &t_color))
     return false;
 
   draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
@@ -1487,7 +1481,7 @@ bool SurfaceDrawQuadFromDict(const base::Value& dict,
     return false;
 
   SkColor4f t_default_background_color;
-  if (!ColorFromDict(dict, "default_background_color",
+  if (!ColorFromDict(dict.GetDict(), "default_background_color",
                      &t_default_background_color))
     return false;
 
@@ -1538,7 +1532,7 @@ bool TextureDrawQuadFromDict(const base::Value& dict_value,
   if (!PointFFromDict(*uv_top_left, &t_uv_top_left) ||
       !PointFFromDict(*uv_bottom_right, &t_uv_bottom_right) ||
       !SizeFromDict(*resource_size_in_pixels, &t_resource_size_in_pixels) ||
-      !ColorFromDict(dict_value, "background_color", &t_background_color)) {
+      !ColorFromDict(dict, "background_color", &t_background_color)) {
     return false;
   }
   float t_vertex_opacity[4];
