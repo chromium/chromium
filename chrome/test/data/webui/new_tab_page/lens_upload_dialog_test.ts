@@ -178,6 +178,68 @@ suite('LensUploadDialogTest', () => {
     assertEquals(url, submittedUrl);
   });
 
+  test('dragenter event should transition to dragging state', async () => {
+    // Arrange.
+    uploadDialog.openDialog();
+    await waitAfterNextRender(uploadDialog);
+    // Act.
+    uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
+    await waitAfterNextRender(uploadDialog);
+    // Assert.
+    assertTrue(uploadDialog.hasAttribute('is-dragging_'));
+  });
+
+  test(
+      'dragenter then dragleave event should transition to normal state',
+      async () => {
+        // Arrange.
+        uploadDialog.openDialog();
+        await waitAfterNextRender(uploadDialog);
+        uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
+        await waitAfterNextRender(uploadDialog);
+        // Act.
+        uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragleave'));
+        await waitAfterNextRender(uploadDialog);
+        // Assert.
+        assertTrue(uploadDialog.hasAttribute('is-normal_'));
+      });
+
+  test(
+      'two dragenter events followed by dragleave should stay in dragging state',
+      async () => {
+        // Arrange.
+        uploadDialog.openDialog();
+        await waitAfterNextRender(uploadDialog);
+        uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
+        await waitAfterNextRender(uploadDialog);
+        uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
+        await waitAfterNextRender(uploadDialog);
+        // Act.
+        uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragleave'));
+        await waitAfterNextRender(uploadDialog);
+        // Assert.
+        assertTrue(uploadDialog.hasAttribute('is-dragging_'));
+      });
+
+  test('drop event should submit files', async () => {
+    // Arrange.
+    let submitFileListCalled = false;
+    uploadDialog.$.lensForm.submitFileList = (_fileList: FileList) => {
+      submitFileListCalled = true;
+    };
+    uploadDialog.openDialog();
+    await waitAfterNextRender(uploadDialog);
+    // Act.
+    const dataTransfer = new DataTransfer();
+    const file = new File([], 'image-file.png', {type: 'image/png'});
+    dataTransfer.items.add(file);
+    uploadDialog.$.dragDropArea.dispatchEvent(
+        new DragEvent('drop', {dataTransfer}));
+    await waitAfterNextRender(uploadDialog);
+    // Assert.
+    assertTrue(submitFileListCalled);
+  });
+
   function getInputBox(): HTMLInputElement {
     return uploadDialog.shadowRoot!.querySelector('#inputBox')!;
   }

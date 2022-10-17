@@ -31,6 +31,7 @@ export interface LensUploadDialogElement {
   $: {
     dialog: HTMLDivElement,
     lensForm: LensFormElement,
+    dragDropArea: HTMLDivElement,
   };
 }
 
@@ -83,6 +84,7 @@ export class LensUploadDialogElement extends PolymerElement {
   private dialogState_ = DialogState.HIDDEN;
   private outsideClickHandlerAttached_ = false;
   private uploadUrl_: string = '';
+  private dragCount: number = 0;
 
   private computeIsHidden_(dialogState: DialogState): boolean {
     return dialogState === DialogState.HIDDEN;
@@ -192,6 +194,37 @@ export class LensUploadDialogElement extends PolymerElement {
     const url = this.uploadUrl_.trim();
     if (url.length > 0) {
       this.$.lensForm.submitUrl(url);
+    }
+  }
+
+  private onDragEnter_(e: DragEvent) {
+    e.preventDefault();
+    this.dragCount += 1;
+
+    if (this.dragCount === 1) {
+      this.dialogState_ = DialogState.DRAGGING;
+    }
+  }
+
+  private onDragOver_(e: DragEvent) {
+    e.preventDefault();
+  }
+
+  private onDragLeave_(e: DragEvent) {
+    e.preventDefault();
+    this.dragCount -= 1;
+
+    if (this.dragCount === 0) {
+      this.dialogState_ = DialogState.NORMAL;
+    }
+  }
+
+  private onDrop_(e: DragEvent) {
+    e.preventDefault();
+    this.dragCount = 0;
+
+    if (e.dataTransfer) {
+      this.$.lensForm.submitFileList(e.dataTransfer.files);
     }
   }
 }

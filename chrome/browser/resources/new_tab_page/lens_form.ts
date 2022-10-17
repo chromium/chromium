@@ -109,11 +109,11 @@ export class LensFormElement extends PolymerElement {
   private handleFileInputChange_() {
     const fileList = this.$.fileInput.files;
     if (fileList) {
-      this.submitFileList_(fileList);
+      this.submitFileList(fileList);
     }
   }
 
-  private submitFileList_(files: FileList) {
+  submitFileList(files: FileList) {
     if (files.length > 1) {
       this.dispatchError_(LensErrorType.MULTIPLE_FILES);
       return;

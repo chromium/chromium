@@ -260,7 +260,11 @@
     <div id="title">
       $i18n{lensSearchUploadDialogTitle}
     </div>
-    <div id="dragDropArea">
+    <div id="dragDropArea"
+         on-dragenter="onDragEnter_"
+         on-dragover="onDragOver_"
+         on-dragleave="onDragLeave_"
+         on-drop="onDrop_">
       <!-- Normal state -->
       <template is="dom-if" if="{{isNormal_}}">
         <div class="drag-drop-title-container">
