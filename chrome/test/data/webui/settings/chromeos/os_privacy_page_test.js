@@ -111,9 +111,6 @@ suite('PrivacyPageTests', function() {
       async () => {
         loadTimeData.overrideValues({
           showPrivacyHubPage: true,
-          showPrivacyHubMVPPage: true,
-          showPrivacyHubDogfoodPage: true,
-          showPrivacyHubFuturePage: true,
         });
 
         privacyPage = document.createElement('os-settings-privacy-page');
@@ -126,9 +123,6 @@ suite('PrivacyPageTests', function() {
   test('Suggested content, pref disabled', async () => {
     loadTimeData.overrideValues({
       showPrivacyHubPage: false,
-      showPrivacyHubMVPPage: false,
-      showPrivacyHubDogfoodPage: false,
-      showPrivacyHubFuturePage: false,
     });
 
     privacyPage = document.createElement('os-settings-privacy-page');
@@ -144,9 +138,6 @@ suite('PrivacyPageTests', function() {
   test('Suggested content, pref enabled', async () => {
     loadTimeData.overrideValues({
       showPrivacyHubPage: false,
-      showPrivacyHubMVPPage: false,
-      showPrivacyHubDogfoodPage: false,
-      showPrivacyHubFuturePage: false,
     });
 
     // Update the backing pref to enabled.
