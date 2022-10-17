@@ -12,8 +12,8 @@
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
-@class ChromeIdentity;
 @protocol LegacySigninScreenConsumer;
+@protocol SystemIdentity;
 
 // Mediator that handles the sign-in operation.
 @interface LegacySigninScreenMediator : NSObject
@@ -31,7 +31,7 @@ class ChromeAccountManagerService;
 @property(nonatomic, weak) id<LegacySigninScreenConsumer> consumer;
 
 // The identity currently selected.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
 // Whether an account has been added. Must be set externally.
 @property(nonatomic, assign) BOOL addedAccount;
