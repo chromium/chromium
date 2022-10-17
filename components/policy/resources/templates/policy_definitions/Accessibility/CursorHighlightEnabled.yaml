@@ -1,4 +1,5 @@
 caption: Enable the cursor highlight accessibility feature
+default: null
 desc: |-
   Enable the cursor highlight accessibility feature.
 
@@ -16,6 +17,13 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable cursor highlight
+  value: true
+- caption: Disable cursor highlight
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - amraboelkher@chromium.org
 - emaxx@chromium.org

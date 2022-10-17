@@ -7,8 +7,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
+items:
+- caption: Keep at least one Chrome tab open
+  value: true
+- caption: Close Chrome completely
+  value: false
 owners:
 - nicolaso@chromium.org
 - pastarmovj@chromium.org

@@ -14,6 +14,7 @@ desc: |-
         - Control printing of any of the sources.
         - Control the privacy screen when any of the sources is visible.
         - Control screen sharing of any of the sources.
+        - Control files downloaded from any of the sources when they are transferred to the destination. Supported on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 108 and higher.
 
         The restriction level can be set to BLOCK, ALLOW, REPORT, WARN.
         - If the restriction level is set to BLOCK, the action won't be allowed. If <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED">DataLeakPreventionReportingEnabled</ph> is set to True, the blocked action will be reported to the admin.
@@ -23,8 +24,9 @@ desc: |-
 
         Notes:
         - PRIVACY_SCREEN restriction doesn't block the ability to turn on privacy screen, but enforces it when the restriction class is set to BLOCK.
-        - Destinations cannot be empty in case one of the restrictions is CLIPBOARD, but they don't make any difference for the remaining restrictions.
-        - Format the URL patterns according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ).
+        - Destinations cannot be empty in case one of the restrictions is CLIPBOARD or FILES, but they don't make any difference for the remaining restrictions.
+        - DRIVE and USB destinations are ignored for CLIPBOARD restriction.
+        - Format the URL patterns according to this format ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
 
         If the policy is left not set, no restrictions will be applied.
 example_value:
@@ -94,6 +96,8 @@ schema:
               - ARC
               - CROSTINI
               - PLUGIN_VM
+              - DRIVE
+              - USB
               type: string
             type: array
           urls:
@@ -113,6 +117,7 @@ schema:
               - PRINTING
               - PRIVACY_SCREEN
               - SCREEN_SHARE
+              - FILES
               type: string
             level:
               enum:

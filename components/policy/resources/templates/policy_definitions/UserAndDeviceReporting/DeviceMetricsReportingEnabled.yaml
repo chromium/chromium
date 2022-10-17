@@ -8,6 +8,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Always send metrics to Google
+  value: true
+- caption: Never send metrics to Google
+  value: false
 owners:
 - cros-reporting-team@google.com
 - lbaraz@chromium.org

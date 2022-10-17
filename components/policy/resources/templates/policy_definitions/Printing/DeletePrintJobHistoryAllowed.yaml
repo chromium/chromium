@@ -12,6 +12,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Allow print job history to be deleted
+  value: true
+- caption: Do not allow print job history to be deleted
+  value: false
 owners:
 - jimmyxgong@chromium.org
 - file://printing/OWNERS

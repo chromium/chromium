@@ -11,6 +11,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Disable Google Drive syncing
+  value: true
+- caption: Enable Google Drive syncing
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - rsorokin@chromium.org

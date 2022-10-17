@@ -8,6 +8,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable emoji suggestions when users type
+  value: true
+- caption: Disable emoji suggestions when users type
+  value: false
 owners:
 - myy@chromium.org
 - essential-inputs-team@google.com

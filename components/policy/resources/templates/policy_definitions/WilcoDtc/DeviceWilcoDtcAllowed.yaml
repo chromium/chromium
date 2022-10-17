@@ -8,6 +8,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Enable the wilco diagnostics and telemetry controller
+  value: true
+- caption: Disable the wilco diagnostics and telemetry controller
+  value: false
 owners:
 - pbond@chromium.org
 - lamzin@google.com

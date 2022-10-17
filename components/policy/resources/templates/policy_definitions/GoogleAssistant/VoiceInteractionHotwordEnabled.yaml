@@ -1,4 +1,5 @@
 caption: Allow Google Assistant to listen for the voice activation phrase
+default: null
 desc: |-
   Setting the policy to Enabled lets Google Assistant listen for the voice activation phrase. Setting the policy to Disabled keeps Google Assistant from listening for the phrase.
 
@@ -7,6 +8,13 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable the Google Assistant hotword
+  value: true
+- caption: Disable the Google Assistant hotword
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - yanxiao@google.com
 schema:

@@ -8,6 +8,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Allow users to turn WiFi on or off
+  value: true
+- caption: Disable WiFi
+  value: false
 owners:
 - apotapchuk@chromium.org
 schema:

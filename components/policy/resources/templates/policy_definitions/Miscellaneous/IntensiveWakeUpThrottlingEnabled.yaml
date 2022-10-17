@@ -1,7 +1,7 @@
 caption: Control the <ph name="PRODUCT_NAME">IntensiveWakeUpThrottling</ph> feature.
 default: null
 desc: "When enabled the <ph name=\"PRODUCT_NAME\">IntensiveWakeUpThrottling</ph> feature\
-  \ causes Javascript timers in background tabs to be aggressively throttled and coalesced,\
+  \ causes JavaScript timers in background tabs to be aggressively throttled and coalesced,\
   \ running no more than once per minute after a page has been backgrounded for 5\
   \ minutes or more.\n\n          This is a web standards compliant feature, but it\
   \ may break functionality\n          on some websites by causing certain actions\
@@ -24,6 +24,14 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Force throttling of background JavaScript timers
+  value: true
+- caption: Force no throttling of background JavaScript timers
+  value: false
+- caption: Allow throttling of background JavaScript timers to be controlled by Chrome
+    logic and configured by users
+  value: null
 owners:
 - file://components/performance_manager/OWNERS
 - chrisha@google.com

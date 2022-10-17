@@ -1,4 +1,5 @@
 caption: Enable on-screen keyboard
+default: null
 desc: |-
   Setting the policy to True keeps the on-screen keyboard on. Setting the policy to False keeps the on-screen keyboard off unless other factors turn it on. See the <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">TouchVirtualKeyboardEnabled</ph> policy as an example of these factors.
 
@@ -8,6 +9,13 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable on-screen keyboard
+  value: true
+- caption: Disable on-screen keyboard
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - shend@google.com
 - e14s-eng@google.com

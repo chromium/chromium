@@ -15,6 +15,11 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Cloud machine policies take precedence over platform machine policies
+  value: true
+- caption: Platform machine policies take precedence over cloud machine policies
+  value: false
 owners:
 - zmin@chromium.org
 - pastarmovj@chromium.org

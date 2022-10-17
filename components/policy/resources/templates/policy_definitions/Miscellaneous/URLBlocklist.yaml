@@ -2,7 +2,7 @@ arc_support: Android apps may voluntarily choose to honor this list. You cannot 
   them to honor it.
 caption: Block access to a list of URLs
 desc: |-
-  Setting the policy prevents webpages with prohibited URLs from loading. It provides a list of URL patterns that specify forbidden URLs. Leaving the policy unset means no URLs are prohibited in the browser. Format the URL pattern according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Up to 1,000 exceptions can be defined in <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>.
+  Setting the policy prevents webpages with prohibited URLs from loading. It provides a list of URL patterns that specify forbidden URLs. Leaving the policy unset means no URLs are prohibited in the browser. Format the URL pattern according to this format ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Up to 1,000 exceptions can be defined in <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>.
 
         From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 73, you can block javascript://* URLs. However, it affects only JavaScript entered in the address bar (or, for example, bookmarklets). In-page JavaScript URLs with dynamically loaded data aren't subject to this policy. For example, if you block example.com/abc, then example.com can still load example.com/abc using XMLHTTPRequest.
 

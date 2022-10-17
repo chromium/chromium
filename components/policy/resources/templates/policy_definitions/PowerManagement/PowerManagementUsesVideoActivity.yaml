@@ -9,6 +9,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Do not consider the user as idle while video plays
+  value: true
+- caption: Consider the user as idle while video plays
+  value: false
 owners:
 - reinauer@google.com
 - chromeos-power@google.com

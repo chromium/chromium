@@ -7,8 +7,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
+items:
+- caption: Enable Legacy Browser Support
+  value: true
+- caption: Disable Legacy Browser Support
+  value: false
 owners:
 - nicolaso@chromium.org
 - pastarmovj@chromium.org

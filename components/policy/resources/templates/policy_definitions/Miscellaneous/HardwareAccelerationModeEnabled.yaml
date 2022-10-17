@@ -9,6 +9,11 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Enable hardware acceleration
+  value: true
+- caption: Disable hardware acceleration
+  value: false
 owners:
 - zmo@chromium.org
 - kbr@chromium.org

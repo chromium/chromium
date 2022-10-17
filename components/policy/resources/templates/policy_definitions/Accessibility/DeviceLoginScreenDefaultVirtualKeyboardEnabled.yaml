@@ -1,4 +1,5 @@
 caption: Set default state of the on-screen keyboard on the login screen
+default: null
 deprecated: true
 desc: |-
   This policy is deprecated, please use the <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">DeviceLoginScreenVirtualKeyboardEnabled</ph> policy instead.
@@ -14,6 +15,15 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Enable on-screen keyboard on the login screen and allow the user to temporarily
+    disable it
+  value: true
+- caption: Disable on-screen keyboard on the login screen and allow the user to temporarily
+    enable it
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - file://components/policy/resources/OWNERS
 - rsorokin@chromium.org

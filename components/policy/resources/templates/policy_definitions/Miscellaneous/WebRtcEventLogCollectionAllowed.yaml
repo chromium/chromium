@@ -11,6 +11,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow WebRTC event log collection from Google services
+  value: true
+- caption: Do not allow WebRTC event log collection from Google services
+  value: false
 owners:
 - eladalon@chromium.org
 schema:

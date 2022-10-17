@@ -8,6 +8,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Erase all local user data
+  value: true
+- caption: Do not erase local user data
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - zmin@chromium.org

@@ -5,6 +5,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Android app install event logs are shared with Google
+  value: true
+- caption: Android app install event logs are not shared with Google
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - pastarmovj@chromium.org

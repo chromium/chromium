@@ -10,6 +10,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Allow users to use Instant Tethering
+  value: true
+- caption: Do not allow users to use Instant Tethering
+  value: false
 owners:
 - hansberry@chromium.org
 - khorimoto@chromium.org

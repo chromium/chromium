@@ -1,4 +1,5 @@
 caption: Enable select to speak
+default: null
 desc: |-
   Enable the select to speak accessibility feature.
 
@@ -14,6 +15,13 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable select to speak
+  value: true
+- caption: Disable select to speak
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - amraboelkher@chromium.org
 schema:

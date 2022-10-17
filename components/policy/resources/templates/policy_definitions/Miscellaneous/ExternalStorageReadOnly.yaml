@@ -7,6 +7,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Disallow writing to external storage devices
+  value: true
+- caption: Allow writing to external storage devices
+  value: false
 owners:
 - yamaguchi@chromium.org
 schema:

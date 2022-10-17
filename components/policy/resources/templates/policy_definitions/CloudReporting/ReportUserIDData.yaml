@@ -16,6 +16,11 @@ features:
   per_profile: true
 future_on:
 - chrome.*
+items:
+- caption: Enable reporting of user identification information
+  value: true
+- caption: Disable reporting of user identification information
+  value: false
 owners:
 - zmin@chromium.org
 - pastarmovj@chromium.org

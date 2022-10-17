@@ -9,6 +9,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Allow port forwarding into Linux virtual machines
+  value: true
+- caption: Do not allow port forwarding into Linux virtual machines
+  value: false
 owners:
 - danielng@google.com
 schema:

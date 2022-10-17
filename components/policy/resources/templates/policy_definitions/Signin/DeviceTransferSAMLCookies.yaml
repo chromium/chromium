@@ -15,6 +15,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Enable transfer of SAML SSO Cookies into user session during sign-in
+  value: true
+- caption: Disable transfer of SAML SSO Cookies into user session during sign-in
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - bartfab@chromium.org

@@ -11,6 +11,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow Chrome to autoplay media
+  value: true
+- caption: Do not allow Chrome to autoplay media
+  value: false
 owners:
 - fbeaufort@chromium.org
 - beccahughes@chromium.org

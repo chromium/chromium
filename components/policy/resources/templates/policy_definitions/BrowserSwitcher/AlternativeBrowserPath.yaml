@@ -7,8 +7,6 @@ example_value: ${ie}
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
 - nicolaso@chromium.org
 - pastarmovj@chromium.org

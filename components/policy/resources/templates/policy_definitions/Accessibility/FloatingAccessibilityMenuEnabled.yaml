@@ -9,6 +9,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Show the floating accessibility menu in kiosk mode
+  value: true
+- caption: Do not show the floating accessibility menu in kiosk mode
+  value: false
 owners:
 - apotapchuk@chromium.org
 schema:

@@ -1,0 +1,46 @@
+caption: Per-App Time Limits Allowlist
+deprecated: true
+desc: This policy is deprecated and unsupported , please use <ph name="PER_APP_TIME_LIMITS_ALLOWLIST">PerAppTimeLimitsAllowlist</ph> instead.
+example_value:
+  app_list:
+  - app_id: pjkljhegncpnkpknbcohdijeoejaedia
+    app_type: EXTENSION
+  - app_id: iniodglblcgmngkgdipeiclkdjjpnlbn
+    app_type: BUILT-IN
+  url_list:
+  - chrome://*
+  - file://*
+  - https://www.support.google.com
+  - https://www.policies.google.com
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- yilkal@chromium.org
+- cros-families-eng@google.com
+schema:
+  properties:
+    app_list:
+      items:
+        properties:
+          app_id:
+            type: string
+          app_type:
+            enum:
+            - ARC
+            - BUILT-IN
+            - EXTENSION
+            - WEB
+            - CROSTINI
+            type: string
+        type: object
+      type: array
+    url_list:
+      items:
+        type: string
+      type: array
+  type: object
+supported_on:
+- 'chrome_os: 80-100'
+tags: []
+type: dict

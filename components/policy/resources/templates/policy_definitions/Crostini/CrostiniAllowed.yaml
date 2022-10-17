@@ -10,6 +10,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Allow users to use virtual machines needed to support Linux apps
+  value: true
+- caption: Do not allow users to use virtual machines needed to support Linux apps
+  value: false
 owners:
 - timzheng@chromium.org
 - aoldemeier@chromium.org

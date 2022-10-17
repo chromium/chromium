@@ -8,6 +8,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Enable sharing diagnostics data to PluginVm
+  value: true
+- caption: Disable sharing diagnostics data to PluginVm
+  value: false
 owners:
 - okalitova@chromium.org
 - janagrill@google.com

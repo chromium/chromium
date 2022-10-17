@@ -11,6 +11,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Use the Internet Explorer SiteList policy as a source of rules
+  value: true
+- caption: Do not use the Internet Explorer SiteList policy as a source of rules
+  value: false
 owners:
 - nicolaso@chromium.org
 - pastarmovj@chromium.org

@@ -8,6 +8,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Allow users to add, configure, and print from non-enterprise printers
+  value: true
+- caption: Do not allow users to add, configure, and print from non-enterprise printers
+  value: false
 owners:
 - valleau@chromium.org
 - skau@chromium.org

@@ -13,6 +13,11 @@ features:
   can_be_recommended: false
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Show privacy notifications until dismissed by the user
+  value: true
+- caption: Do not show privacy notifications
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - ayaelattar@chromium.org

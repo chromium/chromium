@@ -7,6 +7,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Enforce online logins on the login and lock screens
+  value: true
+- caption: Only enforce online logins on the login screen
+  value: false
 owners:
 - mslus@chromium.org
 - emaxx@chromium.org

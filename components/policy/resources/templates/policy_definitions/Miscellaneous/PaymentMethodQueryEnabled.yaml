@@ -11,6 +11,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow websites to check if the user has payment methods saved
+  value: true
+- caption: Always tell websites that no payment methods are saved
+  value: false
 owners:
 - file://components/payments/OWNERS
 - nburris@chromium.org

@@ -8,6 +8,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Use Fast Transition when the wireless access point supports it
+  value: true
+- caption: Disable Fast Transition
+  value: false
 owners:
 - matthewmwang@chromium.org
 schema:

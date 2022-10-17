@@ -1,4 +1,5 @@
 caption: Enable the Click to Call Feature
+default: null
 desc: |-
   Enable the Click to Call feature which allows users to send phone numbers from Chrome Desktops to an Android device when the user is Signed-in. For more information, see help center article: https://support.google.com/chrome/answer/9430554?hl=en.
 
@@ -15,6 +16,13 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow users to send phone numbers from Chrome to their Android device
+  value: true
+- caption: Do not allow users to send phone numbers from Chrome to their Android device
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - knollr@chromium.org
 - mvanouwerkerk@chromium.org

@@ -6,16 +6,14 @@ desc: |-
 
         Leaving this policy unset or empty means that no endpoint will be able to start the attestation flow nor get signals from the machine.
 
-        URLs must have HTTPS scheme, e.g. "https://example.com".
-
         Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
         For ChromeOS, this policy is related to remote attestation where a certificate is automatically generated and uploaded to the Device Management Server.
 
-        For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+        For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 example_value:
 - https://example1.com
-- https://[*.]example2.com
+- example2.com
 - https://foo.example3.com/path
 features:
   cloud_only: true

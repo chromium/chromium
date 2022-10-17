@@ -10,7 +10,6 @@ desc: |
   This policy has no effect if the option to keep existing browsing data is not available; this happens if enterprise profile separation is strictly enforced, or if the data would be from an already managed profile.
 example_value: true
 features:
-  can_be_mandatory: false
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: false

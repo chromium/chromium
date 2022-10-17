@@ -1,4 +1,5 @@
-caption: Enable the mono audio on the login screen
+caption: Enable mono audio on the login screen
+default: null
 desc: |-
   Enable the mono audio accessibility feature on the login screen.
 
@@ -16,6 +17,13 @@ example_value: true
 features:
   can_be_recommended: true
   dynamic_refresh: true
+items:
+- caption: Enable mono audio on the login screen
+  value: true
+- caption: Disable mono audio on the login screen
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - amraboelkher@chromium.org
 - emaxx@chromium.org

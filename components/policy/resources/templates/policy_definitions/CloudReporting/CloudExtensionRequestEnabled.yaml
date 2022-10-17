@@ -18,6 +18,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Create and upload extension install requests to the Admin console
+  value: true
+- caption: Do not create or upload extension install requests to the Admin console
+  value: false
 owners:
 - zmin@chromium.org
 schema:

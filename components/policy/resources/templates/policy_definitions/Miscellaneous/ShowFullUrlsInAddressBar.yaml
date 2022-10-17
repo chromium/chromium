@@ -14,6 +14,13 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Display the full URL
+  value: true
+- caption: Display the default URL
+  value: false
+- caption: Display the default URL, allow users to switch to the full URL
+  value: null
 owners:
 - livvielin@chromium.org
 - enamelites@google.com

@@ -13,6 +13,12 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Users enrolled in the Advanced Protection program will receive extra protections
+  value: true
+- caption: Users enrolled in the Advanced Protection program will only receive standard
+    consumer protections
+  value: false
 owners:
 - file://chrome/browser/safe_browsing/OWNERS
 - drubery@chromium.org

@@ -13,6 +13,13 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Allow Wi-Fi network configurations to be synced across <ph name="PRODUCT_OS_NAME">$2<ex>Google
+    ChromeOS</ex></ph> devices and a connected Android phone
+  value: true
+- caption: Do not allow Wi-Fi network configurations to be synced across <ph name="PRODUCT_OS_NAME">$2<ex>Google
+    ChromeOS</ex></ph> devices and a connected Android phone
+  value: false
 owners:
 - jonmann@chromium.org
 - chromeos-cross-device-eng@google.com

@@ -10,6 +10,13 @@ device_only: true
 example_value: false
 features:
   dynamic_refresh: true
+items:
+- caption: Allow unaffiliated users to use virtual machines needed to support Linux
+    apps
+  value: true
+- caption: Do not allow unaffiliated users to use virtual machines needed to support
+    Linux apps
+  value: false
 owners:
 - timzheng@chromium.org
 - aoldemeier@chromium.org

@@ -10,6 +10,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Allow Smart Lock
+  value: true
+- caption: Do not allow Smart Lock
+  value: false
 owners:
 - file://chrome/browser/ash/login/easy_unlock/OWNERS
 - hansberry@chromium.org

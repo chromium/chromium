@@ -1,4 +1,5 @@
 caption: Enable the mono audio accessibility feature
+default: null
 desc: |-
   Enable the mono audio accessibility feature.
 
@@ -16,6 +17,13 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable mono audio
+  value: true
+- caption: Disable mono audio
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - amraboelkher@chromium.org
 schema:

@@ -11,6 +11,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Block developer mode
+  value: true
+- caption: Allow developer mode
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - atwilson@chromium.org

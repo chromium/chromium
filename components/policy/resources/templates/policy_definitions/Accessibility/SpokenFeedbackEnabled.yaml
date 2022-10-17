@@ -1,4 +1,5 @@
 caption: Enable spoken feedback
+default: null
 desc: |-
   Setting the policy to True keeps spoken feedback on. Setting the policy to False keeps spoken feedback off.
 
@@ -8,6 +9,13 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable spoken feedback
+  value: true
+- caption: Disable spoken feedback
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - file://components/policy/resources/OWNERS
 - rsorokin@chromium.org

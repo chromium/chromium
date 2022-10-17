@@ -10,6 +10,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Allow users to sync SMS messages between their phone and Chromebook
+  value: true
+- caption: Do not allow users to sync SMS messages between their phone and Chromebook
+  value: false
 owners:
 - jlklein@chromium.org
 - jonmann@chromium.org

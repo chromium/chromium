@@ -10,6 +10,11 @@ features:
   per_profile: false
 future_on:
 - chrome_os
+items:
+- caption: Enable root access to Linux virtual machines
+  value: true
+- caption: Disable root access to Linux virtual machines
+  value: false
 owners:
 - aoldemeier@chromium.org
 - okalitova@chromium.org

@@ -7,6 +7,12 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Only allow users to turn off the device using the physical power button
+  value: true
+- caption: Allow users to turn off the device using either the shut down icon or the
+    physical power button
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - emaxx@chromium.org

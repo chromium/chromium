@@ -12,6 +12,12 @@ features:
   platform_only: true
 future_on:
 - fuchsia
+items:
+- caption: Prevent Chrome from launching if not enrolled into Chrome Browser Cloud
+    Management
+  value: true
+- caption: Allow Chrome to launch if not enrolled into Chrome Browser Cloud Management
+  value: false
 owners:
 - zmin@chromium.org
 - pastarmovj@chromium.org

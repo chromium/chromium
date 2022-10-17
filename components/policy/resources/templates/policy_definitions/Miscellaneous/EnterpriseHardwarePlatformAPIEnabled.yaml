@@ -11,6 +11,12 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow managed extensions to use the Enterprise Hardware Platform API
+  value: true
+- caption: Do not allow managed extensions to use the Enterprise Hardware Platform
+    API
+  value: false
 owners:
 - guidou@chromium.org
 schema:

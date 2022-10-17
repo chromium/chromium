@@ -14,6 +14,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Enable USB power share
+  value: true
+- caption: Disable USB power share
+  value: false
 owners:
 - lamzin@google.com
 schema:

@@ -7,6 +7,11 @@ device_only: true
 example_value: false
 features:
   dynamic_refresh: false
+items:
+- caption: Allow unaffiliated users to use Android apps
+  value: true
+- caption: Do not allow unaffiliated users to use Android apps
+  value: false
 owners:
 - phweiss@chromium.org
 schema:

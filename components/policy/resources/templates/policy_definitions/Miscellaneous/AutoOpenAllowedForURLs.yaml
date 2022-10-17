@@ -6,7 +6,7 @@ desc: |-
 
         If this policy isn't set, all downloads where the file type is in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME">AutoOpenFileTypes</ph> will automatically open.
 
-        A URL pattern has to be formatted according to https://www.chromium.org/administrators/url-blocklist-filter-format.
+        A URL pattern has to be formatted according to https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 example_value:
 - example.com
 - https://ssl.server.com

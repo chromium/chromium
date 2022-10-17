@@ -17,6 +17,11 @@ features:
   per_profile: true
 future_on:
 - chrome.*
+items:
+- caption: Enable reporting of version information
+  value: true
+- caption: Disable reporting of version information
+  value: false
 owners:
 - zmin@chromium.org
 - pastarmovj@chromium.org

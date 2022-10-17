@@ -16,6 +16,11 @@ features:
   per_profile: true
 future_on:
 - chrome.*
+items:
+- caption: Enable reporting of policy data
+  value: true
+- caption: Disable reporting of policy data
+  value: false
 owners:
 - zmin@chromium.org
 - pastarmovj@chromium.org

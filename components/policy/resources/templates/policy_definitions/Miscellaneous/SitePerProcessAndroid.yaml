@@ -1,4 +1,5 @@
 caption: Enable Site Isolation for every site
+default: null
 desc: |-
   Setting the policy to Enabled isolates all sites on Android, such that each site runs in its own process, and it prevents users from opting out. A site is a scheme plus eTLD+1 (e.g., https://example.com). Note that Android isolates certain sensitive sites by default starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 77, and this policy extends that default site isolation mode to apply to all sites.
 
@@ -14,6 +15,13 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: false
+items:
+- caption: Require site isolation for all websites
+  value: true
+- caption: Disable site isolation for all websites, but allow the user to enable it
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - alexmos@chromium.org
 - creis@chromium.org

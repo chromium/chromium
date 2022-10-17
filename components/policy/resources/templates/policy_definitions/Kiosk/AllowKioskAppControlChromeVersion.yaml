@@ -13,6 +13,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: ChromeOS updates are set to the version defined in the kiosk app manifest
+  value: true
+- caption: ChromeOS updates ignore the version defined in the kiosk app manifest
+  value: false
 owners:
 - xiyuan@chromium.org
 - poromov@chromium.org

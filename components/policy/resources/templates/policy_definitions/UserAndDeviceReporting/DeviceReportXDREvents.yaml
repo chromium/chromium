@@ -14,8 +14,7 @@ future_on:
 items:
 - caption: Report information about extended detection and response (XDR) events
   value: true
-- caption: Do not report information about about extended detection and response (XDR)
-    events
+- caption: Do not report information about extended detection and response (XDR) events
   value: false
 owners:
 - cros-reporting-team@google.com

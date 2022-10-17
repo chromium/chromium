@@ -7,6 +7,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Enable auto-login bailout
+  value: true
+- caption: Disable auto-login bailout
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - pmarko@chromium.org

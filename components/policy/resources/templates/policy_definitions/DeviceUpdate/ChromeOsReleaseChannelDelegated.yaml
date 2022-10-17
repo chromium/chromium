@@ -8,6 +8,11 @@ device_only: true
 example_value: false
 features:
   dynamic_refresh: true
+items:
+- caption: Allow users to change the release channel
+  value: true
+- caption: Prevent users from changing the release channel
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - pastarmovj@chromium.org

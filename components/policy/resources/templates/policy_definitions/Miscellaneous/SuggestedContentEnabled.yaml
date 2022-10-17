@@ -11,6 +11,11 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable suggested content
+  value: true
+- caption: Disable suggested content
+  value: false
 owners:
 - wrong@chromium.org
 - chrome-knowledge-eng@google.com

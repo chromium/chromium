@@ -8,6 +8,11 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
+items:
+- caption: Use NTLM authentication
+  value: true
+- caption: Do not use NTLM authentication
+  value: false
 owners:
 - amistry@chromium.org
 schema:

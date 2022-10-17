@@ -10,6 +10,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Enable boot on AC
+  value: true
+- caption: Disable boot on AC
+  value: false
 owners:
 - lamzin@google.com
 schema:

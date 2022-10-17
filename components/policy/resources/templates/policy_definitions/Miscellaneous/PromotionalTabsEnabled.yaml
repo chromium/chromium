@@ -11,6 +11,11 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Enable showing full-tab promotional content
+  value: true
+- caption: Disable showing full-tab promotional content
+  value: false
 owners:
 - grt@chromium.org
 - rbpotter@chromium.org

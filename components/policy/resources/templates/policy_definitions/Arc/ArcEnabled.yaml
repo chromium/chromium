@@ -7,6 +7,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Enable ARC
+  value: true
+- caption: Disable ARC
+  value: false
 owners:
 - pbond@chromium.org
 schema:

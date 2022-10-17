@@ -9,6 +9,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow users to use <ph name="PRODUCT_NAME">Google Cast</ph>
+  value: true
+- caption: Do not allow users to use <ph name="PRODUCT_NAME">Google Cast</ph>
+  value: false
 owners:
 - file://components/media_router/OWNERS
 schema:

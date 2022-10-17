@@ -6,17 +6,15 @@ desc: |-
 
         Leaving this policy unset or empty means that no endpoint will be able to start the attestation flow nor get signals from the machine.
 
-        URLs must have HTTPS scheme, e.g. "https://example.com".
-
         Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
         This policy will only impact the attestation flow on the login and lock screen. To change the in-session attestation flow, please use the <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">ContextAwareAccessSignalsAllowlist</ph> policy.
 
-        For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+        For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 device_only: true
 example_value:
 - https://example1.com
-- https://[*.]example2.com
+- example2.com
 - https://foo.example3.com/path
 features:
   cloud_only: true

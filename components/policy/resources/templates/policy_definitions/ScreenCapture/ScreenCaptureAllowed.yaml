@@ -17,6 +17,12 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow sites to prompt the user to share a video stream of their screen
+  value: true
+- caption: Do not allow sites to prompt the user to share a video stream of their
+    screen
+  value: false
 owners:
 - guidou@chromium.org
 - marinaciocea@chromium.org

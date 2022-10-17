@@ -9,6 +9,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Block updates
+  value: true
+- caption: Allow updates
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - hendrich@chromium.org

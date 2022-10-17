@@ -1,4 +1,5 @@
 caption: Use 24 hour clock by default
+default: null
 desc: |-
   Setting the policy to True gives a device's sign-in screen a 24-hour clock format.
 
@@ -11,6 +12,13 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: 24 hour clock format
+  value: true
+- caption: 12 hour clock format
+  value: false
+- caption: Automatic based on current language
+  value: null
 owners:
 - alemate@chromium.org
 - michaelpg@chromium.org

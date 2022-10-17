@@ -10,7 +10,7 @@ desc: |-
                     It controls whether Chrome supports First-Party Sets related features (e.g. the SameParty cookie attribute).
 example_value: false
 features:
-  dynamic_refresh: false
+  dynamic_refresh: true
   per_profile: true
 future_on:
 - chrome.*

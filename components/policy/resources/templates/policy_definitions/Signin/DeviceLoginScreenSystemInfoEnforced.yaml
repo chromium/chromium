@@ -1,4 +1,5 @@
 caption: Force the sign-in screen to show or hide system information.
+default: null
 desc: |-
   Specify whether the system information (e.g. ChromeOS version, device serial
         number) is always shown (or hidden) on the login screen.
@@ -11,6 +12,14 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Always display system information on the sign-in screen
+  value: true
+- caption: Do not display system information on the sign-in screen
+  value: false
+- caption: Allow users to toggle the display of system information on the sign-in
+    screen
+  value: null
 owners:
 - anqing@chromium.org
 schema:

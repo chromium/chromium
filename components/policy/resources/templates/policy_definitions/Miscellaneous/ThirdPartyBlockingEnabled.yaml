@@ -7,6 +7,11 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: false
+items:
+- caption: Prevent third party code from being injected into Chrome
+  value: true
+- caption: Allow third party code to be injected into Chrome
+  value: false
 owners:
 - chrisha@chromium.org
 - pastarmovj@chromium.org

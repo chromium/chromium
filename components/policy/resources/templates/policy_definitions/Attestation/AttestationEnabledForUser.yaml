@@ -7,6 +7,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable remote attestation for the user
+  value: true
+- caption: Disable remote attestation for the user
+  value: false
 owners:
 - emaxx@chromium.org
 - file://chrome/browser/ash/attestation/OWNERS

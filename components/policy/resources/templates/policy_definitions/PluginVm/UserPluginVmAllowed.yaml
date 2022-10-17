@@ -10,6 +10,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Allow users to use a PluginVm
+  value: true
+- caption: Do not allow users to use a PluginVm
+  value: false
 owners:
 - okalitova@chromium.org
 - janagrill@google.com

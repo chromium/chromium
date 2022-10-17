@@ -11,6 +11,12 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Always show the <ph name="PRODUCT_NAME">Google Cast</ph> icon in the toolbar
+  value: true
+- caption: Do not show the <ph name="PRODUCT_NAME">Google Cast</ph> icon in the toolbar
+    by default, but let users choose
+  value: false
 owners:
 - file://components/media_router/OWNERS
 schema:

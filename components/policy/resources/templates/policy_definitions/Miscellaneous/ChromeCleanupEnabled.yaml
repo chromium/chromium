@@ -9,6 +9,12 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: false
+items:
+- caption: Allow Chrome Cleanup to periodically scan the system and allow manual scans
+  value: true
+- caption: Prevent Chrome Cleanup from periodically scanning the system and disable
+    manual scans
+  value: false
 owners:
 - proberge@chromium.org
 schema:

@@ -10,6 +10,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Enable advanced battery charge mode
+  value: true
+- caption: Disable advanced battery charge mode
+  value: false
 owners:
 - lamzin@google.com
 schema:

@@ -27,11 +27,11 @@ policies:
   26: AuthSchemes
   27: DisableAuthNegotiateCnameLookup
   28: EnableAuthNegotiatePort
-  29: ''
-  30: ''
+  29: AuthServerWhitelist
+  30: AuthNegotiateDelegateWhitelist
   31: GSSAPILibraryName
-  32: ''
-  33: ''
+  32: ExtensionInstallBlacklist
+  33: ExtensionInstallWhitelist
   34: ExtensionInstallForcelist
   35: ShowHomeButton
   36: DeveloperToolsDisabled
@@ -101,8 +101,8 @@ policies:
   100: ImportSearchEngine
   101: ImportSavedPasswords
   102: AutoSelectCertificateForUrls
-  103: ''
-  104: ''
+  103: URLBlacklist
+  104: URLWhitelist
   105: NotificationsAllowedForUrls
   106: NotificationsBlockedForUrls
   107: OpenNetworkConfiguration
@@ -120,7 +120,7 @@ policies:
   119: ReportDeviceVersionInfo
   120: ReportDeviceActivityTimes
   121: ReportDeviceBootMode
-  122: ''
+  122: DeviceUserWhitelist
   123: DeviceAllowNewUsers
   124: DeviceGuestModeEnabled
   125: DeviceShowUserNamesOnSignin
@@ -199,7 +199,7 @@ policies:
   198: IdleWarningDelayBattery
   199: DeviceVariationsRestrictParameter
   200: AttestationEnabledForUser
-  201: ''
+  201: AttestationExtensionWhitelist
   202: DeviceLocalAccountAutoLoginBailoutEnabled
   203: AllowScreenWakeLocks
   204: ''
@@ -249,8 +249,8 @@ policies:
   248: ReportDeviceUsers
   249: UserAvatarImage
   250: DeviceLocalAccountPromptForNetworkWhenOffline
-  251: ''
-  252: ''
+  251: NativeMessagingBlacklist
+  252: NativeMessagingWhitelist
   253: NativeMessagingUserLevelHosts
   254: SAMLOfflineSigninTimeLimit
   255: VirtualKeyboardEnabled
@@ -320,7 +320,7 @@ policies:
   319: AllowKioskAppControlChromeVersion
   320: DefaultWebBluetoothGuardSetting
   321: LoginAuthenticationBehavior
-  322: ''
+  322: UsbDetachableWhitelist
   323: DeviceAllowBluetooth
   324: SuppressUnsupportedOSWarning
   325: DeviceQuirksDownloadEnabled
@@ -350,7 +350,7 @@ policies:
   349: ReportArcStatusEnabled
   350: NativePrinters
   351: NetworkThrottlingEnabled
-  352: ''
+  352: QuickUnlockModeWhitelist
   353: QuickUnlockTimeout
   354: PinUnlockMinimumLength
   355: PinUnlockMaximumLength
@@ -375,19 +375,19 @@ policies:
   374: DeviceEcryptfsMigrationStrategy
   375: SafeBrowsingForTrustedSourcesEnabled
   376: EcryptfsMigrationStrategy
-  377: ''
+  377: NoteTakingAppsLockScreenWhitelist
   378: CastReceiverEnabled
   379: CastReceiverName
   380: DeviceOffHours
   381: CloudPolicyOverridesPlatformPolicy
   382: NativePrintersBulkConfiguration
-  383: ''
-  384: ''
-  385: ''
+  383: NativePrintersBulkAccessMode
+  384: NativePrintersBulkBlacklist
+  385: NativePrintersBulkWhitelist
   386: DeviceNativePrinters
-  387: ''
-  388: ''
-  389: ''
+  387: DeviceNativePrintersAccessMode
+  388: DeviceNativePrintersBlacklist
+  389: DeviceNativePrintersWhitelist
   390: TPMFirmwareUpdateSettings
   391: RunAllFlashInAllowMode
   392: AutofillCreditCardEnabled
@@ -420,7 +420,7 @@ policies:
   419: RelaunchNotification
   420: RelaunchNotificationPeriod
   421: VirtualMachinesAllowed
-  422: ''
+  422: SafeBrowsingWhitelistDomains
   423: PasswordProtectionLoginURLs
   424: PasswordProtectionChangePasswordURL
   425: DeviceMachinePasswordChangeRate
@@ -429,7 +429,7 @@ policies:
   428: MachineLevelUserCloudPolicyEnrollmentToken
   429: SafeBrowsingExtendedReportingEnabled
   430: AutoplayAllowed
-  431: ''
+  431: AutoplayWhitelist
   432: TabUnderAllowed
   433: UserNativePrintersAllowed
   434: DefaultWebUsbGuardSetting
@@ -534,7 +534,7 @@ policies:
   533: AllowPopupsDuringPageUnload
   534: RemoteAccessHostAllowFileTransfer
   535: DeviceWilcoDtcConfiguration
-  536: ''
+  536: SpellcheckLanguageBlacklist
   537: DeviceWiFiAllowed
   538: DevicePowerPeakShiftEnabled
   539: DevicePowerPeakShiftBatteryThreshold
@@ -629,7 +629,7 @@ policies:
   628: DeviceLoginScreenScreenMagnifierType
   629: CorsMitigationList
   630: CorsLegacyModeEnabled
-  631: ''
+  631: ExternalPrintServersWhitelist
   632: ExternalProtocolDialogShowAlwaysOpenCheckbox
   633: DefaultInsecureContentSetting
   634: InsecureContentAllowedForUrls
@@ -656,13 +656,13 @@ policies:
   655: PrimaryMouseButtonSwitch
   656: ReportDeviceCpuInfo
   657: DeviceLoginScreenPrimaryMouseButtonSwitch
-  658: ''
+  658: PerAppTimeLimitsWhitelist
   659: AccessibilityShortcutsEnabled
   660: ReportDeviceGraphicsStatus
   661: DeviceLoginScreenAccessibilityShortcutsEnabled
   662: LocalDiscoveryEnabled
   663: ChromeVariations
-  664: ''
+  664: PrintingAPIExtensionsWhitelist
   665: ReportDeviceCrashReportInfo
   666: ScreenCaptureAllowed
   667: AdvancedProtectionDeepScanningEnabled
@@ -878,7 +878,7 @@ policies:
   877: DataLeakPreventionClipboardCheckSizeLimit
   878: CrossOriginWebAssemblyModuleSharingEnabled
   879: RestrictedManagedGuestSessionExtensionCleanupExemptList
-  880: ''
+  880: DisplayCapturePermissionsPolicyEnabled
   881: ScreenCaptureAllowedByOrigins
   882: WindowCaptureAllowedByOrigins
   883: TabCaptureAllowedByOrigins
@@ -1018,6 +1018,12 @@ policies:
   1017: TrashEnabled
   1018: ShoppingListEnabled
   1019: DeskAPIThirdPartyAccessEnabled
+  1020: FileSystemSyncAccessHandleAsyncInterfaceEnabled
+  1021: DefaultHandlersForFileExtensions
+  1022: IsolatedWebAppInstallForceList
+  1023: DeskAPIThirdPartyAllowlist
+  1024: VirtualKeyboardResizesLayoutByDefault
+  1025: HindiInscriptLayoutEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

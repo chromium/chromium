@@ -8,6 +8,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Allow the device to request powerwash
+  value: true
+- caption: Do not allow the device to request powerwash
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - emaxx@chromium.org

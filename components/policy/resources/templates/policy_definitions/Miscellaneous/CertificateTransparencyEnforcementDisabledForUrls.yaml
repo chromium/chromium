@@ -4,7 +4,7 @@ desc: |-
 
         Leaving the policy unset means that if certificates requiring disclosure through Certificate Transparency aren't disclosed, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> doesn't trust those certificates.
 
-        A URL pattern follows this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). However, because the validity of certificates for a given hostname is independent of the scheme, port, or path, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> only considers the hostname portion of the URL. Wildcard hosts aren't supported.
+        A URL pattern follows this format ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). However, because the validity of certificates for a given hostname is independent of the scheme, port, or path, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> only considers the hostname portion of the URL. Wildcard hosts aren't supported.
 example_value:
 - example.com
 - .example.com

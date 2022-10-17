@@ -8,6 +8,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Allow the device to run virtual machines
+  value: true
+- caption: Do not allow the device to run virtual machines
+  value: false
 owners:
 - timzheng@chromium.org
 - aoldemeier@chromium.org

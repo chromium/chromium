@@ -17,6 +17,13 @@ features:
   can_be_recommended: false
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Always enable the privacy screen on the sign-in screen
+  value: true
+- caption: Always disable the privacy screen on the sign-in screen
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - lamzin@google.com
 - gildekel@chromium.org

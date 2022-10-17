@@ -9,6 +9,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: false
+items:
+- caption: Allow users to turn Bluetooth on or off
+  value: true
+- caption: Disable Bluetooth
+  value: false
 owners:
 - isandrk@chromium.org
 - sinhak@chromium.org

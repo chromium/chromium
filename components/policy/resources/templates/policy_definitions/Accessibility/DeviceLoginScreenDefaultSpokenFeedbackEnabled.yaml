@@ -1,4 +1,5 @@
 caption: Set the default state of spoken feedback on the login screen
+default: null
 desc: |-
   Setting the policy to True turns spoken feedback on at the sign-in screen. Setting the policy to False turns spoken feedback off at the screen.
 
@@ -11,6 +12,15 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Enable spoken feedback on the login screen and allow the user to temporarily
+    disable it
+  value: true
+- caption: Disable spoken feedback on the login screen and allow the user to temporarily
+    enable it
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - amraboelkher@chromium.org
 - emaxx@chromium.org

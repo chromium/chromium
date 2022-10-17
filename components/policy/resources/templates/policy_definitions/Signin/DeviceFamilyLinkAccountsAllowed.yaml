@@ -13,6 +13,11 @@ device_only: true
 example_value: false
 features:
   dynamic_refresh: true
+items:
+- caption: Allow parents to add supervised accounts
+  value: true
+- caption: Do not allow parents to add supervised accounts
+  value: false
 owners:
 - agawronska@chromium.org
 - cros-families-eng@google.com

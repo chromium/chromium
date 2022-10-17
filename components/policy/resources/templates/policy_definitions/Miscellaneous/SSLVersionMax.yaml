@@ -1,7 +1,7 @@
 caption: Maximum SSL version enabled
 deprecated: true
 desc: |-
-  Warning: The max TLS version policy will be entirely removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> around version 75 (around June 2019).
+  This policy was removed in M75 after the max TLS version policy was removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
         If this policy is not configured then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the default maximum version.
 

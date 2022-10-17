@@ -9,6 +9,11 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: false
+items:
+- caption: Enable Renderer Code Integrity
+  value: true
+- caption: Disable Renderer Code Integrity
+  value: false
 owners:
 - wfh@chromium.org
 - adetaylor@chromium.org

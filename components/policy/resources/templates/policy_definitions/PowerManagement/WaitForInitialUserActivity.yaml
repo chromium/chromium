@@ -7,6 +7,12 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Start power management delays and session length limits after initial user
+    activity
+  value: true
+- caption: Start power management delays and session length limits at session start
+  value: false
 owners:
 - reinauer@google.com
 - chromeos-power@google.com

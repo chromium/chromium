@@ -1,0 +1,21 @@
+caption: Allow media autoplay on a allowlist of URL patterns
+deprecated: true
+desc: This policy is deprecated and unsupported, please use the '<ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME">AutoplayAllowlist</ph>' policy instead.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- fbeaufort@chromium.org
+- beccahughes@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:66-100
+- chrome_os:66-100
+tags: []
+type: list

@@ -33,5 +33,6 @@ schema:
 supported_on:
 - chrome.*:97-
 - chrome_os:97-
+- android:107-
 tags: []
 type: main

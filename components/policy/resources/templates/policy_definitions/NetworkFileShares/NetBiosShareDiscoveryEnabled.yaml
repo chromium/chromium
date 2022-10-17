@@ -8,6 +8,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Allow NetBIOS share discovery
+  value: true
+- caption: Do not allow NetBIOS share discovery
+  value: false
 owners:
 - amistry@chromium.org
 schema:

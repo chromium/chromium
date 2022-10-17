@@ -10,6 +10,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Show warnings and disable autofill on insecure forms
+  value: true
+- caption: Do not show warnings or disable autofill on insecure forms
+  value: false
 owners:
 - carlosil@chromium.org
 - estark@chromium.org

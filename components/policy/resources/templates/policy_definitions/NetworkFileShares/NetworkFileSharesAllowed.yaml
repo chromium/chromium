@@ -5,6 +5,11 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
+items:
+- caption: Allow network file shares
+  value: true
+- caption: Block network file shares
+  value: false
 owners:
 - amistry@chromium.org
 schema:

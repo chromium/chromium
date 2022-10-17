@@ -10,6 +10,11 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Enable updates for all components
+  value: true
+- caption: Disable updates for non-critical components
+  value: false
 owners:
 - file://components/update_client/OWNERS
 - sorin@chromium.org

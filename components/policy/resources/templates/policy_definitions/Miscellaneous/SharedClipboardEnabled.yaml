@@ -17,6 +17,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Enable the shared clipboard feature
+  value: true
+- caption: Disable the shared clipboard feature
+  value: false
 owners:
 - mvanouwerkerk@chromium.org
 - yasmo@chromium.org

@@ -10,6 +10,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Allow users to enable Nearby Share
+  value: true
+- caption: Prevent users from enabling Nearby Share
+  value: false
 owners:
 - danlee@google.com
 - hansberry@chromium.org

@@ -10,8 +10,6 @@ example_value: http://example.com/greylist.xml
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
 - nicolaso@chromium.org
 - pastarmovj@chromium.org

@@ -6,6 +6,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Enable Linux virtual machine backup and restore
+  value: true
+- caption: Disable Linux virtual machine backup and restore
+  value: false
 owners:
 - joelhockey@chromium.org
 - aoldemeier@chromium.org

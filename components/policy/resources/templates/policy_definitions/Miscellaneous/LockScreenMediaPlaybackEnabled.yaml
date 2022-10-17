@@ -8,6 +8,11 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Allow users to play media when the device is locked
+  value: true
+- caption: Do not allow users to play media when the device is locked
+  value: false
 owners:
 - file://services/media_session/OWNERS
 - mlamouri@chromium.org

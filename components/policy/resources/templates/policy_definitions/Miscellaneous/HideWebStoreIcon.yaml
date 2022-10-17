@@ -11,6 +11,13 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Do not show the Chrome Web Store icon in the <ph name="PRODUCT_OS_NAME">$2<ex>Google
+    ChromeOS</ex></ph> launcher or on the new tab page
+  value: true
+- caption: Show the Chrome Web Store icon in the <ph name="PRODUCT_OS_NAME">$2<ex>Google
+    ChromeOS</ex></ph> launcher and on the new tab page
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - rsorokin@chromium.org

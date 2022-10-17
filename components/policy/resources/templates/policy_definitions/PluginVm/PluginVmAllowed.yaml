@@ -8,6 +8,11 @@ device_only: true
 example_value: true
 features:
   dynamic_refresh: true
+items:
+- caption: Allow devices to use a PluginVm
+  value: true
+- caption: Do not allow devices to use a PluginVm
+  value: false
 owners:
 - okalitova@chromium.org
 - aoldemeier@chromium.org

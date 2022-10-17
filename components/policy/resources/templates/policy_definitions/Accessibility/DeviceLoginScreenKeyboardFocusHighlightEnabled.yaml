@@ -1,4 +1,5 @@
 caption: Enable the keyboard focus highlighting accessibility feature
+default: null
 desc: |-
   Enable the keyboard focus highlighting accessibility feature on the login screen.
 
@@ -16,6 +17,13 @@ example_value: true
 features:
   can_be_recommended: true
   dynamic_refresh: true
+items:
+- caption: Enable keyboard focus highlighting on the login screen
+  value: true
+- caption: Disable keyboard focus highlighting on the login screen
+  value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - amraboelkher@chromium.org
 schema:

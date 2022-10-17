@@ -1,4 +1,5 @@
 caption: Enable virtual keyboard
+default: null
 desc: |-
   Controls the on-screen keyboard, acting as a supplementary policy to the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy.
 
@@ -16,6 +17,13 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable on-screen keyboard
+  value: true
+- caption: Disable on-screen keyboard
+  value: false
+- caption: Enable on-screen keyboard in tablet mode
+  value: null
 owners:
 - rsadam@chromium.org
 schema:

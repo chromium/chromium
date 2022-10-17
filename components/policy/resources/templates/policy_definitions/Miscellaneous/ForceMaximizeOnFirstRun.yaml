@@ -7,6 +7,11 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
+items:
+- caption: Maximize the first browser window on first run
+  value: true
+- caption: Default system behavior (depends on screen size)
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - poromov@chromium.org

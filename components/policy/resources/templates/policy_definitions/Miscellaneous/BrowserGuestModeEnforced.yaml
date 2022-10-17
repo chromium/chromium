@@ -9,6 +9,11 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Only allow guest browser logins
+  value: true
+- caption: Allow guest browser logins and profile logins
+  value: false
 owners:
 - mlerman@chromium.org
 - zmin@chromium.org

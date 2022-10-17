@@ -11,6 +11,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Enable video input
+  value: true
+- caption: Disable video input
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - pastarmovj@chromium.org

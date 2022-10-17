@@ -8,6 +8,11 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Treat top-row keys as function keys, but allow user to change
+  value: true
+- caption: Treat top-row keys as media keys, but allow user to change
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - rsorokin@chromium.org

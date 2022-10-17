@@ -9,6 +9,11 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Allow QUIC
+  value: true
+- caption: Disallow QUIC
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - zmin@chromium.org

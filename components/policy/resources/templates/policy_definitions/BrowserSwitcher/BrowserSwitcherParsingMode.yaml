@@ -18,8 +18,6 @@ example_value: 1
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Default behavior for LBS.
   name: Default

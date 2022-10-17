@@ -9,6 +9,11 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Suppress warnings when Chrome is running on an unsupported system
+  value: true
+- caption: Allow Chrome to display warnings when running on an unsupported system
+  value: false
 owners:
 - grt@chromium.org
 schema:

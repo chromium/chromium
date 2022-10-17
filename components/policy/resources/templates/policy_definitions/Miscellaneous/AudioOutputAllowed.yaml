@@ -9,6 +9,11 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+items:
+- caption: Enable audio output
+  value: true
+- caption: Disable audio output
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - pastarmovj@chromium.org

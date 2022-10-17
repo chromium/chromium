@@ -12,6 +12,13 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Allow <ph name="PRODUCT_NAME">Google Cast</ph> to connect to devices on
+    all IP addresses
+  value: true
+- caption: Allow <ph name="PRODUCT_NAME">Google Cast</ph> to only connect to devices
+    on private IP addresses
+  value: false
 owners:
 - file://components/media_router/OWNERS
 schema:

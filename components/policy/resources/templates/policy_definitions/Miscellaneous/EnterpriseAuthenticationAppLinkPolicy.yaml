@@ -11,8 +11,7 @@ desc: "Allows you to specify configs for authentication urls in <ph name=\"WEBVI
   \ during authentication.\n\n      If there is no valid app installed to handle authentication\
   \ url on the device, navigation will continue in <ph name=\"WEBVIEW_PRODUCT_NAME\"\
   >Android WebView</ph>.\n\n      Authentication URL pattern has to be formatted according\
-  \ to https://www.chromium.org/administrators/url-blocklist-filter-format.\n    \
-  \  "
+  \ to https://support.google.com/chrome/a?p=url_blocklist_filter_format.\n      "
 example_value:
 - url: https://www.abc.com
 features:

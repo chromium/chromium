@@ -9,6 +9,11 @@ features:
   per_profile: false
 future_on:
 - fuchsia
+items:
+- caption: Allow users to end processes with the Chrome task manager
+  value: true
+- caption: Block users from ending processes with the Chrome task manager
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - atwilson@chromium.org

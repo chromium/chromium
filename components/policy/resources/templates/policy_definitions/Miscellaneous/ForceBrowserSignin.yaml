@@ -12,6 +12,11 @@ features:
   per_profile: false
 future_on:
 - chrome.linux
+items:
+- caption: Force the user to sign in before using the browser
+  value: true
+- caption: Allow the user to use the browser without signing in
+  value: false
 owners:
 - zmin@chromium.org
 - pastarmovj@chromium.org

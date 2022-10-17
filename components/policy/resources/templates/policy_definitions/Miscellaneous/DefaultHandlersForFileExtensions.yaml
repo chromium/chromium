@@ -1,0 +1,51 @@
+caption: Assigns apps as default handlers for specified file extensions
+desc: "This policy allows the admins to specify apps that act as default handlers\
+  \ for the respective file extensions on <ph name=\"PRODUCT_OS_NAME\">$2<ex>Google\
+  \ ChromeOS</ex></ph> that users can't change.\n      For all file extensions not\
+  \ specified in the policy, users are free to set their own defaults with respect\
+  \ to the usual workflow.\n\n      Specify Chrome apps by their ID, such as <ph name=\"\
+  DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE\">pjkljhegncpnkpknbcohdijeoejaedia</ph>\
+  \ and web apps by the URL used in <ph name=\"WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME\"\
+  >WebAppInstallForceList</ph>, such as <ph name=\"DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE\"\
+  >https://google.com/maps</ph>.\n\n      Note that apps MUST declare themselves as\
+  \ a file handlers for specified file extensions in the manifest in order for that\
+  \ policy item to take effect (i.e. the policy does NOT extend existing app capabilities).\n\
+  \n      Leaving the policy unset allows <ph name=\"PRODUCT_OS_NAME\">$2<ex>Google\
+  \ ChromeOS</ex></ph> to select default handlers according to the internal logic.\n\
+  \      "
+example_value:
+- file_extensions:
+  - maps
+  policy_id: https://google.com/maps
+- file_extensions:
+  - xslx
+  policy_id: pnomlkjighijklmnopabcdefghijklff
+- file_extensions:
+  - docx
+  - pdf
+  policy_id: abcdefghijklmnopabcdefghijklmnop
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+owners:
+- greengrape@google.com
+- file://ui/file_manager/OWNERS
+schema:
+  items:
+    properties:
+      file_extensions:
+        items:
+          type: string
+        type: array
+      policy_id:
+        type: string
+    required:
+    - policy_id
+    - file_extensions
+    type: object
+  type: array
+tags: []
+type: dict
