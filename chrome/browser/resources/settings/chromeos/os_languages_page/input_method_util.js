@@ -355,7 +355,7 @@ const Settings = {
       {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
     ],
   }],
-  [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS]: [{
+  [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS]: [{
     title: SettingsHeaders.VIRTUAL_KEYBOARD,
     optionNames: [
       {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},

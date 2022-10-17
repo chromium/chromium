@@ -13,7 +13,7 @@ export const SettingsType = {
   PINYIN_SETTINGS: 3,
   PINYIN_FUZZY_SETTINGS: 4,
   BASIC_SETTINGS: 5,
-  ENGLISH_SOUTH_AFRICA_SETTINGS: 6,
+  ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS: 6,
   SUGGESTION_SETTINGS: 7,
   PK_DIACRITICS_SETTINGS: 8,
   JAPANESE_SETTINGS: 9,
@@ -132,8 +132,8 @@ export function getInputMethodSettings(
     'xkb:us::ind': [SettingsType.BASIC_SETTINGS],
     'xkb:us::msa': [SettingsType.BASIC_SETTINGS],
 
-    // ENGLISH_SOUTH_AFRICA_SETTINGS
-    'xkb:za:gb:eng': [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS],
+    // ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS
+    'xkb:za:gb:eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
   };
   // MOZC settings
   if (isJapaneseSettingsEnabled) {
