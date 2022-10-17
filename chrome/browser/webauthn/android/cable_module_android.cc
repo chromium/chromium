@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -65,6 +67,7 @@ class RegistrationState {
   void Register() {
     DCHECK(!linking_registration_);
     DCHECK(!sync_registration_);
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
     instance_id::InstanceIDDriver* const driver =
         instance_id::InstanceIDProfileServiceFactory::GetForProfile(
@@ -82,6 +85,12 @@ class RegistrationState {
                        base::Unretained(this)),
         base::BindRepeating(&RegistrationState::OnEvent,
                             base::Unretained(this)));
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            &RegistrationState::GetCanDeviceSupportCableOnBackgroundSequence),
+        base::BindOnce(&RegistrationState::OnDeviceSupportResult,
+                       base::Unretained(this)));
 
     PrefService* const local_state = g_browser_process->local_state();
     std::string secret_base64 = local_state->GetString(kRootSecretPrefName);
@@ -100,6 +109,14 @@ class RegistrationState {
       crypto::RandBytes(secret_);
       local_state->SetString(kRootSecretPrefName, base::Base64Encode(secret_));
     }
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            &RegistrationState::CalculateIdentityKeyOnBackgroundSequence,
+            secret_),
+        base::BindOnce(&RegistrationState::OnIdentityKeyReady,
+                       base::Unretained(this)));
   }
 
   bool is_registered_for_linking() const {
@@ -118,8 +135,16 @@ class RegistrationState {
   // have_data_for_sync returns true if this object has loaded enough state to
   // put information into sync's DeviceInfo.
   bool have_data_for_sync() const {
-    return sync_registration_ != nullptr && sync_registration_->contact_id();
+    return device_supports_cable_.has_value() && identity_key_ &&
+           sync_registration_ != nullptr && sync_registration_->contact_id();
   }
+
+  const EC_KEY* identity_key() const {
+    DCHECK(identity_key_);
+    return identity_key_.get();
+  }
+
+  bool device_supports_cable() const { return *device_supports_cable_; }
 
   void SignalSyncWhenReady() {
     if (sync_registration_ && !sync_registration_->contact_id()) {
@@ -201,10 +226,52 @@ class RegistrationState {
         ->RefreshLocalDeviceInfo();
   }
 
+  static bool GetCanDeviceSupportCableOnBackgroundSequence() {
+    // This runs on a worker thread because this Java function can take a
+    // little while and it shouldn't block the UI thread.
+    return Java_CableAuthenticatorModuleProvider_canDeviceSupportCable(
+        base::android::AttachCurrentThread());
+  }
+
+  // OnCanDeviceSupportCable is run with the result of `TestDeviceSupport`.
+  void OnDeviceSupportResult(bool result) {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+    device_supports_cable_ = result;
+    MaybeSignalSync();
+  }
+
+  static bssl::UniquePtr<EC_KEY> CalculateIdentityKeyOnBackgroundSequence(
+      std::array<uint8_t, 32> secret) {
+    // This runs on a worker thread because the scalar multiplication takes a
+    // few milliseconds on slower devices.
+    return device::cablev2::IdentityKey(secret);
+  }
+
+  // OnIdentityKeyReady is run with the result of `CalculateIdentityKey`.
+  void OnIdentityKeyReady(bssl::UniquePtr<EC_KEY> identity_key) {
+    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+    identity_key_ = std::move(identity_key);
+    MaybeSignalSync();
+  }
+
   std::unique_ptr<Registration> linking_registration_;
   std::unique_ptr<Registration> sync_registration_;
   std::array<uint8_t, 32> secret_;
+  // identity_key_ is a public/private P-256 key that is calculated from
+  // `secret_`. It's cached because it takes some time to compute.
+  bssl::UniquePtr<EC_KEY> identity_key_;
   std::unique_ptr<Registration::Event> pending_event_;
+  // device_supports_cable_ caches the result of a Java function that checks
+  // some prerequisites: that the device has Bluetooth and a screenlock. If
+  // this value is |nullopt| then its value has not yet been determined.
+  //
+  // The presence of a screen lock could change but, because of this caching,
+  // Clank won't notice in this context until the process restarts. Users can
+  // always use a QR code if pre-linking hasn't worked by the time they need
+  // it.
+  absl::optional<bool> device_supports_cable_;
   bool signal_sync_when_ready_ = false;
 };
 
@@ -229,17 +296,16 @@ absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
 GetSyncDataIfRegistered() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  if (!Java_CableAuthenticatorModuleProvider_canDeviceSupportCable(
-          base::android::AttachCurrentThread())) {
-    return absl::nullopt;
-  }
-
   RegistrationState* state = GetRegistrationState();
   if (!state->have_data_for_sync()) {
     // Not yet ready to provide sync data. When the data is ready,
     // |state| will signal to Sync that something changed and this
     // function will be called again.
     state->SignalSyncWhenReady();
+    return absl::nullopt;
+  }
+
+  if (!state->device_supports_cable()) {
     return absl::nullopt;
   }
 
@@ -257,11 +323,9 @@ GetSyncDataIfRegistered() {
       state->secret(), pairing_id_bytes,
       device::cablev2::DerivedValueType::kPairedSecret);
 
-  bssl::UniquePtr<EC_KEY> identity_key =
-      device::cablev2::IdentityKey(state->secret());
   CHECK_EQ(paask_info.peer_public_key_x962.size(),
-           EC_POINT_point2oct(EC_KEY_get0_group(identity_key.get()),
-                              EC_KEY_get0_public_key(identity_key.get()),
+           EC_POINT_point2oct(EC_KEY_get0_group(state->identity_key()),
+                              EC_KEY_get0_public_key(state->identity_key()),
                               POINT_CONVERSION_UNCOMPRESSED,
                               paask_info.peer_public_key_x962.data(),
                               paask_info.peer_public_key_x962.size(),

@@ -240,6 +240,8 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
 
     @CalledByNative
     public static boolean canDeviceSupportCable() {
+        // This function will be run on a background thread.
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N
                 || BluetoothAdapter.getDefaultAdapter() == null) {
             return false;
