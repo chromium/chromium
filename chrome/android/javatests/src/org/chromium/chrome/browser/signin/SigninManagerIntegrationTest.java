@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,8 +33,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.IdentityMutator;
-import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -49,7 +46,7 @@ import java.util.HashSet;
  * These tests initialize the native part of the service.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class IdentityManagerIntegrationTest {
+public class SigninManagerIntegrationTest {
     @Rule
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
@@ -65,8 +62,8 @@ public class IdentityManagerIntegrationTest {
     private CoreAccountInfo mTestAccount1;
     private CoreAccountInfo mTestAccount2;
 
-    private IdentityMutator mIdentityMutator;
     private IdentityManager mIdentityManager;
+    private SigninManager mSigninManager;
 
     @Mock
     private SigninManager.SignInStateObserver mSignInStateObserverMock;
@@ -81,18 +78,10 @@ public class IdentityManagerIntegrationTest {
         mSigninTestRule.waitForSeeding();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
-            SigninManagerImpl signinManager =
-                    (SigninManagerImpl) IdentityServicesProvider.get().getSigninManager(profile);
-            signinManager.addSignInStateObserver(mSignInStateObserverMock);
-            mIdentityMutator = signinManager.getIdentityMutatorForTesting();
             mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+            mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
+            mSigninManager.addSignInStateObserver(mSignInStateObserverMock);
         });
-    }
-
-    @After
-    public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(null); });
     }
 
     @Test
@@ -103,7 +92,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(null);
+            mSigninManager.reloadAllAccountsFromSystem(null);
 
             Assert.assertArrayEquals("No account: getAccounts must be empty",
                     new CoreAccountInfo[] {}, mIdentityManager.getAccountsWithRefreshTokens());
@@ -117,7 +106,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(null);
+            mSigninManager.reloadAllAccountsFromSystem(null);
 
             Assert.assertArrayEquals("No signed in account: getAccounts must be empty",
                     new CoreAccountInfo[] {}, mIdentityManager.getAccountsWithRefreshTokens());
@@ -131,7 +120,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertArrayEquals("Signed in: one account should be available",
                     new CoreAccountInfo[] {mTestAccount1},
@@ -146,7 +135,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount2.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount2.getId());
 
             Assert.assertArrayEquals(
                     "Signed in but different account, getAccounts must remain empty",
@@ -161,7 +150,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run one validation.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertArrayEquals("Signed in and one account available",
                     new CoreAccountInfo[] {mTestAccount1},
@@ -173,7 +162,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Re-run validation.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
                     new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
@@ -190,7 +179,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run one validation.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
                     new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
@@ -200,7 +189,7 @@ public class IdentityManagerIntegrationTest {
         mSigninTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertArrayEquals(
                     "Only one account available, account2 should not be returned anymore",
@@ -217,7 +206,7 @@ public class IdentityManagerIntegrationTest {
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
                     new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
@@ -230,7 +219,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Re-validate and run checks.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertArrayEquals("No account available", new CoreAccountInfo[] {},
                     mIdentityManager.getAccountsWithRefreshTokens());
@@ -245,7 +234,7 @@ public class IdentityManagerIntegrationTest {
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
                     new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
@@ -257,7 +246,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Re-validate and run checks.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(null);
+            mSigninManager.reloadAllAccountsFromSystem(null);
 
             Assert.assertArrayEquals("Not signed in and no accounts available",
                     new CoreAccountInfo[] {}, mIdentityManager.getAccountsWithRefreshTokens());
@@ -273,7 +262,7 @@ public class IdentityManagerIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
                     new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
@@ -286,7 +275,7 @@ public class IdentityManagerIntegrationTest {
     public void testUpdateAccountListNoAccountsRegisteredButSignedIn() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
-            mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
+            mSigninManager.reloadAllAccountsFromSystem(mTestAccount1.getId());
 
             Assert.assertArrayEquals("No accounts available", new CoreAccountInfo[] {},
                     mIdentityManager.getAccountsWithRefreshTokens());
@@ -303,8 +292,7 @@ public class IdentityManagerIntegrationTest {
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
 
             // Run test.
-            mIdentityMutator.clearPrimaryAccount(
-                    SignoutReason.SIGNOUT_TEST, SignoutDelete.IGNORE_METRIC);
+            mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
 
             // Check the account is signed out
             Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
@@ -328,8 +316,7 @@ public class IdentityManagerIntegrationTest {
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
 
             // Run test.
-            mIdentityMutator.clearPrimaryAccount(
-                    SignoutReason.SIGNOUT_TEST, SignoutDelete.IGNORE_METRIC);
+            mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
 
             Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
         });
@@ -353,8 +340,7 @@ public class IdentityManagerIntegrationTest {
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
 
             // Run test.
-            mIdentityMutator.revokeSyncConsent(
-                    SignoutReason.SIGNOUT_TEST, SignoutDelete.IGNORE_METRIC);
+            mSigninManager.revokeSyncConsent(SignoutReason.SIGNOUT_TEST, null, false);
 
             Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
@@ -379,8 +365,7 @@ public class IdentityManagerIntegrationTest {
             Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
 
             // Run test.
-            mIdentityMutator.revokeSyncConsent(
-                    SignoutReason.SIGNOUT_TEST, SignoutDelete.IGNORE_METRIC);
+            mSigninManager.revokeSyncConsent(SignoutReason.SIGNOUT_TEST, null, false);
 
             Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
         });

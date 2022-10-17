@@ -44,7 +44,6 @@ import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
-import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninReason;
@@ -381,58 +380,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         }
     }
 
-    /**
-     * Implements {@link IdentityManager.Observer}
-     */
-    @Override
-    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        switch (eventDetails.getEventTypeFor(ConsentLevel.SYNC)) {
-            case PrimaryAccountChangeEvent.Type.SET:
-                // Simply verify that the request is ongoing (mSignInState != null), as only
-                // SigninManager should update IdentityManager. This is triggered by the call to
-                // IdentityMutator.setPrimaryAccount
-                assert mSignInState != null;
-                break;
-            case PrimaryAccountChangeEvent.Type.CLEARED:
-                // This event can occur in two cases:
-                // - Syncing account is signed out. User may choose to delete data from UI prompt
-                //   if account is not managed. In this case mSigninOutState is set.
-                // - RevokeSyncConsent() is called in native code. In this case the user may still
-                //   be signed in with Consentlevel::SIGNIN and just lose sync privileges.
-                //   If the account is managed then the data should be wiped.
-                //
-                //   TODO(https://crbug.com/1173016): It might be too late to get management status
-                //       here. SyncService should call RevokeSyncConsent/ClearPrimaryAccount in
-                //       SigninManager instead.
-                if (mSignOutState == null) {
-                    mSignOutState = new SignOutState(null,
-                            getManagementDomain() != null
-                                    ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
-                                    : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
-                    notifySignOutAllowedChanged();
-                }
-
-                // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
-                //                                  uses the sync account before the native is
-                //                                  loaded.
-                SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(null);
-                disableSyncAndWipeData(this::finishSignOut);
-                break;
-            case PrimaryAccountChangeEvent.Type.NONE:
-                if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
-                        == PrimaryAccountChangeEvent.Type.CLEARED) {
-                    if (mSignOutState == null) {
-                        // Don't wipe data as the user is not syncing.
-                        mSignOutState = new SignOutState(
-                                null, SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
-                        notifySignOutAllowedChanged();
-                    }
-                    disableSyncAndWipeData(this::finishSignOut);
-                }
-                break;
-        }
-    }
-
     @Override
     @MainThread
     public void runAfterOperationInProgress(Runnable runnable) {
@@ -498,6 +445,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                 // Always use IGNORE_METRIC as Chrome Android has just a single-profile which is
                 // never deleted.
                 SignoutDelete.IGNORE_METRIC);
+
+        notifySignOutAllowedChanged();
+        disableSyncAndWipeData(this::finishSignOut);
     }
 
     /**
@@ -528,14 +478,14 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                         ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
                         : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
 
-        // User data will be wiped in disableSyncAndWipeData(), called from
-        // onPrimaryAccountChanged().
         mIdentityMutator.clearPrimaryAccount(signoutSource,
                 // Always use IGNORE_METRIC for the profile deletion argument. Chrome
                 // Android has just a single-profile which is never deleted upon
                 // sign-out.
                 SignoutDelete.IGNORE_METRIC);
+
         notifySignOutAllowedChanged();
+        disableSyncAndWipeData(this::finishSignOut);
     }
 
     /**
@@ -715,6 +665,11 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private void disableSyncAndWipeData(final Runnable wipeDataCallback) {
         Log.i(TAG, "Native signout complete, wiping data (user callback: %s)",
                 mSignOutState.mDataWipeAction);
+
+        // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
+        //                                  uses the sync account before the native is
+        //                                  loaded.
+        SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(null);
 
         if (mSignOutState.mSignOutCallback != null) {
             mSignOutState.mSignOutCallback.preWipeData();
