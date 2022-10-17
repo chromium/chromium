@@ -51,30 +51,22 @@ async function main() {
   chrome.test.runTests([
     // Create a file which doesn't exist. Should succeed.
     async function createFileSuccessSimple() {
-      try {
-        const fileEntry = await getFileEntry(
-            TESTING_NEW_FILE.name, {create: true, exclusive: false});
+      const fileEntry = await getFileEntry(
+          TESTING_NEW_FILE.name, {create: true, exclusive: false});
 
-        chrome.test.assertEq(TESTING_NEW_FILE.name, fileEntry.name);
-        chrome.test.assertFalse(fileEntry.isDirectory);
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e);
-      }
+      chrome.test.assertEq(TESTING_NEW_FILE.name, fileEntry.name);
+      chrome.test.assertFalse(fileEntry.isDirectory);
+      chrome.test.succeed();
     },
 
     // Create a file which exists, non-exclusively. Should succeed.
     async function createFileOrOpenSuccess() {
-      try {
-        const fileEntry = await getFileEntry(
-            TESTING_FILE.name, {create: true, exclusive: false});
+      const fileEntry = await getFileEntry(
+          TESTING_FILE.name, {create: true, exclusive: false});
 
-        chrome.test.assertEq(TESTING_FILE.name, fileEntry.name);
-        chrome.test.assertFalse(fileEntry.isDirectory);
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e);
-      }
+      chrome.test.assertEq(TESTING_FILE.name, fileEntry.name);
+      chrome.test.assertFalse(fileEntry.isDirectory);
+      chrome.test.succeed();
     },
 
     // Create a file which exists, exclusively. Should fail.

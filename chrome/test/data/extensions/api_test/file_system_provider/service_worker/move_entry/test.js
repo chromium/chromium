@@ -28,46 +28,38 @@ async function main() {
   chrome.test.runTests([
     // Move an existing file to a non-existing destination. Should succeed.
     async function moveEntrySuccess() {
-      try {
-        const sourceEntry =
-            await fileSystem.getFileEntry(srcPath, {create: false});
-        chrome.test.assertFalse(sourceEntry.isDirectory);
-        const targetEntry = await new Promise(
-            (resolve, reject) => sourceEntry.moveTo(
-                fileSystem.fileSystem.root, dstPath, resolve, reject));
-        chrome.test.assertEq(dstPath, targetEntry.name);
-        chrome.test.assertFalse(targetEntry.isDirectory);
-        // The source file should be deleted.
-        try {
+      const sourceEntry =
           await fileSystem.getFileEntry(srcPath, {create: false});
-          chrome.test.fail('Source file not deleted.');
-        } catch (e) {
-          chrome.test.assertEq('NotFoundError', e.name);
-          chrome.test.succeed();
-        }
+      chrome.test.assertFalse(sourceEntry.isDirectory);
+      const targetEntry = await new Promise(
+          (resolve, reject) => sourceEntry.moveTo(
+              fileSystem.fileSystem.root, dstPath, resolve, reject));
+      chrome.test.assertEq(dstPath, targetEntry.name);
+      chrome.test.assertFalse(targetEntry.isDirectory);
+      // The source file should be deleted.
+      try {
+        await fileSystem.getFileEntry(srcPath, {create: false});
+        chrome.test.fail('Source file not deleted.');
       } catch (e) {
-        chrome.test.fail(e);
+        chrome.test.assertEq('NotFoundError', e.name);
+        chrome.test.succeed();
       }
     },
 
     // Move an existing file to a location which already holds a file. Should
     // fail.
     async function moveEntryExistsError() {
+      const sourceEntry =
+          await fileSystem.getFileEntry(FILE_MOVE_FAIL, {create: false});
+      chrome.test.assertFalse(sourceEntry.isDirectory);
       try {
-        const sourceEntry =
-            await fileSystem.getFileEntry(FILE_MOVE_FAIL, {create: false});
-        chrome.test.assertFalse(sourceEntry.isDirectory);
-        try {
-          await new Promise(
-              (resolve, reject) => sourceEntry.moveTo(
-                  fileSystem.fileSystem.root, dstPath, resolve, reject));
-          chrome.test.fail('Succeeded, but should fail.');
-        } catch (e) {
-          chrome.test.assertEq('InvalidModificationError', e.name);
-          chrome.test.succeed();
-        }
+        await new Promise(
+            (resolve, reject) => sourceEntry.moveTo(
+                fileSystem.fileSystem.root, dstPath, resolve, reject));
+        chrome.test.fail('Succeeded, but should fail.');
       } catch (e) {
-        chrome.test.fail(e);
+        chrome.test.assertEq('InvalidModificationError', e.name);
+        chrome.test.succeed();
       }
     },
   ]);

@@ -13,66 +13,54 @@ async function main() {
     // Tests that returning a too big chunk (4 times larger than the file size,
     // and also much more than requested 1 KB of data) makes the request fail.
     async function returnTooLargeChunk() {
+      const fileEntry = await fileSystem.getFileEntry(
+          TestFileSystemProvider.FILE_TOO_LARGE_CHUNK,
+          {create: false},
+      );
+      const file = await openFile(fileEntry);
+      // Read 1 KB of data.
+      const fileSlice = file.slice(0, 1024);
       try {
-        const fileEntry = await fileSystem.getFileEntry(
-            TestFileSystemProvider.FILE_TOO_LARGE_CHUNK,
-            {create: false},
-        );
-        const file = await openFile(fileEntry);
-        // Read 1 KB of data.
-        const fileSlice = file.slice(0, 1024);
-        try {
-          await readTextFromBlob(fileSlice);
-          chrome.test.fail('Reading should fail.');
-        } catch (e) {
-          chrome.test.assertEq('NotReadableError', e.name);
-          chrome.test.succeed();
-        }
+        await readTextFromBlob(fileSlice);
+        chrome.test.fail('Reading should fail.');
       } catch (e) {
-        chrome.test.fail(e);
+        chrome.test.assertEq('NotReadableError', e.name);
+        chrome.test.succeed();
       }
     },
 
     // Tests that calling a success callback with a non-existing request id
     // doesn't cause any harm.
     async function invalidCallback() {
+      const fileEntry = await fileSystem.getFileEntry(
+          TestFileSystemProvider.FILE_INVALID_CALLBACK,
+          {create: false},
+      );
+      const file = await openFile(fileEntry);
+      // Read 1 KB of data.
+      const fileSlice = file.slice(0, 1024);
       try {
-        const fileEntry = await fileSystem.getFileEntry(
-            TestFileSystemProvider.FILE_INVALID_CALLBACK,
-            {create: false},
-        );
-        const file = await openFile(fileEntry);
-        // Read 1 KB of data.
-        const fileSlice = file.slice(0, 1024);
-        try {
-          await readTextFromBlob(fileSlice);
-          chrome.test.fail('Reading should fail.');
-        } catch (e) {
-          chrome.test.assertEq('NotReadableError', e.name);
-          chrome.test.succeed();
-        }
+        await readTextFromBlob(fileSlice);
+        chrome.test.fail('Reading should fail.');
       } catch (e) {
-        chrome.test.fail(e);
+        chrome.test.assertEq('NotReadableError', e.name);
+        chrome.test.succeed();
       }
     },
 
     // Test that reading from files with negative size is not allowed (empty
     // result is returned).
     async function negativeSize() {
-      try {
-        const fileEntry = await fileSystem.getFileEntry(
-            TestFileSystemProvider.FILE_NEGATIVE_SIZE,
-            {create: false},
-        );
-        const file = await openFile(fileEntry);
-        // Read 1 KB of data.
-        const fileSlice = file.slice(0, 1024);
-        const text = await readTextFromBlob(fileSlice);
-        chrome.test.assertEq('', text);
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e);
-      }
+      const fileEntry = await fileSystem.getFileEntry(
+          TestFileSystemProvider.FILE_NEGATIVE_SIZE,
+          {create: false},
+      );
+      const file = await openFile(fileEntry);
+      // Read 1 KB of data.
+      const fileSlice = file.slice(0, 1024);
+      const text = await readTextFromBlob(fileSlice);
+      chrome.test.assertEq('', text);
+      chrome.test.succeed();
     },
 
     // Tests that accesses to  files containing ".." do not work.

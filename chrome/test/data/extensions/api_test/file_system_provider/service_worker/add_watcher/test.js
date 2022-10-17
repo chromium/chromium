@@ -19,74 +19,62 @@ async function main() {
   chrome.test.runTests([
     // Add an entry watcher on an existing file.
     async function addWatcher() {
-      try {
-        const fileEntry =
-            await fileSystem.getFileEntry(fileName, {create: false});
-        const watching = await addFileWatch(fileEntry);
-        chrome.test.assertTrue(watching);
+      const fileEntry =
+          await fileSystem.getFileEntry(fileName, {create: false});
+      const watching = await addFileWatch(fileEntry);
+      chrome.test.assertTrue(watching);
 
-        const fsInfos = await getAllFsInfos();
+      const fsInfos = await getAllFsInfos();
 
-        chrome.test.assertEq(1, fsInfos.length);
-        chrome.test.assertEq(1, fsInfos[0].watchers.length);
-        const watcher = fsInfos[0].watchers[0];
-        chrome.test.assertEq('/' + fileName, watcher.entryPath);
-        chrome.test.assertFalse(watcher.recursive);
-        chrome.test.assertEq(undefined, /**@type {!Object} */ (watcher).tag);
+      chrome.test.assertEq(1, fsInfos.length);
+      chrome.test.assertEq(1, fsInfos[0].watchers.length);
+      const watcher = fsInfos[0].watchers[0];
+      chrome.test.assertEq('/' + fileName, watcher.entryPath);
+      chrome.test.assertFalse(watcher.recursive);
+      chrome.test.assertEq(undefined, /**@type {!Object} */ (watcher).tag);
 
-        chrome.test.succeed();
-      } catch (error) {
-        chrome.test.fail(error);
-      }
+      chrome.test.succeed();
     },
 
     // Add an entry watcher on a file which is already watched, it should fail.
     async function addExistingFileWatcher() {
+      // Should start with one watcher.
+      let fsInfos = await getAllFsInfos();
+      chrome.test.assertEq(1, fsInfos.length);
+      chrome.test.assertEq(1, fsInfos[0].watchers.length);
+
+      const fileEntry =
+          await fileSystem.getFileEntry(fileName, {create: false});
       try {
-        // Should start with one watcher.
-        let fsInfos = await getAllFsInfos();
+        await addFileWatch(fileEntry);
+        chrome.test.fail('Adding file watcher should have failed.');
+      } catch (error) {
+        chrome.test.assertEq('Unknown error.', error.message);
+
+        // Shouldn't change the number of watchers.
+        fsInfos = await getAllFsInfos();
         chrome.test.assertEq(1, fsInfos.length);
         chrome.test.assertEq(1, fsInfos[0].watchers.length);
 
-        const fileEntry =
-            await fileSystem.getFileEntry(fileName, {create: false});
-        try {
-          await addFileWatch(fileEntry);
-          chrome.test.fail('Adding file watcher should have failed.');
-        } catch (error) {
-          chrome.test.assertEq('Unknown error.', error.message);
-
-          // Shouldn't change the number of watchers.
-          fsInfos = await getAllFsInfos();
-          chrome.test.assertEq(1, fsInfos.length);
-          chrome.test.assertEq(1, fsInfos[0].watchers.length);
-
-          chrome.test.succeed();
-        }
-      } catch (error) {
-        chrome.test.fail(error);
+        chrome.test.succeed();
       }
     },
 
     // Add an entry watcher on a broken file, it should fail.
     async function addBrokenFileWatcher() {
+      const fileEntry = await fileSystem.getFileEntry(
+          TestFileSystemProvider.FILE_FAIL, {create: false});
       try {
-        const fileEntry = await fileSystem.getFileEntry(
-            TestFileSystemProvider.FILE_FAIL, {create: false});
-        try {
-          await addFileWatch(fileEntry);
-          chrome.test.fail('Adding file watcher should have failed.');
-        } catch (error) {
-          chrome.test.assertEq('Unknown error.', error.message);
-          // Shouldn't change the number of watchers.
-          const fsInfos = await getAllFsInfos();
-          chrome.test.assertEq(1, fsInfos.length);
-          chrome.test.assertEq(1, fsInfos[0].watchers.length);
-
-          chrome.test.succeed();
-        }
+        await addFileWatch(fileEntry);
+        chrome.test.fail('Adding file watcher should have failed.');
       } catch (error) {
-        chrome.test.fail(error);
+        chrome.test.assertEq('Unknown error.', error.message);
+        // Shouldn't change the number of watchers.
+        const fsInfos = await getAllFsInfos();
+        chrome.test.assertEq(1, fsInfos.length);
+        chrome.test.assertEq(1, fsInfos[0].watchers.length);
+
+        chrome.test.succeed();
       }
     }
   ]);

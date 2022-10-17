@@ -14,24 +14,20 @@ async function main() {
 
   chrome.test.runTests([
     async function readBigFileSuccess() {
-      try {
-        const fileEntry = await fileSystem.getFileEntry(
-            TestFileSystemProvider.FILE_BIG,
-            {create: false},
-        );
-        const file = await openFile(fileEntry);
-        // Read 10 bytes past the max unsigned 32-bit integer offset.
-        const offset = 2 ** 32 + 100;
-        const text = await readTextFromBlob(file.slice(offset, offset + 10));
-        // Check the provider got the read request at the correct offset.
-        chrome.test.assertEq(
-            offset,
-            (await remoteProvider.waitForEvent('onReadFileRequested')).offset);
-        chrome.test.assertEq('AAAAAAAAAA', text);
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e);
-      }
+      const fileEntry = await fileSystem.getFileEntry(
+          TestFileSystemProvider.FILE_BIG,
+          {create: false},
+      );
+      const file = await openFile(fileEntry);
+      // Read 10 bytes past the max unsigned 32-bit integer offset.
+      const offset = 2 ** 32 + 100;
+      const text = await readTextFromBlob(file.slice(offset, offset + 10));
+      // Check the provider got the read request at the correct offset.
+      chrome.test.assertEq(
+          offset,
+          (await remoteProvider.waitForEvent('onReadFileRequested')).offset);
+      chrome.test.assertEq('AAAAAAAAAA', text);
+      chrome.test.succeed();
     },
   ]);
 }

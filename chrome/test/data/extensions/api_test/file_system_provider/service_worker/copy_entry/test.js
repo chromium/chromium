@@ -18,38 +18,30 @@ async function main() {
   chrome.test.runTests([
     // Copy an existing file to a non-existing destination. Should succeed.
     async function copyEntrySuccess() {
-      try {
-        const sourceEntry =
-            await fileSystem.getFileEntry(srcPath, {create: false});
-        chrome.test.assertFalse(sourceEntry.isDirectory);
-        const targetEntry = await new Promise(
-            (resolve, reject) => sourceEntry.copyTo(
-                fileSystem.fileSystem.root, dstPath, resolve, reject));
-        chrome.test.assertEq(dstPath, targetEntry.name);
-        chrome.test.assertFalse(targetEntry.isDirectory);
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e);
-      }
+      const sourceEntry =
+          await fileSystem.getFileEntry(srcPath, {create: false});
+      chrome.test.assertFalse(sourceEntry.isDirectory);
+      const targetEntry = await new Promise(
+          (resolve, reject) => sourceEntry.copyTo(
+              fileSystem.fileSystem.root, dstPath, resolve, reject));
+      chrome.test.assertEq(dstPath, targetEntry.name);
+      chrome.test.assertFalse(targetEntry.isDirectory);
+      chrome.test.succeed();
     },
     // Copy an existing file to a location which already holds a file.
     // Should fail.
     async function copyEntryExistsError() {
+      const sourceEntry =
+          await fileSystem.getFileEntry(srcPath, {create: false});
+      chrome.test.assertFalse(sourceEntry.isDirectory);
       try {
-        const sourceEntry =
-            await fileSystem.getFileEntry(srcPath, {create: false});
-        chrome.test.assertFalse(sourceEntry.isDirectory);
-        try {
-          await new Promise(
-              (resolve, reject) => sourceEntry.copyTo(
-                  fileSystem.fileSystem.root, dstPath, resolve, reject));
-          chrome.test.fail('Succeeded, but should fail.');
-        } catch (e) {
-          chrome.test.assertEq('InvalidModificationError', e.name);
-          chrome.test.succeed();
-        }
+        await new Promise(
+            (resolve, reject) => sourceEntry.copyTo(
+                fileSystem.fileSystem.root, dstPath, resolve, reject));
+        chrome.test.fail('Succeeded, but should fail.');
       } catch (e) {
-        chrome.test.fail(e);
+        chrome.test.assertEq('InvalidModificationError', e.name);
+        chrome.test.succeed();
       }
     },
   ]);

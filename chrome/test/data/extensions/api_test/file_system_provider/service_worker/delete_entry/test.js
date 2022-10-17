@@ -46,50 +46,38 @@ async function main() {
   chrome.test.runTests([
     // Delete a file. Should succeed.
     async function deleteFileSuccessSimple() {
-      try {
-        const entry = await fileSystem.getFileEntry(TEST_FILE, {
-          create: false,
-        });
-        chrome.test.assertEq(TEST_FILE, entry.name);
-        chrome.test.assertFalse(entry.isDirectory);
-        await new Promise((resolve, reject) => entry.remove(resolve, reject));
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e);
-      }
+      const entry = await fileSystem.getFileEntry(TEST_FILE, {
+        create: false,
+      });
+      chrome.test.assertEq(TEST_FILE, entry.name);
+      chrome.test.assertFalse(entry.isDirectory);
+      await new Promise((resolve, reject) => entry.remove(resolve, reject));
+      chrome.test.succeed();
     },
     // Delete a directory which has contents, non-recursively. Should fail.
     async function deleteDirectoryErrorNotEmpty() {
+      const entry =
+          await fileSystem.getDirectoryEntry(TEST_DIR, {create: false});
+      chrome.test.assertEq(TEST_DIR, entry.name);
+      chrome.test.assertTrue(entry.isDirectory);
       try {
-        const entry =
-            await fileSystem.getDirectoryEntry(TEST_DIR, {create: false});
-        chrome.test.assertEq(TEST_DIR, entry.name);
-        chrome.test.assertTrue(entry.isDirectory);
-        try {
-          await new Promise((resolve, reject) => entry.remove(resolve, reject));
-          chrome.test.fail('Unexpectedly succeded to remove a directory.');
-        } catch (e) {
-          chrome.test.assertEq('InvalidModificationError', e.name);
-          chrome.test.succeed();
-        }
+        await new Promise((resolve, reject) => entry.remove(resolve, reject));
+        chrome.test.fail('Unexpectedly succeded to remove a directory.');
       } catch (e) {
-        chrome.test.fail(e);
+        chrome.test.assertEq('InvalidModificationError', e.name);
+        chrome.test.succeed();
       }
     },
 
     // Delete a directory which has contents, recursively. Should succeed.
     async function deleteDirectoryRecursively() {
-      try {
-        const entry =
-            await fileSystem.getDirectoryEntry(TEST_DIR, {create: false});
-        chrome.test.assertEq(TEST_DIR, entry.name);
-        chrome.test.assertTrue(entry.isDirectory);
-        await new Promise(
-            (resolve, reject) => entry.removeRecursively(resolve, reject));
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e);
-      }
+      const entry =
+          await fileSystem.getDirectoryEntry(TEST_DIR, {create: false});
+      chrome.test.assertEq(TEST_DIR, entry.name);
+      chrome.test.assertTrue(entry.isDirectory);
+      await new Promise(
+          (resolve, reject) => entry.removeRecursively(resolve, reject));
+      chrome.test.succeed();
     },
   ]);
 }

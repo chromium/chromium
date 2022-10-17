@@ -70,21 +70,17 @@ async function main() {
     // Read contents of the /hello directory. This directory exists, so it
     // should succeed.
     async function readEntriesSuccess() {
-      try {
-        const dirEntry = await fileSystem.getDirectoryEntry(
-            TESTING_HELLO_DIR.name, {create: false});
-        const entries = await readAllEntries(dirEntry);
-        chrome.test.assertEq(2, entries.length);
-        chrome.test.assertTrue(entries[0].isFile);
-        chrome.test.assertEq('tiramisu.txt', entries[0].name);
-        chrome.test.assertEq('/hello/tiramisu.txt', entries[0].fullPath);
-        chrome.test.assertTrue(entries[1].isDirectory);
-        chrome.test.assertEq('candies', entries[1].name);
-        chrome.test.assertEq('/hello/candies', entries[1].fullPath);
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail(e);
-      }
+      const dirEntry = await fileSystem.getDirectoryEntry(
+          TESTING_HELLO_DIR.name, {create: false});
+      const entries = await readAllEntries(dirEntry);
+      chrome.test.assertEq(2, entries.length);
+      chrome.test.assertTrue(entries[0].isFile);
+      chrome.test.assertEq('tiramisu.txt', entries[0].name);
+      chrome.test.assertEq('/hello/tiramisu.txt', entries[0].fullPath);
+      chrome.test.assertTrue(entries[1].isDirectory);
+      chrome.test.assertEq('candies', entries[1].name);
+      chrome.test.assertEq('/hello/candies', entries[1].fullPath);
+      chrome.test.succeed();
     },
     // Read contents of a directory which does not exist, what should return an
     // error.
