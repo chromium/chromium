@@ -798,6 +798,74 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNoTimeout) {
 
 // This test verifies that when:
 //
+//  - the private network request policy is set to `kPreflightBlock`
+//  - a simple request detects a private network request
+//  - the following PNA preflight response takes forever to arrive
+//
+// ... we wait as long as it takes for the response to arrive.
+TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockPreflightNoTimeout) {
+  auto initiator_origin = url::Origin::Create(GURL("https://example.com"));
+
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  ResetFactory(initiator_origin, kRendererProcessId, factory_params);
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.mode = mojom::RequestMode::kCors;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator_origin;
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .Build();
+
+  base::HistogramTester histogram_tester;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(CorsErrorStatus(
+      mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Simulate a response that takes longer to arrive than the preflight timeout.
+  // This should still work, because the timeout should not be applied.
+  base::OneShotTimer timer;
+  timer.Start(FROM_HERE, base::Milliseconds(500),
+              base::BindLambdaForTesting([this] {
+                NotifyLoaderClientOnReceiveResponse({
+                    {"Access-Control-Allow-Methods", "PUT"},
+                    {"Access-Control-Allow-Origin", "https://example.com"},
+                    {"Access-Control-Allow-Credentials", "true"},
+                    {"Access-Control-Allow-Private-Network", "true"},
+                });
+              }));
+
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse({
+      {"Access-Control-Allow-Methods", "PUT"},
+      {"Access-Control-Allow-Origin", "https://example.com"},
+      {"Access-Control-Allow-Credentials", "true"},
+  });
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_EQ(client().completion_status().error_code, net::OK);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
+              IsEmpty());
+}
+
+// This test verifies that when:
+//
 //  - the private network request policy is set to `kPreflightWarn`
 //  - a simple request detects a private network request
 //  - the following PNA preflight fails due to a non-PNA CORS error

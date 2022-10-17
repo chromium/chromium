@@ -772,7 +772,7 @@ TEST_F(PreflightControllerTest,
   mojom::ClientSecurityStatePtr client_security_state =
       ClientSecurityStateBuilder()
           .WithPrivateNetworkRequestPolicy(
-              mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+              mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
           .Build();
 
   // Set the client security state in the request's trusted params, because the
