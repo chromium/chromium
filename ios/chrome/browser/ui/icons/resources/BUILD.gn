@@ -53,6 +53,13 @@ symbolset("password") {
   ]
 }
 
+symbolset("password_manager") {
+  sources = [
+    "password_manager.symbolset/Contents.json",
+    "password_manager.symbolset/password.manager.cr.svg",
+  ]
+}
+
 symbolset("square_number") {
   sources = [
     "square_number.symbolset/Contents.json",

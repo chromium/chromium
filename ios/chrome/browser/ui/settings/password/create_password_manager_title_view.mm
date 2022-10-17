@@ -22,7 +22,7 @@ const CGFloat kSymbolPointSize = 17.0;
 
 // Symbol name for the logo image.
 // Using password logo as placeholder until Password Manager SF Symbol is added.
-NSString* const kLogoSymbolName = kPasswordSymbol;
+NSString* const kLogoSymbolName = kPasswordManagerSymbol;
 
 }  // namespace
 
@@ -35,8 +35,8 @@ BrandedNavigationItemTitleView* CreatePasswordManagerTitleView(
 
   title_view.title = title;
 
-  title_view.imageLogo = CustomSymbolWithPointSize(
-      /*symbolName=*/kPasswordSymbol, /*pointSize=*/kSymbolPointSize);
+  title_view.imageLogo = CustomMulticolorSymbol(
+      /*symbolName=*/kLogoSymbolName, /*pointSize=*/kSymbolPointSize);
 
   title_view.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_MANAGER_TITLE_VIEW_ACCESSIBILITY_LABEL);
