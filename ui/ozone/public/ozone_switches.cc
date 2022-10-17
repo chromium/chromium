@@ -39,10 +39,4 @@ const char kDisableBufferBWCompression[] = "disable-buffer-bw-compression";
 // Specifies ozone screen size.
 const char kOzoneOverrideScreenSize[] = "ozone-override-screen-size";
 
-// ChromeOS uses one of two VideoDecoder implementations based on SoC/board
-// specific configurations that are signalled via this command line flag.
-// TODO(b/159825227): remove when the "old" video decoder is fully launched.
-const char kPlatformDisallowsChromeOSDirectVideoDecoder[] =
-    "platform-disallows-chromeos-direct-video-decoder";
-
 }  // namespace switches

@@ -243,7 +243,6 @@ source_set("ozone_switches") {
 
   visibility += [
     "//chrome/test:browser_tests_runner",
-    "//content/public/browser:browser_sources",
     "//media/mojo/services",
   ]
 }

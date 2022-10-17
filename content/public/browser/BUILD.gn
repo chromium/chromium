@@ -617,7 +617,6 @@ source_set("browser_sources") {
 
   if (is_chromeos) {
     sources += [ "lock_screen_storage.h" ]
-    deps += [ "//ui/ozone:ozone_switches" ]
   }
 
   if (!is_android) {

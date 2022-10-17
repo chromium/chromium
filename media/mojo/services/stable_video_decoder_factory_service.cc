@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/task/thread_pool.h"
+#include "components/viz/common/switches.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/media_log.h"
@@ -23,7 +24,6 @@
 #include "media/mojo/services/stable_video_decoder_service.h"
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "ui/ozone/public/ozone_switches.h"
 
 namespace media {
 
@@ -70,10 +70,12 @@ class MojoMediaClientImpl : public MojoMediaClient {
     return configs.value_or(std::vector<SupportedVideoDecoderConfig>{});
   }
   VideoDecoderType GetDecoderImplementationType() final {
+#if BUILDFLAG(IS_CHROMEOS)
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kPlatformDisallowsChromeOSDirectVideoDecoder)) {
+            ::switches::kPlatformDisallowsChromeOSDirectVideoDecoder)) {
       return VideoDecoderType::kVda;
     }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // TODO(b/195769334): how can we keep this in sync with
     // VideoDecoderPipeline::GetDecoderType()?

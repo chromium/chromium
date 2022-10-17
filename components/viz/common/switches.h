@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -20,6 +21,12 @@ VIZ_COMMON_EXPORT extern const char kDisableFrameRateLimit[];
 VIZ_COMMON_EXPORT extern const char kDoubleBufferCompositing[];
 VIZ_COMMON_EXPORT extern const char kEnableDeJelly[];
 VIZ_COMMON_EXPORT extern const char kEnableHardwareOverlays[];
+
+#if BUILDFLAG(IS_CHROMEOS)
+VIZ_COMMON_EXPORT extern const char
+    kPlatformDisallowsChromeOSDirectVideoDecoder[];
+#endif
+
 VIZ_COMMON_EXPORT extern const char kRunAllCompositorStagesBeforeDraw[];
 VIZ_COMMON_EXPORT extern const char kShowAggregatedDamage[];
 VIZ_COMMON_EXPORT extern const char kTintCompositedContentModulate[];

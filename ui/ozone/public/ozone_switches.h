@@ -33,9 +33,6 @@ extern const char kDisableBufferBWCompression[];
 
 COMPONENT_EXPORT(OZONE_SWITCHES) extern const char kOzoneOverrideScreenSize[];
 
-COMPONENT_EXPORT(OZONE_SWITCHES)
-extern const char kPlatformDisallowsChromeOSDirectVideoDecoder[];
-
 }  // namespace switches
 
 #endif  // UI_OZONE_PUBLIC_OZONE_SWITCHES_H_

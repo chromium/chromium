@@ -5,10 +5,10 @@
 #include "content/public/browser/stable_video_decoder_factory.h"
 
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/switches.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/service_process_host.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
-#include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -34,7 +34,7 @@ void LaunchStableVideoDecoderFactory(
     // TODO(b/195769334): consider passing |gpu_preferences|.ToSwitchValue() to
     // the utility process instead.
     extra_switches.push_back(
-        switches::kPlatformDisallowsChromeOSDirectVideoDecoder);
+        ::switches::kPlatformDisallowsChromeOSDirectVideoDecoder);
   }
 #endif
   ServiceProcessHost::Launch(
