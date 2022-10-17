@@ -331,6 +331,12 @@ bool BluetoothAdapterFloss::IsDiscovering() const {
   return NumScanningDiscoverySessions() > 0;
 }
 
+std::unique_ptr<BluetoothDeviceFloss>
+BluetoothAdapterFloss::CreateBluetoothDeviceFloss(FlossDeviceId device) {
+  return std::make_unique<BluetoothDeviceFloss>(this, device, ui_task_runner_,
+                                                socket_thread_);
+}
+
 void BluetoothAdapterFloss::OnMethodResponse(base::OnceClosure callback,
                                              ErrorCallback error_callback,
                                              DBusResult<Void> ret) {
@@ -591,8 +597,7 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
 
   BLUETOOTH_LOG(EVENT) << __func__ << device_found;
 
-  auto device_floss = base::WrapUnique(new BluetoothDeviceFloss(
-      this, device_found, ui_task_runner_, socket_thread_));
+  auto device_floss = CreateBluetoothDeviceFloss(device_found);
 
   std::string canonical_address =
       device::CanonicalizeBluetoothAddress(device_floss->GetAddress());
@@ -643,8 +648,7 @@ void BluetoothAdapterFloss::AdapterClearedDevice(
   DCHECK(FlossDBusManager::Get());
   DCHECK(IsPresent());
 
-  auto device_floss = base::WrapUnique(new BluetoothDeviceFloss(
-      this, device_cleared, ui_task_runner_, socket_thread_));
+  auto device_floss = CreateBluetoothDeviceFloss(device_cleared);
   std::string canonical_address =
       device::CanonicalizeBluetoothAddress(device_floss->GetAddress());
   if (base::Contains(devices_, canonical_address)) {
@@ -963,30 +967,73 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
 }
 
 void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
-  device::BluetoothDevice* device = new BluetoothDeviceFloss(
-      this,
-      FlossDeviceId({.address = scan_result.address, .name = scan_result.name}),
-      ui_task_runner_, socket_thread_);
+  BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
+
+  auto device = CreateBluetoothDeviceFloss(FlossDeviceId(
+      {.address = scan_result.address, .name = scan_result.name}));
+
+  std::string canonical_address =
+      device::CanonicalizeBluetoothAddress(device->GetAddress());
+  if (base::Contains(devices_, canonical_address)) {
+    BLUETOOTH_LOG(DEBUG) << __func__ << ": Already seen device, skipping: "
+                         << scan_result.address;
+    return;
+  }
+
+  // Take copy of pointer before moving ownership.
+  BluetoothDeviceFloss* device_ptr = device.get();
+  devices_.emplace(canonical_address, std::move(device));
 
   device::BluetoothDevice::ServiceDataMap service_data_map;
   for (const auto& [uuid, bytes] : scan_result.service_data) {
     service_data_map[device::BluetoothUUID(uuid)] = bytes;
   }
 
-  device->UpdateAdvertisementData(scan_result.rssi, scan_result.flags,
-                                  scan_result.service_uuids,
-                                  scan_result.tx_power, service_data_map,
-                                  device::BluetoothDevice::ManufacturerDataMap(
-                                      scan_result.manufacturer_data.begin(),
-                                      scan_result.manufacturer_data.end()));
+  device_ptr->UpdateAdvertisementData(
+      scan_result.rssi, scan_result.flags, scan_result.service_uuids,
+      scan_result.tx_power, service_data_map,
+      device::BluetoothDevice::ManufacturerDataMap(
+          scan_result.manufacturer_data.begin(),
+          scan_result.manufacturer_data.end()));
 
   for (auto& observer : observers_)
-    observer.DeviceAdvertisementReceived(this, device, scan_result.rssi,
+    observer.DeviceAdvertisementReceived(this, device_ptr, scan_result.rssi,
                                          scan_result.adv_data);
 
   // All scanners share scan results
   for (const auto& [key, scanner] : scanners_) {
-    scanner->OnDeviceFound(device);
+    scanner->OnDeviceFound(device_ptr);
+  }
+}
+
+void BluetoothAdapterFloss::ScanResultLost(ScanResult scan_result) {
+  // TODO(b/217274013): This needs to be wired once filters are in place and
+  // API has been defined on daemon
+  BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
+
+  auto device = CreateBluetoothDeviceFloss(FlossDeviceId(
+      {.address = scan_result.address, .name = scan_result.name}));
+  std::string canonical_address =
+      device::CanonicalizeBluetoothAddress(device->GetAddress());
+  if (!base::Contains(devices_, canonical_address)) {
+    BLUETOOTH_LOG(EVENT) << __func__
+                         << ": Device lost but never previously found: "
+                         << scan_result.address;
+    return;
+  }
+
+  BluetoothDeviceFloss* device_ptr = device.get();
+  BluetoothDeviceFloss* found_ptr =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(device->GetAddress()));
+
+  // Only remove devices from devices_ that are not paired or connected.
+  if (!found_ptr || (!found_ptr->IsPaired() && !found_ptr->IsConnected())) {
+    devices_.erase(canonical_address);
+  }
+
+  // All scanners share scan results
+  for (const auto& [key, scanner] : scanners_) {
+    scanner->OnDeviceLost(device_ptr);
   }
 }
 

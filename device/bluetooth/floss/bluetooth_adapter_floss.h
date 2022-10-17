@@ -138,6 +138,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                          uint8_t scanner_id,
                          GattStatus status) override;
   void ScanResultReceived(ScanResult scan_result) override;
+  void ScanResultLost(ScanResult scan_result) override;
 
  protected:
   // BluetoothAdapter:
@@ -151,6 +152,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // Init will get asynchronouly called once we know if Object Manager is
   // supported.
   void Init();
+
+  // Helper function to create a Floss device
+  std::unique_ptr<BluetoothDeviceFloss> CreateBluetoothDeviceFloss(
+      FlossDeviceId device);
 
   // Handle responses to most method calls
   void OnMethodResponse(base::OnceClosure callback,

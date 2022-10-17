@@ -620,6 +620,11 @@ TEST_F(BluetoothFlossTest, StartLowEnergyScanSessionWithScanResult) {
   EXPECT_EQ(1, delegate.sessions_started_);
   EXPECT_TRUE(base::Contains(delegate.devices_found_, kTestDeviceAddr));
 
+  // Check that the scanned device is in the devices_ map so clients can
+  // access the device.
+  BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddr);
+  EXPECT_NE(nullptr, device);
+
   adapter_->Shutdown();
   EXPECT_EQ(1, delegate.sessions_invalidated_);
 }

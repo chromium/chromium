@@ -73,6 +73,9 @@ class ScannerClientObserver : public base::CheckedObserver {
 
   // A scan result has been received
   virtual void ScanResultReceived(ScanResult scan_result) {}
+
+  // A scan result has been lost
+  virtual void ScanResultLost(ScanResult scan_result) {}
 };
 
 // Low-level interface to Floss's LE Scan API.
