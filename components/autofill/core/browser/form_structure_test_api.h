@@ -58,6 +58,11 @@ class FormStructureTestApi {
   void SetFieldTypes(
       const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
           heuristic_types,
+      const std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+                            FieldPrediction>& server_types);
+  void SetFieldTypes(
+      const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
+          heuristic_types,
       const std::vector<ServerFieldType>& server_types);
 
   // Set the heuristic and server types for each field. The `heuristic_types`

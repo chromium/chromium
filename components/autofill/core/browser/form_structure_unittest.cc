@@ -124,8 +124,14 @@ constexpr DenseSet<PatternSource> kAllPatternSources {
 #endif
 };
 
+Matcher<FieldPrediction> EqualsPrediction(const FieldPrediction& prediction) {
+  return AllOf(
+      Property("type", &FieldPrediction::type, prediction.type()),
+      Property("source", &FieldPrediction::source, prediction.source()));
+}
+
 Matcher<FieldPrediction> EqualsPrediction(ServerFieldType type) {
-  return Property(&FieldPrediction::type, type);
+  return Property("type", &FieldPrediction::type, type);
 }
 
 }  // namespace
@@ -6498,6 +6504,112 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
 
   EXPECT_EQ(expected_result,
             FormStructure::FindFieldsEligibleForManualFilling(forms));
+}
+
+// Test that experimental server predictions are not used.
+TEST_F(FormStructureTestImpl, ExperimentalServerPredictionsAreSeparate) {
+  FormData form_data;
+  form_data.url = GURL("http://foo.com");
+
+  // Add 6 fields.
+  for (int i = 0; i < 6; i++) {
+    FormFieldData field;
+    field.form_control_type = "text";
+    field.label = field.name = base::NumberToString16(i);
+    field.unique_renderer_id = test::MakeFieldRendererId();
+    form_data.fields.push_back(field);
+  }
+
+  FormStructure form(form_data);
+  form.DetermineHeuristicTypes(nullptr, nullptr);
+
+  const auto default_autofill_prediction = CreateFieldPrediction(
+      NAME_FIRST, FieldPrediction::SOURCE_AUTOFILL_DEFAULT);
+  const auto default_password_prediction = CreateFieldPrediction(
+      USERNAME, FieldPrediction::SOURCE_PASSWORDS_DEFAULT);
+  const auto experimental_prediction = CreateFieldPrediction(
+      EMAIL_ADDRESS, FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS);
+  const auto null_prediction = CreateFieldPrediction(
+      NO_SERVER_DATA, FieldPrediction::SOURCE_UNSPECIFIED);
+  const auto unknown_prediction_source = CreateFieldPrediction(
+      PHONE_HOME_NUMBER, FieldPrediction::SOURCE_UNSPECIFIED);
+
+  // Setup the query response. Default predictions must be returned by
+  // `server_type()` and `server_predictions()` as provided.
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  // 2 default + 1 experimental predictions.
+  AddFieldPredictionsToForm(
+      form_data.fields[0],
+      {default_autofill_prediction, default_password_prediction,
+       experimental_prediction},
+      form_suggestion);
+  // 1 default + 1 experimental predictions.
+  AddFieldPredictionsToForm(
+      form_data.fields[1],
+      {default_autofill_prediction, experimental_prediction}, form_suggestion);
+  // 2 default predictions.
+  AddFieldPredictionsToForm(
+      form_data.fields[2],
+      {default_autofill_prediction, default_password_prediction},
+      form_suggestion);
+  // 1 null + 1 experimental predictions.
+  AddFieldPredictionsToForm(form_data.fields[3],
+                            {null_prediction, experimental_prediction},
+                            form_suggestion);
+  // 1 experimental prediction. The server doesn't do that, but we can defend
+  // against it anyway. The default prediction should be effectively
+  // `NO_SERVER_DATA`.
+  AddFieldPredictionsToForm(form_data.fields[4], {experimental_prediction},
+                            form_suggestion);
+  // A prediction without the source specified.
+  AddFieldPredictionsToForm(form_data.fields[5], {unknown_prediction_source},
+                            form_suggestion);
+
+  // Parse the response and update the field type predictions.
+  std::vector<FormStructure*> forms{&form};
+  FormStructure::ParseApiQueryResponse(SerializeAndEncode(response), forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
+
+  ASSERT_EQ(form.field_count(), 6U);
+
+  auto form_as_span = base::make_span(form.begin(), form.end());
+  EXPECT_THAT(
+      form_as_span,
+      Each(Pointee(Property(&AutofillField::server_type,
+                            Not(AnyOf(experimental_prediction.type(),
+                                      unknown_prediction_source.type()))))))
+      << "server_type() must not return a type provided as an experiment.";
+
+  // `server_predictions` should only return default predictions.
+  EXPECT_THAT(form.field(0)->server_predictions(),
+              ElementsAre(EqualsPrediction(default_autofill_prediction),
+                          EqualsPrediction(default_password_prediction)));
+  EXPECT_THAT(form.field(1)->server_predictions(),
+              ElementsAre(EqualsPrediction(default_autofill_prediction)));
+  EXPECT_THAT(form.field(2)->server_predictions(),
+              ElementsAre(EqualsPrediction(default_autofill_prediction),
+                          EqualsPrediction(default_password_prediction)));
+  EXPECT_THAT(form.field(3)->server_predictions(),
+              ElementsAre(EqualsPrediction(null_prediction)));
+  EXPECT_THAT(form.field(4)->server_predictions(),
+              ElementsAre(EqualsPrediction(null_prediction)));
+  EXPECT_THAT(form.field(5)->server_predictions(),
+              ElementsAre(EqualsPrediction(null_prediction)));
+
+  // `experimental_server_predictions` should only return experimental
+  // predictions.
+  EXPECT_THAT(form.field(0)->experimental_server_predictions(),
+              ElementsAre(EqualsPrediction(experimental_prediction)));
+  EXPECT_THAT(form.field(1)->experimental_server_predictions(),
+              ElementsAre(EqualsPrediction(experimental_prediction)));
+  EXPECT_THAT(form.field(2)->experimental_server_predictions(), IsEmpty());
+  EXPECT_THAT(form.field(3)->experimental_server_predictions(),
+              ElementsAre(EqualsPrediction(experimental_prediction)));
+  EXPECT_THAT(form.field(4)->experimental_server_predictions(),
+              ElementsAre(EqualsPrediction(experimental_prediction)));
+  EXPECT_THAT(form.field(5)->experimental_server_predictions(), IsEmpty());
 }
 
 // Tests that ParseFieldTypesWithPatterns() sets (only) the PatternSource.

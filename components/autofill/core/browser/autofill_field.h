@@ -55,6 +55,11 @@ class AutofillField : public FormFieldData {
   server_predictions() const {
     return server_predictions_;
   }
+  const std::vector<
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
+  experimental_server_predictions() const {
+    return experimental_server_predictions_;
+  }
   bool may_use_prefilled_placeholder() const {
     return may_use_prefilled_placeholder_;
   }
@@ -234,6 +239,11 @@ class AutofillField : public FormFieldData {
   std::vector<
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
       server_predictions_;
+  // Predictions from the Autofill server which are not intended for general
+  // consumption. They are used for metrics and/or finch experiments.
+  std::vector<
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
+      experimental_server_predictions_;
 
   // Whether the server-side classification believes that the field
   // may be pre-filled with a placeholder in the value attribute.

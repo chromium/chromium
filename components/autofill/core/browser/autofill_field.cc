@@ -5,15 +5,38 @@
 #include "components/autofill/core/browser/autofill_field.h"
 
 #include <stdint.h>
+#include <iterator>
 
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
+
+using FieldPrediction =
+    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
+
+namespace {
+
+// Returns true, if the prediction is non-experimental and should be used by
+// autofill or password manager.
+// Note: A `NO_SERVER_DATA` prediction with `SOURCE_UNSPECIFIED` may also be a
+// default prediction. We don't need to store it, because its meaning is that
+// there is no default prediction.
+bool IsDefaultPrediction(const FieldPrediction& prediction) {
+  constexpr DenseSet<FieldPrediction::Source, FieldPrediction::Source_MAX>
+      default_sources = {FieldPrediction::SOURCE_AUTOFILL_DEFAULT,
+                         FieldPrediction::SOURCE_PASSWORDS_DEFAULT,
+                         FieldPrediction::SOURCE_OVERRIDE};
+  return default_sources.contains(prediction.source());
+}
+
+}  // namespace
 
 AutofillField::AutofillField() {
   local_type_predictions_.fill(NO_SERVER_DATA);
@@ -88,16 +111,42 @@ void AutofillField::add_possible_types_validities(
 }
 
 void AutofillField::set_server_predictions(
-    std::vector<
-        AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
-        predictions) {
-  server_predictions_ = std::move(predictions);
+    std::vector<FieldPrediction> predictions) {
   overall_type_ = AutofillType(NO_SERVER_DATA);
   // Ensures that AutofillField::server_type() is a valid enum value.
-  for (auto& prediction : server_predictions_) {
+  for (auto& prediction : predictions) {
     prediction.set_type(
         ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
   }
+
+  server_predictions_.clear();
+  experimental_server_predictions_.clear();
+
+  for (auto& prediction : predictions) {
+    if (prediction.source() == FieldPrediction::SOURCE_UNSPECIFIED)
+      // A prediction with `SOURCE_UNSPECIFIED` is one of two things:
+      //   1. No prediction for default, a.k.a. `NO_SERVER_DATA`. The absence of
+      //      a prediction may not be creditable to a particular prediction
+      //      source.
+      //   2. An experiment that is missing from the `PredictionSource` enum.
+      //      Protobuf corrects unknown values to 0 when parsing.
+      // Neither case is actionable.
+      continue;
+    if (IsDefaultPrediction(prediction)) {
+      server_predictions_.push_back(std::move(prediction));
+    } else {
+      experimental_server_predictions_.push_back(std::move(prediction));
+    }
+  }
+
+  if (server_predictions_.empty())
+    // Equivalent to a `NO_SERVER_DATA` prediction from `SOURCE_UNSPECIFIED`.
+    server_predictions_.emplace_back();
+
+  LOG_IF(ERROR, server_predictions_.size() > 2)
+      << "Expected up to 2 default predictions from the Autofill server. "
+         "Actual: "
+      << server_predictions_.size();
 }
 
 std::vector<AutofillDataModel::ValidityState>
