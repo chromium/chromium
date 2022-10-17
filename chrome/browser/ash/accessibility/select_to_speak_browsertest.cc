@@ -529,10 +529,14 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   sm_.Replay();
 }
 
-// TODO(crbug.com/1107958): Re-enable this test after fixing flakes.
-// TODO(crbug.com/950391): Re-enable this test before launching voice switching.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_BreaksAtLanguageBounds DISABLED_BreaksAtLanguageBounds
+#else
+#define MAYBE_BreaksAtLanguageBounds BreaksAtLanguageBounds
+#endif
+// TODO(crbug.com/1107958): Re-enable this test on msan after fixing flakes.
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithVoiceSwitching,
-                       DISABLED_BreaksAtLanguageBounds) {
+                       MAYBE_BreaksAtLanguageBounds) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div>"
       "<span lang='en-US'>The first paragraph</span>"
