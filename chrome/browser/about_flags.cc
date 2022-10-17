@@ -9653,13 +9653,6 @@ const FeatureEntry kFeatureEntries[] = {
          "ServiceWorkerSkipIgnorableFetchHandler")},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"reduce-gpu-priority-on-background",
-     flag_descriptions::kReduceGpuPriorityOnBackgroundName,
-     flag_descriptions::kReduceGpuPriorityOnBackgroundDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(::features::kReduceGpuPriorityOnBackground)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"binding-manager-use-not-perceptible-binding",
      flag_descriptions::kBindingManagerUseNotPerceptibleBindingName,
      flag_descriptions::kBindingManagerUseNotPerceptibleBindingDescription,

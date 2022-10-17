@@ -5840,11 +5840,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "reduce-gpu-priority-on-background",
-    "owners": [ "boliu" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "reduce-horizontal-fling-velocity",
     "owners": [ "flackr", "input-dev" ],
     "expiry_milestone": 95

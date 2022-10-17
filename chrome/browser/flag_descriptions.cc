@@ -3906,12 +3906,6 @@ const char kRecoverFromNeverSaveAndroidDescription[] =
     "Enables showing UI which allows for easy reverting of the decision to "
     "never save passwords on a certain webiste";
 
-const char kReduceGpuPriorityOnBackgroundName[] =
-    "Reduce GPU process priority when in background";
-const char kReduceGpuPriorityOnBackgroundDescription[] =
-    "Enable to reduce GPU process priority when Chrome is the background. "
-    "This hints to Android OS to kill GPU process first to free memory.";
-
 const char kReengagementNotificationName[] =
     "Enable re-engagement notifications";
 const char kReengagementNotificationDescription[] =

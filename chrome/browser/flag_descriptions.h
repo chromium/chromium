@@ -2227,9 +2227,6 @@ extern const char kReadLaterReminderNotificationDescription[];
 extern const char kRecoverFromNeverSaveAndroidName[];
 extern const char kRecoverFromNeverSaveAndroidDescription[];
 
-extern const char kReduceGpuPriorityOnBackgroundName[];
-extern const char kReduceGpuPriorityOnBackgroundDescription[];
-
 extern const char kReengagementNotificationName[];
 extern const char kReengagementNotificationDescription[];
 
