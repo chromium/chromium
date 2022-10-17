@@ -781,9 +781,13 @@ class PolicyTemplateChecker(object):
       return
 
     if policy_type == 'main':
-      # TODO(crbug.com/1139306): Query the acceptable values from items
-      # once that is used for policy type main.
-      acceptable_values = (True, False, None)
+      # If the policy doesn't have items but is no longer supported, predefined
+      # values are used. Otherwise the policy must have items defined.
+      if 'items' not in policy and not self._SupportedPolicy(
+          policy, current_version):
+        acceptable_values = (True, False, None)
+      else:
+        acceptable_values = [x['value'] for x in policy['items']]
     elif policy_type in ('string-enum', 'int-enum'):
       acceptable_values = [None] + [x['value'] for x in policy['items']]
     else:
@@ -807,12 +811,6 @@ class PolicyTemplateChecker(object):
         policy, current_version):
       return
 
-    # TODO(crbug.com/1139306): Remove this check once all main policies
-    # have specified their items field.
-    policy_type = self.policy_type_provider.GetPolicyType(policy)
-    if policy_type == 'main' and 'items' not in policy:
-      return
-
     items = self._CheckContains(policy, 'items', list)
     if items is None:
       return
@@ -829,6 +827,7 @@ class PolicyTemplateChecker(object):
                           container_name='item',
                           identifier=policy.get('name'))
 
+    policy_type = self.policy_type_provider.GetPolicyType(policy)
     if policy_type == 'main':
       # Main (bool) policies must contain a list of items to clearly
       # indicate what the states mean.
@@ -1897,11 +1896,6 @@ class PolicyTemplateChecker(object):
       # policies instead of just new ones.
       if self._NeedsDefault(new_policy) and not 'default' in new_policy:
         self._PolicyError('Policy does not have "default" field', new_policy)
-
-      # TODO(crbug.com/1139306): This item check should apply to all policies
-      # instead of just new ones.
-      if self._NeedsItems(new_policy) and new_policy.get('items', None) == None:
-        self._PolicyError('Policy does not have "items" field', new_policy)
 
   def _LeadingWhitespace(self, line):
     match = LEADING_WHITESPACE.match(line)

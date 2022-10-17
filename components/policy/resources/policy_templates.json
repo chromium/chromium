@@ -18074,6 +18074,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable creation of supervised users',
+        },
+        {
+          'value': False,
+          'caption': 'Disable creation of supervised users',
+        },
+      ],
       'example_value': True,
       'id': 223,
       'caption': '''Enable creation of supervised users''',
@@ -19085,6 +19095,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to click through SSL warning pages',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent users from clicking through SSL warning pages',
+        },
+      ],
       'example_value': True,
       'id': 300,
       'caption': '''Allow proceeding from the SSL warning page''',
@@ -22340,6 +22360,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable casting content to the device',
+        },
+        {
+          'value': False,
+          'caption': 'Disable casting content to the device',
+        },
+      ],
       'example_value': False,
       'id': 378,
       'default_for_enterprise_users': False,
@@ -26935,6 +26965,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow pages to show pop-ups during unloading',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent pages from showing pop-ups during unloading',
+        },
+      ],
       'default_for_enterprise_users': False,
       'example_value': False,
       'id': 533,
@@ -29260,6 +29300,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow pages to send synchronous XHR requests during page dismissal',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow pages to send synchronous XHR requests during page dismissal',
+        },
+      ],
       'default_for_enterprise_users': False,
       'example_value': False,
       'id': 604,
@@ -30317,7 +30367,7 @@
       'owners': ['carlosil@chromium.org', 'estark@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:80-', 'chrome_os:80-'],
+      'supported_on': ['chrome.*:80-84', 'chrome_os:80-84'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
