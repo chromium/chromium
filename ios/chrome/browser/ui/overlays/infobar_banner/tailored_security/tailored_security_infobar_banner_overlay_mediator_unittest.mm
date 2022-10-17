@@ -59,6 +59,6 @@ TEST_F(TailoredSecurityInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   EXPECT_NSEQ(buttonText, consumer.buttonText);
   EXPECT_NSEQ(title, consumer.titleText);
   EXPECT_NSEQ(subtitle, consumer.subtitleText);
-  EXPECT_NSEQ([UIImage imageNamed:@"icon_image"], consumer.iconImage);
-  EXPECT_TRUE(consumer.presentsModal);
+  EXPECT_NSEQ([UIImage imageNamed:@"legacy_password_key"], consumer.iconImage);
+  EXPECT_FALSE(consumer.presentsModal);
 }

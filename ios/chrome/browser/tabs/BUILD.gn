@@ -89,6 +89,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",
+    "//ios/chrome/browser/safe_browsing/tailored_security",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",

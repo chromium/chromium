@@ -13,6 +13,8 @@ source_set("tailored_security") {
     "tailored_security_tab_helper.mm",
   ]
   deps = [
+    ":infobar_delegates",
+    "//components/infobars/core",
     "//components/keyed_service/ios",
     "//components/prefs",
     "//components/safe_browsing/core/browser/tailored_security_service",
@@ -21,7 +23,10 @@ source_set("tailored_security") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/signin",
+    "//ios/components/security_interstitials/safe_browsing",
   ]
 }
 
@@ -56,6 +61,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/safe_browsing/tailored_security/test",
     "//ios/web/public/test",

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_tab_helper.h"
 
+#import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
@@ -11,7 +12,11 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_service_infobar_delegate.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -33,8 +38,8 @@ TailoredSecurityTabHelper::TailoredSecurityTabHelper(
   if (web_state_) {
     web_state_->AddObserver(this);
     focused = web_state_->IsVisible();
+    UpdateFocusAndURL(focused, web_state_->GetLastCommittedURL());
   }
-  UpdateFocusAndURL(focused, web_state_->GetLastCommittedURL());
 }
 
 TailoredSecurityTabHelper::~TailoredSecurityTabHelper() {
@@ -62,9 +67,12 @@ void TailoredSecurityTabHelper::OnTailoredSecurityBitChanged(
                       identity_manager, browser_state->GetPrefs()))
     return;
 
+  browser_state->GetPrefs()->SetBoolean(
+      prefs::kAccountTailoredSecurityShownNotification, true);
   if (base::Time::NowFromSystemTime() - previous_update <=
       base::Minutes(safe_browsing::kThresholdForInFlowNotificationMinutes)) {
-    // TODO(crbug.com/1353363): Send signal to show InfoBar.
+    ShowInfoBar(safe_browsing::TailoredSecurityServiceMessageState::
+                    kUnconsentedAndFlowEnabled);
   }
 }
 
@@ -92,7 +100,13 @@ void TailoredSecurityTabHelper::OnSyncNotificationMessageRequest(
                  : safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
       /*is_esb_enabled_in_sync=*/is_enabled);
 
-  // TODO(crbug.com/1353363): Send output to create InfoBar message.
+  if (is_enabled) {
+    ShowInfoBar(safe_browsing::TailoredSecurityServiceMessageState::
+                    kConsentedAndFlowEnabled);
+  } else {
+    ShowInfoBar(safe_browsing::TailoredSecurityServiceMessageState::
+                    kConsentedAndFlowDisabled);
+  }
 
   if (is_enabled) {
     safe_browsing::RecordEnabledNotificationResult(
@@ -121,6 +135,16 @@ void TailoredSecurityTabHelper::WasHidden(web::WebState* web_state) {
 void TailoredSecurityTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
   web_state_ = nullptr;
+}
+
+#pragma mark - infobars::InfoBarManager::Observer
+
+void TailoredSecurityTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                                 bool animate) {
+  if (infobar == infobar_) {
+    infobar_manager_scoped_observation_.Reset();
+    infobar_ = nullptr;
+  }
 }
 
 #pragma mark - Private methods
@@ -155,4 +179,29 @@ void TailoredSecurityTabHelper::UpdateFocusAndURL(bool focused,
 
   focused_ = focused;
   last_url_ = url;
+}
+
+void TailoredSecurityTabHelper::ShowInfoBar(
+    safe_browsing::TailoredSecurityServiceMessageState message_state) {
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state_);
+  if (infobar_) {
+    // Previous infobars can continue to exist if the infobar was dismissed
+    // without any user action. For example, this happens when an infobar has an
+    // expired dismissal. Therefore, we remove it to ensure the new infobar is
+    // properly observed.
+    infobar_manager->RemoveInfoBar(infobar_);
+    DCHECK(!infobar_);
+  }
+  infobar_manager_scoped_observation_.Observe(infobar_manager);
+
+  std::unique_ptr<safe_browsing::TailoredSecurityServiceInfobarDelegate>
+      delegate = std::make_unique<
+          safe_browsing::TailoredSecurityServiceInfobarDelegate>(message_state,
+                                                                 web_state_);
+
+  std::unique_ptr<infobars::InfoBar> infobar = std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeTailoredSecurityService, std::move(delegate));
+  infobar_ = infobar_manager->AddInfoBar(std::move(infobar),
+                                         /*replace_existing=*/true);
 }

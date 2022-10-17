@@ -71,6 +71,8 @@
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_web_state_observer.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_client_factory.h"
+#import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_tab_helper.h"
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
@@ -167,6 +169,13 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   SafeBrowsingTabHelper::CreateForWebState(web_state, client);
   SafeBrowsingUrlAllowList::CreateForWebState(web_state);
   SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
+
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityIntegration)) {
+    TailoredSecurityTabHelper::CreateForWebState(
+        web_state,
+        TailoredSecurityServiceFactory::GetForBrowserState(browser_state));
+  }
 
   PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
 
