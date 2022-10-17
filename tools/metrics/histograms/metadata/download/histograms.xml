@@ -1268,6 +1268,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Session.IsDownloadBubbleShowingWhenSessionEnds"
+    enum="BooleanShowing" expires_after="2023-01-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records if the download bubble is showing when session ends. See the
+    description in Session.TotalDuration for how session ends is defined. This
+    histogram is added for debugging purpose and will be removed afterwards.
+  </summary>
+</histogram>
+
+<histogram name="Download.Session.TotalDurationIncludingBubbleTime" units="ms"
+    expires_after="2023-01-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Similar to Session.TotalDuration, but add the time when the download bubble
+    is showing into the total session duration. In rare cases where the user
+    leaves Chrome when the bubble is showing, it may include that duration too.
+    This histogram is added for debugging purpose and will be removed
+    afterwards.
+  </summary>
+</histogram>
+
 <histogram name="Download.SetAlwaysOpenTo" enum="BooleanEnabled"
     expires_after="2023-01-07">
   <owner>xinghuilu@chromium.org</owner>

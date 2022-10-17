@@ -3739,6 +3739,8 @@ static_library("browser") {
       "download/download_dir_util.h",
       "download/download_open_prompt.cc",
       "download/download_open_prompt.h",
+      "download/download_session_durations_metrics_recorder.cc",
+      "download/download_session_durations_metrics_recorder.h",
       "download/download_shelf.cc",
       "download/download_shelf.h",
       "download/download_shelf_context_menu.cc",

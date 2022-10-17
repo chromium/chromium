@@ -13210,6 +13210,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Using share group"/>
 </enum>
 
+<enum name="BooleanShowing">
+  <int value="0" label="Not Showing"/>
+  <int value="1" label="Showing"/>
+</enum>
+
 <enum name="BooleanShown">
   <obsolete>
     Removed as of 06/2022

@@ -68,6 +68,9 @@ class DownloadDisplayController
   // Returns an IconInfo that contains current state of the icon.
   IconInfo GetIconInfo();
 
+  // Returns whether the display is showing details.
+  bool IsDisplayShowingDetails();
+
   // Notifies the controller that the button is pressed. Called by `display_`.
   void OnButtonPressed();
 
