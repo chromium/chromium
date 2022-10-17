@@ -1730,7 +1730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MigrateFailureFromVersion" units="units"
-    expires_after="M77">
+    expires_after="2023-10-01">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -1738,6 +1738,8 @@ chromium-metrics-reviews@google.com.
     History database version from which history migration failed. If there are
     higher than normal migration failures, this histogram will indicate which
     migration step failed.
+
+    Warning: this histogram was expired from M77 to M108; data may be missing.
   </summary>
 </histogram>
 
