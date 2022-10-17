@@ -40,6 +40,8 @@ extern "C" void V8RecordReplayOnNetworkStreamStart(const char* id, const char* k
 extern "C" void V8RecordReplayOnNetworkStreamData(const char* id, size_t offset, size_t length, uint64_t bookmark);
 extern "C" void V8RecordReplayOnNetworkStreamEnd(const char* id, size_t length);
 extern "C" bool V8RecordReplayAreEventsDisallowed();
+extern "C" void V8RecordReplayBeginDisallowEvents();
+extern "C" void V8RecordReplayEndDisallowEvents();
 extern "C" void V8RecordReplayBeginPassThroughEvents();
 extern "C" void V8RecordReplayEndPassThroughEvents();
 extern "C" bool V8RecordReplayHasDivergedFromRecording();
@@ -147,6 +149,14 @@ void OnNetworkStreamEnd(const char* id, size_t length) {
 
 bool AreEventsDisallowed() {
   return OP2(V8RecordReplayAreEventsDisallowed(), false);
+}
+
+void BeginDisallowEvents() {
+  OP(V8RecordReplayBeginDisallowEvents());
+}
+
+void EndDisallowEvents() {
+  OP(V8RecordReplayEndDisallowEvents());
 }
 
 void BeginPassThroughEvents() {

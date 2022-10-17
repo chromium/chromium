@@ -33,6 +33,9 @@ extern void FunctionCallbackRecordReplaySetClearPauseDataCallback(const Function
 
 namespace blink {
 
+// Script which defines handlers for recorder commands, and collects source maps
+// unless disabled. If source map collection is disabled, this script only runs
+// when replaying.
 const char* gRecordReplayScript = R""""(
 
 (() => {
@@ -46,13 +49,12 @@ const {
   getCurrentError,
   getCurrentNetworkRequestEvent,
   getBrowserEvents,
-  notifyDriverOnConsoleAPICall,
   dump,
   getRecordingId,
   sha256DigestHex,
   writeToRecordingDirectory,
   addRecordingEvent,
-  featureEnabled,
+  collectSourceMaps,
 } = __RECORD_REPLAY_ARGUMENTS__;
 
 const gSourceMapData = new Map();
@@ -89,10 +91,6 @@ function syncBrowserEvents() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function initMessages() {
-  if (!featureEnabled("cdp-messages")) {
-    return;
-  }
-
   setCDPMessageCallback(messageCallback);
   setCommandCallback(commandCallback);
   setClearPauseDataCallback(clearPauseDataCallback);
@@ -142,11 +140,10 @@ function messageCallback(message) {
 // Methods for interacting with the record/replay driver.
 
 initMessages();
-if (featureEnabled("listen-console")) {
-  addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
-  sendMessage("Runtime.enable");
-}
-if (featureEnabled("listen-debugger")) {
+addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
+sendMessage("Runtime.enable");
+
+if (collectSourceMaps()) {
   addEventListener("Debugger.scriptParsed", registerSourceMap);
   sendMessage("Debugger.enable");
 }
@@ -186,7 +183,6 @@ let gLastConsoleAPICall;
 
 function onConsoleAPICall(params) {
   gLastConsoleAPICall = params;
-  notifyDriverOnConsoleAPICall();
 }
 
 function Target_getCurrentMessageContents() {
@@ -1177,23 +1173,16 @@ static void AddRecordingEvent(const v8::FunctionCallbackInfo<v8::Value>& args) {
   stream.close();
 }
 
-static void FeatureEnabled(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK(args.Length() == 1 && args[0]->IsString());
-  v8::Isolate* isolate = args.GetIsolate();
-  v8::String::Utf8Value feature(isolate, args[0]);
-  std::string nfeature(*feature);
+// Sourcemap collection can be disabled while recording if the appropriate
+// environment variable is set.
+static bool gCollectSourceMaps;
 
-  bool enabled = recordreplay::FeatureEnabled(nfeature.c_str());
-  args.GetReturnValue().Set(enabled ? v8::True(isolate) : v8::False(isolate));
+static void CollectSourceMaps(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+  args.GetReturnValue().Set(gCollectSourceMaps ? v8::True(isolate) : v8::False(isolate));
 }
 
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
-
-static void NotifyDriverOnConsoleAPICall(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  V8RecordReplayOnConsoleMessage(0);
-}
 
 extern "C" void V8RecordReplayFinishRecording();
 
@@ -1313,9 +1302,25 @@ extern "C" void V8RecordReplayRegisterBrowserEventCallback(
   void (*callback)(const char* name, const char* payload)
 );
 
+static bool TestEnv(const char* env) {
+  const char* v = getenv(env);
+  return v && v[0] && v[0] != '0';
+}
+
 void SetupRecordReplayCommands(v8::Isolate* isolate) {
   V8RecordReplaySetAPIObjectIdCallback(GetAPIObjectIdCallback);
   V8RecordReplayRegisterBrowserEventCallback(HandleBrowserEvent);
+
+  gCollectSourceMaps = !TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_COLLECTION");
+
+  // When we aren't collecting source maps and are recording we don't need the
+  // record/replay script for anything, so we don't compile and run it. The script
+  // adds significant overhead, mainly due to enabling V8 inspector features.
+  if (!gCollectSourceMaps && recordreplay::IsRecording()) {
+    return;
+  }
+
+  recordreplay::AutoDisallowEvents disallow;
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
@@ -1341,8 +1346,6 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       GetCurrentNetworkRequestEvent);
   SetFunctionProperty(isolate, args, "getBrowserEvents",
                       GetBrowserEvents);
-  SetFunctionProperty(isolate, args, "notifyDriverOnConsoleAPICall",
-                      NotifyDriverOnConsoleAPICall);
   SetFunctionProperty(isolate, args, "dump",
                       DumpCallback);
   SetFunctionProperty(isolate, args, "getRecordingId",
@@ -1353,8 +1356,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       WriteToRecordingDirectory);
   SetFunctionProperty(isolate, args, "addRecordingEvent",
                       AddRecordingEvent);
-  SetFunctionProperty(isolate, args, "featureEnabled",
-                      FeatureEnabled);
+  SetFunctionProperty(isolate, args, "collectSourceMaps",
+                      CollectSourceMaps);
 
   v8::Local<v8::String> source = ToV8String(isolate, gRecordReplayScript);
   v8::Local<v8::String> filename = ToV8String(isolate, "record-replay-internal");
@@ -1363,6 +1366,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
   v8::Local<v8::Script> script = v8::Script::Compile(context, source, &origin).ToLocalChecked();
   script->Run(context).ToLocalChecked();
 }
+
+extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
 
 static ErrorEvent* gCurrentErrorEvent;
 
