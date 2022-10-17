@@ -177,22 +177,24 @@ class BaselineOptimizerTest(unittest.TestCase):
             suffix='png')
 
     def test_linux_redundant_with_win(self):
-        self._assert_optimization({
-            'platform/win': '1',
-            'platform/linux': '1',
-        }, {
-            'platform/win': '1',
-        })
-
-    def test_covers_mac_win_linux(self):
         self._assert_optimization(
             {
-                'platform/mac': '1',
                 'platform/win': '1',
                 'platform/linux': '1',
             }, {
-                '': '1',
+                'platform/win': '1',
+                'platform/linux': None,
             })
+
+    def test_covers_mac_win(self):
+        self._assert_optimization({
+            'platform/mac': '1',
+            'platform/win': '1',
+        }, {
+            '': '1',
+            'platform/mac': None,
+            'platform/win': None,
+        })
 
     def test_overwrites_root(self):
         self._assert_optimization(
@@ -203,6 +205,9 @@ class BaselineOptimizerTest(unittest.TestCase):
                 '': '2',
             }, {
                 '': '1',
+                'platform/mac': None,
+                'platform/win': None,
+                'platform/linux': None,
             })
 
     def test_no_new_common_directory(self):
@@ -218,25 +223,29 @@ class BaselineOptimizerTest(unittest.TestCase):
             })
 
     def test_local_optimization(self):
-        self._assert_optimization({
-            'platform/mac': '1',
-            'platform/linux': '1',
-            'platform/mac-mac10.14': '1',
-        }, {
-            'platform/mac': '1',
-            'platform/linux': '1',
-        })
+        self._assert_optimization(
+            {
+                'platform/mac': '1',
+                'platform/linux': '1',
+                'platform/mac-mac10.14': '1',
+            }, {
+                'platform/mac': '1',
+                'platform/linux': '1',
+                'platform/mac-mac10.14': None,
+            })
 
     def test_local_optimization_skipping_a_port_in_the_middle(self):
         # mac-mac10.13 -> mac-mac10.14 -> mac
-        self._assert_optimization({
-            'platform/mac': '1',
-            'platform/linux': '1',
-            'platform/mac-mac10.13': '1',
-        }, {
-            'platform/mac': '1',
-            'platform/linux': '1',
-        })
+        self._assert_optimization(
+            {
+                'platform/mac': '1',
+                'platform/linux': '1',
+                'platform/mac-mac10.13': '1',
+            }, {
+                'platform/mac': '1',
+                'platform/linux': '1',
+                'platform/mac-mac10.13': None,
+            })
 
     def test_baseline_redundant_with_root(self):
         self._assert_optimization(
@@ -246,6 +255,7 @@ class BaselineOptimizerTest(unittest.TestCase):
                 '': '2',
             }, {
                 'platform/mac': '1',
+                'platform/win': None,
                 '': '2',
             })
 
@@ -270,13 +280,15 @@ class BaselineOptimizerTest(unittest.TestCase):
         })
 
     def test_virtual_baseline_redundant_with_non_virtual(self):
-        self._assert_optimization({
-            'platform/win/virtual/gpu/fast/canvas': '2',
-            'platform/win/fast/canvas': '2',
-        }, {
-            'platform/win/fast/canvas': '2',
-        },
-                                  baseline_dirname='virtual/gpu/fast/canvas')
+        self._assert_optimization(
+            {
+                'platform/win/virtual/gpu/fast/canvas': '2',
+                'platform/win/fast/canvas': '2',
+            }, {
+                'platform/win/fast/canvas': '2',
+                'platform/win/virtual/gpu/fast/canvas': None,
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_baseline_redundant_with_non_virtual_fallback(self):
         # virtual linux -> virtual win -> virtual root -> linux -> win
@@ -298,6 +310,25 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'fast/canvas': '2',
             }, {
                 'fast/canvas': '2',
+                'platform/win/virtual/gpu/fast/canvas': None,
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_virtual_baseline_not_redundant_with_actual_root(self):
+        # baseline optimization supprisingly added one baseline in this case.
+        # This is because we are patching the virtual subtree first.
+        # TODO(crbug/1375568): consider do away with the patching virtual subtree operation.
+        self._assert_optimization(
+            {
+                'platform/mac-mac11/virtual/gpu/fast/canvas': '1',
+                'platform/mac-mac11/fast/canvas': '1',
+                'fast/canvas': '2',
+            }, {
+                'platform/mac-mac11/virtual/gpu/fast/canvas': '1',
+                'platform/mac-mac/virtual/gpu/fast/canvas': None,
+                'platform/mac-mac11/fast/canvas': '1',
+                'virtual/gpu/fast/canvas': '2',
+                'fast/canvas': '2',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
@@ -308,6 +339,7 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'fast/canvas': '2',
             }, {
                 'fast/canvas': '2',
+                'virtual/gpu/fast/canvas': None,
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
@@ -319,6 +351,9 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/win/fast/canvas': '2',
             }, {
                 'fast/canvas': '2',
+                'virtual/gpu/fast/canvas': None,
+                'platform/mac/fast/canvas': None,
+                'platform/win/fast/canvas': None,
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
@@ -333,14 +368,15 @@ class BaselineOptimizerTest(unittest.TestCase):
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
-    def test_virtual_covers_mac_win_linux(self):
+    def test_virtual_covers_mac_win(self):
         self._assert_optimization(
             {
                 'platform/mac/virtual/gpu/fast/canvas': '1',
                 'platform/win/virtual/gpu/fast/canvas': '1',
-                'platform/linux/virtual/gpu/fast/canvas': '1',
             }, {
                 'virtual/gpu/fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas': None,
+                'platform/win/virtual/gpu/fast/canvas': None,
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
