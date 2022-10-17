@@ -356,7 +356,6 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
   bool BlocklistedByDefault(const base::Value::List* blocklist);
   bool UserMayLoad(const base::Value::List* blocklist,
                    const base::Value::List* allowlist,
-                   const base::DictionaryValue* forcelist,
                    const base::Value::List* allowed_types,
                    const Extension* extension,
                    std::u16string* error);
@@ -383,7 +382,6 @@ bool ExtensionAdminPolicyTest::BlocklistedByDefault(
 bool ExtensionAdminPolicyTest::UserMayLoad(
     const base::Value::List* blocklist,
     const base::Value::List* allowlist,
-    const base::DictionaryValue* forcelist,
     const base::Value::List* allowed_types,
     const Extension* extension,
     std::u16string* error) {
@@ -394,8 +392,6 @@ bool ExtensionAdminPolicyTest::UserMayLoad(
   if (allowlist)
     SetPref(true, pref_names::kInstallAllowList,
             base::Value(allowlist->Clone()));
-  if (forcelist)
-    SetPref(true, pref_names::kInstallForceList, forcelist->CreateDeepCopy());
   if (allowed_types)
     SetPref(true, pref_names::kAllowedTypes,
             base::Value(allowed_types->Clone()));
@@ -1138,35 +1134,34 @@ TEST_F(ExtensionAdminPolicyTest, BlocklistedByDefault) {
 // Tests UserMayLoad for required extensions.
 TEST_F(ExtensionAdminPolicyTest, UserMayLoadRequired) {
   CreateExtension(ManifestLocation::kComponent);
-  EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, nullptr, extension_.get(),
-                          nullptr));
+  EXPECT_TRUE(
+      UserMayLoad(nullptr, nullptr, nullptr, extension_.get(), nullptr));
   std::u16string error;
-  EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, nullptr, extension_.get(),
-                          &error));
+  EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, extension_.get(), &error));
   EXPECT_TRUE(error.empty());
 
   // Required extensions may load even if they're on the blocklist.
   base::Value::List blocklist;
   blocklist.Append(extension_->id());
-  EXPECT_TRUE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
-                          extension_.get(), nullptr));
+  EXPECT_TRUE(
+      UserMayLoad(&blocklist, nullptr, nullptr, extension_.get(), nullptr));
 
   blocklist.Append("*");
-  EXPECT_TRUE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
-                          extension_.get(), nullptr));
+  EXPECT_TRUE(
+      UserMayLoad(&blocklist, nullptr, nullptr, extension_.get(), nullptr));
 }
 
 // Tests UserMayLoad when no blocklist exists, or it's empty.
 TEST_F(ExtensionAdminPolicyTest, UserMayLoadNoBlocklist) {
   CreateExtension(ManifestLocation::kInternal);
-  EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, nullptr, extension_.get(),
-                          nullptr));
+  EXPECT_TRUE(
+      UserMayLoad(nullptr, nullptr, nullptr, extension_.get(), nullptr));
   base::Value::List blocklist;
-  EXPECT_TRUE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
-                          extension_.get(), nullptr));
+  EXPECT_TRUE(
+      UserMayLoad(&blocklist, nullptr, nullptr, extension_.get(), nullptr));
   std::u16string error;
-  EXPECT_TRUE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
-                          extension_.get(), &error));
+  EXPECT_TRUE(
+      UserMayLoad(&blocklist, nullptr, nullptr, extension_.get(), &error));
   EXPECT_TRUE(error.empty());
 }
 
@@ -1176,16 +1171,16 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadAllowlisted) {
 
   base::Value::List allowlist;
   allowlist.Append(extension_->id());
-  EXPECT_TRUE(UserMayLoad(nullptr, &allowlist, nullptr, nullptr,
-                          extension_.get(), nullptr));
+  EXPECT_TRUE(
+      UserMayLoad(nullptr, &allowlist, nullptr, extension_.get(), nullptr));
 
   base::Value::List blocklist;
   blocklist.Append(extension_->id());
-  EXPECT_TRUE(UserMayLoad(nullptr, &allowlist, nullptr, nullptr,
-                          extension_.get(), nullptr));
+  EXPECT_TRUE(
+      UserMayLoad(nullptr, &allowlist, nullptr, extension_.get(), nullptr));
   std::u16string error;
-  EXPECT_TRUE(UserMayLoad(nullptr, &allowlist, nullptr, nullptr,
-                          extension_.get(), &error));
+  EXPECT_TRUE(
+      UserMayLoad(nullptr, &allowlist, nullptr, extension_.get(), &error));
   EXPECT_TRUE(error.empty());
 }
 
@@ -1196,52 +1191,52 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadBlocklisted) {
   // Blocklisted by default.
   base::Value::List blocklist;
   blocklist.Append("*");
-  EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
-                           extension_.get(), nullptr));
+  EXPECT_FALSE(
+      UserMayLoad(&blocklist, nullptr, nullptr, extension_.get(), nullptr));
   std::u16string error;
-  EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
-                           extension_.get(), &error));
+  EXPECT_FALSE(
+      UserMayLoad(&blocklist, nullptr, nullptr, extension_.get(), &error));
   EXPECT_FALSE(error.empty());
 
   // Extension on the blocklist, with and without wildcard.
   blocklist.Append(extension_->id());
-  EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
-                           extension_.get(), nullptr));
+  EXPECT_FALSE(
+      UserMayLoad(&blocklist, nullptr, nullptr, extension_.get(), nullptr));
   blocklist.clear();
   blocklist.Append(extension_->id());
-  EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
-                           extension_.get(), nullptr));
+  EXPECT_FALSE(
+      UserMayLoad(&blocklist, nullptr, nullptr, extension_.get(), nullptr));
 
   // With a allowlist. There's no such thing as a allowlist wildcard.
   base::Value::List allowlist;
   allowlist.Append("behllobkkfkfnphdnhnkndlbkcpglgmj");
-  EXPECT_FALSE(UserMayLoad(&blocklist, &allowlist, nullptr, nullptr,
-                           extension_.get(), nullptr));
+  EXPECT_FALSE(
+      UserMayLoad(&blocklist, &allowlist, nullptr, extension_.get(), nullptr));
   allowlist.Append("*");
-  EXPECT_FALSE(UserMayLoad(&blocklist, &allowlist, nullptr, nullptr,
-                           extension_.get(), nullptr));
+  EXPECT_FALSE(
+      UserMayLoad(&blocklist, &allowlist, nullptr, extension_.get(), nullptr));
 }
 
 TEST_F(ExtensionAdminPolicyTest, UserMayLoadAllowedTypes) {
   CreateExtension(ManifestLocation::kInternal);
-  EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, nullptr, extension_.get(),
-                          nullptr));
+  EXPECT_TRUE(
+      UserMayLoad(nullptr, nullptr, nullptr, extension_.get(), nullptr));
 
   base::Value::List allowed_types;
-  EXPECT_FALSE(UserMayLoad(nullptr, nullptr, nullptr, &allowed_types,
-                           extension_.get(), nullptr));
+  EXPECT_FALSE(
+      UserMayLoad(nullptr, nullptr, &allowed_types, extension_.get(), nullptr));
 
   allowed_types.Append(Manifest::TYPE_EXTENSION);
-  EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, &allowed_types,
-                          extension_.get(), nullptr));
+  EXPECT_TRUE(
+      UserMayLoad(nullptr, nullptr, &allowed_types, extension_.get(), nullptr));
 
   CreateHostedApp(ManifestLocation::kInternal);
-  EXPECT_FALSE(UserMayLoad(nullptr, nullptr, nullptr, &allowed_types,
-                           extension_.get(), nullptr));
+  EXPECT_FALSE(
+      UserMayLoad(nullptr, nullptr, &allowed_types, extension_.get(), nullptr));
 
   CreateHostedApp(ManifestLocation::kExternalPolicyDownload);
-  EXPECT_FALSE(UserMayLoad(nullptr, nullptr, nullptr, &allowed_types,
-                           extension_.get(), nullptr));
+  EXPECT_FALSE(
+      UserMayLoad(nullptr, nullptr, &allowed_types, extension_.get(), nullptr));
 }
 
 TEST_F(ExtensionAdminPolicyTest, UserMayModifySettings) {
