@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Omnibox.AsyncAutocompletionTime.Provider.{Provider}{Completed}"
+    name="Omnibox.AsyncAutocompletionTime2.Provider.{Provider}{Completed}"
     units="ms" expires_after="2022-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Omnibox.AsyncAutocompletionTime.{Change}{Completed}"
+<histogram name="Omnibox.AsyncAutocompletionTime2.{Change}{Completed}"
     units="ms" expires_after="2022-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -996,7 +996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Omnibox.MatchStability.MatchChangeInAnyPosition{OmniboxAutocompleteUpdateSlice}"
+    name="Omnibox.MatchStability2.MatchChangeInAnyPosition{OmniboxAutocompleteUpdateSlice}"
     enum="BooleanChanged" expires_after="2022-12-04">
   <owner>tommycli@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
@@ -1030,11 +1030,12 @@ chromium-metrics-reviews@google.com.
     Omnibox.Start.WantAsyncMatches, which will yield the number of match changes
     per keystroke or other user gesture.
 
-    There're the related Omnibox.MatchStability.InAnyPosition.* slices for
+    There're the related Omnibox.MatchStability2.InAnyPosition.* slices for
     tracking match instability for all, asynchronous, and synchronous updates.
 
     This histogram can be considered a boolean analogue to the
-    Omnibox.MatchStability.Index.* histogram which tracks which matches changed.
+    Omnibox.MatchStability2.Index.* histogram which tracks which matches
+    changed.
 
     {OmniboxAutocompleteUpdateSlice}
   </summary>
@@ -1043,7 +1044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Omnibox.MatchStability.MatchChangeIndex{OmniboxAutocompleteUpdateSlice}"
+    name="Omnibox.MatchStability2.MatchChangeIndex{OmniboxAutocompleteUpdateSlice}"
     units="position" expires_after="2022-12-04">
   <owner>tommycli@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
@@ -1084,10 +1085,10 @@ chromium-metrics-reviews@google.com.
     Omnibox.Start.WantAsyncMatches, which will yield the number of match changes
     per keystroke or other user gesture.
 
-    There're the related Omnibox.MatchStability.Index.* slices for tracking
+    There're the related Omnibox.MatchStability2.Index.* slices for tracking
     match instability for all, asynchronous, and synchronous updates.
 
-    There's the related Omnibox.MatchStability.InAnyPosition histogram for
+    There's the related Omnibox.MatchStability2.InAnyPosition histogram for
     tracking whether any match changed per autocomplete update.
 
     {OmniboxAutocompleteUpdateSlice}
