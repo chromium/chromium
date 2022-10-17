@@ -15,6 +15,29 @@ static_library("network_health") {
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/services/network_health/public/mojom",
+    "//components/device_event_log",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+component("in_process_instance") {
+  output_name = "network_health_in_process_instance"
+
+  sources = [
+    "in_process_instance.cc",
+    "in_process_instance.h",
+  ]
+
+  defines = [ "IS_IN_PROCESS_NETWORK_HEALTH_IMPL" ]
+
+  public_deps = [
+    "//chromeos/services/network_health/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    ":network_health",
+    "//chromeos/services/network_health/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
 }

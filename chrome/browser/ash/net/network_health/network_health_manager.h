@@ -47,8 +47,6 @@ class NetworkHealthManager {
           chromeos::network_health::mojom::NetworkEventsObserver> observer);
 
  private:
-  std::unique_ptr<chromeos::network_health::NetworkHealthService>
-      network_health_service_;
   std::unique_ptr<network_diagnostics::NetworkDiagnostics> network_diagnostics_;
 };
 
