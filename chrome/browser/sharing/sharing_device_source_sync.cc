@@ -26,26 +26,13 @@
 using sync_pb::SharingSpecificFields;
 
 namespace {
-bool IsDesktop(sync_pb::SyncEnums::DeviceType type) {
-  switch (type) {
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_CROS:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_LINUX:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_MAC:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_WIN:
-      return true;
-    case sync_pb::SyncEnums_DeviceType_TYPE_PHONE:
-    case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_UNSET:
-    case sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_OTHER:
-      return false;
-  }
-}
 
 bool IsStale(const syncer::DeviceInfo& device) {
   if (base::FeatureList::IsEnabled(kSharingMatchPulseInterval)) {
     base::TimeDelta pulse_delta = base::Hours(
-        IsDesktop(device.device_type()) ? kSharingPulseDeltaDesktopHours.Get()
-                                        : kSharingPulseDeltaAndroidHours.Get());
+        device.form_factor() == syncer::DeviceInfo::FormFactor::kDesktop
+            ? kSharingPulseDeltaDesktopHours.Get()
+            : kSharingPulseDeltaAndroidHours.Get());
     base::Time min_updated_time =
         base::Time::Now() - device.pulse_interval() - pulse_delta;
     return device.last_updated_timestamp() < min_updated_time;

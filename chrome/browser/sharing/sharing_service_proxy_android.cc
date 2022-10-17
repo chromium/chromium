@@ -90,7 +90,7 @@ void SharingServiceProxyAndroid::GetDeviceCandidates(
         env, j_device_info,
         base::android::ConvertUTF8ToJavaString(env, device_info->guid()),
         base::android::ConvertUTF8ToJavaString(env, device_info->client_name()),
-        device_info->device_type(),
+        static_cast<int>(device_info->form_factor()),
         device_info->last_updated_timestamp().ToJavaTime());
   }
 }

@@ -9,7 +9,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync.protocol.SharingSpecificFields;
-import org.chromium.components.sync.protocol.SyncEnums;
+import org.chromium.components.sync_device_info.FormFactor;
 
 import java.util.ArrayList;
 
@@ -78,17 +78,18 @@ public class SharingServiceProxy {
 
         public String guid;
         public String clientName;
-        public SyncEnums.DeviceType deviceType;
+        public @FormFactor int formFactor;
         public long lastUpdatedTimestampMillis;
     }
 
     @CalledByNative
     private static void createDeviceInfoAndAppendToList(ArrayList<DeviceInfo> deviceInfo,
-            String guid, String clientName, int deviceType, long lastUpdatedTimestampMillis) {
+            String guid, String clientName, @FormFactor int formFactor,
+            long lastUpdatedTimestampMillis) {
         DeviceInfo device = new DeviceInfo();
         device.guid = guid;
         device.clientName = clientName;
-        device.deviceType = SyncEnums.DeviceType.forNumber(deviceType);
+        device.formFactor = formFactor;
         device.lastUpdatedTimestampMillis = lastUpdatedTimestampMillis;
         deviceInfo.add(device);
     }

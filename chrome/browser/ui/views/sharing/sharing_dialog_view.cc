@@ -246,9 +246,11 @@ void SharingDialogView::InitListView() {
   LogSharingDevicesToShow(data_.prefix, kSharingUiDialog, data_.devices.size());
   size_t index = 0;
   for (const auto& device : data_.devices) {
+    // TODO(crbug.com/1368080): Investigate the need to add a desktop device
+    // icon.
     auto icon =
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            device->device_type() == sync_pb::SyncEnums::TYPE_TABLET
+            device->form_factor() == syncer::DeviceInfo::FormFactor::kTablet
                 ? kTabletIcon
                 : kHardwareSmartphoneIcon,
             ui::kColorIcon, kPrimaryIconSize));
