@@ -1254,7 +1254,7 @@
 <translation id="2135787500304447609">繼續(&amp;R)</translation>
 <translation id="2136372518715274136">輸入新密碼</translation>
 <translation id="2136476978468204130">您輸入的密碼短語不正確</translation>
-<translation id="2137128126782078222">不允許接收來自 <ph name="WEBSITE" /> 的通知</translation>
+<translation id="2137128126782078222">唔批准接收嚟自 <ph name="WEBSITE" /> 嘅通知</translation>
 <translation id="2137891579555018930">正在等待許可…</translation>
 <translation id="2139919072249842737">設定按鈕</translation>
 <translation id="2140788884185208305">電池壽命</translation>
@@ -2493,7 +2493,7 @@
 <translation id="3281892622610078515">要隔離的檔案和程式：</translation>
 <translation id="3282210178675490297">正在與 <ph name="APP_NAME" /> 共用此標籤</translation>
 <translation id="3285322247471302225">新分頁(&amp;T)</translation>
-<translation id="3285500645985761267">允許相關網站查看你在群組中的活動</translation>
+<translation id="3285500645985761267">允許相關網站查看您在群組中的活動</translation>
 <translation id="328571385944182268">要儲存密碼嗎？</translation>
 <translation id="3288047731229977326">在開發人員模式中執行擴充功能可能會損害您的電腦。如果您不是開發人員，最好在開發人員模式中停用這些擴充功能，以策安全。</translation>
 <translation id="3289668031376215426">自動大寫</translation>
@@ -2768,7 +2768,7 @@
 <translation id="3541823293333232175">已指派</translation>
 <translation id="3543393733900874979">更新失敗 (錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">使用 SHA-1 的 X9.62 ECDSA 簽名</translation>
-<translation id="3544058026430919413">公司可定義網站群組，指定哪些網站能夠使用 Cookie 分享你在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
+<translation id="3544058026430919413">公司可定義網站群組，指定哪些網站可使用 Cookie 分享您在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
 <translation id="3544879808695557954">使用者名稱 (選填)</translation>
 <translation id="354602065659584722">已移除有害的軟件</translation>
 <translation id="3547954654003013442">Proxy 設定</translation>
@@ -2907,7 +2907,7 @@
 <translation id="3681548574519135185">突顯環</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> 要求共用螢幕</translation>
 <translation id="3685598397738512288">Linux 的 USB 偏好設定</translation>
-<translation id="3687598459967813435">一律允許接收來自 <ph name="WEBSITE" /> 的通知</translation>
+<translation id="3687598459967813435">一律批准接收嚟自 <ph name="WEBSITE" /> 嘅通知</translation>
 <translation id="368789413795732264">嘗試寫入檔案時發生錯誤：<ph name="ERROR_TEXT" />。</translation>
 <translation id="3688507211863392146">寫入您在應用程式中開啟的檔案和資料夾</translation>
 <translation id="3688526734140524629">變更版本</translation>
@@ -4749,7 +4749,7 @@
 <translation id="5449551289610225147">密碼無效</translation>
 <translation id="5449588825071916739">將所有分頁加入書籤</translation>
 <translation id="5449716055534515760">關閉視窗(&amp;D)</translation>
-<translation id="545133051331995777">沒有網路連線</translation>
+<translation id="545133051331995777">沒有網絡連線</translation>
 <translation id="5452446625764825792">您現可查看手機最近的相片、媒體和應用程式</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (可離線使用)</translation>
 <translation id="5454166040603940656">與 <ph name="PROVIDER" /></translation>
@@ -4793,7 +4793,7 @@
 <translation id="5487521232677179737">清除資料</translation>
 <translation id="5488093641312826914">已複製「<ph name="COPIED_ITEM_NAME" />」</translation>
 <translation id="5488508217173274228">同步加密選項</translation>
-<translation id="5489077378642700219">不允許接收來自 <ph name="WEBSITE" /> 的通知，但稍後再詢問</translation>
+<translation id="5489077378642700219">唔批准接收嚟自 <ph name="WEBSITE" /> 嘅通知，但遲啲再問我</translation>
 <translation id="5489435190927933437"><ph name="DOMAIN" /> 的已儲存密碼</translation>
 <translation id="5490721031479690399">解除連結藍牙裝置</translation>
 <translation id="5490798133083738649">允許 Linux 存取您的麥克風</translation>
@@ -5129,7 +5129,7 @@
 <translation id="5805697420284793859">視窗管理員</translation>
 <translation id="5806447147478173900">已顯示網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (預設)</translation>
-<translation id="5809835394668218762">可對 <ph name="WEBSITE" /> 執行的其他動作</translation>
+<translation id="5809835394668218762">可以對　<ph name="WEBSITE" />　執行嘅其他操作</translation>
 <translation id="5810603387504252966">必須前往 chrome://flags 啟用 #borealis-enabled</translation>
 <translation id="5810809306422959727">此帳戶不符合家長監控設定的資格</translation>
 <translation id="5811614940486072060">此檔案不常下載，代表此檔案可能不安全</translation>
@@ -5144,7 +5144,7 @@
 <translation id="5826395379250998812">將 <ph name="DEVICE_TYPE" /> 連結至您的手機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
-<translation id="5827591412833386477">顯示屬於同一個群組的網站</translation>
+<translation id="5827591412833386477">顯示屬於同一群組的網站</translation>
 <translation id="5827733057563115968">下一字預測</translation>
 <translation id="5828545842856466741">新增設定檔…</translation>
 <translation id="5828633471261496623">列印中…</translation>
@@ -5433,7 +5433,7 @@
 <translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
 <translation id="6087960857463881712">開懷大笑</translation>
 <translation id="608912389580139775">如要將網頁加入您的閱讀清單，請按一下「書籤」圖示</translation>
-<translation id="6091116443517744502">請檢查網際網路連線，然後再試一次</translation>
+<translation id="6091116443517744502">請檢查您的互聯網連線，然後再試一次</translation>
 <translation id="6091761513005122595">已成功連接共用裝置。</translation>
 <translation id="6093803049406781019">刪除設定檔</translation>
 <translation id="6093888419484831006">正在取消更新…</translation>
@@ -6295,7 +6295,7 @@
 <translation id="691106080621596509">此操作會清除 <ph name="SITE_GROUP_NAME" /> 儲存的所有資料和 Cookie、包含的所有網站，以及所有安裝的應用程式</translation>
 <translation id="6911734910326569517">記憶體使用量</translation>
 <translation id="6912007319859991306">流動網絡 SIM 卡 PIN</translation>
-<translation id="6912380255120084882">試試其他裝置</translation>
+<translation id="6912380255120084882">嘗試使用其他裝置</translation>
 <translation id="691289340230098384">字幕偏好設定</translation>
 <translation id="6914783257214138813">任何能查看匯出檔案的使用者都可看到您的密碼。</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
@@ -7119,7 +7119,7 @@
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">和 Cast…</translation>
 <translation id="7711900714716399411">使用 USB 連接線將手機連接電腦。如果手機已連接電腦，請拔除連接線再重新連接。</translation>
-<translation id="7711968363685835633">停用個人化轉換、建議和使用者字典</translation>
+<translation id="7711968363685835633">停用個人化轉換、建議和用戶字典</translation>
 <translation id="7712739869553853093">列印預覽對話框</translation>
 <translation id="7714307061282548371">已允許來自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="7714464543167945231">憑證</translation>
@@ -7191,7 +7191,7 @@
 <translation id="7768770796815395237">變更</translation>
 <translation id="7768784765476638775">選取以朗讀</translation>
 <translation id="7769748505895274502">收合最近關閉的分頁</translation>
-<translation id="7770072242481632881">側邊面板選取器</translation>
+<translation id="7770072242481632881">側面板選取器</translation>
 <translation id="7770406201819593386">執行 ChromeOS Flex 診斷測試。</translation>
 <translation id="7770450735129978837">點擊滑鼠右鍵</translation>
 <translation id="7770612696274572992">從其他裝置複製的圖片</translation>
@@ -7828,7 +7828,7 @@
 <translation id="8353683614194668312">它可以：</translation>
 <translation id="8354034204605718473">已新增您子女的 PIN</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /> 個</translation>
-<translation id="8356409598322585307">你已註冊這部裝置，因此不必再次註冊。</translation>
+<translation id="8356409598322585307">您已註冊此裝置，因此無需再註冊。</translation>
 <translation id="8357388086258943206">安裝 Linux 時發生錯誤</translation>
 <translation id="8358685469073206162">您要還原網頁嗎？</translation>
 <translation id="8358912028636606457">此裝置不支援投放分頁音訊。</translation>

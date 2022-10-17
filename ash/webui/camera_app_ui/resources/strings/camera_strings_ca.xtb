@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
 <translation id="1076394037877376434">Suprimeix la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mode de càmera</translation>
 <translation id="1153190633558910465">Quadrícula desactivada</translation>
@@ -21,6 +22,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">No s'ha gravat res</translation>
 <translation id="1838104802459806957">Inclina cap amunt</translation>
 <translation id="1843105061469674856">Escaneja una pàgina més</translation>
@@ -95,6 +97,7 @@
 <translation id="4705093842003735294">Resolució completa</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Grava vídeos de diversos canals</translation>
+<translation id="4984613436295737187">HD quàdruple (1440p)</translation>
 <translation id="5034763830503483128">Relació d'aspecte de la foto</translation>
 <translation id="5057360777601936059">La càmera no està disponible en aquest moment.
         Comprova que estigui ben connectada.</translation>
@@ -103,6 +106,7 @@
 <translation id="5266635337630551423">Extrem superior esquerre del document</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5320594929574852403">S'està movent cap a l'esquerra</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Col·loca totes les vores del document dins del marc. L'escaneig funciona millor si el document i el fons tenen colors diferents.</translation>
 <translation id="5662366948659129155">S'està escanejant la pàgina <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Quadrat</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1220509181886849806">Gebruik gestoorde wagwoord?</translation>
+<translation id="1580351948163139119">Wagwoord vir <ph name="USERNAME" /></translation>
 <translation id="1717486229951421299">Lys eiebewyse wat met aanraking ingevul moet word, is teen halwe hoogte oopgemaak.</translation>
 <translation id="207576718733492531">Lys eiebewyse wat met aanraking ingevul moet word, is toegemaak.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Lys eiebewyse wat met aanraking ingevul moet word, is teen volle hoogte oopgemaak.</translation>
 <translation id="5591247451101092906">Gebruik gestoorde wagwoord of wagwoordsleutel?</translation>
 <translation id="5624120631404540903">Bestuur wagwoorde</translation>
+<translation id="7736236483645733578">Wagwoordsleutel vir <ph name="USERNAME" />, gebruik jou skermslot.</translation>
 <translation id="804577341878669140">Gaan voort met rekening</translation>
 </translationbundle>

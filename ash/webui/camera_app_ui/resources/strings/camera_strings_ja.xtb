@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> ページを削除</translation>
 <translation id="1113173431709655881">カメラモード</translation>
 <translation id="1153190633558910465">グリッド線をオフにする</translation>
 <translation id="1175958423215084756">リンクが検出されました。<ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> ページを削除しました</translation>
 <translation id="1258009455399840361">時計回りに 90 度回転</translation>
 <translation id="1276998909102132017">ギャラリー画像</translation>
 <translation id="1300209025925956156">ドキュメントをスキャンします</translation>

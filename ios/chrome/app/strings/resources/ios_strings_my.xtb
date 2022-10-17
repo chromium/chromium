@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">အားလုံးကို ဖတ်ပြီးကြောင်း အမှတ်အသားလုပ်ရန်</translation>
 <translation id="1689333818294560261">နာမည်ပြောင်</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ရွေးချယ်ထားသည်</translation>
+<translation id="1715515772563243997"><ph name="SITE" /> ကို ယုံကြည်ပါက သိမ်းထားသည့် စကားဝှက်တစ်ခုကို လက်မှတ်ထိုးဝင်ရန် သုံးနိုင်သည်။</translation>
 <translation id="1740468249224277719">ထည့်သွင်းရန် နှစ်ချက်တို့ပါ။</translation>
 <translation id="1752547299766512813">စကားဝှက်များ သိမ်ဆည်းမည်</translation>
 <translation id="1753905327828125965">အများဆုံး ဝင်ကြည့်ခံခဲ့ရ</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">စာညှပ် တည်းဖြတ်ရန်</translation>
 <translation id="2155145621546387786">Chrome ကို မျှဝေရန်</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
+<translation id="2178545675770638239">စကားဝှက် ရွေးပါ</translation>
 <translation id="2218443599109088993">ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="2230173723195178503">ဝဘ်စာမျက်နှာကို ဖွင့်ပြီးပါပြီ</translation>
 <translation id="2239626343334228536">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာများ ဖယ်ရှားနေသည်…</translation>
@@ -434,6 +436,8 @@
 <translation id="4502566650163919158">ယခု စစ်ကြည့်ရန်</translation>
 <translation id="4505980578794259603"><ph name="TIME" /> တွင် နောက်ဆုံးစစ်ဆေးခဲ့သည်။</translation>
 <translation id="4508750114462689118">လက်မှတ်ထိုးဝင်ထားသော ပရိုမိုးရှင်းများကို ပိတ်ရန်</translation>
+<translation id="4514889972748124117">လုံခြုံမှုမြင့်သည့် စကားဝှက် အကြံပြုရန်…</translation>
+<translation id="4520798012560649652">‘ရုပ်ဖျက်မုဒ်’ အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> တွင် သိမ်းဆည်းထားသော စကားဝှက်များအား ကြည့်ပြီး စီမံပါ</translation>
 <translation id="452750746583162491">သင်စင့်ခ်လုပ်ထားသည့် ဒေတာများကို ပြန်စစ်ခြင်း</translation>
 <translation id="4536418791685807335">ထပ်မံ၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
@@ -1014,6 +1018,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8917490105272468696">သဘောတူပါသည်</translation>
 <translation id="8928133177108699615">ဒက်စ်တော့</translation>
 <translation id="8952559610785099500">စကားဝှက် ထည့်ခြင်း</translation>
+<translation id="8953046091948372197">သင့်စကားဝှက်ကို ဤနေရာတွင် တွေ့မည်</translation>
 <translation id="895541991026785598">ပြဿနာတစ်ခု အစီရင်ခံမည်</translation>
 <translation id="8974714402877957201">၁။ ‘iPad ဆက်တင်များ’ ဖွင့်ပါ</translation>
 <translation id="8976382372951310360">အကူအညီ</translation>
@@ -1047,6 +1052,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="9200875785104711666">ပြီးခဲ့သော <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">လက်မပါဘဲ</translation>
 <translation id="9223358826628549784">ပျက်စီးမှု အစီရင်ခံစာကို ပေးပို့ပြီးပါပြီ။</translation>
+<translation id="941747855997058526">စကားဝှက်ရွေးရန်…</translation>
 <translation id="952704832371081537">မလုပ်တော့</translation>
 <translation id="953008885340860025">Chrome ထွက်သွားသည်</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> ကို လိုက်ကြည့်နေသည်</translation>

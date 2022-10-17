@@ -4826,6 +4826,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 
       Politika, Devre Dışı değerine ayarlanırsa QUIC protokolünün kullanımına izin verilmez.</translation>
 <translation id="5916855682471300200">Bulut makinesi politikaları, platform makinesi politikaları karşısında öncelikli olur</translation>
+<translation id="5917425424971710623">Genişletilmiş tespit ve yanıt (XDR) etkinlikleri ile ilgili bilgileri rapor etme</translation>
 <translation id="5921713479449475707">HTTP aracılığıyla otomatik güncelleme indirmeye izin ver</translation>
 <translation id="5927903236543424081">Tarayıcıyı kullanmadan önce kullanıcının oturum açmasını zorunlu kıl</translation>
 <translation id="5928633129285224981"><ph name="PRODUCT_NAME" /> üzerinde PDF yazdırılırken Resim olarak yazdır'ın varsayılan olarak seçilip seçilmeyeceğini kontrol eder.

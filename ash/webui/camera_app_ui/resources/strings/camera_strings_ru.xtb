@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1076394037877376434">Удалить страницу <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Режим камеры</translation>
 <translation id="1153190633558910465">Без сетки</translation>
 <translation id="1175958423215084756">Обнаружена ссылка <ph name="HOSTNAME" />.</translation>
+<translation id="1197694886744716213">Страница <ph name="PAGE_NUMBER" /> удалена</translation>
 <translation id="1258009455399840361">Повернуть на 90 градусов по часовой стрелке</translation>
 <translation id="1276998909102132017">Изображения в галерее</translation>
 <translation id="1300209025925956156">Сканирование документа</translation>

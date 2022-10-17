@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1220509181886849806">Upotrijebiti spremljenu zaporku?</translation>
+<translation id="1580351948163139119">Zaporka za <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Popis vjerodajnica za unos dodirom otvoren je na pola visine.</translation>
 <translation id="207576718733492531">Popis vjerodajnica za unos dodirom zatvoren je.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Popis vjerodajnica za unos dodirom otvoren je preko cijelog zaslona.</translation>
 <translation id="5591247451101092906">Želite li koristiti spremljenu zaporku ili pristupni ključ?</translation>
 <translation id="5624120631404540903">Upravljanje zaporkama</translation>
+<translation id="7736236483645733578">Pristupni ključ za <ph name="USERNAME" />, upotrijebite zaključavanje zaslona.</translation>
 <translation id="804577341878669140">Nastavite uz račun</translation>
 </translationbundle>

@@ -1909,6 +1909,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Администраторуңуз бул функцияны көзөмөлдөнгөн колдонуучулар үчүн өчүрүп койгон.</translation>
 <translation id="2722540561488096675">Түзмөгүңүз <ph name="TIME_LEFT" /> кийин өчөт. Түзмөктү кайра күйгүзгөнгө чейин USB'ни сууруп салыңыз. Андан кийин <ph name="DEVICE_OS" /> түзмөгүн колдонуп баштасаңыз болот.</translation>
+<translation id="2722547199758472013">Идентификатор: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">WebRTC таржымалдары</translation>
 <translation id="272488616838512378">Бирдик которуу</translation>
 <translation id="2725200716980197196">Тармактын туташуу жөндөмдүүлүгү калыбына келтирилди</translation>
@@ -3082,6 +3083,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3828029223314399057">Кыстармаларды издөө</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарын<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome жана ChromeOS кошумча Тейлөө шарттарын<ph name="END_LINK2" /> жана <ph name="BEGIN_LINK3" />Play Тейлөө шарттарын<ph name="END_LINK3" /> окудум жана аларга макулмун.</translation>
 <translation id="3829765597456725595">SMB'дагы жалпы файлдар</translation>
+<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Администраторуңуз 1 мүмкүн болгон кооптуу кеңейтүүнү кайра күйгүзүп койду}other{Администраторуңуз {NUM_EXTENSIONS} мүмкүн болгон кооптуу кеңейтүүнү кайра күйгүзүп койду}}</translation>
 <translation id="3831436149286513437">Google Drive'тагы издөө сунуштары</translation>
 <translation id="3834728400518755610">Микрофондун жөндөөлөрүнө өзгөртүүлөр киргизилгендиктен Linux'ту жабуу керек. Улантуу үчүн Linux'ту жабыңыз.</translation>
@@ -5218,6 +5220,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5884474295213649357">Бул өтмөк USB түзмөгүнө туташтырылган.</translation>
 <translation id="5885314688092915589">Бул профилди уюмуңуз башкарат</translation>
 <translation id="5886009770935151472">1-манжа</translation>
+<translation id="5886112770923972514">Жакын жердеги Ыкчам туташуу түзмөктөрүн туташтырып, ылдам тууралайсыз</translation>
 <translation id="5886384907280980632">Азыр өчүрүү</translation>
 <translation id="5889282057229379085">Ортодогу Тастыктама борборлорунун эң көп саны: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Тандалган Wi-Fi тармактары</translation>
@@ -7816,6 +7819,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8338952601723052325">Иштеп чыгуучунун вебсайты</translation>
 <translation id="833986336429795709">Бул шилтемени ачуудан мурда колдонмону тандаңыз</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> боюнча башка аракеттер</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Жакында өтө көп билдирмелерди жөнөткөн <ph name="BEGIN_BOLD" />1 сайтты<ph name="END_BOLD" /> карап чыгуу}other{Жакында өтө көп билдирмелерди жөнөткөн <ph name="BEGIN_BOLD" />{NUM_SITES} сайтты<ph name="END_BOLD" /> карап чыгуу}}</translation>
 <translation id="8342221978608739536">Колдонуп көргөн жокмун</translation>
 <translation id="8342861492835240085">Жыйнакты тандаңыз</translation>
 <translation id="8345848587667658367">Телефонуңуздагы акыркы сүрөттөрдү, медиа файлдарды, билдирмелерди жана колдонмолорду көрө аласыз</translation>
@@ -8813,6 +8817,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Коопсуз туташуу орнотулууда…</translation>
 <translation id="996803490569799917">Сүйүктүү адамдарыңыз жана башкалар жөнүндө эстен кеткис көз ирмемдерди көрүңүз</translation>
+<translation id="997143476478634194">Сайттарга киргениңизде, ушул параметр автоматтык түрдө колдонулат. Адатта сайттар соңку жаңылыктар же чаттагы билдирүүлөр жөнүндө билдирмелерди жөнөтүшөт.</translation>
 <translation id="99731366405731005">Wi-Fi Sync функциясын колдонуу үчүн <ph name="LINK1_BEGIN" />Chrome шайкештирүүнү<ph name="LINK1_END" /> күйгүзүңүз. <ph name="LINK2_BEGIN" />Кеңири маалымат<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">И&amp;зилдөө</translation>
 </translationbundle>

@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Kustuta <ph name="PAGE_NUMBER" />. leht</translation>
 <translation id="1113173431709655881">Kaamerarežiim</translation>
 <translation id="1153190633558910465">Ruudustik on välja lülitatud</translation>
 <translation id="1175958423215084756">Tuvastati link. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. leht on kustutatud</translation>
 <translation id="1258009455399840361">Pööra 90 kraadi päripäeva</translation>
 <translation id="1276998909102132017">Galerii pildid</translation>
 <translation id="1300209025925956156">Dokumendi skannimine</translation>

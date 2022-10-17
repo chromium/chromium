@@ -4557,6 +4557,7 @@
 
       このポリシーを無効に設定した場合、QUIC プロトコルの使用は許可されません。</translation>
 <translation id="5916855682471300200">クラウドのマシンポリシーをプラットフォームのマシンポリシーより優先する</translation>
+<translation id="5917425424971710623">広範な検出と対応（XDR）イベントに関する情報を報告しない</translation>
 <translation id="5921713479449475707">HTTP 経由での自動更新ダウンロードを許可する</translation>
 <translation id="5927903236543424081">ブラウザを使用する前にユーザーにログインを強制する</translation>
 <translation id="5928633129285224981"><ph name="PRODUCT_NAME" /> で PDF の印刷時に「画像として印刷する」オプションがデフォルトで設定されるかどうかを管理します。

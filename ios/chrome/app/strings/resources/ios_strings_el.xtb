@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">Επισήμανση όλων ως αναγνωσμένων</translation>
 <translation id="1689333818294560261">Ψευδώνυμο</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία επιλεγμένα</translation>
+<translation id="1715515772563243997">Εάν εμπιστεύεστε την προέλευση <ph name="SITE" />, μπορείτε να χρησιμοποιήσετε έναν αποθηκευμένο κωδικό πρόσβασης για σύνδεση.</translation>
 <translation id="1740468249224277719">Πατήστε δύο φορές για εγκατάσταση.</translation>
 <translation id="1752547299766512813">Απ. κωδ. πρόσβ.</translation>
 <translation id="1753905327828125965">Πιο Δημοφιλή</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="2155145621546387786">Κοινοποίηση του Chrome</translation>
 <translation id="2175927920773552910">Κωδικός QR</translation>
+<translation id="2178545675770638239">Επιλογή κωδικού πρόσβασης</translation>
 <translation id="2218443599109088993">Σμίκρυνση</translation>
 <translation id="2230173723195178503">Η ιστοσελίδα φορτώθηκε</translation>
 <translation id="2239626343334228536">Διαγραφή δεδομένων περιήγησης…</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">Έλεγχος τώρα</translation>
 <translation id="4505980578794259603">Τελευταίος έλεγχος: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Κλείσιμο προσφοράς σύνδεσης</translation>
+<translation id="4514889972748124117">Πρόταση ισχυρού κωδικού πρόσβασης…</translation>
 <translation id="4520798012560649652">Μάθετε περισσότερα σχετικά με την κατάσταση ανώνυμης περιήγησης.</translation>
 <translation id="4526249700380860531">Προβολή και διαχείριση των αποθηκευμένων κωδικών πρόσβασης στη διεύθυνση <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Έλεγχος συγχρονισμένων δεδομένων</translation>
@@ -1017,6 +1020,7 @@
 <translation id="8917490105272468696">Ναι, συμφωνώ</translation>
 <translation id="8928133177108699615">Για υπολογιστή</translation>
 <translation id="8952559610785099500">Προσθήκη κωδικού πρόσβασης</translation>
+<translation id="8953046091948372197">Εδώ θα βρείτε τους κωδικούς πρόσβασής σας</translation>
 <translation id="895541991026785598">Αναφορά προβλήματος</translation>
 <translation id="8974714402877957201">1. Ανοίξτε τις Ρυθμίσεις του iPad</translation>
 <translation id="8976382372951310360">Βοήθεια</translation>
@@ -1050,6 +1054,7 @@
 <translation id="9200875785104711666">Πριν από <ph name="TIME" /> ημ.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Η αναφορά σφάλματος εστάλη.</translation>
+<translation id="941747855997058526">Επιλογή κωδικού πρόσβασης…</translation>
 <translation id="952704832371081537">Ακύρωση</translation>
 <translation id="953008885340860025">Έγινε αποσύνδεση από το Chrome</translation>
 <translation id="959066944189734975">Ακολουθείτε το κανάλι <ph name="CHANNEL_NAME" /></translation>

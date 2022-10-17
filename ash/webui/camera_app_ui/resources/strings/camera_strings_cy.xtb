@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="1057925581724305206">HD Llawn (1080p)</translation>
+<translation id="1076394037877376434">Dileu tudalen <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modd camera</translation>
 <translation id="1153190633558910465">Grid wedi'i ddiffodd</translation>
 <translation id="1175958423215084756">Mae dolen wedi'i chanfod. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Tudalen <ph name="PAGE_NUMBER" /> wedi'i dileu</translation>
 <translation id="1258009455399840361">Cylchdroi 90 gradd yn glocwedd</translation>
 <translation id="1276998909102132017">Lluniau'r oriel</translation>
 <translation id="1300209025925956156">Sganio eich dogfen</translation>
@@ -19,6 +22,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Dim byd wedi'i recordio</translation>
 <translation id="1838104802459806957">Gogwyddo i fyny</translation>
 <translation id="1843105061469674856">Sganio tudalen ychwanegol</translation>
@@ -93,6 +97,7 @@
 <translation id="4705093842003735294">Cydraniad llawn</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Recordiad fideo aml-ffrwd</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Cymhareb agwedd llun</translation>
 <translation id="5057360777601936059">Nid yw'ch camera ar gael ar hyn o bryd.
         Gwiriwch a yw'r camera wedi'i gysylltu'n iawn.</translation>
@@ -101,6 +106,7 @@
 <translation id="5266635337630551423">Cornel chwith uchaf y ddogfen</translation>
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5320594929574852403">Yn symud i'r cyfeiriad chwith</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Rhowch yr holl ymylon o'r ddogfen o fewn y ffrâm. Mae sganio'n gweithio orau os oes gan y ddogfen a'r cefndir liwiau gwahanol.</translation>
 <translation id="5662366948659129155">Wrthi'n sganio tudalen <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Sgwâr</translation>

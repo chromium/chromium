@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1076394037877376434">删除第 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="1113173431709655881">相机模式</translation>
 <translation id="1153190633558910465">网格已关闭</translation>
 <translation id="1175958423215084756">检测到链接。<ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">已删除第 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="1258009455399840361">顺时针旋转 90 度</translation>
 <translation id="1276998909102132017">图库图片</translation>
 <translation id="1300209025925956156">扫描您的文件</translation>

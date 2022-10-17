@@ -159,6 +159,7 @@
 <translation id="4402755511846832236">Blokirajte web lokacijama informacije o vašem aktivnom korištenju ovog uređaja</translation>
 <translation id="4428065317363009941">Personalizacija oglasa</translation>
 <translation id="4434045419905280838">Skočni proz. i preusmjeravanja</translation>
+<translation id="4440642537584213025">Proširi odjeljak <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="445467742685312942">Dozvoljava web lokacijama da reproduciraju zaštićen sadržaj</translation>
 <translation id="4468959413250150279">Isključen zvuk za određenu web lokaciju.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# kolačić}one{# kolačić}few{# kolačića}other{# kolačića}}</translation>

@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Poista sivu <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Kameratila</translation>
 <translation id="1153190633558910465">Ruudukko pois</translation>
 <translation id="1175958423215084756">Linkki havaittu. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Sivu <ph name="PAGE_NUMBER" /> poistettu</translation>
 <translation id="1258009455399840361">Kierrä 90 astetta myötäpäivään</translation>
 <translation id="1276998909102132017">Gallerian kuvat</translation>
 <translation id="1300209025925956156">Skannaa dokumenttisi</translation>

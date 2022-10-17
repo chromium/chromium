@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Smazat stránku <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Režim fotoaparátu</translation>
 <translation id="1153190633558910465">Mřížka vypnuta</translation>
 <translation id="1175958423215084756">Byl zjištěn odkaz. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Stránka <ph name="PAGE_NUMBER" /> byla smazána</translation>
 <translation id="1258009455399840361">Otočit o 90 stupňů ve směru hodinových ručiček</translation>
 <translation id="1276998909102132017">Obrázky v galerii</translation>
 <translation id="1300209025925956156">Naskenujte dokument</translation>
@@ -19,6 +22,7 @@
 <translation id="1588438908519853928">Normální</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Nic nebylo zaznamenáno</translation>
 <translation id="1838104802459806957">Naklonit nahoru</translation>
 <translation id="1843105061469674856">Naskenovat další stránku</translation>
@@ -93,6 +97,7 @@
 <translation id="4705093842003735294">Plné rozlišení</translation>
 <translation id="4890010094662541459">3 × 3</translation>
 <translation id="491895758387112773">Nahrávání videa z více streamů</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Poměr stran fotografie</translation>
 <translation id="5057360777601936059">Fotoaparát momentálně není dostupný.
         Zkontrolujte, zda je fotoaparát správně připojen.</translation>
@@ -101,6 +106,7 @@
 <translation id="5266635337630551423">Levý horní roh dokumentu</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5320594929574852403">Pohyb doleva</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Umístěte všechny okraje dokumentu do rámečku. Skenování funguje nejlépe, když se barva dokumentu liší od barvy pozadí.</translation>
 <translation id="5662366948659129155">Skenování stránky <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Čtverec</translation>

@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">Означи све као прочитано</translation>
 <translation id="1689333818294560261">Надимак</translation>
 <translation id="1700629756560807968">Број изабраних ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">Ако веб-сајт <ph name="SITE" /> сматрате поузданим, можете да користите сачувану лозинку за пријављивање.</translation>
 <translation id="1740468249224277719">Додирните двапут да бисте инсталирали.</translation>
 <translation id="1752547299766512813">Сачуване лозинке</translation>
 <translation id="1753905327828125965">Најпосећеније</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">Измените обележивач</translation>
 <translation id="2155145621546387786">Дели Chrome</translation>
 <translation id="2175927920773552910">QR кôд</translation>
+<translation id="2178545675770638239">Изаберите лозинку</translation>
 <translation id="2218443599109088993">Умањите</translation>
 <translation id="2230173723195178503">Веб-страница је учитана</translation>
 <translation id="2239626343334228536">Бришу се подаци прегледања...</translation>
@@ -434,6 +436,8 @@
 <translation id="4502566650163919158">Провери</translation>
 <translation id="4505980578794259603">Последња провера: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Затвори промоцију за пријављивање</translation>
+<translation id="4514889972748124117">Предложи јаку лозинку…</translation>
+<translation id="4520798012560649652">Сазнајте више о режиму без архивирања</translation>
 <translation id="4526249700380860531">Прегледајте сачуване лозинке и управљајте њима на <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Прегледајте синхронизоване податке</translation>
 <translation id="4536418791685807335">Пробајте поново да се пријавите.</translation>
@@ -1015,6 +1019,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8917490105272468696">Да, омогући</translation>
 <translation id="8928133177108699615">Рачунар</translation>
 <translation id="8952559610785099500">Додајте лозинку</translation>
+<translation id="8953046091948372197">Овде ћете пронаћи лозинке</translation>
 <translation id="895541991026785598">Пријавите проблем</translation>
 <translation id="8974714402877957201">1. Отворите подешавања iPad-а</translation>
 <translation id="8976382372951310360">Помоћ</translation>
@@ -1048,6 +1053,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9200875785104711666">пре <ph name="TIME" /> д</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Извештај о отказивању је послат.</translation>
+<translation id="941747855997058526">Изаберите лозинку…</translation>
 <translation id="952704832371081537">Откажи</translation>
 <translation id="953008885340860025">Одјављени сте из Chrome-а</translation>
 <translation id="959066944189734975">Пратите <ph name="CHANNEL_NAME" /></translation>
