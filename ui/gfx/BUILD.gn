@@ -639,6 +639,8 @@ static_library("test_support") {
     "animation/keyframe/test/animation_utils.cc",
     "animation/keyframe/test/animation_utils.h",
     "animation/test_animation_delegate.h",
+    "geometry/test/fuzzer_util.cc",
+    "geometry/test/fuzzer_util.h",
     "geometry/test/geometry_util.cc",
     "geometry/test/geometry_util.h",
     "image/image_unittest_util.cc",

@@ -108,5 +108,6 @@ fuzzer_test("hit_test_query_fuzzer") {
     ":host",
     "//base/test:test_support",
     "//components/viz/test:test_support",
+    "//ui/gfx:test_support",
   ]
 }
