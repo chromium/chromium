@@ -227,6 +227,9 @@ void CustomEventRecorder::OnTracingStopped(
   }
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // We have to flush explicitly because we're using the asynchronous stop
+  // mechanism.
+  perfetto::TrackEvent::Flush();
   std::move(stop_complete_callback).Run();
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
