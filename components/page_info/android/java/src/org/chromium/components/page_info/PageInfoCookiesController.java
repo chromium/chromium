@@ -105,12 +105,12 @@ public class PageInfoCookiesController
                 address, result);
         if (mSubPage != null) {
             mSubPage.setStorageUsage(mWebsite.getTotalUsage());
-        }
 
-        boolean isFPSInfoShown = mSubPage.maybeShowFPSInfo(
-                mWebsite.getFPSCookieInfo(), mWebsite.getAddress().getOrigin());
-        RecordHistogram.recordBooleanHistogram(
-                "Security.PageInfo.Cookies.HasFPSInfo", isFPSInfoShown);
+            boolean isFPSInfoShown = mSubPage.maybeShowFPSInfo(
+                    mWebsite.getFPSCookieInfo(), mWebsite.getAddress().getOrigin());
+            RecordHistogram.recordBooleanHistogram(
+                    "Security.PageInfo.Cookies.HasFPSInfo", isFPSInfoShown);
+        }
     }
 
     private void onCheckedChangedCallback(boolean state) {
