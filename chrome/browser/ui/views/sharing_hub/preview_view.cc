@@ -23,7 +23,8 @@ struct LayoutVariant {
   gfx::Insets default_margin;
   gfx::Size image_size;
 
-  static LayoutVariant FromFeatureConfig();
+  static LayoutVariant FromFeatureVariant(
+      share::DesktopSharePreviewVariant variant);
 };
 
 // These values are all directly from the Figma redlines. See
@@ -37,8 +38,9 @@ constexpr LayoutVariant kVariant40{gfx::Insets::VH(8, 8),
 constexpr LayoutVariant kVariant72{gfx::Insets::VH(8, 8),
                                    gfx::Insets::VH(0, 16), gfx::Size(72, 72)};
 
-LayoutVariant LayoutVariant::FromFeatureConfig() {
-  switch (share::GetDesktopSharePreviewVariant()) {
+LayoutVariant LayoutVariant::FromFeatureVariant(
+    share::DesktopSharePreviewVariant variant) {
+  switch (variant) {
     case share::DesktopSharePreviewVariant::kEnabled16:
       return kVariant16;
     case share::DesktopSharePreviewVariant::kEnabled40:
@@ -91,20 +93,22 @@ class UrlLabel : public views::Label {
 //     View [FlexLayout, vertical]
 //       Label (title)
 //       Label (URL)
-PreviewView::PreviewView(share::ShareAttempt attempt) {
-  auto variant = LayoutVariant::FromFeatureConfig();
+PreviewView::PreviewView(share::ShareAttempt attempt,
+                         share::DesktopSharePreviewVariant feature_variant)
+    : feature_variant_(feature_variant) {
+  auto layout_variant = LayoutVariant::FromFeatureVariant(feature_variant);
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(variant.interior_margin)
-      .SetDefault(views::kMarginsKey, variant.default_margin)
+      .SetInteriorMargin(layout_variant.interior_margin)
+      .SetDefault(views::kMarginsKey, layout_variant.default_margin)
       .SetCollapseMargins(true);
 
   image_ =
       AddChildView(std::make_unique<views::ImageView>(attempt.preview_image));
-  image_->SetPreferredSize(variant.image_size);
+  image_->SetPreferredSize(layout_variant.image_size);
 
   auto* labels_container = AddChildView(std::make_unique<views::View>());
   labels_container->SetProperty(
@@ -142,7 +146,8 @@ void PreviewView::TakeCallbackSubscription(
 
 void PreviewView::OnImageChanged(ui::ImageModel model) {
   image_->SetImage(model);
-  image_->SetImageSize(LayoutVariant::FromFeatureConfig().image_size);
+  image_->SetImageSize(
+      LayoutVariant::FromFeatureVariant(feature_variant_).image_size);
 }
 
 }  // namespace sharing_hub

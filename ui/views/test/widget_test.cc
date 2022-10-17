@@ -33,6 +33,8 @@ View::Views ShuffledChildren(View* view) {
   return children;
 }
 
+}  // namespace
+
 View* AnyViewMatchingPredicate(View* view, const ViewPredicate& predicate) {
   if (predicate.Run(view))
     return view;
@@ -47,8 +49,6 @@ View* AnyViewMatchingPredicate(View* view, const ViewPredicate& predicate) {
   }
   return nullptr;
 }
-
-}  // namespace
 
 View* AnyViewMatchingPredicate(Widget* widget, const ViewPredicate& predicate) {
   return AnyViewMatchingPredicate(widget->GetRootView(), predicate);

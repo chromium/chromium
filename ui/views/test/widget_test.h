@@ -54,6 +54,11 @@ namespace test {
 // randomly choose a child to return, so make sure your predicate matches
 // *only* the view you want!
 using ViewPredicate = base::RepeatingCallback<bool(const View*)>;
+View* AnyViewMatchingPredicate(View* root, const ViewPredicate& predicate);
+template <typename Pred>
+View* AnyViewMatchingPredicate(View* root, Pred predicate) {
+  return AnyViewMatchingPredicate(root, base::BindLambdaForTesting(predicate));
+}
 View* AnyViewMatchingPredicate(Widget* widget, const ViewPredicate& predicate);
 template <typename Pred>
 View* AnyViewMatchingPredicate(Widget* widget, Pred predicate) {

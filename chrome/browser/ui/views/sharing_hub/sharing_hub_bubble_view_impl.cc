@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 
+#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/share/share_metrics.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
@@ -133,7 +134,8 @@ void SharingHubBubbleViewImpl::Init() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kInterItemPadding));
   if (controller_->ShouldUsePreview()) {
-    auto* preview = AddChildView(std::make_unique<PreviewView>(attempt_));
+    auto* preview = AddChildView(std::make_unique<PreviewView>(
+        attempt_, share::GetDesktopSharePreviewVariant()));
     preview->TakeCallbackSubscription(
         controller_->RegisterPreviewImageChangedCallback(base::BindRepeating(
             &PreviewView::OnImageChanged, base::Unretained(preview))));

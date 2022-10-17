@@ -8257,7 +8257,10 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources += [ "../browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc" ]
+    sources += [
+      "../browser/ui/views/sharing_hub/preview_view_unittest.cc",
+      "../browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc",
+    ]
   }
 
   if (use_aura) {
