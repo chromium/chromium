@@ -34,8 +34,8 @@
 #include "third_party/blink/renderer/core/html/track/text_track_container.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
-#include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -138,7 +138,7 @@ void VTTCueBox::ApplyCSSProperties(
     SetInlineStyleProperty(CSSPropertyID::kWhiteSpace, CSSValueID::kPre);
   }
 
-  // The snap-to-lines position is propagated to LayoutVTTCue.
+  // The snap-to-lines position is propagated to VttCueLayoutAlgorithm.
   snap_to_lines_position_ = display_parameters.snap_to_lines_position;
 }
 
@@ -154,16 +154,12 @@ LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
   // We create a standard block-flow container.
   // See the comment in vtt_cue_layout_algorithm.h about how we adjust
   // VTTCueBox positions.
-  if (RuntimeEnabledFeatures::LayoutNGVTTCueEnabled())
-    return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
-
-  return MakeGarbageCollected<LayoutVTTCue>(this, snap_to_lines_position_);
+  return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
 }
 
 Node::InsertionNotificationRequest VTTCueBox::InsertedInto(
     ContainerNode& insertion_point) {
-  if (RuntimeEnabledFeatures::LayoutNGVTTCueEnabled() &&
-      insertion_point.isConnected() && !IsInRegion()) {
+  if (insertion_point.isConnected() && !IsInRegion()) {
     DCHECK(!box_size_observer_);
     box_size_observer_ =
         ResizeObserver::Create(GetDocument().domWindow(),

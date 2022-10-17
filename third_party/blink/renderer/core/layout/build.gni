@@ -254,8 +254,6 @@ blink_core_sources_layout = [
   "layout_video.h",
   "layout_view.cc",
   "layout_view.h",
-  "layout_vtt_cue.cc",
-  "layout_vtt_cue.h",
   "layout_word_break.cc",
   "layout_word_break.h",
   "line/abstract_inline_text_box.cc",

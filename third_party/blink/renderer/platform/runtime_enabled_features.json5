@@ -1540,11 +1540,6 @@
       status: "stable",
     },
     {
-      // crbug.com/1335309
-      name: "LayoutNGVTTCue",
-      status: "stable",
-    },
-    {
       name: "LazyFrameLoading",
       public: true,
       status: "stable",

@@ -10,10 +10,57 @@
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 
 namespace blink {
+
+namespace {
+
+// We use this helper to make sure all (bounding) boxes used for comparisons
+// are relative to the same coordinate space. If we didn't the (bounding) boxes
+// could be affect by transforms on an ancestor et.c, which could yield
+// incorrect results.
+gfx::Rect BorderBoxRelativeToAncestor(const LayoutBox& box,
+                                      const LayoutBoxModelObject& ancestor) {
+  PhysicalRect border_box = box.PhysicalBorderBoxRect();
+  // We pass UseTransforms here primarily because we use a transform for
+  // non-snap-to-lines positioning (see vtt_cue.cc.)
+  return ToEnclosingRect(box.LocalToAncestorRect(border_box, &ancestor));
+}
+
+gfx::Rect ComputeControlsRect(const LayoutObject& container) {
+  // Determine the area covered by the media controls, if any. For this, the
+  // LayoutVTTCue will walk the tree up to the HTMLMediaElement, then ask for
+  // the MediaControls.
+  DCHECK(container.GetNode()->IsTextTrackContainer());
+
+  auto* media_element = To<HTMLMediaElement>(container.Parent()->GetNode());
+  DCHECK(media_element);
+
+  MediaControls* controls = media_element->GetMediaControls();
+  if (!controls || !controls->ContainerLayoutObject())
+    return gfx::Rect();
+
+  // Only a part of the media controls is used for overlap avoidance.
+  const auto* button_panel_layout_object = controls->ButtonPanelLayoutObject();
+  const auto* timeline_layout_object = controls->TimelineLayoutObject();
+
+  if (!button_panel_layout_object || !button_panel_layout_object->IsBox() ||
+      !timeline_layout_object || !timeline_layout_object->IsBox()) {
+    return gfx::Rect();
+  }
+
+  const auto& container_box = *To<LayoutBox>(controls->ContainerLayoutObject());
+  gfx::Rect button_panel_box = BorderBoxRelativeToAncestor(
+      To<LayoutBox>(*button_panel_layout_object), container_box);
+  gfx::Rect timeline_box = BorderBoxRelativeToAncestor(
+      To<LayoutBox>(*timeline_layout_object), container_box);
+
+  button_panel_box.Union(timeline_box);
+  return button_panel_box;
+}
+
+}  // namespace
 
 VttCueLayoutAlgorithm::VttCueLayoutAlgorithm(VTTCueBox& cue)
     : cue_(cue), snap_to_lines_position_(cue.SnapToLinesPosition()) {}
@@ -196,7 +243,7 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
     return;
 
   // Step 4-9
-  const gfx::Rect controls_rect = LayoutVTTCue::ComputeControlsRect(container);
+  const gfx::Rect controls_rect = ComputeControlsRect(container);
   LayoutUnit position =
       ComputeInitialPositionAdjustment(max_dimension, controls_rect);
 

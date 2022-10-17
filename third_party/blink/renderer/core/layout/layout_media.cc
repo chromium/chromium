@@ -67,7 +67,7 @@ void LayoutMedia::UpdateLayout() {
 // Iterate the children in reverse order so that the media controls are laid
 // out before the text track container. This is to ensure that the text
 // track rendering has an up-to-date position of the media controls for
-// overlap checking, see LayoutVTTCue.
+// overlap checking, see ComputeControlsRect() in vtt_cue_layout_algorithm.cc.
 #if DCHECK_IS_ON()
   bool seen_text_track_container = false;
   bool seen_interstitial = false;

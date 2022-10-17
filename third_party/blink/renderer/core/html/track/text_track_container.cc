@@ -104,20 +104,9 @@ void TextTrackContainer::RemovedFrom(ContainerNode& insertion_point) {
   }
 }
 
-bool TextTrackContainer::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGVTTCueEnabled();
-}
-
 LayoutObject* TextTrackContainer::CreateLayoutObject(const ComputedStyle& style,
                                                      LegacyLayout legacy) {
-  if (RuntimeEnabledFeatures::LayoutNGVTTCueEnabled())
-    return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
-  // TODO(mstensho): Should use LayoutObjectFactory to create the right type of
-  // object here, to enable LayoutNG, but currently we can't, because this will
-  // typically be a child of LayoutVideo (a legacy type), and we'll typically
-  // also insert a LayoutVTTCue (a LayoutBlockFlow type) child, which also isn't
-  // implemented in NG.
-  return MakeGarbageCollected<LayoutBlockFlow>(this);
+  return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
 }
 
 void TextTrackContainer::ObserveSizeChanges(Element& element) {
@@ -178,15 +167,15 @@ void TextTrackContainer::UpdateDisplay(HTMLMediaElement& media_element,
 
   // Note: This is a layout algorithm, expressed terms of appending CSS block
   // boxes to output, and the "apply WebVTT cue settings" part is implemented
-  // in LayoutVTTCue. Here we merely create the DOM tree from which the layout
-  // tree is built and append it to this TextTrackContainer.
+  // in VttCueLayoutAlgorithm. Here we merely create the DOM tree from which
+  // the layout tree is built and append it to this TextTrackContainer.
 
   // 4. If the user agent is exposing a user interface for video, add to
   // output one or more completely transparent positioned CSS block boxes that
   // cover the same region as the user interface.
 
-  // Note: Overlap checking for the controls is implemented in LayoutVTTCue
-  // without a placeholder box (element or layout object).
+  // Note: Overlap checking for the controls is implemented in
+  // VttCueLayoutAlgorithm without a placeholder box (element or layout object).
 
   // 5. If the last time these rules were run, the user agent was not exposing
   // a user interface for video, but now it is, optionally let reset be true.

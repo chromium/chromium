@@ -626,7 +626,7 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
 
   // Step 9 not implemented (margin == 0).
 
-  // The snap-to-lines position is propagated to LayoutVTTCue.
+  // The snap-to-lines position is propagated to VttCueLayoutAlgorithm.
   display_parameters.snap_to_lines_position =
       snap_to_lines_ ? computed_line_position
                      : std::numeric_limits<float>::quiet_NaN();
