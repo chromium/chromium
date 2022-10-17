@@ -87,7 +87,6 @@ namespace test {
 
 namespace {
 
-constexpr int kNumOfSuggestedApps = 3;
 constexpr size_t kMaxItemsInFolder = 48;
 
 class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
@@ -213,20 +212,6 @@ class PostPageFlipTask : public PaginationModelObserver {
   base::OnceClosure task_;
 };
 
-class TestSuggestedSearchResult : public TestSearchResult {
- public:
-  TestSuggestedSearchResult() {
-    set_display_type(SearchResultDisplayType::kChip);
-    set_is_recommendation(true);
-  }
-
-  TestSuggestedSearchResult(const TestSuggestedSearchResult&) = delete;
-  TestSuggestedSearchResult& operator=(const TestSuggestedSearchResult&) =
-      delete;
-
-  ~TestSuggestedSearchResult() override = default;
-};
-
 // Counts when the observed view's bounds change.
 class BoundsChangeCounter : public views::ViewObserver {
  public:
@@ -276,14 +261,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
     // Populate some suggested apps.
     search_model_ = std::make_unique<SearchModel>();
-    for (size_t i = 0; i < kNumOfSuggestedApps; ++i) {
-      auto search_result = std::make_unique<TestSuggestedSearchResult>();
-      // Give each item a name so that the accessibility paint checks pass.
-      // (Focusable items should have accessible names.)
-      search_result->SetAccessibleName(
-          base::UTF8ToUTF16(base::StringPrintf("item %zu", i)));
-      search_model_->results()->Add(std::move(search_result));
-    }
 
     // Replace the model before the app list views are created, because some
     // views cache pointers to the model.
