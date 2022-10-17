@@ -52,7 +52,6 @@ NavigationItemImpl::NavigationItemImpl()
       transition_type_(ui::PAGE_TRANSITION_LINK),
       user_agent_type_(UserAgentType::NONE),
       is_created_from_hash_change_(false),
-      should_skip_repost_form_confirmation_(false),
       should_skip_serialization_(false),
       navigation_initiation_type_(web::NavigationInitiationType::NONE),
       is_untrusted_(false),
@@ -77,8 +76,6 @@ NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
       http_request_headers_([item.http_request_headers_ mutableCopy]),
       serialized_state_object_([item.serialized_state_object_ copy]),
       is_created_from_hash_change_(item.is_created_from_hash_change_),
-      should_skip_repost_form_confirmation_(
-          item.should_skip_repost_form_confirmation_),
       should_skip_serialization_(item.should_skip_serialization_),
       post_data_([item.post_data_ copy]),
       navigation_initiation_type_(item.navigation_initiation_type_),
@@ -269,14 +266,6 @@ void NavigationItemImpl::SetIsCreatedFromHashChange(bool hash_change) {
 
 bool NavigationItemImpl::IsCreatedFromHashChange() const {
   return is_created_from_hash_change_;
-}
-
-void NavigationItemImpl::SetShouldSkipRepostFormConfirmation(bool skip) {
-  should_skip_repost_form_confirmation_ = skip;
-}
-
-bool NavigationItemImpl::ShouldSkipRepostFormConfirmation() const {
-  return should_skip_repost_form_confirmation_;
 }
 
 void NavigationItemImpl::SetShouldSkipSerialization(bool skip) {

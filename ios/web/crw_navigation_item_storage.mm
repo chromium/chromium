@@ -26,8 +26,6 @@ NSString* const kNavigationItemStorageTimestampKey = @"timestamp";
 NSString* const kNavigationItemStorageTitleKey = @"title";
 NSString* const kNavigationItemStoragePageDisplayStateKey = @"state";
 NSString* const kNavigationItemStorageHTTPRequestHeadersKey = @"httpHeaders";
-NSString* const kNavigationItemStorageSkipRepostFormConfirmationKey =
-    @"skipResubmitDataConfirmation";
 NSString* const kNavigationItemStorageUserAgentTypeKey = @"userAgentType";
 
 const char kNavigationItemSerializedSizeHistogram[] =
@@ -65,8 +63,6 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
   [description appendFormat:@"title : %@, ", base::SysUTF16ToNSString(_title)];
   [description
       appendFormat:@"displayState : %@", _displayState.GetDescription()];
-  [description appendFormat:@"skipRepostConfirmation : %@, ",
-                            @(_shouldSkipRepostFormConfirmation)];
   [description
       appendFormat:@"userAgentType : %s, ",
                    web::GetUserAgentTypeDescription(_userAgentType).c_str()];
@@ -137,9 +133,6 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
     NSDictionary* serializedDisplayState = [aDecoder
         decodeObjectForKey:web::kNavigationItemStoragePageDisplayStateKey];
     _displayState = web::PageDisplayState(serializedDisplayState);
-    _shouldSkipRepostFormConfirmation =
-        [aDecoder decodeBoolForKey:
-                      web::kNavigationItemStorageSkipRepostFormConfirmationKey];
     _HTTPRequestHeaders = [aDecoder
         decodeObjectForKey:web::kNavigationItemStorageHTTPRequestHeadersKey];
   }
@@ -205,10 +198,6 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
   base::UmaHistogramMemoryKB(
       web::kNavigationItemSerializedDisplayStateSizeHistogram,
       serializedDisplayStateSizeInBytes / 1024);
-
-  [aCoder encodeBool:_shouldSkipRepostFormConfirmation
-              forKey:web::kNavigationItemStorageSkipRepostFormConfirmationKey];
-  // Size of BOOL is negligible, do not log or count towards session size.
 
   std::string userAgent = web::GetUserAgentTypeDescription(_userAgentType);
   web::nscoder_util::EncodeString(

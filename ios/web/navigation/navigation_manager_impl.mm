@@ -695,7 +695,6 @@ void NavigationManagerImpl::LoadURLWithParams(
     DCHECK([added_item->GetHttpRequestHeaders() objectForKey:@"Content-Type"])
         << "Post data should have an associated content type";
     added_item->SetPostData(params.post_data);
-    added_item->SetShouldSkipRepostFormConfirmation(true);
   }
 
   if (!web_view_cache_.IsAttachedToWebView()) {

@@ -630,7 +630,6 @@ enum class BackForwardNavigationType {
     return;
   }
 
-  DCHECK(!repostedForm || currentItem->ShouldSkipRepostFormConfirmation());
   [self webViewNavigationInternal:holder
            sameDocumentNavigation:sameDocumentNavigation];
 }

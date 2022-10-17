@@ -81,11 +81,6 @@ class NavigationItemImpl : public web::NavigationItem {
       web::NavigationInitiationType navigation_initiation_type);
   web::NavigationInitiationType NavigationInitiationType() const;
 
-  // Whether or not to bypass showing the repost form confirmation when loading
-  // a POST request. Set to YES for browser-generated POST requests.
-  void SetShouldSkipRepostFormConfirmation(bool skip);
-  bool ShouldSkipRepostFormConfirmation() const;
-
   // Whether or not to bypass serializing this item to session storage.  Set to
   // YES to skip saving this page (and therefore restoring this page).
   void SetShouldSkipSerialization(bool skip);
@@ -144,7 +139,6 @@ class NavigationItemImpl : public web::NavigationItem {
 
   NSString* serialized_state_object_;
   bool is_created_from_hash_change_;
-  bool should_skip_repost_form_confirmation_;
   bool should_skip_serialization_;
   NSData* post_data_;
 
