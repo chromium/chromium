@@ -221,12 +221,14 @@ void DomDistillerViewerSource::StartDataRequest(
 #endif  // !BUILDFLAG(IS_ANDROID)
   if (kViewerCssPath == path) {
     std::string css = viewer::GetCss();
-    std::move(callback).Run(base::RefCountedString::TakeString(&css));
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(std::move(css)));
     return;
   }
   if (kViewerLoadingImagePath == path) {
     std::string image = viewer::GetLoadingImage();
-    std::move(callback).Run(base::RefCountedString::TakeString(&image));
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedString>(std::move(image)));
     return;
   }
   if (base::StartsWith(path, kViewerSaveFontScalingPath,
@@ -276,8 +278,8 @@ void DomDistillerViewerSource::StartDataRequest(
   }
 
   // Place template on the page.
-  std::move(callback).Run(
-      base::RefCountedString::TakeString(&unsafe_page_html));
+  std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
+      std::move(unsafe_page_html)));
 }
 
 std::string DomDistillerViewerSource::GetMimeType(const GURL& url) {

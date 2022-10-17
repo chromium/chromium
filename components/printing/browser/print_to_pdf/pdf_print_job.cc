@@ -134,7 +134,7 @@ void PdfPrintJob::ReportMemoryRegion(
       std::string(static_cast<const char*>(mapping.memory()), mapping.size());
   std::move(print_to_pdf_callback_)
       .Run(PdfPrintResult::kPrintSuccess,
-           base::RefCountedString::TakeString(&data));
+           base::MakeRefCounted<base::RefCountedString>(std::move(data)));
 
   delete this;
 }

@@ -75,7 +75,7 @@ scoped_refptr<base::RefCountedString> EncodeAsRefCountedString(
   base::UTF16ToCodepage(text, charset.c_str(),
                         base::OnStringConversionError::SUBSTITUTE,
                         &encoded_text);
-  return base::RefCountedString::TakeString(&encoded_text);
+  return base::MakeRefCounted<base::RefCountedString>(std::move(encoded_text));
 }
 
 DataOffer::AsyncSendDataCallback AsyncEncodeAsRefCountedString(
@@ -137,7 +137,8 @@ void ReadRTFFromClipboard(const ui::DataTransferEndpoint data_dst,
   std::string text;
   ui::Clipboard::GetForCurrentThread()->ReadRTF(ui::ClipboardBuffer::kCopyPaste,
                                                 &data_dst, &text);
-  std::move(callback).Run(base::RefCountedString::TakeString(&text));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(text)));
 }
 
 void OnReceivePNGFromClipboard(DataOffer::SendDataCallback callback,
@@ -302,7 +303,8 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
            DataOffer::SendDataCallback callback) {
           std::move(callback).Run(std::move(contents));
         },
-        base::RefCountedString::TakeString(&file_contents));
+        base::MakeRefCounted<base::RefCountedString>(std::move(file_contents)));
+
     data_callbacks_.emplace(mime_type, std::move(callback));
     delegate_->OnOffer(mime_type);
   }

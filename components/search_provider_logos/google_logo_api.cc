@@ -134,7 +134,8 @@ ParseEncodedImageData(const std::string& encoded_image_data) {
     return result;
 
   result.first = mime_type;
-  result.second = base::RefCountedString::TakeString(&decoded_data);
+  result.second =
+      base::MakeRefCounted<base::RefCountedString>(std::move(decoded_data));
   return result;
 }
 

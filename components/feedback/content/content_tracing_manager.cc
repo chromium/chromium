@@ -31,7 +31,7 @@ scoped_refptr<base::RefCountedString> CompressTraceData(
   std::string output_val;
   feedback_util::ZipString(base::FilePath(kTracingFilename), *trace_data,
                            &output_val);
-  return base::RefCountedString::TakeString(&output_val);
+  return base::MakeRefCounted<base::RefCountedString>(std::move(output_val));
 }
 
 }  // namespace

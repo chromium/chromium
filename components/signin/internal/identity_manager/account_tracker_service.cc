@@ -89,7 +89,7 @@ gfx::Image ReadImage(const base::FilePath& image_path) {
     return gfx::Image();
   }
   return gfx::Image::CreateFrom1xPNGBytes(
-      base::RefCountedString::TakeString(&image_data));
+      base::MakeRefCounted<base::RefCountedString>(std::move(image_data)));
 }
 
 // Saves |png_data| to disk at |image_path|.
