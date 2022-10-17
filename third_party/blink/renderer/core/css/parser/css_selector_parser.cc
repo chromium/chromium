@@ -96,9 +96,11 @@ void MarkAsEntireComplexSelector(base::span<CSSSelector> selectors) {
 base::span<CSSSelector> CSSSelectorParser::ParseSelector(
     CSSParserTokenRange range,
     const CSSParserContext* context,
+    const StyleRule* parent_rule_for_nesting,
     StyleSheetContents* style_sheet,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, style_sheet, arena);
+  CSSSelectorParser parser(context, parent_rule_for_nesting, style_sheet,
+                           arena);
   range.ConsumeWhitespace();
   base::span<CSSSelector> result = parser.ConsumeComplexSelectorList(range);
   if (!range.AtEnd()) {
@@ -113,10 +115,12 @@ base::span<CSSSelector> CSSSelectorParser::ParseSelector(
 base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
     CSSParserTokenStream& stream,
     const CSSParserContext* context,
+    const StyleRule* parent_rule_for_nesting,
     StyleSheetContents* style_sheet,
     CSSParserObserver* observer,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, style_sheet, arena);
+  CSSSelectorParser parser(context, parent_rule_for_nesting, style_sheet,
+                           arena);
   stream.ConsumeWhitespace();
   base::span<CSSSelector> result =
       parser.ConsumeComplexSelectorList(stream, observer);
@@ -130,7 +134,8 @@ CSSSelectorList* CSSSelectorParser::ParseScopeBoundary(
     const CSSParserContext* context,
     StyleSheetContents* style_sheet) {
   HeapVector<CSSSelector> arena;
-  CSSSelectorParser parser(context, style_sheet, arena);
+  CSSSelectorParser parser(context, /*parent_rule_for_nesting=*/nullptr,
+                           style_sheet, arena);
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   range.ConsumeWhitespace();
@@ -151,7 +156,8 @@ bool CSSSelectorParser::SupportsComplexSelector(
     const CSSParserContext* context) {
   range.ConsumeWhitespace();
   HeapVector<CSSSelector> arena;
-  CSSSelectorParser parser(context, nullptr, arena);
+  CSSSelectorParser parser(context, /*parent_rule_for_nesting=*/nullptr,
+                           nullptr, arena);
   parser.SetInSupportsParsing();
   base::span<CSSSelector> selectors = parser.ConsumeComplexSelector(range);
   if (parser.failed_parsing_ || !range.AtEnd() || selectors.empty())
@@ -162,9 +168,13 @@ bool CSSSelectorParser::SupportsComplexSelector(
 }
 
 CSSSelectorParser::CSSSelectorParser(const CSSParserContext* context,
+                                     const StyleRule* parent_rule_for_nesting,
                                      StyleSheetContents* style_sheet,
                                      HeapVector<CSSSelector>& output)
-    : context_(context), style_sheet_(style_sheet), output_(output) {}
+    : context_(context),
+      parent_rule_for_nesting_(parent_rule_for_nesting),
+      style_sheet_(style_sheet),
+      output_(output) {}
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenRange& range) {
@@ -938,6 +948,8 @@ bool CSSSelectorParser::ConsumeSimpleSelector(CSSParserTokenRange& range) {
     ok = ConsumeAttribute(range);
   else if (token.GetType() == kColonToken)
     ok = ConsumePseudo(range);
+  else if (token.GetType() == kDelimiterToken && token.Delimiter() == '&')
+    ok = ConsumeNestingParent(range);
   else
     return false;
   // TODO(futhark@chromium.org): crbug.com/578131
@@ -1366,6 +1378,15 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
   }
 
   return false;
+}
+
+bool CSSSelectorParser::ConsumeNestingParent(CSSParserTokenRange& range) {
+  DCHECK_EQ(range.Peek().GetType(), kDelimiterToken);
+  DCHECK_EQ(range.Peek().Delimiter(), '&');
+  range.Consume();
+
+  output_.push_back(CSSSelector(parent_rule_for_nesting_));
+  return true;
 }
 
 CSSSelector::RelationType CSSSelectorParser::ConsumeCombinator(

@@ -574,7 +574,8 @@ class CORE_EXPORT RuleFeatureSet {
   void AddFeaturesToUniversalSiblingInvalidationSet(
       const InvalidationSetFeatures& sibling_features,
       const InvalidationSetFeatures& descendant_features);
-  void AddValuesInComplexSelectorInsideIsWhereNot(const CSSSelectorList*);
+  void AddValuesInComplexSelectorInsideIsWhereNot(
+      const CSSSelector* selector_first);
   bool AddValueOfSimpleSelectorInHasArgument(
       const CSSSelector& has_pseudo_class);
 

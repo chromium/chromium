@@ -213,6 +213,73 @@ TEST(CSSParserImplTest, AtContainerDisabled) {
   }
 }
 
+TEST(CSSParserImplTest, DirectNesting) {
+  ScopedCSSNestingForTest enabled(true);
+  String sheet_text =
+      ".element { color: green; &.other { color: red; margin-left: 10px; }}";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
+                                             test_css_parser_observer);
+
+  ASSERT_EQ(1u, sheet->ChildRules().size());
+  StyleRule* parent = DynamicTo<StyleRule>(sheet->ChildRules()[0].Get());
+  ASSERT_NE(nullptr, parent);
+  EXPECT_EQ("color: green;", parent->Properties().AsText());
+  EXPECT_EQ(".element", parent->SelectorsText());
+
+  ASSERT_EQ(1u, parent->ChildRules()->size());
+  const StyleRule* child = (*parent->ChildRules())[0].Get();
+  EXPECT_EQ("color: red; margin-left: 10px;", child->Properties().AsText());
+  EXPECT_EQ("&.other", child->SelectorsText());
+}
+
+TEST(CSSParserImplTest, AtNest) {
+  ScopedCSSNestingForTest enabled(true);
+  String sheet_text =
+      ".element { color: green; @nest  .outer & { color: red; }}";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
+                                             test_css_parser_observer);
+
+  ASSERT_EQ(1u, sheet->ChildRules().size());
+  StyleRule* parent = DynamicTo<StyleRule>(sheet->ChildRules()[0].Get());
+  ASSERT_NE(nullptr, parent);
+  EXPECT_EQ("color: green;", parent->Properties().AsText());
+  EXPECT_EQ(".element", parent->SelectorsText());
+
+  ASSERT_EQ(1u, parent->ChildRules()->size());
+  const StyleRule* child = (*parent->ChildRules())[0].Get();
+  EXPECT_EQ("color: red;", child->Properties().AsText());
+  // FIXME(sesse): In the current spec, this should have been @nest .outer &,
+  // but we don't serialize the @nest yet. This part of the spec is somewhat
+  // in flux, so update when it settles.
+  EXPECT_EQ(".outer &", child->SelectorsText());
+}
+
+TEST(CSSParserImplTest, NestingAtTopLevelIsLegalThoughIsMatchesNothing) {
+  String sheet_text = "&.element { color: orchid; }";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
+                                             test_css_parser_observer);
+
+  ASSERT_EQ(1u, sheet->ChildRules().size());
+  const StyleRule* rule = DynamicTo<StyleRule>(sheet->ChildRules()[0].Get());
+  EXPECT_EQ("color: orchid;", rule->Properties().AsText());
+  EXPECT_EQ("&.element", rule->SelectorsText());
+}
+
 TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
   struct TestCase {
     String input;

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 
 #include "base/auto_reset.h"
+#include "style_rule.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -1310,21 +1311,21 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element == element.GetDocument().CssTarget();
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
-    case CSSSelector::kPseudoAny: {
+    case CSSSelector::kPseudoAny:
+    case CSSSelector::kPseudoParent: {
       SelectorCheckingContext sub_context(context);
       sub_context.is_sub_selector = true;
       sub_context.in_nested_complex_selector = true;
       sub_context.pseudo_id = kPseudoIdNone;
-      if (!selector.SelectorList())
-        break;
-      for (sub_context.selector = selector.SelectorList()->First();
+      for (sub_context.selector = selector.SelectorListOrParent();
            sub_context.selector; sub_context.selector = CSSSelectorList::Next(
                                      *sub_context.selector)) {
         MatchResult sub_result;
         if (MatchSelector(sub_context, sub_result) == kSelectorMatches)
           return true;
       }
-    } break;
+      break;
+    }
     case CSSSelector::kPseudoAutofill:
     case CSSSelector::kPseudoWebKitAutofill: {
       auto* html_form_element = DynamicTo<HTMLFormControlElement>(&element);

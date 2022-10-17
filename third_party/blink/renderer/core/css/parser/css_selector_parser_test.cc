@@ -160,7 +160,7 @@ TEST(CSSSelectorParserTest, PseudoElementsInCompoundLists) {
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
@@ -183,7 +183,7 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_GT(vector.size(), 0u);
   }
 }
@@ -218,7 +218,7 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
@@ -262,7 +262,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_EQ(!vector.empty(), test_case.valid);
     if (!test_case.valid)
       continue;
@@ -294,7 +294,7 @@ TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
         range,
         MakeGarbageCollected<CSSParserContext>(
             kUASheetMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_GT(vector.size(), 0u);
   }
 }
@@ -313,7 +313,7 @@ TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
@@ -330,8 +330,8 @@ TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    base::span<CSSSelector> vector =
-        CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+    base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+        range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
@@ -348,8 +348,8 @@ TEST(CSSSelectorParserTest, UnexpectedPipe) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    base::span<CSSSelector> vector =
-        CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+    base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+        range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
@@ -378,8 +378,8 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
     CSSTokenizer tokenizer(test_case[0]);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    base::span<CSSSelector> vector =
-        CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+    base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+        range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
     EXPECT_EQ(test_case[1], list->SelectorsText());
@@ -399,8 +399,8 @@ TEST(CSSSelectorParserTest, AttributeSelectorUniversalInvalid) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    base::span<CSSSelector> vector =
-        CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+    base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+        range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
     EXPECT_EQ(vector.size(), 0u);
   }
 }
@@ -428,14 +428,14 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_EQ(author_vector.size(), 0u);
 
     base::span<CSSSelector> ua_vector = CSSSelectorParser::ParseSelector(
         range,
         MakeGarbageCollected<CSSParserContext>(
             kUASheetMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_GT(ua_vector.size(), 0u);
   }
 }
@@ -621,8 +621,8 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
     CSSTokenizer tokenizer(test_case.input);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    base::span<CSSSelector> vector =
-        CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+    base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+        range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
     EXPECT_GT(vector.size(), 0u);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
@@ -649,8 +649,8 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
     CSSTokenizer tokenizer(test_case.input);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    base::span<CSSSelector> vector =
-        CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+    base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+        range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
     EXPECT_GT(vector.size(), 0u);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
@@ -674,7 +674,7 @@ TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_EQ(test_case, list->SelectorsText().Utf8());
   }
@@ -696,7 +696,7 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
         range,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, arena);
+        /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     EXPECT_GT(vector.size(), 0u);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
@@ -721,7 +721,8 @@ static bool IsCounted(const char* selector,
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
   HeapVector<CSSSelector> arena;
-  CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+  CSSSelectorParser::ParseSelector(
+      range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
 
   return doc->IsUseCounted(feature);
 }
@@ -924,8 +925,8 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
     CSSTokenizer tokenizer(test_case.input);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    base::span<CSSSelector> vector =
-        CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+    base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+        range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
     EXPECT_TRUE(list->IsValid());
     const CSSSelector* selector = list->First();
@@ -963,7 +964,7 @@ TEST(CSSSelectorParserTest, WebKitScrollbarPseudoParsing) {
           range,
           MakeGarbageCollected<CSSParserContext>(
               kHTMLStandardMode, SecureContextMode::kInsecureContext),
-          nullptr, arena);
+          /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
       EXPECT_EQ(vector.size(), state ? 1u : 0u);
     }
   }

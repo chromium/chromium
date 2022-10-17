@@ -481,7 +481,7 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
       MakeGarbageCollected<CSSParserContext>(
           document, document.BaseURL(), true /* origin_clean */, Referrer(),
           WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-      nullptr, selectors, arena);
+      /*parent_rule_for_nesting=*/nullptr, nullptr, selectors, arena);
 
   if (selector_vector.empty()) {
     exception_state.ThrowDOMException(

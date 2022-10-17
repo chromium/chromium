@@ -347,12 +347,14 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   ASSERT_TRUE(t4->GetComputedStyle());
 
   // There's only one font and it's bold and normal.
-  EXPECT_EQ(1u, GetStyleEngine().GetFontSelector()->GetFontFaceCache()
-                ->GetNumSegmentedFacesForTesting());
+  EXPECT_EQ(1u, GetStyleEngine()
+                    .GetFontSelector()
+                    ->GetFontFaceCache()
+                    ->GetNumSegmentedFacesForTesting());
   CSSSegmentedFontFace* font_face =
-      GetStyleEngine().GetFontSelector()->GetFontFaceCache()
-      ->Get(t4->GetComputedStyle()->GetFontDescription(),
-            AtomicString("Cool Font"));
+      GetStyleEngine().GetFontSelector()->GetFontFaceCache()->Get(
+          t4->GetComputedStyle()->GetFontDescription(),
+          AtomicString("Cool Font"));
   EXPECT_TRUE(font_face);
   FontSelectionCapabilities capabilities =
       font_face->GetFontSelectionCapabilities();
@@ -377,11 +379,12 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
 
   // After injecting a more specific font, now there are two and the
   // bold-italic one is selected.
-  EXPECT_EQ(2u, GetStyleEngine().GetFontSelector()->GetFontFaceCache()
-                ->GetNumSegmentedFacesForTesting());
-  font_face = GetStyleEngine().GetFontSelector()->GetFontFaceCache()
-              ->Get(t4->GetComputedStyle()->GetFontDescription(),
-                    AtomicString("Cool Font"));
+  EXPECT_EQ(2u, GetStyleEngine()
+                    .GetFontSelector()
+                    ->GetFontFaceCache()
+                    ->GetNumSegmentedFacesForTesting());
+  font_face = GetStyleEngine().GetFontSelector()->GetFontFaceCache()->Get(
+      t4->GetComputedStyle()->GetFontDescription(), AtomicString("Cool Font"));
   EXPECT_TRUE(font_face);
   capabilities = font_face->GetFontSelectionCapabilities();
   ASSERT_EQ(capabilities.weight,
@@ -403,11 +406,12 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
 
   // Now there are three fonts, but the newest one does not override the older,
   // better matching one.
-  EXPECT_EQ(3u, GetStyleEngine().GetFontSelector()->GetFontFaceCache()
-                ->GetNumSegmentedFacesForTesting());
-  font_face = GetStyleEngine().GetFontSelector()->GetFontFaceCache()
-              ->Get(t4->GetComputedStyle()->GetFontDescription(),
-                    AtomicString("Cool Font"));
+  EXPECT_EQ(3u, GetStyleEngine()
+                    .GetFontSelector()
+                    ->GetFontFaceCache()
+                    ->GetNumSegmentedFacesForTesting());
+  font_face = GetStyleEngine().GetFontSelector()->GetFontFaceCache()->Get(
+      t4->GetComputedStyle()->GetFontDescription(), AtomicString("Cool Font"));
   EXPECT_TRUE(font_face);
   capabilities = font_face->GetFontSelectionCapabilities();
   ASSERT_EQ(capabilities.weight,
@@ -421,11 +425,12 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   // After removing the injected style sheet we're left with a bold-normal and
   // a normal-italic font, and the latter is selected by the matching algorithm
   // as font-style trumps font-weight.
-  EXPECT_EQ(2u, GetStyleEngine().GetFontSelector()->GetFontFaceCache()
-                ->GetNumSegmentedFacesForTesting());
-  font_face = GetStyleEngine().GetFontSelector()->GetFontFaceCache()
-              ->Get(t4->GetComputedStyle()->GetFontDescription(),
-                    AtomicString("Cool Font"));
+  EXPECT_EQ(2u, GetStyleEngine()
+                    .GetFontSelector()
+                    ->GetFontFaceCache()
+                    ->GetNumSegmentedFacesForTesting());
+  font_face = GetStyleEngine().GetFontSelector()->GetFontFaceCache()->Get(
+      t4->GetComputedStyle()->GetFontDescription(), AtomicString("Cool Font"));
   EXPECT_TRUE(font_face);
   capabilities = font_face->GetFontSelectionCapabilities();
   ASSERT_EQ(capabilities.weight,
@@ -4492,6 +4497,46 @@ TEST_F(StyleEngineTest, AtContainerUseCount) {
   )HTML");
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleContainer));
+}
+
+TEST_F(StyleEngineTest, NestingUseCount) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { --x: No @nest or & rule here; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body {
+        & .foo { color: fuchsia; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+}
+
+TEST_F(StyleEngineTest, NestingUseCountAtNest) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { --x: No @nest rule or & here; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body {
+        @nest .foo & { color: lemonchiffon; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
 }
 
 TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {

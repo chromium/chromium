@@ -108,6 +108,9 @@ class CORE_EXPORT CSSParserImpl {
       Element*);
   static ImmutableCSSPropertyValueSet*
   ParseInlineStyleDeclaration(const String&, CSSParserMode, SecureContextMode);
+  // NOTE: This function can currently only be used to parse a
+  // declaration list with no nested rules, not a full style rule
+  // (it is only used for things like inline style).
   static bool ParseDeclarationList(MutableCSSPropertyValueSet*,
                                    const String&,
                                    const CSSParserContext*);
@@ -192,9 +195,16 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleKeyframe* ConsumeKeyframeStyleRule(CSSParserTokenRange prelude,
                                               const RangeOffset& prelude_offset,
                                               CSSParserTokenStream& block);
-  StyleRule* ConsumeStyleRule(CSSParserTokenStream&);
+  StyleRule* ConsumeStyleRule(CSSParserTokenStream&,
+                              StyleRule* parent_rule_for_nesting);
+  StyleRule* ConsumeStyleRuleContents(base::span<CSSSelector> selector_vector,
+                                      CSSParserTokenStream& stream);
 
-  void ConsumeDeclarationList(CSSParserTokenStream&, StyleRule::RuleType);
+  void ConsumeDeclarationList(CSSParserTokenStream&,
+                              StyleRule::RuleType,
+                              StyleRule* parent_rule_for_nesting);
+  void ConsumeNestedRule(CSSParserTokenStream& stream,
+                         StyleRule* parent_rule_for_nesting);
   void ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);
   void ConsumeDeclarationValue(const CSSTokenizedValue&,
                                CSSPropertyID,

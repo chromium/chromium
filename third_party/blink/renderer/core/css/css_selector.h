@@ -42,6 +42,7 @@ namespace blink {
 class CSSParserContext;
 class CSSSelectorList;
 class Document;
+class StyleRule;
 
 // This class represents a simple selector for a StyleRule.
 
@@ -110,6 +111,7 @@ class CORE_EXPORT CSSSelector {
 
   CSSSelector(CSSSelector&&);
   explicit CSSSelector(const QualifiedName&, bool tag_is_implicit = false);
+  explicit CSSSelector(const StyleRule* parent_rule);
 
   ~CSSSelector();
 
@@ -239,6 +241,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoOnlyChild,
     kPseudoOnlyOfType,
     kPseudoOptional,
+    kPseudoParent,  // Written as & (in nested rules).
     kPseudoPart,
     kPseudoPlaceholder,
     kPseudoPlaceholderShown,
@@ -344,6 +347,12 @@ class CORE_EXPORT CSSSelector {
                                      const Document* document);
   static PseudoId GetPseudoId(PseudoType);
 
+  // See StyleRule::Reparent().
+  void Reparent(StyleRule* old_parent, StyleRule* new_parent) {
+    DCHECK_EQ(old_parent, ParentRule());
+    data_.parent_rule_ = new_parent;
+  }
+
   // Selectors are kept in an array by CSSSelectorList. The next component of
   // the selector is the next item in the array.
   const CSSSelector* TagHistory() const {
@@ -352,6 +361,7 @@ class CORE_EXPORT CSSSelector {
 
   static const AtomicString& UniversalSelectorAtom() { return g_null_atom; }
   const QualifiedName& TagQName() const;
+  const StyleRule* ParentRule() const;  // Only valid for kPseudoParent.
   const AtomicString& Value() const;
   const AtomicString& SerializingValue() const;
 
@@ -373,6 +383,12 @@ class CORE_EXPORT CSSSelector {
   const CSSSelectorList* SelectorList() const {
     return has_rare_data_ ? data_.rare_data_->selector_list_.Get() : nullptr;
   }
+  // Similar to SelectorList(), but also works for kPseudoParent
+  // (i.e., nested selectors); on &, will give the parent's selector list.
+  // Will return nullptr if no such list exists (e.g. if we are not a
+  // pseudo selector at all), or if we are a & rule that's in a non-nesting
+  // context (which is valid, but won't match anything).
+  const CSSSelector* SelectorListOrParent() const;
   const Vector<AtomicString>* PartNames() const {
     return has_rare_data_ ? data_.rare_data_->part_names_.get() : nullptr;
   }
@@ -538,6 +554,8 @@ class CORE_EXPORT CSSSelector {
   //
   //  if (match_ == kTag) {
   //     /* data_.tag_q_name_ is valid */
+  //  } else if (match_ == kPseudoClass && pseudo_type_ == kPseudoParent) {
+  //     /* data_.parent_rule_ is valid */
   //  } else if (has_rare_data_) {
   //     /* data_.rare_data_ is valid */
   //  } else {
@@ -559,11 +577,15 @@ class CORE_EXPORT CSSSelector {
     explicit DataUnion(const QualifiedName& tag_q_name)
         : tag_q_name_(tag_q_name) {}
 
+    explicit DataUnion(const StyleRule* parent_rule)
+        : parent_rule_(parent_rule) {}
+
     ~DataUnion() {}
 
     AtomicString value_;
     QualifiedName tag_q_name_;
     Member<RareData> rare_data_;
+    Member<const StyleRule> parent_rule_;  // For & (parent in nest).
   } data_;
 };
 
@@ -596,6 +618,7 @@ inline bool CSSSelector::IsASCIILower(const AtomicString& value) {
 inline void CSSSelector::SetValue(const AtomicString& value,
                                   bool match_lower_case = false) {
   DCHECK_NE(match_, static_cast<unsigned>(kTag));
+  DCHECK(!(match_ == kPseudoClass && pseudo_type_ == kPseudoParent));
   if (match_lower_case && !has_rare_data_ && !IsASCIILower(value)) {
     CreateRareData();
   }
@@ -632,6 +655,16 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
       tag_is_implicit_(tag_is_implicit),
       data_(tag_q_name) {}
 
+inline CSSSelector::CSSSelector(const StyleRule* parent_rule)
+    : relation_(kSubSelector),
+      match_(kPseudoClass),
+      pseudo_type_(kPseudoParent),
+      is_last_in_selector_list_(false),
+      is_last_in_tag_history_(false),
+      has_rare_data_(false),
+      is_for_page_(false),
+      data_(parent_rule) {}
+
 inline CSSSelector::CSSSelector(const CSSSelector& o)
     : relation_(o.relation_),
       match_(o.match_),
@@ -644,6 +677,8 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       data_(DataUnion::kConstructUninitialized) {
   if (o.match_ == kTag) {
     new (&data_.tag_q_name_) QualifiedName(o.data_.tag_q_name_);
+  } else if (o.match_ == kPseudoClass && o.pseudo_type_ == kPseudoParent) {
+    data_.parent_rule_ = o.data_.parent_rule_;
   } else if (o.has_rare_data_) {
     data_.rare_data_ = o.data_.rare_data_;  // Oilpan-managed.
   } else {
@@ -664,6 +699,8 @@ inline CSSSelector::CSSSelector(CSSSelector&& o)
 inline CSSSelector::~CSSSelector() {
   if (match_ == kTag)
     data_.tag_q_name_.~QualifiedName();
+  else if (match_ == kPseudoClass && pseudo_type_ == kPseudoParent)
+    ;  // Nothing to do.
   else if (has_rare_data_)
     ;  // Nothing to do.
   else
@@ -679,6 +716,12 @@ inline CSSSelector& CSSSelector::operator=(CSSSelector&& other) {
 inline const QualifiedName& CSSSelector::TagQName() const {
   DCHECK_EQ(match_, static_cast<unsigned>(kTag));
   return data_.tag_q_name_;
+}
+
+inline const StyleRule* CSSSelector::ParentRule() const {
+  DCHECK_EQ(match_, static_cast<unsigned>(kPseudoClass));
+  DCHECK_EQ(pseudo_type_, static_cast<unsigned>(kPseudoParent));
+  return data_.parent_rule_;
 }
 
 inline const AtomicString& CSSSelector::Value() const {

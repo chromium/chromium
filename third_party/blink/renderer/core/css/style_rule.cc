@@ -347,14 +347,19 @@ StyleRule::StyleRule(base::PassKey<StyleRule>,
   CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray());
 }
 
-// NOTE: Currently, this move constructor leaves the other object fully intact,
-// since there's no benefit in not doing so.
+StyleRule::StyleRule(base::PassKey<StyleRule>,
+                     base::span<CSSSelector> selector_vector)
+    : StyleRuleBase(kStyle) {
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray());
+}
+
 StyleRule::StyleRule(base::PassKey<StyleRule>,
                      base::span<CSSSelector> selector_vector,
                      StyleRule&& other)
     : StyleRuleBase(kStyle),
       properties_(other.properties_),
-      lazy_property_parser_(other.lazy_property_parser_) {
+      lazy_property_parser_(other.lazy_property_parser_),
+      child_rules_(std::move(other.child_rules_)) {
   CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray());
 }
 
@@ -408,6 +413,7 @@ bool StyleRule::HasParsedProperties() const {
 void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
   visitor->Trace(lazy_property_parser_);
+  visitor->Trace(child_rules_);
 
   const CSSSelector* current = SelectorArray();
   do {
@@ -415,6 +421,15 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   } while (!(current++)->IsLastInSelectorList());
 
   StyleRuleBase::TraceAfterDispatch(visitor);
+}
+
+void StyleRule::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
+  for (CSSSelector* s = SelectorArray(); s; s = CSSSelectorList::Next(*s)) {
+    if (s->Match() == CSSSelector::kPseudoClass &&
+        s->GetPseudoType() == CSSSelector::kPseudoParent) {
+      s->Reparent(old_parent, new_parent);
+    }
+  }
 }
 
 StyleRulePage::StyleRulePage(CSSSelectorList* selector_list,

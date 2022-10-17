@@ -45,12 +45,14 @@ void CSSParser::ParseDeclarationListForInspector(
 
 base::span<CSSSelector> CSSParser::ParseSelector(
     const CSSParserContext* context,
+    StyleRule* parent_rule_for_nesting,
     StyleSheetContents* style_sheet_contents,
     const String& selector,
     HeapVector<CSSSelector>& arena) {
   CSSTokenizer tokenizer(selector);
   const auto tokens = tokenizer.TokenizeToEOF();
   return CSSSelectorParser::ParseSelector(CSSParserTokenRange(tokens), context,
+                                          parent_rule_for_nesting,
                                           style_sheet_contents, arena);
 }
 

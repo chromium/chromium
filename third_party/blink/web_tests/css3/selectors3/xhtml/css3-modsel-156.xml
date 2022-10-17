@@ -4,7 +4,7 @@
   <title>Syntax and parsing</title>
   <style type="text/css"><![CDATA[
   p { background: lime; }
-  foo & address, p { background: red; }
+  foo % address, p { background: red; }
 ]]></style>
   <link rel="first" href="css3-modsel-1.xml" title="Groups of selectors"/>
   <link rel="prev" href="css3-modsel-155d.xml" title="Syntax and parsing"/>

@@ -43,10 +43,13 @@ WebString CanonicalizeSelector(WebString web_selector,
   // NOTE: We will always parse the selector in an insecure context mode, if we
   // have selectors which are only parsed in secure contexts, this will need to
   // accept a SecureContextMode as an argument.
+  //
+  // TODO(crbug.com/1095675): If we get nested rules here, we'd need to make
+  // sure they don't return a parse error.
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
-      StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
-      web_selector, arena);
+      StrictCSSParserContext(SecureContextMode::kInsecureContext),
+      /*parent_rule_for_nesting=*/nullptr, nullptr, web_selector, arena);
   if (selector_vector.empty()) {
     // Parse error.
     return {};

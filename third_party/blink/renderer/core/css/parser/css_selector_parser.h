@@ -18,6 +18,7 @@ class CSSParserTokenStream;
 class CSSParserObserver;
 class CSSSelectorList;
 class Node;
+class StyleRule;
 class StyleSheetContents;
 
 // CSSSelectorParser parses a CSS selector (or a comma-separated list of them)
@@ -54,15 +55,19 @@ class CORE_EXPORT CSSSelectorParser {
   // (existing elements on the vector are untouched; the output is
   // appended to its end). In other words, if you add new elements
   // to the vector or similar, the span may be invalidated.
-  static base::span<CSSSelector> ParseSelector(CSSParserTokenRange,
-                                               const CSSParserContext*,
-                                               StyleSheetContents*,
-                                               HeapVector<CSSSelector>&);
-  static base::span<CSSSelector> ConsumeSelector(CSSParserTokenStream&,
-                                                 const CSSParserContext*,
-                                                 StyleSheetContents*,
-                                                 CSSParserObserver*,
-                                                 HeapVector<CSSSelector>&);
+  static base::span<CSSSelector> ParseSelector(
+      CSSParserTokenRange,
+      const CSSParserContext*,
+      const StyleRule* parent_rule_for_nesting,
+      StyleSheetContents*,
+      HeapVector<CSSSelector>&);
+  static base::span<CSSSelector> ConsumeSelector(
+      CSSParserTokenStream&,
+      const CSSParserContext*,
+      const StyleRule* parent_rule_for_nesting,
+      StyleSheetContents*,
+      CSSParserObserver*,
+      HeapVector<CSSSelector>&);
 
   static bool ConsumeANPlusB(CSSParserTokenRange&, std::pair<int, int>&);
 
@@ -91,6 +96,7 @@ class CORE_EXPORT CSSSelectorParser {
 
  private:
   CSSSelectorParser(const CSSParserContext*,
+                    const StyleRule* parent_rule_for_nesting,
                     StyleSheetContents*,
                     HeapVector<CSSSelector>&);
 
@@ -141,8 +147,9 @@ class CORE_EXPORT CSSSelectorParser {
   // otherwise, the vector will be pushed onto output_.
   bool ConsumeId(CSSParserTokenRange&);
   bool ConsumeClass(CSSParserTokenRange&);
-  bool ConsumePseudo(CSSParserTokenRange&);
   bool ConsumeAttribute(CSSParserTokenRange&);
+  bool ConsumePseudo(CSSParserTokenRange&);
+  bool ConsumeNestingParent(CSSParserTokenRange& range);
   // This doesn't include element names, since they're handled specially
   bool ConsumeSimpleSelector(CSSParserTokenRange&);
 
@@ -168,6 +175,7 @@ class CORE_EXPORT CSSSelectorParser {
   void SetInSupportsParsing() { in_supports_parsing_ = true; }
 
   const CSSParserContext* context_;
+  const StyleRule* parent_rule_for_nesting_;
   const StyleSheetContents* style_sheet_;
 
   bool failed_parsing_ = false;

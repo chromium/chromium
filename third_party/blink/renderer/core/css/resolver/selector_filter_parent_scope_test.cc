@@ -49,7 +49,8 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
       base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
           MakeGarbageCollected<CSSParserContext>(
               kHTMLStandardMode, SecureContextMode::kInsecureContext),
-          nullptr, "html *, body *, .match *, #myId *", arena);
+          /*parent_rule_for_nesting=*/nullptr, nullptr,
+          "html *, body *, .match *, #myId *", arena);
       CSSSelectorList* selectors =
           CSSSelectorList::AdoptSelectorVector(selector_vector);
 
@@ -82,7 +83,8 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
-      nullptr, "html *, body *, div *, span *, .x *, #y *", arena);
+      /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "html *, body *, div *, span *, .x *, #y *", arena);
   CSSSelectorList* selectors =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
 
@@ -138,7 +140,8 @@ TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
-      nullptr, "[Attr] *, [attr] *, [viewbox] *, [VIEWBOX] *", arena);
+      /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "[Attr] *, [attr] *, [viewbox] *, [VIEWBOX] *", arena);
   CSSSelectorList* selectors =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
 

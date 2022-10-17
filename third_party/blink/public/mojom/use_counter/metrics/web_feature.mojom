@@ -3690,6 +3690,7 @@ enum WebFeature {
   kSerivceWorkerFallbackMainResource = 4369,
   kGetDisplayMediaWithoutUserActivation = 4370,
   kBackForwardCacheNotRestoredReasons = 4371,
+  kCSSNesting = 4372,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -369,6 +369,8 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
   }
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(contents_->ParserContext(), this);
+
+  // TODO(sesse): Add CSSOM support for nested rules.
   StyleRuleBase* rule =
       CSSParser::ParseRule(context, contents_.Get(), rule_string);
 

@@ -401,6 +401,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoPageTransitionImageWrapper);
     DEFINE_STRING_MAPPING(PseudoPageTransitionIncomingImage);
     DEFINE_STRING_MAPPING(PseudoPageTransitionOutgoingImage);
+    DEFINE_STRING_MAPPING(PseudoParent)
 #undef DEFINE_STRING_MAPPING
   }
 

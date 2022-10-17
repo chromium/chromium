@@ -180,6 +180,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoXrOverlay:
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
+    case CSSSelector::kPseudoParent:  // Same as kPseudoIs.
     case CSSSelector::kPseudoTargetText:
     case CSSSelector::kPseudoHighlight:
     case CSSSelector::kPseudoSpellingError:
@@ -215,7 +216,8 @@ bool SupportsInvalidationWithSelectorList(CSSSelector::PseudoType pseudo) {
          pseudo == CSSSelector::kPseudoIs ||
          pseudo == CSSSelector::kPseudoNot ||
          pseudo == CSSSelector::kPseudoSlotted ||
-         pseudo == CSSSelector::kPseudoWhere;
+         pseudo == CSSSelector::kPseudoWhere ||
+         pseudo == CSSSelector::kPseudoParent;
 }
 
 bool RequiresSubtreeInvalidation(const CSSSelector& selector) {
@@ -835,8 +837,8 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
   AutoRestoreMaxDirectAdjacentSelectors restore_max(&features);
   AutoRestoreDescendantFeaturesDepth restore_depth(&features);
 
-  const CSSSelectorList* selector_list = simple_selector.SelectorList();
-  if (!selector_list)
+  const CSSSelector* sub_selector = simple_selector.SelectorListOrParent();
+  if (!sub_selector)
     return;
   CSSSelector::PseudoType pseudo_type = simple_selector.GetPseudoType();
 
@@ -847,8 +849,6 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     return;
 
   DCHECK(SupportsInvalidationWithSelectorList(pseudo_type));
-
-  const CSSSelector* sub_selector = selector_list->First();
 
   bool all_sub_selectors_have_features = true;
   bool all_sub_selectors_have_features_for_ruleset_invalidation = true;
@@ -1021,6 +1021,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForHasPseudoClass(
         case CSSSelector::kPseudoIs:
         case CSSSelector::kPseudoWhere:
         case CSSSelector::kPseudoNot:
+        case CSSSelector::kPseudoParent:
           // Add features for each method to handle sibling descendant
           // relationship in the logical combination.
           // - For '.a:has(:is(.b ~ .c .d))',
@@ -1056,6 +1057,7 @@ RuleFeatureSet::SkipAddingAndGetLastInCompoundForLogicalCombinationInHas(
       case CSSSelector::kPseudoIs:
       case CSSSelector::kPseudoWhere:
       case CSSSelector::kPseudoNot:
+      case CSSSelector::kPseudoParent:
         // Nested logical combinations in righmost compound of a first-depth
         // logical combination inside :has()
         // (e.g. '.a:has(.a :is(.b :is(.c .d))) {}')
@@ -1091,6 +1093,7 @@ RuleFeatureSet::AddFeaturesAndGetLastInCompoundForLogicalCombinationInHas(
       case CSSSelector::kPseudoIs:
       case CSSSelector::kPseudoWhere:
       case CSSSelector::kPseudoNot:
+      case CSSSelector::kPseudoParent:
         // Nested logical combination inside :has()
         // (e.g. '.a:has(:is(:is(.a .b) .c)) {}')
         AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
@@ -1215,7 +1218,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
   DCHECK(logical_combination.SelectorList());
   DCHECK(compound_containing_has);
 
-  for (const CSSSelector* complex = logical_combination.SelectorList()->First();
+  for (const CSSSelector* complex = logical_combination.SelectorListOrParent();
        complex; complex = CSSSelectorList::Next(*complex)) {
     base::AutoReset<CSSSelector::RelationType> restore_previous_combinator(
         &previous_combinator, previous_combinator);
@@ -1300,9 +1303,9 @@ void RuleFeatureSet::UpdateFeaturesFromCombinatorForLogicalCombinationInHas(
 }
 
 void RuleFeatureSet::AddValuesInComplexSelectorInsideIsWhereNot(
-    const CSSSelectorList* selector_list) {
-  DCHECK(selector_list);
-  for (const CSSSelector* complex = selector_list->First(); complex;
+    const CSSSelector* selector_first) {
+  DCHECK(selector_first);
+  for (const CSSSelector* complex = selector_first; complex;
        complex = CSSSelectorList::Next(*complex)) {
     DCHECK(complex);
 
@@ -1341,7 +1344,9 @@ bool RuleFeatureSet::AddValueOfSimpleSelectorInHasArgument(
         [[fallthrough]];
       case CSSSelector::kPseudoIs:
       case CSSSelector::kPseudoWhere:
-        AddValuesInComplexSelectorInsideIsWhereNot(selector.SelectorList());
+      case CSSSelector::kPseudoParent:
+        AddValuesInComplexSelectorInsideIsWhereNot(
+            selector.SelectorListOrParent());
         break;
       case CSSSelector::kPseudoVisited:
         // Ignore :visited to prevent history leakage.
@@ -1401,7 +1406,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
     const CSSSelector& simple_selector,
     InvalidationSetFeatures* sibling_features,
     InvalidationSetFeatures& descendant_features) {
-  if (!simple_selector.SelectorList())
+  if (!simple_selector.SelectorListOrParent())
     return;
 
   DCHECK(SupportsInvalidationWithSelectorList(simple_selector.GetPseudoType()));
@@ -1412,8 +1417,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
       simple_selector.GetPseudoType() == CSSSelector::kPseudoNot ||
       simple_selector.GetPseudoType() == CSSSelector::kPseudoHostContext;
 
-  for (const CSSSelector* sub_selector =
-           simple_selector.SelectorList()->First();
+  for (const CSSSelector* sub_selector = simple_selector.SelectorListOrParent();
        sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
     AutoRestoreMaxDirectAdjacentSelectors restore_max(sibling_features);
     AutoRestoreDescendantFeaturesDepth restore_depth(&descendant_features);
@@ -1640,14 +1644,13 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectMetadataFromSelector(
             return kSelectorNeverMatches;
         }
         [[fallthrough]];
+      case CSSSelector::kPseudoParent:
       default:
-        if (const CSSSelectorList* selector_list = current->SelectorList()) {
-          for (const CSSSelector* sub_selector = selector_list->First();
-               sub_selector;
-               sub_selector = CSSSelectorList::Next(*sub_selector)) {
-            CollectMetadataFromSelector(
-                *sub_selector, max_direct_adjacent_selectors, metadata);
-          }
+        for (const CSSSelector* sub_selector = current->SelectorListOrParent();
+             sub_selector;
+             sub_selector = CSSSelectorList::Next(*sub_selector)) {
+          CollectMetadataFromSelector(*sub_selector,
+                                      max_direct_adjacent_selectors, metadata);
         }
         break;
     }

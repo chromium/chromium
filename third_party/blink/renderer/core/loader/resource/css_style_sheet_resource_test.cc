@@ -288,23 +288,5 @@ TEST_F(CSSStyleSheetResourceTest, TokenizerCreated) {
       ".foo{a:b}");
 }
 
-TEST_F(CSSStyleSheetResourceTest, TokenizerUsed) {
-  CSSStyleSheetResource* resource = CreateAndSaveTestStyleSheetResource();
-  constexpr char kData[] = ".foo{}";
-  resource->AppendData(kData, strlen(kData));
-
-  auto* parser_context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* contents = MakeGarbageCollected<StyleSheetContents>(parser_context);
-
-  resource->SetTokenizerForTesting(
-      CSSTokenizer::CreateCachedTokenizer(".foo{} .bar{}"));
-  contents->ParseAuthorStyleSheet(resource);
-
-  // If the cached tokenizer is used, the resulting sheet should have 2 rules
-  // (.foo and .bar).
-  EXPECT_EQ(contents->RuleCount(), 2u);
-}
-
 }  // namespace
 }  // namespace blink

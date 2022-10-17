@@ -31,6 +31,7 @@ enum class CSSAtRuleID {
   kCSSAtRuleSupports,
   kCSSAtRuleTry,
   kCSSAtRuleWebkitKeyframes,
+  kCSSAtRuleNest,
 };
 
 CSSAtRuleID CssAtRuleID(StringView name);

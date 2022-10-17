@@ -68,6 +68,8 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   }
   if (EqualIgnoringASCIICase(name, "-webkit-keyframes"))
     return CSSAtRuleID::kCSSAtRuleWebkitKeyframes;
+  if (EqualIgnoringASCIICase(name, "nest"))
+    return CSSAtRuleID::kCSSAtRuleNest;
   return CSSAtRuleID::kCSSAtRuleInvalid;
 }
 
@@ -111,6 +113,8 @@ absl::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return absl::nullopt;
     case CSSAtRuleID::kCSSAtRuleWebkitKeyframes:
       return WebFeature::kCSSAtRuleWebkitKeyframes;
+    case CSSAtRuleID::kCSSAtRuleNest:
+      return WebFeature::kCSSNesting;
     case CSSAtRuleID::kCSSAtRuleInvalid:
       NOTREACHED();
       return absl::nullopt;

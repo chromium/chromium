@@ -223,8 +223,8 @@ CSSSelectorList* ParseSelectorList(const String& string) {
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
   HeapVector<CSSSelector> arena;
-  base::span<CSSSelector> vector =
-      CSSSelectorParser::ParseSelector(range, context, sheet, arena);
+  base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
+      range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
   return CSSSelectorList::AdoptSelectorVector(vector);
 }
 

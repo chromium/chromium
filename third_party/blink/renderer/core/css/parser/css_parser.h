@@ -22,6 +22,7 @@ class CSSSelectorList;
 class Element;
 class ExecutionContext;
 class ImmutableCSSPropertyValueSet;
+class StyleRule;
 class StyleRuleBase;
 class StyleRuleKeyframe;
 class StyleSheetContents;
@@ -50,9 +51,10 @@ class CORE_EXPORT CSSParser {
       std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
   // See CSSSelectorParser for lifetime of the returned value.
   static base::span<CSSSelector> ParseSelector(
-      const CSSParserContext* context,
-      StyleSheetContents* style_sheet_contents,
-      const String& selector,
+      const CSSParserContext*,
+      StyleRule* parent_rule_for_nesting,
+      StyleSheetContents*,
+      const String&,
       HeapVector<CSSSelector>& arena);
   static CSSSelectorList* ParsePageSelector(const CSSParserContext&,
                                             StyleSheetContents*,

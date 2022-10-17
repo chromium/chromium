@@ -160,6 +160,13 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
         base::PassKey<StyleRule>(), selectors, lazy_property_parser);
   }
 
+  // See comment on the corresponding constructor.
+  static StyleRule* Create(base::span<CSSSelector> selectors) {
+    return MakeGarbageCollected<StyleRule>(
+        AdditionalBytesForSelectors(selectors.size()),
+        base::PassKey<StyleRule>(), selectors);
+  }
+
   // Creates a StyleRule with the selectors changed (used by setSelectorText()).
   static StyleRule* Create(base::span<CSSSelector> selectors,
                            StyleRule&& other) {
@@ -180,12 +187,20 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   StyleRule(base::PassKey<StyleRule>,
             base::span<CSSSelector> selector_vector,
             CSSLazyPropertyParser*);
+  // If you use this constructor, the object will not be fully constructed until
+  // you call SetProperties().
+  StyleRule(base::PassKey<StyleRule>, base::span<CSSSelector> selector_vector);
   StyleRule(base::PassKey<StyleRule>,
             base::span<CSSSelector> selector_vector,
             StyleRule&&);
   StyleRule(const StyleRule&, size_t flattened_size);
   StyleRule(const StyleRule&) = delete;
   ~StyleRule();
+
+  void SetProperties(CSSPropertyValueSet* properties) {
+    DCHECK_EQ(properties_, nullptr);
+    properties_ = properties;
+  }
 
   // Partial subset of the CSSSelector API.
   const CSSSelector* FirstSelector() const { return SelectorArray(); }
@@ -226,6 +241,24 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
+  const HeapVector<Member<StyleRule>>* ChildRules() const {
+    return child_rules_.Get();
+  }
+  void AddChildRule(StyleRule* child) {
+    // Allocate the child rule vector only when we need it,
+    // since most rules won't have children (almost by definition).
+    if (child_rules_ == nullptr) {
+      child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRule>>>();
+    }
+    child_rules_->push_back(child);
+  }
+
+  // Move this rule from being a child of old_parent (which is only given for
+  // sake of DCHECK) to being a child of new_parent, updating parent pointers
+  // in the selector. This happens only when we need to reallocate a StyleRule
+  // because its selector changed.
+  void Reparent(StyleRule* old_parent, StyleRule* new_parent);
+
  private:
   friend class CSSLazyParsingTest;
   bool HasParsedProperties() const;
@@ -240,6 +273,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
   mutable Member<CSSPropertyValueSet> properties_;
   mutable Member<CSSLazyPropertyParser> lazy_property_parser_;
+  Member<HeapVector<Member<StyleRule>>> child_rules_;
 };
 
 class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {

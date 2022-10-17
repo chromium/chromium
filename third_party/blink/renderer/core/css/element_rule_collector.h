@@ -98,6 +98,8 @@ class MatchedRule {
   Member<const CSSStyleSheet> parent_style_sheet_;
 
   friend class ElementRuleCollector;
+  FRIEND_TEST_ALL_PREFIXES(ElementRuleCollectorTest, DirectNesting);
+  FRIEND_TEST_ALL_PREFIXES(ElementRuleCollectorTest, AtNest);
 };
 
 }  // namespace blink
@@ -179,6 +181,10 @@ class CORE_EXPORT ElementRuleCollector {
   // control of when they are output - the statistics are designed to be
   // aggregated per-rule for the entire style recalc pass.
   static void DumpAndClearRulesPerfMap();
+
+  const HeapVector<MatchedRule, 32>& MatchedRulesForTest() const {
+    return matched_rules_;
+  }
 
   // Temporarily swap the StyleRecalcContext with one which points to the
   // closest query container for matching ::slotted rules for a given slot.

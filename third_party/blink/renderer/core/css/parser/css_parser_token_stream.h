@@ -51,13 +51,22 @@ class CORE_EXPORT CSSParserTokenStream {
       DCHECK_EQ(next.GetBlockType(), CSSParserToken::kBlockStart);
     }
 
-    ~BlockGuard() {
+    void SkipToEndOfBlock() {
+      DCHECK(!skipped_to_end_of_block_);
       stream_.EnsureLookAhead();
       stream_.UncheckedSkipToEndOfBlock();
+      skipped_to_end_of_block_ = true;
+    }
+
+    ~BlockGuard() {
+      if (!skipped_to_end_of_block_) {
+        SkipToEndOfBlock();
+      }
     }
 
    private:
     CSSParserTokenStream& stream_;
+    bool skipped_to_end_of_block_ = false;
   };
 
   static constexpr uint64_t FlagForTokenType(CSSParserTokenType token_type) {

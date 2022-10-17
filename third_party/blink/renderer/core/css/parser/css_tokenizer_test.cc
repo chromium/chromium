@@ -208,8 +208,8 @@ TEST(CSSTokenizerTest, DelimiterToken) {
   TEST_TOKENS("*", Delim('*'));
   TEST_TOKENS("%", Delim('%'));
   TEST_TOKENS("~", Delim('~'));
-  TEST_TOKENS("&", Delim('&'));
   TEST_TOKENS("|", Delim('|'));
+  TEST_TOKENS("&", Delim('&'));
   TEST_TOKENS("\x7f", Delim('\x7f'));
   TEST_TOKENS("\1", Delim('\x1'));
   TEST_TOKENS("~-", Delim('~'), Delim('-'));

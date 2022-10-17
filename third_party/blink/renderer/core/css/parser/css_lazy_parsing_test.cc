@@ -130,4 +130,18 @@ TEST_F(CSSLazyParsingTest, ChangeDocuments) {
                              UseCounterImpl::CSSPropertyType::kDefault));
 }
 
+TEST_F(CSSLazyParsingTest, NoLazyParsingForNestedRules) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  String sheet_text = "body { & div { color: red; } }";
+  CSSParser::ParseSheet(context, style_sheet, sheet_text,
+                        CSSDeferPropertyParsing::kYes);
+  StyleRule* rule = RuleAt(style_sheet, 0);
+  EXPECT_TRUE(HasParsedProperties(rule));
+  rule->Properties();
+  EXPECT_TRUE(HasParsedProperties(rule));
+}
+
 }  // namespace blink

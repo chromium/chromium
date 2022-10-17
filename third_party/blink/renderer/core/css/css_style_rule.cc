@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/cssom/declared_style_property_map.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -86,7 +85,9 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
       parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr;
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector =
-      CSSParser::ParseSelector(context, parent_contents, selector_text, arena);
+      CSSParser::ParseSelector(context,
+                               /*parent_rule_for_nesting=*/nullptr,
+                               parent_contents, selector_text, arena);
   if (selector_vector.empty())
     return;
 
@@ -96,6 +97,15 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
     position_hint_ = parent_contents->ReplaceRuleIfExists(
         style_rule_, new_style_rule, position_hint_);
   }
+
+  // If we have any nested rules, update their parent selector(s) to point to
+  // our newly created StyleRule instead of the old one.
+  if (style_rule_->ChildRules()) {
+    for (StyleRule* child_rule : *style_rule_->ChildRules()) {
+      child_rule->Reparent(style_rule_, new_style_rule);
+    }
+  }
+
   style_rule_ = new_style_rule;
 
   if (HasCachedSelectorText()) {

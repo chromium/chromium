@@ -93,6 +93,7 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
     return IsValid() ? first_selector_ : nullptr;
   }
   static const CSSSelector* Next(const CSSSelector&);
+  static CSSSelector* Next(CSSSelector&);
 
   // The CSS selector represents a single sequence of simple selectors.
   bool HasOneSelector() const { return IsValid() && !Next(*first_selector_); }
@@ -139,8 +140,12 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
 };
 
 inline const CSSSelector* CSSSelectorList::Next(const CSSSelector& current) {
+  return Next(const_cast<CSSSelector&>(current));
+}
+
+inline CSSSelector* CSSSelectorList::Next(CSSSelector& current) {
   // Skip subparts of compound selectors.
-  const CSSSelector* last = &current;
+  CSSSelector* last = &current;
   while (!last->IsLastInTagHistory())
     last++;
   return last->IsLastInSelectorList() ? nullptr : last + 1;

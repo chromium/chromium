@@ -156,8 +156,8 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
       kUASheetMode, SecureContextMode::kInsecureContext);
   HeapVector<CSSSelector> arena;
   for (const auto& selector : selectors) {
-    base::span<CSSSelector> selector_vector =
-        CSSParser::ParseSelector(context, nullptr, selector, arena);
+    base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
+        context, /*parent_rule_for_nesting=*/nullptr, nullptr, selector, arena);
     if (selector_vector.empty())
       continue;
 
