@@ -3330,7 +3330,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // frames that have been opened by an OOPSIF are considered isolatable for the
   // purposes of this function, since they could lead to process overhead under
   // a per-origin isolation model. Assumes that `policy_container_host_` is set.
-  void UpdateIsolatableSandboxedIframeTracking();
+  void UpdateIsolatableSandboxedIframeTracking(
+      NavigationRequest* navigation_request);
 
   // Called when we receive the confirmation that a navigation committed in the
   // renderer. Used by both DidCommitSameDocumentNavigation and
