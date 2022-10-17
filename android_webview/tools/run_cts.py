@@ -119,7 +119,7 @@ def GetTestRunFilterArg(args, test_run, test_app_mode=None, arch=None):
   test_app_mode = test_app_mode or _APP_MODE_FULL
 
   # Convert cmdline filters to test-filter style
-  filter_string = test_filter.InitializeFilterFromArgs(args)
+  filter_strings = test_filter.InitializeFiltersFromArgs(args)
 
   # Get all the filters for either include or exclude patterns
   # and filter where an architecture is provided and does not match
@@ -132,20 +132,25 @@ def GetTestRunFilterArg(args, test_run, test_app_mode=None, arch=None):
         if 'mode' not in filter_ or filter_['mode'] == test_app_mode
     ]
 
-  # Only add inclusion filters if there's not already one specified, since
-  # they would conflict, see test_filter.ConflictingPositiveFiltersException.
-  if not test_filter.HasPositivePatterns(filter_string):
+  if not filter_strings or not any(
+      test_filter.HasPositivePatterns(filt) for filt in filter_strings):
     patterns = getTestRunFilters("includes")
-    filter_string = test_filter.AppendPatternsToFilter(
-        filter_string, positive_patterns=patterns)
+    positive_string = test_filter.AppendPatternsToFilter(
+        '', positive_patterns=patterns)
+    if positive_string:
+      filter_strings.append(positive_string)
 
   if args.skip_expected_failures:
     patterns = getTestRunFilters("excludes")
-    filter_string = test_filter.AppendPatternsToFilter(
-        filter_string, negative_patterns=patterns)
+    negative_string = test_filter.AppendPatternsToFilter(
+        '', negative_patterns=patterns)
+    filter_strings.append(negative_string)
 
-  if filter_string:
-    return [TEST_FILTER_OPT + '=' + filter_string]
+  if filter_strings:
+    return [
+        TEST_FILTER_OPT + '=' + filter_string
+        for filter_string in filter_strings
+    ]
   return []
 
 
@@ -507,8 +512,8 @@ def main():
     arch = args.arch or DetermineArch(device)
     cts_release = args.cts_release or DetermineCtsRelease(device)
 
-    if (args.test_filter_files or args.test_filter
-        or args.isolated_script_test_filter):
+    if (args.test_filter_files or args.test_filters
+        or args.isolated_script_test_filters):
       # TODO(aluo): auto-determine the module based on the test filter and the
       # available tests in each module
       if not args.module_apk:

@@ -65,8 +65,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     ret = []
     if test_filter_override:
       ret += ['-gtest-filter', ':'.join(test_filter_override)]
-    elif self._test_instance.test_filter:
-      ret += ['-gtest-filter', self._test_instance.test_filter]
+    elif self._test_instance.test_filters:
+      for test_filter in self._test_instance.test_filters:
+        ret += ['-gtest-filter', test_filter]
 
     if self._test_instance.package_filter:
       ret += ['-package-filter', self._test_instance.package_filter]
@@ -150,7 +151,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     # which takes about 1-2 seconds.
     # Do not shard when a test filter is present since we do not know at this
     # point which tests will be filtered out.
-    if (self._test_instance.shards == 1 or self._test_instance.test_filter
+    if (self._test_instance.shards == 1 or self._test_instance.test_filters
         or self._test_instance.suite in _EXCLUDED_SUITES):
       test_classes = []
       shards = 1

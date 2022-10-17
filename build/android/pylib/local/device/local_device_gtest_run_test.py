@@ -32,21 +32,27 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
 
   def testExtractTestsFromFilter(self):
     # Checks splitting by colons.
-    self.assertEqual([
-        'b17',
-        'm4e3',
-        'p51',
-    ], local_device_gtest_run._ExtractTestsFromFilter('b17:m4e3:p51'))
+    self.assertEqual(
+        set([
+            'm4e3',
+            'p51',
+            'b17',
+        ]),
+        set(local_device_gtest_run._ExtractTestsFromFilters(['b17:m4e3:p51'])))
     # Checks the '-' sign.
-    self.assertIsNone(local_device_gtest_run._ExtractTestsFromFilter('-mk2'))
+    self.assertIsNone(local_device_gtest_run._ExtractTestsFromFilters(['-mk2']))
     # Checks the more than one asterick.
     self.assertIsNone(
-        local_device_gtest_run._ExtractTestsFromFilter('.mk2*:.M67*'))
+        local_device_gtest_run._ExtractTestsFromFilters(['.mk2*:.M67*']))
     # Checks just an asterick without a period
-    self.assertIsNone(local_device_gtest_run._ExtractTestsFromFilter('M67*'))
+    self.assertIsNone(local_device_gtest_run._ExtractTestsFromFilters(['M67*']))
     # Checks an asterick at the end with a period.
     self.assertEqual(['.M67*'],
-                     local_device_gtest_run._ExtractTestsFromFilter('.M67*'))
+                     local_device_gtest_run._ExtractTestsFromFilters(['.M67*']))
+    # Checks multiple filters intersect
+    self.assertEqual(['m4e3'],
+                     local_device_gtest_run._ExtractTestsFromFilters(
+                         ['b17:m4e3:p51', 'b17:m4e3', 'm4e3:p51']))
 
   def testGetLLVMProfilePath(self):
     path = local_device_gtest_run._GetLLVMProfilePath('test_dir', 'sr71', '5')

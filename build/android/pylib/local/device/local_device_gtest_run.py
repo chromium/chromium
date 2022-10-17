@@ -95,29 +95,39 @@ def _GenerateSequentialFileNames(filename):
     yield '%s_%d%s' % (base, i, ext)
 
 
-def _ExtractTestsFromFilter(gtest_filter):
-  """Returns the list of tests specified by the given filter.
+def _ExtractTestsFromFilters(gtest_filters):
+  """Returns the list of tests specified by the given filters.
 
   Returns:
     None if the device should be queried for the test list instead.
   """
-  # Empty means all tests, - means exclude filter.
-  if not gtest_filter or '-' in gtest_filter:
+  # - means exclude filter.
+  for gtest_filter in gtest_filters:
+    if '-' in gtest_filter:
+      return None
+  # Empty means all tests
+  if not any(gtest_filters):
     return None
 
-  patterns = gtest_filter.split(':')
-  # For a single pattern, allow it even if it has a wildcard so long as the
-  # wildcard comes at the end and there is at least one . to prove the scope is
-  # not too large.
-  # This heuristic is not necessarily faster, but normally is.
-  if len(patterns) == 1 and patterns[0].endswith('*'):
-    no_suffix = patterns[0].rstrip('*')
-    if '*' not in no_suffix and '.' in no_suffix:
-      return patterns
+  if len(gtest_filters) == 1:
+    patterns = gtest_filters[0].split(':')
+    # For a single pattern, allow it even if it has a wildcard so long as the
+    # wildcard comes at the end and there is at least one . to prove the scope
+    # is not too large.
+    # This heuristic is not necessarily faster, but normally is.
+    if len(patterns) == 1 and patterns[0].endswith('*'):
+      no_suffix = patterns[0].rstrip('*')
+      if '*' not in no_suffix and '.' in no_suffix:
+        return patterns
 
-  if '*' in gtest_filter:
-    return None
-  return patterns
+  all_patterns = set(gtest_filters[0].split(':'))
+  for gtest_filter in gtest_filters:
+    patterns = gtest_filter.split(':')
+    for pattern in patterns:
+      if '*' in pattern:
+        return None
+    all_patterns = all_patterns.intersection(set(patterns))
+  return list(all_patterns)
 
 
 def _GetDeviceTimeoutMultiplier():
@@ -593,7 +603,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       # When the exact list of tests to run is given via command-line (e.g. when
       # locally iterating on a specific test), skip querying the device (which
       # takes ~3 seconds).
-      tests = _ExtractTestsFromFilter(self._test_instance.gtest_filter)
+      tests = _ExtractTestsFromFilters(self._test_instance.gtest_filters)
       if tests:
         return tests
 

@@ -20,7 +20,7 @@ class JunitTestInstance(test_instance.TestInstance):
     self._robolectric_runtime_deps_dir = args.robolectric_runtime_deps_dir
     self._runner_filter = args.runner_filter
     self._shards = args.shards
-    self._test_filter = test_filter.InitializeFilterFromArgs(args)
+    self._test_filters = test_filter.InitializeFiltersFromArgs(args)
     self._test_suite = args.test_suite
 
   #override
@@ -64,8 +64,8 @@ class JunitTestInstance(test_instance.TestInstance):
     return self._runner_filter
 
   @property
-  def test_filter(self):
-    return self._test_filter
+  def test_filters(self):
+    return self._test_filters
 
   @property
   def shards(self):
