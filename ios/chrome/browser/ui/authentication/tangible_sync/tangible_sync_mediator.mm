@@ -121,6 +121,13 @@
   _consumer = consumer;
   id<SystemIdentity> identity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (!identity) {
+    // This can happen if identity is removed from the device when the tangible
+    // sync is opened. There is no point to update the UI since the dialog will
+    // be automatically closed (see -[TangibleSyncMediator
+    // onPrimaryAccountChanged:].
+    return;
+  }
   [self updateAvatarImageWithIdentity:identity];
 }
 
