@@ -196,6 +196,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
     else
       creation_flags_ &= ~Extension::FROM_WEBSTORE;
   }
+  void set_withhold_permissions();
 
   // If |apps_require_extension_mime_type_| is set to true, be sure to set
   // |original_mime_type_| as well.

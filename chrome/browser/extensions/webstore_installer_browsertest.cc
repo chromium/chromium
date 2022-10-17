@@ -4,32 +4,35 @@
 
 #include "chrome/browser/extensions/webstore_installer.h"
 
+#include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/webstore_installer_test.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/extensions/webstore_install_result.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/value_builder.h"
 
 namespace extensions {
 
 namespace {
 
-const char kExtensionName[] = "InstallerExtension";
 const char kWebstoreDomain[] = "cws.com";
 const char kAppDomain[] = "app.com";
 const char kNonAppDomain[] = "nonapp.com";
 const char kTestExtensionId[] = "ecglahbcnmdpdciemllbhojghbkagdje";
+const char kTestExtensionWithPermissionsId[] =
+    "lpbboafeefjeccjhdhcfdibnjcecpmhd";
 const char kTestDataPath[] = "extensions/api_test/webstore_inline_install";
 const char kCrxFilename[] = "extension.crx";
+const char kCrxWithPermissionsFilename[] =
+    "extension_with_host_permissions.crx";
 
 }  // namespace
 
@@ -66,14 +69,17 @@ class WebstoreInstallerBrowserTest
     : public WebstoreInstallerTest,
       public WebstoreInstaller::Delegate {
  public:
-  WebstoreInstallerBrowserTest()
-      : WebstoreInstallerTest(
-            kWebstoreDomain,
-            kTestDataPath,
-            kCrxFilename,
-            kAppDomain,
-            kNonAppDomain) {}
-  ~WebstoreInstallerBrowserTest() override {}
+  WebstoreInstallerBrowserTest(const std::string& webstore_domain,
+                               const std::string& test_data_path,
+                               const std::string& crx_filename,
+                               const std::string& verified_domain,
+                               const std::string& unverified_domain)
+      : WebstoreInstallerTest(webstore_domain,
+                              test_data_path,
+                              crx_filename,
+                              verified_domain,
+                              unverified_domain) {}
+  ~WebstoreInstallerBrowserTest() override = default;
 
   void SetDoneClosure(base::OnceClosure done_closure) {
     done_closure_ = std::move(done_closure);
@@ -83,51 +89,52 @@ class WebstoreInstallerBrowserTest
 
   // Overridden from WebstoreInstaller::Delegate:
   void OnExtensionDownloadStarted(const std::string& id,
-                                  download::DownloadItem* item) override;
+                                  download::DownloadItem* item) override {}
   void OnExtensionDownloadProgress(const std::string& id,
-                                   download::DownloadItem* item) override;
-  void OnExtensionInstallSuccess(const std::string& id) override;
+                                   download::DownloadItem* item) override {}
+  void OnExtensionInstallSuccess(const std::string& id) override {
+    success_ = true;
+    std::move(done_closure_).Run();
+  }
   void OnExtensionInstallFailure(
       const std::string& id,
       const std::string& error,
-      WebstoreInstaller::FailureReason reason) override;
+      WebstoreInstaller::FailureReason reason) override {
+    success_ = false;
+    std::move(done_closure_).Run();
+  }
 
  private:
   base::OnceClosure done_closure_;
   bool success_;
 };
 
-void WebstoreInstallerBrowserTest::OnExtensionDownloadStarted(
-    const std::string& id,
-    download::DownloadItem* item) {}
+class WebstoreInstallerMV2BrowserTest : public WebstoreInstallerBrowserTest {
+ public:
+  WebstoreInstallerMV2BrowserTest()
+      : WebstoreInstallerBrowserTest(kWebstoreDomain,
+                                     kTestDataPath,
+                                     kCrxFilename,
+                                     kAppDomain,
+                                     kNonAppDomain) {}
+  ~WebstoreInstallerMV2BrowserTest() override = default;
 
-void WebstoreInstallerBrowserTest::OnExtensionDownloadProgress(
-    const std::string& id,
-    download::DownloadItem* item) {}
+  // The manifest used by the test installer must match `kCrxFilename` manifest
+  // in the test directory.
+  std::unique_ptr<base::DictionaryValue> GetManifest() {
+    std::unique_ptr<base::DictionaryValue> manifest(
+        DictionaryBuilder()
+            .Set("name", "Installer Extension")
+            .Set("manifest_version", 2)
+            .Set("version", "1.0")
+            .Set("permissions", ListBuilder().Append("tabs").Build())
+            .Build());
+    return manifest;
+  }
+};
 
-void WebstoreInstallerBrowserTest::OnExtensionInstallSuccess(
-    const std::string& id) {
-  success_ = true;
-  std::move(done_closure_).Run();
-}
-
-void WebstoreInstallerBrowserTest::OnExtensionInstallFailure(
-    const std::string& id,
-    const std::string& error,
-    WebstoreInstaller::FailureReason reason) {
-  success_ = false;
-  std::move(done_closure_).Run();
-}
-
-IN_PROC_BROWSER_TEST_F(WebstoreInstallerBrowserTest, WebstoreInstall) {
-  std::unique_ptr<base::DictionaryValue> manifest(
-      DictionaryBuilder()
-          .Set("name", kExtensionName)
-          .Set("description", "Foo")
-          .Set("manifest_version", 2)
-          .Set("version", "1.0")
-          .Set("permissions", ListBuilder().Append("tabs").Build())
-          .Build());
+IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, WebstoreInstall) {
+  std::unique_ptr<base::DictionaryValue> manifest = GetManifest();
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -152,15 +159,8 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerBrowserTest, WebstoreInstall) {
   ASSERT_TRUE(registry->enabled_extensions().GetByID(kTestExtensionId));
 }
 
-IN_PROC_BROWSER_TEST_F(WebstoreInstallerBrowserTest, SimultaneousInstall) {
-  std::unique_ptr<base::DictionaryValue> manifest(
-      DictionaryBuilder()
-          .Set("name", kExtensionName)
-          .Set("description", "Foo")
-          .Set("manifest_version", 2)
-          .Set("version", "1.0")
-          .Set("permissions", ListBuilder().Append("tabs").Build())
-          .Build());
+IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, SimultaneousInstall) {
+  std::unique_ptr<base::DictionaryValue> manifest = GetManifest();
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -207,5 +207,89 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerBrowserTest, SimultaneousInstall) {
   // Extension ends up as disabled because of permissions.
   ASSERT_TRUE(registry->disabled_extensions().GetByID(kTestExtensionId));
 }
+
+class WebstoreInstallerWithWithholdingUIBrowserTest
+    : public WebstoreInstallerBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebstoreInstallerWithWithholdingUIBrowserTest()
+      : WebstoreInstallerBrowserTest(kWebstoreDomain,
+                                     kTestDataPath,
+                                     kCrxWithPermissionsFilename,
+                                     kAppDomain,
+                                     kNonAppDomain) {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kAllowWithholdingExtensionPermissionsOnInstall);
+  }
+  ~WebstoreInstallerWithWithholdingUIBrowserTest() override = default;
+
+  // Th manifest used by the test installer must match
+  // `kCrxWithPermissionsFilename` manifest in the test directory.
+  std::unique_ptr<base::DictionaryValue> GetManifest() {
+    std::unique_ptr<base::DictionaryValue> manifest(
+        DictionaryBuilder()
+            .Set("name", "Installer Extension")
+            .Set("manifest_version", 3)
+            .Set("version", "1.0")
+            .Set("host_permissions", ListBuilder().Append("<all_urls>").Build())
+            .Build());
+    return manifest;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests host permissions are withheld at installation only when the checkbox is
+// selected.
+IN_PROC_BROWSER_TEST_P(WebstoreInstallerWithWithholdingUIBrowserTest,
+                       WithholdingHostsOnInstall) {
+  bool should_check_box = GetParam();
+  std::unique_ptr<base::DictionaryValue> manifest = GetManifest();
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_web_contents);
+
+  // Create an approval with the check box selection.
+  std::unique_ptr<WebstoreInstaller::Approval> approval =
+      WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
+          browser()->profile(), kTestExtensionWithPermissionsId,
+          std::move(manifest), false);
+  if (should_check_box)
+    approval->withhold_permissions = true;
+
+  // Create and run a WebstoreInstaller.
+  base::RunLoop run_loop;
+  SetDoneClosure(run_loop.QuitClosure());
+  TestWebstoreInstaller* installer = new TestWebstoreInstaller(
+      browser()->profile(), this, active_web_contents,
+      kTestExtensionWithPermissionsId, std::move(approval),
+      WebstoreInstaller::INSTALL_SOURCE_OTHER);
+  installer->Start();
+  run_loop.Run();
+
+  // Verify extension was installed.
+  EXPECT_TRUE(success());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(kTestExtensionWithPermissionsId);
+  ASSERT_TRUE(extension);
+
+  // Host permissions should be withheld only when the box was checked.
+  ScriptingPermissionsModifier modifier(browser()->profile(), extension);
+  EXPECT_EQ(modifier.HasWithheldHostPermissions(), should_check_box);
+
+  // Access to google.com should be withheld only when the box was checked.
+  const PermissionsManager::ExtensionSiteAccess site_access =
+      PermissionsManager::Get(profile())->GetSiteAccess(
+          *extension, GURL("https://www.google.com"));
+  EXPECT_EQ(site_access.withheld_site_access, should_check_box);
+  EXPECT_EQ(site_access.has_site_access, !should_check_box);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebstoreInstallerWithWithholdingUIBrowserTest,
+                         testing::Bool());
 
 }  // namespace extensions

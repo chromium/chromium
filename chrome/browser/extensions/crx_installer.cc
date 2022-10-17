@@ -56,6 +56,7 @@
 #include "extensions/browser/policy_check.h"
 #include "extensions/browser/preload_check_group.h"
 #include "extensions/browser/requirements_checker.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
@@ -880,8 +881,8 @@ void CrxInstaller::UpdateCreationFlagsAndCompleteInstall(
   if (ExtensionPrefs::Get(profile())->AllowFileAccess(extension()->id()))
     creation_flags_ |= Extension::ALLOW_FILE_ACCESS;
 
-  if (withholding_behavior == kWithholdPermissions)
-    creation_flags_ |= Extension::WITHHOLD_PERMISSIONS;
+  if (withholding_behavior == WithholdingBehavior::kWithholdPermissions)
+    set_withhold_permissions();
 
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile());
@@ -1217,6 +1218,12 @@ base::SequencedTaskRunner* CrxInstaller::GetUnpackerTaskRunner() {
                      : base::TaskPriority::USER_VISIBLE);
   }
   return unpacker_task_runner_.get();
+}
+
+void CrxInstaller::set_withhold_permissions() {
+  DCHECK(base::FeatureList::IsEnabled(
+      extensions_features::kAllowWithholdingExtensionPermissionsOnInstall));
+  creation_flags_ |= Extension::WITHHOLD_PERMISSIONS;
 }
 
 void CrxInstaller::set_installer_callback(InstallerResultCallback callback) {

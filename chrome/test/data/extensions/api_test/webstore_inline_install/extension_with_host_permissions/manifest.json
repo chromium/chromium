@@ -1,0 +1,6 @@
+{
+  "name": "Inline Install Test Extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "host_permissions": ["<all_urls>"]
+}

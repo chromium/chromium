@@ -110,7 +110,8 @@ class WebstorePrivateBeginInstallWithManifest3Function
   void OnRequestPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
   void OnBlockByPolicyPromptDone();
 
-  void HandleInstallProceed();
+  // Permissions are granted by default.
+  void HandleInstallProceed(bool withhold_permissions = false);
   void HandleInstallAbort(bool user_initiated);
 
   ExtensionFunction::ResponseValue BuildResponse(

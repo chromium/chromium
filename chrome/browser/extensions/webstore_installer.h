@@ -166,6 +166,10 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
     // the user has enabled Enhanced Protection.
     bool bypassed_safebrowsing_friction = false;
 
+    // Whether to withhold permissions at installation. By default, permissions
+    // are granted at installation.
+    bool withhold_permissions = false;
+
    private:
     Approval();
   };
