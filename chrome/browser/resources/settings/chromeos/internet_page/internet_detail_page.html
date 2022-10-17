@@ -300,6 +300,20 @@
       </div>
     </template>
   </template>
+
+  <!-- APN row item -->
+  <template is="dom-if" if="[[shouldShowApnRow_(managedProperties_,
+      isApnRevampEnabled_)]]">
+    <cr-link-row
+        id="apnSubpageButton"
+        class="hr"
+        label="[[i18n('OncCellular-APN-AccessPointName')]]"
+        sub-label="[[getApnRowSubLabel_(managedProperties_)]]"
+        on-click="onApnRowClicked_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </template>
+
   <template is="dom-if" if="[[hasAdvancedSection_(managedProperties_,
                               propertiesReceived_, showMeteredToggle_,
                               deviceState_)]]">
@@ -414,7 +428,8 @@
           </template>
 
           <!-- APN -->
-          <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
+          <template is="dom-if" if="[[shouldShowApnList_(managedProperties_,
+              isApnRevampEnabled_)]]">
             <network-apnlist on-apn-change="onApnChange_"
                 managed-properties="[[managedProperties_]]"
                 disabled="[[disabled_]]">

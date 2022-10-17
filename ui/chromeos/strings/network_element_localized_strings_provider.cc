@@ -443,6 +443,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isSimLockPolicyEnabled",
                           chromeos::features::IsSimLockPolicyEnabled());
+  html_source->AddBoolean("apnRevamp", ash::features::IsApnRevampEnabled());
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {

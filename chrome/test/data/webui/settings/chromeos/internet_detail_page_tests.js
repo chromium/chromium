@@ -1378,6 +1378,36 @@ suite('InternetDetailPage', function() {
       assertFalse(!!internetDetailPage.shadowRoot.querySelector(
           'network-proxy-section'));
     });
+    // Syntactic sugar for running test twice with different values for the
+    // apnRevamp feature flag.
+    [true, false].forEach(isApnRevampEnabled => {
+      test('Show/Hide APN row correspondingly to ApnRevamp flag', async () => {
+        loadTimeData.overrideValues({
+          apnRevamp: isApnRevampEnabled,
+        });
+        init();
+        mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+        const apnName = 'test';
+        const cellularNetwork =
+            getManagedProperties(NetworkType.kCellular, 'cellular');
+        cellularNetwork.typeProperties.cellular.connectedApn = {};
+        cellularNetwork.typeProperties.cellular.connectedApn.accessPointName =
+            apnName;
+        mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+        internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+        await flushAsync();
+        const crLink =
+            internetDetailPage.shadowRoot.querySelector('#apnSubpageButton');
+        const apn =
+            crLink ? crLink.shadowRoot.querySelector('#subLabel') : null;
+        if (isApnRevampEnabled) {
+          assertTrue(!!apn);
+          assertEquals(apn.textContent.trim(), apnName);
+        } else {
+          assertFalse(!!apn);
+        }
+      });
+    });
   });
 
   suite('DetailsPageEthernet', function() {

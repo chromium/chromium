@@ -336,6 +336,18 @@ class SettingsInternetDetailPageElement extends
         },
       },
 
+      /**
+       * Return true if apnRevamp feature flag is enabled.
+       * @private
+       */
+      isApnRevampEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('apnRevamp') &&
+              loadTimeData.getBoolean('apnRevamp');
+        },
+      },
+
       /** @private */
       advancedExpanded_: Boolean,
 
@@ -1308,7 +1320,7 @@ class SettingsInternetDetailPageElement extends
   }
 
   /**
-   * @param {!ManagedProperties} managedProperties
+   * @param {!ManagedProperties|undefined} managedProperties
    * @return {boolean}
    * @private
    */
@@ -1373,6 +1385,24 @@ class SettingsInternetDetailPageElement extends
          !!managedNetworkAvailable) ||
         (!!hexSsid && !!globalPolicy.blockedHexSsids &&
          globalPolicy.blockedHexSsids.includes(hexSsid));
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowApnRow_() {
+    return this.isApnRevampEnabled_ &&
+        this.isCellular_(this.managedProperties_);
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowApnList_() {
+    return !this.isApnRevampEnabled_ &&
+        this.isCellular_(this.managedProperties_);
   }
 
   /**
@@ -1970,6 +2000,25 @@ class SettingsInternetDetailPageElement extends
     this.setMojoNetworkProperties_(config);
   }
 
+  /**
+   * @return {string}
+   * @private
+   */
+  getApnRowSubLabel_() {
+    if (!this.isCellular_(this.managedProperties_) ||
+        !this.managedProperties_.typeProperties.cellular.connectedApn) {
+      return '';
+    }
+
+    return this.managedProperties_.typeProperties.cellular.connectedApn
+        .accessPointName;
+  }
+
+  /**
+   * @private
+   * TODO: implement
+   */
+  onApnRowClicked_() {}
 
   /**
    * Event triggered when the IP Config or NameServers element changes.
