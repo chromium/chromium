@@ -935,9 +935,8 @@ TEST_F(WidgetOwnsNativeWidgetTest, WidgetDelegateView) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Test to verify using various Widget methods doesn't crash when the underlying
+// Tests to verify using various Widget methods don't crash when the underlying
 // NativeView is destroyed.
-//
 
 class WidgetWithDestroyedNativeViewTest
     : public ViewsTestBaseWithNativeWidgetType {
@@ -970,16 +969,92 @@ TEST_P(WidgetWithDestroyedNativeViewTest, Activate) {
   widget()->Activate();
 }
 
+TEST_P(WidgetWithDestroyedNativeViewTest, AddAndRemoveObserver) {
+  // Constructor calls |AddObserver()|
+  TestWidgetObserver observer(widget());
+  widget()->RemoveObserver(&observer);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, AddAndRemoveRemovalsObserver) {
+  TestWidgetRemovalsObserver removals_observer;
+  widget()->AddRemovalsObserver(&removals_observer);
+  widget()->RemoveRemovalsObserver(&removals_observer);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, AsWidget) {
+  widget()->AsWidget();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, CanActivate) {
+  widget()->CanActivate();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, CenterWindow) {
+  widget()->CenterWindow(gfx::Size());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, ClearNativeFocus) {
+  widget()->ClearNativeFocus();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, ClientView) {
+  widget()->client_view();
+}
+
 TEST_P(WidgetWithDestroyedNativeViewTest, Close) {
   widget()->Close();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, CloseAllSecondaryWidgets) {
+  widget()->CloseAllSecondaryWidgets();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, CloseNow) {
+  widget()->CloseNow();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, ClosedReason) {
+  widget()->closed_reason();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, CloseWithReason) {
+  widget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, CreateNonClientFrameView) {
+  widget()->CreateNonClientFrameView();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, Deactivate) {
   widget()->Deactivate();
 }
 
+TEST_P(WidgetWithDestroyedNativeViewTest, DebugToggleFrameType) {
+  widget()->DebugToggleFrameType();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, DraggedView) {
+  widget()->dragged_view();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, EndMoveLoop) {
+  widget()->EndMoveLoop();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, ExecuteCommand) {
+  widget()->ExecuteCommand(0);
+}
+
 TEST_P(WidgetWithDestroyedNativeViewTest, FlashFrame) {
   widget()->FlashFrame(true);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, FrameType) {
+  widget()->frame_type();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, FrameTypeChanged) {
+  widget()->FrameTypeChanged();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, GetAccelerator) {
@@ -987,8 +1062,42 @@ TEST_P(WidgetWithDestroyedNativeViewTest, GetAccelerator) {
   widget()->GetAccelerator(0, &accelerator);
 }
 
+TEST_P(WidgetWithDestroyedNativeViewTest, GetAllChildWidgets) {
+  views::Widget::Widgets widgets;
+  Widget::GetAllChildWidgets(widget()->GetNativeView(), &widgets);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetAllOwnedWidgets) {
+  views::Widget::Widgets widgets;
+  Widget::GetAllOwnedWidgets(widget()->GetNativeView(), &widgets);
+}
+
 TEST_P(WidgetWithDestroyedNativeViewTest, GetClientAreaBoundsInScreen) {
   widget()->GetClientAreaBoundsInScreen();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetColorProvider) {
+  widget()->GetColorProvider();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetCompositor) {
+  widget()->GetCompositor();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetContentsView) {
+  widget()->GetContentsView();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetCustomTheme) {
+  widget()->GetCustomTheme();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetEventSink) {
+  widget()->GetEventSink();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetFocusSearch) {
+  widget()->GetFocusSearch();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, GetFocusManager) {
@@ -999,8 +1108,37 @@ TEST_P(WidgetWithDestroyedNativeViewTest, GetFocusTraversable) {
   widget()->GetFocusTraversable();
 }
 
+TEST_P(WidgetWithDestroyedNativeViewTest, GetGestureConsumer) {
+  widget()->GetGestureConsumer();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetGestureRecognizer) {
+  widget()->GetGestureRecognizer();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetHitTestMask) {
+  SkPath mask;
+  widget()->GetHitTestMask(&mask);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetInputMethod) {
+  widget()->GetInputMethod();
+}
+
 TEST_P(WidgetWithDestroyedNativeViewTest, GetLayer) {
   widget()->GetLayer();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetMinimumSize) {
+  widget()->GetMinimumSize();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetMaximumSize) {
+  widget()->GetMaximumSize();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetName) {
+  widget()->GetName();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, GetNativeTheme) {
@@ -1019,12 +1157,53 @@ TEST_P(WidgetWithDestroyedNativeViewTest, GetNativeWindowProperty) {
   widget()->GetNativeWindowProperty("xx");
 }
 
+TEST_P(WidgetWithDestroyedNativeViewTest, GetNonClientComponent) {
+  gfx::Point point;
+  widget()->GetNonClientComponent(point);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetPrimaryWindowWidget) {
+  widget()->GetPrimaryWindowWidget();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetRestoredBounds) {
+  widget()->GetRestoredBounds();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetRootView) {
+  widget()->GetRootView();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetSublevelManager) {
+  widget()->GetSublevelManager();
+}
+
 TEST_P(WidgetWithDestroyedNativeViewTest, GetThemeProvider) {
   widget()->GetThemeProvider();
 }
 
+TEST_P(WidgetWithDestroyedNativeViewTest, GetTooltipManager) {
+  widget()->GetTooltipManager();
+}
+
 TEST_P(WidgetWithDestroyedNativeViewTest, GetTopLevelWidget) {
   widget()->GetTopLevelWidget();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetTopLevelWidgetForNativeView) {
+  Widget::GetTopLevelWidgetForNativeView(widget()->GetNativeView());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetWeakPtr) {
+  widget()->GetWeakPtr();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetWidgetForNativeView) {
+  Widget::GetWidgetForNativeView(widget()->GetNativeView());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetWidgetForNativeWindow) {
+  Widget::GetWidgetForNativeWindow(widget()->GetNativeWindow());
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, GetWindowBoundsInScreen) {
@@ -1033,6 +1212,14 @@ TEST_P(WidgetWithDestroyedNativeViewTest, GetWindowBoundsInScreen) {
 
 TEST_P(WidgetWithDestroyedNativeViewTest, GetWorkAreaBoundsInScreen) {
   widget()->GetWorkAreaBoundsInScreen();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetWorkspace) {
+  widget()->GetWorkspace();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, GetZOrderSublevel) {
+  widget()->GetZOrderSublevel();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, HasCapture) {

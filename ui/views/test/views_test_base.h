@@ -189,7 +189,7 @@ class ViewsTestBaseWithNativeWidgetType
 };
 
 // A helper that makes it easier to declare basic views tests that want to test
-// desktop native widgets. See |ViewsTestBase::native_wiget_type_| and
+// desktop native widgets. See |ViewsTestBase::native_widget_type_| and
 // |ViewsTestBase::CreateNativeWidgetForTest|. In short, for Aura, this will
 // result in most Widgets automatically being backed by a
 // DesktopNativeWidgetAura. For Mac, it has no impact as a NativeWidgetMac is

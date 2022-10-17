@@ -249,6 +249,9 @@ Widget* Widget::CreateWindowWithContext(
 
 // static
 Widget* Widget::GetWidgetForNativeView(gfx::NativeView native_view) {
+  if (!native_view)
+    return nullptr;
+
   internal::NativeWidgetPrivate* native_widget =
       internal::NativeWidgetPrivate::GetNativeWidgetForNativeView(native_view);
   return native_widget ? native_widget->GetWidget() : nullptr;
@@ -256,6 +259,9 @@ Widget* Widget::GetWidgetForNativeView(gfx::NativeView native_view) {
 
 // static
 Widget* Widget::GetWidgetForNativeWindow(gfx::NativeWindow native_window) {
+  if (!native_window)
+    return nullptr;
+
   internal::NativeWidgetPrivate* native_widget =
       internal::NativeWidgetPrivate::GetNativeWidgetForNativeWindow(
           native_window);
@@ -264,6 +270,9 @@ Widget* Widget::GetWidgetForNativeWindow(gfx::NativeWindow native_window) {
 
 // static
 Widget* Widget::GetTopLevelWidgetForNativeView(gfx::NativeView native_view) {
+  if (!native_view)
+    return nullptr;
+
   internal::NativeWidgetPrivate* native_widget =
       internal::NativeWidgetPrivate::GetTopLevelNativeWidget(native_view);
   return native_widget ? native_widget->GetWidget() : nullptr;
@@ -272,11 +281,17 @@ Widget* Widget::GetTopLevelWidgetForNativeView(gfx::NativeView native_view) {
 // static
 void Widget::GetAllChildWidgets(gfx::NativeView native_view,
                                 Widgets* children) {
+  if (!native_view)
+    return;
+
   internal::NativeWidgetPrivate::GetAllChildWidgets(native_view, children);
 }
 
 // static
 void Widget::GetAllOwnedWidgets(gfx::NativeView native_view, Widgets* owned) {
+  if (!native_view)
+    return;
+
   internal::NativeWidgetPrivate::GetAllOwnedWidgets(native_view, owned);
 }
 
@@ -602,6 +617,9 @@ gfx::Rect Widget::GetRestoredBounds() const {
 }
 
 std::string Widget::GetWorkspace() const {
+  if (native_widget_destroyed_)
+    return "";
+
   return native_widget_->GetWorkspace();
 }
 
@@ -614,6 +632,9 @@ void Widget::SetSize(const gfx::Size& size) {
 }
 
 void Widget::CenterWindow(const gfx::Size& size) {
+  if (native_widget_destroyed_)
+    return;
+
   native_widget_->CenterWindow(size);
 }
 
@@ -813,6 +834,9 @@ void Widget::SetZOrderSublevel(int sublevel) {
 }
 
 int Widget::GetZOrderSublevel() const {
+  if (!sublevel_manager_)
+    return 0;
+
   return sublevel_manager_->GetSublevel();
 }
 
@@ -1076,10 +1100,15 @@ void Widget::SetFocusTraversableParentView(View* parent_view) {
 }
 
 void Widget::ClearNativeFocus() {
+  if (native_widget_destroyed_)
+    return;
+
   native_widget_->ClearNativeFocus();
 }
 
 std::unique_ptr<NonClientFrameView> Widget::CreateNonClientFrameView() {
+  if (native_widget_destroyed_)
+    return nullptr;
   auto frame_view = widget_delegate_->CreateNonClientFrameView(this);
   if (!frame_view)
     frame_view = native_widget_->CreateNonClientFrameView();
@@ -1104,6 +1133,9 @@ bool Widget::ShouldWindowContentsBeTransparent() const {
 }
 
 void Widget::DebugToggleFrameType() {
+  if (native_widget_destroyed_)
+    return;
+
   if (frame_type_ == FrameType::kDefault) {
     frame_type_ = ShouldUseNativeFrame() ? FrameType::kForceCustom
                                          : FrameType::kForceNative;
@@ -1116,6 +1148,9 @@ void Widget::DebugToggleFrameType() {
 }
 
 void Widget::FrameTypeChanged() {
+  if (native_widget_destroyed_)
+    return;
+
   native_widget_->FrameTypeChanged();
 }
 
@@ -1686,6 +1721,9 @@ void Widget::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 bool Widget::ExecuteCommand(int command_id) {
+  if (!widget_delegate_)
+    return false;
+
   return widget_delegate_->ExecuteWindowsCommand(command_id);
 }
 
@@ -1697,6 +1735,9 @@ bool Widget::HasHitTestMask() const {
 }
 
 void Widget::GetHitTestMask(SkPath* mask) const {
+  if (!widget_delegate_)
+    return;
+
   DCHECK(mask);
   widget_delegate_->GetWidgetHitTestMask(mask);
 }
