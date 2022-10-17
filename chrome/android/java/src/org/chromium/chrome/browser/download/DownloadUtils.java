@@ -13,7 +13,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -363,9 +362,7 @@ public class DownloadUtils {
      * @return URI for other apps to use the file via {@link android.content.ContentResolver}.
      */
     public static Uri getUriForOtherApps(String filePath) {
-        // Some old Samsung devices with Android M- must use file URI. See https://crbug.com/705748.
-        return Build.VERSION.SDK_INT > Build.VERSION_CODES.M ? getUriForItem(filePath)
-                                                             : Uri.fromFile(new File(filePath));
+        return getUriForItem(filePath);
     }
 
     @CalledByNative
