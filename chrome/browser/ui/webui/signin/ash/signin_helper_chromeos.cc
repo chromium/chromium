@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper_chromeos.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -15,7 +15,7 @@
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr char kSecondaryGoogleAccountUsageHistogramName[] =
@@ -23,7 +23,7 @@ constexpr char kSecondaryGoogleAccountUsageHistogramName[] =
 }  // namespace
 
 using SigninRestrictionPolicyFetcher =
-    ::ash::UserCloudSigninRestrictionPolicyFetcherChromeOS;
+    UserCloudSigninRestrictionPolicyFetcherChromeOS;
 
 // static
 bool SigninHelper::IsSecondaryGoogleAccountUsageEnabled() {
@@ -33,7 +33,7 @@ bool SigninHelper::IsSecondaryGoogleAccountUsageEnabled() {
 SigninHelper::ArcHelper::ArcHelper(
     bool is_available_in_arc,
     bool is_account_addition,
-    ash::AccountAppsAvailability* account_apps_availability)
+    AccountAppsAvailability* account_apps_availability)
     : is_available_in_arc_(is_available_in_arc),
       is_account_addition_(is_account_addition),
       account_apps_availability_(account_apps_availability) {}
@@ -73,12 +73,12 @@ SigninHelper::SigninHelper(
       gaia_auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory_) {
   DCHECK(!signin_scoped_device_id.empty());
 
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
     DCHECK(arc_helper_);
   if (!IsInitialPrimaryAccount() && IsSecondaryGoogleAccountUsageEnabled()) {
     DCHECK(show_signin_blocked_error_);
     restriction_fetcher_ =
-        std::make_unique<ash::UserCloudSigninRestrictionPolicyFetcherChromeOS>(
+        std::make_unique<UserCloudSigninRestrictionPolicyFetcherChromeOS>(
             email_, url_loader_factory_);
   }
 
@@ -132,7 +132,7 @@ void SigninHelper::UpsertAccount(const std::string& refresh_token) {
   account_manager_->UpsertAccount(account_key_, email_, refresh_token);
 
   auto new_account = account_manager::Account{account_key_, email_};
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     arc_helper_->OnAccountAdded(new_account);
   }
   // Notify `AccountManagerMojoService` about successful account addition and
@@ -237,4 +237,4 @@ scoped_refptr<network::SharedURLLoaderFactory>
 SigninHelper::GetUrlLoaderFactory() {
   return url_loader_factory_;
 }
-}  // namespace chromeos
+}  // namespace ash

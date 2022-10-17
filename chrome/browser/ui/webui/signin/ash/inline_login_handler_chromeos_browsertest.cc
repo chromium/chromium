@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_chromeos.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
@@ -42,7 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -129,7 +129,7 @@ class TestInlineLoginHandlerChromeOS : public InlineLoginHandlerChromeOS {
 };
 
 class MockAccountAppsAvailabilityObserver
-    : public ::ash::AccountAppsAvailability::Observer {
+    : public AccountAppsAvailability::Observer {
  public:
   MockAccountAppsAvailabilityObserver() = default;
   ~MockAccountAppsAvailabilityObserver() override = default;
@@ -276,8 +276,8 @@ class InlineLoginHandlerChromeOSTest
     web_ui()->HandleReceivedMessage("consentLogged", list_args);
   }
 
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
+  FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
@@ -374,7 +374,7 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
     InlineLoginHandlerChromeOSTest::SetUpOnMainThread();
     // In-session account addition happens when `AccountAppsAvailability` is
     // already initialized.
-    EXPECT_TRUE(ash::AccountAppsAvailabilityFactory::GetForProfile(profile())
+    EXPECT_TRUE(AccountAppsAvailabilityFactory::GetForProfile(profile())
                     ->IsInitialized());
   }
 
@@ -386,7 +386,7 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
     observation.Observe(
         ::GetAccountManagerFacade(profile()->GetPath().value()));
     auto* account_apps_availability =
-        ash::AccountAppsAvailabilityFactory::GetForProfile(profile());
+        AccountAppsAvailabilityFactory::GetForProfile(profile());
 
     // Wait until account is added.
     base::RunLoop run_loop;
@@ -448,11 +448,11 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
       ::GetAccountManagerFacade(profile()->GetPath().value()));
 
   MockAccountAppsAvailabilityObserver apps_availability_observer;
-  base::ScopedObservation<ash::AccountAppsAvailability,
-                          ash::AccountAppsAvailability::Observer>
+  base::ScopedObservation<AccountAppsAvailability,
+                          AccountAppsAvailability::Observer>
       apps_availability_observation{&apps_availability_observer};
   apps_availability_observation.Observe(
-      ash::AccountAppsAvailabilityFactory::GetForProfile(profile()));
+      AccountAppsAvailabilityFactory::GetForProfile(profile()));
 
   // Call "completeLogin".
   base::Value::List args;
@@ -490,11 +490,11 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
       ::GetAccountManagerFacade(profile()->GetPath().value()));
 
   MockAccountAppsAvailabilityObserver apps_availability_observer;
-  base::ScopedObservation<ash::AccountAppsAvailability,
-                          ash::AccountAppsAvailability::Observer>
+  base::ScopedObservation<AccountAppsAvailability,
+                          AccountAppsAvailability::Observer>
       apps_availability_observation{&apps_availability_observer};
   apps_availability_observation.Observe(
-      ash::AccountAppsAvailabilityFactory::GetForProfile(profile()));
+      AccountAppsAvailabilityFactory::GetForProfile(profile()));
 
   // Call "completeLogin".
   base::Value::List args;
@@ -556,4 +556,4 @@ INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerChromeOSTestWithArcRestrictionsSuite,
                          ::testing::Values(GetGaiaDeviceAccountInfo(),
                                            GetChildDeviceAccountInfo()));
 
-}  // namespace chromeos
+}  // namespace ash

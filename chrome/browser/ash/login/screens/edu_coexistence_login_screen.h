@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos_onboarding.h"
 
 namespace gfx {
 class Rect;
@@ -55,7 +55,7 @@ class EduCoexistenceLoginScreen : public BaseScreen,
   void WebDialogViewBoundsChanged(const gfx::Rect& bounds) override;
 
   ScreenExitCallback exit_callback_;
-  std::unique_ptr<chromeos::InlineLoginDialogChromeOSOnboarding::Delegate>
+  std::unique_ptr<InlineLoginDialogChromeOSOnboarding::Delegate>
       dialog_delegate_;
 
   base::ScopedObservation<LoginDisplayHost, LoginDisplayHost::Observer>

@@ -7,12 +7,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos.h"
 #include "components/account_manager_core/account_addition_options.h"
 
 namespace ash {
-
-using ::chromeos::InlineLoginDialogChromeOS;
 
 AccountManagerUIImpl::AccountManagerUIImpl() = default;
 AccountManagerUIImpl::~AccountManagerUIImpl() = default;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_DIALOG_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_DIALOG_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
-#include "chrome/browser/ui/webui/signin/inline_login_handler_modal_delegate.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_modal_delegate.h"
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -20,10 +20,8 @@
 class GURL;
 
 namespace ash {
-class AccountManagerUIImpl;
-}
 
-namespace chromeos {
+class AccountManagerUIImpl;
 
 // Extends from |SystemWebDialogDelegate| to create an always-on-top dialog.
 class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
@@ -73,7 +71,7 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
 
   // `Show` method can be called directly only by `AccountManagerUIImpl` class.
   // To show the dialog, use `AccountManagerFacade`.
-  friend class ash::AccountManagerUIImpl;
+  friend class AccountManagerUIImpl;
 
   // Displays the dialog. |close_dialog_closure| will be called when the dialog
   // is closed.
@@ -100,6 +98,6 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
       modal_dialog_host_observer_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_DIALOG_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_H_

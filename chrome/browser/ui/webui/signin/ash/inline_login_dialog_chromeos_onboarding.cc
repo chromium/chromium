@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos_onboarding.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,7 +12,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 InlineLoginDialogChromeOSOnboarding::Delegate::Delegate(
     InlineLoginDialogChromeOSOnboarding* dialog)
@@ -122,4 +122,4 @@ void InlineLoginDialogChromeOSOnboarding::OnDialogClosed(
   InlineLoginDialogChromeOS::OnDialogClosed(json_retval);
 }
 
-}  // namespace chromeos
+}  // namespace ash

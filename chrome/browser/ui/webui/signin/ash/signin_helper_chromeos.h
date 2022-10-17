@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_HELPER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_HELPER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_CHROMEOS_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_CHROMEOS_H_
 
-#include "chrome/browser/ui/webui/signin/user_cloud_signin_restriction_policy_fetcher_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher_chromeos.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
@@ -16,11 +16,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
 class AccountManager;
 class AccountAppsAvailability;
-}  // namespace ash
-
-namespace chromeos {
 
 // A helper class for completing the inline login flow. Primarily, it is
 // responsible for exchanging the auth code, obtained after a successful user
@@ -37,7 +35,7 @@ class SigninHelper : public GaiaAuthConsumer {
     // If `is_account_addition` is `false` - the account is reauthenticated.
     ArcHelper(bool is_available_in_arc,
               bool is_account_addition,
-              ash::AccountAppsAvailability* account_apps_availability);
+              AccountAppsAvailability* account_apps_availability);
     ArcHelper(const ArcHelper&) = delete;
     ArcHelper& operator=(const ArcHelper&) = delete;
     virtual ~ArcHelper();
@@ -51,7 +49,7 @@ class SigninHelper : public GaiaAuthConsumer {
     bool is_account_addition_ = false;
     // A non-owning pointer to AccountAppsAvailability which is a KeyedService
     // and should outlive this class.
-    ash::AccountAppsAvailability* account_apps_availability_ = nullptr;
+    AccountAppsAvailability* account_apps_availability_ = nullptr;
   };
 
   SigninHelper(
@@ -85,7 +83,7 @@ class SigninHelper : public GaiaAuthConsumer {
 
   // Receives the callback for `GetSecondaryGoogleAccountUsage()`.
   void OnGetSecondaryGoogleAccountUsage(
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status status,
+      UserCloudSigninRestrictionPolicyFetcherChromeOS::Status status,
       absl::optional<std::string> policy_result,
       const std::string& hosted_domain);
 
@@ -116,7 +114,7 @@ class SigninHelper : public GaiaAuthConsumer {
   // sessions, Demo mode, and Kiosks.
   bool IsInitialPrimaryAccount();
   // Fetcher to get SecondaryGoogleAccountUsage policy value.
-  std::unique_ptr<ash::UserCloudSigninRestrictionPolicyFetcherChromeOS>
+  std::unique_ptr<UserCloudSigninRestrictionPolicyFetcherChromeOS>
       restriction_fetcher_;
   // The user's refresh token fetched in `this` object.
   std::string refresh_token_;
@@ -144,6 +142,6 @@ class SigninHelper : public GaiaAuthConsumer {
   base::WeakPtrFactory<SigninHelper> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_HELPER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_CHROMEOS_H_

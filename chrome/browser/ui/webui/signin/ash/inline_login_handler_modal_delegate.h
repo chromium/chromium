@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_
 
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 // Used to display sub-modals inside |InlineLoginHandlerDialogChromeOS| modal
 // dialog, e.g. displaying a dialog for accounts using 2FA with WebAuthn,
@@ -36,6 +36,6 @@ class InlineLoginHandlerModalDelegate
   web_modal::WebContentsModalDialogHost* host_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_

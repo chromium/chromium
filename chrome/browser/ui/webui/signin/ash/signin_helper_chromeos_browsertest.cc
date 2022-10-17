@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper_chromeos.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
@@ -29,7 +29,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 class SigninHelperChromeOSTest;
 
@@ -710,4 +710,4 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
       0);
 }
 
-}  // namespace chromeos
+}  // namespace ash

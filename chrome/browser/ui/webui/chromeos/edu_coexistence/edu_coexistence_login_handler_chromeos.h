@@ -92,4 +92,9 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::EduCoexistenceLoginHandler;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_COEXISTENCE_EDU_COEXISTENCE_LOGIN_HANDLER_CHROMEOS_H_

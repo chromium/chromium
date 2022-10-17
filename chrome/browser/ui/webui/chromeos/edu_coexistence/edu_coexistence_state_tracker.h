@@ -123,4 +123,9 @@ class EduCoexistenceStateTracker {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::EduCoexistenceStateTracker;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_COEXISTENCE_EDU_COEXISTENCE_STATE_TRACKER_H_

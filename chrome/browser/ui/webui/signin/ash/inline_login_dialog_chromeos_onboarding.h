@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_
 
-#include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos.h"
 
 #include "base/callback.h"
 #include "ui/base/ui_base_types.h"
@@ -21,7 +21,7 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace chromeos {
+namespace ash {
 
 // Inherits from InlineLoginDialogChromeOS to handle the special scenario where
 // the dialog is shown during onboarding.
@@ -83,12 +83,6 @@ class InlineLoginDialogChromeOSOnboarding : public InlineLoginDialogChromeOS {
   base::OnceCallback<void(void)> dialog_closed_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::InlineLoginDialogChromeOSOnboarding;
-}
-
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_

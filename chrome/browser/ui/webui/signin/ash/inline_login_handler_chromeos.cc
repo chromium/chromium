@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_chromeos.h"
 
 #include <memory>
 #include <string>
@@ -22,8 +22,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
-#include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/version/version_loader.h"
@@ -45,7 +45,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 using ::account_manager::AccountManager;
@@ -227,9 +227,8 @@ InlineLoginHandlerChromeOS::~InlineLoginHandlerChromeOS() = default;
 // static
 void InlineLoginHandlerChromeOS::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(
-      chromeos::prefs::kShouldSkipInlineLoginWelcomePage,
-      false /*default_value*/);
+  registry->RegisterBooleanPref(prefs::kShouldSkipInlineLoginWelcomePage,
+                                false /*default_value*/);
 }
 
 void InlineLoginHandlerChromeOS::RegisterMessages() {
@@ -272,8 +271,8 @@ void InlineLoginHandlerChromeOS::SetExtraInitParams(base::Value::Dict& params) {
   const GURL& url = gaia_urls->embedded_setup_chromeos_url(2U);
   params.Set("gaiaPath", url.path().substr(1));
 
-  absl::optional<std::string> version =
-      version_loader::GetVersion(version_loader::VERSION_SHORT);
+  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_SHORT);
   params.Set("platformVersion", version.value_or("0.0.0.0"));
   params.Set("constrained", "1");
   params.Set("flow", GetInlineLoginFlowName(Profile::FromWebUI(web_ui()),
@@ -294,7 +293,7 @@ void InlineLoginHandlerChromeOS::CompleteLogin(
   CHECK(!params.gaia_id.empty());
   CHECK(!params.email.empty());
 
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
         ->GetAccounts(base::BindOnce(
             &InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin,
@@ -324,7 +323,7 @@ void InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin(
   std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
       std::make_unique<SigninHelper::ArcHelper>(
           is_available_in_arc, /*is_account_addition=*/is_new_account,
-          ash::AccountAppsAvailabilityFactory::GetForProfile(
+          AccountAppsAvailabilityFactory::GetForProfile(
               Profile::FromWebUI(web_ui())));
   CreateSigninHelper(params, std::move(arc_helper));
 }
@@ -430,8 +429,7 @@ void InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc(
 void InlineLoginHandlerChromeOS::ContinueGetAccountsNotAvailableInArc(
     const std::string& callback_id,
     const std::vector<::account_manager::Account>& accounts) {
-  ash::AccountAppsAvailabilityFactory::GetForProfile(
-      Profile::FromWebUI(web_ui()))
+  AccountAppsAvailabilityFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->GetAccountsAvailableInArc(base::BindOnce(
           &InlineLoginHandlerChromeOS::FinishGetAccountsNotAvailableInArc,
           weak_factory_.GetWeakPtr(), callback_id, accounts));
@@ -464,8 +462,7 @@ void InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
   const base::Value::Dict& dictionary = args.front().GetDict();
-  ash::AccountAppsAvailabilityFactory::GetForProfile(
-      Profile::FromWebUI(web_ui()))
+  AccountAppsAvailabilityFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->SetIsAccountAvailableInArc(ValueToGaiaAccount(dictionary),
                                    /*is_available=*/true);
   close_dialog_closure_.Run();
@@ -485,4 +482,4 @@ void InlineLoginHandlerChromeOS::OpenGuestWindowAndCloseDialog(
   close_dialog_closure_.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

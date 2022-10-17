@@ -45,12 +45,12 @@
 #include "chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_chromeos.h"
 #include "chrome/grit/arc_account_picker_resources.h"
 #include "chrome/grit/arc_account_picker_resources_map.h"
-#include "components/account_manager_core/pref_names.h"
 #include "chrome/grit/gaia_action_buttons_resources.h"
 #include "chrome/grit/gaia_action_buttons_resources_map.h"
+#include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -358,10 +358,9 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui->AddMessageHandler(
-      std::make_unique<chromeos::InlineLoginHandlerChromeOS>(
-          base::BindRepeating(&WebDialogUIBase::CloseDialog,
-                              weak_factory_.GetWeakPtr(),
-                              base::Value::List() /* args */)));
+      std::make_unique<ash::InlineLoginHandlerChromeOS>(base::BindRepeating(
+          &WebDialogUIBase::CloseDialog, weak_factory_.GetWeakPtr(),
+          base::Value::List() /* args */)));
   if (profile->IsChild()) {
     web_ui->AddMessageHandler(
         std::make_unique<chromeos::EduCoexistenceLoginHandler>(

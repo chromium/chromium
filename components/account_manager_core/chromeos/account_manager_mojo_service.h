@@ -20,9 +20,9 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
+namespace ash {
 class SigninHelper;
-}  // namespace chromeos
+}
 
 namespace crosapi {
 
@@ -75,9 +75,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   friend class AccountManagerMojoServiceTest;
   friend class TestAccountManagerObserver;
   friend class AccountManagerFacadeAshTest;
-  friend class chromeos::SigninHelper;
+  friend class ash::SigninHelper;
 
-  // This method is called by `chromeos::SigninHelper` which passes `AccountKey`
+  // This method is called by `ash::SigninHelper` which passes `AccountKey`
   // of account that was added.
   void OnAccountAdditionFinished(
       const account_manager::AccountAdditionResult& result);

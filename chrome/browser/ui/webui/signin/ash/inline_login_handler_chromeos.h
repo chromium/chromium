@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_CHROMEOS_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_CHROMEOS_H_
 
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/values.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper_chromeos.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
-#include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 #include "components/account_manager_core/account.h"
 
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 class InlineLoginHandlerChromeOS : public InlineLoginHandler {
  public:
@@ -71,6 +71,6 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
   base::WeakPtrFactory<InlineLoginHandlerChromeOS> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_CHROMEOS_H_

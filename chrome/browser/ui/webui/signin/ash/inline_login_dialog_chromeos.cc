@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos.h"
 
 #include <algorithm>
 #include <string>
@@ -31,7 +31,7 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -276,8 +276,8 @@ void InlineLoginDialogChromeOS::ShowInternal(
 
   // TODO(crbug.com/1016828): Remove/update this after the dialog behavior on
   // Chrome OS is defined.
-  ash::WindowBackdrop::Get(dialog->dialog_window())
-      ->SetBackdropType(ash::WindowBackdrop::BackdropType::kSemiOpaque);
+  WindowBackdrop::Get(dialog->dialog_window())
+      ->SetBackdropType(WindowBackdrop::BackdropType::kSemiOpaque);
 }
 
-}  // namespace chromeos
+}  // namespace ash

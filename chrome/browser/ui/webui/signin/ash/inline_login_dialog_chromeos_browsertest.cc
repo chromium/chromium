@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos.h"
 
 #include "base/json/json_reader.h"
 #include "chrome/common/webui_url_constants.h"
@@ -17,7 +17,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Subclass to access protected constructor and protected methods.
@@ -119,4 +119,4 @@ IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
   EXPECT_FALSE(InlineLoginDialogChromeOS::IsShown());
 }
 
-}  // namespace chromeos
+}  // namespace ash
