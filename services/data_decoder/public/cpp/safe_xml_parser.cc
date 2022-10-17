@@ -60,7 +60,7 @@ bool GetXmlElementText(const base::Value& element, std::string* text) {
     return false;
 
   const base::Value* text_node = nullptr;
-  for (const base::Value& value : children->GetListDeprecated()) {
+  for (const base::Value& value : children->GetList()) {
     if (IsXmlElementOfType(value, mojom::XmlParser::kTextNodeType) ||
         IsXmlElementOfType(value, mojom::XmlParser::kCDataNodeType)) {
       text_node = &value;
@@ -103,7 +103,7 @@ int GetXmlElementChildrenCount(const base::Value& element,
   if (!children)
     return 0;
   int child_count = 0;
-  for (const base::Value& value : children->GetListDeprecated()) {
+  for (const base::Value& value : children->GetList()) {
     DCHECK(value.is_dict());
     std::string tag_name;
     bool success = GetXmlElementTagName(value, &tag_name);
@@ -118,7 +118,7 @@ const base::Value* GetXmlElementChildWithType(const base::Value& element,
   const base::Value* children = GetXmlElementChildren(element);
   if (!children)
     return nullptr;
-  for (const base::Value& value : children->GetListDeprecated()) {
+  for (const base::Value& value : children->GetList()) {
     DCHECK(value.is_dict());
     if (IsXmlElementOfType(value, type)) {
       return &value;
@@ -132,7 +132,7 @@ const base::Value* GetXmlElementChildWithTag(const base::Value& element,
   const base::Value* children = GetXmlElementChildren(element);
   if (!children)
     return nullptr;
-  for (const base::Value& value : children->GetListDeprecated()) {
+  for (const base::Value& value : children->GetList()) {
     DCHECK(value.is_dict());
     if (IsXmlElementNamed(value, tag))
       return &value;
@@ -148,7 +148,7 @@ bool GetAllXmlElementChildrenWithTag(
   if (!children)
     return false;
   bool found = false;
-  for (const base::Value& child : children->GetListDeprecated()) {
+  for (const base::Value& child : children->GetList()) {
     DCHECK(child.is_dict());
     if (IsXmlElementNamed(child, tag)) {
       found = true;
