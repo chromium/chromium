@@ -139,23 +139,48 @@ void AttributionReportNetworkSender::OnReportSent(
           ? Status::kOk
           : !internal_ok ? Status::kInternalError : Status::kExternalError;
 
-  base::UmaHistogramEnumeration(is_debug_report
-                                    ? "Conversions.DebugReport.ReportStatus"
-                                    : "Conversions.ReportStatus2",
-                                status);
+  const char* status_metric;
+  const char* http_response_or_net_error_code_metric;
+  const char* retry_succeed_metric;
+
+  switch (report.GetReportType()) {
+    case AttributionReport::Type::kEventLevel:
+      status_metric = is_debug_report
+                          ? "Conversions.DebugReport.ReportStatusEventLevel"
+                          : "Conversions.ReportStatusEventLevel";
+      http_response_or_net_error_code_metric =
+          is_debug_report
+              ? "Conversions.DebugReport.HttpResponseOrNetErrorCodeEventLevel"
+              : "Conversions.HttpResponseOrNetErrorCodeEventLevel";
+      retry_succeed_metric =
+          is_debug_report
+              ? "Conversions.DebugReport.ReportRetrySucceedEventLevel"
+              : "Conversions.ReportRetrySucceedEventLevel";
+      break;
+    case AttributionReport::Type::kAggregatableAttribution:
+      status_metric = is_debug_report
+                          ? "Conversions.DebugReport.ReportStatusAggregatable"
+                          : "Conversions.ReportStatusAggregatable";
+      http_response_or_net_error_code_metric =
+          is_debug_report
+              ? "Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable"
+              : "Conversions.HttpResponseOrNetErrorCodeAggregatable";
+      retry_succeed_metric =
+          is_debug_report
+              ? "Conversions.DebugReport.ReportRetrySucceedAggregatable"
+              : "Conversions.ReportRetrySucceedAggregatable";
+      break;
+  }
+
+  base::UmaHistogramEnumeration(status_metric, status);
 
   // Since net errors are always negative and HTTP errors are always positive,
   // it is fine to combine these in a single histogram.
-  base::UmaHistogramSparse(
-      is_debug_report ? "Conversions.DebugReport.HttpResponseOrNetErrorCode"
-                      : "Conversions.Report.HttpResponseOrNetErrorCode",
-      internal_ok ? response_code : net_error);
+  base::UmaHistogramSparse(http_response_or_net_error_code_metric,
+                           internal_ok ? response_code : net_error);
 
   if (loader->GetNumRetries() > 0) {
-    base::UmaHistogramBoolean(is_debug_report
-                                  ? "Conversions.DebugReport.ReportRetrySucceed"
-                                  : "Conversions.ReportRetrySucceed2",
-                              status == Status::kOk);
+    base::UmaHistogramBoolean(retry_succeed_metric, status == Status::kOk);
   }
 
   loaders_in_progress_.erase(it);

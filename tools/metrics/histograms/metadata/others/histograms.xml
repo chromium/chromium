@@ -3668,6 +3668,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.DebugReport.HttpResponseOrNetErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="M117">
+  <obsolete>
+    Split between with
+    Conversions.DebugReport.HttpResponseOrNetErrorCodeEventLevel and
+    Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable to help debug
+    report loss issues, Oct 2022.
+  </obsolete>
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3679,8 +3685,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending a debug attribution report, recorded for each sent
+    aggregatable report. The HTTP response code is recorded if there is no net
+    error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.HttpResponseOrNetErrorCodeEventLevel"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending a debug attribution report, recorded for each sent
+    event-level report. The HTTP response code is recorded if there is no net
+    error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.DebugReport.ReportRetrySucceed"
     enum="BooleanSuccess" expires_after="M117">
+  <obsolete>
+    Split between with Conversions.DebugReport.ReportRetrySucceedEventLevel and
+    Conversions.DebugReport.ReportRetrySucceedAggregatable to help debug report
+    loss issues, Oct 2022.
+  </obsolete>
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3690,14 +3728,65 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DebugReport.ReportRetrySucceedAggregatable"
+    enum="BooleanSuccess" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular aggregatable debug attribution report was
+    successful. Emitted for all aggregatable debug attribution reports that
+    retry.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.ReportRetrySucceedEventLevel"
+    enum="BooleanSuccess" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular event-level debug attribution report was
+    successful. Emitted for all event-level debug attribution reports that
+    retry.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.DebugReport.ReportStatus"
     enum="ConversionReportStatus" expires_after="M117">
+  <obsolete>
+    Split between with Conversions.DebugReport.ReportStatusEventLevel and
+    Conversions.DebugReport.ReportStatusAggregatable to help debug report loss
+    issues, Oct 2022.
+  </obsolete>
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the high-level request status of a debug attribution report.
     Recorded for every debug attribution report sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.ReportStatusAggregatable"
+    enum="ConversionReportStatus" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high-level request status of an aggregatable debug attribution
+    report. Recorded for every debug aggregatable attribution report sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.ReportStatusEventLevel"
+    enum="ConversionReportStatus" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high-level request status of an event-level debug attribution
+    report. Recorded for every debug event-level attribution report sent.
   </summary>
 </histogram>
 
@@ -3768,6 +3857,32 @@ chromium-metrics-reviews@google.com.
     filter data in source, top-level trigger, event-level and aggregatable
     trigger data. Recorded once for each filter data when parsed from the
     attributionsrc response.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.HttpResponseOrNetErrorCodeAggregatable"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an attribution report, recorded for each sent
+    aggregatable report. The HTTP response code is recorded if there is no net
+    error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.HttpResponseOrNetErrorCodeEventLevel"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an attribution report, recorded for each sent
+    event-level report. The HTTP response code is recorded if there is no net
+    error code for the request, or the net error code indicates there was a
+    response code failure.
   </summary>
 </histogram>
 
@@ -3914,6 +4029,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.Report.HttpResponseOrNetErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="M117">
+  <obsolete>
+    Split between with Conversions.HttpResponseOrNetErrorCodeEventLevel and
+    Conversions.HttpResponseOrNetErrorCodeAggregatable to help debug report loss
+    issues, Oct 2022.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -3940,12 +4060,39 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ReportRetrySucceed2" enum="BooleanSuccess"
     expires_after="M117">
+  <obsolete>
+    Split between with Conversions.ReportRetrySucceedEventLevel and
+    Conversions.ReportRetrySucceedAggregatable to help debug report loss issues,
+    Oct 2022.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
     Records whether a particular conversion report was successful. Emitted for
     all conversion reports which retry.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportRetrySucceedAggregatable"
+    enum="BooleanSuccess" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular aggregatable attribution report was successful.
+    Emitted for all conversion aggregatable reports which retry.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportRetrySucceedEventLevel"
+    enum="BooleanSuccess" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular event-level attribution report was successful.
+    Emitted for all attribution event-level reports which retry.
   </summary>
 </histogram>
 
@@ -4047,12 +4194,41 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ReportStatus2" enum="ConversionReportStatus"
     expires_after="M117">
+  <obsolete>
+    Split between with Conversions.ReportStatusEventLevel and
+    Conversions.ReportStatusAggregatable to help debug report loss issues, Oct
+    2022.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the high level request status of a conversion report. Recorded for
     every conversion report sent. For conversion report that has been retried,
     every retry will be counted.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportStatusAggregatable"
+    enum="ConversionReportStatus" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of an attribution report. Recorded for
+    every aggregatable attribution report sent. For attribution report that has
+    been retried, every retry will be counted.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportStatusEventLevel"
+    enum="ConversionReportStatus" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of an attribution report. Recorded for
+    every event-level attribution report sent. For attribution report that has
+    been retried, every retry will be counted.
   </summary>
 </histogram>
 
