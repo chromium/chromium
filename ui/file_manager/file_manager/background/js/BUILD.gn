@@ -47,7 +47,6 @@ js_type_check("closure_compile_jsmodules") {
     ":file_operation_manager",
     ":file_operation_util",
     ":launcher",
-    ":metadata_proxy",
     ":metrics_start",
     ":mock_progress_center",
     ":progress_center",
@@ -212,7 +211,6 @@ js_library("entry_location_impl") {
 js_library("file_operation_handler") {
   deps = [
     "//ui/file_manager/file_manager/common/js:api",
-    "//ui/file_manager/file_manager/common/js:file_operation_common",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
@@ -227,10 +225,7 @@ js_unittest("file_operation_handler_unittest") {
     ":mock_file_operation_manager",
     ":mock_progress_center",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:file_operation_common",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -248,22 +243,12 @@ js_library("mock_file_operation_manager") {
 js_library("file_operation_manager") {
   deps = [
     ":file_operation_util",
-    ":metadata_proxy",
     ":trash",
-    ":volume_manager_factory",
-    "//ui/file_manager/file_manager/common/js:api",
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:file_operation_common",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:trash",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -273,11 +258,9 @@ js_unittest("file_operation_manager_unittest") {
     ":file_operation_util",
     ":volume_manager_factory",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:file_operation_common",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/webui/resources/js:load_time_data.m",
@@ -285,29 +268,7 @@ js_unittest("file_operation_manager_unittest") {
 }
 
 js_library("file_operation_util") {
-  deps = [
-    ":metadata_proxy",
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:file_operation_common",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:trash",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:event_target",
-  ]
-}
-
-js_library("metadata_proxy") {
-  deps = [ "//ui/file_manager/file_manager/common/js:lru_cache" ]
-}
-
-js_unittest("metadata_proxy_unittest") {
-  deps = [
-    ":metadata_proxy",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-  ]
+  deps = [ "//ui/file_manager/file_manager/common/js:util" ]
 }
 
 js_library("metrics_start") {
@@ -502,7 +463,6 @@ js_test_type_check("js_test_type_check") {
     ":drive_sync_handler_unittest",
     ":file_operation_handler_unittest",
     ":file_operation_manager_unittest",
-    ":metadata_proxy_unittest",
     ":trash_unittest",
     ":volume_manager_unittest",
   ]

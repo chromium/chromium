@@ -673,7 +673,6 @@ js_library("file_manager_commands") {
     "ui:list",
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:file_operation_common",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:metrics",

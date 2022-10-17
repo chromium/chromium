@@ -1034,20 +1034,6 @@ util.isNonModifiable = (volumeManager, entry) => {
 };
 
 /**
- * Adds a foreground listener to the background page components.
- * The listener will be removed when the foreground window is closed.
- * @param {!EventTarget} target
- * @param {string} type
- * @param {Function} handler
- */
-util.addEventListenerToBackgroundComponent = (target, type, handler) => {
-  target.addEventListener(type, handler);
-  window.addEventListener('pagehide', () => {
-    target.removeEventListener(type, handler);
-  });
-};
-
-/**
  * Checks if an API call returned an error, and if yes then prints it.
  */
 util.checkAPIError = () => {

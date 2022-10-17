@@ -218,10 +218,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataModel) {
   RunTestURL("foreground/js/metadata/metadata_model_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataProxyTest) {
-  RunTestURL("background/js/metadata_proxy_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMenu) {
   RunTestURL("foreground/js/ui/multi_menu_unittest.js");
 }

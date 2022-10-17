@@ -122,9 +122,6 @@ export class DirectoryModel extends EventTarget {
       chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
           this.updateFileListAfterIOTask_.bind(this));
     }
-    util.addEventListenerToBackgroundComponent(
-        fileOperationManager, 'entries-changed',
-        this.onEntriesChanged_.bind(this));
 
     /** @private {string} */
     this.lastSearchQuery_ = '';
@@ -977,66 +974,6 @@ export class DirectoryModel extends EventTarget {
     });
 
     dispatchSimpleEvent(this, 'end-update-files');
-  }
-
-  /**
-   * Callback when an entry is changed.
-   * @param {EntriesChangedEvent} event Entry change event.
-   * @private
-   */
-  async onEntriesChanged_(event) {
-    const kind = event.kind;
-    const entries = event.entries;
-    // TODO(hidehiko): We should update directory model even the search result
-    // is shown.
-    const rootType = this.getCurrentRootType();
-    if ((rootType === VolumeManagerCommon.RootType.DRIVE ||
-         rootType === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME ||
-         rootType === VolumeManagerCommon.RootType.DRIVE_RECENT ||
-         rootType === VolumeManagerCommon.RootType.DRIVE_OFFLINE) &&
-        this.isSearching()) {
-      return;
-    }
-
-    switch (kind) {
-      case util.EntryChangedKind.CREATED:
-        try {
-          const parentPromises =
-              entries.map(entry => new Promise((resolve, reject) => {
-                            entry.getParent(resolve, reject);
-                          }));
-          const parents = await Promise.all(parentPromises);
-          const entriesToAdd = [];
-
-          for (let i = 0; i < parents.length; i++) {
-            if (!util.isSameEntry(parents[i], this.getCurrentDirEntry())) {
-              continue;
-            }
-
-            const index = this.findIndexByEntry_(entries[i]);
-            if (index >= 0) {
-              this.getFileList().replaceItem(
-                  this.getFileList().item(index), entries[i]);
-            } else {
-              entriesToAdd.push(entries[i]);
-            }
-          }
-
-          this.partialUpdate_(entriesToAdd, []);
-        } catch (error) {
-          console.warn(error.stack || error);
-        }
-        break;
-
-      case util.EntryChangedKind.DELETED:
-        // This is the delete event.
-        this.partialUpdate_([], util.entriesToURLs(entries));
-        break;
-
-      default:
-        console.error('Invalid EntryChangedKind: ' + kind);
-        break;
-    }
   }
 
   /**

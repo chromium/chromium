@@ -28,7 +28,6 @@ group("js_modules") {
     ":async_util",
     ":dialog_type",
     ":error_counter",
-    ":file_operation_common",
     ":file_type",
     ":file_types_data",
     ":files_app_entry_types",
@@ -57,7 +56,6 @@ js_type_check("closure_compile_jsmodules") {
     ":array_data_model",
     ":async_util",
     ":error_counter",
-    ":file_operation_common",
     ":file_type",
     ":file_types_data",
     ":files_app_entry_types",
@@ -193,13 +191,6 @@ js_unittest("file_type_unittest") {
     ":mock_entry",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
-}
-
-js_library("file_operation_common") {
-  deps = [
-    ":util",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
   ]
 }
 

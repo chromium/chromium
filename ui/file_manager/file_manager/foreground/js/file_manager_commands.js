@@ -9,7 +9,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
-import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -1187,7 +1186,7 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
         fileManager.trashEnabled) {
       fileManager.ui.nudgeContainer.showNudge(NudgeType['TRASH_NUDGE']);
 
-      chrome.fileManagerPrivate.startIOTask(
+      startIOTask(
           chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
           /*params=*/ {});
       return;
@@ -1210,8 +1209,9 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
 
     const deleteAction = () => {
       dialogDoneCallback();
-      fileManager.fileOperationManager.deleteEntries(
-          entries, permanentlyDelete);
+      // Start the permanent delete.
+      startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.DELETE, entries, /*params=*/ {});
     };
 
     const cancelAction = () => {

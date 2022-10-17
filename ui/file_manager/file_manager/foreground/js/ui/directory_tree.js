@@ -2008,10 +2008,6 @@ export class DirectoryTree extends Tree {
     this.directoryModel_.addEventListener(
         'directory-changed', this.onCurrentDirectoryChanged_.bind(this));
 
-    util.addEventListenerToBackgroundComponent(
-        fileOperationManager, 'entries-changed',
-        this.onEntriesChanged_.bind(this));
-
     this.addEventListener(
         'scroll', this.onTreeScrollEvent_.bind(this), {passive: true});
 
@@ -2194,39 +2190,6 @@ export class DirectoryTree extends Tree {
         await DirectoryItemTreeBaseMethods.searchAndSelectByEntry.call(
             this, entry);
     return found;
-  }
-
-  /**
-   * Handles entries changed event.
-   * @param {!Event} event
-   * @private
-   */
-  onEntriesChanged_(event) {
-    const directories = event.entries.filter((entry) => entry.isDirectory);
-
-    if (directories.length === 0) {
-      return;
-    }
-
-    switch (event.kind) {
-      case util.EntryChangedKind.CREATED:
-        // Handle as change event of parent entry.
-        Promise
-            .all(directories.map(
-                (directory) =>
-                    new Promise(directory.getParent.bind(directory))))
-            .then((parentDirectories) => {
-              parentDirectories.forEach(
-                  (parentDirectory) =>
-                      this.updateTreeByEntry_(parentDirectory));
-            });
-        break;
-      case util.EntryChangedKind.DELETED:
-        directories.forEach((directory) => this.updateTreeByEntry_(directory));
-        break;
-      default:
-        assertNotReached();
-    }
   }
 
   /**
