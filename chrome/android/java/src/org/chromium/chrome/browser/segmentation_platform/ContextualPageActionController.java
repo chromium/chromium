@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
+import android.os.Handler;
+import android.os.Looper;
+
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -18,10 +22,12 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonControl
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Central class for contextual page actions bridging between UI and backend. Registers itself with
@@ -29,12 +35,27 @@ import org.chromium.url.GURL;
  * button data to the toolbar when asked for it.
  */
 public class ContextualPageActionController {
+    /**
+     * The interface to be implemented by the individual feature backends to provide signals
+     * necessary for the controller in an uniform manner.
+     */
+    public interface ActionProvider {
+        /**
+         * Called during a page load to fetch the relevant signals from the action provider.
+         * @param tab The current tab for which the action would be shown.
+         * @param signalAccumulator An accumulator into which the provider would populate relevant
+         *         signals.
+         */
+        void getAction(Tab tab, SignalAccumulator signalAccumulator);
+    }
+
     private final ObservableSupplier<Profile> mProfileSupplier;
-    private final ObservableSupplier<Tab> mTabSupplier;
-    private final Supplier<ShoppingService> mShoppingServiceSupplier;
-    private final Supplier<BookmarkModel> mBookmarkModelSupplier;
+    private ObservableSupplier<Tab> mTabSupplier;
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private CurrentTabObserver mCurrentTabObserver;
+
+    // The action provider backends.
+    protected final List<ActionProvider> mActionProviders = new ArrayList<>();
 
     /**
      * Constructor.
@@ -50,8 +71,6 @@ public class ContextualPageActionController {
             Supplier<BookmarkModel> bookmarkModelSupplier) {
         mProfileSupplier = profileSupplier;
         mTabSupplier = tabSupplier;
-        mShoppingServiceSupplier = shoppingServiceSupplier;
-        mBookmarkModelSupplier = bookmarkModelSupplier;
         mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
         profileSupplier.addObserver(profile -> {
             if (profile.isOffTheRecord()) return;
@@ -71,7 +90,22 @@ public class ContextualPageActionController {
                     if (tab != null) maybeShowContextualPageAction();
                 }
             }, this::activeTabChanged);
+
+            initActionProviders(shoppingServiceSupplier, bookmarkModelSupplier);
         });
+    }
+
+    @VisibleForTesting
+    protected void initActionProviders(Supplier<ShoppingService> shoppingServiceSupplier,
+            Supplier<BookmarkModel> bookmarkModelSupplier) {
+        mActionProviders.clear();
+        if (AdaptiveToolbarFeatures.isPriceTrackingPageActionEnabled()) {
+            mActionProviders.add(new PriceTrackingActionProvider(
+                    shoppingServiceSupplier, bookmarkModelSupplier));
+        }
+        if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled()) {
+            mActionProviders.add(new ReaderModeActionProvider());
+        }
     }
 
     /** Called on destroy. */
@@ -88,34 +122,28 @@ public class ContextualPageActionController {
     }
 
     private void maybeShowContextualPageAction() {
-        Tab tab = mTabSupplier.get();
-        if (tab == null || tab.isIncognito() || tab.isDestroyed()) {
+        Tab tab = getValidActiveTab();
+        if (tab == null) {
             // On incognito tabs revert back to static action.
-            mAdaptiveToolbarButtonController.showDynamicAction(
-                    AdaptiveToolbarButtonVariant.UNKNOWN);
+            showDynamicAction(AdaptiveToolbarButtonVariant.UNKNOWN);
             return;
         }
         collectSignals(tab);
     }
 
     private void collectSignals(Tab tab) {
-        final BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
-            boolean isAlreadyPriceTracked =
-                    PowerBookmarkUtils.isBookmarkPriceTracked(bookmarkModel, bookmarkId);
-            if (isAlreadyPriceTracked) {
-                findBestAction(tab, /*canTrackPrice=*/false);
-            } else {
-                mShoppingServiceSupplier.get().getProductInfoForUrl(tab.getUrl(), (url, info) -> {
-                    boolean canTrackPrice = info != null;
-                    findBestAction(tab, canTrackPrice);
-                });
-            }
-        });
+        if (mActionProviders.isEmpty()) return;
+        final SignalAccumulator signalAccumulator =
+                new SignalAccumulator(new Handler(Looper.getMainLooper()), tab, mActionProviders);
+        signalAccumulator.getSignals(() -> findBestAction(signalAccumulator));
     }
 
-    private void findBestAction(Tab tab, boolean canTrackPrice) {
+    private void findBestAction(SignalAccumulator signalAccumulator) {
+        Tab tab = getValidActiveTab();
+        if (tab == null) return;
+        // TODO(crbug/1373905): Remove this after segmentation integration for reader mode.
+        boolean canTrackPrice =
+                signalAccumulator.hasPriceTracking() || signalAccumulator.hasReaderMode();
         ContextualPageActionControllerJni.get().computeContextualPageAction(
                 mProfileSupplier.get(), tab.getUrl(), canTrackPrice, result -> {
                     if (tab.isDestroyed()) return;
@@ -125,11 +153,29 @@ public class ContextualPageActionController {
                     if (!isSameTab) return;
 
                     if (!AdaptiveToolbarFeatures.isContextualPageActionUiEnabled()) return;
-                    mAdaptiveToolbarButtonController.showDynamicAction(
-                            AdaptiveToolbarStatePredictor
-                                    .getAdaptiveToolbarButtonVariantFromSegmentId(
-                                            result.selectedSegment));
+                    int action = AdaptiveToolbarStatePredictor
+                                         .getAdaptiveToolbarButtonVariantFromSegmentId(
+                                                 result.selectedSegment);
+                    // TODO(crbug/1373905): Remove this after segmentation integration for reader
+                    // mode.
+                    if (signalAccumulator.hasReaderMode()) {
+                        action = AdaptiveToolbarButtonVariant.READER_MODE;
+                    }
+                    showDynamicAction(action);
                 });
+    }
+
+    private void showDynamicAction(@AdaptiveToolbarButtonVariant int action) {
+        // TODO(crbug/1373891): Add logic to inform reader mode backend.
+        mAdaptiveToolbarButtonController.showDynamicAction(action);
+    }
+
+    /** @return The active regular tab. Null for incognito. */
+    private Tab getValidActiveTab() {
+        if (mProfileSupplier == null || mProfileSupplier.get().isOffTheRecord()) return null;
+        Tab tab = mTabSupplier.get();
+        if (tab == null || tab.isIncognito() || tab.isDestroyed()) return null;
+        return tab;
     }
 
     @NativeMethods

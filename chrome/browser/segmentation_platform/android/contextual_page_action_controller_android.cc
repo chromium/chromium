@@ -45,6 +45,7 @@ static void JNI_ContextualPageActionController_ComputeContextualPageAction(
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::
           SegmentationPlatformServiceFactory::GetForProfile(profile);
+  DCHECK(segmentation_platform_service);
   segmentation_platform_service->GetSelectedSegmentOnDemand(
       segmentation_platform::kContextualPageActionsKey, input_context,
       base::BindOnce(&RunGetSelectedSegmentCallback,
