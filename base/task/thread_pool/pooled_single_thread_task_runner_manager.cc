@@ -17,6 +17,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_features.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/priority_queue.h"
@@ -415,7 +416,8 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
     if (!g_manager_is_alive)
       return false;
 
-    Task task(from_here, std::move(closure), TimeTicks::Now(), delay);
+    Task task(from_here, std::move(closure), TimeTicks::Now(), delay,
+              base::GetTaskLeeway());
     return PostTask(std::move(task));
   }
 
@@ -427,8 +429,8 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
     if (!g_manager_is_alive)
       return false;
 
-    Task task(from_here, std::move(closure), TimeTicks::Now(),
-              delayed_run_time);
+    Task task(from_here, std::move(closure), TimeTicks::Now(), delayed_run_time,
+              base::GetTaskLeeway(), delay_policy);
     return PostTask(std::move(task));
   }
 
