@@ -130,10 +130,7 @@ android_library("browserfragment_shell_java") {
   testonly = true
   resources_package = "org.chromium.browserfragment.shell"
 
-  sources = [
-    "browserfragment_shell_apk/src/org/chromium/browserfragment/shell/BrowserFragmentShellActivity.java",
-    "browserfragment_shell_apk/src/org/chromium/browserfragment/shell/InstrumentationActivity.java",
-  ]
+  sources = [ "browserfragment_shell_apk/src/org/chromium/browserfragment/shell/BrowserFragmentShellActivity.java" ]
 
   deps = [
     ":browserfragment_service_provider_resources",
