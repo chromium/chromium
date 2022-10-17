@@ -330,6 +330,9 @@ tast_disabled_tests_from_chrome_all = [
   "policy.AllowedLanguages",
   "terminal.Crosh",
 
+  # https://crbug.com/1374943
+  "hwsec.CrossVersionLogin",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
