@@ -254,11 +254,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(crbug.com/962299): This is incorrect in some cases.
   int PixelSnappedWidth() const {
     NOT_DESTROYED();
-    return frame_rect_.PixelSnappedWidth();
+    return SnapSizeToPixel(Size().Width(), Location().X());
   }
   int PixelSnappedHeight() const {
     NOT_DESTROYED();
-    return frame_rect_.PixelSnappedHeight();
+    return SnapSizeToPixel(Size().Height(), Location().Y());
   }
 
   void SetX(LayoutUnit x) {
@@ -310,13 +310,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   LayoutUnit LogicalWidth() const {
     NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? frame_rect_.Width()
-                                                : frame_rect_.Height();
+    LayoutSize size = Size();
+    return StyleRef().IsHorizontalWritingMode() ? size.Width() : size.Height();
   }
   LayoutUnit LogicalHeight() const {
     NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? frame_rect_.Height()
-                                                : frame_rect_.Width();
+    LayoutSize size = Size();
+    return StyleRef().IsHorizontalWritingMode() ? size.Height() : size.Width();
   }
 
   // Logical height of the object, including content overflowing the
@@ -404,7 +404,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     auto location = Location();
     return LayoutSize(location.X(), location.Y());
   }
-  LayoutSize Size() const {
+  virtual LayoutSize Size() const {
     NOT_DESTROYED();
     return frame_rect_.Size();
   }
@@ -806,11 +806,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // of a single line).
   LayoutUnit OffsetWidth() const final {
     NOT_DESTROYED();
-    return frame_rect_.Width();
+    return Size().Width();
   }
   LayoutUnit OffsetHeight() const final {
     NOT_DESTROYED();
-    return frame_rect_.Height();
+    return Size().Height();
   }
 
   // TODO(crbug.com/962299): This is incorrect in some cases.
@@ -1790,7 +1790,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     if (LIKELY(!HasFlippedBlocksWritingMode()))
       return position;
     DCHECK(!IsHorizontalWritingMode());
-    return frame_rect_.Width() - (position + width);
+    return Size().Width() - (position + width);
   }
   // Inherit other flipping methods from LayoutObject.
   using LayoutObject::FlipForWritingMode;

@@ -1079,11 +1079,11 @@ LayoutUnit LayoutBox::ClientWidth() const {
   // border side values are currently limited to 2^20px (a recent change in the
   // code), if this limit is raised again in the future, we'd have ill effects
   // of saturated arithmetic otherwise.
+  LayoutUnit width = Size().Width();
   if (CanSkipComputeScrollbars()) {
-    return (frame_rect_.Width() - BorderLeft() - BorderRight())
-        .ClampNegativeToZero();
+    return (width - BorderLeft() - BorderRight()).ClampNegativeToZero();
   } else {
-    return (frame_rect_.Width() - BorderLeft() - BorderRight() -
+    return (width - BorderLeft() - BorderRight() -
             ComputeScrollbarsInternal(kClampToContentBox).HorizontalSum())
         .ClampNegativeToZero();
   }
@@ -1098,11 +1098,11 @@ LayoutUnit LayoutBox::ClientHeight() const {
   // currently limited to 2^20px (a recent change in the code), if this limit is
   // raised again in the future, we'd have ill effects of saturated arithmetic
   // otherwise.
+  LayoutUnit height = Size().Height();
   if (CanSkipComputeScrollbars()) {
-    return (frame_rect_.Height() - BorderTop() - BorderBottom())
-        .ClampNegativeToZero();
+    return (height - BorderTop() - BorderBottom()).ClampNegativeToZero();
   } else {
-    return (frame_rect_.Height() - BorderTop() - BorderBottom() -
+    return (height - BorderTop() - BorderBottom() -
             ComputeScrollbarsInternal(kClampToContentBox).VerticalSum())
         .ClampNegativeToZero();
   }
@@ -1264,8 +1264,8 @@ void LayoutBox::AbsoluteQuads(Vector<gfx::QuadF>& quads,
 
 gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  return gfx::RectF(0, 0, frame_rect_.Width().ToFloat(),
-                    frame_rect_.Height().ToFloat());
+  LayoutSize size = Size();
+  return gfx::RectF(0, 0, size.Width().ToFloat(), size.Height().ToFloat());
 }
 
 void LayoutBox::UpdateAfterLayout() {
@@ -1828,7 +1828,7 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
   // is just to make sure that left-hand scrollbars don't mess up
   // scrollWidth. For the full story, visit http://crbug.com/724255.
   if (scrollbars.left > 0 && clamp_to_content_box == kClampToContentBox) {
-    LayoutUnit max_width = frame_rect_.Width() - BorderAndPaddingWidth();
+    LayoutUnit max_width = Size().Width() - BorderAndPaddingWidth();
     scrollbars.left =
         std::min(scrollbars.left, max_width.ClampNegativeToZero());
   }
