@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/web_modal/modal_dialog_host.h"
@@ -18,6 +19,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
+
 ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
     ProfilePickerForceSigninDialogHost* host,
     std::unique_ptr<views::WebView> web_view,
@@ -61,7 +63,9 @@ gfx::Size ProfilePickerForceSigninDialogDelegate::CalculatePreferredSize()
 }
 
 void ProfilePickerForceSigninDialogDelegate::DisplayErrorMessage() {
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUISigninErrorURL));
+  GURL url(chrome::kChromeUISigninErrorURL);
+  url = AddFromProfilePickerURLParameter(url);
+  web_view_->LoadInitialURL(url);
 }
 
 bool ProfilePickerForceSigninDialogDelegate::HandleContextMenu(

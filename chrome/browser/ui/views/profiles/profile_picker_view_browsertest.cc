@@ -696,6 +696,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   GURL force_signin_webui_url = signin::GetEmbeddedPromoURL(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::Reason::kForcedSigninPrimaryAccount, true);
+  force_signin_webui_url =
+      AddFromProfilePickerURLParameter(force_signin_webui_url);
+
   ui_test_utils::UrlLoadObserver url_observer(
       force_signin_webui_url, content::NotificationService::AllSources());
   url_observer.Wait();

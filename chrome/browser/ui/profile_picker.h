@@ -19,9 +19,6 @@
 
 class GURL;
 class Profile;
-namespace content {
-class BrowserContext;
-}
 
 namespace views {
 class View;
@@ -230,9 +227,7 @@ class ProfilePicker {
   // Shows a dialog where the user can auth the profile or see the
   // auth error message. If a dialog is already shown, this destroys the current
   // dialog and creates a new one.
-  static void ShowDialog(content::BrowserContext* browser_context,
-                         const GURL& url,
-                         const base::FilePath& profile_path);
+  static void ShowDialog(Profile* profile, const GURL& url);
 
   // Hides the dialog if it is showing.
   static void HideDialog();
@@ -294,8 +289,7 @@ class ProfilePicker {
 #endif
 
   // Show the dialog and display local sign in error message without browser.
-  static void ShowDialogAndDisplayErrorMessage(
-      content::BrowserContext* browser_context);
+  static void ShowDialogAndDisplayErrorMessage(Profile* profile);
 };
 
 // Dialog that will be displayed when a locked profile is selected in the
@@ -309,20 +303,14 @@ class ProfilePickerForceSigninDialog {
 
   // Shows a dialog where the user reauthenticates their primary account that
   // has invalid credentials, when force signin is enabled.
-  static void ShowReauthDialog(content::BrowserContext* browser_context,
-                               const std::string& email,
-                               const base::FilePath& profile_path);
+  static void ShowReauthDialog(Profile* profile, const std::string& email);
 
   // Shows a dialog where the user logs into their profile for the first time
   // via the profile picker, when force signin is enabled.
-  static void ShowForceSigninDialog(content::BrowserContext* browser_context,
-                                    const base::FilePath& profile_path);
+  static void ShowForceSigninDialog(Profile* profile);
 
   // Display local sign in error message without browser.
   static void DisplayErrorMessage();
-
-  // Hides the dialog if it is showing.
-  static void HideDialog();
 };
 
 #endif  // CHROME_BROWSER_UI_PROFILE_PICKER_H_

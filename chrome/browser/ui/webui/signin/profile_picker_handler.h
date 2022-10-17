@@ -148,6 +148,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // the picker when it was first shown.
   void SetProfilesOrder(const std::vector<ProfileAttributesEntry*>& entries);
 
+  // Displays either a sign-in or an error dialog within the profile picker
+  // using `profile`.
+  void OnProfileForDialogLoaded(Profile* profile);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Opens the Ash account settings page in a new window.
   void HandleOpenAshAccountSettingsPage(const base::Value::List& args);

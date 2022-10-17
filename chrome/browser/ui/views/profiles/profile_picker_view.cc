@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -113,6 +114,19 @@ bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
          ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun;
 }
 
+void ClearLockedProfilesFirstBrowserKeepAlive() {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const std::vector<Profile*> loaded_profiles =
+      profile_manager->GetLoadedProfiles();
+  for (Profile* profile : loaded_profiles) {
+    ProfileAttributesEntry* entry =
+        profile_manager->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile->GetPath());
+    if (entry && entry->IsSigninRequired())
+      profile_manager->ClearFirstBrowserWindowKeepAlive(profile);
+  }
+}
+
 }  // namespace
 
 // static
@@ -190,11 +204,9 @@ base::FilePath ProfilePicker::GetPickerProfilePath() {
 }
 
 // static
-void ProfilePicker::ShowDialog(content::BrowserContext* browser_context,
-                               const GURL& url,
-                               const base::FilePath& profile_path) {
+void ProfilePicker::ShowDialog(Profile* profile, const GURL& url) {
   if (g_profile_picker_view) {
-    g_profile_picker_view->ShowDialog(browser_context, url, profile_path);
+    g_profile_picker_view->ShowDialog(profile, url);
   }
 }
 
@@ -267,13 +279,13 @@ void ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
 }
 
 // static
-void ProfilePicker::ShowDialogAndDisplayErrorMessage(
-    content::BrowserContext* browser_context) {
+void ProfilePicker::ShowDialogAndDisplayErrorMessage(Profile* profile) {
   if (!ProfilePicker::IsActive())
     return;
 
   GURL url(chrome::kChromeUISigninErrorURL);
-  ProfilePicker::ShowDialog(browser_context, url, base::FilePath());
+  url = AddFromProfilePickerURLParameter(url);
+  ProfilePicker::ShowDialog(profile, url);
   return;
 }
 
@@ -282,22 +294,20 @@ void ProfilePicker::ShowDialogAndDisplayErrorMessage(
 
 // static
 void ProfilePickerForceSigninDialog::ShowReauthDialog(
-    content::BrowserContext* browser_context,
-    const std::string& email,
-    const base::FilePath& profile_path) {
+    Profile* profile,
+    const std::string& email) {
   DCHECK(signin_util::IsForceSigninEnabled());
   if (!ProfilePicker::IsActive())
     return;
   GURL url = signin::GetEmbeddedReauthURLWithEmail(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::Reason::kReauthentication, email);
-  ProfilePicker::ShowDialog(browser_context, url, profile_path);
+  url = AddFromProfilePickerURLParameter(url);
+  ProfilePicker::ShowDialog(profile, url);
 }
 
 // static
-void ProfilePickerForceSigninDialog::ShowForceSigninDialog(
-    content::BrowserContext* browser_context,
-    const base::FilePath& profile_path) {
+void ProfilePickerForceSigninDialog::ShowForceSigninDialog(Profile* profile) {
   DCHECK(signin_util::IsForceSigninEnabled());
   if (!ProfilePicker::IsActive())
     return;
@@ -305,8 +315,9 @@ void ProfilePickerForceSigninDialog::ShowForceSigninDialog(
   GURL url = signin::GetEmbeddedPromoURL(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::Reason::kForcedSigninPrimaryAccount, true);
+  url = AddFromProfilePickerURLParameter(url);
 
-  ProfilePicker::ShowDialog(browser_context, url, profile_path);
+  ProfilePicker::ShowDialog(profile, url);
 }
 
 // static
@@ -315,11 +326,6 @@ void ProfilePickerForceSigninDialog::DisplayErrorMessage() {
   if (g_profile_picker_view) {
     g_profile_picker_view->DisplayErrorMessage();
   }
-}
-
-// static
-void ProfilePickerForceSigninDialog::HideDialog() {
-  ProfilePicker::HideDialog();
 }
 
 // ProfilePickerView::NavigationFinishedObserver ------------------------------
@@ -671,8 +677,7 @@ void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
   }
 
   std::move(switch_finished_callback).Run(true);
-  ProfilePickerForceSigninDialog::ShowForceSigninDialog(
-      web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
+  ProfilePickerForceSigninDialog::ShowForceSigninDialog(profile);
 }
 
 #endif
@@ -688,6 +693,12 @@ void ProfilePickerView::SwitchToSignedInFlow(
 #endif
 
 void ProfilePickerView::WindowClosing() {
+  // If a profile is locked, it might have been loaded and it's first browser
+  // will never be created, we need to remove it's equivalent
+  // `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow` to be able to
+  // delete the profile.
+  ClearLockedProfilesFirstBrowserKeepAlive();
+
   views::WidgetDelegateView::WindowClosing();
   // Now that the window is closed, we can allow a new one to be opened.
   // (WindowClosing comes in asynchronously from the call to Close() and we
@@ -854,11 +865,9 @@ void ProfilePickerView::ConfigureAccelerators() {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void ProfilePickerView::ShowDialog(content::BrowserContext* browser_context,
-                                   const GURL& url,
-                                   const base::FilePath& profile_path) {
+void ProfilePickerView::ShowDialog(Profile* profile, const GURL& url) {
   gfx::NativeView parent = GetWidget()->GetNativeView();
-  dialog_host_.ShowDialog(browser_context, url, profile_path, parent);
+  dialog_host_.ShowDialog(profile, url, parent);
 }
 
 void ProfilePickerView::HideDialog() {

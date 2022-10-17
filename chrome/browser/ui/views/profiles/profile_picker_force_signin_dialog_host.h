@@ -16,9 +16,7 @@ namespace views {
 class DialogDelegateView;
 }
 
-namespace content {
-class BrowserContext;
-}
+class Profile;
 
 // Class encapsulating logic for views willing to host
 // ProfilePickerForceSigninDialogDelegate.
@@ -34,10 +32,7 @@ class ProfilePickerForceSigninDialogHost {
   // Shows a dialog where the user can auth the profile or see the auth error
   // message. If a dialog is already shown, this destroys the current dialog and
   // creates a new one.
-  void ShowDialog(content::BrowserContext* browser_context,
-                  const GURL& url,
-                  const base::FilePath& profile_path,
-                  gfx::NativeView parent);
+  void ShowDialog(Profile* profile, const GURL& url, gfx::NativeView parent);
 
   // Hides the reauth dialog if it is showing.
   void HideDialog();

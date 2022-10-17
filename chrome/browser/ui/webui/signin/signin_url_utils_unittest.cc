@@ -10,13 +10,27 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 TEST(SigninURLUtilsTest, ParseParameterlessSyncConfirmationURL) {
   GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
   EXPECT_EQ(SyncConfirmationStyle::kDefaultModal,
             GetSyncConfirmationStyle(url));
+}
+
+TEST(SigninURLUtilsTest, AddAndGetFromProfilePickerURLParam) {
+  // Create a basic url, e.g. chrome://signin-error/.
+  GURL url(chrome::kChromeUISigninErrorURL);
+  ASSERT_FALSE(HasFromProfilePickerURLParameter(url));
+
+  // Append the profile picker tag
+  url = AddFromProfilePickerURLParameter(url);
+
+  // Checks that the raw url contains the tag.
+  EXPECT_TRUE(url.spec().find("from_profile_picker=true"));
+  EXPECT_TRUE(url.is_valid());
+  // Test the getter function that checks the tag.
+  EXPECT_TRUE(HasFromProfilePickerURLParameter(url));
 }
 
 TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {

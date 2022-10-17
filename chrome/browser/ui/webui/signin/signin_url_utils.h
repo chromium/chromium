@@ -49,4 +49,9 @@ GURL AppendProfileCustomizationQueryParams(const GURL& url,
                                            ProfileCustomizationStyle style);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// Checks if the |url| is coming from the ProfilePicker.
+bool HasFromProfilePickerURLParameter(const GURL& url);
+// Adds the ProfilePicker tag to the |url|. Returns the appended URL.
+GURL AddFromProfilePickerURLParameter(const GURL& url);
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_URL_UTILS_H_

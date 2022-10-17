@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_error_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
@@ -39,36 +40,25 @@
 
 SigninErrorUI::SigninErrorUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui) {
-  Profile* webui_profile = Profile::FromWebUI(web_ui);
-  if (webui_profile->IsSystemProfile()) {
+  const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
+  if (HasFromProfilePickerURLParameter(url)) {
     InitializeMessageHandlerForProfilePicker();
   }
 }
 
 void SigninErrorUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
   DCHECK(browser);
-  Initialize(browser, false /* is_system_profile */);
+  Initialize(browser, /*from_profile_picker=*/false);
 }
 
 void SigninErrorUI::InitializeMessageHandlerForProfilePicker() {
-  Initialize(nullptr, true /* is_system_profile */);
+  Initialize(nullptr, /*from_profile_picker=*/true);
 }
 
-void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
+void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
   Profile* webui_profile = Profile::FromWebUI(web_ui());
-  Profile* signin_profile;
   std::unique_ptr<SigninErrorHandler> handler =
-      std::make_unique<SigninErrorHandler>(browser, is_system_profile);
-
-  if (is_system_profile) {
-    signin_profile = g_browser_process->profile_manager()->GetProfileByPath(
-        ProfilePicker::GetForceSigninProfilePath());
-    // Sign in is completed before profile creation.
-    if (!signin_profile)
-      signin_profile = webui_profile->GetOriginalProfile();
-  } else {
-    signin_profile = webui_profile;
-  }
+      std::make_unique<SigninErrorHandler>(browser, from_profile_picker);
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISigninErrorHost);
@@ -85,11 +75,11 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
-  source->AddBoolean("isSystemProfile", is_system_profile);
+  source->AddBoolean("fromProfilePicker", from_profile_picker);
 
   // Retrieve the last signin error message and email used.
   LoginUIService* login_ui_service =
-      LoginUIServiceFactory::GetForProfile(signin_profile);
+      LoginUIServiceFactory::GetForProfile(webui_profile);
   const SigninUIError last_login_error = login_ui_service->GetLastLoginError();
   const bool is_profile_blocked =
       last_login_error.type() == SigninUIError::Type::kProfileIsBlocked;
@@ -102,7 +92,7 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
     source->AddLocalizedString("signinErrorTitle", IDS_SIGNIN_ERROR_TITLE);
   } else {
     int title_string_id =
-        AccountConsistencyModeManager::IsDiceEnabledForProfile(signin_profile)
+        AccountConsistencyModeManager::IsDiceEnabledForProfile(webui_profile)
             ? IDS_SIGNIN_ERROR_DICE_EMAIL_TITLE
             : IDS_SIGNIN_ERROR_EMAIL_TITLE;
     source->AddString(
@@ -138,7 +128,7 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
 
     source->AddLocalizedString("profileBlockedRemoveProfileSuggestion",
                                IDS_OLD_PROFILES_DISABLED_REMOVED_OLD_PROFILE);
-  } else if (!is_system_profile &&
+  } else if (!from_profile_picker &&
              last_login_error.type() ==
                  SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
     ProfileAttributesEntry* entry =

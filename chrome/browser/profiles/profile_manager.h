@@ -348,6 +348,11 @@ class ProfileManager : public Profile::Delegate {
   std::map<ProfileKeepAliveOrigin, int> GetKeepAlivesByPath(
       const base::FilePath& path);
 
+  // Removes the kWaitingForFirstBrowserWindow keepalive. This allows a
+  // Profile* to be deleted from now on, even if it never had a visible
+  // browser window.
+  void ClearFirstBrowserWindowKeepAlive(const Profile* profile);
+
  protected:
   // Creates a new profile by calling into the profile's profile creation
   // method. Virtual so that unittests can return a TestingProfile instead
@@ -443,11 +448,6 @@ class ProfileManager : public Profile::Delegate {
   void RemoveKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
 
   void RecordZombieMetrics();
-
-  // Removes the kWaitingForFirstBrowserWindow keepalive. This allows a
-  // Profile* to be deleted from now on, even if it never had a visible
-  // browser window.
-  void ClearFirstBrowserWindowKeepAlive(const Profile* profile);
 
   // Helper for RemoveKeepAlive() and ClearFirstBrowserWindowFlag(). If the
   // refcount to this Profile is zero, calls RemoveKeepAlive().

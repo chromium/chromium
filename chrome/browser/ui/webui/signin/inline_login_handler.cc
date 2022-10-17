@@ -242,7 +242,7 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
 void InlineLoginHandler::HandleDialogClose(const base::Value::List& args) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Does nothing if profile picker is not showing.
-  ProfilePickerForceSigninDialog::HideDialog();
+  ProfilePicker::HideDialog();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

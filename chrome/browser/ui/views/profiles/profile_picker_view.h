@@ -189,9 +189,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Shows a dialog where the user can auth the profile or see the
   // auth error message. If a dialog is already shown, this destroys the current
   // dialog and creates a new one.
-  void ShowDialog(content::BrowserContext* browser_context,
-                  const GURL& url,
-                  const base::FilePath& profile_path);
+  void ShowDialog(Profile* profile, const GURL& url);
 
   // Hides the dialog if it is showing.
   void HideDialog();

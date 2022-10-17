@@ -15,11 +15,12 @@
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
-SigninErrorHandler::SigninErrorHandler(Browser* browser, bool is_system_profile)
-    : browser_(browser), is_system_profile_(is_system_profile) {
+SigninErrorHandler::SigninErrorHandler(Browser* browser,
+                                       bool from_profile_picker)
+    : browser_(browser), from_profile_picker_(from_profile_picker) {
   // |browser_| must not be null when this dialog is presented from the
   // profile picker.
-  DCHECK(browser_ || is_system_profile_);
+  DCHECK(browser_ || from_profile_picker_);
   BrowserList::AddObserver(this);
 }
 
@@ -40,7 +41,7 @@ void SigninErrorHandler::RegisterMessages() {
       "switchToExistingProfile",
       base::BindRepeating(&SigninErrorHandler::HandleSwitchToExistingProfile,
                           base::Unretained(this)));
-  if (!is_system_profile_) {
+  if (!from_profile_picker_) {
     web_ui()->RegisterMessageCallback(
         "learnMore", base::BindRepeating(&SigninErrorHandler::HandleLearnMore,
                                          base::Unretained(this)));
@@ -73,8 +74,8 @@ void SigninErrorHandler::HandleConfirm(const base::Value::List& args) {
 }
 
 void SigninErrorHandler::HandleLearnMore(const base::Value::List& args) {
-  // "Learn more" only shown when is_system_profile_=false
-  DCHECK(!is_system_profile_);
+  // "Learn more" only shown when from_profile_picker_=false
+  DCHECK(!from_profile_picker_);
   if (!browser_)
     return;
   CloseDialog();
@@ -91,9 +92,9 @@ void SigninErrorHandler::HandleInitializedWithSize(
 }
 
 void SigninErrorHandler::CloseDialog() {
-  if (is_system_profile_) {
-    CloseProfilePickerForceSigninDialog();
-  } else if (browser_){
+  if (from_profile_picker_) {
+    CloseProfilePickerDialog();
+  } else if (browser_) {
     CloseBrowserModalSigninDialog();
   }
 }
@@ -102,6 +103,6 @@ void SigninErrorHandler::CloseBrowserModalSigninDialog() {
   browser_->signin_view_controller()->CloseModalSignin();
 }
 
-void SigninErrorHandler::CloseProfilePickerForceSigninDialog() {
-  ProfilePickerForceSigninDialog::HideDialog();
+void SigninErrorHandler::CloseProfilePickerDialog() {
+  ProfilePicker::HideDialog();
 }

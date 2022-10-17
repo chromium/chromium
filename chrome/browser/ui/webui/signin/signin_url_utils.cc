@@ -21,6 +21,9 @@ const char kStyleParamKey[] = "style";
 // Query parameter names of the reauth confirmation URL.
 const char kAccessPointParamKey[] = "access_point";
 
+// URL tag to specify that the source is the ProfilePicker.
+const char kFromProfilePickerParamKey[] = "from_profile_picker";
+
 }  // namespace
 
 SyncConfirmationStyle GetSyncConfirmationStyle(const GURL& url) {
@@ -88,3 +91,15 @@ GURL AppendProfileCustomizationQueryParams(const GURL& url,
   return url_with_params;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+bool HasFromProfilePickerURLParameter(const GURL& url) {
+  std::string from_profile_picker;
+  bool found = net::GetValueForKeyInQuery(url, kFromProfilePickerParamKey,
+                                          &from_profile_picker);
+  return found && from_profile_picker == "true";
+}
+
+GURL AddFromProfilePickerURLParameter(const GURL& url) {
+  return net::AppendOrReplaceQueryParameter(url, kFromProfilePickerParamKey,
+                                            "true");
+}

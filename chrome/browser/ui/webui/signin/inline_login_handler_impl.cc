@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
@@ -496,12 +497,11 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
 
   // If this was called from the user manager to reauthenticate the profile,
   // make sure the webui is aware.
-  Profile* profile = Profile::FromWebUI(web_ui());
-  if (profile->IsSystemProfile())
-    params.Set("dontResizeNonEmbeddedPages", true);
-
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetLastCommittedURL();
+  if (HasFromProfilePickerURLParameter(current_url))
+    params.Set("dontResizeNonEmbeddedPages", true);
+
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
 
   const GURL& url = GaiaUrls::GetInstance()->embedded_signin_url();
@@ -601,47 +601,27 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
   content::StoragePartition* partition =
       signin::GetSigninPartition(contents->GetBrowserContext());
 
-  // If this was called from the user manager to reauthenticate the profile,
-  // the current profile is the system profile.  In this case, use the email to
-  // find the right profile to reauthenticate.  Otherwise the profile can be
-  // taken from web_ui().
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
-
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (reason == HandlerSigninReason::kFetchLstOnly ||
-      !profile->IsSystemProfile()) {
-    FinishCompleteLogin(
-        FinishCompleteLoginParams(this, partition, current_url,
-                                  base::FilePath(), confirm_untrusted_signin_,
-                                  params.email, params.gaia_id, params.password,
-                                  params.auth_code, params.choose_what_to_sync,
-                                  /*is_force_sign_in_with_usermanager=*/false),
-        profile);
-    return;
+
+  bool force_sign_in_with_usermanager = false;
+  base::FilePath path;
+  if (reason != HandlerSigninReason::kFetchLstOnly &&
+      HasFromProfilePickerURLParameter(current_url)) {
+    DCHECK(reason == HandlerSigninReason::kForcedSigninPrimaryAccount ||
+           reason == HandlerSigninReason::kReauthentication);
+    DCHECK(signin_util::IsForceSigninEnabled());
+
+    force_sign_in_with_usermanager = true;
+    path = profile->GetPath();
   }
 
-  DCHECK(reason == HandlerSigninReason::kForcedSigninPrimaryAccount ||
-         reason == HandlerSigninReason::kReauthentication);
-  DCHECK(signin_util::IsForceSigninEnabled());
-
-  ProfileManager* manager = g_browser_process->profile_manager();
-  base::FilePath path =
-      profiles::GetPathOfProfileWithEmail(manager, params.email);
-  if (path.empty())
-    path = ProfilePicker::GetForceSigninProfilePath();
-  if (path.empty())
-    return;
-
-  // Switch to the profile and finish the login. Pass the profile path so it can
-  // be marked as unlocked.
-  FinishCompleteLoginParams finish_login_params(
-      this, partition, current_url, path, confirm_untrusted_signin_,
-      params.email, params.gaia_id, params.password, params.auth_code,
-      params.choose_what_to_sync, /*is_force_sign_in_with_usermanager=*/true);
-  base::OnceCallback<void(Profile*)> callback = base::BindOnce(
-      &InlineLoginHandlerImpl::FinishCompleteLogin, finish_login_params);
-  // Browser window will be opened after ClientOAuthSuccess.
-  profiles::LoadProfileAsync(path, std::move(callback));
+  FinishCompleteLogin(
+      FinishCompleteLoginParams(
+          this, partition, current_url, path, confirm_untrusted_signin_,
+          params.email, params.gaia_id, params.password, params.auth_code,
+          params.choose_what_to_sync, force_sign_in_with_usermanager),
+      profile);
 }
 
 InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
@@ -794,13 +774,10 @@ void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
     return;
   }
   SyncSetupFailed();
-  Browser* browser = GetDesktopBrowser();
-  Profile* profile = Profile::FromWebUI(web_ui());
 
-  if (profile->IsSystemProfile())
-    profile = g_browser_process->profile_manager()->GetProfileByPath(
-        ProfilePicker::GetForceSigninProfilePath());
   if (!error.IsOk()) {
+    Browser* browser = GetDesktopBrowser();
+    Profile* profile = Profile::FromWebUI(web_ui());
     LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(browser,
                                                                       error);
   }

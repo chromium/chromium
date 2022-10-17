@@ -521,44 +521,20 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
     return;
   }
 
-  if (entry->IsSigninRequired()) {
-    DCHECK(signin_util::IsForceSigninEnabled());
-    if (entry->CanBeManaged()) {
-      ProfilePickerForceSigninDialog::ShowReauthDialog(
-          web_ui()->GetWebContents()->GetBrowserContext(),
-          base::UTF16ToUTF8(entry->GetUserName()), *profile_path);
-    } else if (entry->GetActiveTime() != base::Time()) {
-      // If force-sign-in is enabled, do not allow users to sign in to a
-      // pre-existing locked profile, as this may force unexpected profile data
-      // merge. We consider a profile as pre-existing if it has been actived
-      // previously. A pre-existed profile can still be used if it has been
-      // signed in with an email address matched RestrictSigninToPattern policy
-      // already.
-      LoginUIServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui())->GetOriginalProfile())
-          ->SetProfileBlockingErrorMessage();
-      ProfilePicker::ShowDialogAndDisplayErrorMessage(
-          web_ui()->GetWebContents()->GetBrowserContext());
-    } else {
-      // Fresh sign in via profile picker without existing email address.
-      ProfilePickerForceSigninDialog::ShowForceSigninDialog(
-          web_ui()->GetWebContents()->GetBrowserContext(), *profile_path);
-    }
+  // If a browser window cannot be opened for profile, load the profile to
+  // display a dialog.
+  if (entry->IsSigninRequired()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      || (!profiles::AreSecondaryProfilesAllowed() &&
+          !Profile::IsMainProfilePath(*profile_path))
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  ) {
+    g_browser_process->profile_manager()->LoadProfileByPath(
+        *profile_path, /*incognito=*/false,
+        base::BindOnce(&ProfilePickerHandler::OnProfileForDialogLoaded,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profiles::AreSecondaryProfilesAllowed()) {
-    if (!Profile::IsMainProfilePath(*profile_path)) {
-      LoginUIServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui())->GetOriginalProfile())
-          ->SetProfileBlockingErrorMessage();
-      ProfilePicker::ShowDialogAndDisplayErrorMessage(
-          web_ui()->GetWebContents()->GetBrowserContext());
-      return;
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   if (!creation_time_on_startup_.is_null() &&
       // Avoid overriding the picked time if already recorded. This can happen
@@ -570,6 +546,43 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
       *profile_path, /*always_create=*/false,
       base::BindOnce(&ProfilePickerHandler::OnSwitchToProfileComplete,
                      weak_factory_.GetWeakPtr(), false, open_settings));
+}
+
+void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
+  if (!profile)
+    return;
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  DCHECK(entry);
+  if (entry->IsSigninRequired()) {
+    DCHECK(signin_util::IsForceSigninEnabled());
+    if (entry->CanBeManaged()) {
+      ProfilePickerForceSigninDialog::ShowReauthDialog(
+          profile, base::UTF16ToUTF8(entry->GetUserName()));
+    } else if (entry->GetActiveTime() != base::Time()) {
+      // If force-sign-in is enabled, do not allow users to sign in to a
+      // pre-existing locked profile, as this may force unexpected profile data
+      // merge. We consider a profile as pre-existing if it has been active
+      // previously. A pre-existed profile can still be used if it has been
+      // signed in with an email address matched RestrictSigninToPattern policy
+      // already.
+      LoginUIServiceFactory::GetForProfile(profile)
+          ->SetProfileBlockingErrorMessage();
+      ProfilePicker::ShowDialogAndDisplayErrorMessage(profile);
+    } else {
+      // Fresh sign in via profile picker without existing email address.
+      ProfilePickerForceSigninDialog::ShowForceSigninDialog(profile);
+    }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  } else if (!profiles::AreSecondaryProfilesAllowed() &&
+             !Profile::IsMainProfilePath(profile->GetPath())) {
+    LoginUIServiceFactory::GetForProfile(profile)
+        ->SetProfileBlockingErrorMessage();
+    ProfilePicker::ShowDialogAndDisplayErrorMessage(profile);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
 }
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(

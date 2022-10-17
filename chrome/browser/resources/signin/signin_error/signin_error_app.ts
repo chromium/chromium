@@ -29,9 +29,9 @@ class SigninErrorAppElement extends SigninErrorAppElementBase {
 
   static get properties() {
     return {
-      isSystemProfile_: {
+      fromProfilePicker_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('isSystemProfile'),
+        value: () => loadTimeData.getBoolean('fromProfilePicker'),
       },
 
       switchButtonUnavailable_: {
@@ -68,7 +68,7 @@ class SigninErrorAppElement extends SigninErrorAppElementBase {
     };
   }
 
-  private isSystemProfile_: boolean;
+  private fromProfilePicker_: boolean;
   private switchButtonUnavailable_: boolean;
   private hideNormalError_: boolean;
   private hideProfileBlockingErrors_: boolean[];
