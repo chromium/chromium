@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_SUGGESTIONS_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_SUGGESTIONS_DELEGATE_H_
 
-#include <set>
+#include <map>
 
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
@@ -69,8 +70,12 @@ class HoldingSpaceSuggestionsDelegate
   // Records the suggestion types on which data fetches are pending.
   std::set<app_list::FileSuggestionType> pending_fetches_;
 
-  // Caches the most recently fetched suggestion data.
-  std::map<app_list::FileSuggestionType, std::vector<app_list::FileSuggestData>>
+  // Caches the suggested files in the holding space model. In each key-value
+  // pair: the key is a holding space suggestion item type; the value is an
+  // array of paths to the suggested files. NOTE: each file path array follows
+  // the relevance order, which means that a file path with a smaller index in
+  // the array has a higher relevance score.
+  std::map<HoldingSpaceItem::Type, std::vector<base::FilePath>>
       suggestions_by_type_;
 
   // Used to schedule the task of updating suggestions in model.

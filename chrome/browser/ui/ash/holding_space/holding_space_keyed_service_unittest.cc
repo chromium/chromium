@@ -3382,4 +3382,60 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
   EXPECT_EQ(expected, GetSuggestionsInModel(model));
 }
 
+// Verifies the file suggestion update on a profile with restored suggestions.
+TEST_P(HoldingSpaceSuggestionsDelegateTest, RestoreSuggestions) {
+  const base::FilePath drive_file = mount_point()->CreateArbitraryFile();
+  std::unique_ptr<HoldingSpaceItem> drive_file_suggestion =
+      HoldingSpaceItem::CreateFileBackedItem(
+          HoldingSpaceItem::Type::kDriveSuggestion, drive_file,
+          GetFileSystemUrl(GetProfile(), drive_file),
+          base::BindOnce(&CreateTestHoldingSpaceImage));
+
+  // Create a secondary profile with a persisted drive file suggestion.
+  TestingProfile* const secondary_profile = CreateSecondaryProfile(
+      base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
+        base::Value::List persisted_items;
+        persisted_items.Append(drive_file_suggestion->Serialize());
+        pref_store->SetValueSilently(
+            HoldingSpacePersistenceDelegate::kPersistencePath,
+            base::Value(std::move(persisted_items)),
+            PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
+      }));
+
+  // Activate `secondary_profile`. Wait until the model updates.
+  ActivateSecondaryProfile();
+  HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
+  HoldingSpaceModel* const secondary_holding_space_model =
+      HoldingSpaceController::Get()->model();
+  ItemsInitializedWaiter(secondary_holding_space_model).Wait();
+  const bool suggestion_feature_enabled =
+      features::IsHoldingSpaceSuggestionsEnabled();
+  EXPECT_EQ(secondary_holding_space_model->items().size(),
+            suggestion_feature_enabled ? 1u : 0u);
+
+  // Update local file suggestions on the secondary profile. Fast-forward to
+  // ensure the suggestion fetch completes.
+  const base::FilePath local_file = mount_point()->CreateArbitraryFile();
+  static_cast<app_list::MockFileSuggestKeyedService*>(
+      app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+          secondary_profile))
+      ->SetSuggestionsForType(
+          app_list::FileSuggestionType::kLocalFile,
+          /*suggestions=*/std::vector<app_list::FileSuggestData>{
+              {app_list::FileSuggestionType::kLocalFile, local_file,
+               /*new_prediction_reason=*/absl::nullopt,
+               /*new_score=*/absl::nullopt}});
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  const auto& model_items = secondary_holding_space_model->items();
+  if (suggestion_feature_enabled) {
+    // The drive and local file suggestions should coexist in the model.
+    ASSERT_EQ(model_items.size(), 2u);
+    EXPECT_EQ(model_items[0]->file_path(), local_file);
+    EXPECT_EQ(model_items[1]->file_path(), drive_file);
+  } else {
+    EXPECT_TRUE(model_items.empty());
+  }
+}
+
 }  // namespace ash
