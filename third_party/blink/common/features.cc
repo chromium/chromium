@@ -1483,10 +1483,6 @@ BASE_FEATURE(kWebRtcExposeNonStandardStats,
              "WebRtc-ExposeNonStandardStats",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSubstringSetTreeForAttributeBuckets,
-             "SubstringSetTreeForAttributeBuckets",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kInvalidationSetClassBloomFilter,
              "InvalidationSetClassBloomFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);

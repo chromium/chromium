@@ -738,12 +738,7 @@ static wtf_size_t GetMinimumRulesetSizeForSubstringMatcher() {
   // have a match). We add a little bit of margin to compensate for the fact
   // that we also need to spend time building the tree, and the extra memory
   // in use.
-  //
-  // TODO(sesse): When the Finch experiment finishes, lock this to 50.
-  return base::FeatureList::IsEnabled(
-             blink::features::kSubstringSetTreeForAttributeBuckets)
-             ? 50
-             : std::numeric_limits<wtf_size_t>::max();
+  return 50;
 }
 
 bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,

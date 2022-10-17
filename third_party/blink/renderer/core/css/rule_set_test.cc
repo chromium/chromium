@@ -329,11 +329,6 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereMultiArg) {
 
 static void AddManyAttributeRules(base::test::ScopedFeatureList& feature_list,
                                   css_test_helpers::TestStyleSheet& sheet) {
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kSubstringSetTreeForAttributeBuckets},
-      /*disabled_features=*/{});
-
   // Create more than 50 rules, in order to trigger building the Aho-Corasick
   // tree.
   for (int i = 0; i < 100; ++i) {
