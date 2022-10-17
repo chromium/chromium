@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
+#include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -208,8 +209,6 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD2(OnFirstFrame, void(base::TimeTicks, size_t));
   MOCK_METHOD0(OnRequestVideoFrameCallback, void());
   MOCK_METHOD0(GetTextTrackMetadata, Vector<TextTrackMetadata>());
-
-  bool was_always_muted_ = false;
 };
 
 class MockWebMediaPlayerEncryptedMediaClient
@@ -2290,19 +2289,18 @@ TEST_F(WebMediaPlayerImplTest, DISABLED_DemuxerOverride) {
 
 class WebMediaPlayerImplBackgroundBehaviorTest
     : public WebMediaPlayerImplTest,
+      public WebAudioSourceProviderClient,
       public ::testing::WithParamInterface<
-          std::tuple<bool, int, int, bool, bool, bool, bool, bool, bool>> {
+          std::tuple<bool, int, int, bool, bool, bool, bool>> {
  public:
   // Indices of the tuple parameters.
   static const int kIsMediaSuspendEnabled = 0;
   static const int kDurationSec = 1;
   static const int kAverageKeyframeDistanceSec = 2;
   static const int kIsResumeBackgroundVideoEnabled = 3;
-  static const int kIsMediaSource = 4;
-  static const int kIsBackgroundPauseEnabled = 5;
-  static const int kIsPictureInPictureEnabled = 6;
-  static const int kIsBackgroundVideoPlaybackEnabled = 7;
-  static const int kIsVideoBeingCaptured = 8;
+  static const int kIsPictureInPictureEnabled = 4;
+  static const int kIsBackgroundVideoPlaybackEnabled = 5;
+  static const int kIsVideoBeingCaptured = 6;
 
   void SetUp() override {
     WebMediaPlayerImplTest::SetUp();
@@ -2311,16 +2309,6 @@ class WebMediaPlayerImplBackgroundBehaviorTest
 
     std::string enabled_features;
     std::string disabled_features;
-
-    if (IsBackgroundPauseOn()) {
-      if (!enabled_features.empty())
-        enabled_features += ",";
-      enabled_features += media::kBackgroundVideoPauseOptimization.name;
-    } else {
-      if (!disabled_features.empty())
-        disabled_features += ",";
-      disabled_features += media::kBackgroundVideoPauseOptimization.name;
-    }
 
     if (IsResumeBackgroundVideoEnabled()) {
       if (!enabled_features.empty())
@@ -2335,17 +2323,16 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     feature_list_.InitFromCommandLine(enabled_features, disabled_features);
 
     InitializeWebMediaPlayerImpl();
-    bool is_media_source = std::get<kIsMediaSource>(GetParam());
-    SetLoadType(is_media_source ? WebMediaPlayer::kLoadTypeMediaSource
-                                : WebMediaPlayer::kLoadTypeURL);
+
+    // MSE or SRC doesn't matter since we artificially inject pipeline stats.
+    SetLoadType(WebMediaPlayer::kLoadTypeURL);
+
     SetVideoKeyframeDistanceAverage(
         base::Seconds(GetAverageKeyframeDistanceSec()));
     SetDuration(base::Seconds(GetDurationSec()));
 
     if (IsPictureInPictureOn()) {
-      EXPECT_CALL(client_, GetDisplayType())
-          .WillRepeatedly(Return(DisplayType::kPictureInPicture));
-
+      SetPiPExpectations();
       wmpi_->OnSurfaceIdUpdated(surface_id_);
     }
 
@@ -2361,16 +2348,19 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     wmpi_->SetPipelineStatisticsForTest(statistics);
   }
 
+  void SetPiPExpectations() {
+    if (!IsPictureInPictureOn())
+      return;
+    EXPECT_CALL(client_, GetDisplayType())
+        .WillRepeatedly(Return(DisplayType::kPictureInPicture));
+  }
+
   bool IsMediaSuspendOn() {
     return std::get<kIsMediaSuspendEnabled>(GetParam());
   }
 
   bool IsResumeBackgroundVideoEnabled() {
     return std::get<kIsResumeBackgroundVideoEnabled>(GetParam());
-  }
-
-  bool IsBackgroundPauseOn() {
-    return std::get<kIsBackgroundPauseEnabled>(GetParam());
   }
 
   bool IsPictureInPictureOn() {
@@ -2396,14 +2386,6 @@ class WebMediaPlayerImplBackgroundBehaviorTest
            base::Time::kMillisecondsPerSecond;
   }
 
-  bool IsAndroid() {
-#if BUILDFLAG(IS_ANDROID)
-    return true;
-#else
-    return false;
-#endif
-  }
-
   bool ShouldDisableVideoWhenHidden() const {
     return wmpi_->ShouldDisableVideoWhenHidden();
   }
@@ -2412,24 +2394,69 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     return wmpi_->ShouldPausePlaybackWhenHidden();
   }
 
-  bool IsBackgroundOptimizationCandidate() const {
-    return wmpi_->IsBackgroundOptimizationCandidate();
+  std::string PrintValues() {
+    std::stringstream stream;
+    stream << "is_media_suspend_enabled=" << IsMediaSuspendOn()
+           << ", duration_sec=" << GetDurationSec()
+           << ", average_keyframe_distance_sec="
+           << GetAverageKeyframeDistanceSec()
+           << ", is_resume_background_video_enabled="
+           << IsResumeBackgroundVideoEnabled()
+           << ", is_picture_in_picture=" << IsPictureInPictureOn()
+           << ", is_background_video_playback_enabled="
+           << IsBackgroundVideoPlaybackEnabled()
+           << ", is_video_being_captured=" << IsVideoBeingCaptured();
+    return stream.str();
   }
+
+  MOCK_METHOD2(SetFormat, void(uint32_t numberOfChannels, float sampleRate));
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioOnly) {
-  // Never optimize or pause an audio-only player.
-  SetMetadata(true, false);
-  EXPECT_FALSE(IsBackgroundOptimizationCandidate());
+  SCOPED_TRACE(testing::Message() << PrintValues());
+  if (base::FeatureList::IsEnabled(media::kPauseBackgroundMutedAudio)) {
+    // Audio only players should pause if they are muted and not captured.
+    EXPECT_CALL(client_, WasAlwaysMuted()).WillRepeatedly(Return(true));
+    SetMetadata(true, false);
+    EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+    auto provider = wmpi_->GetAudioSourceProvider();
+    provider->SetClient(this);
+    EXPECT_FALSE(ShouldPausePlaybackWhenHidden());
+    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+    provider->SetClient(nullptr);
+    EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+    provider->SetCopyAudioCallback(base::DoNothing());
+    EXPECT_FALSE(ShouldPausePlaybackWhenHidden());
+    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+    provider->ClearCopyAudioCallback();
+    EXPECT_TRUE(ShouldPausePlaybackWhenHidden());
+    EXPECT_FALSE(ShouldDisableVideoWhenHidden());
+
+    testing::Mock::VerifyAndClearExpectations(&client_);
+    SetPiPExpectations();
+  } else {
+    // Never optimize or pause an audio-only player.
+    SetMetadata(true, false);
+  }
+
   EXPECT_FALSE(ShouldPausePlaybackWhenHidden());
   EXPECT_FALSE(ShouldDisableVideoWhenHidden());
 }
 
 TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, VideoOnly) {
-  // Video only.
+  SCOPED_TRACE(testing::Message() << PrintValues());
+
+  // Video only -- setting muted should do nothing.
+  EXPECT_CALL(client_, WasAlwaysMuted()).WillRepeatedly(Return(true));
   SetMetadata(false, true);
 
   // Never disable video track for a video only stream.
@@ -2438,19 +2465,56 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, VideoOnly) {
   // There's no optimization criteria for video only in Picture-in-Picture.
   bool matches_requirements =
       !IsPictureInPictureOn() && !IsVideoBeingCaptured();
-  EXPECT_EQ(matches_requirements, IsBackgroundOptimizationCandidate());
 
   // Video is always paused when suspension is on and only if matches the
   // optimization criteria if the optimization is on.
-  bool should_pause =
-      (!IsBackgroundVideoPlaybackEnabled() || IsMediaSuspendOn() ||
-       (IsBackgroundPauseOn() && matches_requirements)) &&
-      !(IsPictureInPictureOn() && IsAndroid());
+  bool should_pause = (!IsBackgroundVideoPlaybackEnabled() ||
+                       IsMediaSuspendOn() || matches_requirements) &&
+                      !IsPictureInPictureOn();
   EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
 }
 
 TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioVideo) {
-  SetMetadata(true, true);
+  SCOPED_TRACE(testing::Message() << PrintValues());
+
+  bool always_pause =
+      (!IsBackgroundVideoPlaybackEnabled() ||
+       (IsMediaSuspendOn() && IsResumeBackgroundVideoEnabled())) &&
+      !IsPictureInPictureOn();
+
+  if (base::FeatureList::IsEnabled(media::kPauseBackgroundMutedAudio)) {
+    bool should_pause = !IsPictureInPictureOn() &&
+                        (!IsBackgroundVideoPlaybackEnabled() ||
+                         IsMediaSuspendOn() || !IsVideoBeingCaptured());
+
+    EXPECT_CALL(client_, WasAlwaysMuted()).WillRepeatedly(Return(true));
+    SetMetadata(true, true);
+    EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
+
+    auto provider = wmpi_->GetAudioSourceProvider();
+    provider->SetClient(this);
+    EXPECT_EQ(always_pause, ShouldPausePlaybackWhenHidden());
+
+    provider->SetClient(nullptr);
+    EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
+
+    provider->SetCopyAudioCallback(base::DoNothing());
+    EXPECT_EQ(always_pause, ShouldPausePlaybackWhenHidden());
+
+    provider->ClearCopyAudioCallback();
+    EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
+
+    testing::Mock::VerifyAndClearExpectations(&client_);
+    SetPiPExpectations();
+  } else {
+    SetMetadata(true, true);
+  }
+
+  // Only pause audible videos if both media suspend and resume background
+  // videos is on and background video playback is disabled. Background video
+  // playback is enabled by default. Both media suspend and resume background
+  // videos are on by default on Android and off on desktop.
+  EXPECT_EQ(always_pause, ShouldPausePlaybackWhenHidden());
 
   // Optimization requirements are the same for all platforms.
   bool matches_requirements =
@@ -2458,26 +2522,12 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioVideo) {
       ((GetDurationSec() < GetMaxKeyframeDistanceSec()) ||
        (GetAverageKeyframeDistanceSec() < GetMaxKeyframeDistanceSec()));
 
-  EXPECT_EQ(matches_requirements, IsBackgroundOptimizationCandidate());
   EXPECT_EQ(matches_requirements, ShouldDisableVideoWhenHidden());
-
-  // Only pause audible videos if both media suspend and resume background
-  // videos is on and background video playback is disabled. Background video
-  // playback is enabled by default. Both media suspend and resume background
-  // videos are on by default on Android and off on desktop.
-  EXPECT_EQ((!IsBackgroundVideoPlaybackEnabled() ||
-             (IsMediaSuspendOn() && IsResumeBackgroundVideoEnabled())) &&
-                !(IsPictureInPictureOn() && IsAndroid()),
-            ShouldPausePlaybackWhenHidden());
 
   if (!matches_requirements || !ShouldDisableVideoWhenHidden() ||
       IsMediaSuspendOn()) {
     return;
   }
-
-  // These tests start in background mode prior to having metadata, so put the
-  // test back into a normal state.
-  EXPECT_TRUE(IsDisableVideoTrackPending());
 
   ForegroundPlayer();
   EXPECT_FALSE(IsVideoTrackDisabled());
@@ -2511,8 +2561,6 @@ INSTANTIATE_TEST_SUITE_P(
                     base::Time::kMillisecondsPerSecond -
                 1,
             100),
-        ::testing::Bool(),
-        ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Bool(),

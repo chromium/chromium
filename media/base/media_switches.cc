@@ -276,6 +276,11 @@ BASE_FEATURE(kOverlayFullscreenVideo,
              "overlay-fullscreen-video",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Pauses muted (and uncaptured) playbacks in the background.
+BASE_FEATURE(kPauseBackgroundMutedAudio,
+             "PauseBackgroundMutedAudio",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables user control over muting tab audio from the tab strip.
 BASE_FEATURE(kEnableTabMuting,
              "EnableTabMuting",
@@ -363,11 +368,6 @@ BASE_FEATURE(kUseDecoderStreamForWebRTC,
 BASE_FEATURE(kExposeSwDecodersToWebRTC,
              "ExposeSwDecodersToWebRTC",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Let video without audio be paused when it is playing in the background.
-BASE_FEATURE(kBackgroundVideoPauseOptimization,
-             "BackgroundVideoPauseOptimization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // CDM host verification is enabled by default. Can be disabled for testing.
 // Has no effect if ENABLE_CDM_HOST_VERIFICATION buildflag is false.

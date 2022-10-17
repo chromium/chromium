@@ -538,13 +538,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // pipeline's state.
   bool ShouldDisableVideoWhenHidden() const;
 
-  // Whether the video is suitable for background playback optimizations (either
-  // pausing it or disabling the video track). Uses metadata so has meaning only
-  // after the pipeline has started, otherwise returns false.
-  // The logical OR between the two methods above that is also used as their
-  // common implementation.
-  bool IsBackgroundOptimizationCandidate() const;
-
   // If enabling or disabling background video optimization has been delayed,
   // because of the pipeline not running, seeking or resuming, this method
   // needs to be called to update the optimization state.
@@ -1059,6 +1052,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // Whether background video optimization is supported on current platform.
   bool is_background_video_track_optimization_supported_ = true;
+
+  const bool should_pause_background_muted_audio_;
 
   bool was_suspended_for_frame_closed_ = false;
 

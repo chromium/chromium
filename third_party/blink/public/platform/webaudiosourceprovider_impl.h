@@ -93,6 +93,8 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
 
   int RenderForTesting(media::AudioBus* audio_bus);
 
+  bool IsAudioBeingCaptured() const;
+
  protected:
   ~WebAudioSourceProviderImpl() override;
 
@@ -103,17 +105,17 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   void OnSetFormat();
 
   // Used to keep the volume across reconfigurations.
-  double volume_;
+  double volume_ = 1.0;
 
   // Tracks the current playback state.
   enum PlaybackState { kStopped, kStarted, kPlaying };
-  PlaybackState state_;
+  PlaybackState state_ = kStopped;
 
   // Closure that calls OnSetFormat() on |client_| on the renderer thread.
   base::RepeatingClosure set_format_cb_;
 
   // When set via setClient() it overrides |sink_| for consuming audio.
-  raw_ptr<WebAudioSourceProviderClient> client_;
+  raw_ptr<WebAudioSourceProviderClient> client_ = nullptr;
 
   // Where audio ends up unless overridden by |client_|.
   base::Lock sink_lock_;
@@ -128,6 +130,8 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   const raw_ptr<media::MediaLog> media_log_;
 
   base::OnceClosure on_set_client_callback_;
+
+  bool has_copy_audio_callback_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<WebAudioSourceProviderImpl> weak_factory_{this};

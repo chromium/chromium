@@ -129,10 +129,6 @@ bool IsResumeBackgroundVideosEnabled() {
   return base::FeatureList::IsEnabled(media::kResumeBackgroundVideo);
 }
 
-bool IsBackgroundVideoPauseOptimizationEnabled() {
-  return base::FeatureList::IsEnabled(media::kBackgroundVideoPauseOptimization);
-}
-
 bool IsNetworkStateError(WebMediaPlayer::NetworkState state) {
   bool result = state == WebMediaPlayer::kNetworkStateFormatError ||
                 state == WebMediaPlayer::kNetworkStateNetworkError ||
@@ -451,6 +447,8 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           is_background_video_playback_enabled),
       is_background_video_track_optimization_supported_(
           is_background_video_track_optimization_supported),
+      should_pause_background_muted_audio_(
+          base::FeatureList::IsEnabled(media::kPauseBackgroundMutedAudio)),
       simple_watch_timer_(
           base::BindRepeating(&WebMediaPlayerImpl::OnSimpleWatchTimerTick,
                               base::Unretained(this)),
@@ -1148,6 +1146,15 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
         pipeline_metadata_.video_decoder_config.codec(), content_type);
     delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
                                       HasVideo(), content_type);
+
+    // If we paused a background video since it was muted, the volume change
+    // should resume the playback.
+    if (paused_when_hidden_) {
+      paused_when_hidden_ = false;
+      // Calls UpdatePlayState() so return afterwards.
+      client_->ResumePlayback();
+      return;
+    }
   }
 
   // The play state is updated because the player might have left the autoplay
@@ -3626,81 +3633,67 @@ base::WeakPtr<WebMediaPlayer> WebMediaPlayerImpl::AsWeakPtr() {
 }
 
 bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  const bool preserve_audio =
+      should_pause_background_muted_audio_
+          ? HasUnmutedAudio() || audio_source_provider_->IsAudioBeingCaptured()
+          : HasAudio();
+
   // Audio only stream is allowed to play when in background.
-  // TODO: We should check IsBackgroundOptimizationCandidate here. But we need
-  // to move the logic of checking video frames out of that function.
-  if (!HasVideo())
+  if (!HasVideo() && preserve_audio)
     return false;
 
+  // MediaPlayer always signals audio and video, so use an empty natural size to
+  // determine if there's really video or not.
   if (using_media_player_renderer_ &&
-      pipeline_metadata_.natural_size.IsEmpty()) {
+      pipeline_metadata_.natural_size.IsEmpty() && preserve_audio) {
     return false;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  if (IsInPictureInPicture())
+  // PiP is the only exception when background video playback is disabled.
+  if (HasVideo() && IsInPictureInPicture())
     return false;
-#endif
 
+  // This takes precedent over every restriction except PiP.
   if (!is_background_video_playback_enabled_)
     return true;
 
-  // If suspending background video, pause any video that's not remoted or
-  // not unlocked to play in the background.
-  if (IsBackgroundSuspendEnabled(this)) {
-#if BUILDFLAG(IS_ANDROID)
-    if (is_flinging_)
-      return false;
-#endif
+  if (is_flinging_)
+    return false;
 
-    return !HasAudio() || (IsResumeBackgroundVideosEnabled() &&
-                           video_locked_when_paused_when_hidden_);
+  // If suspending background video, pause any video that's not unlocked to play
+  // in the background.
+  if (IsBackgroundSuspendEnabled(this)) {
+    return !preserve_audio || (IsResumeBackgroundVideosEnabled() &&
+                               video_locked_when_paused_when_hidden_);
   }
 
-  // Otherwise only pause if the optimization is on and it's a video-only
-  // optimization candidate.
-  return IsBackgroundVideoPauseOptimizationEnabled() && !HasAudio() &&
-         IsBackgroundOptimizationCandidate() && !is_flinging_;
+  if (HasVideo() && IsVideoBeingCaptured())
+    return false;
+
+  return !preserve_audio;
 }
 
 bool WebMediaPlayerImpl::ShouldDisableVideoWhenHidden() const {
-  // This optimization is behind the flag on all platforms, only for non-mse
-  // video. MSE video track switching on hide has gone through a field test.
-  // TODO(tmathmeyer): Passing load_type_ won't be needed after src= field
-  // testing is finished. see: http://crbug.com/709302
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
   if (!is_background_video_track_optimization_supported_)
     return false;
 
-  // Disable video track only for players with audio that match the criteria for
-  // being optimized.
-  return HasAudio() && IsBackgroundOptimizationCandidate();
-}
-
-bool WebMediaPlayerImpl::IsBackgroundOptimizationCandidate() const {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  // Don't optimize Picture-in-Picture players.
-  if (IsInPictureInPicture())
+  // Only disable the video track on audio + video playbacks, otherwise they
+  // should be paused or left alone.
+  if (!HasVideo() || !HasAudio())
     return false;
 
-#if BUILDFLAG(IS_ANDROID)
-  // Don't optimize videos casted as part of RemotePlayback.
-  if (is_flinging_)
-    return false;
-#endif
-
-  // Don't optimize audio-only or streaming players.
-  if (!HasVideo() || IsStreaming())
+  // Disabling tracks causes seeks which can cause problematic network delays
+  // on streaming resources.
+  if (IsStreaming())
     return false;
 
-  // If frames are being captured, don't disable the track or pause the video.
-  if (IsVideoBeingCaptured())
+  // In these cases something external needs the frames.
+  if (IsInPictureInPicture() || IsVideoBeingCaptured() || is_flinging_)
     return false;
-
-  // Video-only players are always optimized (paused).
-  // Don't check the keyframe distance and duration.
-  if (!HasAudio() && HasVideo())
-    return true;
 
   // Videos shorter than the maximum allowed keyframe distance can be optimized.
   base::TimeDelta duration = GetPipelineMediaDuration();
@@ -3719,6 +3712,8 @@ bool WebMediaPlayerImpl::IsBackgroundOptimizationCandidate() const {
 void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
   if (IsHidden()) {
     if (ShouldPausePlaybackWhenHidden()) {
+      update_background_status_cb_.Cancel();
+      is_background_status_change_cancelled_ = true;
       PauseVideoIfNeeded();
     } else if (is_background_status_change_cancelled_) {
       // Only trigger updates when we don't have one already scheduled.
