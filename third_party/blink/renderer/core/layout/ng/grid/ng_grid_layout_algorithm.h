@@ -227,7 +227,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // elements in the grid (as provided by `oof_children`).
   void PlaceOutOfFlowItems(const NGGridLayoutData& layout_data,
                            const LayoutUnit block_size,
-                           const HeapVector<Member<LayoutBox>>& oof_children);
+                           HeapVector<Member<LayoutBox>>& oof_children);
 
   void ComputeGridItemOffsetAndSize(
       const GridItemData& grid_item,
