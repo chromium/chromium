@@ -156,11 +156,9 @@ ScriptPromise StorageManager::estimate(ScriptState* script_state,
   auto callback = resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&QueryStorageUsageAndQuotaCallback));
   GetQuotaHost(execution_context)
-      ->QueryStorageUsageAndQuota(
-          mojom::blink::StorageType::kTemporary,
-          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-              std::move(callback), mojom::blink::QuotaStatusCode::kErrorAbort,
-              0, 0, nullptr));
+      ->QueryStorageUsageAndQuota(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback), mojom::blink::QuotaStatusCode::kErrorAbort, 0, 0,
+          nullptr));
   return promise;
 }
 

@@ -281,8 +281,7 @@ void BindQuotaManagerHost(
     RenderFrameHostImpl* host,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   host->GetStoragePartition()->GetQuotaContext()->BindQuotaManagerHost(
-      host->GetProcess()->GetID(), host->GetRoutingID(), host->storage_key(),
-      std::move(receiver));
+      host->storage_key(), std::move(receiver));
 }
 
 void BindNativeIOHost(

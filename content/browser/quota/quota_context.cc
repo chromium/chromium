@@ -15,7 +15,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/quota_permission_context.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -41,21 +40,16 @@ QuotaContext::QuotaContext(
           base::BindRepeating(&QuotaChangeDispatcher::MaybeDispatchEvents,
                               quota_change_dispatcher_),
           std::move(special_storage_policy),
-          std::move(get_settings_function))),
-      permission_context_(
-          GetContentClient()->browser()->CreateQuotaPermissionContext()) {}
+          std::move(get_settings_function))) {}
 
 void QuotaContext::BindQuotaManagerHost(
-    int process_id,
-    int render_frame_id,
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   io_thread_->PostTask(
       FROM_HERE, base::BindOnce(&QuotaContext::BindQuotaManagerHostOnIOThread,
-                                this, process_id, render_frame_id, storage_key,
-                                std::move(receiver)));
+                                this, storage_key, std::move(receiver)));
 }
 
 QuotaContext::~QuotaContext() {
@@ -63,16 +57,13 @@ QuotaContext::~QuotaContext() {
 }
 
 void QuotaContext::BindQuotaManagerHostOnIOThread(
-    int process_id,
-    int render_frame_id,
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // The quota manager currently runs on the I/O thread.
   auto host = std::make_unique<QuotaManagerHost>(
-      process_id, render_frame_id, storage_key, quota_manager_.get(),
-      permission_context_.get(), quota_change_dispatcher_);
+      storage_key, quota_manager_.get(), quota_change_dispatcher_);
   auto* host_ptr = host.get();
   receivers_.Add(host_ptr, std::move(receiver), std::move(host));
 }

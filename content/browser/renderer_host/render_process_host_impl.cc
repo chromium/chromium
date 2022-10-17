@@ -2016,7 +2016,7 @@ void RenderProcessHostImpl::BindQuotaManagerHost(
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   storage_partition_impl_->GetQuotaContext()->BindQuotaManagerHost(
-      GetID(), MSG_ROUTING_NONE, storage_key, std::move(receiver));
+      storage_key, std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreateLockManager(
