@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "extensions/browser/api/storage/settings_observer.h"
@@ -43,8 +45,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
                                public policy::PolicyService::Observer {
  public:
   // |factory| is used to create databases for the PolicyValueStores.
-  // |observers| is the list of SettingsObservers to notify when a ValueStore
-  // changes.
+  // |observer| is invoked/notified when a ValueStore changes.
   ManagedValueStoreCache(content::BrowserContext* context,
                          scoped_refptr<value_store::ValueStoreFactory> factory,
                          SettingsChangedCallback observer);
@@ -54,8 +55,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
 
   ~ManagedValueStoreCache() override;
 
- private:
-  class ExtensionTracker;
+  policy::PolicyDomain policy_domain() const;
 
   // ValueStoreCache implementation:
   void ShutdownOnUI() override;
@@ -63,6 +63,9 @@ class ManagedValueStoreCache : public ValueStoreCache,
       StorageCallback callback,
       scoped_refptr<const Extension> extension) override;
   void DeleteStorageSoon(const std::string& extension_id) override;
+
+ private:
+  class ExtensionTracker;
 
   // PolicyService::Observer implementation:
   void OnPolicyServiceInitialized(policy::PolicyDomain domain) override;
@@ -76,36 +79,46 @@ class ManagedValueStoreCache : public ValueStoreCache,
   // Posted by OnPolicyUpdated() to update a PolicyValueStore on the backend
   // sequence.
   void UpdatePolicyOnBackend(const std::string& extension_id,
-                             const policy::PolicyMap& current_policy);
+                             const policy::PolicyMap& current_policy)
+      VALID_CONTEXT_REQUIRED(backend_sequence_checker_);
 
   // Returns an existing PolicyValueStore for |extension_id|, or NULL.
-  PolicyValueStore* GetStoreFor(const std::string& extension_id);
+  PolicyValueStore* GetOrCreateStore(const std::string& extension_id)
+      VALID_CONTEXT_REQUIRED(backend_sequence_checker_);
 
   // Returns true if a backing store has been created for |extension_id|.
-  bool HasStore(const std::string& extension_id) const;
+  bool HasStore(const std::string& extension_id) const
+      VALID_CONTEXT_REQUIRED(backend_sequence_checker_);
 
   // The profile that owns the extension system being used. This is used to
   // get the PolicyService, the EventRouter and the ExtensionService.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // The policy domain. This is used for both updating the schema registry with
   // the list of extensions and for observing the policy updates.
-  policy::PolicyDomain policy_domain_;
+  policy::PolicyDomain policy_domain_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // The |profile_|'s PolicyService.
-  raw_ptr<policy::PolicyService> policy_service_;
+  raw_ptr<policy::PolicyService> policy_service_
+      GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // Observes extension loading and unloading, and keeps the Profile's
   // PolicyService aware of the current list of extensions.
-  std::unique_ptr<ExtensionTracker> extension_tracker_;
+  std::unique_ptr<ExtensionTracker> extension_tracker_
+      GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
-  // These live on the FILE thread.
-  scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
-  SequenceBoundSettingsChangedCallback observer_;
+  scoped_refptr<value_store::ValueStoreFactory> storage_factory_
+      GUARDED_BY_CONTEXT(backend_sequence_checker_);
+  SequenceBoundSettingsChangedCallback observer_
+      GUARDED_BY_CONTEXT(backend_sequence_checker_);
 
-  // All the PolicyValueStores live on the FILE thread, and |store_map_| can be
-  // accessed only on the FILE thread as well.
-  std::map<std::string, std::unique_ptr<PolicyValueStore>> store_map_;
+  // All the PolicyValueStores live on the FILE/backend thread, and |store_map_|
+  // can be accessed only on this thread as well.
+  std::map<std::string, std::unique_ptr<PolicyValueStore>> store_map_
+      GUARDED_BY_CONTEXT(backend_sequence_checker_);
+
+  SEQUENCE_CHECKER(ui_sequence_checker_);
+  SEQUENCE_CHECKER(backend_sequence_checker_);
 
   base::WeakPtrFactory<ManagedValueStoreCache> weak_ptr_factory_{this};
 };
