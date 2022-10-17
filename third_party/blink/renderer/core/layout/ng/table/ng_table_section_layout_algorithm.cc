@@ -102,15 +102,19 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
       DCHECK_EQ(break_status, NGBreakStatus::kContinue);
     }
 
-    const NGBoxFragment fragment(
-        table_data.table_writing_direction,
-        To<NGPhysicalBoxFragment>(row_result->PhysicalFragment()));
+    const auto& physical_fragment =
+        To<NGPhysicalBoxFragment>(row_result->PhysicalFragment());
+    const NGBoxFragment fragment(table_data.table_writing_direction,
+                                 physical_fragment);
 
+    // TODO(crbug.com/736093): Due to inconsistent writing-direction of
+    // table-parts these DCHECKs may fail. When the above bug is fixed use the
+    // logical fragment instead of the physical.
     DCHECK(fragment.FirstBaseline());
     DCHECK(fragment.LastBaseline());
     if (!first_baseline)
-      first_baseline = offset.block_offset + *fragment.FirstBaseline();
-    last_baseline = offset.block_offset + *fragment.LastBaseline();
+      first_baseline = offset.block_offset + *physical_fragment.FirstBaseline();
+    last_baseline = offset.block_offset + *physical_fragment.LastBaseline();
 
     container_builder_.AddResult(*row_result, offset);
     offset.block_offset += fragment.BlockSize();
