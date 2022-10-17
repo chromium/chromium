@@ -584,11 +584,7 @@ SVGElement* SVGElement::viewportElement() const {
 
 void SVGElement::AddInstance(SVGElement* instance) {
   DCHECK(instance);
-  // Called during the <use> shadow tree building's post-processing step, just
-  // after the target<->instance association.
-  DCHECK(!instance->isConnected());
-  DCHECK(instance->HasSVGRareData());
-  DCHECK_EQ(instance->SvgRareData()->CorrespondingElement(), this);
+  DCHECK(instance->InUseShadowTree());
 
   HeapHashSet<WeakMember<SVGElement>>& instances =
       EnsureSVGRareData()->ElementInstances();
@@ -599,11 +595,8 @@ void SVGElement::AddInstance(SVGElement* instance) {
 
 void SVGElement::RemoveInstance(SVGElement* instance) {
   DCHECK(instance);
-  // Called during instance->RemovedFrom() after removal from shadow tree,
-  // before the target<->instance association is severed.
+  // Called during instance->RemovedFrom() after removal from shadow tree
   DCHECK(!instance->isConnected());
-  DCHECK(instance->HasSVGRareData());
-  DCHECK_EQ(instance->SvgRareData()->CorrespondingElement(), this);
 
   HeapHashSet<WeakMember<SVGElement>>& instances =
       SvgRareData()->ElementInstances();
