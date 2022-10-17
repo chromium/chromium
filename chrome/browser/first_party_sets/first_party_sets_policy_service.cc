@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 
 #include "base/feature_list.h"
@@ -128,9 +130,20 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
   }
 }
 
+void FirstPartySetsPolicyService::RegisterThrottleResumeCallback(
+    base::OnceClosure resume_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_ready()) {
+    std::move(resume_callback).Run();
+    return;
+  }
+  on_ready_callbacks_.push_back(std::move(resume_callback));
+}
+
 void FirstPartySetsPolicyService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_delegates_.Clear();
+  on_ready_callbacks_.clear();
   browser_context_ = nullptr;
   weak_factory_.InvalidateWeakPtrs();
 }
@@ -221,6 +234,14 @@ void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(
         MakeReadyEvent(config_.value().Clone(), cache_filter_.value().Clone()));
   }
 
+  base::circular_deque<base::OnceClosure> callback_queue;
+  callback_queue.swap(on_ready_callbacks_);
+  while (!callback_queue.empty()) {
+    base::OnceClosure callback = std::move(callback_queue.front());
+    callback_queue.pop_front();
+    std::move(callback).Run();
+  }
+
   if (on_first_init_complete_for_testing_.has_value()) {
     std::move(on_first_init_complete_for_testing_).value().Run();
   }
@@ -229,6 +250,7 @@ void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(
 void FirstPartySetsPolicyService::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_delegates_.Clear();
+  on_ready_callbacks_.clear();
   config_.reset();
   cache_filter_.reset();
   on_first_init_complete_for_testing_.reset();
