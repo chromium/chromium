@@ -16,6 +16,7 @@ import {$} from 'chrome://resources/js/util.js';
 import {TimelineDataSeries} from './data_series.js';
 import {peerConnectionDataStore} from './dump_creator.js';
 import {GetSsrcFromReport} from './ssrc_info_manager.js';
+import {generateStatsLabel} from './stats_helper.js';
 import {TimelineGraphView} from './timeline_graph_view.js';
 
 const STATS_GRAPH_CONTAINER_HEADING_CLASS = 'stats-graph-container-heading';
@@ -414,7 +415,7 @@ function ensureStatsGraphTopContainer(peerConnectionElement, report) {
     container.firstChild.firstChild.className =
         STATS_GRAPH_CONTAINER_HEADING_CLASS;
     container.firstChild.firstChild.textContent =
-        'Stats graphs for ' + report.type + ' (id=' + report.id + ')';
+        'Stats graphs for ' + generateStatsLabel(report);
     const statsType = getSsrcReportType(report);
     if (statsType !== '') {
       container.firstChild.firstChild.textContent += ' (' + statsType + ')';

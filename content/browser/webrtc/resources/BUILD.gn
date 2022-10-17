@@ -19,6 +19,7 @@ generate_grd("build_grd") {
     "peer_connection_update_table.js",
     "ssrc_info_manager.js",
     "stats_graph_helper.js",
+    "stats_helper.js",
     "stats_rates_calculator.js",
     "stats_table.js",
     "tab_view.js",
