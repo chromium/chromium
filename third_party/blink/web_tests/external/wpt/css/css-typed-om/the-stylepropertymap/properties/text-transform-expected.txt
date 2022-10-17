@@ -2,7 +2,7 @@ This is a testharness.js-based test.
 PASS Can set 'text-transform' to CSS-wide keywords
 PASS Can set 'text-transform' to var() references
 PASS Can set 'text-transform' to the 'none' keyword
-FAIL Can set 'text-transform' to the 'captialize' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'text-transform' to the 'capitalize' keyword
 PASS Can set 'text-transform' to the 'uppercase' keyword
 PASS Can set 'text-transform' to the 'lowercase' keyword
 FAIL Can set 'text-transform' to the 'full-width' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property

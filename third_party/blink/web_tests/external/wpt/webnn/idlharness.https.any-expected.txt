@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 389 tests; 164 PASS, 225 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'MLGraphBuilder': parameter 1 is not of type 'MLContext'."
+Found 389 tests; 163 PASS, 226 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL idl_test setup assert_unreached: navigator.ml.createContext returned a Promise Reached unreachable code
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
 PASS Partial interface MLContext: member names are unique
@@ -127,12 +127,12 @@ PASS MLContext interface: existence and properties of interface prototype object
 PASS MLContext interface: member compute
 FAIL MLContext interface: operation computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: interface prototype object missing non-static operation expected property "computeAsync" missing
 FAIL MLContext interface: operation createCommandEncoder() assert_own_property: interface prototype object missing non-static operation expected property "createCommandEncoder" missing
-FAIL MLContext must be primary interface of context assert_equals: context's prototype is not MLContext.prototype expected object "[object MLContext]" but got object "[object Promise]"
-FAIL Stringification of context assert_class_string: class string of context expected "[object MLContext]" but got "[object Promise]"
-PASS MLContext interface: context must not have property "compute"
-FAIL MLContext interface: context must inherit property "computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_inherits: property "computeAsync" not found in prototype chain
-FAIL MLContext interface: calling computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_inherits: property "computeAsync" not found in prototype chain
-FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_inherits: property "createCommandEncoder" not found in prototype chain
+FAIL MLContext must be primary interface of context assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
+FAIL Stringification of context assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
+FAIL MLContext interface: context must not have property "compute" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
+FAIL MLContext interface: context must inherit property "computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
+FAIL MLContext interface: calling computeAsync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
+FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: context is not defined"
 PASS MLOperand interface: existence and properties of interface object
 PASS MLOperand interface object length
 PASS MLOperand interface object name

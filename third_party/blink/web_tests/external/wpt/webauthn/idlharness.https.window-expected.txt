@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 82 tests; 79 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 87 tests; 83 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial dictionary CredentialCreationOptions: original dictionary defined
@@ -36,6 +36,10 @@ PASS Partial dictionary AuthenticationExtensionsClientInputs[6]: original dictio
 PASS Partial dictionary AuthenticationExtensionsClientInputs[6]: member names are unique
 PASS Partial dictionary AuthenticationExtensionsClientOutputs[6]: original dictionary defined
 PASS Partial dictionary AuthenticationExtensionsClientOutputs[6]: member names are unique
+PASS Partial dictionary AuthenticationExtensionsClientInputs[7]: original dictionary defined
+PASS Partial dictionary AuthenticationExtensionsClientInputs[7]: member names are unique
+PASS Partial dictionary AuthenticationExtensionsClientOutputs[7]: original dictionary defined
+PASS Partial dictionary AuthenticationExtensionsClientOutputs[7]: member names are unique
 PASS Partial dictionary CredentialRequestOptions[2]: member names are unique
 PASS Partial dictionary CredentialCreationOptions[2]: member names are unique
 PASS Partial dictionary CredentialRequestOptions[3]: member names are unique
@@ -82,5 +86,6 @@ PASS AuthenticatorAssertionResponse interface: existence and properties of inter
 PASS AuthenticatorAssertionResponse interface: attribute authenticatorData
 PASS AuthenticatorAssertionResponse interface: attribute signature
 PASS AuthenticatorAssertionResponse interface: attribute userHandle
+FAIL AuthenticatorAssertionResponse interface: attribute attestationObject assert_true: The prototype object must have a property "attestationObject" expected true got false
 Harness: the test ran to completion.
 

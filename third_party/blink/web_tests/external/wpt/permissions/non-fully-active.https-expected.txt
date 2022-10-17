@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Trying to query() a non-fully active document rejects with a InvalidStateError promise_rejects_dom: must reject in the right global when the document is not fully active function "function() { throw e }" threw object "TypeError: Failed to execute 'query' on 'Permissions': Failed to read the 'name' property from 'PermissionDescriptor': The provided value 'whatever' is not a valid enum value of type PermissionName." that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+PASS Permission change events shouldn't fire on non-fully active document
+Harness: the test ran to completion.
+

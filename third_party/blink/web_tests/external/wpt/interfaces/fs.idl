@@ -75,7 +75,7 @@ interface FileSystemWritableFileStream : WritableStream {
 };
 
 dictionary FileSystemReadWriteOptions {
-  [EnforceRange] required unsigned long long at;
+  [EnforceRange] unsigned long long at = 0;
 };
 
 [Exposed=DedicatedWorker, SecureContext]

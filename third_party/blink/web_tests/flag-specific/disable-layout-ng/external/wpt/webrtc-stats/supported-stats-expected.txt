@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 245 tests; 215 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 260 tests; 226 PASS, 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -17,6 +17,7 @@ PASS inbound-rtp's mid
 PASS inbound-rtp's remoteId
 PASS inbound-rtp's framesDecoded
 PASS inbound-rtp's keyFramesDecoded
+PASS inbound-rtp's framesDropped
 PASS inbound-rtp's frameWidth
 PASS inbound-rtp's frameHeight
 PASS inbound-rtp's framesPerSecond
@@ -24,6 +25,10 @@ PASS inbound-rtp's qpSum
 PASS inbound-rtp's totalDecodeTime
 PASS inbound-rtp's totalInterFrameDelay
 PASS inbound-rtp's totalSquaredInterFrameDelay
+PASS inbound-rtp's pauseCount
+PASS inbound-rtp's totalPausesDuration
+PASS inbound-rtp's freezeCount
+PASS inbound-rtp's totalFreezesDuration
 PASS inbound-rtp's lastPacketReceivedTimestamp
 PASS inbound-rtp's headerBytesReceived
 PASS inbound-rtp's packetsDiscarded
@@ -52,10 +57,11 @@ PASS inbound-rtp's framesReceived
 PASS inbound-rtp's decoderImplementation
 FAIL inbound-rtp's playoutId assert_true: Is playoutId present expected true got false
 FAIL inbound-rtp's powerEfficientDecoder assert_true: Is powerEfficientDecoder present expected true got false
+PASS inbound-rtp's framesAssembledFromMultiplePackets
+PASS inbound-rtp's totalAssemblyTime
 PASS inbound-rtp's packetsReceived
 PASS inbound-rtp's packetsLost
 PASS inbound-rtp's jitter
-PASS inbound-rtp's framesDropped
 PASS inbound-rtp's ssrc
 PASS inbound-rtp's transportId
 PASS inbound-rtp's codecId
@@ -107,7 +113,6 @@ PASS remote-inbound-rtp's roundTripTimeMeasurements
 FAIL remote-inbound-rtp's packetsReceived assert_true: Is packetsReceived present expected true got false
 PASS remote-inbound-rtp's packetsLost
 PASS remote-inbound-rtp's jitter
-FAIL remote-inbound-rtp's framesDropped assert_true: Is framesDropped present expected true got false
 PASS remote-inbound-rtp's ssrc
 PASS remote-inbound-rtp's kind
 PASS remote-inbound-rtp's transportId
@@ -224,6 +229,11 @@ PASS local-candidate's candidateType
 PASS local-candidate's priority
 FAIL local-candidate's url assert_true: Is url present expected true got false
 FAIL local-candidate's relayProtocol assert_true: Is relayProtocol present expected true got false
+PASS local-candidate's foundation
+FAIL local-candidate's relatedAddress assert_true: Is relatedAddress present expected true got false
+FAIL local-candidate's relatedPort assert_true: Is relatedPort present expected true got false
+PASS local-candidate's usernameFragment
+PASS local-candidate's tcpType
 PASS local-candidate's timestamp
 PASS local-candidate's type
 PASS local-candidate's id
@@ -235,6 +245,11 @@ PASS remote-candidate's candidateType
 PASS remote-candidate's priority
 FAIL remote-candidate's url assert_true: Is url present expected true got false
 FAIL remote-candidate's relayProtocol assert_true: Is relayProtocol present expected true got false
+PASS remote-candidate's foundation
+FAIL remote-candidate's relatedAddress assert_true: Is relatedAddress present expected true got false
+FAIL remote-candidate's relatedPort assert_true: Is relatedPort present expected true got false
+PASS remote-candidate's usernameFragment
+FAIL remote-candidate's tcpType assert_true: Is tcpType present expected true got false
 PASS remote-candidate's timestamp
 PASS remote-candidate's type
 PASS remote-candidate's id

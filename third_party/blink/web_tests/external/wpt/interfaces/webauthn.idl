@@ -125,6 +125,7 @@ interface AuthenticatorAssertionResponse : AuthenticatorResponse {
     [SameObject] readonly attribute ArrayBuffer      authenticatorData;
     [SameObject] readonly attribute ArrayBuffer      signature;
     [SameObject] readonly attribute ArrayBuffer?     userHandle;
+    [SameObject] readonly attribute ArrayBuffer?     attestationObject;
 };
 
 dictionary PublicKeyCredentialParameters {
@@ -143,6 +144,7 @@ dictionary PublicKeyCredentialCreationOptions {
     sequence<PublicKeyCredentialDescriptor>      excludeCredentials = [];
     AuthenticatorSelectionCriteria               authenticatorSelection;
     DOMString                                    attestation = "none";
+    sequence<DOMString>                          attestationFormats = [];
     AuthenticationExtensionsClientInputs         extensions;
 };
 
@@ -190,6 +192,8 @@ dictionary PublicKeyCredentialRequestOptions {
     USVString                            rpId;
     sequence<PublicKeyCredentialDescriptor> allowCredentials = [];
     DOMString                            userVerification = "preferred";
+    DOMString                            attestation = "none";
+    sequence<DOMString>                  attestationFormats = [];
     AuthenticationExtensionsClientInputs extensions;
 };
 
@@ -324,4 +328,22 @@ typedef sequence<UvmEntry> UvmEntries;
 
 partial dictionary AuthenticationExtensionsClientOutputs {
   UvmEntries uvm;
+};
+
+dictionary AuthenticationExtensionsDevicePublicKeyInputs {
+    DOMString attestation = "none";
+    sequence<DOMString> attestationFormats = [];
+};
+
+partial dictionary AuthenticationExtensionsClientInputs {
+    AuthenticationExtensionsDevicePublicKeyInputs devicePubKey;
+};
+
+dictionary AuthenticationExtensionsDevicePublicKeyOutputs {
+    ArrayBuffer authenticatorOutput;
+    ArrayBuffer signature;
+};
+
+partial dictionary AuthenticationExtensionsClientOutputs {
+    AuthenticationExtensionsDevicePublicKeyOutputs devicePubKey;
 };

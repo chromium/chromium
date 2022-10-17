@@ -35,7 +35,15 @@ idl_test(
       }
 
       for (const deviceType of DeviceTypeArray) {
-        self.context = navigator.ml.createContext({deviceType});
+        const context = navigator.ml.createContext({deviceType});
+        // Per spec navigator.ml.createContext should return a MLContext, but
+        // in Chromium it returns a Promise<MLContext>. Fail the setup if this
+        // happens, since the tests wouldn't make sense.
+        if (context instanceof Promise) {
+          context.catch(() => {});
+          assert_unreached('navigator.ml.createContext returned a Promise');
+        }
+        self.context = context;
         self.builder = new MLGraphBuilder(context);
         self.input = builder.input('input', {type: 'float32', dimensions: [1, 1, 5, 5]});
         self.filter = builder.constant({type: 'float32', dimensions: [1, 1, 3, 3]}, new Float32Array(9).fill(1));

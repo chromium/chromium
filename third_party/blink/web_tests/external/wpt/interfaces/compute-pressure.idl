@@ -28,11 +28,12 @@ interface PressureObserver {
   [Exposed=Window] static Promise<PermissionState> requestPermission();
 };
 
-dictionary PressureRecord {
-  PressureSource source;
-  PressureState state;
-  sequence<PressureFactor> factors;
-  DOMHighResTimeStamp time;
+[Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
+interface PressureRecord {
+  readonly attribute PressureSource source;
+  readonly attribute PressureState state;
+  readonly attribute FrozenArray<PressureFactor> factors;
+  readonly attribute DOMHighResTimeStamp time;
 };
 
 dictionary PressureObserverOptions {

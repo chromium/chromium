@@ -113,8 +113,8 @@ dictionary WebTransportReceiveStreamStats {
 
 [Exposed=(Window,Worker), SecureContext]
 interface WebTransportBidirectionalStream {
-  readonly attribute ReadableStream readable;
-  readonly attribute WritableStream writable;
+  readonly attribute WebTransportReceiveStream readable;
+  readonly attribute WebTransportSendStream writable;
 };
 
 [Exposed=(Window,Worker), SecureContext]

@@ -4,19 +4,11 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <body>
-<script>
-  async function attachIFrame() {
-    const iframe = document.createElement("iframe");
-    document.body.appendChild(iframe);
-    await new Promise((resolve) => {
-      iframe.onload = resolve;
-      iframe.src = "about:blank";
-    });
-    return iframe;
-  }
+<script type="module">
+  import { attachIframe } from "./resources/orientation-utils.js";
 
   promise_test(async (t) => {
-    const iframe = await attachIFrame();
+    const iframe = await attachIframe();
     const { orientation } = iframe.contentWindow.screen;
     const opposite = orientation.type.startsWith("portrait")
       ? "landscape"
@@ -34,7 +26,7 @@
   }, "Attempting to lock non-fully active documents results in a InvalidStateError");
 
   promise_test(async (t) => {
-    const iframe = await attachIFrame();
+    const iframe = await attachIframe();
     const { orientation } = iframe.contentWindow.screen;
 
     const frameDOMException = iframe.contentWindow.DOMException;
@@ -44,7 +36,7 @@
   }, "Attempting to unlock non-fully active documents results in a InvalidStateError");
 
   promise_test(async (t) => {
-    const iframe = await attachIFrame();
+    const iframe = await attachIframe();
     const { orientation } = iframe.contentWindow.screen;
 
     const opposite = orientation.type.startsWith("portrait")

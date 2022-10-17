@@ -206,7 +206,7 @@ enum CodecState {
 
 callback WebCodecsErrorCallback = undefined(DOMException error);
 
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable]
 interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
@@ -229,7 +229,7 @@ enum EncodedAudioChunkType {
     "delta",
 };
 
-[Exposed=(Window,DedicatedWorker)]
+[Exposed=(Window,DedicatedWorker), Serializable]
 interface EncodedVideoChunk {
   constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
@@ -244,7 +244,7 @@ dictionary EncodedVideoChunkInit {
   required EncodedVideoChunkType type;
   [EnforceRange] required long long timestamp;        // microseconds
   [EnforceRange] unsigned long long duration;         // microseconds
-  required BufferSource data;
+  required [AllowShared] BufferSource data;
 };
 
 enum EncodedVideoChunkType {

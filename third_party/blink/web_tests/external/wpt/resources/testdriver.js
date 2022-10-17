@@ -677,7 +677,7 @@
             return Promise.reject(new Error("unimplemented"));
         },
 
-        delete_named_cookie: function(name, context=null) {
+        get_named_cookie: function(name, context=null) {
             return Promise.reject(new Error("unimplemented"));
         },
 

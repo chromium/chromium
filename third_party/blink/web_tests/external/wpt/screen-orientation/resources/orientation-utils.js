@@ -1,22 +1,33 @@
-export async function loadIframe(src = "/screen-orientation/resources/blank.html") {
-  const iframe = document.createElement("iframe");
-  iframe.src = src;
-  document.body.appendChild(iframe);
-  return new Promise(r => {
-    if (iframe.contentDocument.readyState === "complete") {
-      return r(iframe);
-    }
-    iframe.onload = () => r(iframe);
+/**
+ *
+ * @param {object} options
+ * @param {string} options.src - The iframe src
+ * @param {Window} options.context - The browsing context in which the iframe will be created
+ * @returns
+ */
+export async function attachIframe(options = {}) {
+  const { src, context } = {
+    ...{ src: "about:blank", context: self },
+    ...options,
+  };
+  const iframe = context.document.createElement("iframe");
+  await new Promise((resolve) => {
+    iframe.onload = resolve;
+    iframe.src = src;
+    context.document.body.appendChild(iframe);
   });
+  return iframe;
 }
 
 export function getOppositeOrientation() {
-  const { type: currentOrientation } = screen.orientation;
-  const isPortrait = currentOrientation.includes("portrait");
-  return isPortrait ? "landscape" : "portrait";
+  return screen.orientation.type.startsWith("portrait")
+    ? "landscape"
+    : "portrait";
 }
 
-export function makeCleanup(initialOrientation = screen.orientation?.type.split(/-/)[0]) {
+export function makeCleanup(
+  initialOrientation = screen.orientation?.type.split(/-/)[0]
+) {
   return async () => {
     if (initialOrientation) {
       await screen.orientation.lock(initialOrientation);
@@ -25,5 +36,5 @@ export function makeCleanup(initialOrientation = screen.orientation?.type.split(
     requestAnimationFrame(async () => {
       await document.exitFullscreen();
     });
-  }
+  };
 }

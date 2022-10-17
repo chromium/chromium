@@ -131,9 +131,9 @@ function that can be used to send arbitary messages to the test
 window. For example, in an auxillary browsing context:
 
 ```js
-testdriver.set_test_context(window.opener)
-await testdriver.click(document.getElementsByTagName("button")[0])
-testdriver.message_test("click complete")
+test_driver.set_test_context(window.opener)
+await test_driver.click(document.getElementsByTagName("button")[0])
+test_driver.message_test("click complete")
 ```
 
 The requirement to have a handle to the test window does mean it's
