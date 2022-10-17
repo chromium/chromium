@@ -103,8 +103,8 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     public void testClickingSuggestionsTriggersCallback() {
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna),
-                    Collections.emptyList(), false);
+            mTouchToFill.showCredentials(sExampleUrl, true, Collections.emptyList(),
+                    Collections.singletonList(sAna), false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -119,8 +119,8 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     public void testClickingWebAuthnCredentialTriggersCallback() {
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna),
-                    Collections.singletonList(sCam), false);
+            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sCam),
+                    Collections.singletonList(sAna), false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -135,8 +135,8 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     public void testClickingButtonTriggersCallback() {
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna),
-                    Collections.emptyList(), false);
+            mTouchToFill.showCredentials(sExampleUrl, true, Collections.emptyList(),
+                    Collections.singletonList(sAna), false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -153,7 +153,7 @@ public class TouchToFillIntegrationTest {
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(
-                    sExampleUrl, true, Arrays.asList(sAna, sBob), Collections.emptyList(), false);
+                    sExampleUrl, true, Collections.emptyList(), Arrays.asList(sAna, sBob), false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -167,8 +167,8 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     public void testClickingManagePasswordsTriggersCallback() {
         runOnUiThreadBlocking(() -> {
-            mTouchToFill.showCredentials(sExampleUrl, true, Collections.singletonList(sAna),
-                    Collections.emptyList(), false);
+            mTouchToFill.showCredentials(sExampleUrl, true, Collections.emptyList(),
+                    Collections.singletonList(sAna), false);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -250,7 +250,7 @@ public class TouchToFillIntegrationTest {
 
         runOnUiThreadBlocking(() -> {
             mTouchToFill.showCredentials(
-                    sExampleUrl, true, Arrays.asList(sAna, sBob), Collections.emptyList(), false);
+                    sExampleUrl, true, Collections.emptyList(), Arrays.asList(sAna, sBob), false);
         });
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onCredentialSelected(any());

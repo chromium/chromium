@@ -118,7 +118,7 @@ void TouchToFillViewImpl::Show(
 
   Java_TouchToFillBridge_showCredentials(
       env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, url),
-      is_origin_secure.value(), credential_array, webauthn_credential_array,
+      is_origin_secure.value(), webauthn_credential_array, credential_array,
       trigger_submission);
 }
 

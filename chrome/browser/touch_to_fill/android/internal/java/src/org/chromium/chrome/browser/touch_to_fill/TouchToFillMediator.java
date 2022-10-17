@@ -80,8 +80,9 @@ class TouchToFillMediator {
         mDesiredIconSize = desiredIconSize;
     }
 
-    void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials,
-            List<WebAuthnCredential> webAuthnCredentials, boolean triggerSubmission) {
+    void showCredentials(GURL url, boolean isOriginSecure,
+            List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials,
+            boolean triggerSubmission) {
         assert credentials != null;
         mModel.set(ON_CLICK_MANAGE, this::onManagePasswordSelected);
         mModel.set(MANAGE_BUTTON_TEXT, getManageButtonText(credentials, webAuthnCredentials));

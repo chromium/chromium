@@ -42,10 +42,11 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
     }
 
     @Override
-    public void showCredentials(GURL url, boolean isOriginSecure, List<Credential> credentials,
-            List<WebAuthnCredential> webAuthnCredentials, boolean triggerSubmission) {
+    public void showCredentials(GURL url, boolean isOriginSecure,
+            List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials,
+            boolean triggerSubmission) {
         mMediator.showCredentials(
-                url, isOriginSecure, credentials, webAuthnCredentials, triggerSubmission);
+                url, isOriginSecure, webAuthnCredentials, credentials, triggerSubmission);
     }
 
     /**
