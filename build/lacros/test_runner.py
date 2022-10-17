@@ -375,6 +375,35 @@ def _IsRunningOnBots(forward_args):
   return '--test-launcher-bot-mode' in forward_args
 
 
+def _KillNicely(proc, timeout_secs=0.5):
+  """Kills a subprocess nicely.
+
+  Args:
+    proc: The subprocess to kill.
+    timeout_secs: The timeout to wait in seconds.
+  """
+  if proc and proc.poll() is None:
+    proc.terminate()
+    try:
+      proc.wait(timeout_secs)
+    except subprocess.TimeoutExpired:
+      proc.kill()
+      proc.wait()
+
+
+def _ClearDir(dirpath):
+  """Deletes everything within the directory.
+
+  Args:
+    dirpath: The path of the directory.
+  """
+  for e in os.scandir(dirpath):
+    if e.is_dir():
+      shutil.rmtree(e.path)
+    elif e.is_file():
+      os.remove(e.path)
+
+
 def _RunTestWithAshChrome(args, forward_args):
   """Runs tests with ash-chrome.
 
@@ -501,8 +530,11 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
       logging.warning('Are you using test_ash_chrome?')
       logging.warning('Printing the output of "ps aux" for debugging:')
       subprocess.call(['ps', 'aux'])
-      if ash_process and ash_process.poll() is None:
-        ash_process.kill()
+      _KillNicely(ash_process)
+
+      # Clean up for retry.
+      _ClearDir(tmp_xdg_dir_name)
+      _ClearDir(tmp_ash_data_dir_name)
 
     if not ash_process_has_started:
       raise RuntimeError('Timed out waiting for ash-chrome to start')
@@ -519,11 +551,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     return test_process.wait()
 
   finally:
-    if ash_process and ash_process.poll() is None:
-      ash_process.terminate()
-      # Allow process to do cleanup and exit gracefully before killing.
-      time.sleep(0.5)
-      ash_process.kill()
+    _KillNicely(ash_process)
 
     shutil.rmtree(tmp_xdg_dir_name, ignore_errors=True)
     shutil.rmtree(tmp_ash_data_dir_name, ignore_errors=True)
@@ -540,10 +568,7 @@ def _RunTestDirectly(args, forward_args):
     p = subprocess.Popen([args.command] + forward_args)
     return p.wait()
   finally:
-    if p and p.poll() is None:
-      p.terminate()
-      time.sleep(0.5)
-      p.kill()
+    _KillNicely(p)
 
 
 def _HandleSignal(sig, _):
