@@ -7009,7 +7009,8 @@
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
-          'MAC_RETINA_AMD_GPU_STABLE',
+          # Not enough capacity on Mac AMD https://crbug.com/1375306.
+          # 'MAC_RETINA_AMD_GPU_STABLE',
         ],
       },
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {

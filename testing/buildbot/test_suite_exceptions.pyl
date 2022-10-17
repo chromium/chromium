@@ -3678,6 +3678,14 @@
       'Linux Tests',  # https://crbug.com/929689, https://crbug.com/936557
     ],
   },
+  'webgl2_conformance_gl_passthrough_tests': {
+    'remove_from': [
+      # Not enough capacity on Mac AMD https://crbug.com/1375306.
+      'Mac FYI Retina ASAN (AMD)',
+      'Mac FYI Retina Release (AMD)',
+      'mac-angle-chromium-amd',
+    ],
+  },
   'webgl2_conformance_gles_passthrough_tests': {
     'remove_from': [
       # Currently not enough capacity to run these tests on this config.
