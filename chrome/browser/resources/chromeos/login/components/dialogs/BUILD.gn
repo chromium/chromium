@@ -51,7 +51,7 @@ js_library("oobe_loading_dialog.m") {
   deps = [
     ":oobe_adaptive_dialog.m",
     ":oobe_content_dialog.m",
-    "..:oobe_cr_lottie.m",
+    "..:oobe_cr_lottie",
     "../behaviors:oobe_dialog_host_behavior.m",
     "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

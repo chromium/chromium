@@ -32,7 +32,7 @@ group("closure_compile") {
     ":oobe_a11y_option",
     ":oobe_apps_list.m",
     ":oobe_carousel.m",
-    ":oobe_cr_lottie.m",
+    ":oobe_cr_lottie",
     ":oobe_i18n_dropdown",
     ":oobe_icons.m",
     ":oobe_network_icons.m",
@@ -60,7 +60,6 @@ group("polymer3_elements") {
                   ":network_select_login_module",
                   ":oobe_apps_list_module",
                   ":oobe_carousel_module",
-                  ":oobe_cr_lottie_module",
                   ":oobe_icons_module",
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
@@ -194,15 +193,15 @@ js_library("oobe_carousel.m") {
   extra_deps = [ ":oobe_carousel_module" ]
 }
 
-js_library("oobe_cr_lottie.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.m.js" ]
+js_library("oobe_cr_lottie") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.js" ]
   deps = [
     "behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
-  extra_deps = [ ":oobe_cr_lottie_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("oobe_network_icons.m") {
@@ -306,15 +305,6 @@ polymer_modulizer("oobe_carousel") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("oobe_cr_lottie") {
-  js_file = "oobe_cr_lottie.js"
-  html_file = "oobe_cr_lottie.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("oobe_network_icons") {
   js_file = "oobe_network_icons.m.js"
   html_file = "oobe_network_icons.html"
@@ -361,6 +351,7 @@ html_to_js("web_components") {
     "hd_iron_icon.js",
     "notification_card.js",
     "oobe_a11y_option.js",
+    "oobe_cr_lottie.js",
     "oobe_i18n_dropdown.js",
     "progress_list_item.js",
     "security_token_pin.js",

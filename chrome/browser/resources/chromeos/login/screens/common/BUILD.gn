@@ -110,7 +110,7 @@ js_library("adb_sideloading") {
 js_library("app_downloading") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/app_downloading.js" ]
   deps = [
-    "../../components:oobe_cr_lottie.m",
+    "../../components:oobe_cr_lottie",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
@@ -239,7 +239,7 @@ js_library("fingerprint_setup") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/fingerprint_setup.js" ]
   deps = [
     "../../components:display_manager_types.m",
-    "../../components:oobe_cr_lottie.m",
+    "../../components:oobe_cr_lottie",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
@@ -256,7 +256,7 @@ js_library("fingerprint_setup") {
 js_library("gesture_navigation") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gesture_navigation.js" ]
   deps = [
-    "../../components:oobe_cr_lottie.m",
+    "../../components:oobe_cr_lottie",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
@@ -363,7 +363,7 @@ js_library("marketing_opt_in") {
   deps = [
     "../../components:display_manager_types.m",
     "../../components:oobe_a11y_option",
-    "../../components:oobe_cr_lottie.m",
+    "../../components:oobe_cr_lottie",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",

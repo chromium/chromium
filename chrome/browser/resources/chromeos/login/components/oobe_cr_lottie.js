@@ -2,19 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #js_imports_placeholder */
-
 /**
  * @fileoverview Polymer element for displaying pausable lottie animation.
  */
+
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import './oobe_icons.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.m.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {OobeI18nBehaviorInterface}
  */
-const OobeCrLottieBase =
-    Polymer.mixinBehaviors([OobeI18nBehavior], Polymer.Element);
+const OobeCrLottieBase = mixinBehaviors([OobeI18nBehavior], PolymerElement);
 
 /**
  * @typedef {{
@@ -23,26 +28,29 @@ const OobeCrLottieBase =
  */
 OobeCrLottieBase.$;
 
-/* #export */ class OobeCrLottie extends OobeCrLottieBase {
+/** @polymer */
+export class OobeCrLottie extends OobeCrLottieBase {
   static get is() {
     return 'oobe-cr-lottie';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
   static get properties() {
     return {
       playing: {
         type: Boolean,
         observer: 'onPlayingChanged_',
+        value: false,
       },
-      animationUrl: String,
-    };
-  }
 
-  constructor() {
-    super();
-    this.playing = false;
-    this.animationUrl = '';
+      animationUrl: {
+        type: String,
+        value: '',
+      },
+    };
   }
 
   ready() {
