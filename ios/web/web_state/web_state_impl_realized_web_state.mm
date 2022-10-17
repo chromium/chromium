@@ -191,6 +191,10 @@ void WebStateImpl::RealizedWebState::SetWebController(
 
 void WebStateImpl::RealizedWebState::OnNavigationStarted(
     NavigationContextImpl* context) {
+  // When a navigation starts, immediately close any visible dialogs to avoid
+  // confusion about the origin of a dialog.
+  ClearDialogs();
+
   // Navigation manager loads internal URLs to restore session history and
   // create back-forward entries for WebUI. Do not trigger external callbacks.
   if ([CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()] ||
