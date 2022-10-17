@@ -30,8 +30,8 @@ void ReceivedBadMessage(content::RenderProcessHost* host,
 }  // namespace
 
 bool CheckFrameNotPrerendering(content::RenderFrameHost* frame) {
-  if (frame->GetLifecycleState() ==
-      content::RenderFrameHost::LifecycleState::kPrerendering) {
+  if (frame->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
     ReceivedBadMessage(frame->GetProcess(), BadMessageReason::kPrerendering);
     return false;
   }

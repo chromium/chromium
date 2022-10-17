@@ -103,8 +103,8 @@ bool ContentAutofillDriver::IsInAnyMainFrame() const {
 }
 
 bool ContentAutofillDriver::IsPrerendering() const {
-  return render_frame_host_->GetLifecycleState() ==
-         content::RenderFrameHost::LifecycleState::kPrerendering;
+  return render_frame_host_->IsInLifecycleState(
+      content::RenderFrameHost::LifecycleState::kPrerendering);
 }
 
 bool ContentAutofillDriver::CanShowAutofillUi() const {
@@ -700,8 +700,7 @@ FormData ContentAutofillDriver::GetFormWithFrameAndFormMetaData(
 }
 
 ContentAutofillRouter& ContentAutofillDriver::autofill_router() {
-  DCHECK(content::RenderFrameHost::LifecycleState::kPrerendering !=
-         render_frame_host_->GetLifecycleState());
+  DCHECK(!IsPrerendering());
   return *autofill_router_;
 }
 

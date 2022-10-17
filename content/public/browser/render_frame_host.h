@@ -730,6 +730,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // GetLifecycleState() will crash if it is called on a RenderFrameHost in such
   // a state.  Eventually, we should make sure that embedders only learn about
   // new RenderFrameHosts when they reach the kPendingCommit state.
+  // If you want to use GetLifecycleState to check the state for speculative
+  // RenderFrameHosts, use RenderFrameHost::IsInLifecycleState to avoid crashing
+  // for speculative RenderFrameHosts.
   virtual LifecycleState GetLifecycleState() = 0;
 
   // Returns true if and only if the `lifecycle_state` matches
