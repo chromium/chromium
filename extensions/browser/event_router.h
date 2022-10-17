@@ -283,6 +283,11 @@ class EventRouter : public KeyedService,
   virtual bool ExtensionHasEventListener(const std::string& extension_id,
                                          const std::string& event_name) const;
 
+  // Returns true if the URL is listening to the given event.
+  // (virtual for testing only.)
+  virtual bool URLHasEventListener(const GURL& url,
+                                   const std::string& event_name) const;
+
   // Broadcasts an event to every listener registered for that event.
   virtual void BroadcastEvent(std::unique_ptr<Event> event);
 

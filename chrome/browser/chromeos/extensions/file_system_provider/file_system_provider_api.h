@@ -28,6 +28,7 @@ namespace extensions {
 class FileSystemProviderBase : public ExtensionFunction {
  protected:
   ~FileSystemProviderBase() override {}
+  std::string GetProviderId() const;
   void RespondWithError(const std::string& error);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -106,7 +107,7 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
                             crosapi::mojom::FileSystemIdPtr* file_system_id,
                             int64_t* request_id) {
     *file_system_id = crosapi::mojom::FileSystemId::New();
-    (*file_system_id)->provider = extension_id();
+    (*file_system_id)->provider = GetProviderId();
     (*file_system_id)->id = params->file_system_id;
     *request_id = params->request_id;
   }

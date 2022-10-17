@@ -749,6 +749,11 @@ bool EventRouter::ExtensionHasEventListener(
   return listeners_.HasListenerForExtension(extension_id, event_name);
 }
 
+bool EventRouter::URLHasEventListener(const GURL& url,
+                                      const std::string& event_name) const {
+  return listeners_.HasListenerForURL(url, event_name);
+}
+
 std::set<std::string> EventRouter::GetRegisteredEvents(
     const std::string& extension_id,
     RegisteredEventType type) const {

@@ -527,17 +527,32 @@
       "chrome://file-manager/*"
     ]
   }],
-  "fileSystemProvider": {
+  "fileSystemProvider": [{
     "dependencies": ["permission:fileSystemProvider"],
     "contexts": ["blessed_extension"],
     "disallow_for_service_workers": true
-  },
-  "fileSystemProviderInternal": {
+  }, {
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      "chrome-untrusted://terminal/*"
+    ],
+    "platforms": ["chromeos"]
+  }],
+  "fileSystemProviderInternal": [{
     "internal": true,
     "dependencies": ["permission:fileSystemProvider"],
     "contexts": ["blessed_extension"],
     "disallow_for_service_workers": true
-  },
+  }, {
+    "internal": true,
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      "chrome-untrusted://terminal/*"
+    ],
+    "platforms": ["chromeos"]
+  }],
   "fontSettings": {
     "dependencies": ["permission:fontSettings"],
     "contexts": ["blessed_extension"]

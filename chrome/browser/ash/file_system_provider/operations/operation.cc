@@ -12,7 +12,9 @@
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/extension_id.h"
@@ -61,6 +63,16 @@ bool DispatchEventImpl(extensions::EventRouter* event_router,
         extension_id, std::make_unique<extensions::Event>(
                           histogram_value, event_name, std::move(event_args)));
     return true;
+  }
+
+  if (extension_id == guest_os::kTerminalSystemAppId) {
+    GURL terminal(chrome::kChromeUIUntrustedTerminalURL);
+    if (event_router->URLHasEventListener(terminal, event_name)) {
+      event_router->DispatchEventToURL(
+          terminal, std::make_unique<extensions::Event>(
+                        histogram_value, event_name, std::move(event_args)));
+      return true;
+    }
   }
 
   // If there are any Lacros remotes, forward the message to the first one. This

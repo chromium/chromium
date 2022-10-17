@@ -195,6 +195,9 @@ class EventListenerMap {
   bool HasListenerForExtension(const std::string& extension_id,
                                const std::string& event_name) const;
 
+  // Returns true if there are any listeners on |event_name| from |url|.
+  bool HasListenerForURL(const GURL& url, const std::string& event_name) const;
+
   // Returns true if this map contains an EventListener that .Equals()
   // |listener|.
   bool HasListener(const EventListener* listener) const;

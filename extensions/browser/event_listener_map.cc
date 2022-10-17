@@ -210,6 +210,19 @@ bool EventListenerMap::HasListenerForExtension(
   return false;
 }
 
+bool EventListenerMap::HasListenerForURL(const GURL& url,
+                                         const std::string& event_name) const {
+  auto it = listeners_.find(event_name);
+  if (it == listeners_.end())
+    return false;
+
+  for (const auto& listener_to_search : it->second) {
+    if (url::IsSameOriginWith(listener_to_search->listener_url(), url))
+      return true;
+  }
+  return false;
+}
+
 bool EventListenerMap::HasListener(const EventListener* listener) const {
   auto it = listeners_.find(listener->event_name());
   if (it == listeners_.end())

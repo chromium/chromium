@@ -18,9 +18,13 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/file_system_provider/provider_interface.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
@@ -107,6 +111,18 @@ std::unique_ptr<TerminalSource> TerminalSource::ForCrosh(Profile* profile) {
 
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForTerminal(Profile* profile) {
+  auto provider_id =
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          guest_os::kTerminalSystemAppId);
+  ash::file_system_provider::Capabilities capabilities(
+      /*configurable=*/true, /*watchable=*/false, /*multiple_mounts=*/true,
+      extensions::FileSystemProviderSource::SOURCE_NETWORK);
+  auto provider =
+      std::make_unique<ash::file_system_provider::ExtensionProvider>(
+          ProfileManager::GetPrimaryUserProfile(), std::move(provider_id),
+          std::move(capabilities), chrome::kChromeUIUntrustedTerminalURL);
+  ash::file_system_provider::Service::Get(profile)->RegisterProvider(
+      std::move(provider));
   return base::WrapUnique(new TerminalSource(
       profile, chrome::kChromeUIUntrustedTerminalURL, "html/terminal.html",
       profile->GetPrefs()
