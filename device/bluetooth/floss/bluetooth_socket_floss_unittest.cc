@@ -20,6 +20,7 @@
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
+#include "device/bluetooth/floss/fake_floss_gatt_client.h"
 #include "device/bluetooth/floss/fake_floss_lescan_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_socket_manager.h"
@@ -44,20 +45,20 @@ class BluetoothSocketFlossTest : public testing::Test {
         floss::FlossDBusManager::GetSetterForTesting();
 
     auto fake_floss_manager_client = std::make_unique<FakeFlossManagerClient>();
-    auto fake_floss_adapter_client = std::make_unique<FakeFlossAdapterClient>();
     auto fake_floss_socket_manager = std::make_unique<FakeFlossSocketManager>();
     auto fake_floss_lescan_client = std::make_unique<FakeFlossLEScanClient>();
     auto fake_floss_advertiser_client =
         std::make_unique<FakeFlossAdvertiserClient>();
 
     fake_floss_manager_client_ = fake_floss_manager_client.get();
-    fake_floss_adapter_client_ = fake_floss_adapter_client.get();
     fake_floss_socket_manager_ = fake_floss_socket_manager.get();
     fake_floss_lescan_client_ = fake_floss_lescan_client.get();
     fake_floss_advertiser_client_ = fake_floss_advertiser_client.get();
 
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
-    dbus_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
+    dbus_setter->SetFlossAdapterClient(
+        std::make_unique<FakeFlossAdapterClient>());
+    dbus_setter->SetFlossGattClient(std::make_unique<FakeFlossGattClient>());
     dbus_setter->SetFlossSocketManager(std::move(fake_floss_socket_manager));
     dbus_setter->SetFlossLEScanClient(std::move(fake_floss_lescan_client));
     dbus_setter->SetFlossAdvertiserClient(
@@ -169,7 +170,6 @@ class BluetoothSocketFlossTest : public testing::Test {
   // Holds pointer to FakeFloss*Client's so that we can manipulate the fake
   // within tests.
   raw_ptr<FakeFlossManagerClient> fake_floss_manager_client_;
-  raw_ptr<FakeFlossAdapterClient> fake_floss_adapter_client_;
   raw_ptr<FakeFlossSocketManager> fake_floss_socket_manager_;
   raw_ptr<FakeFlossLEScanClient> fake_floss_lescan_client_;
   raw_ptr<FakeFlossAdvertiserClient> fake_floss_advertiser_client_;

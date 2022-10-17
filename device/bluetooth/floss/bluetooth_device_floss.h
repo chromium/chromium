@@ -13,12 +13,12 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
+#include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/bluetooth_pairing_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
+#include "device/bluetooth/floss/floss_gatt_client.h"
 
 namespace floss {
-
-class BluetoothAdapterFloss;
 
 // BluetoothDeviceFloss implements device::BluetoothDevice for platforms using
 // Floss (Linux front-end for Fluoride). Objects of this type should be managed
@@ -26,7 +26,8 @@ class BluetoothAdapterFloss;
 //
 // This class is not thread-safe but is only called from the UI thread.
 class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
-    : public device::BluetoothDevice {
+    : public device::BluetoothDevice,
+      public FlossGattClientObserver {
  public:
   BluetoothDeviceFloss(const BluetoothDeviceFloss&) = delete;
   BluetoothDeviceFloss& operator=(const BluetoothDeviceFloss&) = delete;
@@ -121,10 +122,25 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   void InitializeDeviceProperties(base::OnceClosure callback);
 
+  // FlossGattClientObserver overrides
+  void GattClientConnectionState(GattStatus status,
+                                 int32_t client_id,
+                                 bool connected,
+                                 std::string address) override;
+  void GattSearchComplete(std::string address,
+                          const std::vector<GattService>& services,
+                          GattStatus status) override;
+
+  // Returns the adapter which owns this device instance.
+  BluetoothAdapterFloss* adapter() const {
+    return static_cast<BluetoothAdapterFloss*>(adapter_);
+  }
+
  protected:
   // BluetoothDevice override
   void CreateGattConnectionImpl(
       absl::optional<device::BluetoothUUID> service_uuid) override;
+  void UpgradeToFullDiscovery() override;
   void DisconnectGatt() override;
 
  private:
@@ -141,6 +157,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                                const std::string& error_message);
 
   void TriggerInitDevicePropertiesCallback();
+  void OnConnectGatt(DBusResult<Void> ret);
 
   absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
       absl::nullopt;
@@ -177,6 +194,17 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // Whether the device is connected at link layer level (not profile level).
   // Updated via |SetIsConnected| only.
   bool is_acl_connected_ = false;
+
+  // Is GATT connected for this device.
+  bool is_gatt_connected_ = false;
+
+  // Are all services resolved? Only true if full discovery is completed. See
+  // |IsGattServicesDiscoveryComplete| for more info.
+  bool svc_resolved_ = false;
+
+  // Specific uuid to search for after gatt connection is established. If this
+  // is not set, then we do full discovery.
+  absl::optional<device::BluetoothUUID> search_uuid;
 
   // Similar to is_acl_connected_ but contains the full connection state
   // (including encryption). This is updated when |SetConnectionState| is called
