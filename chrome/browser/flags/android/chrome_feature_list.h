@@ -143,7 +143,6 @@ BASE_DECLARE_FEATURE(kSearchEnginePromoExistingDevice);
 BASE_DECLARE_FEATURE(kSearchEnginePromoExistingDeviceV2);
 BASE_DECLARE_FEATURE(kSearchEnginePromoNewDevice);
 BASE_DECLARE_FEATURE(kSearchEnginePromoNewDeviceV2);
-BASE_DECLARE_FEATURE(kShareButtonInTopToolbar);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
 BASE_DECLARE_FEATURE(kShowScrollableMVTOnNTPAndroid);
 BASE_DECLARE_FEATURE(kFeedPositionAndroid);

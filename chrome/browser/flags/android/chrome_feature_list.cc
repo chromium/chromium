@@ -290,7 +290,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchEnginePromoExistingDeviceV2,
     &kSearchEnginePromoNewDevice,
     &kSearchEnginePromoNewDeviceV2,
-    &kShareButtonInTopToolbar,
     &kShowScrollableMVTOnNTPAndroid,
     &kFeedPositionAndroid,
     &kSearchResumptionModuleAndroid,
@@ -950,10 +949,6 @@ BASE_FEATURE(kRequestDesktopSiteDefaultsDowngrade,
 
 BASE_FEATURE(kSafeModeForCachedFlags,
              "SafeModeForCachedFlags",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kShareButtonInTopToolbar,
-             "ShareButtonInTopToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowScrollableMVTOnNTPAndroid,

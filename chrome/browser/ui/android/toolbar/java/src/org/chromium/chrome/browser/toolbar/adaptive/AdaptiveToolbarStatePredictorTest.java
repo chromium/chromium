@@ -35,7 +35,6 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 @Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-        ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class AdaptiveToolbarStatePredictorTest {
