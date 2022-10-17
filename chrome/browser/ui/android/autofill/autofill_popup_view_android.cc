@@ -81,7 +81,9 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
     ScopedJavaLocalRef<jstring> label;
     ScopedJavaLocalRef<jstring> secondary_label;
     if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVirtualCardMetadata)) {
+            features::kAutofillEnableVirtualCardMetadata) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableCardProductName)) {
       label = base::android::ConvertUTF16ToJavaString(
           env, controller_->GetSuggestionMainTextAt(i));
       secondary_label = base::android::ConvertUTF16ToJavaString(

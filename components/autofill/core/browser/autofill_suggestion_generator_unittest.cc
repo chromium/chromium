@@ -546,8 +546,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_VirtualCardNumberField) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableVirtualCardMetadata);
+  scoped_feature_list.InitWithFeatures(
+      /* enabled_features */ {features::kAutofillEnableVirtualCardMetadata,
+                              features::kAutofillEnableCardProductName},
+      /* disabled_features */ {});
 
   // Create a server card.
   CreditCard server_card = test::GetMaskedServerCard();
@@ -644,8 +646,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_NonVirtualCardNumberField) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableVirtualCardMetadata);
+  scoped_feature_list.InitWithFeatures(
+      /* enabled_features */ {features::kAutofillEnableVirtualCardMetadata,
+                              features::kAutofillEnableCardProductName},
+      /* disabled_features */ {});
 
   // Create a server card.
   CreditCard server_card = test::GetMaskedServerCard();

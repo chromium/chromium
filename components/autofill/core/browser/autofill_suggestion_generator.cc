@@ -382,6 +382,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   if (!base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory) &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableVirtualCardMetadata) &&
+      base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName) &&
       type.GetStorableType() == CREDIT_CARD_NUMBER) {
     // For the Android dropdown, populate the card name (nickname/product
     // description/network) and the last 4 digits separately to allow them to
