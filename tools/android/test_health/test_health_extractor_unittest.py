@@ -50,8 +50,7 @@ class GetRepoTestHealth(unittest.TestCase):
             java_test_health=java_test_utils.JavaTestHealth(
                 java_package=_JAVA_PACKAGE_HEALTHY_TESTS,
                 disabled_tests_count=0,
-                disable_if_tests_count=0,
-                flaky_tests_count=0),
+                disable_if_tests_count=0),
             git_repo_info=_CHROMIUM_REPO_INFO)
 
         test_health_infos = test_health_extractor.get_repo_test_health(
@@ -73,8 +72,7 @@ class GetRepoTestHealth(unittest.TestCase):
             java_test_health=java_test_utils.JavaTestHealth(
                 java_package=_JAVA_PACKAGE_UNHEALTHY_TESTS,
                 disabled_tests_count=1,
-                disable_if_tests_count=1,
-                flaky_tests_count=0),
+                disable_if_tests_count=1),
             git_repo_info=_CHROMIUM_REPO_INFO)
 
         test_health_infos = test_health_extractor.get_repo_test_health(

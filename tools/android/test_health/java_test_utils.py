@@ -45,8 +45,6 @@ class JavaTestHealth:
     """The number of test cases annotated with @DisabledTest."""
     disable_if_tests_count: int
     """The number of test cases annotated with @DisableIf."""
-    flaky_tests_count: int
-    """The number of test cases annotated with the removed @FlakyTest, now always 0."""
 
 
 def get_java_test_health(test_path: pathlib.Path) -> JavaTestHealth:
@@ -106,8 +104,7 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
     return JavaTestHealth(
         java_package=_get_java_package_name(java_ast),
         disabled_tests_count=annotation_counter[_DISABLED_TEST_ANNOTATION],
-        disable_if_tests_count=annotation_counter[_DISABLE_IF_TEST_ANNOTATION],
-        flaky_tests_count=0)
+        disable_if_tests_count=annotation_counter[_DISABLE_IF_TEST_ANNOTATION])
 
 
 def _get_java_package_name(java_ast: CompilationUnit) -> Optional[str]:
