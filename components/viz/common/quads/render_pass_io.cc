@@ -1011,15 +1011,12 @@ base::Value SurfaceIdToDict(const SurfaceId& id) {
   return dict;
 }
 
-absl::optional<SurfaceId> SurfaceIdFromDict(const base::Value& dict) {
-  if (!dict.is_dict()) {
-    return absl::nullopt;
-  }
-  absl::optional<int> client_id = dict.FindIntKey("client_id");
-  absl::optional<int> sink_id = dict.FindIntKey("sink_id");
-  absl::optional<int> parent_seq = dict.FindIntKey("parent_seq");
-  absl::optional<int> child_seq = dict.FindIntKey("child_seq");
-  const base::Value* embed_token_value = dict.FindKey("embed_token");
+absl::optional<SurfaceId> SurfaceIdFromDict(const base::Value::Dict& dict) {
+  absl::optional<int> client_id = dict.FindInt("client_id");
+  absl::optional<int> sink_id = dict.FindInt("sink_id");
+  absl::optional<int> parent_seq = dict.FindInt("parent_seq");
+  absl::optional<int> child_seq = dict.FindInt("child_seq");
+  const base::Value* embed_token_value = dict.Find("embed_token");
   if (!client_id || !sink_id || !parent_seq || !child_seq || !embed_token_value)
     return absl::nullopt;
 
@@ -1040,12 +1037,10 @@ base::Value SurfaceRangeToDict(const SurfaceRange& range) {
   return dict;
 }
 
-absl::optional<SurfaceRange> SurfaceRangeFromDict(const base::Value& dict) {
-  if (!dict.is_dict()) {
-    return absl::nullopt;
-  }
-  const base::Value* start_dict = dict.FindDictKey("start");
-  const base::Value* end_dict = dict.FindDictKey("end");
+absl::optional<SurfaceRange> SurfaceRangeFromDict(
+    const base::Value::Dict& dict) {
+  const base::Value::Dict* start_dict = dict.FindDict("start");
+  const base::Value::Dict* end_dict = dict.FindDict("end");
   if (!end_dict)
     return absl::nullopt;
   absl::optional<SurfaceId> start =
@@ -1462,28 +1457,30 @@ bool SolidColorDrawQuadFromDict(const base::Value& dict,
   return true;
 }
 
-bool SurfaceDrawQuadFromDict(const base::Value& dict,
+bool SurfaceDrawQuadFromDict(const base::Value& dict_value,
                              const DrawQuadCommon& common,
                              SurfaceDrawQuad* draw_quad) {
   DCHECK(draw_quad);
-  if (!dict.is_dict())
+  if (!dict_value.is_dict())
     return false;
 
-  const base::Value* surface_range_dict = dict.FindDictKey("surface_range");
+  const base::Value::Dict& dict = dict_value.GetDict();
+  const base::Value::Dict* surface_range_dict = dict.FindDict("surface_range");
   if (!surface_range_dict)
     return false;
   absl::optional<SurfaceRange> surface_range =
       SurfaceRangeFromDict(*surface_range_dict);
-  absl::optional<bool> stretch_content = dict.FindBoolKey("stretch_content");
-  absl::optional<bool> is_reflection = dict.FindBoolKey("is_reflection");
-  absl::optional<bool> allow_merge = dict.FindBoolKey("allow_merge");
+  absl::optional<bool> stretch_content = dict.FindBool("stretch_content");
+  absl::optional<bool> is_reflection = dict.FindBool("is_reflection");
+  absl::optional<bool> allow_merge = dict.FindBool("allow_merge");
   if (!surface_range || !stretch_content || !is_reflection || !allow_merge)
     return false;
 
   SkColor4f t_default_background_color;
-  if (!ColorFromDict(dict.GetDict(), "default_background_color",
-                     &t_default_background_color))
+  if (!ColorFromDict(dict, "default_background_color",
+                     &t_default_background_color)) {
     return false;
+  }
 
   draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
                     common.needs_blending, *surface_range,
@@ -2281,7 +2278,8 @@ bool CompositorFrameFromDict(const base::Value& dict,
     return false;
   }
   for (auto& referenced_surface_dict : referenced_surfaces->GetList()) {
-    auto referenced_surface = SurfaceRangeFromDict(referenced_surface_dict);
+    auto referenced_surface =
+        SurfaceRangeFromDict(referenced_surface_dict.GetDict());
     if (!referenced_surface) {
       return false;
     }
@@ -2322,7 +2320,7 @@ bool FrameDataFromList(const base::Value& list,
   }
   for (const auto& frame_data_dict : list.GetList()) {
     FrameData frame_data;
-    auto* surface_id_dict = frame_data_dict.FindDictKey("surface_id");
+    auto* surface_id_dict = frame_data_dict.GetDict().FindDict("surface_id");
     if (!surface_id_dict) {
       return false;
     }
