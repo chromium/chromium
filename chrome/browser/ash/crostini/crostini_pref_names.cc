@@ -19,6 +19,20 @@ namespace prefs {
 // A boolean preference representing whether a user has opted in to use
 // Crostini (Called "Linux Apps" in UI).
 const char kCrostiniEnabled[] = "crostini.enabled";
+// A list representing the intent to create containers with
+// certain specifications. This will also store whether or not it's been
+// successfully run. If so, it will only remain as a historical record.
+
+// Keys for the kCrostiniCreateOptions Dictionary stored for each container
+// CreateOptions.
+const char kCrostiniCreateOptionsSharePathsKey[] = "share_paths";
+const char kCrostiniCreateOptionsContainerUsernameKey[] = "container_username";
+const char kCrostiniCreateOptionsDiskSizeBytesKey[] = "disk_size_bytes";
+const char kCrostiniCreateOptionsImageServerUrlKey[] = "image_server_url";
+const char kCrostiniCreateOptionsImageAliasKey[] = "image_alias";
+const char kCrostiniCreateOptionsAnsiblePlaybookKey[] = "ansible_playbook";
+const char kCrostiniCreateOptionsUsedKey[] = "used";
+
 // List of USB devices with their system guid, a name/description and their
 // enabled state for use with Crostini.
 const char kCrostiniSharedUsbDevices[] = "crostini.shared_usb_devices";

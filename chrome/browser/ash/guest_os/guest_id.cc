@@ -29,6 +29,7 @@ bool MatchContainerDict(const base::Value& dict, const GuestId& container_id) {
 }
 
 static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
+    prefs::kContainerCreateOptions,
     prefs::kContainerOsVersionKey,
     prefs::kContainerOsPrettyNameKey,
     prefs::kContainerColorKey,

@@ -430,6 +430,25 @@ class CrostiniManager : public KeyedService,
                                        CrostiniResultCallback callback,
                                        RestartObserver* observer = nullptr);
 
+  // CreateOption operations.
+
+  // Registers the CreateOptions to create a container with specified
+  // RestartOptions. For containers that existed before this feature, this will
+  // be generic restart options, for newly created containers, this will store
+  // the initial starting information. Returns false if there is already an
+  // CreateOption registered.
+  bool RegisterCreateOptions(const guest_os::GuestId& container_id,
+                             const RestartOptions& options);
+
+  // Fetches the CreateOptions as RestartOptions. Returns True if this
+  // configuration has been started with before.
+  bool FetchCreateOptions(const guest_os::GuestId& container_id,
+                          RestartOptions* restart_options);
+
+  // Sets an CreateOptions as booted, so it becomes a historical record and has
+  // no effect on future starts.
+  void SetCreateOptionsUsed(const guest_os::GuestId& container_id);
+
   // Cancel a restart request. The associated result callback will be fired
   // immediately and the observer will be removed. If there were multiple
   // restart requests for the same container id, the restart may actually keep

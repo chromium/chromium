@@ -41,6 +41,7 @@ extern const char kAppLastLaunchTimeKey[];
 
 // GuestId
 extern const char kGuestOsContainers[];
+extern const char kContainerCreateOptions[];
 extern const char kContainerOsVersionKey[];
 extern const char kContainerOsPrettyNameKey[];
 extern const char kContainerColorKey[];

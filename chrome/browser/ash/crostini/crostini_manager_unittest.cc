@@ -54,6 +54,8 @@
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -714,33 +716,100 @@ TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalOperationBlocked) {
   run_loop()->Run();
 }
 
-TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerCreated) {
-  const base::Value::List* pref =
-      &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->size(), 0u);
-  crostini_manager()->CreateLxdContainer(
-      container_id(), absl::nullopt, absl::nullopt,
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::SUCCESS));
-  run_loop()->Run();
-  pref = &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->size(), 1u);
+TEST_F(CrostiniManagerTest, RegisterCreateOptions) {
+  guest_os::AddContainerToPrefs(profile_.get(), crostini::DefaultContainerId(),
+                                {});
+  CrostiniManager::RestartOptions options;
+  options.container_username = "penguininadesert";
+  options.ansible_playbook = base::FilePath("pob.yaml");
+  options.disk_size_bytes = 9001;
+  options.image_server_url = "https://suspiciouswebsite.com";
+  options.image_alias = "nothingtoseehereofficer";
+  EXPECT_TRUE(crostini_manager()->RegisterCreateOptions(
+      crostini::DefaultContainerId(), options));
 }
 
-TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
-  const base::Value::List* pref =
-      &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->size(), 0u);
-  vm_tools::cicerone::CreateLxdContainerResponse response;
-  response.set_status(vm_tools::cicerone::CreateLxdContainerResponse::EXISTS);
-  fake_cicerone_client_->set_create_lxd_container_response(response);
-  crostini_manager()->CreateLxdContainer(
-      container_id(), absl::nullopt, absl::nullopt,
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::SUCCESS));
-  run_loop()->Run();
-  pref = &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->size(), 1u);
+TEST_F(CrostiniManagerTest, RegisterCreateOptions_FalseWhenExists) {
+  guest_os::AddContainerToPrefs(profile_.get(), crostini::DefaultContainerId(),
+                                {});
+  CrostiniManager::RestartOptions options;
+  options.container_username = "penguininadesert";
+  options.ansible_playbook = base::FilePath("pob.yaml");
+  options.disk_size_bytes = 9001;
+  options.image_server_url = "https://suspiciouswebsite.com";
+  options.image_alias = "nothingtoseehereofficer";
+  EXPECT_TRUE(crostini_manager()->RegisterCreateOptions(
+      crostini::DefaultContainerId(), options));
+  EXPECT_FALSE(crostini_manager()->RegisterCreateOptions(
+      crostini::DefaultContainerId(), options));
+}
+
+TEST_F(CrostiniManagerTest, SetCreateOptionsUsed) {
+  guest_os::AddContainerToPrefs(profile_.get(), crostini::DefaultContainerId(),
+                                {});
+  CrostiniManager::RestartOptions options;
+  options.container_username = "penguininadesert";
+  options.ansible_playbook = base::FilePath("pob.yaml");
+  options.disk_size_bytes = 9001;
+  options.image_server_url = "https://suspiciouswebsite.com";
+  options.image_alias = "nothingtoseehereofficer";
+  EXPECT_TRUE(crostini_manager()->RegisterCreateOptions(
+      crostini::DefaultContainerId(), options));
+  crostini_manager()->SetCreateOptionsUsed(crostini::DefaultContainerId());
+
+  const base::Value* create_options = guest_os::GetContainerPrefValue(
+      profile_.get(), crostini::DefaultContainerId(),
+      guest_os::prefs::kContainerCreateOptions);
+  ASSERT_NE(create_options, nullptr);
+
+  EXPECT_TRUE(
+      create_options->GetDict().FindBool(prefs::kCrostiniCreateOptionsUsedKey));
+}
+
+TEST_F(CrostiniManagerTest, FetchCreateOptions_FalseWhenUnused) {
+  guest_os::AddContainerToPrefs(profile_.get(), crostini::DefaultContainerId(),
+                                {});
+  CrostiniManager::RestartOptions options;
+  options.container_username = "penguininadesert";
+  options.ansible_playbook = base::FilePath("pob.yaml");
+  options.disk_size_bytes = 9001;
+  options.image_server_url = "https://suspiciouswebsite.com";
+  options.image_alias = "nothingtoseehereofficer";
+  EXPECT_TRUE(crostini_manager()->RegisterCreateOptions(
+      crostini::DefaultContainerId(), options));
+
+  CrostiniManager::RestartOptions options2;
+  EXPECT_FALSE(crostini_manager()->FetchCreateOptions(
+      crostini::DefaultContainerId(), &options2));
+  EXPECT_TRUE(options.container_username == options2.container_username);
+  EXPECT_TRUE(options.ansible_playbook == options2.ansible_playbook);
+  EXPECT_TRUE(options.disk_size_bytes == options2.disk_size_bytes);
+  EXPECT_TRUE(options.image_server_url == options2.image_server_url);
+  EXPECT_TRUE(options.image_alias == options2.image_alias);
+}
+
+TEST_F(CrostiniManagerTest, FetchCreateOptions_TrueWhenUsed) {
+  guest_os::AddContainerToPrefs(profile_.get(), crostini::DefaultContainerId(),
+                                {});
+  CrostiniManager::RestartOptions options;
+  options.container_username = "penguininadesert";
+  options.ansible_playbook = base::FilePath("pob.yaml");
+  options.disk_size_bytes = 9001;
+  options.image_server_url = "https://suspiciouswebsite.com";
+  options.image_alias = "nothingtoseehereofficer";
+  EXPECT_TRUE(crostini_manager()->RegisterCreateOptions(
+      crostini::DefaultContainerId(), options));
+
+  crostini_manager()->SetCreateOptionsUsed(crostini::DefaultContainerId());
+
+  CrostiniManager::RestartOptions options2;
+  EXPECT_TRUE(crostini_manager()->FetchCreateOptions(
+      crostini::DefaultContainerId(), &options2));
+  EXPECT_TRUE(options.container_username == options2.container_username);
+  EXPECT_TRUE(options.ansible_playbook == options2.ansible_playbook);
+  EXPECT_TRUE(options.disk_size_bytes == options2.disk_size_bytes);
+  EXPECT_TRUE(options.image_server_url == options2.image_server_url);
+  EXPECT_TRUE(options.image_alias == options2.image_alias);
 }
 
 class CrostiniManagerRestartTest : public CrostiniManagerTest,
@@ -1481,11 +1550,12 @@ TEST_F(CrostiniManagerRestartTest, InstallHistogramEntries) {
   // Likewise for RestartSource::kMultiContainerCreation
   base::RunLoop run_loop2;
   barrier_closure = base::BarrierClosure(2, run_loop2.QuitClosure());
+  guest_os::GuestId container_id2("termina", "banana");
   CrostiniManager::RestartOptions options2;
   options2.restart_source = RestartSource::kMultiContainerCreation;
   crostini_manager()->RestartCrostiniWithOptions(
-      container_id(), std::move(options2), result_callback);
-  crostini_manager()->RestartCrostini(container_id(), result_callback);
+      container_id2, std::move(options2), result_callback);
+  crostini_manager()->RestartCrostini(container_id2, result_callback);
   run_loop2.Run();
 
   histogram_tester_.ExpectBucketCount(

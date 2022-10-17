@@ -60,8 +60,8 @@ void StartupStatusPrinter::StartShowingSpinner() {
 void StartupStatusPrinter::PrintStageWithColor(int stage_index,
                                                const char* color,
                                                const std::string& stage_name) {
-  DCHECK_GE(stage_index_, 0);
-  DCHECK_LE(stage_index_, max_stage_);
+  DCHECK_GE(stage_index, 0);
+  DCHECK_LE(stage_index, max_stage_);
   InitializeProgress();
   stage_index_ = stage_index;
   auto output = verbose_ ? stage_name : "";

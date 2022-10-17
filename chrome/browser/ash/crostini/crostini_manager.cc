@@ -71,6 +71,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -677,8 +678,6 @@ void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
   }
   // Set the pref here, after we first successfully install something
   profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, true);
-  // Register penguin so it will show in Terminal even on failure (b/221771751).
-  AddNewLxdContainerToPrefs(profile_, DefaultContainerId());
 
   // Allow concierge to choose an appropriate disk image size.
   int64_t disk_size_bytes = requests_[0].options.disk_size_bytes.value_or(0);
@@ -2270,11 +2269,23 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
     return kUninitializedRestartId;
   }
 
+  RestartOptions create_options;
+  create_options.start_vm_only = options.start_vm_only;
+  create_options.stop_after_lxd_available = options.stop_after_lxd_available;
+  bool obsolete_create_options = true;
+  AddNewLxdContainerToPrefs(profile_, container_id);
+  RegisterContainer(container_id);
+  if (!RegisterCreateOptions(container_id, options)) {
+    obsolete_create_options = FetchCreateOptions(container_id, &create_options);
+  }
+
   RestartId restart_id = next_restart_id_++;
   restarters_by_id_.emplace(restart_id, container_id);
 
-  CrostiniRestarter::RestartRequest request = {restart_id, std::move(options),
-                                               std::move(callback), observer};
+  CrostiniRestarter::RestartRequest request = {
+      restart_id,
+      obsolete_create_options ? std::move(options) : std::move(create_options),
+      std::move(callback), observer};
 
   auto it = restarters_by_container_.find(container_id);
   if (it == restarters_by_container_.end()) {
@@ -2949,6 +2960,9 @@ void CrostiniManager::OnCreateLxdContainer(
     default:
       LOG(ERROR) << "Failed to create container: "
                  << response->failure_reason();
+      // Remove all create options and the existence of this container.
+      RemoveLxdContainerFromPrefs(profile_, container_id);
+      UnregisterContainer(container_id);
       std::move(callback).Run(CrostiniResult::CONTAINER_CREATE_FAILED);
   }
 }
@@ -3111,9 +3125,8 @@ void CrostiniManager::OnLxdContainerCreated(
       result = CrostiniResult::UNKNOWN_ERROR;
       break;
     case vm_tools::cicerone::LxdContainerCreatedSignal::CREATED:
+      SetCreateOptionsUsed(container_id);
       result = CrostiniResult::SUCCESS;
-      AddNewLxdContainerToPrefs(profile_, container_id);
-      RegisterContainer(container_id);
       break;
     case vm_tools::cicerone::LxdContainerCreatedSignal::DOWNLOAD_TIMED_OUT:
       result = CrostiniResult::CONTAINER_DOWNLOAD_TIMED_OUT;
@@ -3132,6 +3145,8 @@ void CrostiniManager::OnLxdContainerCreated(
   if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to create container. ID: " << container_id
                << " reason: " << signal.failure_reason();
+    RemoveLxdContainerFromPrefs(profile_, container_id);
+    UnregisterContainer(container_id);
   }
 
   InvokeAndErasePendingContainerCallbacks(&create_lxd_container_callbacks_,
@@ -4001,6 +4016,122 @@ void CrostiniManager::UnregisterAllContainers() {
     terminal_registry->Unregister(pair.second);
   }
   terminal_provider_ids_.clear();
+}
+
+bool CrostiniManager::RegisterCreateOptions(
+    const guest_os::GuestId& container_id,
+    const RestartOptions& options) {
+  if (guest_os::GetContainerPrefValue(
+          profile_, container_id, guest_os::prefs::kContainerCreateOptions) !=
+      nullptr) {
+    return false;
+  }
+
+  base::Value new_create_options(base::Value::Type::DICT);
+
+  base::Value share_paths(base::Value::Type::LIST);
+  for (const base::FilePath& path : options.share_paths) {
+    share_paths.Append(path.value());
+  }
+  new_create_options.SetKey(prefs::kCrostiniCreateOptionsSharePathsKey,
+                            std::move(share_paths));
+
+  if (options.container_username.has_value()) {
+    new_create_options.SetKey(prefs::kCrostiniCreateOptionsContainerUsernameKey,
+                              base::Value(options.container_username.value()));
+  }
+  if (options.disk_size_bytes.has_value()) {
+    new_create_options.SetKey(
+        prefs::kCrostiniCreateOptionsDiskSizeBytesKey,
+        base::Value(base::NumberToString(options.disk_size_bytes.value())));
+  }
+  if (options.image_server_url.has_value()) {
+    new_create_options.SetKey(prefs::kCrostiniCreateOptionsImageServerUrlKey,
+                              base::Value(options.image_server_url.value()));
+  }
+  if (options.image_alias.has_value()) {
+    new_create_options.SetKey(prefs::kCrostiniCreateOptionsImageAliasKey,
+                              base::Value(options.image_alias.value()));
+  }
+  if (options.ansible_playbook.has_value()) {
+    new_create_options.SetKey(
+        prefs::kCrostiniCreateOptionsAnsiblePlaybookKey,
+        base::Value(options.ansible_playbook.value().value()));
+  }
+  new_create_options.SetKey(prefs::kCrostiniCreateOptionsUsedKey,
+                            base::Value(false));
+
+  guest_os::UpdateContainerPref(profile_, container_id,
+                                guest_os::prefs::kContainerCreateOptions,
+                                std::move(new_create_options));
+  return true;
+}
+
+void CrostiniManager::SetCreateOptionsUsed(
+    const guest_os::GuestId& container_id) {
+  const base::Value* create_options = guest_os::GetContainerPrefValue(
+      profile_, container_id, guest_os::prefs::kContainerCreateOptions);
+  if (create_options == nullptr) {
+    // Should never reach here.
+    return;
+  }
+  base::Value mutable_create_options = create_options->Clone();
+  mutable_create_options.SetKey(prefs::kCrostiniCreateOptionsUsedKey,
+                                base::Value(true));
+  guest_os::UpdateContainerPref(profile_, container_id,
+                                guest_os::prefs::kContainerCreateOptions,
+                                std::move(mutable_create_options));
+}
+
+bool CrostiniManager::FetchCreateOptions(const guest_os::GuestId& container_id,
+                                         RestartOptions* options) {
+  DCHECK(options != nullptr);
+
+  const base::Value* create_options = guest_os::GetContainerPrefValue(
+      profile_, container_id, guest_os::prefs::kContainerCreateOptions);
+  if (create_options == nullptr) {
+    // Should never reach here. If we somehow do, just restart with the given
+    // options.
+    return true;
+  }
+
+  for (const auto& path : *create_options->GetDict().FindList(
+           prefs::kCrostiniCreateOptionsSharePathsKey)) {
+    options->share_paths.emplace_back(path.GetString());
+  }
+
+  if (create_options->GetDict().Find(
+          prefs::kCrostiniCreateOptionsContainerUsernameKey)) {
+    options->container_username = *create_options->GetDict().FindString(
+        prefs::kCrostiniCreateOptionsContainerUsernameKey);
+  }
+  if (create_options->GetDict().Find(
+          prefs::kCrostiniCreateOptionsDiskSizeBytesKey)) {
+    int64_t size;
+    base::StringToInt64(*create_options->GetDict().FindString(
+                            prefs::kCrostiniCreateOptionsDiskSizeBytesKey),
+                        &size);
+    options->disk_size_bytes = size;
+  }
+  if (create_options->GetDict().Find(
+          prefs::kCrostiniCreateOptionsImageServerUrlKey)) {
+    options->image_server_url = *create_options->GetDict().FindString(
+        prefs::kCrostiniCreateOptionsImageServerUrlKey);
+  }
+  if (create_options->GetDict().Find(
+          prefs::kCrostiniCreateOptionsImageAliasKey)) {
+    options->image_alias = *create_options->GetDict().FindString(
+        prefs::kCrostiniCreateOptionsImageAliasKey);
+  }
+  if (create_options->GetDict().Find(
+          prefs::kCrostiniCreateOptionsAnsiblePlaybookKey)) {
+    options->ansible_playbook =
+        base::FilePath(*create_options->GetDict().FindString(
+            prefs::kCrostiniCreateOptionsAnsiblePlaybookKey));
+  }
+
+  return *create_options->GetDict().FindBool(
+      prefs::kCrostiniCreateOptionsUsedKey);
 }
 
 }  // namespace crostini

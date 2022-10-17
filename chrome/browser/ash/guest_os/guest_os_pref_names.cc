@@ -45,6 +45,7 @@ const char kAppLastLaunchTimeKey[] = "last_launch_time";
 
 // GuestId
 const char kGuestOsContainers[] = "crostini.containers";
+const char kContainerCreateOptions[] = "crostini_create_options";
 const char kContainerOsVersionKey[] = "container_os_version";
 const char kContainerOsPrettyNameKey[] = "container_os_pretty_name";
 // SkColor used to assign badges to apps associated with this container.

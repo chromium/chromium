@@ -4436,6 +4436,9 @@
   <message name="IDS_CROSTINI_TERMINAL_STATUS_START_CONTAINER" desc="Text shown in the crostini terminal when it is starting the Linux container">
     Starting the Linux container
   </message>
+  <message name="IDS_CROSTINI_TERMINAL_STATUS_CONFIGURE_CONTAINER" desc="Text shown in the crostini terminal when it is configuring the Linux container">
+    Configuring the Linux container
+  </message>
   <message name="IDS_CROSTINI_TERMINAL_STATUS_CONNECT_CONTAINER" desc="Text shown in the crostini terminal when it is connecting to the container">
     Connecting to the container
   </message>

@@ -734,6 +734,15 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
           container_id, std::move(options),
           base::BindOnce(&CrostiniHandler::OnContainerCreated,
                          handler_weak_ptr_factory_.GetWeakPtr(), container_id));
+
+  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
+  intent->extras = container_id.ToMap();
+
+  // The Terminal will be added as an observer to the above restart.
+
+  // Immediately launch the terminal to allow the window to popup and show the
+  // startup progress.
+  LaunchTerminal(std::move(intent));
 }
 
 void CrostiniHandler::OnContainerCreated(guest_os::GuestId container_id,
@@ -743,12 +752,6 @@ void CrostiniHandler::OnContainerCreated(guest_os::GuestId container_id,
     return;
   }
   VLOG(1) << "Container was created successfully with ID: " << container_id;
-
-  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
-  intent->extras = container_id.ToMap();
-
-  // The Terminal will be added as an observer to the above restart.
-  LaunchTerminal(std::move(intent));
 }
 
 void CrostiniHandler::HandleDeleteContainer(const base::Value::List& args) {

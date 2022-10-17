@@ -19,7 +19,8 @@ namespace crostini {
 using mojom::InstallerState;
 
 namespace {
-const int kMaxStage = static_cast<int>(InstallerState::kStartContainer) + 1;
+// Counts from chrome/browser/ash/crostini/crostini_types.mojom.
+const int kMaxStage = static_cast<int>(InstallerState::kConfigureContainer) + 1;
 }  // namespace
 
 // Displays startup status to the crostini terminal.
@@ -58,14 +59,13 @@ class CrostiniStartupStatus : public crostini::CrostiniManager::RestartObserver,
             {InstallerState::kStartContainer,
              l10n_util::GetStringUTF8(
                  IDS_CROSTINI_TERMINAL_STATUS_START_CONTAINER)},
+            {InstallerState::kConfigureContainer,
+             l10n_util::GetStringUTF8(
+                 IDS_CROSTINI_TERMINAL_STATUS_CONFIGURE_CONTAINER)},
         });
-    // Our count of stages should match the number of stages we can actually
-    // reach. kMaxStage is inclusive because we leave it at that as the special
-    // post-restart state while vsh is connecting.
-    // This is a DCHECK instead of static_assert because I can't figure
-    // out how to check the size of a flatmap in a constexpr way.
-    DCHECK(kStartStrings->size() == kMaxStage);
     const std::string& stage_string = (*kStartStrings)[stage];
+    // Ensure we have a valid string for each stage.
+    DCHECK(!stage_string.empty());
     printer()->PrintStage(stage_index, stage_string);
   }
 };
