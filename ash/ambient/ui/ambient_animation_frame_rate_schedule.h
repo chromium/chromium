@@ -78,6 +78,8 @@ struct ASH_EXPORT AmbientAnimationFrameRateSection {
 
 using AmbientAnimationFrameRateSchedule =
     std::list<AmbientAnimationFrameRateSection>;
+using AmbientAnimationFrameRateScheduleIterator =
+    AmbientAnimationFrameRateSchedule::const_iterator;
 
 // Returns a schedule that plays the entire animation at the default frame
 // rate.

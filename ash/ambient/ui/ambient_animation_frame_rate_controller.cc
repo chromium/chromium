@@ -1,0 +1,161 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/ambient/ui/ambient_animation_frame_rate_controller.h"
+
+#include "ash/frame_throttler/frame_throttling_controller.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "base/time/time.h"
+#include "cc/paint/skottie_wrapper.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
+#include "ui/aura/window.h"
+
+namespace ash {
+namespace {
+
+AmbientAnimationFrameRateSchedule BuildSchedule(lottie::Animation* animation) {
+  DCHECK(animation);
+  AmbientAnimationFrameRateSchedule schedule =
+      BuildAmbientAnimationFrameRateSchedule(
+          animation->skottie()->GetAllMarkers());
+  if (schedule.empty()) {
+    // This means the animation file needs to be fixed. This should never happen
+    // in the field in theory, but just in case, resort to the default frame
+    // rate schedule (no throttling).
+    LOG(DFATAL) << "Ambient animation has invalid frame rate markers.";
+    schedule = BuildDefaultFrameRateSchedule();
+  }
+  return schedule;
+}
+
+}  // namespace
+
+AmbientAnimationFrameRateController::AmbientAnimationFrameRateController(
+    FrameThrottlingController* frame_throttling_controller,
+    lottie::Animation* animation)
+    : frame_throttling_controller_(frame_throttling_controller),
+      animation_(animation),
+      schedule_(BuildSchedule(animation)),
+      current_section_(schedule_.end()) {
+  DCHECK(frame_throttling_controller_);
+  DCHECK(animation_);
+  current_section_ = FindCurrentSection();
+  animation_observation_.Observe(animation);
+}
+
+AmbientAnimationFrameRateController::~AmbientAnimationFrameRateController() {
+  ThrottleFrameRate(kDefaultFrameInterval);
+}
+
+void AmbientAnimationFrameRateController::AnimationFramePainted(
+    const lottie::Animation* animation,
+    float) {
+  auto new_current_section = FindCurrentSection();
+  if (new_current_section == current_section_)
+    return;
+
+  DVLOG(1) << "Found new frame rate section: " << *new_current_section;
+  current_section_ = new_current_section;
+  ThrottleFrameRateForCurrentSection();
+}
+
+void AmbientAnimationFrameRateController::AnimationIsDeleting(
+    const lottie::Animation* animation) {
+  animation_observation_.Reset();
+  ThrottleFrameRate(kDefaultFrameInterval);
+}
+
+void AmbientAnimationFrameRateController::OnWindowDestroying(
+    aura::Window* window) {
+  if (base::Erase(windows_to_throttle_, window) == 0) {
+    NOTREACHED() << "Received OnWindowDestroying() for unknown window "
+                 << window->GetId();
+  }
+  window_observations_.RemoveObservation(window);
+  // Update throttling with the trimmed list of |windows_to_throttle_|.
+  ThrottleFrameRateForCurrentSection();
+}
+
+void AmbientAnimationFrameRateController::AddWindowToThrottle(
+    aura::Window* window) {
+  DCHECK(window);
+  DCHECK(window->GetFrameSinkId().is_valid());
+  if (base::Contains(windows_to_throttle_, window))
+    return;
+
+  windows_to_throttle_.push_back(window);
+  window_observations_.AddObservation(window);
+  // Update throttling with the expanded list of |windows_to_throttle_|.
+  ThrottleFrameRateForCurrentSection();
+}
+
+AmbientAnimationFrameRateScheduleIterator
+AmbientAnimationFrameRateController::FindCurrentSection() const {
+  absl::optional<float> current_progress = animation_->GetCurrentProgress();
+  if (!current_progress) {
+    DVLOG(1) << "Animation is not playing currently. Cannot map timestamp to "
+                "scheduled frame rate.";
+    return schedule_.end();
+  }
+
+  // Always start searching from the last section the animation was on. Since
+  // animations progress linearly in small increments, most of the time, the
+  // |current_section_| will not change.
+  AmbientAnimationFrameRateScheduleIterator new_current_section =
+      current_section_ == schedule_.end() ? schedule_.begin()
+                                          : current_section_;
+  AmbientAnimationFrameRateScheduleIterator orig_current_section =
+      new_current_section;
+  while (!new_current_section->Contains(*current_progress)) {
+    ++new_current_section;
+    // Note the AmbientAnimationFrameRateSchedule by design is contiguous. Every
+    // possible timestamp falls within a section of the schedule, so it's
+    // impossible to infinite loop here.
+    DCHECK(new_current_section != orig_current_section)
+        << "Infinite loop detected. AmbientAnimationFrameRateSchedule has gap "
+           "and is malformed.";
+    // The schedule is cyclic. Loop back to the beginning.
+    if (new_current_section == schedule_.end())
+      new_current_section = schedule_.begin();
+  }
+  return new_current_section;
+}
+
+void AmbientAnimationFrameRateController::ThrottleFrameRateForCurrentSection() {
+  // TODO(esum): There is a corner case not accounted for yet. Say the frame
+  // interval is large (1 second). And say we throttle to 1 fps at time 10 sec,
+  // and we need to restore the default 60 fps at 19.1 sec. We will get:
+  // AnimationFramePainted(10 sec)
+  // AnimationFramePainted(11 sec)
+  // ...
+  // AnimationFramePainted(19 sec) - Still not past the 19.1 second mark
+  // AnimationFramePainted(20 sec) - Switch back to 60 fps here.
+  //
+  // This is bad because we switch back .9 seconds too late, which is a lot.
+  // To fix this, we could start a timer that fires when the current section is
+  // over and we need to switch to the new frame rate. It currently is not a
+  // problem because in practice, the frame rates never get small enough to
+  // notice this issue. But it will be a problem with the slideshow lottie
+  // animation.
+  if (current_section_ != schedule_.end())
+    ThrottleFrameRate(current_section_->frame_interval);
+}
+
+void AmbientAnimationFrameRateController::ThrottleFrameRate(
+    base::TimeDelta frame_interval) {
+  if (frame_interval == kDefaultFrameInterval) {
+    DVLOG(1) << "Resetting frame rate to default";
+    frame_throttling_controller_->EndThrottling();
+  } else {
+    DVLOG(1) << "Throttling frame rate to " << frame_interval.ToHz() << "hz";
+    frame_throttling_controller_->StartThrottling(windows_to_throttle_,
+                                                  frame_interval);
+  }
+}
+
+}  // namespace ash

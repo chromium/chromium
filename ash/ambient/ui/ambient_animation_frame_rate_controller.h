@@ -1,0 +1,96 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_AMBIENT_UI_AMBIENT_ANIMATION_FRAME_RATE_CONTROLLER_H_
+#define ASH_AMBIENT_UI_AMBIENT_ANIMATION_FRAME_RATE_CONTROLLER_H_
+
+#include <vector>
+
+#include "ash/ambient/ui/ambient_animation_frame_rate_schedule.h"
+#include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
+#include "ui/lottie/animation.h"
+#include "ui/lottie/animation_observer.h"
+
+namespace ash {
+
+class FrameThrottlingController;
+
+// Throttles (lowers) the BeginFrame rate of the //viz service so that the
+// lottie::Animation is ultimately rendered at a lower frame rate. This is
+// done to reduce power consumption, thus increasing battery life. The time at
+// which to throttle and the amount to throttle by is embedded within the
+// lottie::Animation itself and chosen by the motion designer. Generally
+// speaking, the less motion there is, the more opportunity there is to
+// throttle.
+//
+// Once this class is destroyed or the lottie::Animation ends, the BeginFrame
+// rate in //viz is restored to the default.
+class ASH_EXPORT AmbientAnimationFrameRateController
+    : public lottie::AnimationObserver,
+      public aura::WindowObserver {
+ public:
+  // AmbientAnimationFrameRateController gracefully handles |animation| being
+  // destroyed first (the controller just goes idle).
+  AmbientAnimationFrameRateController(
+      FrameThrottlingController* frame_throttling_controller,
+      lottie::Animation* animation);
+  AmbientAnimationFrameRateController(
+      const AmbientAnimationFrameRateController&) = delete;
+  AmbientAnimationFrameRateController& operator=(
+      const AmbientAnimationFrameRateController&) = delete;
+  ~AmbientAnimationFrameRateController() override;
+
+  // Adds a |window| (playing an ambient mode animation) to throttle. The
+  // |window| must have a valid viz::FrameSinkId assigned to it. Note the caller
+  // may add multiple windows for throttling, even though the controller
+  // only accepts one lottie::Animation in the constructor. This means that
+  // all of the added windows will be throttled at the same frame rate even
+  // though each window may have a separate lottie::Animation instance playing
+  // in it. This is done for simplicity purposes. The underlying assumption is
+  // that the lottie::Animations' timestamps are all closely synchronized; this
+  // is ensured within AmbientAnimationPlayer.
+  //
+  // If the |window| has already been added in the past, this call is a no-op.
+  // The controller gracefully handles the |window| being destroyed; it gets
+  // removed from the throttling schedule internally.
+  void AddWindowToThrottle(aura::Window* window);
+
+ private:
+  // lottie::AnimationObserver implementation:
+  void AnimationFramePainted(const lottie::Animation* animation,
+                             float) override;
+  void AnimationIsDeleting(const lottie::Animation* animation) override;
+
+  // aura::WindowObserver implementation:
+  void OnWindowDestroying(aura::Window* window) override;
+
+  AmbientAnimationFrameRateScheduleIterator FindCurrentSection() const;
+  AmbientAnimationFrameRateScheduleIterator GetNextScheduledSection(
+      AmbientAnimationFrameRateScheduleIterator section_in) const;
+  void ThrottleFrameRateForCurrentSection();
+  void ThrottleFrameRate(base::TimeDelta frame_interval);
+
+  const base::raw_ptr<FrameThrottlingController> frame_throttling_controller_;
+  const base::raw_ptr<lottie::Animation> animation_;
+  const AmbientAnimationFrameRateSchedule schedule_;
+  // Points to the current section in the |schedule_| that's being played.
+  // Set to |schedule_.end()| if the animation is not playing currently.
+  AmbientAnimationFrameRateScheduleIterator current_section_;
+  std::vector<aura::Window*> windows_to_throttle_;
+  base::ScopedObservation<lottie::Animation, lottie::AnimationObserver>
+      animation_observation_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
+};
+
+}  // namespace ash
+
+#endif  // ASH_AMBIENT_UI_AMBIENT_ANIMATION_FRAME_RATE_CONTROLLER_H_
