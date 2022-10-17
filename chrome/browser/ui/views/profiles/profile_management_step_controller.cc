@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -134,6 +135,8 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
         profile_color_(profile_color),
         finish_flow_callback_(std::move(finish_flow_callback)) {
     DCHECK(finish_flow_callback_.value());
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kProfileCreationSamlFlow);
   }
 
   ~FinishSamlSignInStepController() override {
@@ -190,6 +193,7 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
     std::move(finish_flow_callback_.value()).Run(std::move(continue_callback));
   }
 
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   Profile* profile_;
   std::unique_ptr<content::WebContents> contents_;
   absl::optional<SkColor> profile_color_;

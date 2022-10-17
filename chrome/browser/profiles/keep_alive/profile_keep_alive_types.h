@@ -127,7 +127,11 @@ enum class ProfileKeepAliveOrigin {
   // destroyed.
   kLacrosMainProfile = 29,
 
-  kMaxValue = kLacrosMainProfile,
+  // This profile is being created, and the SAML flow needs to be completed to
+  // finish signin in the user's account.
+  kProfileCreationSamlFlow = 30,
+
+  kMaxValue = kProfileCreationSamlFlow,
 };
 
 std::ostream& operator<<(std::ostream& out,

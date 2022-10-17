@@ -65,6 +65,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kHistoryMenuBridge";
     case ProfileKeepAliveOrigin::kLacrosMainProfile:
       return out << "kLacrosMainProfile";
+    case ProfileKeepAliveOrigin::kProfileCreationSamlFlow:
+      return out << "kProfileCreationSamlFlow";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);
