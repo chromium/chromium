@@ -15,4 +15,7 @@ void CrosapiTestBase::SetUp() {
   ASSERT_TRUE(AshCrosapiTestEnv::GetInstance()->IsValid());
 }
 
+const base::FilePath& CrosapiTestBase::GetUserDataDir() {
+  return AshCrosapiTestEnv::GetInstance()->GetUserDataDir();
+}
 }  // namespace crosapi

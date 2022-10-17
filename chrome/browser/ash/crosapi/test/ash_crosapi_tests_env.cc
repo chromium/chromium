@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/common/chrome_switches.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -65,6 +66,12 @@ AshCrosapiTestEnv::AshCrosapiTestEnv() {
       temp_dir.GetPath().AppendASCII("lacros.socket").MaybeAsASCII();
   command_line.AppendSwitchASCII(ash::switches::kLacrosMojoSocketForTesting,
                                  socket_path);
+
+  // Sets a user data dir path.
+  CHECK(user_data_dir_.CreateUniqueTempDir());
+  command_line.AppendSwitchPath(switches::kUserDataDir,
+                                user_data_dir_.GetPath());
+  command_line.AppendSwitch(ash::switches::kUseMyFilesInUserDataDirForTesting);
 
   // Waits for socket connection to establish.
   // TODO(crbug.com/1368029): Separate logs generated during setup from those
@@ -120,10 +127,6 @@ AshCrosapiTestEnv::~AshCrosapiTestEnv() {
 AshCrosapiTestEnv* AshCrosapiTestEnv::GetInstance() {
   CHECK(g_instance) << "AshCrosapiTestEnv is not created.";
   return g_instance;
-}
-
-mojo::Remote<mojom::Crosapi>& AshCrosapiTestEnv::GetCrosapiRemote() {
-  return crosapi_remote_;
 }
 
 bool AshCrosapiTestEnv::IsValid() {

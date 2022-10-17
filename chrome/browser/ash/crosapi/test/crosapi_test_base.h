@@ -10,6 +10,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace crosapi {
 
 // Base class for testing the behavior of crosapi on Ash-side only.
@@ -40,6 +44,9 @@ class CrosapiTestBase : public ::testing::Test {
         remote.BindNewPipeAndPassReceiver());
     return std::move(remote);
   }
+
+  // A temp dir will be used as a user data dir.
+  const base::FilePath& GetUserDataDir();
 };
 
 }  // namespace crosapi
