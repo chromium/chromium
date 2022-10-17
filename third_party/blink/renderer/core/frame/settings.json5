@@ -311,6 +311,11 @@
       initial: true,
     },
     {
+      name: "placeRTLScrollbarsOnLeftSideInMainFrame",
+      initial: false,
+      invalidate: ["ScrollbarLayout"],
+    },
+    {
       name: "webSecurityEnabled",
       initial: true,
     },

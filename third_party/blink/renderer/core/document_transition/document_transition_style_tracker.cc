@@ -729,6 +729,18 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
     TransformationMatrix snapshot_matrix =
         layout_object->LocalToAbsoluteTransform();
 
+    if (document_->GetLayoutView()
+            ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
+      // The SnapshotViewportRect offset below takes points from the fixed
+      // viewport into the snapshot viewport. However, the transform is
+      // currently into absolute coordinates; when the scrollbar appears on the
+      // left, the fixed viewport origin is actually at (15, 0) in absolute
+      // coordinates (assuming 15px scrollbars). Therefore we must first shift
+      // by the scrollbar width so we're in fixed viewport coordinates.
+      ScrollableArea& viewport = *document_->View()->LayoutViewport();
+      snapshot_matrix.PostTranslate(-viewport.VerticalScrollbarWidth(), 0);
+    }
+
     gfx::Vector2d snapshot_to_fixed_offset =
         -GetSnapshotViewportRect().OffsetFromOrigin();
     snapshot_matrix.PostTranslate(snapshot_to_fixed_offset.x(),
@@ -986,10 +998,18 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
 
   // TODO(bokan): Account for virtual-keyboard
 
-  // TODO(bokan): Handle left-hand side vertical scrollbars.
-
+  // A left-side scrollbar (i.e. in an RTL writing-mode) should overlay the
+  // snapshot viewport as well. This cannot currently happen in Chrome but it
+  // can in other browsers. Handle this case in the event
+  // https://crbug.com/249860 is ever fixed.
   LocalFrameView& view = *document.View();
-  right += view.LayoutViewport()->VerticalScrollbarWidth();
+  if (document.GetLayoutView()
+          ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
+    left += view.LayoutViewport()->VerticalScrollbarWidth();
+  } else {
+    right += view.LayoutViewport()->VerticalScrollbarWidth();
+  }
+
   bottom += view.LayoutViewport()->HorizontalScrollbarHeight();
 
   gfx::Outsets outsets;
@@ -1026,6 +1046,13 @@ gfx::Vector2d DocumentTransitionStyleTracker::GetRootSnapshotPaintOffset()
   gfx::Outsets outsets = GetFixedToSnapshotViewportOutsets(*document_);
   int left = outsets.left();
   int top = outsets.top();
+
+  // Paint already applies an offset for a left-side vertical scrollbar so
+  // don't offset by it here again.
+  if (document_->GetLayoutView()
+          ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
+    left -= document_->View()->LayoutViewport()->VerticalScrollbarWidth();
+  }
 
   return gfx::Vector2d(left, top);
 }
