@@ -18,6 +18,9 @@ namespace {
 void OnReauthCompleted(PrefService* prefs,
                        base::WeakPtr<PasswordsModelDelegate> delegate,
                        bool success) {
+  base::UmaHistogramBoolean(
+      "PasswordManager.BiometricAuthenticationPromo.AuthenticationResult",
+      success);
   if (!success) {
     return;
   }
@@ -97,6 +100,7 @@ int BiometricAuthenticationForFillingBubbleController::GetImageID(
 void BiometricAuthenticationForFillingBubbleController::OnAccepted() {
   base::OnceCallback<void(bool)> on_reauth_completed =
       base::BindOnce(OnReauthCompleted, prefs_, delegate_);
+  accept_clicked_ = true;
 
   delegate_->AuthenticateUserWithMessage(
       l10n_util::GetStringUTF16(
@@ -126,5 +130,8 @@ std::u16string BiometricAuthenticationForFillingBubbleController::GetTitle()
 #endif
 }
 
-// TODO(crbug.com/1364015): Record bubble interactions metrics.
-void BiometricAuthenticationForFillingBubbleController::ReportInteractions() {}
+void BiometricAuthenticationForFillingBubbleController::ReportInteractions() {
+  base::UmaHistogramBoolean(
+      "PasswordBubble.BiometricAuthenticationPromo.AcceptClicked",
+      accept_clicked_);
+}

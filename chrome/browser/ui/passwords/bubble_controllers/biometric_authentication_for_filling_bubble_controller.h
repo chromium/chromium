@@ -38,6 +38,8 @@ class BiometricAuthenticationForFillingBubbleController
   // PasswordBubbleControllerBase:
   void ReportInteractions() override;
 
+  bool accept_clicked_ = false;
+
   raw_ptr<PrefService> prefs_;
 };
 

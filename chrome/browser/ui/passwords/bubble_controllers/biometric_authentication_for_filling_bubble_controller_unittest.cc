@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/biometric_authentication_for_filling_bubble_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -13,6 +14,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+constexpr char kAcceptHistogram[] =
+    "PasswordBubble.BiometricAuthenticationPromo.AcceptClicked";
+constexpr char kAuthResultHistogram[] =
+    "PasswordManager.BiometricAuthenticationPromo.AuthenticationResult";
 
 class BiometricAuthenticationForFillingBubbleControllerTest
     : public ::testing::Test {
@@ -47,6 +53,8 @@ class BiometricAuthenticationForFillingBubbleControllerTest
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
   }
 
+  void ResetController() { controller_.reset(); }
+
  private:
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<BiometricAuthenticationForFillingBubbleController>
@@ -55,10 +63,12 @@ class BiometricAuthenticationForFillingBubbleControllerTest
 };
 
 TEST_F(BiometricAuthenticationForFillingBubbleControllerTest, Destroy) {
+  base::HistogramTester histograms;
   CreateController();
 
   EXPECT_CALL(*delegate(), OnBubbleHidden());
   controller()->OnBubbleClosing();
+  histograms.ExpectUniqueSample(kAcceptHistogram, false, 1);
 }
 
 TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
@@ -91,20 +101,26 @@ TEST_F(BiometricAuthenticationForFillingBubbleControllerTest, Cancel) {
 
 TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
        OnAcceptedFailure) {
+  base::HistogramTester histograms;
   CreateController();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
       .WillOnce(testing::WithArg<1>(
           [](auto callback) { std::move(callback).Run(/*success=*/false); }));
   controller()->OnAccepted();
+
+  ResetController();
   EXPECT_FALSE(test_pref_service()->GetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling));
   EXPECT_FALSE(test_pref_service()->GetBoolean(
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo));
+  histograms.ExpectUniqueSample(kAcceptHistogram, true, 1);
+  histograms.ExpectUniqueSample(kAuthResultHistogram, false, 1);
 }
 
 TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
        OnAcceptedSuccess) {
+  base::HistogramTester histograms;
   CreateController();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
@@ -112,10 +128,14 @@ TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
           [](auto callback) { std::move(callback).Run(/*success=*/true); }));
   EXPECT_CALL(*delegate(), ShowBiometricActivationConfirmation);
   controller()->OnAccepted();
+
+  ResetController();
   EXPECT_TRUE(test_pref_service()->GetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling));
   EXPECT_TRUE(test_pref_service()->GetBoolean(
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo));
+  histograms.ExpectUniqueSample(kAcceptHistogram, true, 1);
+  histograms.ExpectUniqueSample(kAuthResultHistogram, true, 1);
 }
 
 }  // namespace

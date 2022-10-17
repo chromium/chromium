@@ -206,6 +206,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordBubble.BiometricAuthenticationPromo.AcceptClicked"
+    enum="BooleanSuccess" expires_after="2023-02-12">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records whether user clicked accept button on the Biometric Authentication
+    before filling promo dialog. Recorded when the dialog is closed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordBubble.CompromisedBubble.CheckClicked"
     enum="BooleanClicked" expires_after="2023-04-09">
   <owner>vasilii@chromium.org</owner>
@@ -783,6 +793,17 @@ chromium-metrics-reviews@google.com.
     Indicates whether biometric authentication before filling is enabled.
     Recorded 30 seconds after PasswordStore is created which happens once per
     profile, and at most once per day.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.BiometricAuthenticationPromo.AuthenticationResult"
+    enum="BooleanSuccess" expires_after="2023-02-12">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the result of the attempt to re-auth the user via biometrics when
+    trying to enable the feature from the promo dialog.
   </summary>
 </histogram>
 
