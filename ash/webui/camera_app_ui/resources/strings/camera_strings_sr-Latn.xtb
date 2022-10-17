@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1057925581724305206">Full HD (1080 piksela)</translation>
+<translation id="1076394037877376434">Izbriši <ph name="PAGE_NUMBER" />. stranicu</translation>
 <translation id="1113173431709655881">Režim kamere</translation>
 <translation id="1153190633558910465">Koordinatna mreža je isključena</translation>
 <translation id="1175958423215084756">Link je otkriven. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. stranica je izbrisana</translation>
 <translation id="1258009455399840361">Rotiraj za 90 stepeni udesno</translation>
 <translation id="1276998909102132017">Slike u galeriji</translation>
 <translation id="1300209025925956156">Skenirajte dokument</translation>
@@ -19,6 +22,7 @@
 <translation id="1588438908519853928">Normalan</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4×4</translation>
+<translation id="1644345013557678440">HD (720 piksela)</translation>
 <translation id="1664224225747386870">Ništa nije snimljeno</translation>
 <translation id="1838104802459806957">Naginjanje nagore</translation>
 <translation id="1843105061469674856">Skeniraj dodatnu stranicu</translation>
@@ -93,6 +97,7 @@
 <translation id="4705093842003735294">Puna rezolucija</translation>
 <translation id="4890010094662541459">3×3</translation>
 <translation id="491895758387112773">Snimanje videa sa više strimova</translation>
+<translation id="4984613436295737187">Quad HD (1440 piksela)</translation>
 <translation id="5034763830503483128">Razmera slika</translation>
 <translation id="5057360777601936059">Kamera trenutno nije dostupna.
         Proverite da li je kamera ispravno povezana.</translation>
@@ -101,6 +106,7 @@
 <translation id="5266635337630551423">Gornji levi ugao dokumenta</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5320594929574852403">Kreće se ulevo</translation>
+<translation id="5374917190292010970">4K (2160 piksela)</translation>
 <translation id="5444515100983837161">Postavite sve ivice dokumenta u okvir. Skeniranje je najuspešnije ako su dokument i pozadina različite boje.</translation>
 <translation id="5662366948659129155">Skenira se <ph name="COUNT" />. stranica</translation>
 <translation id="5671277269877808209">Kvadrat</translation>

@@ -343,7 +343,6 @@
 <translation id="2885950158625301909">შეიტყვეთ მეტი</translation>
 <translation id="2891209721153296020">„არჩევის გაუქმება“</translation>
 <translation id="2894949423239620203">კაბელმა შეიძლება გავლენა იქონიოს ეფექტურობაზე</translation>
-<translation id="2903844815300039659">დაკავშირებულია <ph name="NAME" />-თან, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">ეკრანის აღბეჭდვები</translation>
 <translation id="2941112035454246133">დაბალი</translation>
 <translation id="2942350706960889382">ჩამაგრებული ლუპა</translation>
@@ -434,6 +433,7 @@
 <translation id="3413817803639110246">ჯერჯერობით სანახავი არაფერია</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />-თან კავშირის გაწყვეტა</translation>
 <translation id="3430396595145920809">უკან დასაბრუნებლად გადაფურცლეთ მარჯვნიდან</translation>
+<translation id="3431517721463707585">სამუშაო მაგიდა 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">შეხსენების რედაქტირება</translation>
 <translation id="3435967511775410570">თითის ანაბეჭდი ამოცნობილია</translation>
@@ -674,6 +674,7 @@
 <translation id="4731797938093519117">მშობლის წვდომა</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (მარცხენა)</translation>
 <translation id="4734965478015604180">ჰორიზონტალური</translation>
+<translation id="4735944890391795473">სამუშაო მაგიდა 12</translation>
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4740516757091333363">გსურთ, წაშალოთ შენახული სამუშაო მაგიდა?</translation>
 <translation id="4752784485658729358">დაშვებულია მხოლოდ 6 შენახული სამუშაო მაგიდა. ახლის შესანახად წაშალეთ ერთ-ერთი არსებული.</translation>
@@ -694,6 +695,7 @@
 <translation id="4860284199500934869">შეამოწმეთ კავშირი ქსელთან, <ph name="FILENAME" /> რომ ჩამოტვირთოთ</translation>
 <translation id="486056901304535126">ჩამოტვირთვას მოგვიანებით შევეცდებით. ჩამოტვირთვის დასრულებამდე მეტყველება გაეგზავნება Google-ს დასამუშავებლად.</translation>
 <translation id="4864369630010738180">მიმდინარეობს შესვლა…</translation>
+<translation id="4864648187878336334">სამუშაო მაგიდა 15</translation>
 <translation id="4868492592575313542">გააქტიურებულია</translation>
 <translation id="4872237917498892622">Alt+ძიება ან Shift</translation>
 <translation id="4881695831933465202">გახსნა</translation>
@@ -720,6 +722,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">სამუშაო მაგიდა 16</translation>
 <translation id="5003993274120026347">შემდეგი წინადადება</translation>
 <translation id="5016558321564993266">მარკერის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">დრო ამოიწურა</translation>
@@ -735,6 +738,7 @@
 <translation id="5098537242461068432">სამუშაო მაგიდა და ფანჯრები ხელახლა გაიხსნა</translation>
 <translation id="5104236669533825617">სკრინკასტის შექმნა ვერ მოხერხდა</translation>
 <translation id="5107522548814527560">ვები</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">შემდეგი თვის ჩვენება</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
 <translation id="5147567197700016471">განბლოკილია</translation>
@@ -822,6 +826,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> საჭიროებს ყურადღების მიქცევას.</translation>
+<translation id="5662075790140998213">სამუშაო მაგიდა 10</translation>
 <translation id="5662709761327382534">მიკროფონის ჩაწერაა <ph name="CURRENT_STATE" />, დააჭირეთ კლავიშს enter, თუ გსურთ, მიკროფონის ჩაწერა <ph name="NEW_STATE" /> იყოს</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
 <translation id="5673434351075758678">„<ph name="FROM_LOCALE" />“ გახდა „<ph name="TO_LOCALE" />“ თქვენი პარამეტრების სინქრონიზაციის შემდეგ.</translation>
@@ -1021,6 +1026,8 @@
 <translation id="6753390234084146956">ჩანართები</translation>
 <translation id="6757237461819837179">მედიაკონტენტი არ უკრავს</translation>
 <translation id="6777216307882431711">ელკვება მიეწოდება დაკავშირებულ USB-C მოწყობილობებს</translation>
+<translation id="6781002679438061620">სამუშაო მაგიდა 9</translation>
+<translation id="6782182743534150858">სამუშაო მაგიდა 13</translation>
 <translation id="6786750046913594791">საქაღალდის დახურვა</translation>
 <translation id="6787595647772650851">ბოლო სესიის აღდგენა</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
@@ -1082,6 +1089,7 @@
 <translation id="7098053464892629930">ყველა ხელმისაწვდომი ფუნქციის სანახავად ჩამოტვირთეთ აპი <ph name="NAME" />-ისთვის Google Play-დან</translation>
 <translation id="7098389117866926363">USB-C მოწყობილობა (უკან მდებარე მარცხენა პორტი)</translation>
 <translation id="7106330611027933926">სამუშაო მაგიდების ზოლის ჩვენება</translation>
+<translation id="7116969082764510092">სამუშაო მაგიდა 11</translation>
 <translation id="7118268675952955085">ეკრანის ანაბეჭდი</translation>
 <translation id="7126996685418858413">კვირის განმავლობაში გახსნილი</translation>
 <translation id="7130207228079676353">ყველაზე სავარაუდო</translation>
@@ -1180,6 +1188,7 @@
 <translation id="7662283695561029522">შეეხეთ პარამეტრების კონფიგურაციისთვის</translation>
 <translation id="7670953955701272011">ამ თარიღის Google Calendar-ში გახსნა</translation>
 <translation id="7671610481353807627">აპები დალაგებულია ფერის მიხედვით</translation>
+<translation id="7672095158465655885">დაკავშირებულია <ph name="NAME" />-თან, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">კამერის შემავალ სიგნალად დაყენებულია <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ახალი ფიჭური ქსელის დამატება</translation>
@@ -1465,5 +1474,6 @@
 <translation id="974545358917229949">ნაჩვენებია <ph name="RESULT_COUNT" /> შედეგი მოთხოვნაზე: <ph name="QUERY" /></translation>
 <translation id="98515147261107953">პეიზაჟი</translation>
 <translation id="990277280839877440">ფანჯარა „<ph name="WINDOW_TITILE" />“ დაიხურა.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">ისარგებლეთ უახლესი ფუნქციებითა და უსაფრთხოების გაუმჯობესებებით. განახლება ხორციელდება ფონურ რეჟიმში.</translation>
 </translationbundle>

@@ -340,9 +340,9 @@
 <translation id="2865888419503095837">네트워크 정보</translation>
 <translation id="2872961005593481000">종료</translation>
 <translation id="2878884018241093801">최근 항목이 없습니다.</translation>
+<translation id="2885950158625301909">자세히 알아보기</translation>
 <translation id="2891209721153296020">'선택 해제'</translation>
 <translation id="2894949423239620203">케이블이 성능에 영향을 줄 수 있습니다</translation>
-<translation id="2903844815300039659"><ph name="NAME" />에 연결됨, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">화면 캡처</translation>
 <translation id="2941112035454246133">낮음</translation>
 <translation id="2942350706960889382">고정 돋보기</translation>
@@ -1051,6 +1051,7 @@
 <translation id="6961121602502368900">직장 프로필에서는 휴대전화 무음 설정을 사용할 수 없음</translation>
 <translation id="6961840794482373852">Alt + 위쪽 화살표 단축키가 변경되었습니다. Page Up 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 위쪽 화살표 키를 누르세요.</translation>
 <translation id="696267987219125751">카메라 프레이밍이 사용 중지되어 있습니다.</translation>
+<translation id="6964690557625666701">모든 고정된 항목이 실행기에 표시되지 않음</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@
 <translation id="8734991477317290293">키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="8735678380411481005">키보드 백라이트 색상</translation>
 <translation id="8735953464173050365">키보드 설정을 표시합니다. <ph name="KEYBOARD_NAME" />이(가) 선택되었습니다.</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">카메라 액세스 권한이 있는 앱과 웹페이지에서 이 기기에 연결된 카메라를 사용할 수 있도록 하려면 카메라 액세스를 사용 설정하세요.</translation>
 <translation id="8755498163081687682">본인 확인: <ph name="ORIGIN_NAME" />에서 본인 확인을 요청합니다</translation>
 <translation id="875593634123171288">VPN 설정 표시</translation>

@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">Αισθητήρες κίνησης</translation>
 <translation id="1717494416764505390">Γραμματοκιβώτιο 3</translation>
 <translation id="1718029547804390981">Το έγγραφο είναι πάρα πολύ μεγάλο για σχολιασμό.</translation>
+<translation id="1719434663396780149">Οι ειδοποιήσεις για τις πτώσεις τιμών είναι ενεργοποιημένες. Μπορείτε να αλλάξετε αυτήν την επιλογή στην ενότητα <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Κλείσιμο οδηγού</translation>
 <translation id="1721424275792716183">* Το πεδίο είναι υποχρεωτικό</translation>
 <translation id="1725591448053514783">Φάκελος You 6</translation>
@@ -980,6 +981,7 @@
 <translation id="3550112004925580947">Κλάδος φιλοξενίας</translation>
 <translation id="3552297013052089404">Γραμματοσειρά Sans-serif</translation>
 <translation id="3558573058928565255">Ημέρα</translation>
+<translation id="3560824484345057728">Εμφάνιση σχετικών ιστοτόπων</translation>
 <translation id="3566021033012934673">Η σύνδεσή σας δεν είναι ιδιωτική</translation>
 <translation id="3567778190852720481">Δεν είναι δυνατή η εγγραφή με εταιρικό λογαριασμό (ο εταιρικός λογαριασμός δεν είναι κατάλληλος).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1366,6 +1368,7 @@
 <translation id="4542971377163063093">Δίσκος 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Δοκιμάστε να απενεργοποιήσετε τις επεκτάσεις σας.</translation>
+<translation id="4559134504959026834">Αυτός ο ιστότοπος ανήκει σε μια ομάδα που καθορίζεται από τον τομέα <ph name="SET_OWNER" />,  ο οποίος μπορεί να βλέπει τη δραστηριότητά σας</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Δραστηριότητες σε εξωτερικούς χώρους</translation>
 <translation id="4567686777917670400">Ο διαχειριστής σας μπορεί να αλλάξει τη ρύθμιση του προγράμματος περιήγησής σας απομακρυσμένα. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί επίσης να πραγματοποιηθεί εκτός Chromium. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
@@ -2283,6 +2286,7 @@
 <translation id="7003335073762455340">Παρακολουθείτε αυτό το προϊόν. Αυτή η σελίδα έχει αποθηκευτεί στον φάκελο <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Χρησιμοποιήστε το Windows Hello για πιο γρήγορη επιβεβαίωση καρτών</translation>
 <translation id="7006930604109697472">Αποστολή ούτως ή άλλως</translation>
+<translation id="7007006156138369007">Παρακολούθηση τιμών σε πολλούς ιστοτόπους ταυτόχρονα</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Επίπεδο εστίασης</translation>
 <translation id="7016992613359344582">Αυτές οι χρεώσεις μπορεί να είναι εφάπαξ ή επαναλαμβανόμενες και ίσως να μην είναι εμφανείς.</translation>
@@ -2674,6 +2678,7 @@
 <translation id="7995512525968007366">Δεν καθορίστηκε</translation>
 <translation id="7998269595945679889">Κουμπί για άνοιγμα καρτέλας ανώνυμης περιήγησης, πατήστε Enter για να ανοίξετε μια νέα καρτέλα ανώνυμης περιήγησης για ιδιωτική περιήγηση</translation>
 <translation id="800218591365569300">Δοκιμάστε να κλείσετε τις άλλες καρτέλες ή τα άλλα προγράμματα για να απελευθερώσετε μνήμη.</translation>
+<translation id="8002230960325005199">Δείτε σχετικούς ιστοτόπους σε νέα καρτέλα</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Πρόγραμμα περιήγησης</translation>
 <translation id="8009225694047762179">Διαχείριση Κωδικός πρόσβασης</translation>
@@ -2777,6 +2782,7 @@
 <translation id="8270242299912238708">Έγγραφα PDF</translation>
 <translation id="8275952078857499577">Να μην παρέχεται δυνατότητα μετάφρασης αυτού του ιστοτόπου</translation>
 <translation id="8277900682056760511">Το φύλλο δείκτη διαχειριστή πληρωμών είναι ανοικτό.</translation>
+<translation id="8279611986089885641">Οι ειδοποιήσεις του Chrome πρέπει να είναι ενεργοποιημένες. Μπορείτε να τις ενεργοποιήσετε στην ενότητα <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /></translation>
 <translation id="8280630997017109758">Τροφοδότης χαρτιού 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Παράβλεψη</translation>

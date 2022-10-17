@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Inte nu</translation>
 <translation id="3486821258960016770">mongoliska</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> fel.</translation>
-<translation id="3495810061346586977">Den här filen är konfidentiell och omfattas av begränsningar enligt en administratörspolicy. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="3522708245912499433">portugisiska</translation>
 <translation id="3524311639100184459">Obs! De här filerna är tillfälliga och kan tas bort automatiskt för att frigöra utrymme på hårddisken.  <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -649,6 +648,7 @@
 <translation id="642282551015776456">Det här namnet får inte användas som namn på en fil eller mapp</translation>
 <translation id="6423031066725912715">vietnamesiskt tangentbord (TCVN)</translation>
 <translation id="6430271654280079150">Du har 1 försök kvar.</translation>
+<translation id="643243556292470964">Raderade filer har nu flyttats till papperskorgen</translation>
 <translation id="6485131920355264772">Det gick inte att hämta information om lagringsutrymme</translation>
 <translation id="6495925982925244349">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
 <translation id="649877868557234318">Extraherar <ph name="FILE_NAME" /> till <ph name="FOLDER_NAME" /></translation>

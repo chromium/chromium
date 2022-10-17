@@ -340,9 +340,9 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2865888419503095837">Tarmoq ma’lumoti</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="2878884018241093801">Hozircha hech narsa yo‘q</translation>
+<translation id="2885950158625301909">Batafsil</translation>
 <translation id="2891209721153296020">“Belgilamaslik”</translation>
 <translation id="2894949423239620203">Kabel unumdorlikka taʼsir qilishi mumkin</translation>
-<translation id="2903844815300039659">Tarmoqqa ulandi: <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Ekran tasvirlari</translation>
 <translation id="2941112035454246133">Past</translation>
 <translation id="2942350706960889382">Mahkamlangan lupa</translation>
@@ -1051,6 +1051,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6961121602502368900">Telefon ish profilida sukut qilinmaydi</translation>
 <translation id="6961840794482373852">Alt + Tepaga strelka tezkor tugmasi oʻzgardi. Page Up tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Tepaga strelkani bosing.</translation>
 <translation id="696267987219125751">Kamerani freymlash yoqilmagan.</translation>
+<translation id="6964690557625666701">Barcha mahkamlangan elementlar Shelf Party ichida</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Boshlash</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@ yangi oʻrnatilgan</translation>
 <translation id="8734991477317290293">Bu bosilayotgan tugmalarni kuzatish urinishi bo‘lishi mumkin.</translation>
 <translation id="8735678380411481005">Klaviatura orqa chirogʻi rangi</translation>
 <translation id="8735953464173050365">Klaviatura sozlamalarini ochish. <ph name="KEYBOARD_NAME" /> tanlandi</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Ilova va saytlar bu qurilmaga ulangan kameradan foydalanishi uchun kamera ruxsatini yoqing.</translation>
 <translation id="8755498163081687682">Shaxsingizni tasdiqlang: <ph name="ORIGIN_NAME" /> bu siz ekanligingizni tasdiqlamoqchi</translation>
 <translation id="875593634123171288">VPN sozlamalarini ochish</translation>

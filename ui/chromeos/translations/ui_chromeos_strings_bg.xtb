@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">Монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
-<translation id="3495810061346586977">Този файл е поверителен и е предмет на ограничения, наложени чрез администраторски правила. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Внимание: Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска.  <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -456,6 +455,7 @@
 <translation id="4900532980794411603">Споделяне с Parallels Desktop</translation>
 <translation id="4902546322522096650">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, свързване</translation>
 <translation id="4906580650526544301">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, подробности</translation>
+<translation id="4929673617759421391">Поставянето на този файл е блокирано чрез администраторско правило</translation>
 <translation id="4935975195727477204">Газания</translation>
 <translation id="4943368462779413526">Футболна топка</translation>
 <translation id="4961158930123534723">1 папка е споделена с Parallels Desktop</translation>
@@ -513,6 +513,7 @@
 <translation id="5286194356314741248">Сканира се</translation>
 <translation id="5288441970121584418">Хамбургер</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5293615890992542006">Преместването на този файл е блокирано чрез администраторско правило</translation>
 <translation id="5305688511332277257">Няма инсталирани</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5318819489018851358">Споделяне с Linux</translation>
@@ -647,6 +648,7 @@
 <translation id="642282551015776456">Това име не може да се използва като име на файл или на папка</translation>
 <translation id="6423031066725912715">Виетнамски с клавиатура TCVN</translation>
 <translation id="6430271654280079150">Остава ви 1 опит.</translation>
+<translation id="643243556292470964">Изтритите файлове са преместени в кошчето</translation>
 <translation id="6485131920355264772">Извличането на информацията за мястото не бе успешно</translation>
 <translation id="6495925982925244349">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> се извлича в(ъв) „<ph name="FOLDER_NAME" />“</translation>
@@ -713,6 +715,7 @@
 <translation id="6993826899923627728">Тези елементи са в кошчето ви</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> избрани папки</translation>
 <translation id="7008426324576352165">Организацията ви има нужда от още място за съхранение, за да бъде завършено качването.</translation>
+<translation id="7009985720488544166">Преместването на <ph name="COUNT" /> файла е блокирано чрез администраторско правило</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Инсталацията не бе успешна.</translation>
 <translation id="7031639531908619281">Турски</translation>
@@ -972,6 +975,7 @@
 <translation id="9183302530794969518">Google Документи</translation>
 <translation id="9189836632794948435">Казахски</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> елемента са извлечени.</translation>
+<translation id="9210751050717126865">Поставянето на <ph name="COUNT" /> файла е блокирано чрез администраторско правило</translation>
 <translation id="9213073329713032541">Инсталирането стартира успешно.</translation>
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="9219908252191632183">Лунен пейзаж</translation>

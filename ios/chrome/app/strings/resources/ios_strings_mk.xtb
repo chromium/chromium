@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">Означи ги сите како прочитани</translation>
 <translation id="1689333818294560261">Прекар</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> избрани</translation>
+<translation id="1715515772563243997">Ако имате доверба во <ph name="SITE" />, може да користите зачувана лозинка за да се најавите.</translation>
 <translation id="1740468249224277719">Двоен допир за инсталирање.</translation>
 <translation id="1752547299766512813">Зачувај лозинки</translation>
 <translation id="1753905327828125965">Најпосетени</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">Измени Обележувач</translation>
 <translation id="2155145621546387786">Споделете ја Chrome</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2178545675770638239">Изберете лозинка</translation>
 <translation id="2218443599109088993">Одзумирај</translation>
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="2239626343334228536">Се чистат податоците од прелистувањето…</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">Проверете сега</translation>
 <translation id="4505980578794259603">Последен пат проверено: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Затвори ја промоцијата за најавување</translation>
+<translation id="4514889972748124117">Предложи силна лозинка…</translation>
 <translation id="4520798012560649652">Дознајте повеќе за режимот „Инкогнито“</translation>
 <translation id="4526249700380860531">Прикажи и управувај зачувани лозинки на <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
@@ -1016,6 +1019,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8917490105272468696">Да, прифаќам</translation>
 <translation id="8928133177108699615">Компјутер</translation>
 <translation id="8952559610785099500">Додајте лозинка</translation>
+<translation id="8953046091948372197">Вашите лозинки ќе ги најдете тука</translation>
 <translation id="895541991026785598">Пријави проблем</translation>
 <translation id="8974714402877957201">1. Отворете ги поставките за iPad</translation>
 <translation id="8976382372951310360">Помош</translation>
@@ -1049,6 +1053,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9200875785104711666">Пред <ph name="TIME" /> д.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Извештајот за пад се испрати.</translation>
+<translation id="941747855997058526">Изберете лозинка…</translation>
 <translation id="952704832371081537">Откажи</translation>
 <translation id="953008885340860025">Chrome е одјавен</translation>
 <translation id="959066944189734975">Го следите <ph name="CHANNEL_NAME" /></translation>

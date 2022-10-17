@@ -340,9 +340,9 @@
 <translation id="2865888419503095837">Տեղեկություններ ցանցի մասին</translation>
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="2878884018241093801">Վերջին տարրեր չկան</translation>
+<translation id="2885950158625301909">Իմանալ ավելին</translation>
 <translation id="2891209721153296020">«Չեղարկել ընտրությունը»</translation>
 <translation id="2894949423239620203">Մալուխը կարող է ազդել աշխատանքի արդյունավետության վրա</translation>
-<translation id="2903844815300039659">Միացած է <ph name="NAME" /> ցանցին։ <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Էկրանի լուսանկարներ</translation>
 <translation id="2941112035454246133">Ցածր</translation>
 <translation id="2942350706960889382">Ամրացված խոշորացույց</translation>
@@ -1050,6 +1050,7 @@
 <translation id="6961121602502368900">«Ծանուցումների անջատում հեռախոսում» գործառույթը հասանելի չէ աշխատանքային պրոֆիլում</translation>
 <translation id="6961840794482373852">«Alt + վեր սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Page Up ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + վեր սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="696267987219125751">Տեսախցիկի կադրավորումն անջատված է</translation>
+<translation id="6964690557625666701">Բոլոր ամրացված տարրերը Shelf Party ռեժիմում են</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6972754398087986839">Սկսել աշխատանքը</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1357,6 +1358,8 @@
 <translation id="8734991477317290293">Հնարավոր է՝ ինչ-որ մեկը փորձում է իմանալ, թե ինչ ստեղներ եք սեղմում։</translation>
 <translation id="8735678380411481005">Ստեղնաշարի հետնալույսի գույն</translation>
 <translation id="8735953464173050365">Ցուցադրել ստեղնաշարի կարգավորումները: Ընտրված է <ph name="KEYBOARD_NAME" />ը</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Հասանելի դարձրեք տեսախցիկը, որպեսզի հավելվածներն ու վեբ էջերը կարողանան օգտագործել այս սարքին միացված տեսախցիկ(ներ)ը։</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="875593634123171288">Ցուցադրել VPN-ի կարգավորումները</translation>

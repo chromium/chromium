@@ -320,6 +320,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1717218214683051432">Synwyryddion symudiad</translation>
 <translation id="1717494416764505390">Blwch negeseuon 3</translation>
 <translation id="1718029547804390981">Mae'r ddogfen yn rhy fawr i'w chael ei hanodi</translation>
+<translation id="1719434663396780149">Mae rhybuddion gostyngiadau prisiau ymlaen. Gallwch newid hyn yn <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Cau'r tiwtorial</translation>
 <translation id="1721424275792716183">* Mae'r maes yn ofynnol</translation>
 <translation id="1725591448053514783">Amlen You 6</translation>
@@ -979,6 +980,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3550112004925580947">Diwydiant lletygarwch</translation>
 <translation id="3552297013052089404">Ffont Sans-serif</translation>
 <translation id="3558573058928565255">Yn ystod y dydd</translation>
+<translation id="3560824484345057728">Gweld gwefannau cysylltiedig</translation>
 <translation id="3566021033012934673">Nid yw eich cysylltiad yn breifat</translation>
 <translation id="3567778190852720481">Methu â chofrestru gyda chyfrif menter (nid yw'r cyfrif menter yn gymwys).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4542971377163063093">Hambwrdd 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Rhowch gynnig ar analluogi'ch estyniadau.</translation>
+<translation id="4559134504959026834">Mae'r wefan hon mewn grŵp, a ddiffinnir gan <ph name="SET_OWNER" />, sy'n gallu gweld eich gweithgarwch</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Awyr agored</translation>
 <translation id="4567686777917670400">Gall eich gweinyddwr newid gosodiadau eich porwr o bell. Gellir rheoli gweithgarwch ar y ddyfais hon y tu allan i Chromium hefyd. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -2279,6 +2282,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7003335073762455340">Rydych yn olrhain y cynnyrch hwn. Mae'r dudalen hon wedi'i chadw yn <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Defnyddio Windows Hello i gadarnhau cardiau'n gyflymach</translation>
 <translation id="7006930604109697472">Anfon beth bynnag</translation>
+<translation id="7007006156138369007">Olrhain prisiau ar draws sawl gwefan ar yr un pryd</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Lefel chwyddo</translation>
 <translation id="7016992613359344582">Gallai'r taliadau hyn fod yn untro neu'n ailadrodd ac mae'n bosib na fydd yn amlwg.</translation>
@@ -2670,6 +2674,7 @@ Manylion ychwanegol:
 <translation id="7995512525968007366">Heb ei Nodi</translation>
 <translation id="7998269595945679889">Botwm agor tab Anhysbys, pwyswch Enter i agor tab Anhysbys newydd i bori'n breifat</translation>
 <translation id="800218591365569300">Rhowch gynnig ar gau tabiau neu raglenni eraill i leihau'r defnydd cof.</translation>
+<translation id="8002230960325005199">Gweld gwefannau cysylltiedig mewn tab newydd</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Porwr</translation>
 <translation id="8009225694047762179">Rheoli Cyfrineiriau</translation>
@@ -2773,6 +2778,7 @@ Manylion ychwanegol:
 <translation id="8270242299912238708">Dogfennau PDF</translation>
 <translation id="8275952078857499577">Peidio â chynnig cyfieithu'r wefan hon</translation>
 <translation id="8277900682056760511">Mae'r daenlen trinydd talu wedi'i hagor</translation>
+<translation id="8279611986089885641">Rhaid i hysbysiadau Chrome fod ymlaen. Gallwch eu troi ymlaen yn <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Hambwrdd 11</translation>
 <translation id="8281084378435768645">Llun-Mawr</translation>
 <translation id="8281886186245836920">Neidio</translation>

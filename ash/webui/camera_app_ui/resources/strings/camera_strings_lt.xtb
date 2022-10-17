@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1076394037877376434">Ištrinti <ph name="PAGE_NUMBER" /> puslapį</translation>
 <translation id="1113173431709655881">Kameros režimas</translation>
 <translation id="1153190633558910465">Tinklelis išjungtas</translation>
 <translation id="1175958423215084756">Aptikta nuoroda. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> puslapis ištrintas</translation>
 <translation id="1258009455399840361">Pasukti 90 laipsnių pagal laikrodžio rodyklę</translation>
 <translation id="1276998909102132017">Galerijos vaizdai</translation>
 <translation id="1300209025925956156">Nuskaitykite dokumentą</translation>

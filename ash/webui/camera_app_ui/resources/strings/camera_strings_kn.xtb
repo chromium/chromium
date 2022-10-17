@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
+<translation id="1057925581724305206">ಸಂಪೂರ್ಣ HD (1080p)</translation>
+<translation id="1076394037877376434"><ph name="PAGE_NUMBER" />ನೇ ಪುಟವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1113173431709655881">ಕ್ಯಾಮರಾ ಮೋಡ್</translation>
 <translation id="1153190633558910465">ಗ್ರಿಡ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1175958423215084756">ಲಿಂಕ್ ಪತ್ತೆಯಾಗಿದೆ. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />ನೇ ಪುಟವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1258009455399840361">ಪ್ರದಕ್ಷಿಣಾಕಾರವಾಗಿ 90 ಡಿಗ್ರಿಗಳಷ್ಟು ತಿರುಗಿಸಿ</translation>
 <translation id="1276998909102132017">ಗ್ಯಾಲರಿ ಚಿತ್ರಗಳು</translation>
 <translation id="1300209025925956156">ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -19,6 +22,7 @@
 <translation id="1588438908519853928">ಸಾಮಾನ್ಯ</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">ಏನನ್ನೂ ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="1838104802459806957">ಮೇಲಕ್ಕೆ ಟಿಲ್ಟ್ ಮಾಡಿ</translation>
 <translation id="1843105061469674856">ಹೆಚ್ಚುವರಿ ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -93,6 +97,7 @@
 <translation id="4705093842003735294">ಪೂರ್ಣ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">ಮಲ್ಟಿಸ್ಟ್ರೀಮ್ ವೀಡಿಯೊ ರೆಕಾರ್ಡಿಂಗ್</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">ಫೋಟೋ ದೃಶ್ಯಾನುಪಾತ</translation>
 <translation id="5057360777601936059">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಪ್ರಸ್ತುತ ಲಭ್ಯವಿಲ್ಲ.
         ಕ್ಯಾಮರಾ ಸರಿಯಾಗಿ ಸಂಪರ್ಕಗೊಂಡಿದೆಯೇ ಎಂಬುದನ್ನು ಪರೀಕ್ಷಿಸಿ.</translation>
@@ -101,6 +106,7 @@
 <translation id="5266635337630551423">ಡಾಕ್ಯುಮೆಂಟ್ ಮೇಲಿನ ಎಡ ಮೂಲೆ</translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5320594929574852403">ಎಡ ದಿಕ್ಕಿನಲ್ಲಿ ಚಲಿಸುತ್ತಿದೆ</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಎಲ್ಲಾ ಅಂಚುಗಳನ್ನು ಫ್ರೇಮ್‌ನೊಳಗೆ ಇರಿಸಿ. ಡಾಕ್ಯುಮೆಂಟ್ ಮತ್ತು ಹಿನ್ನೆಲೆ ವಿಭಿನ್ನ ಬಣ್ಣಗಳಾಗಿದ್ದರೆ ಸ್ಕ್ಯಾನಿಂಗ್ ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
 <translation id="5662366948659129155">ಪುಟ <ph name="COUNT" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5671277269877808209">ಚೌಕ</translation>

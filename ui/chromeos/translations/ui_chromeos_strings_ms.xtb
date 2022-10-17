@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Bukan sekarang</translation>
 <translation id="3486821258960016770">Mongolia</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ralat.</translation>
-<translation id="3495810061346586977">Fail ini sulit dan tertakluk pada sekatan oleh dasar pentadbir. <ph name="BEGIN_LINK_HELP" />Ketahui lebih lanjut<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Butiran</translation>
 <translation id="3522708245912499433">Bahasa Portugis</translation>
 <translation id="3524311639100184459">Awas: Fail ini bersifat sementara dan mungkin dipadamkan secara automatik untuk mengosongkan ruang cakera.  <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -456,6 +455,7 @@
 <translation id="4900532980794411603">Kongsi dengan Parallels Desktop</translation>
 <translation id="4902546322522096650">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Sambung</translation>
 <translation id="4906580650526544301">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Bateri Telefon <ph name="BATTERY_STATUS" />%, Butiran</translation>
+<translation id="4929673617759421391">Penampalan fail ini disekat oleh dasar pentadbir</translation>
 <translation id="4935975195727477204">Bunga Gazania</translation>
 <translation id="4943368462779413526">Bola Sepak</translation>
 <translation id="4961158930123534723">1 folder dikongsi dengan Parallels Desktop</translation>
@@ -513,6 +513,7 @@
 <translation id="5286194356314741248">Mengimbas</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5293615890992542006">Pengalihan fail ini disekat oleh dasar pentadbir</translation>
 <translation id="5305688511332277257">Tiada yang dipasang</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318819489018851358">Kongsi dengan Linux</translation>
@@ -714,6 +715,7 @@
 <translation id="6993826899923627728">Item ini berada dalam folder sampah anda</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> folder dipilih</translation>
 <translation id="7008426324576352165">Organisasi anda memerlukan lebih banyak storan untuk menyelesaikan muat naik.</translation>
+<translation id="7009985720488544166">Pengalihan <ph name="COUNT" /> fail disekat oleh dasar pentadbir</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Gagal pemasangan.</translation>
 <translation id="7031639531908619281">Turki</translation>
@@ -973,6 +975,7 @@
 <translation id="9183302530794969518">Dokumen Google</translation>
 <translation id="9189836632794948435">Kazakhstan</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> item diekstrak.</translation>
+<translation id="9210751050717126865">Penampalan <ph name="COUNT" /> fail disekat oleh dasar pentadbir</translation>
 <translation id="9213073329713032541">Pemasangan berjaya dimulakan.</translation>
 <translation id="9219103736887031265">Imej</translation>
 <translation id="9219908252191632183">Qamari</translation>

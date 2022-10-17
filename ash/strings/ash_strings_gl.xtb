@@ -340,9 +340,9 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2865888419503095837">Información da rede</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="2878884018241093801">Non hai elementos recentes</translation>
+<translation id="2885950158625301909">Máis información</translation>
 <translation id="2891209721153296020">"Anula a selección"</translation>
 <translation id="2894949423239620203">As conexións por cable poderían afectarlle ao rendemento</translation>
-<translation id="2903844815300039659">Conexión establecida con <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Capturas de pantalla</translation>
 <translation id="2941112035454246133">Baixa</translation>
 <translation id="2942350706960889382">Lupa ancorada</translation>
@@ -1052,6 +1052,7 @@ Nova instalación</translation>
 <translation id="6961121602502368900">A opción Silenciar teléfono non está dispoñible no perfil de traballo</translation>
 <translation id="6961840794482373852">O atallo Alt + Frecha arriba cambiou. Para usar a tecla Retroceder páxina, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha arriba.</translation>
 <translation id="696267987219125751">O zoom automático está desactivado.</translation>
+<translation id="6964690557625666701">Todos os elementos fixados están ocultos</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972754398087986839">Introdución</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1360,6 +1361,8 @@ Nova instalación</translation>
 <translation id="8734991477317290293">É posible que estea tentando detectar as teclas que premes</translation>
 <translation id="8735678380411481005">Cor de retroiluminación do teclado</translation>
 <translation id="8735953464173050365">Mostrar a configuración do teclado. Está seleccionado o seguinte: <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Activa o acceso á cámara para que as aplicacións e páxinas web que teñan permiso poidan usar as cámaras conectadas a este dispositivo.</translation>
 <translation id="8755498163081687682">Verificar identidade: <ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>
 <translation id="875593634123171288">Mostrar a configuración da VPN</translation>

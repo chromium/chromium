@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1076394037877376434">ลบหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">โหมดกล้อง</translation>
 <translation id="1153190633558910465">ปิดตารางกริด</translation>
 <translation id="1175958423215084756">ตรวจพบลิงก์ <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">ลบหน้า <ph name="PAGE_NUMBER" /> แล้ว</translation>
 <translation id="1258009455399840361">หมุน 90 องศาตามเข็มนาฬิกา</translation>
 <translation id="1276998909102132017">รูปภาพในแกลเลอรี</translation>
 <translation id="1300209025925956156">สแกนเอกสาร</translation>

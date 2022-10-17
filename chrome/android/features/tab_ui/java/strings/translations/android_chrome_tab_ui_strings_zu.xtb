@@ -80,6 +80,7 @@
 <translation id="753732157349120914">Isishintshi Sethebhu</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Isibuyekezo esingu-<ph name="REVIEWS_COUNT_ONE" /> esivela ku-Google}one{Izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" /> ezivela ku-Google}other{Izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" /> ezivela ku-Google}}</translation>
 <translation id="7559245342362162951">Bonisa amathebhu eqembu kugridi yesikrini esigcwele</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Yabelana ngethebhu ekhethiwe ye-<ph name="TABS_COUNT_ONE" />}one{Yabelana ngamathebhu akhethiwe we-<ph name="TABS_COUNT_MANY" />}other{Yabelana ngamathebhu akhethiwe we-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="7792771145871471484">Buyekeza iziphakamiso.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Faka kuqembu ithebhu ekhethiwe e-<ph name="TABS_COUNT_ONE" />}one{Faka kuqembu amathebhu akhethiwe a-<ph name="TABS_COUNT_MANY" />}other{Faka kuqembu amathebhu akhethiwe a-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso, <ph name="REVIEWS_COUNT_ONE" /> isibuyekezo}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso, <ph name="REVIEWS_COUNT_MANY" /> izibuyekezo}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso, <ph name="REVIEWS_COUNT_MANY" /> izibuyekezo}}</translation>

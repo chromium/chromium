@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1076394037877376434">Hapus halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mode kamera</translation>
 <translation id="1153190633558910465">Petak nonaktif</translation>
 <translation id="1175958423215084756">Link terdeteksi. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Halaman <ph name="PAGE_NUMBER" /> dihapus</translation>
 <translation id="1258009455399840361">Putar 90 derajat searah jarum jam</translation>
 <translation id="1276998909102132017">Foto galeri</translation>
 <translation id="1300209025925956156">Pindai dokumen Anda</translation>

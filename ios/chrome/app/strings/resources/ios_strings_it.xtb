@@ -109,6 +109,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1687475363370981210">Segna tutti come già letti</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selezionati</translation>
+<translation id="1715515772563243997">Se ritieni attendibile <ph name="SITE" />, puoi usare una password salvata per accedere.</translation>
 <translation id="1740468249224277719">Tocca due volte per installare.</translation>
 <translation id="1752547299766512813">Salva password</translation>
 <translation id="1753905327828125965">Più visitati</translation>
@@ -151,6 +152,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2155145621546387786">Condividi Chrome</translation>
 <translation id="2175927920773552910">Codice QR</translation>
+<translation id="2178545675770638239">Seleziona password</translation>
 <translation id="2218443599109088993">Diminuisci lo zoom</translation>
 <translation id="2230173723195178503">Pagina web caricata</translation>
 <translation id="2239626343334228536">Cancellazione dati di navigazione…</translation>
@@ -434,6 +436,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4502566650163919158">Controlla ora</translation>
 <translation id="4505980578794259603">Ultima verifica: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Chiudi promo accesso</translation>
+<translation id="4514889972748124117">Suggerisci password efficace…</translation>
 <translation id="4526249700380860531">Controlla e gestisci le password salvate all'indirizzo <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4536418791685807335">Prova ad accedere nuovamente.</translation>
@@ -1015,6 +1018,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8917490105272468696">Sì, accetto</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8952559610785099500">Aggiungi password</translation>
+<translation id="8953046091948372197">Qui troverai le tue password</translation>
 <translation id="895541991026785598">Segnala un problema</translation>
 <translation id="8974714402877957201">1. Apri le Impostazioni dell'iPad</translation>
 <translation id="8976382372951310360">Guida</translation>
@@ -1048,6 +1052,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9200875785104711666"><ph name="TIME" /> g fa</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Report sugli arresti anomali inviato.</translation>
+<translation id="941747855997058526">Seleziona password…</translation>
 <translation id="952704832371081537">Annulla</translation>
 <translation id="953008885340860025">Chrome è disconnesso</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>

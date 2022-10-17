@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1076394037877376434"><ph name="PAGE_NUMBER" />. sayfayı sil</translation>
 <translation id="1113173431709655881">Kamera modu</translation>
 <translation id="1153190633558910465">Izgara kapalı</translation>
 <translation id="1175958423215084756">Bağlantı algılandı. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. sayfa silindi</translation>
 <translation id="1258009455399840361">Saat yönünde 90 derece döndür</translation>
 <translation id="1276998909102132017">Galeri resimleri</translation>
 <translation id="1300209025925956156">Dokümanınızı tarayın</translation>

@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1076394037877376434"><ph name="PAGE_NUMBER" />페이지 삭제</translation>
 <translation id="1113173431709655881">카메라 모드</translation>
 <translation id="1153190633558910465">그리드 사용 안함</translation>
 <translation id="1175958423215084756">링크가 감지되었습니다. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />페이지 삭제됨</translation>
 <translation id="1258009455399840361">시계 방향으로 90도 회전</translation>
 <translation id="1276998909102132017">갤러리 이미지</translation>
 <translation id="1300209025925956156">문서 스캔</translation>

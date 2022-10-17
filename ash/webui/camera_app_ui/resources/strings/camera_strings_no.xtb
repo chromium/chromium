@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1076394037877376434">Slett side <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Kameramodus</translation>
 <translation id="1153190633558910465">Rutenett av</translation>
 <translation id="1175958423215084756">Oppdaget link. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Side <ph name="PAGE_NUMBER" /> er slettet</translation>
 <translation id="1258009455399840361">Rotér 90 grader med klokken</translation>
 <translation id="1276998909102132017">Galleribilder</translation>
 <translation id="1300209025925956156">Skann dokumentet</translation>

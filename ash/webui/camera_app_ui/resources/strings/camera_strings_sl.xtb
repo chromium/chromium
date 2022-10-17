@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1076394037877376434">Izbriši stran <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Način fotoaparata</translation>
 <translation id="1153190633558910465">Mreža izklopljena</translation>
 <translation id="1175958423215084756">Zaznana je bila povezava. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Stran <ph name="PAGE_NUMBER" /> je izbrisana</translation>
 <translation id="1258009455399840361">Zavrti za 90 stopinj v desno</translation>
 <translation id="1276998909102132017">Slike v galeriji</translation>
 <translation id="1300209025925956156">Optično branje dokumenta</translation>

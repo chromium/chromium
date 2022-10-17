@@ -340,9 +340,9 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2865888419503095837">Info jaringan</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2878884018241093801">Tidak ada item baru-baru ini</translation>
+<translation id="2885950158625301909">Pelajari lebih lanjut</translation>
 <translation id="2891209721153296020">"Batalkan pilihan"</translation>
 <translation id="2894949423239620203">Kabel dapat memengaruhi performa</translation>
-<translation id="2903844815300039659">Terhubung ke <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Screenshot</translation>
 <translation id="2941112035454246133">Rendah</translation>
 <translation id="2942350706960889382">Kaca Pembesar Tersemat</translation>
@@ -1051,6 +1051,7 @@ Baru diinstal</translation>
 <translation id="6961121602502368900">Fitur senyapkan ponsel tidak tersedia di profil kerja</translation>
 <translation id="6961840794482373852">Pintasan keyboard Alt + Panah Atas telah diubah. Untuk menggunakan tombol Page Up, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Atas.</translation>
 <translation id="696267987219125751">Framing kamera nonaktif.</translation>
+<translation id="6964690557625666701">Semua item tersemat tidak terlihat di rak karena berada di area kerja</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6972754398087986839">Mulai</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@ Baru diinstal</translation>
 <translation id="8734991477317290293">Keyboard mungkin mencoba mencuri ketukan tombol Anda</translation>
 <translation id="8735678380411481005">Warna lampu latar keyboard</translation>
 <translation id="8735953464173050365">Tampilkan setelan keyboard. <ph name="KEYBOARD_NAME" /> dipilih</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Aktifkan akses kamera untuk mengizinkan aplikasi dan halaman web yang memiliki izin kamera untuk menggunakan kamera yang terhubung ke perangkat ini.</translation>
 <translation id="8755498163081687682">Verifikasi identitas Anda: <ph name="ORIGIN_NAME" /> ingin mengonfirmasi bahwa ini benar-benar Anda</translation>
 <translation id="875593634123171288">Tampilkan setelan VPN</translation>

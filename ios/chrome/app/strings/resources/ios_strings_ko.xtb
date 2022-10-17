@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">모두 읽음으로 표시</translation>
 <translation id="1689333818294560261">닉네임</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 선택됨</translation>
+<translation id="1715515772563243997"><ph name="SITE" /> 사이트를 신뢰하는 경우 저장된 비밀번호를 사용하여 로그인할 수 있습니다.</translation>
 <translation id="1740468249224277719">설치하려면 두 번 탭하세요.</translation>
 <translation id="1752547299766512813">비밀번호 저장</translation>
 <translation id="1753905327828125965">자주 방문한 페이지</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2155145621546387786">Chrome 공유</translation>
 <translation id="2175927920773552910">QR 코드</translation>
+<translation id="2178545675770638239">비밀번호 선택</translation>
 <translation id="2218443599109088993">축소</translation>
 <translation id="2230173723195178503">웹페이지 로드됨</translation>
 <translation id="2239626343334228536">인터넷 사용 기록 삭제 중...</translation>
@@ -434,6 +436,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4502566650163919158">지금 확인</translation>
 <translation id="4505980578794259603"><ph name="TIME" />에 마지막으로 확인함</translation>
 <translation id="4508750114462689118">로그인 프로모션 닫기</translation>
+<translation id="4514889972748124117">안전한 비밀번호 추천...</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4536418791685807335">다시 로그인해 주세요.</translation>
@@ -1015,6 +1018,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8917490105272468696">사용</translation>
 <translation id="8928133177108699615">데스크톱</translation>
 <translation id="8952559610785099500">비밀번호 추가</translation>
+<translation id="8953046091948372197">여기에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="895541991026785598">문제 신고</translation>
 <translation id="8974714402877957201">1. iPad 설정을 엽니다.</translation>
 <translation id="8976382372951310360">도움말</translation>
@@ -1048,6 +1052,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9200875785104711666"><ph name="TIME" />일 전</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">비정상 종료 보고서 전송 완료</translation>
+<translation id="941747855997058526">비밀번호 선택...</translation>
 <translation id="952704832371081537">취소</translation>
 <translation id="953008885340860025">Chrome에서 로그아웃됨</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> 채널을 팔로우 중입니다</translation>

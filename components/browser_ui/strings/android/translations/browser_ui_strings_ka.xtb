@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">რეკომენდებულია საუკეთესო შედეგების მისაღებად</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />-მა AR რომ გამოიყენოს, გაააქტიურეთ კამერაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">წყარო: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">დაკავშირებულ საიტებს შეუძლია თქვენი აქტივობის ნახვა ჯგუფში</translation>
 <translation id="1887786770086287077">მდებარეობაზე წვდომა გამორთულია ამ მოწყობილობისთვის. ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1919345977826869612">რეკლამა</translation>
@@ -86,7 +87,6 @@
 <translation id="2713106313042589954">კამერის გამორთვა</translation>
 <translation id="2717722538473713889">ელფოსტის მისამართები</translation>
 <translation id="2750481671343847896">საიტებს შეუძლია სისტემაში შესვლის მოთხოვნების ჩვენება პირადობის მონაცემების სერვისებიდან.</translation>
-<translation id="2785051990912111074">ეს არჩევანი გაასუფთავებს ქუქი-ჩანაწერებს <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="2822354292072154809">ნამდვილად გსურთ, საიტის ყველა ნებართვის გადაყენება <ph name="CHOSEN_OBJECT_NAME" />-ისთვის?</translation>
 <translation id="2870560284913253234">საიტი</translation>
 <translation id="2874939134665556319">წინა ჩანაწერი</translation>
@@ -111,6 +111,7 @@
 <translation id="3227137524299004712">მიკროფონი</translation>
 <translation id="3248611290851046188">ეს საიტი განსაზღვრავს ინტერესებს, რომელთა გამოყენებაც შეუძლია სხვა საიტებს, რეკლამა რომ გაჩვენოთ. გარდა ამისა, ეს საიტი Chrome-იდან იღებს ინფორმაციას თქვენი ინტერესების შესახებ, უფრო შესაფერისი რეკლამა რომ შემოგთავაზოთ.</translation>
 <translation id="3277252321222022663">საიტებისთვის სენსორებზე წვდომის დაშვება (რეკომენდებული)</translation>
+<translation id="3285500645985761267">საიტებისთვის ჯგუფში თქვენი აქტივობის ნახვის დაშვება</translation>
 <translation id="3295602654194328831">ინფორმაციის დამალვა</translation>
 <translation id="3328801116991980348">საიტის ინფორმაცია</translation>
 <translation id="3333961966071413176">ყველა კონტაქტი</translation>
@@ -118,6 +119,7 @@
 <translation id="3386292677130313581">შეკითხვა საიტებისთვის თქვენი მდებარეობის დადგენის დაშვებამდე (რეკომენდებული)</translation>
 <translation id="3521663503435878242">საიტები <ph name="DOMAIN" />-ის ფარგლებში</translation>
 <translation id="3538390592868664640">საიტებისთვის თქვენი გარემოს 3-განზომილებიანი რუკის შექმნის ან კამერის პოზიციისთვის თვალის მიდევნების დაბლოკვა</translation>
+<translation id="3544058026430919413">კომპანიას შეუძლია საიტების იმ ჯგუფის განსაზღვრა, რომელსაც საშუალება აქვს, ქუქი-ჩანაწერების მეშვეობით გააზიაროთ თქვენი აქტივობა ჯგუფში. აღნიშნული გამორთულია ინკოგნიტო რეჟიმში.</translation>
 <translation id="3551268116566418498">გავიდეთ ინკოგნიტო რეჟიმიდან?</translation>
 <translation id="3586500876634962664">კამერის/მიკროფონის გამოყენება</translation>
 <translation id="358794129225322306">საიტისთვის რამდენიმე ფაილის ავტომატურად ჩამოტვირთვის დაშვება.</translation>
@@ -160,6 +162,7 @@
 <translation id="4434045419905280838">ამომხ. ფანჯრები/გადამისამართება</translation>
 <translation id="445467742685312942">საიტებისთვის დაცული კონტენტის დაკვრის დაშვება</translation>
 <translation id="4468959413250150279">ხმის დადუმება კონკრეტული საიტისთვის.</translation>
+<translation id="4475912480633855319">{COOKIES,plural, =1{# ქუქი-ჩანაწერი}other{# ქუქი-ჩანაწერი}}</translation>
 <translation id="4479647676395637221">შეკითხვა საიტებისთვის თქვენი კამერის გამოყენების დაშვებამდე (რეკომენდებული)</translation>
 <translation id="4505788138578415521">URL გაშლილია</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />-მა მიკროფონით რომ ისარგებლოს, გაააქტიურეთ მიკროფონზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
@@ -173,16 +176,17 @@
 <translation id="483914009762354899">ამ დომენში არსებული ყველა საიტის დართვა</translation>
 <translation id="4883854917563148705">მართული პარამეტრების გადაყენება ვერ მოხერხდება</translation>
 <translation id="4887024562049524730">საიტების მიერ თქვენი ვირტუალური რეალობის მოწყობილობების/მონაცემების გამოყენების მოთხოვნა (რეკომენდებული)</translation>
+<translation id="4955223779495905865">საიტს, რომელსაც ეწვევით, შეუძლია სხვა საიტების კონტენტის (მაგალითად, სურათების, რეკლამისა და ტექსტის) ჩაშენება. ამ საიტებიდან ნებისმიერს შეუძლია ქუქი-ჩანაწერებისა და საიტების სხვა მონაცემების შენახვა, ფუნქციების თქვენზე მორგების მიზნით.</translation>
 <translation id="4962975101802056554">მოწყობილობისთვის ყველა ნებართვის გაუქმება</translation>
 <translation id="497421865427891073">გადასვლა წინ</translation>
 <translation id="4976702386844183910">ბოლო ვიზიტი: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">კონტაქტები ვერ მოიძებნა</translation>
 <translation id="4996978546172906250">გაზიარების პროგრამა</translation>
-<translation id="5014906230196386306">გსურთ ქუქი-ჩანაწერების გასუფთავება?</translation>
 <translation id="5039804452771397117">დაშვება</translation>
 <translation id="5048398596102334565">საიტებისთვის მოძრაობის სენსორებზე წვდომის დაშვება (რეკომენდებული)</translation>
 <translation id="5050380848339752099">ეს საიტი აპირებს, ინკოგნიტო რეჟიმის გარეთ გაუზიაროს ინფორმაცია აპს.</translation>
 <translation id="5063480226653192405">გამოყენება</translation>
+<translation id="5082281938627763039">ეს მოქმედება წაშლის ქუქი-ჩანაწერებსა და საიტების სხვა მონაცემებს როგორც <ph name="FPS_MEMBER" />-ისთვის, ისე საიტებისთვის, რომლებიც შედის <ph name="FPS_OWNER" />-ის საიტების ჯგუფში</translation>
 <translation id="5091013926750941408">მობილური საიტი</translation>
 <translation id="509133520954049755">დესკტოპის ხედის მოთხოვნა</translation>
 <translation id="5100237604440890931">ჩაკეცილია — დააწკაპუნეთ გასაშლელად.</translation>
@@ -219,6 +223,7 @@
 <translation id="5677928146339483299">დაბლოკილი</translation>
 <translation id="5689516760719285838">მდებარეობა</translation>
 <translation id="5690795753582697420">კამერა გამორთულია Android-ის პარამეტრებში</translation>
+<translation id="5706552988683188916">ეს მოქმედება წაშლის ქუქი-ჩანაწერებსა და საიტის სხვა მონაცემებს <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="5719847187258001597">ამ მოქმედებით გასუფთავდება <ph name="ORIGIN" />-ის ან მისი აპის მიერ თქვენს მთავარ ეკრანზე შენახული ყველა მონაცემი.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> დაბლოკილია</translation>
 <translation id="5804241973901381774">ნებართვები</translation>
@@ -319,6 +324,7 @@
 <translation id="7882806643839505685">ხმის დაშვება კონკრეტული საიტისთვის.</translation>
 <translation id="789180354981963912">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა ინკოგნიტო რეჟიმში:</translation>
 <translation id="7940722705963108451">შემახსენეთ</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />-ის იმ საიტების ჯგუფში, რომლებსაც შეუძლია თქვენი აქტივობის ნახვა ჯგუფში, არის <ph name="FPS_MEMBERS_COUNT" /> საიტი}other{<ph name="FPS_OWNER" />-ის იმ საიტების ჯგუფში, რომლებსაც შეუძლია თქვენი აქტივობის ნახვა ჯგუფში, არის <ph name="FPS_MEMBERS_COUNT" /> საიტი}}</translation>
 <translation id="7986741934819883144">აირჩიეთ კონტაქტი</translation>
 <translation id="7999064672810608036">დარწმუნებული ხართ, რომ გსურთ ყველა ადგილობრივი მონაცემების წაშლა, მათ შორის ქუქი ფაილების, და ამ გვერდისათვის ყველა ნებართვების აღდგენა?</translation>
 <translation id="8007176423574883786">გამორთულია ამ მოწყობილობისთვის</translation>
@@ -357,6 +363,7 @@
 <translation id="8499083585497694743">მიკროფონის დადუმების მოხსნა</translation>
 <translation id="851751545965956758">საიტებისთვის მოწყობილობებთან დაკავშირების აკრძალვა</translation>
 <translation id="8525306231823319788">მთელ ეკრანზე</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{ქუქი-ჩანაწერები დაშვებულია <ph name="FPS_OWNER" />-ის <ph name="FPS_MEMBERS_COUNT" /> საიტისთვის}other{ქუქი-ჩანაწერები დაშვებულია <ph name="FPS_OWNER" />-ის <ph name="FPS_MEMBERS_COUNT" /> საიტისთვის}}</translation>
 <translation id="857943718398505171">დაშვებული (რეკომენდებულია)</translation>
 <translation id="8609465669617005112">გადაადგილება ზემოთ</translation>
 <translation id="8676374126336081632">შეყვანილი ტექსტის გასუფთავება</translation>
@@ -382,6 +389,8 @@
 <translation id="8986362086234534611">დავიწყება</translation>
 <translation id="9019902583201351841">იმართება თქვენი მშობლების მიერ</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">ეს საიტი არის ჯგუფში, რომელსაც შეუძლია თქვენი აქტივობის ნახვა. ჯგუფი განსაზღვრულია <ph name="FPS_OWNER" />-ის მიერ.</translation>
+<translation id="9106233582039520022">გსურთ, წაშალოთ ქუქი-ჩანაწერები?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" />-ისთვის ნებართვების გააქტიურება <ph name="BEGIN_LINK" />Android-ის პარამეტრებში<ph name="END_LINK" /> შეგიძლიათ.</translation>
 <translation id="9162462602695099906">ეს გვერდი სახიფათოა</translation>

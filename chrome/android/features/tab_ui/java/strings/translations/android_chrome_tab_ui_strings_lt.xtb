@@ -13,6 +13,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
 <translation id="2118649612461486615">Parduotuvės informacija</translation>
 <translation id="2162620598375156287">Dabar <ph name="CURRENT_PRICE" /> svetainėje <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="22623456902492423">{TABS_COUNT,plural, =1{Išgrupuoti skirtuką}one{Išgrupuoti skirtukus}few{Išgrupuoti skirtukus}many{Išgrupuoti skirtukus}other{Išgrupuoti skirtukus}}</translation>
 <translation id="2277224997687551299">Redaguoti grupės pavadinimą</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Pašalinti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką iš grupės.}one{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką iš grupės.}few{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus iš grupės.}many{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko iš grupės.}other{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų iš grupės.}}</translation>
 <translation id="2479148705183875116">Eiti į nustatymus</translation>
@@ -36,6 +37,7 @@
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sutraukti <ph name="TABS_COUNT_ONE" /> skirtuką.}one{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
 <translation id="3882834874697329510">Norėdami gauti įspėjimą, kai atidarytame skirtuke bus sumažinta kaina, įjunkite pranešimus Nustatymų skiltyje.</translation>
 <translation id="3940195383040445971">Stebėti kainas skirtukuose</translation>
+<translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupuoti skirtuką}one{Grupuoti skirtukus}few{Grupuoti skirtukus}many{Grupuoti skirtukus}other{Grupuoti skirtukus}}</translation>
 <translation id="3996880007329611795">Pranešti</translation>
 <translation id="4133493477912226187">Skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="4212246570487010370">Tęsti naršymą</translation>
@@ -44,6 +46,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsiliepimas)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimas)}few{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimai)}many{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimo)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimų)}}</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>
 <translation id="4870911314065352661">Uždaryti visus skirtukus?</translation>
+<translation id="4895402777090717310">{TABS_COUNT,plural, =1{Uždaryti skirtuką}one{Uždaryti skirtukus}few{Uždaryti skirtukus}many{Uždaryti skirtukus}other{Uždaryti skirtukus}}</translation>
 <translation id="492284538114688557">Aptikta sumažinta kaina</translation>
 <translation id="5007392906805964215">Peržiūrėti</translation>
 <translation id="5073204694187207510">Slėpti viso ekrano tinklelį</translation>
@@ -72,6 +75,7 @@
 <translation id="6615455863669487791">Rodyti</translation>
 <translation id="6840760312327750441">Norėdami grupuoti skirtukus, palieskite ir palaikykite skirtuką. Tada nuvilkite jį į kitą skirtuką.</translation>
 <translation id="6856809498882026482">Slėpti kelių elementų pasirinkimo režimą</translation>
+<translation id="7100731960740376323">{TABS_COUNT,plural, =1{Bendrinti skirtuką}one{Bendrinti skirtukus}few{Bendrinti skirtukus}many{Bendrinti skirtukus}other{Bendrinti skirtukus}}</translation>
 <translation id="7129458170538955174">Informacija apie šią parduotuvę atidaryta iki pusės ekrano aukščio</translation>
 <translation id="7151209024774799310">Pašalinti skirtukus iš grupės</translation>
 <translation id="7204204600596740190">Kelių elementų pasirinkimo režimas</translation>

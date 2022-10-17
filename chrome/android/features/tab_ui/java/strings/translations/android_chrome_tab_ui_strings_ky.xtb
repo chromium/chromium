@@ -80,6 +80,7 @@
 <translation id="753732157349120914">Өтмөк которуштургуч</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'да жазылган <ph name="REVIEWS_COUNT_ONE" /> сын-пикир}other{Google'да жазылган <ph name="REVIEWS_COUNT_MANY" /> сын-пикир}}</translation>
 <translation id="7559245342362162951">Топтун өтмөктөрүн толук экрандагы торчодо көрсөтүү</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү бөлүшүү}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү бөлүшүү}}</translation>
 <translation id="7792771145871471484">Сунуштарды карап чыгуу.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> тандалган өтмөктү топко бириктирүү}other{<ph name="TABS_COUNT_MANY" /> тандалган өтмөктү топко бириктирүү}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> сын-пикир}other{Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> сын-пикир}}</translation>

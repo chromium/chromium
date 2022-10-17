@@ -202,6 +202,7 @@
 <translation id="2771816809568414714">Keso</translation>
 <translation id="2781645665747935084">Belgian</translation>
 <translation id="2782104745158847185">Nagkaroon ng error sa pag-install ng Linux application</translation>
+<translation id="2802583107108007218">Matuto pa tungkol sa mga paghihigpit na ito</translation>
 <translation id="2803375539583399270">Ilagay ang PIN</translation>
 <translation id="2820957248982571256">Nagsa-scan...</translation>
 <translation id="2830077785865012357">Chinese Zhuyin</translation>
@@ -281,7 +282,6 @@
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> (na) error.</translation>
-<translation id="3495810061346586977">Ang file na ito ay kumpidensyal at napapailalim sa mga paghihigpit ng patakaran ng administrator. <ph name="BEGIN_LINK_HELP" />Matuto pa<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3522708245912499433">Portuguese</translation>
 <translation id="3524311639100184459">Mag-ingat: Ang mga file na ito ay pansamantala lang at puwedeng awtomatikong ma-delete para magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
@@ -922,6 +922,7 @@
 <translation id="8656768832129462377">Huwag suriin</translation>
 <translation id="8688591111840995413">Hindi magandang password</translation>
 <translation id="8698464937041809063">Drawing ng Google</translation>
+<translation id="8698877009525468705">Ang file na ito ay kumpidensyal at napapailalim sa mga paghihigpit ng patakaran ng administrator.</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8713112442029511308">Maltese</translation>
 <translation id="8714406895390098252">Bisikleta</translation>

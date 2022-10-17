@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Ekki núna</translation>
 <translation id="3486821258960016770">Mongólska</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> villur.</translation>
-<translation id="3495810061346586977">Skráin inniheldur trúnaðarmál og er háð takmörkunum stjórnandareglu. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, upplýsingar</translation>
 <translation id="3522708245912499433">Portúgalskt</translation>
 <translation id="3524311639100184459">Varúð: Þessar skrár eru til bráðabirgða og þeim kann að vera eytt sjálfkrafa til að losa um diskpláss.  <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
@@ -456,6 +455,7 @@
 <translation id="4900532980794411603">Deila með Parallels Desktop</translation>
 <translation id="4902546322522096650">Net <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, tengjast</translation>
 <translation id="4906580650526544301">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />% rafhlaða síma <ph name="BATTERY_STATUS" />%, upplýsingar</translation>
+<translation id="4929673617759421391">Regla stjórnanda kemur í veg fyrir að hægt sé að líma þessa skrá</translation>
 <translation id="4935975195727477204">Blóm</translation>
 <translation id="4943368462779413526">Amerískur fótbolti</translation>
 <translation id="4961158930123534723">1 möppu deilt með Parallels Desktop</translation>
@@ -512,6 +512,7 @@
 <translation id="5278111733643988471">Til að endurheimta atriðið skaltu draga það úr ruslinu yfir í nýja möppu. Upprunalegu möppunni „<ph name="PARENT_FOLDER_NAME" />“ fyrir atriðið hefur verið eytt.</translation>
 <translation id="5286194356314741248">Leit</translation>
 <translation id="5288441970121584418">Hamborgari</translation>
+<translation id="5293615890992542006">Regla stjórnanda kemur í veg fyrir að hægt sé að flytja þessa skrá</translation>
 <translation id="5305688511332277257">Engin uppsett</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5318819489018851358">Deila með Linux</translation>
@@ -713,6 +714,7 @@
 <translation id="6993826899923627728">Þessi atriði eru í ruslinu</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> möppur valdar</translation>
 <translation id="7008426324576352165">Fyrirtækið þitt þarf meira geymslurými til að ljúka við upphleðsluna.</translation>
+<translation id="7009985720488544166">Regla stjórnanda kemur í veg fyrir að hægt sé að flytja <ph name="COUNT" /> skrár</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Uppsetningin mistókst.</translation>
 <translation id="7031639531908619281">Tyrkneska</translation>
@@ -972,6 +974,7 @@
 <translation id="9183302530794969518">Google skjöl</translation>
 <translation id="9189836632794948435">Kasakstanska</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> atriði dregin út.</translation>
+<translation id="9210751050717126865">Regla stjórnanda kemur í veg fyrir að hægt sé að líma <ph name="COUNT" /> skrár</translation>
 <translation id="9213073329713032541">Uppsetning hófst.</translation>
 <translation id="9219103736887031265">Myndir</translation>
 <translation id="9219908252191632183">Tungllandslag</translation>

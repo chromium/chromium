@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1076394037877376434">Ջնջել էջ <ph name="PAGE_NUMBER" />-ը</translation>
 <translation id="1113173431709655881">Տեսախցիկի ռեժիմ</translation>
 <translation id="1153190633558910465">Ցանցն անջատված է</translation>
 <translation id="1175958423215084756">Հայտնաբերվել է հղում։ <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Էջը <ph name="PAGE_NUMBER" />-ը ջնջվեց</translation>
 <translation id="1258009455399840361">Պտտել 90 աստիճան ժամացույցի սլաքի ուղղությամբ</translation>
 <translation id="1276998909102132017">Ցուցասրահի պատկերներ</translation>
 <translation id="1300209025925956156">Փաստաթղթի սկանավորում</translation>

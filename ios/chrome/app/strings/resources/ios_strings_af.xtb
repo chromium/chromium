@@ -109,6 +109,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1687475363370981210">Merk alles as gelees</translation>
 <translation id="1689333818294560261">Bynaam</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> gekies</translation>
+<translation id="1715515772563243997">As jy <ph name="SITE" /> vertrou, kan jy ’n gestoorde wagwoord gebruik om aan te meld.</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeer.</translation>
 <translation id="1752547299766512813">Stoor wagwoorde</translation>
 <translation id="1753905327828125965">Meeste besoek</translation>
@@ -151,6 +152,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2149973817440762519">Wysig boekmerk</translation>
 <translation id="2155145621546387786">Deel Chrome</translation>
 <translation id="2175927920773552910">QR-kode</translation>
+<translation id="2178545675770638239">Kies wagwoord</translation>
 <translation id="2218443599109088993">Zoem uit</translation>
 <translation id="2230173723195178503">Webblad is gelaai</translation>
 <translation id="2239626343334228536">Vee blaaierdata uit …</translation>
@@ -434,6 +436,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4502566650163919158">Meld nou aan</translation>
 <translation id="4505980578794259603">Laas gekontroleer: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Maak aanmelding-promosie toe</translation>
+<translation id="4514889972748124117">Stel sterk wagwoord voor …</translation>
 <translation id="4526249700380860531">Bekyk en bestuur gestoorde wagwoorde by <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Gaan jou gesinkroniseerde data na</translation>
 <translation id="4536418791685807335">Probeer om weer aan te meld.</translation>
@@ -1015,6 +1018,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8917490105272468696">Ja, ek is in</translation>
 <translation id="8928133177108699615">Rekenaar</translation>
 <translation id="8952559610785099500">Voeg wagwoord by</translation>
+<translation id="8953046091948372197">Jy sal jou wagwoorde hier kry</translation>
 <translation id="895541991026785598">Gee 'n kwessie aan</translation>
 <translation id="8974714402877957201">1. Maak iPad Settings oop</translation>
 <translation id="8976382372951310360">Hulp</translation>
@@ -1048,6 +1052,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9200875785104711666"><ph name="TIME" /> d. gelede</translation>
 <translation id="9203116392574189331">Oorgee</translation>
 <translation id="9223358826628549784">Omvalverslag is gestuur.</translation>
+<translation id="941747855997058526">Kies wagwoord …</translation>
 <translation id="952704832371081537">Kanselleer</translation>
 <translation id="953008885340860025">Chrome is afgemeld</translation>
 <translation id="959066944189734975">Jy volg tans <ph name="CHANNEL_NAME" /></translation>

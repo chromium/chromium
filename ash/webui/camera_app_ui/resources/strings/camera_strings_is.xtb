@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1057925581724305206">Full háskerpa (1080p)</translation>
 <translation id="1113173431709655881">Myndavélarstilling</translation>
 <translation id="1153190633558910465">Slökkt á línum</translation>
 <translation id="1175958423215084756">Tengill greindist. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">Venjuleg</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Ekkert var tekið upp</translation>
 <translation id="1838104802459806957">Halla upp</translation>
 <translation id="1843105061469674856">Skanna viðbótarsíðu</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">Full upplausn</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Myndupptaka af mörgum straumum í einu</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Myndhlutfall myndar</translation>
 <translation id="5057360777601936059">Ekki er hægt að nota myndavélina eins og er.
         Athugaðu hvort myndavélin er rétt tengd.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">Efra, vinstra horn skjals</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5320594929574852403">Færist til vinstri</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Settu öll horn skjalsins í rammann. Skönnun virkar betur ef skjalið og bakgrunnurinn eru í mismunandi litum.</translation>
 <translation id="5662366948659129155">Skannar síðu <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Ferningur</translation>

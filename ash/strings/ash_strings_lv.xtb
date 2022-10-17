@@ -343,7 +343,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2885950158625301909">Uzzināt vairāk</translation>
 <translation id="2891209721153296020">“Noņemt atlasi”</translation>
 <translation id="2894949423239620203">Vads var ietekmēt veiktspēju</translation>
-<translation id="2903844815300039659">Izveidots savienojums ar <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Ekrānuzņēmumi</translation>
 <translation id="2941112035454246133">Zema</translation>
 <translation id="2942350706960889382">Dokota lupa</translation>
@@ -1052,6 +1051,7 @@ Jauna instalācija</translation>
 <translation id="6961121602502368900">Darba profilā tālruņa skaņu nevar izslēgt.</translation>
 <translation id="6961840794482373852">Šie īsinājumtaustiņi ir mainījušies: Alt + augšupvērstais bulttaustiņš. Lai izmantotu augšupšķiršanas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + augšupvērstais bulttaustiņš.</translation>
 <translation id="696267987219125751">Kameras kadrēšana ir izslēgta.</translation>
+<translation id="6964690557625666701">Visi piespraustie vienumi dejo</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6972754398087986839">Sākt darbu</translation>
 <translation id="6979158407327259162">Google disks</translation>
@@ -1360,6 +1360,8 @@ Jauna instalācija</translation>
 <translation id="8734991477317290293">Tā, iespējams, mēģina piesavināties jūsu taustiņsitienus</translation>
 <translation id="8735678380411481005">Taustiņu izgaismojuma krāsa</translation>
 <translation id="8735953464173050365">Rādīt tastatūras iestatījumus. Ir atlasīta tastatūra <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />.
+        <ph name="SCREEN_SHARE_STATUS" />.</translation>
 <translation id="8752416742247198423">Ieslēdziet piekļuvi kamerai, lai ļautu lietotnēm un tīmekļa lapām ar kameras atļauju izmantot ar šo ierīci savienotās kameras.</translation>
 <translation id="8755498163081687682">Identitātes apstiprināšana: <ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="875593634123171288">Rādīt VPN iestatījumus</translation>

@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Избриши ја страницата <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Режим на камера</translation>
 <translation id="1153190633558910465">Исклучи мрежа</translation>
 <translation id="1175958423215084756">Препознаен е линк. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Страницата <ph name="PAGE_NUMBER" /> е избришана</translation>
 <translation id="1258009455399840361">Ротирајте 90 степени во насока на стрелките на часовникот</translation>
 <translation id="1276998909102132017">Слики од галеријата</translation>
 <translation id="1300209025925956156">Скенирајте го документот</translation>

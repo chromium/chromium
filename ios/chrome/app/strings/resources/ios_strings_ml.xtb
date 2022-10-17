@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">എല്ലാം വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="1689333818294560261">വിളിപ്പേര്</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> തിരഞ്ഞെടുത്തു</translation>
+<translation id="1715515772563243997">നിങ്ങൾക്ക് <ph name="SITE" /> എന്നതിനെ വിശ്വാസമാണെങ്കിൽ സംരക്ഷിച്ച പാസ്‌വേഡ് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യാം.</translation>
 <translation id="1740468249224277719">ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1752547299766512813">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="1753905327828125965">കൂടുതൽ‍ സന്ദര്‍ശിച്ചത്</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">ബുക്മാര്‍ക്ക് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2155145621546387786">Chrome പങ്കിടുക</translation>
 <translation id="2175927920773552910">QR കോഡ്</translation>
+<translation id="2178545675770638239">പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2218443599109088993">സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="2230173723195178503">വെബ്‌പേജ് ലോഡ് ചെയ്‌തു</translation>
 <translation id="2239626343334228536">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുന്നു...</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="4505980578794259603">അവസാനം പരിശോധിച്ചത് <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">സൈൻ ഇൻ പ്രമോ അടയ്‌ക്കുക</translation>
+<translation id="4514889972748124117">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക...</translation>
 <translation id="4520798012560649652">അദൃശ്യ മോഡ് സംബന്ധിച്ച് കൂടുതലറിയുക</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> എന്നതിൽ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ കാണുക, നിയന്ത്രിക്കുക</translation>
 <translation id="452750746583162491">നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ അവലോകനം ചെയ്യുക</translation>
@@ -1016,6 +1019,7 @@
 <translation id="8917490105272468696">അതെ, ഞാൻ തയ്യാറാണ്</translation>
 <translation id="8928133177108699615">ഡെസ്‌ക്ടോപ്പ്</translation>
 <translation id="8952559610785099500">പാസ്‌വേഡ് ചേർക്കുക</translation>
+<translation id="8953046091948372197">നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഇവിടെ കാണാം</translation>
 <translation id="895541991026785598">ഒരു പ്രശ്നം റിപ്പോര്‍ട്ട് ചെയ്യുക</translation>
 <translation id="8974714402877957201">1. iPad ക്രമീകരണം തുറക്കുക</translation>
 <translation id="8976382372951310360">സഹായം</translation>
@@ -1049,6 +1053,7 @@
 <translation id="9200875785104711666"><ph name="TIME" /> ദിവസം മുമ്പ്</translation>
 <translation id="9203116392574189331">ഹാൻഡ്ഓഫ്</translation>
 <translation id="9223358826628549784">ക്രാഷ് റിപ്പോർട്ട് അയച്ചു.</translation>
+<translation id="941747855997058526">പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="952704832371081537">റദ്ദാക്കുക</translation>
 <translation id="953008885340860025">Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്തു</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> എന്നത് നിങ്ങൾ പിന്തുടരുന്നു</translation>

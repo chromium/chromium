@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Orain ez</translation>
 <translation id="3486821258960016770">Mongoliarra</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errore.</translation>
-<translation id="3495810061346586977">Fitxategia isilpekoa da, eta administratzailearen gidalerroek ezarritako murrizketen mende dago. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />; <ph name="CONNECTION_STATUS" />). Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>
 <translation id="3522708245912499433">Portugaldarra</translation>
 <translation id="3524311639100184459">Kontuz: fitxategi hauek aldi baterakoak dira eta agian automatikoki ezabatuko dira diskoan tokia egiteko.  <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>

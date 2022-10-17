@@ -340,9 +340,9 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2865888419503095837">Informacje o sieci</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="2878884018241093801">Brak ostatnich elementów</translation>
+<translation id="2885950158625301909">Więcej informacji</translation>
 <translation id="2891209721153296020">„Odznacz”</translation>
 <translation id="2894949423239620203">Kabel może wpływać na wydajność</translation>
-<translation id="2903844815300039659">Połączono z siecią <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Zrzuty ekranu</translation>
 <translation id="2941112035454246133">Niski</translation>
 <translation id="2942350706960889382">Lupa zadokowana</translation>
@@ -1050,6 +1050,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6961121602502368900">Funkcja Wyciszenie telefonu jest niedostępna w profilu służbowym</translation>
 <translation id="6961840794482373852">Skrót klawiszowy Alt + strzałka w górę został zmieniony. Aby użyć klawisza Page Up, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w górę.</translation>
 <translation id="696267987219125751">Kadrowanie jest wyłączone.</translation>
+<translation id="6964690557625666701">Wszystkie przypięte elementy są w trybie Shelf Party</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Rozpocznij</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
@@ -1358,6 +1359,8 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8734991477317290293">Klawiatura może próbować przechwycić naciskane klawisze</translation>
 <translation id="8735678380411481005">Kolor podświetlenia klawiatury</translation>
 <translation id="8735953464173050365">Pokaż ustawienia klawiatury. Wybrana jest: <ph name="KEYBOARD_NAME" />.</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Włącz dostęp do aparatu, aby zezwolić aplikacjom i stronom z uprawnieniami na korzystanie z aparatów podłączonych do tego urządzenia.</translation>
 <translation id="8755498163081687682">Weryfikacja tożsamości: strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
 <translation id="875593634123171288">Pokaż ustawienia VPN</translation>

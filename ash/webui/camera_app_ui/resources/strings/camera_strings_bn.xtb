@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1076394037877376434"><ph name="PAGE_NUMBER" />টি পৃষ্ঠা মুছুন</translation>
 <translation id="1113173431709655881">ক্যামেরা মোড</translation>
 <translation id="1153190633558910465">গ্রিড বন্ধ আছে</translation>
 <translation id="1175958423215084756">লিঙ্ক শনাক্ত হয়েছে। <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />টি পৃষ্ঠা মুছে ফেলা হয়েছে</translation>
 <translation id="1258009455399840361">ঘড়ির কাঁটার দিকে ৯০ ডিগ্রি ঘোরান</translation>
 <translation id="1276998909102132017">গ্যালারির ছবি</translation>
 <translation id="1300209025925956156">আপনার ডকুমেন্ট স্ক্যান করুন</translation>

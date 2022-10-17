@@ -340,9 +340,9 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2865888419503095837">Informazioni di rete</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2878884018241093801">Nessun elemento recente</translation>
+<translation id="2885950158625301909">Scopri di più</translation>
 <translation id="2891209721153296020">"Deseleziona"</translation>
 <translation id="2894949423239620203">Il cavo può influire sulle prestazioni</translation>
-<translation id="2903844815300039659">Connesso a <ph name="NAME" />, <ph name="STRENGTH" />.</translation>
 <translation id="2914580577416829331">Schermate acquisite</translation>
 <translation id="2941112035454246133">Bassa</translation>
 <translation id="2942350706960889382">Lente d'ingrandimento ancorata</translation>
@@ -1052,6 +1052,7 @@ Nuova installazione</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>
 <translation id="6961840794482373852">La scorciatoia da tastiera Alt + Freccia su è cambiata. Per usare il tasto Pagina su, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia su.</translation>
 <translation id="696267987219125751">Zoom automatico disattivato.</translation>
+<translation id="6964690557625666701">Tutti gli elementi fissati sono in modalità Shelf Party</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Inizia</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1360,6 +1361,7 @@ Nuova installazione</translation>
 <translation id="8734991477317290293">Potrebbe essere un tentativo di rubare i tasti premuti</translation>
 <translation id="8735678380411481005">Colore della retroilluminazione della tastiera</translation>
 <translation id="8735953464173050365">Mostra impostazioni tastiera. Selezione attiva: <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Concedi l'accesso alla fotocamera per consentire alle app e alle pagine web autorizzate di utilizzare le fotocamere collegate a questo dispositivo.</translation>
 <translation id="8755498163081687682">Verifica la tua identità come richiesto da <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>

@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="1057925581724305206">I-HD Egcwele (1080p)</translation>
+<translation id="1076394037877376434">Sula ikhasi <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Imodi yekhamera</translation>
 <translation id="1153190633558910465">Igridi ivaliwe</translation>
 <translation id="1175958423215084756">Isixhumanisi sitholiwe. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Ikhasi <ph name="PAGE_NUMBER" /> lisuliwe</translation>
 <translation id="1258009455399840361">Zungezisa u-90 degrees ngokwewashi</translation>
 <translation id="1276998909102132017">Izithombe zegalari</translation>
 <translation id="1300209025925956156">Skena idokhumenti yakho</translation>
@@ -19,6 +22,7 @@
 <translation id="1588438908519853928">Jwayelekile</translation>
 <translation id="1620510694547887537">Ikhamela</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">I-HD (720p)</translation>
 <translation id="1664224225747386870">Akukho okurekhodiwe</translation>
 <translation id="1838104802459806957">Yisa phezulu</translation>
 <translation id="1843105061469674856">Skena ikhasi elengeziwe</translation>
@@ -93,6 +97,7 @@
 <translation id="4705093842003735294">Irezolushini egcwele.</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Ukurekhoda ividiyo kokusakaza okuningi</translation>
+<translation id="4984613436295737187">I-Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Ukubukeka kwesilinganiselo sesithombe</translation>
 <translation id="5057360777601936059">Ikhamera yakho manje ayitholakali.
         Hlola uma ngabe ikhamera ixhumeke kahle yini.</translation>
@@ -101,6 +106,7 @@
 <translation id="5266635337630551423">Idokhumenti ekhoneni eliphezulu kwesobunxele</translation>
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5320594929574852403">Ihambela ngasohlangothini lwesobunxele</translation>
+<translation id="5374917190292010970">I-4K (2160p)</translation>
 <translation id="5444515100983837161">Beka bonke onqenqema bedokhumenti ngaphakathi kohlaka. Ukuskena kusebenza kangcono uma idokhumenti nengemuva kuyimibala ehlukile.</translation>
 <translation id="5662366948659129155">Iskena ikhasi <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Isikwele</translation>

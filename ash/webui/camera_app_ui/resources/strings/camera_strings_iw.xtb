@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1076394037877376434">מחיקת דף מס' <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">מצב מצלמה</translation>
 <translation id="1153190633558910465">הסתרת הרשת</translation>
 <translation id="1175958423215084756">זוהה קישור. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">דף מס' <ph name="PAGE_NUMBER" /> נמחק</translation>
 <translation id="1258009455399840361">סיבוב ב-90 מעלות בכיוון השעון</translation>
 <translation id="1276998909102132017">תמונות מהגלריה</translation>
 <translation id="1300209025925956156">סריקת המסמך</translation>

@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">လှုပ်ရှားမှု အာရုံခံစနစ်များ</translation>
 <translation id="1717494416764505390">စာတိုက်ပုံး ၃</translation>
 <translation id="1718029547804390981">မှတ်တမ်းဖိုင်သည် မှတ်ချက်ပေးရန်အတွက် အလွန်ကြီးနေပါသည်</translation>
+<translation id="1719434663396780149">ကျစျေး သတိပေးချက် ဖွင့်ထားသည်။ ၎င်းကို <ph name="BEGIN_LINK" /> <ph name="NOTIFICATION_SETTINGS" /> <ph name="END_LINK" />တွင် ပြောင်းနိုင်သည်။</translation>
 <translation id="1720941539803966190">ရှင်းလင်းပို့ချချက်ကို ပိတ်ရန်</translation>
 <translation id="1721424275792716183">* ပြထားသော အကွက်ကို ဖြည့်ရန်လိုသည်</translation>
 <translation id="1725591448053514783">You 6 စာအိတ်</translation>
@@ -980,6 +981,7 @@
 <translation id="3550112004925580947">ဧည့်ဝတ်ပြုခြင်းဆိုင်ရာ လုပ်ငန်း</translation>
 <translation id="3552297013052089404">Sans-serif ဖောင့်</translation>
 <translation id="3558573058928565255">နေ့အချိန်</translation>
+<translation id="3560824484345057728">ဆက်စပ်ဝဘ်ဆိုက်များ ကြည့်ရန်</translation>
 <translation id="3566021033012934673">သင်၏ ချိတ်ဆက်မှုမှာ ကိုယ်ပိုင် မဟုတ်ပါ</translation>
 <translation id="3567778190852720481">လုပ်ငန်းသုံး အကောင့်ဖြင့် စာရင်းသွင်း၍ မရပါ (လုပ်ငန်းသုံး အကောင့်က အကျုံးမဝင်ပါ)။</translation>
 <translation id="3574305903863751447"><ph name="CITY" />၊ <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1365,6 +1367,7 @@
 <translation id="4542971377163063093">ဗန်း ၆</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">သင့် နောက်ဆက်တွဲများကို ဖြုတ်ကြည့်ပါ။</translation>
+<translation id="4559134504959026834">သင့်လှုပ်ရှားမှုကို မြင်နေနိုင်သော <ph name="SET_OWNER" /> က သတ်မှတ်သည့် အုပ်စုတွင် ဤဝဘ်ဆိုက် ပါဝင်သည်</translation>
 <translation id="4559332380232738994">၁၀x၁၁</translation>
 <translation id="4566017918361049074">ပြင်ပလှုပ်ရှားမှုများ</translation>
 <translation id="4567686777917670400">သင့်စီမံခန့်ခွဲသူက သင်၏ဘရောင်ဇာ စနစ်ထည့်သွင်းမှုကို အဝေးမှ ပြောင်းလဲနိုင်ပါသည်။ ဤစက်ပေါ်ရှိ လုပ်ဆောင်ချက်ကိုလည်း Chromium ပြင်ပမှ စီမံခန့်ခွဲထားနိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -2279,6 +2282,7 @@
 <translation id="7003335073762455340">ဤထုန်ကုန်ကို စောင့်ကြည့်နေပါသည်။ ဤစာမျက်နှာကို <ph name="LAST_BOOKMARKS_FOLDER" /> တွင် သိမ်းသည်။</translation>
 <translation id="7004583254764674281">ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုနိုင်ရန် Windows Hello ကို အသုံးပြုပါ</translation>
 <translation id="7006930604109697472">မည်သို့ပင်ဖြစ်စေ ပို့ရန်</translation>
+<translation id="7007006156138369007">ဝဘ်ဆိုက်များရှိ စျေးနှုန်းကို တစ်ချိန်တည်း စောင့်ကြည့်သည်</translation>
 <translation id="7012363358306927923">တရုတ် UnionPay</translation>
 <translation id="7014741021609395734">ဇူးမ်အဆင့်</translation>
 <translation id="7016992613359344582">ဤငွေကောက်ခံမှုများသည် တစ်ချိန်တစ်ခါတည်း ဖြစ်နိုင်သလို ထပ်တလဲလဲကောက်ခံမှုလည်း ဖြစ်နိုင်ပြီး သိသာမှုမရှိနိုင်ပါ။</translation>
@@ -2401,7 +2405,7 @@
 <translation id="7346048084945669753">အောက်ပါနှင့် ပေါင်းစည်းထားသည်−</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">ဤတဘ်ကို မပိတ်မချင်း ခွင့်ပြုထားသည်</translation>
-<translation id="7352651011704765696">တစ်ခုခု မှားနေပြီ</translation>
+<translation id="7352651011704765696">တစ်ခုခု မှားသွားသည်</translation>
 <translation id="7353601530677266744">ညွှန်ကြားချက် လိုင်း</translation>
 <translation id="7354880545102894991">စရိတ်နည်းနှင့် ရုတ်တရက် ခရီးစဉ်</translation>
 <translation id="7359588939039777303">ကြော်ငြာများကို ပိတ်လိုက်ပါပြီ။</translation>
@@ -2672,6 +2676,7 @@
 <translation id="7995512525968007366">သတ်မှတ်မထားပါ</translation>
 <translation id="7998269595945679889">ရုပ်ဖျက်တဘ်ခလုတ်ကို ဖွင့်ပါ။ ရုပ်ဖျက်တဘ်အသစ်တစ်ခုဖြင့် သီးသန့်ကြည့်ရှုနိုင်ရန် Enter ခလုတ်နှိပ်ပါ</translation>
 <translation id="800218591365569300">မှတ်ဉာဏ်နေရာလွတ်ရရှိစေရန် တဘ် သို့မဟုတ် ပရိုဂရမ်များကို ပိတ်ကြည့်ပါ။</translation>
+<translation id="8002230960325005199">ဆက်စပ်ဝဘ်ဆိုက်များကို တဘ်အသစ်တွင် ကြည့်ရန်</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ဘရောင်ဇာ</translation>
 <translation id="8009225694047762179">စကားဝှက်များကို စီမံခြင်း</translation>
@@ -2775,6 +2780,7 @@
 <translation id="8270242299912238708">PDF ဖိုင်များ</translation>
 <translation id="8275952078857499577">ဤဝဘ်ဆိုက်ကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="8277900682056760511">ငွေပေးချေမှု ကိုင်တွယ်သည့်စနစ်စာမျက်နှာကို ဖွင့်ထားသည်</translation>
+<translation id="8279611986089885641">Chrome အကြောင်းကြားချက်ကို ဖွင့်ထားရမည်။ ၎င်းတို့ကို <ph name="BEGIN_LINK" /> <ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> တွင် ဖွင့်နိုင်သည်။</translation>
 <translation id="8280630997017109758">ဗန်း ၁၁</translation>
 <translation id="8281084378435768645">ဓာတ်ပုံ အကြီး</translation>
 <translation id="8281886186245836920">ကျော်ရန်</translation>
