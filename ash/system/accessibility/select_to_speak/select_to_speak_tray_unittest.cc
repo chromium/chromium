@@ -16,9 +16,12 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -140,6 +143,72 @@ TEST_F(SelectToSpeakTrayTest, SelectToSpeakStateImpactsImageAndActivation) {
   actual_icon_image = GetImageView()->GetImage();
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*expected_icon_image.bitmap(),
                                          *actual_icon_image.bitmap()));
+}
+
+// Test that changing the SelectToSpeakState in the AccessibilityController
+// results in a change of tooltip text in the tray, when hover text improvements
+// are enabled.
+TEST_F(SelectToSpeakTrayTest, SelectToSpeakStateImpactsTooltipText) {
+  // Enable AccessibilitySelectToSpeakHoverTextImprovements feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ::features::kAccessibilitySelectToSpeakHoverTextImprovements);
+
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  controller->SetSelectToSpeakState(
+      SelectToSpeakState::kSelectToSpeakStateSelecting);
+  std::u16string expected_tooltip_text = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK_INSTRUCTIONS);
+  std::u16string actual_tooltip_text = GetImageView()->GetTooltipText();
+  EXPECT_TRUE(expected_tooltip_text == actual_tooltip_text);
+
+  controller->SetSelectToSpeakState(
+      SelectToSpeakState::kSelectToSpeakStateSpeaking);
+  expected_tooltip_text = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK_STOP_INSTRUCTIONS);
+  actual_tooltip_text = GetImageView()->GetTooltipText();
+  EXPECT_TRUE(expected_tooltip_text == actual_tooltip_text);
+
+  controller->SetSelectToSpeakState(
+      SelectToSpeakState::kSelectToSpeakStateInactive);
+  expected_tooltip_text = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK);
+  actual_tooltip_text = GetImageView()->GetTooltipText();
+  EXPECT_TRUE(expected_tooltip_text == actual_tooltip_text);
+}
+// Test that changing the SelectToSpeakState in the AccessibilityController
+// results in a change of tooltip text in the tray, when hover text improvements
+// are disabled.
+TEST_F(SelectToSpeakTrayTest,
+       SelectToSpeakStateImpactsTooltipTextFeatureDisabled) {
+  // Disable AccessibilitySelectToSpeakHoverTextImprovements feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ::features::kAccessibilitySelectToSpeakHoverTextImprovements);
+
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  controller->SetSelectToSpeakState(
+      SelectToSpeakState::kSelectToSpeakStateSelecting);
+  std::u16string expected_tooltip_text = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK);
+  std::u16string actual_tooltip_text = GetImageView()->GetTooltipText();
+  EXPECT_TRUE(expected_tooltip_text == actual_tooltip_text);
+
+  controller->SetSelectToSpeakState(
+      SelectToSpeakState::kSelectToSpeakStateSpeaking);
+  expected_tooltip_text = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK);
+  actual_tooltip_text = GetImageView()->GetTooltipText();
+  EXPECT_TRUE(expected_tooltip_text == actual_tooltip_text);
+
+  controller->SetSelectToSpeakState(
+      SelectToSpeakState::kSelectToSpeakStateInactive);
+  expected_tooltip_text = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK);
+  actual_tooltip_text = GetImageView()->GetTooltipText();
+  EXPECT_TRUE(expected_tooltip_text == actual_tooltip_text);
 }
 
 // Trivial test to increase coverage of select_to_speak_tray.h. The

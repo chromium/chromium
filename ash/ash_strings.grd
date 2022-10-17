@@ -1005,6 +1005,12 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK" desc="The label used in the accessibility menu of the system tray to toggle on/off the select-to-speak feature.">
         Select-to-speak
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK_INSTRUCTIONS" desc="The tooltip text used while hovering the Select-to-speak action button in the system tray, when Select-to-speak is activated, and ready for the user to select text.">
+        Click and drag to select text
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK_STOP_INSTRUCTIONS" desc="The tooltip text used while hovering the Select-to-speak action button in the system tray, when Select-to-speak is speaking text, and can be stopped by clicking the button.">
+        Stop speaking
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION" desc="The label used in the accessibility menu of the system tray to toggle on/off the speak to type feature.">
         Dictation
       </message>

@@ -13,6 +13,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -27,12 +28,11 @@ namespace ash {
 
 namespace {
 
-gfx::ImageSkia GetImageOnCurrentSelectToSpeakStatus() {
+gfx::ImageSkia GetImageOnCurrentSelectToSpeakStatus(
+    const SelectToSpeakState& select_to_speak_state) {
   auto* shell = Shell::Get();
   const SkColor color =
       TrayIconColor(shell->session_controller()->GetSessionState());
-  const auto select_to_speak_state =
-      shell->accessibility_controller()->GetSelectToSpeakState();
 
   switch (select_to_speak_state) {
     case SelectToSpeakState::kSelectToSpeakStateInactive:
@@ -42,6 +42,26 @@ gfx::ImageSkia GetImageOnCurrentSelectToSpeakStatus() {
                                    color);
     case SelectToSpeakState::kSelectToSpeakStateSpeaking:
       return gfx::CreateVectorIcon(kSystemTrayStopNewuiIcon, color);
+  }
+}
+
+std::u16string GetTooltipTextOnCurrentSelectToSpeakStatus(
+    const SelectToSpeakState& select_to_speak_state) {
+  if (!::features::IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled()) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK);
+  }
+
+  switch (select_to_speak_state) {
+    case SelectToSpeakState::kSelectToSpeakStateInactive:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK);
+    case SelectToSpeakState::kSelectToSpeakStateSelecting:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK_INSTRUCTIONS);
+    case SelectToSpeakState::kSelectToSpeakStateSpeaking:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK_STOP_INSTRUCTIONS);
   }
 }
 
@@ -78,7 +98,7 @@ SelectToSpeakTray::~SelectToSpeakTray() {
 
 void SelectToSpeakTray::Initialize() {
   TrayBackgroundView::Initialize();
-  UpdateIconOnCurrentStatus();
+  UpdateUXOnCurrentStatus();
 }
 
 std::u16string SelectToSpeakTray::GetAccessibleNameForTray() {
@@ -87,8 +107,10 @@ std::u16string SelectToSpeakTray::GetAccessibleNameForTray() {
 }
 
 void SelectToSpeakTray::HandleLocaleChange() {
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK));
+  const auto select_to_speak_state =
+      Shell::Get()->accessibility_controller()->GetSelectToSpeakState();
+  icon_->SetTooltipText(
+      GetTooltipTextOnCurrentSelectToSpeakStatus(select_to_speak_state));
 }
 
 void SelectToSpeakTray::OnThemeChanged() {
@@ -97,7 +119,7 @@ void SelectToSpeakTray::OnThemeChanged() {
 }
 
 void SelectToSpeakTray::OnAccessibilityStatusChanged() {
-  UpdateIconOnCurrentStatus();
+  UpdateUXOnCurrentStatus();
 }
 
 void SelectToSpeakTray::OnSessionStateChanged(
@@ -105,24 +127,31 @@ void SelectToSpeakTray::OnSessionStateChanged(
   UpdateIconOnColorChanges();
 }
 
-void SelectToSpeakTray::UpdateIconOnCurrentStatus() {
+void SelectToSpeakTray::UpdateUXOnCurrentStatus() {
   auto* accessibility_controller = Shell::Get()->accessibility_controller();
   if (!accessibility_controller->select_to_speak().enabled()) {
     SetVisiblePreferred(false);
     return;
   }
-  icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus());
+  const auto select_to_speak_state =
+      accessibility_controller->GetSelectToSpeakState();
+  icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus(select_to_speak_state));
+  icon_->SetTooltipText(
+      GetTooltipTextOnCurrentSelectToSpeakStatus(select_to_speak_state));
   SetIsActive(accessibility_controller->GetSelectToSpeakState() !=
               SelectToSpeakState::kSelectToSpeakStateInactive);
   SetVisiblePreferred(true);
 }
 
 void SelectToSpeakTray::UpdateIconOnColorChanges() {
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
   if (!visible_preferred() ||
-      !Shell::Get()->accessibility_controller()->select_to_speak().enabled()) {
+      !accessibility_controller->select_to_speak().enabled()) {
     return;
   }
-  icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus());
+  const auto select_to_speak_state =
+      accessibility_controller->GetSelectToSpeakState();
+  icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus(select_to_speak_state));
 }
 
 BEGIN_METADATA(SelectToSpeakTray, TrayBackgroundView);

@@ -51,10 +51,10 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
  private:
   friend class SelectToSpeakTrayTest;
 
-  // Updates icon depending on the current status of select-to-speak. And
-  // updates the visibility of the tray depending on whether select-to-speak is
-  // enabled or disabled.
-  void UpdateIconOnCurrentStatus();
+  // Updates icon and hovertext depending on the current status of
+  // select-to-speak. And updates the visibility of the tray depending on
+  // whether select-to-speak is enabled or disabled.
+  void UpdateUXOnCurrentStatus();
 
   // Updates icon if the color of the icon changes.
   void UpdateIconOnColorChanges();
