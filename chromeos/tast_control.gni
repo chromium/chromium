@@ -2,6 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+#~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=
+# BEFORE ADDING A TEST HERE: If this is a consistent failure in Chrome on
+# ChromeOS CI builders, you should try to find and revert CLs causing new
+# regressions. Do not simply disable newly failing tests in tast_control.gni
+# as the Chrome uprev will still fail.
+#
+# Chromimum sheriffs should not disable NEW regressions here. Changes to
+# this file require the current CrOS gardener's approval. See go/chrome-sheriff-tast.
+#~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=
+
 # WARNING: if you wish to disable a tast test that runs in a ChromeOS SDK
 # build, this is the wrong file to edit. You need to mark those tests as
 # "informational" in their source .go files.
@@ -319,6 +329,8 @@ tast_disabled_tests_from_chrome_all = [
   "peripherals.LaunchAppFromSettings.scan",
   "policy.AllowedLanguages",
   "terminal.Crosh",
+
+  # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
 # To create filters to be used on specific builders add them like this:
