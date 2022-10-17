@@ -370,8 +370,8 @@ bool DecomposeTransform(DecomposedTransform* decomp,
 
   if (matrix.HasPerspective()) {
     // rhs is the right hand side of the equation.
-    SkScalar rhs[4] = {matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2),
-                       matrix.rc(3, 3)};
+    double rhs[4] = {matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2),
+                     matrix.rc(3, 3)};
 
     // Solve the equation by inverting perspectiveMatrix and multiplying
     // rhs by the inverse.

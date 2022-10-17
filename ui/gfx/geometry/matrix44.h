@@ -31,22 +31,22 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
         fTypeMask(kIdentity_Mask) {}
 
   // The parameters are in row-major order.
-  Matrix44(SkScalar col1row1,
-           SkScalar col2row1,
-           SkScalar col3row1,
-           SkScalar col4row1,
-           SkScalar col1row2,
-           SkScalar col2row2,
-           SkScalar col3row2,
-           SkScalar col4row2,
-           SkScalar col1row3,
-           SkScalar col2row3,
-           SkScalar col3row3,
-           SkScalar col4row3,
-           SkScalar col1row4,
-           SkScalar col2row4,
-           SkScalar col3row4,
-           SkScalar col4row4)
+  Matrix44(double col1row1,
+           double col2row1,
+           double col3row1,
+           double col4row1,
+           double col1row2,
+           double col2row2,
+           double col3row2,
+           double col4row2,
+           double col1row3,
+           double col2row3,
+           double col3row3,
+           double col4row3,
+           double col1row4,
+           double col2row4,
+           double col3row4,
+           double col4row4)
       // fMat is indexed by [col][row] (i.e. col-major).
       : fMat{{col1row1, col1row2, col1row3, col1row4},
              {col2row1, col2row2, col2row3, col2row4},
@@ -114,7 +114,7 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
    *  (0, 3)  translate-x
    *  (3, 0)  perspective-x
    */
-  inline SkScalar rc(int row, int col) const {
+  inline double rc(int row, int col) const {
     SkASSERT((unsigned)row <= 3);
     SkASSERT((unsigned)col <= 3);
     return fMat[col][row];
@@ -126,7 +126,7 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
    *  (0, 3)  translate-x
    *  (3, 0)  perspective-x
    */
-  inline void setRC(int row, int col, SkScalar value) {
+  inline void setRC(int row, int col, double value) {
     SkASSERT((unsigned)row <= 3);
     SkASSERT((unsigned)col <= 3);
     fMat[col][row] = value;
@@ -162,28 +162,28 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   CATransform3D ToCATransform3D() const;
 #endif
 
-  Matrix44& setTranslate(SkScalar dx, SkScalar dy, SkScalar dz);
-  Matrix44& preTranslate(SkScalar dx, SkScalar dy, SkScalar dz);
-  Matrix44& postTranslate(SkScalar dx, SkScalar dy, SkScalar dz);
+  Matrix44& setTranslate(double dx, double dy, double dz);
+  Matrix44& preTranslate(double dx, double dy, double dz);
+  Matrix44& postTranslate(double dx, double dy, double dz);
 
-  Matrix44& setScale(SkScalar sx, SkScalar sy, SkScalar sz);
-  Matrix44& preScale(SkScalar sx, SkScalar sy, SkScalar sz);
-  Matrix44& postScale(SkScalar sx, SkScalar sy, SkScalar sz);
+  Matrix44& setScale(double sx, double sy, double sz);
+  Matrix44& preScale(double sx, double sy, double sz);
+  Matrix44& postScale(double sx, double sy, double sz);
 
   // Sets this matrix to rotate about the specified unit-length axis vector,
   // by an angle specified by its sin() and cos(). This does not attempt to
   // verify that axis(x, y, z).length() == 1 or that the sin, cos values are
   // correct.
-  void setRotateUnitSinCos(SkScalar x,
-                           SkScalar y,
-                           SkScalar z,
-                           SkScalar sin_angle,
-                           SkScalar cos_angle);
+  void setRotateUnitSinCos(double x,
+                           double y,
+                           double z,
+                           double sin_angle,
+                           double cos_angle);
 
   // Special case for x, y or z axis of the above function.
-  void setRotateAboutXAxisSinCos(SkScalar sin_angle, SkScalar cos_angle);
-  void setRotateAboutYAxisSinCos(SkScalar sin_angle, SkScalar cos_angle);
-  void setRotateAboutZAxisSinCos(SkScalar sin_angle, SkScalar cos_angle);
+  void setRotateAboutXAxisSinCos(double sin_angle, double cos_angle);
+  void setRotateAboutYAxisSinCos(double sin_angle, double cos_angle);
+  void setRotateAboutZAxisSinCos(double sin_angle, double cos_angle);
 
   void setConcat(const Matrix44& a, const Matrix44& b);
   inline void preConcat(const Matrix44& m) { this->setConcat(*this, m); }
@@ -205,8 +205,8 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
   /** Apply the matrix to the src vector, returning the new vector in dst.
       It is legal for src and dst to point to the same memory.
    */
-  void mapScalars(const SkScalar src[4], SkScalar dst[4]) const;
-  inline void mapScalars(SkScalar vec[4]) const { this->mapScalars(vec, vec); }
+  void mapScalars(const double src[4], double dst[4]) const;
+  inline void mapScalars(double vec[4]) const { this->mapScalars(vec, vec); }
 
   double determinant() const;
 
@@ -214,22 +214,22 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
 
  private:
   /* This is indexed by [col][row]. */
-  SkScalar fMat[4][4];
+  double fMat[4][4];
   TypeMask fTypeMask;
 
   static constexpr int kAllPublic_Masks = 0xF;
 
-  SkScalar transX() const { return fMat[3][0]; }
-  SkScalar transY() const { return fMat[3][1]; }
-  SkScalar transZ() const { return fMat[3][2]; }
+  double transX() const { return fMat[3][0]; }
+  double transY() const { return fMat[3][1]; }
+  double transZ() const { return fMat[3][2]; }
 
-  SkScalar scaleX() const { return fMat[0][0]; }
-  SkScalar scaleY() const { return fMat[1][1]; }
-  SkScalar scaleZ() const { return fMat[2][2]; }
+  double scaleX() const { return fMat[0][0]; }
+  double scaleY() const { return fMat[1][1]; }
+  double scaleZ() const { return fMat[2][2]; }
 
-  SkScalar perspX() const { return fMat[0][3]; }
-  SkScalar perspY() const { return fMat[1][3]; }
-  SkScalar perspZ() const { return fMat[2][3]; }
+  double perspX() const { return fMat[0][3]; }
+  double perspY() const { return fMat[1][3]; }
+  double perspZ() const { return fMat[2][3]; }
 
   void recomputeTypeMask();
 

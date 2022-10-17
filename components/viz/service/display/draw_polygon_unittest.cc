@@ -682,14 +682,14 @@ TEST(DrawPolygonSplitTest, SplitNoInfs) {
                                   &back_polygon, &is_coplanar);
 
   EXPECT_FALSE(is_coplanar);
-  EXPECT_TRUE(front_polygon != nullptr);
-  EXPECT_TRUE(back_polygon != nullptr);
-
-  for (auto point : front_polygon->points()) {
-    EXPECT_TRUE(std::isfinite(point.x()));
-    EXPECT_TRUE(std::isfinite(point.y()));
-    EXPECT_TRUE(std::isfinite(point.z()));
-  }
+  // After crrev.com/c/3914178, this test no longer produces the exact original
+  // situation of crbug.com/1264787 which had one front_polygon point with
+  // almost zero distance to the plane of splitting-polygon. Now with better
+  // precision in gfx::Transform, the front_polygon point becomes one of the
+  // back_polygon points. It's hard to reproduce the original situation, but we
+  // can still check all points have finite coordinates.
+  EXPECT_TRUE(front_polygon == nullptr);
+  ASSERT_TRUE(back_polygon != nullptr);
 
   for (auto point : back_polygon->points()) {
     EXPECT_TRUE(std::isfinite(point.x()));

@@ -2416,11 +2416,9 @@ TEST_F(DrawPropertiesTest,
   LayerImpl* child = AddLayer<LayerImpl>();
   LayerImpl* grand_child = AddLayer<LayerImpl>();
 
-  gfx::Transform perspective;
-  perspective.ApplyPerspectiveDepth(SkDoubleToScalar(1e-12));
-
-  gfx::Transform rotation;
-  rotation.RotateAboutYAxis(45.0);
+  gfx::Transform scale = gfx::Transform::MakeScale(1e-15);
+  EXPECT_TRUE(scale.IsInvertible());
+  EXPECT_FALSE((scale * scale).IsInvertible());
 
   root->SetBounds(gfx::Size(100, 100));
   child->SetBounds(gfx::Size(100, 100));
@@ -2433,12 +2431,12 @@ TEST_F(DrawPropertiesTest,
   child_transform_node.flattens_inherited_transform = false;
   child_transform_node.post_translation = gfx::Vector2dF(10.f, 10.f);
   child_transform_node.sorting_context_id = 1;
-  child_transform_node.local = perspective;
+  child_transform_node.local = scale;
   CopyProperties(child, grand_child);
   auto& grand_child_transform_node = CreateTransformNode(grand_child);
   grand_child_transform_node.flattens_inherited_transform = false;
   grand_child_transform_node.sorting_context_id = 1;
-  grand_child_transform_node.local = rotation;
+  grand_child_transform_node.local = scale;
 
   UpdateActiveTreeDrawProperties();
 
@@ -2544,11 +2542,9 @@ TEST_F(DrawPropertiesTest, OcclusionForLayerWithUninvertibleDrawTransform) {
   LayerImpl* grand_child = AddLayer<LayerImpl>();
   LayerImpl* occluding_child = AddLayer<LayerImpl>();
 
-  gfx::Transform perspective;
-  perspective.ApplyPerspectiveDepth(SkDoubleToScalar(1e-12));
-
-  gfx::Transform rotation;
-  rotation.RotateAboutYAxis(45.0);
+  gfx::Transform scale = gfx::Transform::MakeScale(1e-15);
+  EXPECT_TRUE(scale.IsInvertible());
+  EXPECT_FALSE((scale * scale).IsInvertible());
 
   root->SetBounds(gfx::Size(1000, 1000));
   child->SetBounds(gfx::Size(300, 300));
@@ -2565,12 +2561,12 @@ TEST_F(DrawPropertiesTest, OcclusionForLayerWithUninvertibleDrawTransform) {
   child_transform_node.flattens_inherited_transform = false;
   child_transform_node.post_translation = gfx::Vector2dF(10.f, 10.f);
   child_transform_node.sorting_context_id = 1;
-  child_transform_node.local = perspective;
+  child_transform_node.local = scale;
   CopyProperties(child, grand_child);
   auto& grand_child_transform_node = CreateTransformNode(grand_child);
   grand_child_transform_node.flattens_inherited_transform = false;
   grand_child_transform_node.sorting_context_id = 1;
-  grand_child_transform_node.local = rotation;
+  grand_child_transform_node.local = scale;
   CopyProperties(root, occluding_child);
   CreateTransformNode(occluding_child).flattens_inherited_transform = false;
 
@@ -3357,14 +3353,16 @@ TEST_F(DrawPropertiesScalingTest, SmallIdealScale) {
   float expected_ideal_scale =
       device_scale_factor * page_scale_factor * initial_parent_scale;
   EXPECT_LT(expected_ideal_scale, 1.f);
-  EXPECT_EQ(gfx::Vector2dF(expected_ideal_scale, expected_ideal_scale),
-            parent->GetIdealContentsScale());
+  EXPECT_VECTOR2DF_EQ(
+      gfx::Vector2dF(expected_ideal_scale, expected_ideal_scale),
+      parent->GetIdealContentsScale());
 
   expected_ideal_scale = device_scale_factor * page_scale_factor *
                          initial_parent_scale * initial_child_scale;
   EXPECT_LT(expected_ideal_scale, 1.f);
-  EXPECT_EQ(gfx::Vector2dF(expected_ideal_scale, expected_ideal_scale),
-            child_scale->GetIdealContentsScale());
+  EXPECT_VECTOR2DF_EQ(
+      gfx::Vector2dF(expected_ideal_scale, expected_ideal_scale),
+      child_scale->GetIdealContentsScale());
 }
 
 TEST_F(DrawPropertiesScalingTest, IdealScaleForAnimatingLayer) {

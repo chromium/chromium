@@ -32,6 +32,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace vr {
 
@@ -1257,7 +1258,7 @@ TEST_F(UiTest, ResetRepositioner) {
   model_->mutable_primary_controller().recentered = true;
 
   AdvanceFrame();
-  EXPECT_EQ(original, repositioner->world_space_transform());
+  EXPECT_TRANSFORM_NEAR(original, repositioner->world_space_transform(), 1e-20);
 }
 
 // No element in the controller root's subtree should be hit testable.

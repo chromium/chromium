@@ -298,7 +298,7 @@ TEST(XFormTest, ConcatRotate) {
     Point3F p1 = xform.MapPoint(Point3F(value.x1, value.y1, 0));
     Point3F p2(value.x2, value.y2, 0);
     if (value.degrees == value.degrees) {
-      EXPECT_TRUE(PointsAreNearlyEqual(p1, p2));
+      EXPECT_POINT3F_NEAR(p1, p2, 0.0001f);
     }
   }
 }

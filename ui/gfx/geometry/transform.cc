@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/clamp_float_geometry.h"
+#include "ui/gfx/geometry/double4.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -24,17 +25,17 @@ namespace gfx {
 
 namespace {
 
-const SkScalar kEpsilon = std::numeric_limits<float>::epsilon();
+const double kEpsilon = std::numeric_limits<float>::epsilon();
 
-SkScalar TanDegrees(double degrees) {
-  return SkDoubleToScalar(std::tan(gfx::DegToRad(degrees)));
+double TanDegrees(double degrees) {
+  return std::tan(gfx::DegToRad(degrees));
 }
 
-inline bool ApproximatelyZero(SkScalar x, SkScalar tolerance) {
+inline bool ApproximatelyZero(double x, double tolerance) {
   return std::abs(x) <= tolerance;
 }
 
-inline bool ApproximatelyOne(SkScalar x, SkScalar tolerance) {
+inline bool ApproximatelyOne(double x, double tolerance) {
   return std::abs(x - 1) <= tolerance;
 }
 
@@ -47,14 +48,13 @@ Transform::Transform(Transform&&) = default;
 Transform& Transform::operator=(Transform&&) = default;
 
 // clang-format off
-Transform::Transform(
-    SkScalar r0c0, SkScalar r1c0, SkScalar r2c0, SkScalar r3c0,
-    SkScalar r0c1, SkScalar r1c1, SkScalar r2c1, SkScalar r3c1,
-    SkScalar r0c2, SkScalar r1c2, SkScalar r2c2, SkScalar r3c2,
-    SkScalar r0c3, SkScalar r1c3, SkScalar r2c3, SkScalar r3c3) {
-  if (r1c0 == 0 && r2c0 == 0 && r3c0 == 0 && r0c1 == 0 && r2c1 == 0 &&
-      r3c1 == 0 && r0c2 == 0 && r1c2 == 0 && r2c2 == 1 && r3c2 == 0 &&
-      r2c3 == 0 && r3c3 == 1) {
+Transform::Transform(double r0c0, double r1c0, double r2c0, double r3c0,
+                     double r0c1, double r1c1, double r2c1, double r3c1,
+                     double r0c2, double r1c2, double r2c2, double r3c2,
+                     double r0c3, double r1c3, double r2c3, double r3c3) {
+  if (AllTrue(Double4{r1c0, r2c0, r3c0, r0c1} == Double4{0, 0, 0, 0} &
+              Double4{r2c1, r3c1, r0c2, r1c2} == Double4{0, 0, 0, 0} &
+              Double4{r2c2, r3c2, r2c3, r3c3} == Double4{1, 0, 0, 1})) {
     axis_2d_ = AxisTransform2d::FromScaleAndTranslation(
         Vector2dF(r0c0, r1c1), Vector2dF(r0c3, r1c3));
   } else {
@@ -69,19 +69,19 @@ Transform::Transform(
 Transform::Transform(const Quaternion& q)
     : Transform(
           // Col 0.
-          SkDoubleToScalar(1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z())),
-          SkDoubleToScalar(2.0 * (q.x() * q.y() + q.z() * q.w())),
-          SkDoubleToScalar(2.0 * (q.x() * q.z() - q.y() * q.w())),
+          1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()),
+          2.0 * (q.x() * q.y() + q.z() * q.w()),
+          2.0 * (q.x() * q.z() - q.y() * q.w()),
           0,
           // Col 1.
-          SkDoubleToScalar(2.0 * (q.x() * q.y() - q.z() * q.w())),
-          SkDoubleToScalar(1.0 - 2.0 * (q.x() * q.x() + q.z() * q.z())),
-          SkDoubleToScalar(2.0 * (q.y() * q.z() + q.x() * q.w())),
+          2.0 * (q.x() * q.y() - q.z() * q.w()),
+          1.0 - 2.0 * (q.x() * q.x() + q.z() * q.z()),
+          2.0 * (q.y() * q.z() + q.x() * q.w()),
           0,
           // Col 2.
-          SkDoubleToScalar(2.0 * (q.x() * q.z() + q.y() * q.w())),
-          SkDoubleToScalar(2.0 * (q.y() * q.z() - q.x() * q.w())),
-          SkDoubleToScalar(1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())),
+          2.0 * (q.x() * q.z() + q.y() * q.w()),
+          2.0 * (q.y() * q.z() - q.x() * q.w()),
+          1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y()),
           0,
           // Col 3.
           0, 0, 0, 1) {}
@@ -161,8 +161,7 @@ void Transform::RotateAboutXAxis(double degrees) {
   double sin_angle = std::sin(radians);
   double cos_angle = std::cos(radians);
   Transform t(kSkipInitialization);
-  t.EnsureFullMatrix().setRotateAboutXAxisSinCos(SkDoubleToScalar(sin_angle),
-                                                 SkDoubleToScalar(cos_angle));
+  t.EnsureFullMatrix().setRotateAboutXAxisSinCos(sin_angle, cos_angle);
   PreConcat(t);
 }
 
@@ -173,8 +172,7 @@ void Transform::RotateAboutYAxis(double degrees) {
   double sin_angle = std::sin(radians);
   double cos_angle = std::cos(radians);
   Transform t(kSkipInitialization);
-  t.EnsureFullMatrix().setRotateAboutYAxisSinCos(SkDoubleToScalar(sin_angle),
-                                                 SkDoubleToScalar(cos_angle));
+  t.EnsureFullMatrix().setRotateAboutYAxisSinCos(sin_angle, cos_angle);
   PreConcat(t);
 }
 
@@ -185,8 +183,7 @@ void Transform::RotateAboutZAxis(double degrees) {
   double sin_angle = std::sin(radians);
   double cos_angle = std::cos(radians);
   Transform t(kSkipInitialization);
-  t.EnsureFullMatrix().setRotateAboutZAxisSinCos(SkDoubleToScalar(sin_angle),
-                                                 SkDoubleToScalar(cos_angle));
+  t.EnsureFullMatrix().setRotateAboutZAxisSinCos(sin_angle, cos_angle);
   PreConcat(t);
 }
 
@@ -209,9 +206,7 @@ void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
   double sin_angle = std::sin(radians);
   double cos_angle = std::cos(radians);
   Transform t(kSkipInitialization);
-  t.EnsureFullMatrix().setRotateUnitSinCos(
-      SkDoubleToScalar(x), SkDoubleToScalar(y), SkDoubleToScalar(z),
-      SkDoubleToScalar(sin_angle), SkDoubleToScalar(cos_angle));
+  t.EnsureFullMatrix().setRotateUnitSinCos(x, y, z, sin_angle, cos_angle);
   PreConcat(t);
 }
 
@@ -219,28 +214,28 @@ double Transform::Determinant() const {
   return LIKELY(!matrix_) ? axis_2d_.Determinant() : matrix_->determinant();
 }
 
-void Transform::Scale(SkScalar x, SkScalar y) {
+void Transform::Scale(double x, double y) {
   if (LIKELY(!matrix_))
     axis_2d_.PreScale(Vector2dF(x, y));
   else
     matrix_->preScale(x, y, 1);
 }
 
-void Transform::PostScale(SkScalar x, SkScalar y) {
+void Transform::PostScale(double x, double y) {
   if (LIKELY(!matrix_))
     axis_2d_.PostScale(Vector2dF(x, y));
   else
     matrix_->postScale(x, y, 1);
 }
 
-void Transform::Scale3d(SkScalar x, SkScalar y, SkScalar z) {
+void Transform::Scale3d(double x, double y, double z) {
   if (z == 1)
     Scale(x, y);
   else
     EnsureFullMatrix().preScale(x, y, z);
 }
 
-void Transform::PostScale3d(SkScalar x, SkScalar y, SkScalar z) {
+void Transform::PostScale3d(double x, double y, double z) {
   if (z == 1)
     PostScale(x, y);
   else
@@ -251,7 +246,7 @@ void Transform::Translate(const Vector2dF& offset) {
   Translate(offset.x(), offset.y());
 }
 
-void Transform::Translate(SkScalar x, SkScalar y) {
+void Transform::Translate(double x, double y) {
   if (LIKELY(!matrix_))
     axis_2d_.PreTranslate(Vector2dF(x, y));
   else
@@ -262,7 +257,7 @@ void Transform::PostTranslate(const Vector2dF& offset) {
   PostTranslate(offset.x(), offset.y());
 }
 
-void Transform::PostTranslate(SkScalar x, SkScalar y) {
+void Transform::PostTranslate(double x, double y) {
   if (LIKELY(!matrix_))
     axis_2d_.PostTranslate(Vector2dF(x, y));
   else
@@ -273,7 +268,7 @@ void Transform::PostTranslate3d(const Vector3dF& offset) {
   PostTranslate3d(offset.x(), offset.y(), offset.z());
 }
 
-void Transform::PostTranslate3d(SkScalar x, SkScalar y, SkScalar z) {
+void Transform::PostTranslate3d(double x, double y, double z) {
   if (z == 0)
     PostTranslate(x, y);
   else
@@ -284,7 +279,7 @@ void Transform::Translate3d(const Vector3dF& offset) {
   Translate3d(offset.x(), offset.y(), offset.z());
 }
 
-void Transform::Translate3d(SkScalar x, SkScalar y, SkScalar z) {
+void Transform::Translate3d(double x, double y, double z) {
   if (z == 0)
     Translate(x, y);
   else
@@ -307,7 +302,7 @@ void Transform::Skew(double angle_x, double angle_y) {
   }
 }
 
-void Transform::ApplyPerspectiveDepth(SkScalar depth) {
+void Transform::ApplyPerspectiveDepth(double depth) {
   if (depth == 0)
     return;
 
@@ -347,7 +342,7 @@ void Transform::PostConcat(const AxisTransform2d& transform) {
   PostTranslate(transform.translation());
 }
 
-bool Transform::IsApproximatelyIdentityOrTranslation(SkScalar tolerance) const {
+bool Transform::IsApproximatelyIdentityOrTranslation(double tolerance) const {
   DCHECK_GE(tolerance, 0);
   if (LIKELY(!matrix_)) {
     return ApproximatelyOne(axis_2d_.scale().x(), tolerance) &&
@@ -369,7 +364,7 @@ bool Transform::IsApproximatelyIdentityOrTranslation(SkScalar tolerance) const {
 }
 
 bool Transform::IsApproximatelyIdentityOrIntegerTranslation(
-    SkScalar tolerance) const {
+    double tolerance) const {
   if (!IsApproximatelyIdentityOrTranslation(tolerance))
     return false;
 
@@ -382,7 +377,7 @@ bool Transform::IsApproximatelyIdentityOrIntegerTranslation(
     return true;
   }
 
-  for (float t : {matrix_->rc(0, 3), matrix_->rc(1, 3), matrix_->rc(2, 3)}) {
+  for (double t : {matrix_->rc(0, 3), matrix_->rc(1, 3), matrix_->rc(2, 3)}) {
     if (!base::IsValueInRangeForNumericType<int>(t) ||
         std::abs(std::round(t) - t) > tolerance)
       return false;
@@ -404,7 +399,7 @@ bool Transform::IsIdentityOrIntegerTranslation() const {
     return true;
   }
 
-  for (float t : {matrix_->rc(0, 3), matrix_->rc(1, 3), matrix_->rc(2, 3)}) {
+  for (double t : {matrix_->rc(0, 3), matrix_->rc(1, 3), matrix_->rc(2, 3)}) {
     if (!base::IsValueInRangeForNumericType<int>(t) || static_cast<int>(t) != t)
       return false;
   }
@@ -635,7 +630,7 @@ Vector3dF Transform::MapVector(const Vector3dF& vector) const {
                      ClampFloatGeometry(vector.y() * axis_2d_.scale().y()),
                      ClampFloatGeometry(vector.z()));
   }
-  SkScalar p[4] = {vector.x(), vector.y(), vector.z(), 0};
+  double p[4] = {vector.x(), vector.y(), vector.z(), 0};
   matrix_->mapScalars(p);
   return Vector3dF(ClampFloatGeometry(p[0]), ClampFloatGeometry(p[1]),
                    ClampFloatGeometry(p[2]));
@@ -648,11 +643,28 @@ void Transform::TransformVector4(float vector[4]) const {
                 vector[3] * axis_2d_.translation().x();
     vector[1] = vector[1] * axis_2d_.scale().y() +
                 vector[3] * axis_2d_.translation().y();
+    for (int i = 0; i < 4; i++)
+      vector[i] = ClampFloatGeometry(vector[i]);
+  } else {
+    double v[4] = {vector[0], vector[1], vector[2], vector[3]};
+    matrix_->mapScalars(v);
+    for (int i = 0; i < 4; i++)
+      vector[i] = ClampFloatGeometry(v[i]);
+  }
+}
+
+void Transform::TransformVector4(double vector[4]) const {
+  DCHECK(vector);
+  // For now the only caller doesn't need clamping.
+  // TODO(crbug.com/1359528): Revisit the clamping requirement.
+  if (LIKELY(!matrix_)) {
+    vector[0] = vector[0] * axis_2d_.scale().x() +
+                vector[3] * axis_2d_.translation().x();
+    vector[1] = vector[1] * axis_2d_.scale().y() +
+                vector[3] * axis_2d_.translation().y();
   } else {
     matrix_->mapScalars(vector);
   }
-  for (int i = 0; i < 4; i++)
-    vector[i] = ClampFloatGeometry(vector[i]);
 }
 
 absl::optional<PointF> Transform::InverseMapPoint(const PointF& point) const {
@@ -789,7 +801,7 @@ Point3F Transform::MapPointInternal(const Matrix44& xform,
                                     const Point3F& point) const {
   DCHECK(matrix_);
 
-  SkScalar p[4] = {point.x(), point.y(), point.z(), 1};
+  double p[4] = {point.x(), point.y(), point.z(), 1};
 
   xform.mapScalars(p);
 

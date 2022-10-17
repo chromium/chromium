@@ -25,8 +25,7 @@ static_assert(std::is_trivially_copyable<Matrix44>::value,
               "Matrix44 must be trivially copyable");
 #endif
 
-static inline bool eq4(const SkScalar* SK_RESTRICT a,
-                       const SkScalar* SK_RESTRICT b) {
+static inline bool eq4(const double* a, const double* b) {
   return (a[0] == b[0]) & (a[1] == b[1]) & (a[2] == b[2]) & (a[3] == b[3]);
 }
 
@@ -39,8 +38,8 @@ bool Matrix44::operator==(const Matrix44& other) const {
     return true;
   }
 
-  const SkScalar* SK_RESTRICT a = &fMat[0][0];
-  const SkScalar* SK_RESTRICT b = &other.fMat[0][0];
+  const double* a = &fMat[0][0];
+  const double* b = &other.fMat[0][0];
 
 #if 0
     for (int i = 0; i < 16; ++i) {
@@ -92,14 +91,14 @@ void Matrix44::recomputeTypeMask() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void Matrix44::getColMajor(float dst[]) const {
-  const SkScalar* src = &fMat[0][0];
+  const double* src = &fMat[0][0];
   for (int i = 0; i < 16; ++i) {
     dst[i] = src[i];
   }
 }
 
 void Matrix44::getRowMajor(float dst[]) const {
-  const SkScalar* src = &fMat[0][0];
+  const double* src = &fMat[0][0];
   for (int i = 0; i < 4; ++i) {
     dst[0] = float(src[0]);
     dst[4] = float(src[1]);
@@ -111,7 +110,7 @@ void Matrix44::getRowMajor(float dst[]) const {
 }
 
 void Matrix44::setColMajor(const float src[]) {
-  SkScalar* dst = &fMat[0][0];
+  double* dst = &fMat[0][0];
   for (int i = 0; i < 16; ++i) {
     dst[i] = src[i];
   }
@@ -120,7 +119,7 @@ void Matrix44::setColMajor(const float src[]) {
 }
 
 void Matrix44::setRowMajor(const float src[]) {
-  SkScalar* dst = &fMat[0][0];
+  double* dst = &fMat[0][0];
   for (int i = 0; i < 4; ++i) {
     dst[0] = src[0];
     dst[4] = src[1];
@@ -135,7 +134,7 @@ void Matrix44::setRowMajor(const float src[]) {
 #if BUILDFLAG(IS_MAC)
 CATransform3D Matrix44::ToCATransform3D() const {
   CATransform3D result;
-  const float* src = &fMat[0][0];
+  const double* src = &fMat[0][0];
   auto* dst = &result.m11;
   for (int i = 0; i < 16; ++i)
     dst[i] = src[i];
@@ -167,7 +166,7 @@ void Matrix44::setIdentity() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Matrix44& Matrix44::setTranslate(SkScalar dx, SkScalar dy, SkScalar dz) {
+Matrix44& Matrix44::setTranslate(double dx, double dy, double dz) {
   this->setIdentity();
 
   if (!dx && !dy && !dz) {
@@ -181,7 +180,7 @@ Matrix44& Matrix44::setTranslate(SkScalar dx, SkScalar dy, SkScalar dz) {
   return *this;
 }
 
-Matrix44& Matrix44::preTranslate(SkScalar dx, SkScalar dy, SkScalar dz) {
+Matrix44& Matrix44::preTranslate(double dx, double dy, double dz) {
   if (!dx && !dy && !dz) {
     return *this;
   }
@@ -194,7 +193,7 @@ Matrix44& Matrix44::preTranslate(SkScalar dx, SkScalar dy, SkScalar dz) {
   return *this;
 }
 
-Matrix44& Matrix44::postTranslate(SkScalar dx, SkScalar dy, SkScalar dz) {
+Matrix44& Matrix44::postTranslate(double dx, double dy, double dz) {
   if (!dx && !dy && !dz) {
     return *this;
   }
@@ -216,7 +215,7 @@ Matrix44& Matrix44::postTranslate(SkScalar dx, SkScalar dy, SkScalar dz) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Matrix44& Matrix44::setScale(SkScalar sx, SkScalar sy, SkScalar sz) {
+Matrix44& Matrix44::setScale(double sx, double sy, double sz) {
   this->setIdentity();
 
   if (1 == sx && 1 == sy && 1 == sz) {
@@ -230,7 +229,7 @@ Matrix44& Matrix44::setScale(SkScalar sx, SkScalar sy, SkScalar sz) {
   return *this;
 }
 
-Matrix44& Matrix44::preScale(SkScalar sx, SkScalar sy, SkScalar sz) {
+Matrix44& Matrix44::preScale(double sx, double sy, double sz) {
   if (1 == sx && 1 == sy && 1 == sz) {
     return *this;
   }
@@ -247,7 +246,7 @@ Matrix44& Matrix44::preScale(SkScalar sx, SkScalar sy, SkScalar sz) {
   return *this;
 }
 
-Matrix44& Matrix44::postScale(SkScalar sx, SkScalar sy, SkScalar sz) {
+Matrix44& Matrix44::postScale(double sx, double sy, double sz) {
   if (1 == sx && 1 == sy && 1 == sz) {
     return *this;
   }
@@ -263,11 +262,11 @@ Matrix44& Matrix44::postScale(SkScalar sx, SkScalar sy, SkScalar sz) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Matrix44::setRotateUnitSinCos(SkScalar x,
-                                   SkScalar y,
-                                   SkScalar z,
-                                   SkScalar sin_angle,
-                                   SkScalar cos_angle) {
+void Matrix44::setRotateUnitSinCos(double x,
+                                   double y,
+                                   double z,
+                                   double sin_angle,
+                                   double cos_angle) {
   // Use double precision for intermediate results.
   double c = cos_angle;
   double s = sin_angle;
@@ -282,28 +281,27 @@ void Matrix44::setRotateUnitSinCos(SkScalar x,
   double yzC = y * zC;
   double zxC = z * xC;
 
-  fMat[0][0] = SkDoubleToScalar(x * xC + c);
-  fMat[0][1] = SkDoubleToScalar(xyC + zs);
-  fMat[0][2] = SkDoubleToScalar(zxC - ys);
-  fMat[0][3] = SkDoubleToScalar(0);
-  fMat[1][0] = SkDoubleToScalar(xyC - zs);
-  fMat[1][1] = SkDoubleToScalar(y * yC + c);
-  fMat[1][2] = SkDoubleToScalar(yzC + xs);
-  fMat[1][3] = SkDoubleToScalar(0);
-  fMat[2][0] = SkDoubleToScalar(zxC + ys);
-  fMat[2][1] = SkDoubleToScalar(yzC - xs);
-  fMat[2][2] = SkDoubleToScalar(z * zC + c);
-  fMat[2][3] = SkDoubleToScalar(0);
-  fMat[3][0] = SkDoubleToScalar(0);
-  fMat[3][1] = SkDoubleToScalar(0);
-  fMat[3][2] = SkDoubleToScalar(0);
-  fMat[3][3] = SkDoubleToScalar(1);
+  fMat[0][0] = x * xC + c;
+  fMat[0][1] = xyC + zs;
+  fMat[0][2] = zxC - ys;
+  fMat[0][3] = 0;
+  fMat[1][0] = xyC - zs;
+  fMat[1][1] = y * yC + c;
+  fMat[1][2] = yzC + xs;
+  fMat[1][3] = 0;
+  fMat[2][0] = zxC + ys;
+  fMat[2][1] = yzC - xs;
+  fMat[2][2] = z * zC + c;
+  fMat[2][3] = 0;
+  fMat[3][0] = 0;
+  fMat[3][1] = 0;
+  fMat[3][2] = 0;
+  fMat[3][3] = 1;
 
   this->recomputeTypeMask();
 }
 
-void Matrix44::setRotateAboutXAxisSinCos(SkScalar sin_angle,
-                                         SkScalar cos_angle) {
+void Matrix44::setRotateAboutXAxisSinCos(double sin_angle, double cos_angle) {
   fMat[0][0] = 1;
   fMat[0][1] = 0;
   fMat[0][2] = 0;
@@ -324,8 +322,7 @@ void Matrix44::setRotateAboutXAxisSinCos(SkScalar sin_angle,
   this->recomputeTypeMask();
 }
 
-void Matrix44::setRotateAboutYAxisSinCos(SkScalar sin_angle,
-                                         SkScalar cos_angle) {
+void Matrix44::setRotateAboutYAxisSinCos(double sin_angle, double cos_angle) {
   fMat[0][0] = cos_angle;
   fMat[0][1] = 0;
   fMat[0][2] = -sin_angle;
@@ -346,8 +343,7 @@ void Matrix44::setRotateAboutYAxisSinCos(SkScalar sin_angle,
   this->recomputeTypeMask();
 }
 
-void Matrix44::setRotateAboutZAxisSinCos(SkScalar sin_angle,
-                                         SkScalar cos_angle) {
+void Matrix44::setRotateAboutZAxisSinCos(double sin_angle, double cos_angle) {
   fMat[0][0] = cos_angle;
   fMat[0][1] = sin_angle;
   fMat[0][2] = 0;
@@ -388,8 +384,8 @@ void Matrix44::setConcat(const Matrix44& a, const Matrix44& b) {
   }
 
   bool useStorage = (this == &a || this == &b);
-  SkScalar storage[16];
-  SkScalar* result = useStorage ? storage : &fMat[0][0];
+  double storage[16];
+  double* result = useStorage ? storage : &fMat[0][0];
 
   // Both matrices are at most scale+translate
   if (bits_isonly(a_mask | b_mask, kScale_Mask | kTranslate_Mask)) {
@@ -408,9 +404,9 @@ void Matrix44::setConcat(const Matrix44& a, const Matrix44& b) {
       for (int i = 0; i < 4; i++) {
         double value = 0;
         for (int k = 0; k < 4; k++) {
-          value += double(a.fMat[k][i]) * b.fMat[j][k];
+          value += a.fMat[k][i] * b.fMat[j][k];
         }
-        *result++ = SkScalar(value);
+        *result++ = value;
       }
     }
   }
@@ -423,10 +419,6 @@ void Matrix44::setConcat(const Matrix44& a, const Matrix44& b) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/** We always perform the calculation in doubles, to avoid prematurely losing
-    precision along the way. This relies on the compiler automatically
-    promoting our SkScalar values to double (if needed).
- */
 double Matrix44::determinant() const {
   if (this->isIdentity()) {
     return 1;
@@ -472,7 +464,7 @@ double Matrix44::determinant() const {
 ///////////////////////////////////////////////////////////////////////////////
 
 static bool is_matrix_finite(const Matrix44& matrix) {
-  SkScalar accumulator = 0;
+  double accumulator = 0;
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
       accumulator *= matrix.rc(row, col);
@@ -508,24 +500,24 @@ bool Matrix44::invert(Matrix44* storage) const {
     double invYScale = 1 / fMat[1][1];
     double invZScale = 1 / fMat[2][2];
 
-    inverse->fMat[0][0] = SkDoubleToScalar(invXScale);
+    inverse->fMat[0][0] = invXScale;
     inverse->fMat[0][1] = 0;
     inverse->fMat[0][2] = 0;
     inverse->fMat[0][3] = 0;
 
     inverse->fMat[1][0] = 0;
-    inverse->fMat[1][1] = SkDoubleToScalar(invYScale);
+    inverse->fMat[1][1] = invYScale;
     inverse->fMat[1][2] = 0;
     inverse->fMat[1][3] = 0;
 
     inverse->fMat[2][0] = 0;
     inverse->fMat[2][1] = 0;
-    inverse->fMat[2][2] = SkDoubleToScalar(invZScale);
+    inverse->fMat[2][2] = invZScale;
     inverse->fMat[2][3] = 0;
 
-    inverse->fMat[3][0] = SkDoubleToScalar(-fMat[3][0] * invXScale);
-    inverse->fMat[3][1] = SkDoubleToScalar(-fMat[3][1] * invYScale);
-    inverse->fMat[3][2] = SkDoubleToScalar(-fMat[3][2] * invZScale);
+    inverse->fMat[3][0] = -fMat[3][0] * invXScale;
+    inverse->fMat[3][1] = -fMat[3][1] * invYScale;
+    inverse->fMat[3][2] = -fMat[3][2] * invZScale;
     inverse->fMat[3][3] = 1;
 
     inverse->setTypeMask(this->getType());
@@ -598,21 +590,21 @@ bool Matrix44::invert(Matrix44* storage) const {
     b10 *= invdet;
     b11 *= invdet;
 
-    inverse->fMat[0][0] = SkDoubleToScalar(a11 * b11 - a12 * b10);
-    inverse->fMat[0][1] = SkDoubleToScalar(a02 * b10 - a01 * b11);
-    inverse->fMat[0][2] = SkDoubleToScalar(b03);
+    inverse->fMat[0][0] = a11 * b11 - a12 * b10;
+    inverse->fMat[0][1] = a02 * b10 - a01 * b11;
+    inverse->fMat[0][2] = b03;
     inverse->fMat[0][3] = 0;
-    inverse->fMat[1][0] = SkDoubleToScalar(a12 * b08 - a10 * b11);
-    inverse->fMat[1][1] = SkDoubleToScalar(a00 * b11 - a02 * b08);
-    inverse->fMat[1][2] = SkDoubleToScalar(-b01);
+    inverse->fMat[1][0] = a12 * b08 - a10 * b11;
+    inverse->fMat[1][1] = a00 * b11 - a02 * b08;
+    inverse->fMat[1][2] = -b01;
     inverse->fMat[1][3] = 0;
-    inverse->fMat[2][0] = SkDoubleToScalar(a10 * b10 - a11 * b08);
-    inverse->fMat[2][1] = SkDoubleToScalar(a01 * b08 - a00 * b10);
-    inverse->fMat[2][2] = SkDoubleToScalar(b00);
+    inverse->fMat[2][0] = a10 * b10 - a11 * b08;
+    inverse->fMat[2][1] = a01 * b08 - a00 * b10;
+    inverse->fMat[2][2] = b00;
     inverse->fMat[2][3] = 0;
-    inverse->fMat[3][0] = SkDoubleToScalar(a11 * b07 - a10 * b09 - a12 * b06);
-    inverse->fMat[3][1] = SkDoubleToScalar(a00 * b09 - a01 * b07 + a02 * b06);
-    inverse->fMat[3][2] = SkDoubleToScalar(a31 * b01 - a30 * b03 - a32 * b00);
+    inverse->fMat[3][0] = a11 * b07 - a10 * b09 - a12 * b06;
+    inverse->fMat[3][1] = a00 * b09 - a01 * b07 + a02 * b06;
+    inverse->fMat[3][2] = a31 * b01 - a30 * b03 - a32 * b00;
     inverse->fMat[3][3] = 1;
 
     inverse->setTypeMask(this->getType());
@@ -663,22 +655,22 @@ bool Matrix44::invert(Matrix44* storage) const {
   b10 *= invdet;
   b11 *= invdet;
 
-  inverse->fMat[0][0] = SkDoubleToScalar(a11 * b11 - a12 * b10 + a13 * b09);
-  inverse->fMat[0][1] = SkDoubleToScalar(a02 * b10 - a01 * b11 - a03 * b09);
-  inverse->fMat[0][2] = SkDoubleToScalar(a31 * b05 - a32 * b04 + a33 * b03);
-  inverse->fMat[0][3] = SkDoubleToScalar(a22 * b04 - a21 * b05 - a23 * b03);
-  inverse->fMat[1][0] = SkDoubleToScalar(a12 * b08 - a10 * b11 - a13 * b07);
-  inverse->fMat[1][1] = SkDoubleToScalar(a00 * b11 - a02 * b08 + a03 * b07);
-  inverse->fMat[1][2] = SkDoubleToScalar(a32 * b02 - a30 * b05 - a33 * b01);
-  inverse->fMat[1][3] = SkDoubleToScalar(a20 * b05 - a22 * b02 + a23 * b01);
-  inverse->fMat[2][0] = SkDoubleToScalar(a10 * b10 - a11 * b08 + a13 * b06);
-  inverse->fMat[2][1] = SkDoubleToScalar(a01 * b08 - a00 * b10 - a03 * b06);
-  inverse->fMat[2][2] = SkDoubleToScalar(a30 * b04 - a31 * b02 + a33 * b00);
-  inverse->fMat[2][3] = SkDoubleToScalar(a21 * b02 - a20 * b04 - a23 * b00);
-  inverse->fMat[3][0] = SkDoubleToScalar(a11 * b07 - a10 * b09 - a12 * b06);
-  inverse->fMat[3][1] = SkDoubleToScalar(a00 * b09 - a01 * b07 + a02 * b06);
-  inverse->fMat[3][2] = SkDoubleToScalar(a31 * b01 - a30 * b03 - a32 * b00);
-  inverse->fMat[3][3] = SkDoubleToScalar(a20 * b03 - a21 * b01 + a22 * b00);
+  inverse->fMat[0][0] = a11 * b11 - a12 * b10 + a13 * b09;
+  inverse->fMat[0][1] = a02 * b10 - a01 * b11 - a03 * b09;
+  inverse->fMat[0][2] = a31 * b05 - a32 * b04 + a33 * b03;
+  inverse->fMat[0][3] = a22 * b04 - a21 * b05 - a23 * b03;
+  inverse->fMat[1][0] = a12 * b08 - a10 * b11 - a13 * b07;
+  inverse->fMat[1][1] = a00 * b11 - a02 * b08 + a03 * b07;
+  inverse->fMat[1][2] = a32 * b02 - a30 * b05 - a33 * b01;
+  inverse->fMat[1][3] = a20 * b05 - a22 * b02 + a23 * b01;
+  inverse->fMat[2][0] = a10 * b10 - a11 * b08 + a13 * b06;
+  inverse->fMat[2][1] = a01 * b08 - a00 * b10 - a03 * b06;
+  inverse->fMat[2][2] = a30 * b04 - a31 * b02 + a33 * b00;
+  inverse->fMat[2][3] = a21 * b02 - a20 * b04 - a23 * b00;
+  inverse->fMat[3][0] = a11 * b07 - a10 * b09 - a12 * b06;
+  inverse->fMat[3][1] = a00 * b09 - a01 * b07 + a02 * b06;
+  inverse->fMat[3][2] = a31 * b01 - a30 * b03 - a32 * b00;
+  inverse->fMat[3][3] = a20 * b03 - a21 * b01 + a22 * b00;
   inverse->setTypeMask(this->getType());
   if (!is_matrix_finite(*inverse)) {
     return false;
@@ -706,12 +698,12 @@ void Matrix44::transpose() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Matrix44::mapScalars(const SkScalar src[4], SkScalar dst[4]) const {
-  SkScalar storage[4];
-  SkScalar* result = (src == dst) ? storage : dst;
+void Matrix44::mapScalars(const double src[4], double dst[4]) const {
+  double storage[4];
+  double* result = (src == dst) ? storage : dst;
 
   for (int i = 0; i < 4; i++) {
-    SkScalar value = 0;
+    double value = 0;
     for (int j = 0; j < 4; j++) {
       value += fMat[j][i] * src[j];
     }

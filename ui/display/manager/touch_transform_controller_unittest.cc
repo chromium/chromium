@@ -871,17 +871,33 @@ TEST_F(TouchTransformControllerTest, PillarBoxingUserTouchCalibration) {
   // [0, ~137] ---> < 0
   // [~137, ~1782] ---> [0, 1920)
   // [~1782, 1920] ---> >= 1920
+  x = 136.0;
+  y = 0.0;
+  device_manager->ApplyTouchTransformer(kTouchId1, &x, &y);
+  EXPECT_LT(-1.0f, x);
+  EXPECT_LT(x, 0.0f);
+  EXPECT_NEAR(0.0f, y, 0.01f);
+
   x = 137.0;
   y = 0.0;
   device_manager->ApplyTouchTransformer(kTouchId1, &x, &y);
-  EXPECT_NEAR(0, x, 0.5);
-  EXPECT_NEAR(0, y, 0.5);
+  EXPECT_LT(0.0f, x);
+  EXPECT_LT(x, 1.0f);
+  EXPECT_NEAR(0.0f, y, 0.01f);
 
   x = 1782.0;
   y = 0.0;
   device_manager->ApplyTouchTransformer(kTouchId1, &x, &y);
-  EXPECT_NEAR(1920, x, 0.5);
-  EXPECT_NEAR(0, y, 0.5);
+  EXPECT_LT(1919.0f, x);
+  EXPECT_LT(x, 1920.0f);
+  EXPECT_NEAR(0.0f, y, 0.01f);
+
+  x = 1783.0;
+  y = 0.0;
+  device_manager->ApplyTouchTransformer(kTouchId1, &x, &y);
+  EXPECT_LT(1920.0f, x);
+  EXPECT_LT(x, 1921.0f);
+  EXPECT_NEAR(0.0f, y, 0.01f);
 }
 
 }  // namespace test

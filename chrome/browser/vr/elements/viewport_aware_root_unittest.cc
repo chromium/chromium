@@ -36,8 +36,8 @@ bool MatricesAreNearlyEqual(const gfx::Transform& lhs,
                             const gfx::Transform& rhs) {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      if (!base::IsApproximatelyEqual(lhs.rc(row, col), rhs.rc(row, col),
-                                      kEpsilon)) {
+      if (!base::IsApproximatelyEqual<double>(lhs.rc(row, col),
+                                              rhs.rc(row, col), kEpsilon)) {
         return false;
       }
     }
