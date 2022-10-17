@@ -27,13 +27,6 @@ namespace {
 // window has been dragged.
 constexpr int kDistanceFromEdge = 8;
 
-// A window has to be dragged toward the direction of the edge of the screen for
-// a minimum of `kMinDragDistance` to a point within `kScreenEdgeInsetForSnap`
-// of the edge of the screen, or dragged inside `kDistanceEdge` from edge to be
-// snapped.
-constexpr int kMinDragDistance = 96;
-constexpr int kScreenEdgeInsetForSnap = 48;
-
 // The minimum distance that will be considered as a drag event.
 constexpr float kMinimumDragDistance = 5.f;
 

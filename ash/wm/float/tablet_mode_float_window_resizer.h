@@ -13,6 +13,17 @@ namespace ash {
 class SplitViewDragIndicators;
 class WindowState;
 
+// TODO(crbug.com/1351562): The following constants are the same the drag window
+// from shelf feature. They need to be changed for this feature, or moved to a
+// shared location.
+
+// A window has to be dragged toward the direction of the edge of the screen for
+// a minimum of `kMinDragDistance` to a point within `kScreenEdgeInsetForSnap`
+// of the edge of the screen, or dragged inside `kDistanceEdge` from edge to be
+// snapped.
+constexpr int kMinDragDistance = 96;
+constexpr int kScreenEdgeInsetForSnap = 48;
+
 // WindowResizer implementation for floated windows in tablet mode.
 // TODO(crbug.com/1338715): This resizer adds the most basic dragging. It needs
 // to stick to edges and magnetize to corners on release.
