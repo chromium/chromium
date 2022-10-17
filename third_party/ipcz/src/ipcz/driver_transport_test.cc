@@ -166,5 +166,43 @@ TEST_F(DriverTransportTest, Transmit) {
   EXPECT_CALL(driver(), Close(kTransport0, _, _));
 }
 
+TEST_F(DriverTransportTest, SerializationFailure) {
+  // Verifies that if a serializable object fails to serialize, it's properly
+  // destroyed by the transport and no transmission occurs.
+  constexpr IpczDriverHandle kTransport0 = 5;
+  constexpr IpczDriverHandle kTransport1 = 42;
+  auto [a, b] = CreateTransportPair(kTransport0, kTransport1);
+
+  constexpr IpczDriverHandle kFakeObject = 12345678;
+  test::msg::MessageWithDriverObject message;
+  message.params().object =
+      message.AppendDriverObject(DriverObject(test::kMockDriver, kFakeObject));
+
+  EXPECT_CALL(driver(), Serialize(kFakeObject, kTransport0, _, _, _, _, _, _))
+      .WillRepeatedly([&](IpczDriverHandle, IpczDriverHandle, uint32_t,
+                          const void*, void* data, size_t* num_bytes,
+                          IpczDriverHandle* handles, size_t* num_handles) {
+        if (!data && !handles) {
+          // Return valid outputs when ipcz is sizing the object.
+          if (num_bytes && num_handles) {
+            *num_bytes = 1;
+            *num_handles = 1;
+          }
+          return IPCZ_RESULT_RESOURCE_EXHAUSTED;
+        }
+
+        // Return an error when serializing.
+        return IPCZ_RESULT_FAILED_PRECONDITION;
+      });
+
+  // The object handle should be closed upon transmission failure.
+  EXPECT_CALL(driver(), Close(kFakeObject, _, _)).Times(1);
+
+  a->Transmit(message);
+
+  EXPECT_CALL(driver(), Close(kTransport1, _, _));
+  EXPECT_CALL(driver(), Close(kTransport0, _, _));
+}
+
 }  // namespace
 }  // namespace ipcz
