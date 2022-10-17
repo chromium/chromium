@@ -171,6 +171,12 @@ const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",
 const base::Feature kNtpShortcuts{"NtpShortcuts",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::FeatureParam<std::string> kNtpOgbButtonSelectorParam{
+    &kNtpRemoveScrim, "NtpOgbButtonSelectorParam", ".gb_A"};
+
+const base::FeatureParam<std::string> kNtpOgbUnprotectedTextSelectorParam{
+    &kNtpRemoveScrim, "NtpOgbUnprotectedTextSelectorParam", ".gb_d"};
+
 const char kNtpModulesEligibleForHappinessTrackingSurveyParam[] =
     "NtpModulesEligibleForHappinessTrackingSurveyParam";
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
