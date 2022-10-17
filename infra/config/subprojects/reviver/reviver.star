@@ -5,6 +5,7 @@
 load("//lib/builders.star", "builder", "cpu", "defaults", "free_space", "os")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/polymorphic.star", "polymorphic")
 
 luci.bucket(
     name = "reviver",
@@ -42,64 +43,30 @@ defaults.set(
     omit_python2 = False,
 )
 
-def target_builder(*, name):
-    return {
-        "builder_id": {
-            "project": "chromium",
-            "bucket": "ci",
-            "builder": name,
-        },
-    }
-
-builder(
+polymorphic.launcher(
     name = "android-launcher",
-    executable = "recipe:chromium_polymorphic/launcher",
+    runner = "reviver/runner",
+    target_builders = [
+        "ci/android-nougat-x86-rel",
+        "ci/android-12-x64-rel",
+    ],
     os = os.LINUX_DEFAULT,
-    pool = "luci.chromium.ci",
-    properties = {
-        "runner_builder": {
-            "project": "chromium",
-            "bucket": "reviver",
-            "builder": "runner",
-        },
-        "target_builders": [
-            target_builder(
-                name = "android-nougat-x86-rel",
-            ),
-            target_builder(
-                name = "android-12-x64-rel",
-            ),
-        ],
-    },
+    pool = ci.DEFAULT_POOL,
     # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
     schedule = "0 1,4,7,10,13 * * *",
 )
 
 # A coordinator of slightly aggressive scheduling with effectively unlimited
 # test bot capacity for fuchsia.
-builder(
+polymorphic.launcher(
     name = "fuchsia-coordinator",
-    executable = "recipe:chromium_polymorphic/launcher",
+    runner = "reviver/runner",
+    target_builders = [
+        "ci/fuchsia-fyi-arm64-dbg",
+        "ci/fuchsia-fyi-x64-asan",
+    ],
     os = os.LINUX_DEFAULT,
-    pool = "luci.chromium.ci",
-    properties = {
-        "runner_builder": {
-            "project": "chromium",
-            "bucket": "reviver",
-            "builder": "runner",
-        },
-        "target_builders": [
-            target_builder(
-                name = "fuchsia-fyi-x64-rel",
-            ),
-            target_builder(
-                name = "fuchsia-fyi-arm64-dbg",
-            ),
-            target_builder(
-                name = "fuchsia-fyi-x64-asan",
-            ),
-        ],
-    },
+    pool = ci.DEFAULT_POOL,
     # Avoid peak hours.
     schedule = "0 1,3,5,7,9,11,13 * * *",
 )
