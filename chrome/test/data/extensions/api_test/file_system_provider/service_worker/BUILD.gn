@@ -35,6 +35,8 @@ js_library("service_worker") {
     "get_metadata/sw.js",
     "get_metadata/test.js",
     "helpers.js",
+    "mount/sw.js",
+    "mount/test.js",
     "move_entry/sw.js",
     "move_entry/test.js",
     "provider.js",

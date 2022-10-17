@@ -408,6 +408,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, GetMetadata) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Mount) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/mount",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, MoveEntry) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/move_entry",
                                {.extension_url = "test.html"},

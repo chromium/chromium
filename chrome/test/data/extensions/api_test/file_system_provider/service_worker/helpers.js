@@ -21,6 +21,22 @@ export async function promisifyWithLastError(fn, ...args) {
 }
 
 /**
+ * Catch error thrown in an async function.
+ *
+ * @param {!Promise<?>} promise
+ * @returns {?Object} thrown error, or null if the function returns
+ *    successfully. Function's return value is discarded.
+ */
+export async function catchError(promise) {
+  try {
+    await promise;
+    return null;
+  } catch (e) {
+    return e;
+  }
+}
+
+/**
  * Gets volume information for the provided file system.
  *
  * @param {string} fileSystemId Id of the provided file system.
