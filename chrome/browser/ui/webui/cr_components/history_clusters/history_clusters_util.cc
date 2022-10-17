@@ -38,6 +38,7 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
 
   static constexpr webui::LocalizedString kHistoryClustersStrings[] = {
       {"actionMenuDescription", IDS_HISTORY_CLUSTERS_ACTION_MENU_DESCRIPTION},
+      {"bookmarked", IDS_HISTORY_ENTRY_BOOKMARKED},
       {"cancel", IDS_CANCEL},
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"deleteConfirm",
