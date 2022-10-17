@@ -290,6 +290,7 @@ message TextInputViewProto {
     CREDIT_CARD = 7;
     NUMERIC = 8;
     PASSWORD = 9;
+    NUMERIC_PIN = 10;
   }
 
   // The hint to display when the input is empty.
