@@ -107,6 +107,9 @@ function addPromptListener(action) {
         e.preventDefault();
         setTimeout(() => e.prompt(), 0);
         break;
+      case Action.CANCEL_PROMPT:
+        e.preventDefault();
+        break;
       case Action.CANCEL_PROMPT_AND_NAVIGATE:
         e.preventDefault();
         // Navigate the window to trigger cancellation in the renderer.

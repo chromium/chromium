@@ -151,7 +151,8 @@ void TestAppBannerManagerDesktop::UpdateState(AppBannerManager::State state) {
   AppBannerManager::UpdateState(state);
 
   if (state == AppBannerManager::State::PENDING_ENGAGEMENT ||
-      state == AppBannerManager::State::PENDING_PROMPT ||
+      state == AppBannerManager::State::PENDING_PROMPT_CANCELED ||
+      state == AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED ||
       state == AppBannerManager::State::COMPLETE) {
     OnFinished();
   }
