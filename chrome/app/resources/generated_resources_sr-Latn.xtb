@@ -2965,7 +2965,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3788331399335602504">ovi fajlovi</translation>
 <translation id="3788401245189148511">Mogli bi da:</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
-<translation id="3790417903123637354">Nešto nije u redu. Probajte ponovo kasnije</translation>
+<translation id="3790417903123637354">Došlo je do greške. Probajte ponovo kasnije</translation>
 <translation id="379082410132524484">Kartica je istekla</translation>
 <translation id="3792973596468118484">Dodataka: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome nije pronašao štetan softver na računaru • Provereno pre 1 dan}one{Chrome nije pronašao štetan softver na računaru • Provereno pre {NUM_DAYS} dan}few{Chrome nije pronašao štetan softver na računaru • Provereno pre {NUM_DAYS} dana}other{Chrome nije pronašao štetan softver na računaru • Provereno pre {NUM_DAYS} dana}}</translation>
@@ -6046,7 +6046,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6795371939514004514">Automatsko skeniranje vam omogućava da se automatski krećete kroz stavke na ekranu. Kada je stavka istaknuta, pritisnite Izaberi da biste je aktivirali.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Renderuj</translation>
-<translation id="6797493596609571643">Ups, nešto nije u redu.</translation>
+<translation id="6797493596609571643">Ups, došlo je do greške.</translation>
 <translation id="6798420440063423019">Bezbednosni ključ je zaključan jer ste previše puta uneli pogrešan PIN. Treba da resetujete bezbednosni ključ.</translation>
 <translation id="679845623837196966">Prikaži listu za čitanje</translation>
 <translation id="6798578729981748444">Da biste dovršili uvoz, zatvorite sve Firefox prozore.</translation>
@@ -6898,7 +6898,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7632948528260659758">Ažuriranje sledećih kiosk aplikacija nije uspelo:</translation>
 <translation id="7633724038415831385">Ovo je jedini trenutak kada ćete čekati na ažuriranje. Na Chromebook-u se softver ažurira u pozadini.</translation>
 <translation id="7634280112532283638">Umanjenje nepoželjnog sadržaja i prevara</translation>
-<translation id="7634566076839829401">Nešto nije u redu. Probajte ponovo.</translation>
+<translation id="7634566076839829401">Došlo je do greške. Probajte ponovo.</translation>
 <translation id="7635048370253485243">Zakačio je administrator</translation>
 <translation id="7636919061354591437">Instaliraj na ovom uređaju</translation>
 <translation id="7637253234491814483">Dodirnite senzor za otisak prsta u gornjem desnom uglu tastature, pored dugmeta za uključivanje. Podaci o otisku prsta se bezbedno čuvaju isključivo na uređaju <ph name="DEVICE_TYPE" />.</translation>

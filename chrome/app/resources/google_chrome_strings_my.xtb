@@ -19,7 +19,7 @@
 <translation id="1302523850133262269">​​ကျေးဇူးပြုပြီး Chrome က စနစ်၏ နောက်ဆုံး မွမ်းမံမှုများကို တပ်ဆင်ပေးနေတာကို စောင့်ပါ။</translation>
 <translation id="1335640173511558774">ဤစက်ကိုမသုံးမီ အောက်ပါ ‘ဝန်ဆောင်မှုစည်းမျဉ်းများ’ ကို ဖတ်ရှုပြီး လက်ခံရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ ဤစည်းမျဉ်းများက ‘Google ChromeOS Flex စည်းမျဉ်းများ’ ကို ထပ်ထည့်ခြင်း၊ မွမ်းမံခြင်း သို့မဟုတ် ကန့်သတ်ခြင်း မရှိပါ။</translation>
 <translation id="1363996462118479832">လက်မှတ်ထိုးဝင်စဉ် အမှားဖြစ်သွားသောကြောင့် ChromeOS က သင့်ဒေတာကို စင့်ခ်လုပ်၍မရပါ။</translation>
-<translation id="137466361146087520">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲ</translation>
+<translation id="137466361146087520">Google Chrome စမ်းသပ်</translation>
 <translation id="1399397803214730675">ဒီကွန်ပျူတာ ထဲမှာ ပိုပြီး နောက်ကျသော Google Chrome  ဗားရှင်း ရှိနေပါပြီ။ ဆော့ဝဲ အလုပ်မလုပ်လျှင်၊ ကျေးဇူးပြုပြီး Google Chrome ကို ဖြုတ်လိုက်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="139993653570221430">Chrome ဆက်တင်များတွင် အချိန်မရွေး စိတ်အလိုကျ ပြောင်းလဲနိုင်သည်။ လက်ရှိကြော်ငြာ ပြသသည့်နည်းလမ်းနှင့်တွဲ၍ စမ်းသပ်မှုများကို ပြုလုပ်သဖြင့် ပြောင်းလဲမှုများကို ချက်ချင်းမြင်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="1434626383986940139">Chrome ၏ Canary စမ်းသပ်အက်ပ်များ</translation>
@@ -49,7 +49,7 @@
 <translation id="1812689907177901597">၎င်းကိုပိတ်ခြင်းဖြင့် Chrome တွင် လက်မှတ်ထိုးမဝင်ဘဲ Gmail ကဲ့သို့ Google ဝဘ်ဆိုက်များသို့ လက်မှတ်ထိုးဝင်နိုင်ပါသည်</translation>
 <translation id="1860536484129686729">ဤဝဘ်ဆိုက်အတွက် Chrome သည် သင်၏ကင်မရာကို အသုံးပြုခွင့်ရရန် လိုအပ်ပါသည်</translation>
 <translation id="1873233029667955273">Google Chrome သည် သင်၏ မူရင်းဘရောင်ဇာ မဟုတ်ပါ</translation>
-<translation id="1874309113135274312">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲ (mDNS-In)</translation>
+<translation id="1874309113135274312">Google Chrome စမ်းသပ် (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome မှာ ဟောင်းသွားပြီ</translation>
 <translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>
 <translation id="1952239763774043237">နောက်ပိုင်းထွက်မည့် Google Chrome အပ်ဒိတ်များ ရယူရန် macOS 10.13 နှင့်အထက် လိုအပ်ပါမည်။ ဤကွန်ပျူတာက macOS 10.12 အသုံးပြုနေသည်။</translation>
@@ -282,7 +282,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6785872064505734160">Chrome ရှိ Google Assistant က ဝဘ်ဆိုက်များတွင် သင့်အတွက် အလိုအလျောက် ဖြည့်ပေးနိုင်သည်</translation>
 <translation id="683440813066116847">Google Chrome ကိန္နရီ အတွက် mDNS သွားလာမှု ခွင့်ပြုရေး အဝင် စည်းကမ်းချက်</translation>
 <translation id="6881299373831449287">Chrome ကို အပ်ဒိတ်လုပ်နေသည်</translation>
-<translation id="6885412569789873916">Chrome စမ်းသပ်ဆော့ဖ်ဝဲ အက်ပ်များ</translation>
+<translation id="6885412569789873916">Chrome စမ်းသပ် အက်ပ်များ</translation>
 <translation id="6933858244219479645">ChromeOS စနစ်</translation>
 <translation id="6943584222992551122">ဤပုဂ္ဂိုလ်၏ ကြည့်ရှုမှုဒေတာများကို ဤကိရိယာမှနေ၍ ဖျက်လိုက်ပါမည်။ ဒေတာကို ပြန်လည်ရယူရန် <ph name="USER_EMAIL" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="6967962315388095737">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲက mDNS အသွားအလာကို ခွင့်ပြုပေးနိုင်ရန်အတွက် ချမှတ်ထားသော အတွင်းစည်းမျဉ်း။</translation>
