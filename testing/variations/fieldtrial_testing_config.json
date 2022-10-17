@@ -8509,42 +8509,6 @@
             ]
         }
     ],
-    "Prerender2Desktop": [
-        {
-            "platforms": [
-                "windows",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledPrerenderSpecRulesAndDUI_20220913",
-                    "enable_features": [
-                        "OmniboxTriggerForPrerender2",
-                        "Prerender2"
-                    ],
-                    "disable_features": [
-                        "OmniboxTriggerForNoStatePrefetch",
-                        "SupportSearchSuggestionForPrerender2"
-                    ]
-                },
-                {
-                    "name": "EnabledPrerenderSpecRules_20220913",
-                    "enable_features": [
-                        "OmniboxTriggerForNoStatePrefetch",
-                        "Prerender2"
-                    ],
-                    "disable_features": [
-                        "OmniboxTriggerForPrerender2",
-                        "SupportSearchSuggestionForPrerender2"
-                    ]
-                }
-            ]
-        }
-    ],
     "PriceDropNtpIPH": [
         {
             "platforms": [
