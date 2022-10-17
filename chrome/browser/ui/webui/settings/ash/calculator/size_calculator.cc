@@ -51,6 +51,27 @@ void GetFreeDiskSpaceBlocking(const base::FilePath& mount_path,
     *available_bytes = size;
 }
 
+// Computes the size of My Files and Play files.
+int64_t ComputeLocalFilesSize(const base::FilePath& my_files_path,
+                              const base::FilePath& android_files_path) {
+  int64_t size = 0;
+
+  // Compute directory size of My Files.
+  size += base::ComputeDirectorySize(my_files_path);
+
+  // Compute directory size of Play Files.
+  size += base::ComputeDirectorySize(android_files_path);
+
+  // Remove size of Download. If Android is enabled, the size of the Download
+  // folder is counted in both My Files and Play files. If Android is disabled,
+  // the Download folder doesn't exist and the returned size is 0.
+  const base::FilePath download_files_path =
+      android_files_path.AppendASCII("Download");
+  size -= base::ComputeDirectorySize(download_files_path);
+
+  return size;
+}
+
 }  // namespace
 
 SizeCalculator::SizeCalculator(const CalculationType& calculation_type)
@@ -166,31 +187,9 @@ void MyFilesSizeCalculator::PerformCalculation() {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&MyFilesSizeCalculator::ComputeLocalFilesSize,
-                     base::Unretained(this), my_files_path, android_files_path),
+      base::BindOnce(&ComputeLocalFilesSize, my_files_path, android_files_path),
       base::BindOnce(&MyFilesSizeCalculator::OnGetMyFilesSize,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-int64_t MyFilesSizeCalculator::ComputeLocalFilesSize(
-    const base::FilePath& my_files_path,
-    const base::FilePath& android_files_path) {
-  int64_t size = 0;
-
-  // Compute directory size of My Files.
-  size += base::ComputeDirectorySize(my_files_path);
-
-  // Compute directory size of Play Files.
-  size += base::ComputeDirectorySize(android_files_path);
-
-  // Remove size of Download. If Android is enabled, the size of the Download
-  // folder is counted in both My Files and Play files. If Android is disabled,
-  // the Download folder doesn't exist and the returned size is 0.
-  const base::FilePath download_files_path =
-      android_files_path.AppendASCII("Download");
-  size -= base::ComputeDirectorySize(download_files_path);
-
-  return size;
 }
 
 void MyFilesSizeCalculator::OnGetMyFilesSize(int64_t total_bytes) {

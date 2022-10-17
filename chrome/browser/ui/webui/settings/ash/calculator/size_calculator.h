@@ -150,10 +150,6 @@ class MyFilesSizeCalculator : public SizeCalculator {
   // SizeCalculator:
   void PerformCalculation() override;
 
-  // Computes the size of My Files and Play files.
-  int64_t ComputeLocalFilesSize(const base::FilePath& my_files_path,
-                                const base::FilePath& android_files_path);
-
   // Updates the size of My Files and Play files.
   void OnGetMyFilesSize(int64_t total_bytes);
 
