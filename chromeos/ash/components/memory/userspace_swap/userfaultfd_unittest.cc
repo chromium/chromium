@@ -104,9 +104,13 @@ const size_t kPageSize = base::GetPageSize();
 class UserfaultFDTest : public testing::Test {
  public:
   void SetUp() override {
-    // We skip these tests if the kernel does not support userfaultfd.
+    // We skip these tests if the kernel does not support userfaultfd
+    // or when we have insufficient permissions.
     if (!UserfaultFD::KernelSupportsUserfaultFD()) {
       GTEST_SKIP() << "Skipping test: no userfaultfd(2) support.";
+    }
+    if (!CreateUffd() && errno == EPERM) {
+      GTEST_SKIP() << "Skipping test: userfaultfd(2) not permitted.";
     }
   }
 
