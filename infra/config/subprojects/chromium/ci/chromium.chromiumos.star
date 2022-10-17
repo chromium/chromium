@@ -153,6 +153,7 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "chromeos",
+                "checkout_lacros_sdk",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -410,6 +411,7 @@ ci.builder(
             apply_configs = [
                 "arm",
                 "chromeos",
+                "checkout_lacros_sdk",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -422,6 +424,7 @@ ci.builder(
             target_bits = 32,
             target_cros_boards = [
                 "kevin",
+                "arm-generic",
             ],
             target_platform = builder_config.target_platform.CHROMEOS,
         ),

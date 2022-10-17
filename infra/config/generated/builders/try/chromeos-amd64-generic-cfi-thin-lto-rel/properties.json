@@ -28,7 +28,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos"
+                  "chromeos",
+                  "checkout_lacros_sdk"
                 ],
                 "config": "chromium"
               }

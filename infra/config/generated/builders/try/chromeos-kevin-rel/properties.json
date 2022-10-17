@@ -22,14 +22,16 @@
                 "target_arch": "arm",
                 "target_bits": 32,
                 "target_cros_boards": [
-                  "kevin"
+                  "kevin",
+                  "arm-generic"
                 ],
                 "target_platform": "chromeos"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
                   "arm",
-                  "chromeos"
+                  "chromeos",
+                  "checkout_lacros_sdk"
                 ],
                 "config": "chromium"
               }
