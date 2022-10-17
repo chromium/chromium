@@ -251,13 +251,6 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
     const base::FilePath& local_file_path,
     const std::string& remote_golden_image_name,
     const SkiaGoldMatchingAlgorithm* algorithm) const {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kBypassSkiaGoldFunctionality)) {
-    LOG(WARNING) << "Bypassing Skia Gold comparison due to "
-                 << "--bypass-skia-gold-functionality being present.";
-    return true;
-  }
-
   // Copy the png file to another place for local debugging.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kPngFilePathDebugging)) {
@@ -277,6 +270,13 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
       filepath = path.AppendASCII(remote_golden_image_name);
     }
     base::CopyFile(local_file_path, filepath);
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kBypassSkiaGoldFunctionality)) {
+    LOG(WARNING) << "Bypassing Skia Gold comparison due to "
+                 << "--bypass-skia-gold-functionality being present.";
+    return true;
   }
 
   base::ScopedAllowBlockingForTesting allow_blocking;
