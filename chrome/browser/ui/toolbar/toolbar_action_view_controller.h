@@ -62,35 +62,36 @@ class ToolbarActionViewController {
     kMaxValue = kRequestAccessButton,
   };
 
-  // Site access state for the toolbar action view's hover card.
-  // TODO(emiliapaz): Change the enum name to reflect "site acesss" state, or
-  // bundle both enums in one struct.
-  enum class HoverCardState {
-    // All extensions are allowed on the current site by the user.
-    kAllExtensionsAllowed,
+  // State for the toolbar action view's hover card.
+  struct HoverCardState {
+    enum class SiteAccess {
+      // All extensions are allowed on the current site by the user.
+      kAllExtensionsAllowed,
 
-    // All extensions are blocked on the current site by the user.
-    kAllExtensionsBlocked,
+      // All extensions are blocked on the current site by the user.
+      kAllExtensionsBlocked,
 
-    // The extension has access to the current site.
-    kExtensionHasAccess,
+      // The extension has access to the current site.
+      kExtensionHasAccess,
 
-    // The extension requests access to the current site.
-    kExtensionRequestsAccess,
+      // The extension requests access to the current site.
+      kExtensionRequestsAccess,
 
-    // The extension does not want access to the current site.
-    kExtensionDoesNotWantAccess,
-  };
+      // The extension does not want access to the current site.
+      kExtensionDoesNotWantAccess,
+    };
 
-  // Policy state for the toolbar action view's hover card.
-  enum class HoverCardPolicyState {
-    kNone,
+    enum class AdminPolicy {
+      kNone,
+      // Extension is force pinned by administrator.
+      kPinnedByAdmin,
 
-    // Extension is force pinned by administrator.
-    kPinnedByAdmin,
+      // Extension if force installed by administrator.
+      kInstalledByAdmin,
+    };
 
-    // Extension if force installed by administrator.
-    kInstalledByAdmin
+    SiteAccess site_access;
+    AdminPolicy policy;
   };
 
   virtual ~ToolbarActionViewController() = default;
@@ -123,8 +124,6 @@ class ToolbarActionViewController {
   // Returns the hover card state to use for the given `web_contents`.
   virtual HoverCardState GetHoverCardState(
       content::WebContents* web_contents) const = 0;
-
-  virtual HoverCardPolicyState GetHoverCardPolicyState() const = 0;
 
   // Returns true if the action should be enabled on the given |web_contents|.
   virtual bool IsEnabled(content::WebContents* web_contents) const = 0;

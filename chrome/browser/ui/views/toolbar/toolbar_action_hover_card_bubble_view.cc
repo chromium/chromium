@@ -33,6 +33,8 @@
 
 namespace {
 
+using HoverCardState = ToolbarActionViewController::HoverCardState;
+
 // Hover card fixed width. Toolbar actions are not visible when window is too
 // small to display them, therefore hover cards wouldn't be displayed if the
 // window is not big enough.
@@ -55,72 +57,68 @@ bool CustomShadowsSupported() {
 }
 
 std::u16string GetFootnoteTitle(
-    ToolbarActionViewController::HoverCardState state) {
+    ToolbarActionViewController::HoverCardState::SiteAccess state) {
   int title_id = -1;
   switch (state) {
-    case ToolbarActionViewController::HoverCardState::kAllExtensionsAllowed:
-    case ToolbarActionViewController::HoverCardState::kExtensionHasAccess:
+    case HoverCardState::SiteAccess::kAllExtensionsAllowed:
+    case HoverCardState::SiteAccess::kExtensionHasAccess:
       title_id =
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_HAS_ACCESS;
       break;
-    case ToolbarActionViewController::HoverCardState::kAllExtensionsBlocked:
+    case HoverCardState::SiteAccess::kAllExtensionsBlocked:
       title_id =
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_BLOCKED_ACCESS;
       break;
-    case ToolbarActionViewController::HoverCardState::kExtensionRequestsAccess:
+    case HoverCardState::SiteAccess::kExtensionRequestsAccess:
       title_id =
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_REQUESTS_ACCESS;
       break;
-    case ToolbarActionViewController::HoverCardState::
-        kExtensionDoesNotWantAccess:
+    case HoverCardState::SiteAccess::kExtensionDoesNotWantAccess:
       NOTREACHED();
       break;
   }
   return l10n_util::GetStringUTF16(title_id);
 }
 
-std::u16string GetFootnoteDescription(
-    ToolbarActionViewController::HoverCardState state,
-    std::u16string host) {
+std::u16string GetFootnoteDescription(HoverCardState::SiteAccess state,
+                                      std::u16string host) {
   int title_id = -1;
   switch (state) {
-    case ToolbarActionViewController::HoverCardState::kAllExtensionsAllowed:
+    case HoverCardState::SiteAccess::kAllExtensionsAllowed:
       title_id =
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_ALL_EXTENSIONS_ALLOWED_ACCESS;
       break;
-    case ToolbarActionViewController::HoverCardState::kAllExtensionsBlocked:
+    case HoverCardState::SiteAccess::kAllExtensionsBlocked:
       title_id =
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_ALL_EXTENSIONS_BLOCKED_ACCESS;
       break;
-    case ToolbarActionViewController::HoverCardState::kExtensionHasAccess:
+    case HoverCardState::SiteAccess::kExtensionHasAccess:
       title_id =
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_HAS_ACESSS;
       break;
-    case ToolbarActionViewController::HoverCardState::kExtensionRequestsAccess:
+    case HoverCardState::SiteAccess::kExtensionRequestsAccess:
       title_id =
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_REQUESTS_ACESSS;
       break;
-    case ToolbarActionViewController::HoverCardState::
-        kExtensionDoesNotWantAccess:
+    case HoverCardState::SiteAccess::kExtensionDoesNotWantAccess:
       NOTREACHED();
       break;
   }
   return l10n_util::GetStringFUTF16(title_id, host);
 }
 
-std::u16string GetFootnotePolicyText(
-    ToolbarActionViewController::HoverCardPolicyState state) {
+std::u16string GetFootnotePolicyText(HoverCardState::AdminPolicy state) {
   int text_id = -1;
   switch (state) {
-    case ToolbarActionViewController::HoverCardPolicyState::kPinnedByAdmin:
+    case HoverCardState::AdminPolicy::kPinnedByAdmin:
       text_id =
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_PINNED_TEXT;
       break;
-    case ToolbarActionViewController::HoverCardPolicyState::kInstalledByAdmin:
+    case HoverCardState::AdminPolicy::kInstalledByAdmin:
       text_id =
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_INSTALLED_TEXT;
       break;
-    case ToolbarActionViewController::HoverCardPolicyState::kNone:
+    case HoverCardState::AdminPolicy::kNone:
       NOTREACHED();
       break;
   }
@@ -289,16 +287,11 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
         color_provider->GetColor(ui::kColorBubbleFooterBorder)));
   }
 
-  void UpdateContent(
-      ToolbarActionViewController::HoverCardState site_access_state,
-      ToolbarActionViewController::HoverCardPolicyState policy_state,
-      std::u16string host) {
-    bool show_site_access_labels = site_access_state !=
-                                   ToolbarActionViewController::HoverCardState::
-                                       kExtensionDoesNotWantAccess;
-    bool show_policy_label =
-        policy_state !=
-        ToolbarActionViewController::HoverCardPolicyState::kNone;
+  void UpdateContent(HoverCardState state, std::u16string host) {
+    bool show_site_access_labels =
+        state.site_access !=
+        HoverCardState::SiteAccess::kExtensionDoesNotWantAccess;
+    bool show_policy_label = state.policy != HoverCardState::AdminPolicy::kNone;
     bool footer_visible = show_site_access_labels || show_policy_label;
     SetVisible(footer_visible);
 
@@ -311,13 +304,13 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
     separator_->SetVisible(show_site_access_labels && show_policy_label);
 
     if (show_site_access_labels) {
-      title_label_->SetText(GetFootnoteTitle(site_access_state));
+      title_label_->SetText(GetFootnoteTitle(state.site_access));
       description_label_->SetText(
-          GetFootnoteDescription(site_access_state, host));
+          GetFootnoteDescription(state.site_access, host));
     }
 
     if (show_policy_label)
-      policy_label_->SetText(GetFootnotePolicyText(policy_state));
+      policy_label_->SetText(GetFootnotePolicyText(state.policy));
   }
 
   void SetFade(double percent) {
@@ -424,7 +417,6 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
   title_label_->SetText(action_controller->GetActionName());
   footnote_view_->UpdateContent(
       action_controller->GetHoverCardState(web_contents),
-      action_controller->GetHoverCardPolicyState(),
       GetCurrentHost(web_contents));
 }
 
@@ -454,7 +446,7 @@ bool ToolbarActionHoverCardBubbleView::IsFooterSeparatorVisible() const {
   return footnote_view_->IsSeparatorVisible();
 }
 
-bool ToolbarActionHoverCardBubbleView::IsFooterPolicyLabelVisible() const {
+bool ToolbarActionHoverCardBubbleView::IsFooterAdminPolicyVisible() const {
   return footnote_view_->IsPolicyVisible();
 }
 

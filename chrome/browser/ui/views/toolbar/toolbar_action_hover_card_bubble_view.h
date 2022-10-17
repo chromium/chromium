@@ -38,7 +38,7 @@ class ToolbarActionHoverCardBubbleView
   bool IsFooterTitleLabelVisible() const;
   bool IsFooterDescriptionLabelVisible() const;
   bool IsFooterSeparatorVisible() const;
-  bool IsFooterPolicyLabelVisible() const;
+  bool IsFooterAdminPolicyVisible() const;
 
  private:
   friend class ToolbarActionHoverCardBubbleViewUITest;

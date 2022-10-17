@@ -52,13 +52,12 @@ std::u16string TestToolbarActionViewController::GetTooltip(
 ToolbarActionViewController::HoverCardState
 TestToolbarActionViewController::GetHoverCardState(
     content::WebContents* web_contents) const {
-  return ToolbarActionViewController::HoverCardState::
+  ToolbarActionViewController::HoverCardState state;
+  state.site_access = ToolbarActionViewController::HoverCardState::SiteAccess::
       kExtensionDoesNotWantAccess;
-}
-
-ToolbarActionViewController::HoverCardPolicyState
-TestToolbarActionViewController::GetHoverCardPolicyState() const {
-  return ToolbarActionViewController::HoverCardPolicyState::kNone;
+  state.policy =
+      ToolbarActionViewController::HoverCardState::AdminPolicy::kNone;
+  return state;
 }
 
 bool TestToolbarActionViewController::IsEnabled(

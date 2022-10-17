@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_TRUE(hover_card()->IsFooterVisible());
   EXPECT_FALSE(hover_card()->IsFooterTitleLabelVisible());
   EXPECT_FALSE(hover_card()->IsFooterDescriptionLabelVisible());
-  EXPECT_TRUE(hover_card()->IsFooterPolicyLabelVisible());
+  EXPECT_TRUE(hover_card()->IsFooterAdminPolicyVisible());
   EXPECT_FALSE(hover_card()->IsFooterSeparatorVisible());
 
   // Hover over the extension with host permissions pinned by the user.
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_TRUE(hover_card()->IsFooterVisible());
   EXPECT_TRUE(hover_card()->IsFooterTitleLabelVisible());
   EXPECT_TRUE(hover_card()->IsFooterDescriptionLabelVisible());
-  EXPECT_FALSE(hover_card()->IsFooterPolicyLabelVisible());
+  EXPECT_FALSE(hover_card()->IsFooterAdminPolicyVisible());
   EXPECT_FALSE(hover_card()->IsFooterSeparatorVisible());
 
   // Hover over the extension with host permission installed and pinned by
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_TRUE(hover_card()->IsFooterVisible());
   EXPECT_TRUE(hover_card()->IsFooterTitleLabelVisible());
   EXPECT_TRUE(hover_card()->IsFooterDescriptionLabelVisible());
-  EXPECT_TRUE(hover_card()->IsFooterPolicyLabelVisible());
+  EXPECT_TRUE(hover_card()->IsFooterAdminPolicyVisible());
   EXPECT_TRUE(hover_card()->IsFooterSeparatorVisible());
 }
 

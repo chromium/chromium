@@ -833,6 +833,12 @@ class ExtensionActionViewControllerFeatureUnitTest
   ExtensionActionViewControllerFeatureUnitTest& operator=(
       const ExtensionActionViewControllerFeatureUnitTest&) = delete;
 
+  HoverCardState::SiteAccess GetHoverCardSiteAccessState(
+      ExtensionActionViewController* controller,
+      content::WebContents* web_contents) {
+    return controller->GetHoverCardState(web_contents).site_access;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -869,55 +875,55 @@ TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetHoverCardStatus) {
       extensions::PermissionsManager::Get(browser()->profile());
   ASSERT_EQ(permissions_manager->GetUserSiteSetting(url),
             UserSiteSetting::kCustomizeByExtension);
-  EXPECT_EQ(controllerA->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionDoesNotWantAccess);
-  EXPECT_EQ(controllerB->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionHasAccess);
-  EXPECT_EQ(controllerC->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionHasAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerA, web_contents),
+            HoverCardState::SiteAccess::kExtensionDoesNotWantAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerB, web_contents),
+            HoverCardState::SiteAccess::kExtensionHasAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerC, web_contents),
+            HoverCardState::SiteAccess::kExtensionHasAccess);
 
   // Withhold extension C host permissions. Verify only extension C changed
   // hover card state to "requests access".
   extensions::ScriptingPermissionsModifier(profile(), extensionC)
       .SetWithholdHostPermissions(true);
-  EXPECT_EQ(controllerA->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionDoesNotWantAccess);
-  EXPECT_EQ(controllerB->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionHasAccess);
-  EXPECT_EQ(controllerC->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionRequestsAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerA, web_contents),
+            HoverCardState::SiteAccess::kExtensionDoesNotWantAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerB, web_contents),
+            HoverCardState::SiteAccess::kExtensionHasAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerC, web_contents),
+            HoverCardState::SiteAccess::kExtensionRequestsAccess);
 
   // Grant all extensions site access. Verify extension A hover card state is
   // "does not want access" and extensions B and C is "all extensions allowed".
   permissions_manager->UpdateUserSiteSetting(
       url, UserSiteSetting::kGrantAllExtensions);
-  EXPECT_EQ(controllerA->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionDoesNotWantAccess);
-  EXPECT_EQ(controllerB->GetHoverCardState(web_contents),
-            HoverCardState::kAllExtensionsAllowed);
-  EXPECT_EQ(controllerC->GetHoverCardState(web_contents),
-            HoverCardState::kAllExtensionsAllowed);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerA, web_contents),
+            HoverCardState::SiteAccess::kExtensionDoesNotWantAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerB, web_contents),
+            HoverCardState::SiteAccess::kAllExtensionsAllowed);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerC, web_contents),
+            HoverCardState::SiteAccess::kAllExtensionsAllowed);
 
   // Block all extensions site access. Verify all extensions appear as "all
   // extensions blocked" (even though extension A never requested access).
   permissions_manager->UpdateUserSiteSetting(
       url, UserSiteSetting::kBlockAllExtensions);
-  EXPECT_EQ(controllerA->GetHoverCardState(web_contents),
-            HoverCardState::kAllExtensionsBlocked);
-  EXPECT_EQ(controllerB->GetHoverCardState(web_contents),
-            HoverCardState::kAllExtensionsBlocked);
-  EXPECT_EQ(controllerC->GetHoverCardState(web_contents),
-            HoverCardState::kAllExtensionsBlocked);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerA, web_contents),
+            HoverCardState::SiteAccess::kAllExtensionsBlocked);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerB, web_contents),
+            HoverCardState::SiteAccess::kAllExtensionsBlocked);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerC, web_contents),
+            HoverCardState::SiteAccess::kAllExtensionsBlocked);
 
   // Change back to customize site access by extension. Verify extension A
   // hover card state is "does not want access", extension B is "has access" and
   // extension C is "requests access".
   permissions_manager->UpdateUserSiteSetting(
       url, UserSiteSetting::kCustomizeByExtension);
-  EXPECT_EQ(controllerA->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionDoesNotWantAccess);
-  EXPECT_EQ(controllerB->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionHasAccess);
-  EXPECT_EQ(controllerC->GetHoverCardState(web_contents),
-            HoverCardState::kExtensionRequestsAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerA, web_contents),
+            HoverCardState::SiteAccess::kExtensionDoesNotWantAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerB, web_contents),
+            HoverCardState::SiteAccess::kExtensionHasAccess);
+  EXPECT_EQ(GetHoverCardSiteAccessState(controllerC, web_contents),
+            HoverCardState::SiteAccess::kExtensionRequestsAccess);
 }
