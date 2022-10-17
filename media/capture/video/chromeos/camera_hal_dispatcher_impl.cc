@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -33,6 +34,7 @@
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_client.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+#include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -126,6 +128,36 @@ class MojoCameraClientObserver : public CameraClientObserver {
  private:
   mojo::Remote<cros::mojom::CameraHalClient> client_;
 };
+
+cros::mojom::EffectsConfigPtr GetCameraEffectState() {
+  cros::mojom::EffectsConfigPtr effects_state =
+      cros::mojom::EffectsConfig::New();
+
+  std::string blur_level = GetFieldTrialParamValueByFeature(
+      ash::features::kVCBackgroundBlur, "blur_level");
+  if (blur_level == "lowest") {
+    effects_state->blur_level = cros::mojom::BlurLevel::kLowest;
+  } else if (blur_level == "light") {
+    effects_state->blur_level = cros::mojom::BlurLevel::kLight;
+  } else if (blur_level == "medium") {
+    effects_state->blur_level = cros::mojom::BlurLevel::kMedium;
+  } else if (blur_level == "heavy") {
+    effects_state->blur_level = cros::mojom::BlurLevel::kHeavy;
+  } else if (blur_level == "maximum") {
+    effects_state->blur_level = cros::mojom::BlurLevel::kMaximum;
+  }
+
+  effects_state->effect = ash::features::IsVCBackgroundBlurEnabled()
+                              ? cros::mojom::CameraEffect::kBackgroundBlur
+                              : cros::mojom::CameraEffect::kNone;
+  effects_state->effect = ash::features::IsVCBackgroundReplaceEnabled()
+                              ? cros::mojom::CameraEffect::kBackgroundReplace
+                              : effects_state->effect;
+  effects_state->effect = ash::features::IsVCPortraitRelightingEnabled()
+                              ? cros::mojom::CameraEffect::kPortraitRelight
+                              : effects_state->effect;
+  return effects_state;
+}
 
 }  // namespace
 
@@ -279,21 +311,11 @@ bool CameraHalDispatcherImpl::Start(
     if (!base::DeleteFile(disable_file_path)) {
       LOG(WARNING) << "Could not delete " << kForceDisableEffectsPath;
     }
-    const base::CommandLine* command_line =
-        base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(media::switches::kEffectsOverride)) {
-      std::string value =
-          command_line->GetSwitchValueASCII(switches::kEffectsOverride);
-      if (value == switches::kEffectsForceEnabled) {
-        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS |
-                                              base::File::FLAG_WRITE);
-        file.Close();
-      } else if (value == switches::kEffectsForceDisabled) {
-        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS |
-                                               base::File::FLAG_WRITE);
-        file.Close();
-      }
-    }
+    base::File file(ash::features::IsVCBackgroundBlurEnabled()
+                        ? enable_file_path
+                        : disable_file_path,
+                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    file.Close();
   }
 
   jda_factory_ = std::move(jda_factory);
@@ -476,6 +498,12 @@ void CameraHalDispatcherImpl::RegisterServerWithToken(
         std::move(auto_framing_supported_callback_));
   }
   camera_hal_server_->SetAutoFramingState(current_auto_framing_state_);
+  camera_hal_server_->SetCameraEffect(
+      GetCameraEffectState(),
+      base::BindOnce([](cros::mojom::SetEffectResult result) {
+        if (result == cros::mojom::SetEffectResult::kError)
+          LOG(ERROR) << "SetCameraEffect failed.";
+      }));
   CAMERA_LOG(EVENT) << "Camera HAL server registered";
   std::move(callback).Run(
       0, camera_hal_server_callbacks_.BindNewPipeAndPassRemote());

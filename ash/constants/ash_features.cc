@@ -1671,6 +1671,16 @@ BASE_FEATURE(kVCBackgroundBlur,
              "VCBackgroundBlur",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the vc background replace is enabled.
+BASE_FEATURE(kVCBackgroundReplace,
+             "VCBackgroundReplace",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether the vc portrait relighting is enabled.
+BASE_FEATURE(kVCPortraitRelighting,
+             "VCPortraitRelighting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Quick Settings Network revamp, which updates Network
 // Quick Settings UI and related infrastructure. See https://crbug.com/1169479.
 BASE_FEATURE(kQuickSettingsNetworkRevamp,
@@ -3041,6 +3051,14 @@ bool IsUseStorkSmdsServerAddressEnabled() {
 
 bool IsVCBackgroundBlurEnabled() {
   return base::FeatureList::IsEnabled(kVCBackgroundBlur);
+}
+
+bool IsVCBackgroundReplaceEnabled() {
+  return base::FeatureList::IsEnabled(kVCBackgroundReplace);
+}
+
+bool IsVCPortraitRelightingEnabled() {
+  return base::FeatureList::IsEnabled(kVCPortraitRelighting);
 }
 
 bool IsVcControlsUiEnabled() {

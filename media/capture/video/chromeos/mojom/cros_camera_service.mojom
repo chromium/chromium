@@ -11,6 +11,7 @@ import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 import "media/capture/video/chromeos/mojom/camera_common.mojom";
 import "media/capture/video/chromeos/mojom/cros_camera_client.mojom";
+import "media/capture/video/chromeos/mojom/effects_pipeline.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // CameraClientType indicates the type of a CameraHalClient.
@@ -120,7 +121,7 @@ interface CameraHalDispatcher {
 
 // The CrOS camera HAL v3 Mojo server.
 //
-// Next method ID: 6
+// Next method ID: 7
 interface CameraHalServer {
   // A caller calls CreateChannel to create a new Mojo channel to the camera
   // HAL v3 adapter.  Upon successfully binding of |camera_module_receiver|, the
@@ -148,6 +149,10 @@ interface CameraHalServer {
   // Get if the HAL supports auto framing.
   [MinVersion=9]
   GetAutoFramingSupported@5() => (bool supported);
+
+  // Turn ON/OFF and configure specified effect.
+  [MinVersion=10]
+  SetCameraEffect@6(EffectsConfig config) => (SetEffectResult result);
 };
 
 // CameraHalServerCallbacks is an interface for CameraHalServer to notify

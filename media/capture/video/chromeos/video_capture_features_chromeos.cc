@@ -13,7 +13,6 @@ namespace switches {
 const char kForceControlFaceAe[] = "force-control-face-ae";
 const char kHdrNetOverride[] = "hdrnet-override";
 const char kAutoFramingOverride[] = "auto-framing-override";
-const char kEffectsOverride[] = "effects-override";
 
 }  // namespace switches
 
