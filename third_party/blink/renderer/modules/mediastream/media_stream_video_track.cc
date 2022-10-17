@@ -856,7 +856,7 @@ void MediaStreamVideoTrack::StopAndNotify(base::OnceClosure callback) {
 }
 
 void MediaStreamVideoTrack::GetSettings(
-    MediaStreamTrackPlatform::Settings& settings) {
+    MediaStreamTrackPlatform::Settings& settings) const {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   if (!source_)
     return;

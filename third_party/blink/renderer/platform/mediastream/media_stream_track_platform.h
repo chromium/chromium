@@ -84,7 +84,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   void Stop() { StopAndNotify(base::OnceClosure()); }
 
   // TODO(hta): Make method pure virtual when all tracks have the method.
-  virtual void GetSettings(Settings& settings) {}
+  virtual void GetSettings(Settings& settings) const {}
   virtual CaptureHandle GetCaptureHandle();
 
   // Adds a one off callback that will be invoked when observing the first frame
