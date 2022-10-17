@@ -399,8 +399,8 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
         for (int row = 0; row < blit_size.height(); ++row, src += src_stride,
                  under_weight += src_stride, dst += dst_stride) {
           for (int col = 0; col < blit_size.width(); ++col) {
-            dst[col] = ToClamped255(
-                std::fma(From255(dst[col]), under_weight[col], src[col]));
+            dst[col] = base::saturated_cast<uint8_t>(
+                dst[col] * under_weight[col] + 255.0f * src[col] + 0.5f);
           }
         }
       };
