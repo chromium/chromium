@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 #include "ash/accessibility/ui/accessibility_highlight_layer.h"
@@ -197,6 +198,35 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   std::unique_ptr<base::RunLoop> highlights_runner_;
   std::unique_ptr<base::RunLoop> tray_loop_runner_;
   base::WeakPtrFactory<SelectToSpeakTest> weak_ptr_factory_{this};
+};
+
+// TODO(crbug.com/1375293): Extract MagnifierAnimationWaiter to helper.
+class MagnifierAnimationWaiter {
+ public:
+  explicit MagnifierAnimationWaiter(FullscreenMagnifierController* controller)
+      : controller_(controller) {}
+
+  MagnifierAnimationWaiter(const MagnifierAnimationWaiter&) = delete;
+  MagnifierAnimationWaiter& operator=(const MagnifierAnimationWaiter&) = delete;
+
+  void Wait() {
+    base::RepeatingTimer check_timer;
+    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
+                      &MagnifierAnimationWaiter::OnTimer);
+    runner_ = new content::MessageLoopRunner;
+    runner_->Run();
+  }
+
+ private:
+  void OnTimer() {
+    DCHECK(runner_.get());
+    if (!controller_->IsOnAnimationForTesting()) {
+      runner_->Quit();
+    }
+  }
+
+  FullscreenMagnifierController* controller_;  // not owned
+  scoped_refptr<content::MessageLoopRunner> runner_;
 };
 
 class SelectToSpeakTestWithVoiceSwitching : public SelectToSpeakTest {
@@ -614,6 +644,51 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, FocusRingMovesWithMouse) {
   // by releasing the key before the button.
   WaitForFocusRingChanged();
   EXPECT_EQ(focus_rings.size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
+                       SelectToSpeakPansFullscreenMagnifier) {
+  FullscreenMagnifierController* fullscreen_magnifier_controller =
+      Shell::Get()->fullscreen_magnifier_controller();
+  fullscreen_magnifier_controller->SetEnabled(true);
+
+  // Wait for Fullscreen magnifier to initialize.
+  MagnifierAnimationWaiter waiter(fullscreen_magnifier_controller);
+  waiter.Wait();
+  gfx::Point const initial_window_position =
+      fullscreen_magnifier_controller->GetWindowPosition();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("data:text/html;charset=utf-8,"
+                                                "<p>This is some text</p>")));
+  gfx::Rect bounds = GetWebContentsBounds();
+  PrepareToWaitForFocusRingChanged();
+
+  // Hold down Search, and move mouse to start of text.
+  generator_->PressKey(ui::VKEY_LWIN, 0 /* flags */);
+  generator_->MoveMouseTo(bounds.x(), bounds.y());
+
+  // FullscreenMagnifierController moves the magnifier window with animation
+  // when the magnifier is set to be enabled. Wait until the animation
+  // completes, so that the mouse movement controls the position of magnifier
+  // window later.
+  waiter.Wait();
+
+  // Press and drag mouse past bounds of magnified screen, to move the viewport.
+  generator_->PressLeftButton();
+
+  // Move mouse to bottom right area of screen. Multiply by scale as fullscreen
+  // magnifier is enabled, so input needs to be transformed.
+  const float scale = fullscreen_magnifier_controller->GetScale();
+  generator_->MoveMouseTo(
+      (bounds.right() - initial_window_position.x()) * scale,
+      (bounds.bottom() - initial_window_position.y()) * scale);
+
+  gfx::Point const final_window_position =
+      fullscreen_magnifier_controller->GetWindowPosition();
+
+  // Expect Magnifier window to move with mouse drag.
+  EXPECT_GT(final_window_position.x(), initial_window_position.x());
+  EXPECT_GT(final_window_position.y(), initial_window_position.y());
 }
 
 // crbug.com/1114854 - Times out on MSAN bots.
