@@ -5314,7 +5314,9 @@ TEST_P(AppsGridViewClamshellAndTabletTest, QuickDragToRemoveItemFromFolder) {
   }
 }
 
-TEST_P(AppsGridViewClamshellAndTabletTest, ReorderDragAnimationMetrics) {
+// TODO(crbug.com/1371184): Fix flaky test.
+TEST_P(AppsGridViewClamshellAndTabletTest,
+       DISABLED_ReorderDragAnimationMetrics) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   base::HistogramTester histogram_tester;
