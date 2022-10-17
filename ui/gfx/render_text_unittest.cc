@@ -6285,6 +6285,16 @@ TEST_F(RenderTextTest, Multiline_ZeroWidthChars) {
         test_api()->lines()[j].segments[segment_size - 1].char_range.end());
     EXPECT_EQ(char_ranges[j], line_range);
   }
+
+  for (const std::u16string test_text : {u"\u200b", u"A\u200bB", u"A\u200b"}) {
+    for (int width = 1; width <= 5; width++) {
+      SCOPED_TRACE(testing::Message()
+                   << "String: '" << test_text << "' width: " << width);
+      render_text->SetText(test_text);
+      render_text->SetDisplayRect(Rect(0, 0, width, 0));
+      render_text->Draw(canvas());
+    }
+  }
 }
 
 TEST_F(RenderTextTest, Multiline_ZeroWidthNewline) {
