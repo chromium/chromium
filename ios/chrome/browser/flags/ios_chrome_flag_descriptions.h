@@ -161,12 +161,6 @@ extern const char kContentSuggestionsUIModuleRefreshDescription[];
 extern const char kCrashpadIOSName[];
 extern const char kCrashpadIOSDescription[];
 
-#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
-// Title and description for the flag to enable configurable DCHECKs.
-extern const char kDcheckIsFatalName[];
-extern const char kDcheckIsFatalDescription[];
-#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
-
 // Title and description for the flag to show a modified fullscreen modal promo
 // with a button that would send the users in the Settings.app to update the
 // default browser.

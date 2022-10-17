@@ -174,16 +174,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Disable DCHECK Crashes</string>
-			<key>Key</key>
-			<string>DisableDCHECKCrashes</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Enable Memory Debugging</string>
 			<key>Key</key>
 			<string>EnableMemoryDebugging</string>

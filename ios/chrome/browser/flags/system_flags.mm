@@ -28,7 +28,6 @@ namespace {
 
 NSString* const kAlternateDiscoverFeedServerURL =
     @"AlternateDiscoverFeedServerURL";
-NSString* const kDisableDCHECKCrashes = @"DisableDCHECKCrashes";
 NSString* const kEnableStartupCrash = @"EnableStartupCrash";
 NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
 NSString* const kOriginServerHost = @"AlternateOriginServerHost";
@@ -97,11 +96,6 @@ bool IsMemoryDebuggingEnabled() {
 
 bool IsStartupCrashEnabled() {
   return [[NSUserDefaults standardUserDefaults] boolForKey:kEnableStartupCrash];
-}
-
-bool AreDCHECKCrashesDisabled() {
-  return
-      [[NSUserDefaults standardUserDefaults] boolForKey:kDisableDCHECKCrashes];
 }
 
 bool MustClearApplicationGroupSandbox() {
