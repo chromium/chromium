@@ -777,6 +777,13 @@ bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
     AutocompleteMatch non_entity_match_copy = *non_entity_it;
     top_match->duplicate_matches.erase(non_entity_it);
 
+    // When we spawn our non-entity match copy, we still want to preserve any
+    // entity ID that was provided by the server for logging purposes, even if
+    // we don't display it.
+    if (non_entity_match_copy.entity_id.empty()) {
+      non_entity_match_copy.entity_id = top_match->entity_id;
+    }
+
     // Promote the non-entity match to the top, then immediately return, since
     // all our iterators are invalid after the insertion.
     matches->insert(matches->begin(), std::move(non_entity_match_copy));

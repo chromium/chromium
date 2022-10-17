@@ -664,6 +664,8 @@ struct AutocompleteMatch {
   GURL image_url;
 
   // Optional entity id for entity suggestions. Empty string means no entity ID.
+  // This is not meant for display, but internal use only. The actual UI display
+  // is controlled by the `type` and `image_url`.
   std::string entity_id;
 
   // Optional override to use for types that specify an icon sub-type.

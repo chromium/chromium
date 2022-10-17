@@ -383,6 +383,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.keyword = template_url->keyword();
   match.image_dominant_color = suggestion.image_dominant_color();
   match.image_url = suggestion.image_url();
+  match.entity_id = suggestion.entity_id();
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
   match.suggestion_group_id = suggestion.suggestion_group_id();
