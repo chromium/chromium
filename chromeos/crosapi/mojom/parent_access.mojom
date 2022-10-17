@@ -5,28 +5,26 @@
 module crosapi.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 
+// Struct that indicates that the parent approved the request.
 [Stable]
-struct ParentAccessResult {
-  // Result status of the request.
-  // kUnknown:  default status that shouldn't be returned.
-  // kApproved: the parent was verified and approved the request.
-  // kDeclined: the parent explicitly declined the request.
-  // kCancelled: the request was dismissed/cancelled but
-  //             not explicitly declined.
-  // kError: there was an error in the request. Example error_type.
-  [Stable, Extensible]
-  enum Status {
-    [Default] kUnknown = 0,
-    kApproved = 1,
-    kDeclined = 2,
-    kCancelled = 3,
-    kError = 4,
-  };
+struct ParentAccessApprovedResult {
+  // The parent access token. 
+  string parent_access_token@0;
 
+  // The parent access token expiration timestamp, after which the token
+  // is not considered valid. 
+  mojo_base.mojom.Time parent_access_token_expire_timestamp@1;
+};
+
+// Struct that indicates that an unexpected error occurred during the
+// request.
+[Stable]
+struct ParentAccessErrorResult {
   // The type of error that occurred
   // kNone:  no error, the default value.
   // kUnknown: an unknown error occurred.
@@ -35,18 +33,36 @@ struct ParentAccessResult {
   // kAlreadyVisible: the dialog is already visible and
   //                  handling another permission request.
   [Stable, Extensible]
-  enum ErrorType {
+  enum Type {
     [Default] kNone = 0,
     kUnknown = 1,
     kNotAChildUser = 2,
     kAlreadyVisible = 3,
   };
 
-  // The terminal status of the request.
-  Status status@0;
-
   // The type of error which occurred.  Only set if status is kError.
-  ErrorType error_type@1;
+  Type type@0;
+};
+
+// Struct used to indicate that the parent cancelled the request.
+[Stable]
+struct ParentAccessCancelledResult {};
+
+// Struct used to indicate that the parent declined the request.
+[Stable]
+struct ParentAccessDeclinedResult {};
+
+
+[Stable]
+union ParentAccessResult {
+  // If present, the parent approved the request
+  ParentAccessApprovedResult approved;
+  // If present, an unexpected error occurred during the request.
+  ParentAccessErrorResult error;
+  // If present, the parent cancelled the request
+  ParentAccessCancelledResult cancelled;
+  // If present, the parent declined the request
+  ParentAccessDeclinedResult declined;
 };
 
 // Interface that provides access to the Parent Access Widget.
@@ -59,7 +75,6 @@ struct ParentAccessResult {
 // supports the functionality it requires.  It should never send an IPC over
 // the interface to an incompatible version.
 [Stable, Uuid="9be7bba2-a67d-4f8a-bf18-e37338dc7c8e"]
-// Interface that provides access to the ParentAccessDialog to ChromeOS.
 interface ParentAccess {
   // Request parental approval for website access.
   // url:  The url being requested
