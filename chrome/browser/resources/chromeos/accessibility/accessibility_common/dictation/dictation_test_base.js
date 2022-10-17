@@ -76,6 +76,8 @@ DictationE2ETestBase = class extends E2ETestBase {
     await importModule(
         'Dictation', '/accessibility_common/dictation/dictation.js');
     assertNotNullNorUndefined(Dictation);
+    await importModule(
+        'LocaleInfo', '/accessibility_common/dictation/locale_info.js');
     await new Promise(resolve => {
       chrome.accessibilityFeatures.dictation.set({value: true}, resolve);
     });
@@ -380,6 +382,14 @@ DictationE2ETestBase = class extends E2ETestBase {
       icon: ${props.icon}
       text: ${props.text}
       hints: ${props.hints}`);
+  }
+
+  /**
+   * Always allows Dictation commands, even if the Dictation locale and browser
+   * locale differ. Only used for testing.
+   */
+  alwaysEnableCommands() {
+    LocaleInfo.alwaysEnableCommandsForTesting = true;
   }
 };
 

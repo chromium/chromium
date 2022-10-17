@@ -75,22 +75,22 @@ speech.pumpkin.api.js.PumpkinTagger.PumpkinTagger = function() {};
  * This proto file can be generated using pumpkin/tools/build_binary_configs
  * which converts an pumpkin.config and directory of grammar .far files into a
  * single binary file.
- * @param {string} filename The pumpkin config binary file to load.
+ * @param {!ArrayBuffer} buffer The pumpkin config binary file contents.
  * @return {!Promise<boolean>}
  */
 speech.pumpkin.api.js.PumpkinTagger.PumpkinTagger.prototype
-    .initializeFromPumpkinConfig = async function(filename) {};
+    .initializeFromPumpkinConfig = async function(buffer) {};
 
 /**
  * Loads an ActionFrame from an ActionSetConfig proto binary file.
  * This proto file can be generated using pumpkin/tools/build_binary_configs
  * which converts an action.config and directory of .far files into a single
  * binary file.
- * @param {string} filename The action set config binary file to load.
+ * @param {!ArrayBuffer} buffer The action set config binary file contents.
  * @return {!Promise<boolean>}
  */
 speech.pumpkin.api.js.PumpkinTagger.PumpkinTagger.prototype.loadActionFrame =
-    async function(filename) {};
+    async function(buffer) {};
 
 /**
  * Cleans up C++ memory. Should be called before the tagger is

@@ -292,6 +292,8 @@ action("pumpkin_test_files") {
     "$pumpkin_output_dir/tagger_wasm_main.wasm",
     "$pumpkin_output_dir/en_us/action_config.binarypb",
     "$pumpkin_output_dir/en_us/pumpkin_config.binarypb",
+    "$pumpkin_output_dir/fr_fr/action_config.binarypb",
+    "$pumpkin_output_dir/fr_fr/pumpkin_config.binarypb",
   ]
   args = [
     "--dest-dir=resources/chromeos/accessibility/accessibility_common/dictation/parse/pumpkin",

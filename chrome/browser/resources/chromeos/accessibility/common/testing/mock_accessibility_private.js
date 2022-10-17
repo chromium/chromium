@@ -19,6 +19,8 @@ let SelectToSpeakPanelState;
  *  tagger_wasm_main_wasm: !ArrayBuffer,
  *  en_us_action_config_binarypb: !ArrayBuffer,
  *  en_us_pumpkin_config_binarypb: !ArrayBuffer,
+ *  fr_fr_action_config_binarypb: !ArrayBuffer,
+ *  fr_fr_pumpkin_config_binarypb: !ArrayBuffer,
  * }}
  */
 let MockPumpkinData;
@@ -433,6 +435,10 @@ class MockAccessibilityPrivate {
         await getFileBytes(`${pumpkinDir}/en_us/action_config.binarypb`);
     data.en_us_pumpkin_config_binarypb =
         await getFileBytes(`${pumpkinDir}/en_us/pumpkin_config.binarypb`);
+    data.fr_fr_action_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/fr_fr/action_config.binarypb`);
+    data.fr_fr_pumpkin_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/fr_fr/pumpkin_config.binarypb`);
     MockAccessibilityPrivate.pumpkinData_ = data;
   }
 }

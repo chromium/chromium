@@ -38,6 +38,7 @@ export const FromPumpkinTaggerCommand = {
   READY: 'ready',
   FULLY_INITIALIZED: 'fullyInitialized',
   TAG_RESULTS: 'tagResults',
+  REFRESHED: 'refreshed',
 };
 
 /**
@@ -47,6 +48,7 @@ export const FromPumpkinTaggerCommand = {
 export const ToPumpkinTaggerCommand = {
   LOAD: 'load',
   TAG: 'tagAndGetNBestHypotheses',
+  REFRESH: 'refresh',
 };
 
 /**
@@ -108,6 +110,7 @@ export const SUPPORTED_LOCALES = {
   'en-SG': PumpkinLocale.EN_US,
   'en-TZ': PumpkinLocale.EN_US,
   'en-ZA': PumpkinLocale.EN_US,
+  'fr-FR': PumpkinLocale.FR_FR,
 };
 
 /**

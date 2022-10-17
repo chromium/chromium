@@ -36,6 +36,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
     this.tagResolver_ = null;
     /** @private {?Worker} */
     this.worker_ = null;
+    /** @private {?PumpkinConstants.PumpkinLocale} */
+    this.locale_ = null;
 
     this.init_();
   }
@@ -46,9 +48,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
                                .DICTATION_PUMPKIN_PARSING;
     chrome.accessibilityPrivate.isFeatureEnabled(pumpkinFeature, enabled => {
       this.featureEnabled_ = enabled;
-      const pumpkinLocale =
-          PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale];
-      if (!enabled || !pumpkinLocale) {
+      this.refreshLocale_();
+      if (!enabled || !this.locale_) {
         return;
       }
 
@@ -76,8 +77,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
       }
     }
 
-    const pumpkinLocale = PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale];
-    if (!pumpkinLocale || !this.isEnabled()) {
+    this.refreshLocale_();
+    if (!this.locale_ || !this.isEnabled()) {
       return;
     }
 
@@ -101,9 +102,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
         /** @type {!PumpkinConstants.FromPumpkinTagger} */ (message.data);
     switch (command.type) {
       case PumpkinConstants.FromPumpkinTaggerCommand.READY:
-        const pumpkinLocale =
-            PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale];
-        if (!pumpkinLocale) {
+        this.refreshLocale_();
+        if (!this.locale_) {
           throw new Error(
               `Can't load SandboxedPumpkinTagger in an unsupported locale ${
                   LocaleInfo.locale}`);
@@ -111,16 +111,21 @@ export class PumpkinParseStrategy extends ParseStrategy {
 
         this.sendToSandboxedPumpkinTagger_({
           type: PumpkinConstants.ToPumpkinTaggerCommand.LOAD,
-          locale: pumpkinLocale,
+          locale: this.locale_,
           pumpkinData: this.pumpkinData_,
         });
         this.pumpkinData_ = null;
         return;
       case PumpkinConstants.FromPumpkinTaggerCommand.FULLY_INITIALIZED:
         this.pumpkinTaggerReady_ = true;
+        this.maybeRefresh_();
         return;
       case PumpkinConstants.FromPumpkinTaggerCommand.TAG_RESULTS:
         this.tagResolver_(command.results);
+        return;
+      case PumpkinConstants.FromPumpkinTaggerCommand.REFRESHED:
+        this.pumpkinTaggerReady_ = true;
+        this.maybeRefresh_();
         return;
     }
 
@@ -136,7 +141,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
   sendToSandboxedPumpkinTagger_(command) {
     if (!this.worker_) {
       throw new Error(
-          'Worker not ready, cannot send message to SandboxedPumpkinTagger');
+          `Worker not ready, cannot send command to SandboxedPumpkinTagger: ${
+              command.type}`);
     }
 
     this.worker_.postMessage(command);
@@ -213,12 +219,38 @@ export class PumpkinParseStrategy extends ParseStrategy {
     }
   }
 
+  /** @private */
+  refreshLocale_() {
+    this.locale_ =
+        PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale] || null;
+  }
+
+  /**
+   * Refreshes SandboxedPumpkinTagger if the Dictation locale differs from
+   * the pumpkin locale.
+   * @private
+   */
+  maybeRefresh_() {
+    const dictationLocale =
+        PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale];
+    if (dictationLocale !== this.locale_) {
+      this.refresh();
+    }
+  }
+
   /** @override */
   refresh() {
-    const pumpkinLocale = PumpkinConstants.SUPPORTED_LOCALES[LocaleInfo.locale];
-    this.enabled = Boolean(pumpkinLocale) && LocaleInfo.areCommandsSupported();
-    // TODO(https://crbug.com/1258190): Re-initialize SandboxedPumpkinTagger
-    // if the locale changed.
+    this.refreshLocale_();
+    this.enabled = Boolean(this.locale_) && LocaleInfo.areCommandsSupported();
+    if (!this.isEnabled() || !this.locale_ || !this.pumpkinTaggerReady_) {
+      return;
+    }
+
+    this.pumpkinTaggerReady_ = false;
+    this.sendToSandboxedPumpkinTagger_({
+      type: PumpkinConstants.ToPumpkinTaggerCommand.REFRESH,
+      locale: this.locale_,
+    });
   }
 
   /** @override */

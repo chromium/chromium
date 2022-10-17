@@ -12,6 +12,8 @@ class SandboxedPumpkinTagger {
   constructor() {
     /** @private {?speech.pumpkin.api.js.PumpkinTagger.PumpkinTagger} */
     this.pumpkinTagger_ = null;
+    /** @private {?PumpkinConstants.PumpkinData} */
+    this.pumpkinData_ = null;
     this.init_();
   }
 
@@ -44,6 +46,10 @@ class SandboxedPumpkinTagger {
         const text = /** @type {string} */ (command.text);
         const numResults = /** @type {number} */ (command.numResults);
         this.tagAndGetNBestHypotheses_(text, numResults);
+        return;
+      case PumpkinConstants.ToPumpkinTaggerCommand.REFRESH:
+        this.refresh_(
+            /** @type {!PumpkinConstants.PumpkinLocale} */ (command.locale));
         return;
     }
 
@@ -81,6 +87,7 @@ class SandboxedPumpkinTagger {
       throw new Error(`Can't load pumpkin tagger from empty data`);
     }
 
+    this.pumpkinData_ = data;
     // Unpack the PumpkinTagger JS.
     const pumpkinTaggerBytes = data.js_pumpkin_tagger_bin_js;
     if (!pumpkinTaggerBytes) {
@@ -138,34 +145,7 @@ class SandboxedPumpkinTagger {
     await wasmLoadPromise;
 
     // Initialize from config files.
-    let pumpkinConfig;
-    let actionConfig;
-    switch (locale) {
-      case PumpkinConstants.PumpkinLocale.EN_US:
-        pumpkinConfig = data.en_us_pumpkin_config_binarypb;
-        actionConfig = data.en_us_action_config_binarypb;
-        break;
-      case PumpkinConstants.PumpkinLocale.FR_FR:
-        pumpkinConfig = data.fr_fr_pumpkin_config_binarypb;
-        actionConfig = data.fr_fr_action_config_binarypb;
-        break;
-      case PumpkinConstants.PumpkinLocale.IT_IT:
-        pumpkinConfig = data.it_it_pumpkin_config_binarypb;
-        actionConfig = data.it_it_action_config_binarypb;
-        break;
-      case PumpkinConstants.PumpkinLocale.DE_DE:
-        pumpkinConfig = data.de_de_pumpkin_config_binarypb;
-        actionConfig = data.de_de_action_config_binarypb;
-        break;
-      case PumpkinConstants.PumpkinLocale.ES_ES:
-        pumpkinConfig = data.es_es_pumpkin_config_binarypb;
-        actionConfig = data.es_es_action_config_binarypb;
-        break;
-      default:
-        throw new Error(
-            `Can't initialize Pumpkin in unsupported locale: ${locale}`);
-    }
-
+    const {pumpkinConfig, actionConfig} = this.getConfigsForLocale(locale);
     pumpkinTagger.initializeFromPumpkinConfig(pumpkinConfig);
     pumpkinTagger.loadActionFrame(actionConfig);
 
@@ -173,6 +153,66 @@ class SandboxedPumpkinTagger {
     this.pumpkinTagger_ = pumpkinTagger;
     this.sendToBackground_(
         {type: PumpkinConstants.FromPumpkinTaggerCommand.FULLY_INITIALIZED});
+  }
+
+  /**
+   * Refreshes SandboxedPumpkinTagger in a new locale.
+   * @param {!PumpkinConstants.PumpkinLocale} locale
+   */
+  refresh_(locale) {
+    if (!this.pumpkinTagger_) {
+      throw new Error(
+          'SandboxedPumpkinTagger must be initialized before calling refresh');
+    }
+
+    const {pumpkinConfig, actionConfig} = this.getConfigsForLocale(locale);
+    this.pumpkinTagger_.initializeFromPumpkinConfig(pumpkinConfig);
+    this.pumpkinTagger_.loadActionFrame(actionConfig);
+    this.sendToBackground_({
+      type: PumpkinConstants.FromPumpkinTaggerCommand.REFRESHED,
+    });
+  }
+
+  /**
+   * @param {!PumpkinConstants.PumpkinLocale} locale
+   * @return {!{pumpkinConfig: !ArrayBuffer, actionConfig: !ArrayBuffer}}
+   */
+  getConfigsForLocale(locale) {
+    let pumpkinConfig;
+    let actionConfig;
+    switch (locale) {
+      case PumpkinConstants.PumpkinLocale.EN_US:
+        pumpkinConfig = this.pumpkinData_.en_us_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_.en_us_action_config_binarypb;
+        break;
+      case PumpkinConstants.PumpkinLocale.FR_FR:
+        pumpkinConfig = this.pumpkinData_.fr_fr_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_.fr_fr_action_config_binarypb;
+        break;
+      case PumpkinConstants.PumpkinLocale.IT_IT:
+        pumpkinConfig = this.pumpkinData_.it_it_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_.it_it_action_config_binarypb;
+        break;
+      case PumpkinConstants.PumpkinLocale.DE_DE:
+        pumpkinConfig = this.pumpkinData_.de_de_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_.de_de_action_config_binarypb;
+        break;
+      case PumpkinConstants.PumpkinLocale.ES_ES:
+        pumpkinConfig = this.pumpkinData_.es_es_pumpkin_config_binarypb;
+        actionConfig = this.pumpkinData_.es_es_action_config_binarypb;
+        break;
+      default:
+        throw new Error(
+            `Can't initialize Pumpkin in unsupported locale: ${locale}`);
+    }
+
+    if (!pumpkinConfig || !actionConfig) {
+      throw new Error(
+          `Either pumpkinConfig or actionConfig is invalid for locale: ${
+              locale}`);
+    }
+
+    return {pumpkinConfig, actionConfig};
   }
 }
 

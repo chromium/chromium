@@ -44,7 +44,8 @@ export class LocaleInfo {
       return true;
     }
 
-    return Boolean(LocaleInfo.getUILanguage()) &&
+    return LocaleInfo.alwaysEnableCommandsForTesting ||
+        Boolean(LocaleInfo.getUILanguage()) &&
         (LocaleInfo.getUILanguage() === systemLanguage ||
          LocaleInfo.getUILanguage() === systemLocale);
   }
@@ -64,6 +65,9 @@ export class LocaleInfo {
  * @type {string}
  */
 LocaleInfo.locale = '';
+
+/** @type {boolean} */
+LocaleInfo.alwaysEnableCommandsForTesting = false;
 
 /**
  * @const {!Set<string>}

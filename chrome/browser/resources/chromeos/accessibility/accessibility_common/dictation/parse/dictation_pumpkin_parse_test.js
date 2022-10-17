@@ -141,5 +141,35 @@ AX_TEST_F(
       }
     });
 
+AX_TEST_F('DictationPumpkinParseTest', 'ChangeLocale', async function() {
+  await this.waitForPumpkinParseStrategy_();
+  this.alwaysEnableCommands();
+  // Pumpkin should work in English.
+  await this.runParseTestCase(
+      new ParseTestCase('copy selected text', 'COPY_SELECTED_TEXT'));
+  // Change the locale.
+  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'fr-FR');
+  await this.waitForPumpkinParseStrategy_();
+  // Pumpkin should work in new locale.
+  await this.runParseTestCase(
+      new ParseTestCase('copier', 'COPY_SELECTED_TEXT'));
+  await this.runParseTestCase(new ParseTestCase(
+      'supprimer deux caractères précédent', 'DELETE_PREV_CHAR', 2));
+});
+
+AX_TEST_F('DictationPumpkinParseTest', 'UnsupportedLocale', async function() {
+  await this.waitForPumpkinParseStrategy_();
+  this.alwaysEnableCommands();
+  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'ja');
+  await this.waitForPumpkinParseStrategy_();
+  await this.runParseTestCase(new ParseTestCase('copy selected text'));
+  // Would produce an UNDO_TEXT_EDIT macro if Japanese was supported.
+  await this.runParseTestCase(new ParseTestCase('もとどおりにする'));
+  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
+  await this.waitForPumpkinParseStrategy_();
+  await this.runParseTestCase(
+      new ParseTestCase('copy selected text', 'COPY_SELECTED_TEXT'));
+});
+
 // TODO(https://crbug.com/1258190): Add test cases for when Dictation is in
 // another en-* locale (e.g. en-GB).
