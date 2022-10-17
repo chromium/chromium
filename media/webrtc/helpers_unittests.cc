@@ -350,6 +350,61 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   EXPECT_FALSE(config.gain_controller2.adaptive_digital.enabled);
 }
 
+TEST(CreateWebRtcAudioProcessingModuleTest,
+     InputVolumeAdjustmentEnabledWithHybridAgc) {
+  ::base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kWebRtcAllowInputVolumeAdjustment,
+                            features::kWebRtcHybridAgc},
+      /*disabled_features=*/{});
+  auto config = CreateApmGetConfig(
+      /*settings=*/{.automatic_gain_control = true,
+                    .experimental_automatic_gain_control = true});
+  EXPECT_TRUE(config.gain_controller1.enabled);
+  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
+}
+
+TEST(CreateWebRtcAudioProcessingModuleTest,
+     InputVolumeAdjustmentEnabledWithAgc1) {
+  ::base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kWebRtcAllowInputVolumeAdjustment},
+      /*disabled_features=*/{features::kWebRtcHybridAgc});
+  auto config = CreateApmGetConfig(
+      /*settings=*/{.automatic_gain_control = true,
+                    .experimental_automatic_gain_control = true});
+  EXPECT_TRUE(config.gain_controller1.enabled);
+  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
+}
+
+TEST(CreateWebRtcAudioProcessingModuleTest,
+     CanDisableInputVolumeAdjustmentWithHybridAgc) {
+  ::base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kWebRtcHybridAgc},
+      /*disabled_features=*/{features::kWebRtcAllowInputVolumeAdjustment});
+  auto config = CreateApmGetConfig(
+      /*settings=*/{.automatic_gain_control = true,
+                    .experimental_automatic_gain_control = true});
+  // Check that AGC1 is entirely disabled since, in the Hybrid AGC setup, AGC1
+  // is only used for input volume adaptations.
+  EXPECT_FALSE(config.gain_controller1.enabled);
+}
+
+TEST(CreateWebRtcAudioProcessingModuleTest,
+     CannotDisableInputVolumeAdjustmentWithAgc1) {
+  ::base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kWebRtcHybridAgc,
+                             features::kWebRtcAllowInputVolumeAdjustment});
+  auto config = CreateApmGetConfig(
+      /*settings=*/{.automatic_gain_control = true,
+                    .experimental_automatic_gain_control = true});
+  EXPECT_TRUE(config.gain_controller1.enabled);
+  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
+}
+
 TEST(CreateWebRtcAudioProcessingModuleTest, VerifyNoiseSuppressionSettings) {
   for (bool noise_suppressor_enabled : {true, false}) {
     SCOPED_TRACE(noise_suppressor_enabled);

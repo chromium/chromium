@@ -55,6 +55,7 @@ BASE_FEATURE(kWebRtcAnalogAgcStartupMinVolume,
              "WebRtcAnalogAgcStartupMinVolume",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/1375239): Inactivate the flag gradually before deleting it.
 // When disabled, any WebRTC Audio Processing Module input volume recommendation
 // is ignored and no adjustment takes place.
 BASE_FEATURE(kWebRtcAllowInputVolumeAdjustment,

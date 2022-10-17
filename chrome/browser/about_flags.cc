@@ -3623,7 +3623,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-webrtc-allow-input-volume-adjustment",
      flag_descriptions::kWebRtcAllowInputVolumeAdjustmentName,
      flag_descriptions::kWebRtcAllowInputVolumeAdjustmentDescription,
-     kOsDesktop,
+     kOsWin | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(features::kWebRtcAllowInputVolumeAdjustment)},
     {"enable-webrtc-hide-local-ips-with-mdns",
      flag_descriptions::kWebrtcHideLocalIpsWithMdnsName,
