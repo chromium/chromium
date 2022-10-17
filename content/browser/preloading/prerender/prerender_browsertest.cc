@@ -4316,7 +4316,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
           kPrerender2);
   auto* preloading_attempt_impl = static_cast<PreloadingAttemptImpl*>(
       prerender2_host->preloading_attempt().get());
-  EXPECT_EQ(preloading_attempt_impl->get_triggering_outcome_for_testing(),
+  EXPECT_EQ(test::PreloadingAttemptAccessor(preloading_attempt_impl)
+                .GetTriggeringOutcome(),
             PreloadingTriggeringOutcome::kTriggeredButPending);
 
   NavigationHandleObserver activation_observer(web_contents(), kPrerender1);

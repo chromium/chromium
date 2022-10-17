@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preloading.h"
-#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/site_instance_impl.h"
@@ -19,6 +18,7 @@
 #include "content/public/browser/preloading_data.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_commit_deferring_condition.h"
@@ -527,9 +527,8 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
   // Wait for the completion of CommitPrerenderNavigation() above.
   run_loop.Run();
 
-  auto* preloading_attempt_impl =
-      static_cast<PreloadingAttemptImpl*>(preloading_attempt);
-  EXPECT_EQ(preloading_attempt_impl->get_triggering_outcome_for_testing(),
+  EXPECT_EQ(test::PreloadingAttemptAccessor(preloading_attempt)
+                .GetTriggeringOutcome(),
             PreloadingTriggeringOutcome::kFailure);
 }
 

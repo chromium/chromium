@@ -13,6 +13,10 @@
 
 namespace content {
 
+namespace test {
+class PreloadingAttemptAccessor;
+}
+
 class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
  public:
   ~PreloadingAttemptImpl() override;
@@ -45,11 +49,9 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
       ukm::SourceId triggered_primary_page_source_id,
       PreloadingURLMatchCallback url_match_predicate);
 
-  PreloadingTriggeringOutcome get_triggering_outcome_for_testing() const {
-    return triggering_outcome_;
-  }
-
  private:
+  friend class test::PreloadingAttemptAccessor;
+
   // Reason why the preloading attempt failed, this is similar to specific
   // preloading logging reason. Zero as a failure reason signifies no reason is
   // specified. This value is casted from preloading specific enum to int64_t

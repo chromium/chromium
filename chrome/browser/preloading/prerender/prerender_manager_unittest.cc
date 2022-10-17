@@ -5,12 +5,14 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -82,6 +84,14 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
 
   content::test::PrerenderTestHelper& prerender_helper() {
     return prerender_helper_;
+  }
+
+  content::PreloadingFailureReason ToPreloadingFailureReason(
+      PrerenderPredictionStatus status) {
+    return static_cast<content::PreloadingFailureReason>(
+        static_cast<int>(status) +
+        static_cast<int>(content::PreloadingFailureReason::
+                             kPreloadingFailureReasonContentEnd));
   }
 
  private:
@@ -175,6 +185,69 @@ TEST_F(PrerenderManagerTest, DestroyedOnNavigateAway) {
   web_contents_tester()->NavigateAndCommit(GetUrl("/empty.html"));
   host_observer.WaitForDestroyed();
   EXPECT_FALSE(prerender_manager()->HasSearchResultPagePrerendered());
+}
+
+TEST_F(PrerenderManagerTest, StartCleanPrerenderDirectUrlInput) {
+  GURL prerendering_url = GetUrl("/foo");
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  auto* preloading_data = content::PreloadingData::GetOrCreateForWebContents(
+      GetActiveWebContents());
+  content::PreloadingURLMatchCallback same_url_matcher =
+      content::PreloadingData::GetSameURLMatcher(prerendering_url);
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          ToPreloadingPredictor(
+              ChromePreloadingPredictor::kOmniboxDirectURLInput),
+          content::PreloadingType::kPrerender, same_url_matcher);
+
+  prerender_manager()->StartPrerenderDirectUrlInput(prerendering_url,
+                                                    *preloading_attempt);
+  registry_observer.WaitForTrigger(prerendering_url);
+  int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);
+  EXPECT_NE(prerender_host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+}
+
+// Test that the PreloadingTriggeringOutcome is set to kFailure when the DUI
+// predictor suggests a different URL.
+TEST_F(PrerenderManagerTest, StartNewPrerenderDirectUrlInput) {
+  GURL prerendering_url = GetUrl("/foo");
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  auto* preloading_data = content::PreloadingData::GetOrCreateForWebContents(
+      GetActiveWebContents());
+  content::PreloadingURLMatchCallback same_url_matcher =
+      content::PreloadingData::GetSameURLMatcher(prerendering_url);
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          ToPreloadingPredictor(
+              ChromePreloadingPredictor::kOmniboxDirectURLInput),
+          content::PreloadingType::kPrerender, same_url_matcher);
+
+  prerender_manager()->StartPrerenderDirectUrlInput(prerendering_url,
+                                                    *preloading_attempt);
+  registry_observer.WaitForTrigger(prerendering_url);
+  int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);
+  EXPECT_NE(prerender_host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::test::PrerenderHostObserver host_observer(*GetActiveWebContents(),
+                                                     prerender_host_id);
+  GURL prerendering_url2 = GetUrl("/bar");
+  content::PreloadingURLMatchCallback same_url_matcher2 =
+      content::PreloadingData::GetSameURLMatcher(prerendering_url);
+  content::PreloadingAttempt* preloading_attempt2 =
+      preloading_data->AddPreloadingAttempt(
+          ToPreloadingPredictor(
+              ChromePreloadingPredictor::kOmniboxDirectURLInput),
+          content::PreloadingType::kPrerender, same_url_matcher);
+  prerender_manager()->StartPrerenderDirectUrlInput(prerendering_url2,
+                                                    *preloading_attempt2);
+  host_observer.WaitForDestroyed();
+  registry_observer.WaitForTrigger(prerendering_url2);
+  EXPECT_EQ(ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled),
+            content::test::PreloadingAttemptAccessor(preloading_attempt)
+                .GetFailureReason());
 }
 
 }  // namespace

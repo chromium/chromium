@@ -5,6 +5,7 @@
 #include "content/public/test/preloading_test_util.h"
 
 #include "base/strings/stringprintf.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content::test {
@@ -111,6 +112,20 @@ std::string ActualVsExpectedUkmEntriesToString(
     result += UkmEntryToString(entry);
   }
   return result;
+}
+
+PreloadingAttemptAccessor::PreloadingAttemptAccessor(
+    PreloadingAttempt* preloading_attempt)
+    : preloading_attempt_(preloading_attempt) {}
+
+PreloadingTriggeringOutcome PreloadingAttemptAccessor::GetTriggeringOutcome() {
+  return static_cast<PreloadingAttemptImpl*>(preloading_attempt_)
+      ->triggering_outcome_;
+}
+
+PreloadingFailureReason PreloadingAttemptAccessor::GetFailureReason() {
+  return static_cast<PreloadingAttemptImpl*>(preloading_attempt_)
+      ->failure_reason_;
 }
 
 }  // namespace content::test

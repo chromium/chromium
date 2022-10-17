@@ -100,6 +100,14 @@ void CheckAndSetPrerenderHoldbackStatus(
   }
 }
 
+content::PreloadingFailureReason ToPreloadingFailureReason(
+    PrerenderPredictionStatus status) {
+  return static_cast<content::PreloadingFailureReason>(
+      static_cast<int>(status) +
+      static_cast<int>(content::PreloadingFailureReason::
+                           kPreloadingFailureReasonContentEnd));
+}
+
 }  // namespace
 
 PrerenderManager::~PrerenderManager() = default;
@@ -111,8 +119,7 @@ class PrerenderManager::SearchPrerenderTask {
       std::unique_ptr<content::PrerenderHandle> search_prerender_handle,
       base::WeakPtr<content::PreloadingAttempt> preloading_attempt)
       : search_prerender_handle_(std::move(search_prerender_handle)),
-        prerendered_search_terms_(search_terms),
-        preloading_attempt_(preloading_attempt) {
+        prerendered_search_terms_(search_terms) {
     expiry_timer_.Start(FROM_HERE, GetSearchPrerenderExpiryDuration(),
                         base::BindOnce(&SearchPrerenderTask::OnTimerTriggered,
                                        base::Unretained(this)));
@@ -131,21 +138,13 @@ class PrerenderManager::SearchPrerenderTask {
         prediction_status_);
   }
 
-  content::PreloadingFailureReason ToPreloadingFailureReason(
-      PrerenderPredictionStatus status) {
-    return static_cast<content::PreloadingFailureReason>(
-        static_cast<int>(status) +
-        static_cast<int>(content::PreloadingFailureReason::
-                             kPreloadingFailureReasonContentEnd));
-  }
-
   void SetFailureReason(PrerenderPredictionStatus status) {
-    if (!preloading_attempt_)
+    if (!search_prerender_handle_)
       return;
     switch (status) {
       case PrerenderPredictionStatus::kNotStarted:
       case PrerenderPredictionStatus::kCancelled:
-        preloading_attempt_->SetFailureReason(
+        search_prerender_handle_->SetPreloadingAttemptFailureReason(
             ToPreloadingFailureReason(status));
         return;
       case PrerenderPredictionStatus::kUnused:
@@ -286,9 +285,6 @@ class PrerenderManager::SearchPrerenderTask {
 
   // Stores the search term that `search_prerender_handle_` is prerendering.
   const std::u16string prerendered_search_terms_;
-
-  // Stores the PreloadingAttempt corresponding to Prerender to log metrics.
-  base::WeakPtr<content::PreloadingAttempt> preloading_attempt_;
 };
 
 void PrerenderManager::DidStartNavigation(
@@ -356,6 +352,10 @@ PrerenderManager::StartPrerenderDirectUrlInput(
     base::UmaHistogramEnumeration(
         internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
         PrerenderPredictionStatus::kCancelled);
+    // Mark the previous prerender as failure as we can't keep multiple DUI
+    // prerenders active at the same time.
+    direct_url_input_prerender_handle_->SetPreloadingAttemptFailureReason(
+        ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled));
     direct_url_input_prerender_handle_.reset();
   }
   direct_url_input_prerender_handle_ = web_contents()->StartPrerendering(
@@ -506,6 +506,9 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
                 opened_url
             ? PrerenderPredictionStatus::kHitFinished
             : PrerenderPredictionStatus::kUnused);
+    // We don't set the PreloadingFailureReason for wrong predictions, as this
+    // is not a prerender failure rather it is an in accurate triggering for DUI
+    // predictor as the user didn't end up navigating to the predicted URL.
     direct_url_input_prerender_handle_.reset();
   }
 
@@ -584,6 +587,8 @@ void PrerenderManager::StartPrerenderSearchResultInternal(
           /*preloading_attempt=*/attempt.get(), std::move(url_match_predicate));
 
   if (prerender_handle) {
+    DCHECK(!search_prerender_task_)
+        << "SearchPrerenderTask should be reset before setting a new one.";
     search_prerender_task_ = std::make_unique<SearchPrerenderTask>(
         search_terms, std::move(prerender_handle), attempt);
   }

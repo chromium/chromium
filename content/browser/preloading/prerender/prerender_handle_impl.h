@@ -19,6 +19,8 @@ class PrerenderHandleImpl final : public PrerenderHandle {
   ~PrerenderHandleImpl() override;
   GURL GetInitialPrerenderingUrl() override;
   base::WeakPtr<PrerenderHandle> GetWeakPtr() override;
+  void SetPreloadingAttemptFailureReason(
+      PreloadingFailureReason reason) override;
 
  private:
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;

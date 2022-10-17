@@ -39,4 +39,16 @@ base::WeakPtr<PrerenderHandle> PrerenderHandleImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void PrerenderHandleImpl::SetPreloadingAttemptFailureReason(
+    PreloadingFailureReason reason) {
+  if (!prerender_host_registry_)
+    return;
+  auto* prerender_host =
+      prerender_host_registry_->FindNonReservedHostById(frame_tree_node_id_);
+  if (!prerender_host) {
+    return;
+  }
+  prerender_host->preloading_attempt()->SetFailureReason(reason);
+}
+
 }  // namespace content

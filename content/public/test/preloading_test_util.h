@@ -9,6 +9,7 @@
 
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/browser/preloading_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content::test {
@@ -66,6 +67,18 @@ std::string ActualVsExpectedUkmEntryToString(
 std::string ActualVsExpectedUkmEntriesToString(
     const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>& actual,
     const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>& expected);
+
+// Utility class to access internal state from a PreloadingAttempt.
+class PreloadingAttemptAccessor {
+ public:
+  explicit PreloadingAttemptAccessor(PreloadingAttempt* preloading_attempt);
+
+  PreloadingTriggeringOutcome GetTriggeringOutcome();
+  PreloadingFailureReason GetFailureReason();
+
+ private:
+  PreloadingAttempt* preloading_attempt_;
+};
 
 }  // namespace content::test
 
