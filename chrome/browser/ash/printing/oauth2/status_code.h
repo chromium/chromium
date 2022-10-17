@@ -58,7 +58,7 @@ base::StringPiece ToStringPiece(StatusCode status);
 // When `status` is different than StatusCode::kOK, `data` may contain
 // an additional error message.
 using StatusCallback =
-    base::OnceCallback<void(StatusCode status, const std::string& data)>;
+    base::OnceCallback<void(StatusCode status, std::string data)>;
 
 }  // namespace ash::printing::oauth2
 

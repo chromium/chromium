@@ -109,7 +109,7 @@ void OnPrinterAuthenticated(
     const chromeos::Printer& printer,
     mojom::LocalPrinter::GetCapabilityCallback callback,
     ash::printing::oauth2::StatusCode status,
-    const std::string& /* access_token */) {
+    std::string /* access_token */) {
   if (status != ash::printing::oauth2::StatusCode::kOK) {
     // An error occurred.
     std::move(callback).Run(nullptr);

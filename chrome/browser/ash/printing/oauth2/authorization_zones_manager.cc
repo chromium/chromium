@@ -42,7 +42,7 @@ void LogAndCall(StatusCallback callback,
                 const GURL& auth_server,
                 const chromeos::Uri& ipp_endpoint,
                 StatusCode status,
-                const std::string& data) {
+                std::string data) {
   if (status == StatusCode::kOK || status == StatusCode::kAuthorizationNeeded) {
     PRINTER_LOG(EVENT) << LogEntry((status == StatusCode::kOK) ? "" : data,
                                    method, auth_server, status, ipp_endpoint);
@@ -50,7 +50,7 @@ void LogAndCall(StatusCallback callback,
     PRINTER_LOG(ERROR) << LogEntry(data, method, auth_server, status,
                                    ipp_endpoint);
   }
-  std::move(callback).Run(status, data);
+  std::move(callback).Run(status, std::move(data));
 }
 
 void AddLoggingToCallback(StatusCallback& callback,

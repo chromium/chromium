@@ -65,30 +65,30 @@ class AuthorizationZoneImpl : public AuthorizationZone {
   void AuthorizationProcedure();
 
   // Callback for AuthorizationServerData::Initialize().
-  void OnInitializeCallback(StatusCode status, const std::string& data);
+  void OnInitializeCallback(StatusCode status, std::string data);
 
   // Callback for AuthorizationServerSession::SendFirstTokenRequest() and
   // AuthorizationServerSession::SendNextTokenRequest().
   void OnSendTokenRequestCallback(AuthorizationServerSession* session,
                                   StatusCode status,
-                                  const std::string& data);
+                                  std::string data);
 
   // Callback for IppEndpointTokenFetcher::SendTokenExchangeRequest(...).
   void OnTokenExchangeRequestCallback(const chromeos::Uri& ipp_endpoint,
                                       StatusCode status,
-                                      const std::string& data);
+                                      std::string data);
 
   // Executes all callbacks from the waitlist of `ipp_endpoint`. Also, removes
   // `ipp_endpoint` when `status` != StatusCode::kOK.
   void ResultForIppEndpoint(const chromeos::Uri& ipp_endpoint,
                             StatusCode status,
-                            const std::string& data);
+                            std::string data);
 
   // This callback is added to the waitlist of AuthorizationSession when
   // `ipp_endpoint` must wait for the access token from it.
   void OnAccessTokenForEndpointCallback(const chromeos::Uri& ipp_endpoint,
                                         StatusCode status,
-                                        const std::string& data);
+                                        std::string data);
 
   // Tries to find OAuth session for given IPP Endpoint and send Token Exchange
   // request to obtain an endpoint access token.

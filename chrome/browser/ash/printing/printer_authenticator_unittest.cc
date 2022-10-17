@@ -50,18 +50,17 @@ class PrintingPrinterAuthenticatorTest : public testing::Test {
   // Call PrintAuthenticator::ObtainAccessTokenIfNeeded() and returns result
   // reported by the callback.
   CallbackResult CallObtainAccessTokenIfNeeded() {
-    base::MockOnceCallback<void(oauth2::StatusCode, const std::string&)>
-        callback;
+    base::MockOnceCallback<void(oauth2::StatusCode, std::string)> callback;
     CallbackResult result;
     base::RunLoop loop;
     EXPECT_CALL(callback, Run)
         .InSequence(sequence_)
-        .WillOnce([&result, &loop](oauth2::StatusCode status,
-                                   const std::string& data) {
-          result.status = status;
-          result.data = data;
-          loop.Quit();
-        });
+        .WillOnce(
+            [&result, &loop](oauth2::StatusCode status, std::string data) {
+              result.status = status;
+              result.data = std::move(data);
+              loop.Quit();
+            });
     authenticator_->ObtainAccessTokenIfNeeded(callback.Get());
     loop.Run();
     return result;
@@ -92,7 +91,7 @@ class PrintingPrinterAuthenticatorTest : public testing::Test {
         .InSequence(sequence_)
         .WillOnce([result](const GURL& auth_server, const std::string& scope,
                            oauth2::StatusCallback callback) {
-          std::move(callback).Run(result.status, result.data);
+          std::move(callback).Run(result.status, std::move(result.data));
         });
   }
 
@@ -104,7 +103,7 @@ class PrintingPrinterAuthenticatorTest : public testing::Test {
         .InSequence(sequence_)
         .WillOnce([result](const GURL& auth_server, const GURL& redirect_url,
                            oauth2::StatusCallback callback) {
-          std::move(callback).Run(result.status, result.data);
+          std::move(callback).Run(result.status, std::move(result.data));
         });
   }
 
@@ -118,7 +117,7 @@ class PrintingPrinterAuthenticatorTest : public testing::Test {
                            const chromeos::Uri& ipp_endpoint,
                            const std::string& scope,
                            oauth2::StatusCallback callback) {
-          std::move(callback).Run(result.status, result.data);
+          std::move(callback).Run(result.status, std::move(result.data));
         });
   }
 

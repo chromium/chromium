@@ -78,7 +78,7 @@ class PrinterAuthenticator {
   // `data` contain result of the completed step (`current_step`).
   void ToNextStep(Step current_step,
                   oauth2::StatusCode status,
-                  const std::string& data);
+                  std::string data);
   // Shows a dialog to the user asking if the given `auth_url` is a trusted
   // Authorization Server. Calls `callback` when the dialog is closed.
   void ShowIsTrustedDialog(const GURL& auth_url,

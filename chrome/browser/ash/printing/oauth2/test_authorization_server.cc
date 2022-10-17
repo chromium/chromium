@@ -81,14 +81,14 @@ bool ParseURLParameters(const std::string& params_str,
   return true;
 }
 
-base::OnceCallback<void(StatusCode, const std::string&)> BindResult(
+base::OnceCallback<void(StatusCode, std::string)> BindResult(
     CallbackResult& target) {
   target.status = StatusCode::kUnexpectedError;
   target.data.clear();
   auto save_results = [](CallbackResult* target, StatusCode status,
-                         const std::string& data) {
+                         std::string data) {
     target->status = status;
-    target->data = data;
+    target->data = std::move(data);
   };
   return base::BindOnce(save_results, base::Unretained(&target));
 }

@@ -34,13 +34,13 @@ void LogAndCall(oauth2::StatusCallback callback,
                 base::StringPiece method,
                 const GURL& auth_server,
                 oauth2::StatusCode status,
-                const std::string& data) {
+                std::string data) {
   if (status == oauth2::StatusCode::kOK) {
     PRINTER_LOG(EVENT) << oauth2::LogEntry("", method, auth_server, status);
   } else {
     PRINTER_LOG(ERROR) << oauth2::LogEntry(data, method, auth_server, status);
   }
-  std::move(callback).Run(status, data);
+  std::move(callback).Run(status, std::move(data));
 }
 
 }  // namespace
@@ -103,12 +103,12 @@ oauth2::StatusCallback PrinterAuthenticator::OnComplete(Step step) {
 
 void PrinterAuthenticator::ToNextStep(PrinterAuthenticator::Step current_step,
                                       oauth2::StatusCode status,
-                                      const std::string& data) {
+                                      std::string data) {
   switch (current_step) {
     case Step::kGetAccessToken:
       if (status == oauth2::StatusCode::kOK) {
         // Success, return the endpoint access token.
-        std::move(callback_).Run(status, data);
+        std::move(callback_).Run(status, std::move(data));
         return;
       }
       if (status == oauth2::StatusCode::kUntrustedAuthorizationServer) {

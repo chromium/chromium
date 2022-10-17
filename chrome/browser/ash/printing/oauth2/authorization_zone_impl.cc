@@ -110,10 +110,9 @@ base::expected<std::string, std::string> ExtractParameter(
 
 // Calls `callback` with `status` and `data` as parameters. When `status` equals
 // StatusCode::kOK, ignores `data` and passes an empty string instead.
-void NoDataForOK(StatusCallback callback,
-                 StatusCode status,
-                 const std::string& data) {
-  std::move(callback).Run(status, (status == StatusCode::kOK) ? "" : data);
+void NoDataForOK(StatusCallback callback, StatusCode status, std::string data) {
+  std::move(callback).Run(status,
+                          (status == StatusCode::kOK) ? "" : std::move(data));
 }
 
 }  // namespace
@@ -327,9 +326,9 @@ void AuthorizationZoneImpl::AuthorizationProcedure() {
     PendingAuthorization& pa = pending_authorizations_.emplace_back(
         std::move(wa.scopes), RandBase64String<kLengthOfState>(),
         RandBase64String<kLengthOfCodeVerifier>());
-    const std::string auth_url = GetAuthorizationURL(
-        server_data_, pa.scopes, pa.state, pa.code_verifier);
-    std::move(wa.callback).Run(StatusCode::kOK, auth_url);
+    std::string auth_url = GetAuthorizationURL(server_data_, pa.scopes,
+                                               pa.state, pa.code_verifier);
+    std::move(wa.callback).Run(StatusCode::kOK, std::move(auth_url));
   }
   waiting_authorizations_.clear();
 }
@@ -363,7 +362,7 @@ void AuthorizationZoneImpl::MarkAuthorizationZoneAsUntrusted() {
 }
 
 void AuthorizationZoneImpl::OnInitializeCallback(StatusCode status,
-                                                 const std::string& data) {
+                                                 std::string data) {
   if (status == StatusCode::kOK) {
     AuthorizationProcedure();
     return;
@@ -378,7 +377,7 @@ void AuthorizationZoneImpl::OnInitializeCallback(StatusCode status,
 void AuthorizationZoneImpl::OnSendTokenRequestCallback(
     AuthorizationServerSession* session,
     StatusCode status,
-    const std::string& data) {
+    std::string data) {
   // Find the session for which the request was completed.
   auto it_session = base::ranges::find(
       sessions_, session, &std::unique_ptr<AuthorizationServerSession>::get);
@@ -386,23 +385,20 @@ void AuthorizationZoneImpl::OnSendTokenRequestCallback(
 
   // Get the list of callbacks to run and copy the data.
   std::vector<StatusCallback> callbacks = session->TakeWaitingList();
-  // We have to make a copy of `data` here because it may be an error message
-  // owned by the session object deleted in the next if block.
-  const std::string data2 = data;
   // Erase the session if the request failed.
   if (status != StatusCode::kOK) {
     sessions_.erase(it_session);
   }
   // Run the callbacks.
   for (auto& callback : callbacks) {
-    std::move(callback).Run(status, data2);
+    std::move(callback).Run(status, data);
   }
 }
 
 void AuthorizationZoneImpl::OnTokenExchangeRequestCallback(
     const chromeos::Uri& ipp_endpoint,
     StatusCode status,
-    const std::string& data) {
+    std::string data) {
   if (status == StatusCode::kInvalidAccessToken) {
     // The access token used by IppEndpointFetcher is invalid. Find the session
     // the token came from and ask it to refresh the token.
@@ -430,34 +426,31 @@ void AuthorizationZoneImpl::OnTokenExchangeRequestCallback(
     return;
   }
   // For all other statuses just send back the result.
-  ResultForIppEndpoint(ipp_endpoint, status, data);
+  ResultForIppEndpoint(ipp_endpoint, status, std::move(data));
 }
 
 void AuthorizationZoneImpl::ResultForIppEndpoint(
     const chromeos::Uri& ipp_endpoint,
     StatusCode status,
-    const std::string& data) {
+    std::string data) {
   auto it = ipp_endpoints_.find(ipp_endpoint);
   DCHECK(it != ipp_endpoints_.end());
   // The list of callbacks to run.
   std::vector<StatusCallback> callbacks = it->second->TakeWaitingList();
-  // We have to make a copy of `data` here because it may be an error message
-  // owned by the ipp_endpoint object deleted in the next if block.
-  const std::string data2 = data;
   // Erase the IPP Endpoint in case of an error.
   if (status != StatusCode::kOK) {
     ipp_endpoints_.erase(it);
   }
   // Run the callbacks.
   for (auto& callback : callbacks) {
-    std::move(callback).Run(status, data2);
+    std::move(callback).Run(status, data);
   }
 }
 
 void AuthorizationZoneImpl::OnAccessTokenForEndpointCallback(
     const chromeos::Uri& ipp_endpoint,
     StatusCode status,
-    const std::string& data) {
+    std::string data) {
   auto it = ipp_endpoints_.find(ipp_endpoint);
   DCHECK(it != ipp_endpoints_.end());
   IppEndpointTokenFetcher* endpoint = it->second.get();
@@ -484,7 +477,7 @@ void AuthorizationZoneImpl::OnAccessTokenForEndpointCallback(
       break;
     default:
       // For all other statuses just send back the result.
-      ResultForIppEndpoint(ipp_endpoint, status, data);
+      ResultForIppEndpoint(ipp_endpoint, status, std::move(data));
       break;
   }
 }
