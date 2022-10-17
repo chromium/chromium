@@ -54,7 +54,7 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
             return;
         }
 
-        // TODO(crrev.com/1374142): Adopt new type in AndroidX.
+        // TODO(crbug.com/1374142: Add array buffer type support.
         if (payload.getType() != MessagePayloadType.STRING) {
             return;
         }

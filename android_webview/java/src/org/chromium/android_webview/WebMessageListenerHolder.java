@@ -27,7 +27,7 @@ public class WebMessageListenerHolder {
 
     @CalledByNative
     public void onPostMessage(MessagePayload payload, String sourceOrigin, boolean isMainFrame,
-                              MessagePort[] ports, JsReplyProxy replyProxy) {
+            MessagePort[] ports, JsReplyProxy replyProxy) {
         mListener.onPostMessage(payload, Uri.parse(sourceOrigin), isMainFrame, replyProxy, ports);
     }
 

@@ -17,7 +17,7 @@ import org.chromium.content_public.browser.MessagePort;
 public interface WebMessageListener {
     /**
      * Receives postMessage information.
-     * @param payload      The message from JavaScript.
+     * @param payload      The message payload from JavaScript.
      * @param sourceOrigin The origin of the frame where the message is from.
      * @param isMainFrame  If the message is from a main frame.
      * @param jsReplyProxy Used for reply message to the injected JavaScript object.
@@ -26,5 +26,5 @@ public interface WebMessageListener {
      *                     won't be null.
      */
     void onPostMessage(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
-                       JsReplyProxy jsReplyProxy, MessagePort[] ports);
+            JsReplyProxy jsReplyProxy, MessagePort[] ports);
 }
