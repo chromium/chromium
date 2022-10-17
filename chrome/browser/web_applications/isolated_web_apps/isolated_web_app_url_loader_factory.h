@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +29,10 @@ struct MutableNetworkTrafficAnnotationTag;
 
 namespace network {
 struct ResourceRequest;
+}
+
+namespace web_package {
+class SignedWebBundleId;
 }
 
 namespace web_app {
@@ -58,6 +63,13 @@ class IsolatedWebAppURLLoaderFactory
       int frame_tree_node_id,
       Profile* profile,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+
+  void HandleSignedBundle(
+      const base::FilePath& path,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+      const network::ResourceRequest& resource_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client);
 
   void HandleDevModeProxy(
       const IsolatedWebAppUrlInfo& url_info,

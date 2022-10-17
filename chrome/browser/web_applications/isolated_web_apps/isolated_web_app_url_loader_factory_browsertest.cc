@@ -161,7 +161,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public InProcessBrowserTest {
   }
 
   const std::string kWebBundleId =
-      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac";
+      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
   const std::string kPrimaryUrl = "isolated-app://" + kWebBundleId;
 
   bool enable_isolated_web_apps_feature_;
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
       GURL(kPrimaryUrl + "/non-existing"),
       "Failed to read response from Signed Web Bundle: The Web Bundle does not "
       "contain a response for the provided URL: "
-      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/"
+      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
       "non-existing");
 }
 
@@ -313,15 +313,15 @@ INSTANTIATE_TEST_SUITE_P(
             "characters long, but was 3 characters long."),
         std::make_pair(
             GURL("isolated-app://"
-                 "9erugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac"),
+                 "9erugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"),
             "The host of isolated-app:// URLs must be a valid Signed Web "
             "Bundle ID (got "
-            "9erugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac): The "
+            "9erugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic): The "
             "signed web bundle ID must only contain lowercase ASCII characters "
             "and digits between 2 and 7 (without any padding)."),
         std::make_pair(
             GURL("isolated-app://"
-                 "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac"),
+                 "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"),
             "Failed to read response from Signed Web Bundle: Failed to parse "
             "integrity block: FILE_ERROR_NOT_FOUND")));
 
