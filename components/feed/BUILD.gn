@@ -32,6 +32,7 @@ source_set("unit_tests") {
   sources = [ "feed_feature_list_unittest.cc" ]
   deps = [
     ":feature_list",
+    "core/common:feed_core_common_unit_tests",
     "core/v2:core_unit_tests",
     "//base",
     "//base/test:test_support",

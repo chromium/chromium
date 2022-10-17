@@ -2600,8 +2600,10 @@ TEST_F(FeedApiTest, UnloadOnlyOneOfMultipleModels) {
 
 TEST_F(FeedApiTest, ExperimentsAreClearedOnClearAll) {
   Experiments e;
-  e["Trial1"] = "Group1";
-  e["Trial2"] = "Group2";
+  std::vector<std::string> group_list1{"Group1"};
+  std::vector<std::string> group_list2{"Group2"};
+  e["Trial1"] = group_list1;
+  e["Trial2"] = group_list2;
   prefs::SetExperiments(e, profile_prefs_);
 
   stream_->OnCacheDataCleared();  // triggers ClearAll().

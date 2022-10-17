@@ -1990,6 +1990,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 09/2022.
   profile_prefs->ClearPref(kFirstPartySetsEnabled);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Added 10/2022
+  feed::MigrateObsoleteProfilePrefsOct_2022(profile_prefs);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 

@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -72,9 +73,9 @@ using EphemeralChangeId = base::IdTypeU32<class EphemeralChangeIdClass>;
 using SurfaceId = base::IdTypeU32<class SurfaceIdClass>;
 using ImageFetchId = base::IdTypeU32<class ImageFetchIdClass>;
 
-// A map of trial names (key) to group names (value) that is
+// A map of trial names (key) and list of group names/IDs (value)
 // sent from the server.
-typedef std::map<std::string, std::string> Experiments;
+typedef std::map<std::string, std::vector<std::string>> Experiments;
 
 struct NetworkResponseInfo {
   NetworkResponseInfo();

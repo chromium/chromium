@@ -38,7 +38,6 @@ const char kMetricsData[] = "feedv2.metrics_data";
 const char kClientInstanceId[] = "feedv2.client_instance_id";
 // This pref applies to all discover APIs despite the string.
 const char kDiscoverAPIEndpointOverride[] = "feedv2.actions_endpoint_override";
-const char kExperiments[] = "feedv2.experiments";
 const char kEnableWebFeedFollowIntroDebug[] =
     "webfeed_follow_intro_debug.enable";
 const char kReliabilityLoggingIdSalt[] = "feedv2.reliability_logging_id_salt";
@@ -49,6 +48,10 @@ const char kFeedOnDeviceUserActionsCollector[] = "feed.user_actions_collection";
 const char kInfoCardStates[] = "feed.info_card_states";
 const char kHasSeenWebFeed[] = "webfeed.has_seen_feed";
 const char kLastBadgeAnimationTime[] = "webfeed.last_badge_animation_time";
+const char kExperimentsV2[] = "feedv2.experiments_v2";
+
+// Deprecated October 2022
+const char kExperimentsDeprecated[] = "feedv2.experiments";
 
 }  // namespace prefs
 
@@ -62,6 +65,10 @@ const char kIsWebFeedSubscriber[] = "webfeed.is_subscriber";
 void RegisterObsoletePrefsJune_2021(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kEnableWebFeedUI, false);
   registry->RegisterBooleanPref(kIsWebFeedSubscriber, false);
+}
+
+void RegisterObsoletePrefsOct_2022(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kExperimentsDeprecated);
 }
 
 }  // namespace
@@ -84,7 +91,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardViewsCount, 0);
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardClicksCount, 0);
-  registry->RegisterDictionaryPref(feed::prefs::kExperiments);
   registry->RegisterBooleanPref(feed::prefs::kEnableWebFeedFollowIntroDebug,
                                 false);
   registry->RegisterUint64Pref(feed::prefs::kReliabilityLoggingIdSalt, 0);
@@ -97,6 +103,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(feed::prefs::kHasSeenWebFeed, false);
   registry->RegisterTimePref(feed::prefs::kLastBadgeAnimationTime,
                              base::Time());
+  registry->RegisterDictionaryPref(feed::prefs::kExperimentsV2);
 
 #if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(feed::prefs::kLastFetchHadLoggingEnabled,
@@ -104,11 +111,28 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_IOS)
 
   RegisterObsoletePrefsJune_2021(registry);
+  RegisterObsoletePrefsOct_2022(registry);
 }
 
 void MigrateObsoleteProfilePrefsJune_2021(PrefService* prefs) {
   prefs->ClearPref(kEnableWebFeedUI);
   prefs->ClearPref(kIsWebFeedSubscriber);
+}
+
+void MigrateObsoleteProfilePrefsOct_2022(PrefService* prefs) {
+  const base::Value* val =
+      prefs->GetUserPrefValue(prefs::kExperimentsDeprecated);
+  const base::Value::Dict* old = val ? val->GetIfDict() : nullptr;
+  if (old) {
+    base::Value::Dict dict;
+    for (const auto kv : *old) {
+      base::Value::List list;
+      list.Append(kv.second.GetString());
+      dict.Set(kv.first, std::move(list));
+    }
+    prefs->SetDict(feed::prefs::kExperimentsV2, std::move(dict));
+  }
+  prefs->ClearPref(prefs::kExperimentsDeprecated);
 }
 
 }  // namespace feed
