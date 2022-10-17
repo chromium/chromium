@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
-import {Menu} from './menu.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {util} from '../../../common/js/util.js';
 import {MockActionModel, MockActionsModel} from '../mock_actions_model.js';
 
 import {ActionsSubmenu} from './actions_submenu.js';
+import {Menu} from './menu.js';
 
 let menu = null;
 let submenu = null;
@@ -26,8 +27,8 @@ export function setUp() {
       <cr-menu id="menu">
       <hr id="actions-separator" hidden>
       </cr-menu>`;
-  menu = util.queryDecoratedElement('#menu', Menu);
-  separator = util.queryRequiredElement('#actions-separator', menu);
+  menu = queryDecoratedElement('#menu', Menu);
+  separator = queryRequiredElement('#actions-separator', menu);
   submenu = new ActionsSubmenu(menu);
 }
 

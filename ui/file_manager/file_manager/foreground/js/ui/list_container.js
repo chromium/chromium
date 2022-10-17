@@ -6,6 +6,7 @@ import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
+import {queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {util} from '../../../common/js/util.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
@@ -80,7 +81,7 @@ export class ListContainer {
      * @const
      */
     this.spinner =
-        util.queryRequiredElement('files-spinner.loading-indicator', element);
+        queryRequiredElement('files-spinner.loading-indicator', element);
 
     /**
      * @type {FileListModel}

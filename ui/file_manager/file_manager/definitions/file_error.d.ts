@@ -25,3 +25,19 @@ interface FileError extends DOMException {
   TYPE_MISMATCH_ERR: number;
   PATH_EXISTS_ERR: number;
 }
+
+/**
+ * DOMError is deprecated and not shipped with TS anymore.
+ * Definition copied from:
+ * https://github.com/microsoft/TypeScript/blob/v3.7.7/lib/lib.dom.d.ts
+ */
+interface DOMError {
+  readonly name: string;
+  message: string;
+  toString(): string;
+}
+
+declare let DOMError: {
+  prototype: DOMError,
+  new (name: string, message?: string): DOMError,
+};

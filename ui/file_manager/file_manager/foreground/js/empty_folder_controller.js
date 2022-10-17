@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -56,12 +57,12 @@ export class EmptyFolderController {
     /**
      * @private {!HTMLElement}
      */
-    this.label_ = util.queryRequiredElement('.label', emptyFolder);
+    this.label_ = queryRequiredElement('.label', emptyFolder);
 
     /**
      * @private {!HTMLElement}
      */
-    this.image_ = util.queryRequiredElement('.image', emptyFolder);
+    this.image_ = queryRequiredElement('.image', emptyFolder);
 
     /**
      * @private {boolean}

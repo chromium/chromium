@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {createChild} from '../../common/js/dom_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
@@ -17,7 +16,6 @@ import {EmptyFolderController} from './empty_folder_controller.js';
 import {FileListModel} from './file_list_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
-
 
 /**
  * @type {!HTMLElement}
@@ -80,12 +78,12 @@ export function setUp() {
 
   // Create EmptyFolderController instance with dependencies.
   element = /** @type {!HTMLElement} */ (document.createElement('div'));
-  util.createChild(element, 'label', 'span');
+  createChild(element, 'label', 'span');
 
   // Setup the image, nested svg and nested use elements.
-  const image = util.createChild(element, 'image');
-  const svg = util.createChild(image, undefined, 'svg');
-  util.createChild(svg, undefined, 'use');
+  const image = createChild(element, 'image');
+  const svg = createChild(image, undefined, 'svg');
+  createChild(svg, undefined, 'use');
 
   directoryModel = createFakeDirectoryModel();
   fileListModel = new FileListModel(new MockMetadataModel({}));

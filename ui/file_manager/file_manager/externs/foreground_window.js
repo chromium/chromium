@@ -30,4 +30,7 @@ export class ForegroundWindow {
      */
     this.background;
   }
+
+  /** @return {boolean} */
+  isFocused() {}
 }

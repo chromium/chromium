@@ -4,13 +4,14 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {decorate} from 'chrome://resources/js/cr/ui.js';
-import {Command} from './command.js';
-import {Menu} from './menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {queryDecoratedElement} from '../../../common/js/dom_utils.js';
 import {util} from '../../../common/js/util.js';
 
+import {Command} from './command.js';
+import {Menu} from './menu.js';
 import {MultiMenuButton} from './multi_menu_button.js';
 
 /** @type {MultiMenuButton} */
@@ -84,10 +85,10 @@ export function setUp() {
 
   // Initialize cr.ui.Command with the <command>s.
   decorate('command', Command);
-  menubutton = util.queryDecoratedElement('#test-menu-button', MultiMenuButton);
-  topMenu = util.queryDecoratedElement('#menu', Menu);
-  subMenu = util.queryDecoratedElement('#sub-menu', Menu);
-  secondSubMenu = util.queryDecoratedElement('#second-sub-menu', Menu);
+  menubutton = queryDecoratedElement('#test-menu-button', MultiMenuButton);
+  topMenu = queryDecoratedElement('#menu', Menu);
+  subMenu = queryDecoratedElement('#sub-menu', Menu);
+  secondSubMenu = queryDecoratedElement('#second-sub-menu', Menu);
 }
 
 /**

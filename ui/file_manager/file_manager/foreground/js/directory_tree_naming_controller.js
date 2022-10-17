@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {util} from '../../common/js/util.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
@@ -242,7 +243,7 @@ export class DirectoryTreeNamingController {
   onKeyDown_(event) {
     event.stopPropagation();
 
-    switch (util.getKeyModifiers(event) + event.key) {
+    switch (getKeyModifiers(event) + event.key) {
       case 'Escape':
         this.cancelRename_();
         event.preventDefault();

@@ -10,6 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {DialogType} from '../../common/js/dialog_type.js';
+import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
@@ -671,7 +672,7 @@ export class FileManager extends EventTarget {
         assert(this.providersModel_));
     this.selectionMenuController_ = new SelectionMenuController(
         this.ui_.selectionMenuButton,
-        util.queryDecoratedElement('#file-context-menu', Menu));
+        queryDecoratedElement('#file-context-menu', Menu));
     this.toolbarController_ = new ToolbarController(
         this.ui_.toolbar, this.ui_.dialogNavigationList, this.ui_.listContainer,
         this.selectionHandler_, this.directoryModel_, this.volumeManager_,
@@ -831,7 +832,7 @@ export class FileManager extends EventTarget {
     CommandUtil.forceDefaultHandler(node, 'paste');
     CommandUtil.forceDefaultHandler(node, 'delete');
     node.addEventListener('keydown', e => {
-      const key = util.getKeyModifiers(e) + e.keyCode;
+      const key = getKeyModifiers(e) + e.keyCode;
       if (key === '190' /* '/' */ || key === '191' /* '.' */) {
         // If this key event is propagated, this is handled search command,
         // which calls 'preventDefault' method.
@@ -1006,7 +1007,7 @@ export class FileManager extends EventTarget {
     this.fileFilter_ = new FileFilter(this.volumeManager_);
 
     // Set the files-ng class for dialog header styling.
-    const dialogHeader = util.queryRequiredElement('.dialog-header');
+    const dialogHeader = queryRequiredElement('.dialog-header');
     dialogHeader.classList.add('files-ng');
 
     // Create the root view of FileManager.
@@ -1032,12 +1033,12 @@ export class FileManager extends EventTarget {
     const dom = this.dialogDom_;
     assert(dom);
 
-    const table = util.queryRequiredElement('.detail-table', dom);
+    const table = queryRequiredElement('.detail-table', dom);
     FileTable.decorate(
         table, this.metadataModel_, this.volumeManager_,
         /** @type {!A11yAnnounce} */ (this.ui_),
         this.dialogType == DialogType.FULL_PAGE);
-    const grid = util.queryRequiredElement('.thumbnail-grid', dom);
+    const grid = queryRequiredElement('.thumbnail-grid', dom);
     FileGrid.decorate(
         grid, this.metadataModel_, this.volumeManager_,
         /** @type {!A11yAnnounce} */ (this.ui_));
@@ -1048,8 +1049,6 @@ export class FileManager extends EventTarget {
 
     // Handle UI events.
     this.progressCenter.addPanel(this.ui_.progressCenterPanel);
-
-    util.addIsFocusedMethod();
 
     // Arrange the file list.
     this.ui_.listContainer.table.normalizeColumns();

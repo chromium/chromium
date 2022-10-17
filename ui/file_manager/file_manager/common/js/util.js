@@ -9,7 +9,6 @@
  */
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
-import {decorate} from 'chrome://resources/js/cr/ui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';
@@ -18,6 +17,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {promisify} from './api.js';
+import {createDOMError} from './dom_utils.js';
 import {EntryList} from './files_app_entry_types.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
@@ -97,23 +97,6 @@ util.FileError = {
   ENCODING_ERR: 'EncodingError',
 };
 Object.freeze(util.FileError);
-
-/**
- * @param {string} str String to escape.
- * @return {string} Escaped string.
- */
-util.htmlEscape = str => {
-  return str.replace(/[<>&]/g, entity => {
-    switch (entity) {
-      case '<':
-        return '&lt;';
-      case '>':
-        return '&gt;';
-      case '&':
-        return '&amp;';
-    }
-  });
-};
 
 /**
  * Remove a file or a directory.
@@ -200,18 +183,6 @@ util.bytesToString = (bytes, addedPrecision = 0) => {
 };
 
 /**
- * Returns a string '[Ctrl-][Alt-][Shift-][Meta-]' depending on the event
- * modifiers. Convenient for writing out conditions in keyboard handlers.
- *
- * @param {Event} event The keyboard event.
- * @return {string} Modifiers.
- */
-util.getKeyModifiers = event => {
-  return (event.ctrlKey ? 'Ctrl-' : '') + (event.altKey ? 'Alt-' : '') +
-      (event.shiftKey ? 'Shift-' : '') + (event.metaKey ? 'Meta-' : '');
-};
-
-/**
  * Extracts path from filesystem: URL.
  * @param {?string=} url Filesystem URL.
  * @return {?string} The path if it can be parsed, null if it cannot.
@@ -225,52 +196,6 @@ util.extractFilePath = url => {
     return null;
   }
   return decodeURIComponent(path);
-};
-
-/**
- * A shortcut function to create a child element with given tag and class.
- *
- * @param {!HTMLElement} parent Parent element.
- * @param {string=} opt_className Class name.
- * @param {string=} opt_tag Element tag, DIV is omitted.
- * @return {!HTMLElement} Newly created element.
- */
-util.createChild = (parent, opt_className, opt_tag) => {
-  const child = parent.ownerDocument.createElement(opt_tag || 'div');
-  if (opt_className) {
-    child.className = opt_className;
-  }
-  parent.appendChild(child);
-  return /** @type {!HTMLElement} */ (child);
-};
-
-/**
- * Query an element that's known to exist by a selector. We use this instead of
- * just calling querySelector and not checking the result because this lets us
- * satisfy the JSCompiler type system.
- * @param {string} selectors CSS selectors to query the element.
- * @param {(!Document|!DocumentFragment|!Element)=} context An optional
- *     context object for querySelector.
- * @return {!HTMLElement} the Element.
- */
-util.queryRequiredElement = (selectors, context) => {
-  const element = (context || document).querySelector(selectors);
-  return assertInstanceof(
-      element, HTMLElement, 'Missing required element: ' + selectors);
-};
-
-/**
- * Obtains the element that should exist, decorates it with given type, and
- * returns it.
- * @param {string} query Query for the element.
- * @param {function(new: T, ...)} type Type used to decorate.
- * @template T
- * @return {!T} Decorated element.
- */
-util.queryDecoratedElement = (query, type) => {
-  const element = util.queryRequiredElement(query);
-  decorate(element, type);
-  return element;
 };
 
 /**
@@ -315,29 +240,6 @@ util.strf = strf;
 util.runningInBrowser = () => {
   return !window.appID;
 };
-
-/**
- * Adds an isFocused method to the current window object.
- */
-util.addIsFocusedMethod = () => {
-  let focused = true;
-
-  window.addEventListener('focus', () => {
-    focused = true;
-  });
-
-  window.addEventListener('blur', () => {
-    focused = false;
-  });
-
-  /**
-   * @return {boolean} True if focused.
-   */
-  window.isFocused = () => {
-    return focused;
-  };
-};
-
 
 /**
  * The type of a file operation.
@@ -521,61 +423,6 @@ util.isTrashEntry = entry => {
       entry.rootType == VolumeManagerCommon.RootType.TRASH;
 };
 
-/**
- * Creates an instance of UserDOMError subtype of DOMError because DOMError is
- * deprecated and its Closure extern is wrong, doesn't have the constructor
- * with 2 arguments. This DOMError looks like a FileError except that it does
- * not have the deprecated FileError.code member.
- *
- * @param {string} name Error name for the file error.
- * @param {string=} opt_message optional message.
- * @return {DOMError} DOMError instance
- */
-util.createDOMError = (name, opt_message) => {
-  return new util.UserDOMError(name, opt_message);
-};
-
-/**
- * Creates a DOMError-like object to be used in place of returning file errors.
- */
-util.UserDOMError = class UserDOMError extends DOMError {
-  /**
-   * @param {string} name Error name for the file error.
-   * @param {string=} opt_message Optional message for this error.
-   * @suppress {checkTypes} Closure externs for DOMError doesn't have
-   * constructor with 2 args.
-   */
-  constructor(name, opt_message) {
-    super(name, opt_message);
-
-    /**
-     * @type {string}
-     * @private
-     */
-    this.name_ = name;
-
-    /**
-     * @type {string}
-     * @private
-     */
-    this.message_ = opt_message || '';
-    Object.freeze(this);
-  }
-
-  /**
-   * @return {string} File error name.
-   */
-  get name() {
-    return this.name_;
-  }
-
-  /**
-   * @return {string} Error message.
-   */
-  get message() {
-    return this.message_;
-  }
-};
 
 /**
  * Compares two entries.
@@ -818,11 +665,9 @@ util.isDescendantEntry = (ancestorEntry, childEntry) => {
 
 /**
  * The last URL with visitURL().
- *
- * @type {string}
- * @private
+ * @private {string}
  */
-util.lastVisitedURL;
+let lastVisitedURL;
 
 /**
  * Visit the URL.
@@ -833,7 +678,7 @@ util.lastVisitedURL;
  * @param {!string} url URL to visit.
  */
 util.visitURL = url => {
-  util.lastVisitedURL = url;
+  lastVisitedURL = url;
   // openURL opens URLs in the primary browser (ash vs lacros) as opposed to
   // window.open which always opens URLs in ash-chrome.
   chrome.fileManagerPrivate.openURL(url);
@@ -845,7 +690,7 @@ util.visitURL = url => {
  * @return {string} The last URL visited.
  */
 util.getLastVisitedURL = () => {
-  return util.lastVisitedURL;
+  return lastVisitedURL;
 };
 
 /**
@@ -1189,19 +1034,6 @@ util.isNonModifiable = (volumeManager, entry) => {
 };
 
 /**
- * Checks if the specified set of allowed effects contains the given effect.
- * See: http://www.w3.org/TR/html5/editing.html#the-datatransfer-interface
- *
- * @param {string} effectAllowed The string denoting the set of allowed effects.
- * @param {string} dropEffect The effect to be checked.
- * @return {boolean} True if |dropEffect| is included in |effectAllowed|.
- */
-util.isDropEffectAllowed = (effectAllowed, dropEffect) => {
-  return effectAllowed === 'all' ||
-      effectAllowed.toLowerCase().indexOf(dropEffect) !== -1;
-};
-
-/**
  * Adds a foreground listener to the background page components.
  * The listener will be removed when the foreground window is closed.
  * @param {!EventTarget} target
@@ -1389,7 +1221,7 @@ util.readEntriesRecursively =
       const maybeRunCallback = () => {
         if (numRunningTasks === 0) {
           if (shouldStop()) {
-            errorCallback(util.createDOMError(util.FileError.ABORT_ERR));
+            errorCallback(createDOMError(util.FileError.ABORT_ERR));
           } else if (error) {
             errorCallback(error);
           } else {
@@ -1605,35 +1437,6 @@ util.isSameVolume = (entries, volumeManager) => {
   }
 
   return true;
-};
-
-/**
- * Sets line clamp properties on elements to limit element's text to specified
- * number of lines and add ellipsis.
- *
- * @param {!Element} element Element to clamp.
- * @param {string} lines Maximum number of lines in element.
- * @return {!Element}
- */
-util.setClampLine = (element, lines) => {
-  element.style.overflow = 'hidden';
-  element.style.textOverflow = 'ellipsis';
-  element.style.webkitBoxOrient = 'vertical';
-  element.style.display = '-webkit-box';
-  element.style.webkitLineClamp = lines;
-
-  return element;
-};
-
-/**
- * Returns true if the element's content has overflowed.
- *
- * @param {!Element} element The element to check.
- * @returns {boolean}
- */
-util.hasOverflow = (element) => {
-  return element.clientWidth < element.scrollWidth ||
-      element.clientHeight < element.scrollHeight;
 };
 
 /**

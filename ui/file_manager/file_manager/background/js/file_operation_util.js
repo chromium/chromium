@@ -6,6 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {AsyncUtil} from '../../common/js/async_util.js';
+import {createDOMError} from '../../common/js/dom_utils.js';
 import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {metrics} from '../../common/js/metrics.js';
 import {TrashEntry} from '../../common/js/trash.js';
@@ -417,7 +418,7 @@ fileOperationUtil.copyTo =
             chrome.fileManagerPrivate.onCopyProgress.removeListener(
                 onCopyProgress);
             const forceErrorForTest = util.FileError.INVALID_STATE_ERR;
-            errorCallback(util.createDOMError(forceErrorForTest));
+            errorCallback(createDOMError(forceErrorForTest));
             callback();
             return;
           }
@@ -478,7 +479,7 @@ fileOperationUtil.copyTo =
                   ' error: ' + status.error);
               chrome.fileManagerPrivate.onCopyProgress.removeListener(
                   onCopyProgress);
-              errorCallback(util.createDOMError(status.error));
+              errorCallback(createDOMError(status.error));
               callback();
               break;
 
@@ -489,8 +490,7 @@ fileOperationUtil.copyTo =
                   onCopyProgress);
               chrome.fileManagerPrivate.cancelCopy(
                   assert(copyId), util.checkAPIError);
-              errorCallback(
-                  util.createDOMError(util.FileError.INVALID_STATE_ERR));
+              errorCallback(createDOMError(util.FileError.INVALID_STATE_ERR));
               callback();
           }
         });
@@ -509,7 +509,7 @@ fileOperationUtil.copyTo =
               chrome.fileManagerPrivate.onCopyProgress.removeListener(
                   onCopyProgress);
               errorCallback(
-                  util.createDOMError(chrome.runtime.lastError.message || ''));
+                  createDOMError(chrome.runtime.lastError.message || ''));
               return;
             }
 
@@ -910,7 +910,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
           if (this.cancelRequested_) {
             errorCallback(new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
-                util.createDOMError(util.FileError.ABORT_ERR)));
+                createDOMError(util.FileError.ABORT_ERR)));
             return;
           }
           progressCallback();
@@ -991,7 +991,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
           if (this.cancelRequested_) {
             errorCallback(new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
-                util.createDOMError(util.FileError.ABORT_ERR)));
+                createDOMError(util.FileError.ABORT_ERR)));
             return;
           }
           this.cancelCallback_ = fileOperationUtil.copyTo(
@@ -1084,7 +1084,7 @@ fileOperationUtil.MoveTask = class extends fileOperationUtil.Task {
           if (this.cancelRequested_) {
             errorCallback(new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
-                util.createDOMError(util.FileError.ABORT_ERR)));
+                createDOMError(util.FileError.ABORT_ERR)));
             return;
           }
           progressCallback();
@@ -1184,7 +1184,7 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
             this.targetDirEntry, destName + '.zip');
 
         if (this.cancelRequested_) {
-          throw util.createDOMError(util.FileError.ABORT_ERR);
+          throw createDOMError(util.FileError.ABORT_ERR);
         }
 
         // Start ZIP operation.
@@ -1224,8 +1224,8 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
           // Check for error.
           if (result > 0) {
             throw this.cancelRequested_ ?
-                util.createDOMError(util.FileError.ABORT_ERR) :
-                util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
+                createDOMError(util.FileError.ABORT_ERR) :
+                createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
           }
 
           // Report progress.

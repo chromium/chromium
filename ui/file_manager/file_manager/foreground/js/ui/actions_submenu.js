@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
+import {util} from '../../../common/js/util.js';
+import {ActionsModel} from '../actions_model.js';
+
 import {Command} from './command.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
-
-import {util} from '../../../common/js/util.js';
-import {ActionsModel} from '../actions_model.js';
 
 export class ActionsSubmenu {
   /** @param {!Menu} menu */
@@ -23,7 +24,7 @@ export class ActionsSubmenu {
      * @const
      */
     this.separator_ = /** @type {!MenuItem} */
-        (util.queryRequiredElement('#actions-separator', this.menu_));
+        (queryRequiredElement('#actions-separator', this.menu_));
 
     /**
      * @private {!Array<!MenuItem>}
@@ -69,7 +70,7 @@ export class ActionsSubmenu {
       menuItem.classList.toggle('hide-on-toolbar', true);
       delete remainingActions[ActionsModel.CommonActionId.SHARE];
     }
-    util.queryDecoratedElement('#share', Command).canExecuteChange(element);
+    queryDecoratedElement('#share', Command).canExecuteChange(element);
 
     // Then add the Manage in Drive item (if available).
     const manageInDriveAction =
@@ -80,14 +81,13 @@ export class ActionsSubmenu {
       menuItem.classList.toggle('hide-on-toolbar', true);
       delete remainingActions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE];
     }
-    util.queryDecoratedElement('#manage-in-drive', Command)
+    queryDecoratedElement('#manage-in-drive', Command)
         .canExecuteChange(element);
 
     // Removing shortcuts is not rendered in the submenu to keep the previous
     // behavior. Shortcuts can be removed in the left nav using the roots menu.
     // TODO(mtomasz): Consider rendering the menu item here for consistency.
-    util.queryDecoratedElement('#unpin-folder', Command)
-        .canExecuteChange(element);
+    queryDecoratedElement('#unpin-folder', Command).canExecuteChange(element);
 
     // Both save-for-offline and offline-not-necessary are handled by the single
     // #toggle-pinned command.
@@ -107,8 +107,7 @@ export class ActionsSubmenu {
                                     .OFFLINE_NOT_NECESSARY];
       }
     }
-    util.queryDecoratedElement('#toggle-pinned', Command)
-        .canExecuteChange(element);
+    queryDecoratedElement('#toggle-pinned', Command).canExecuteChange(element);
 
     let hasCustomActions = false;
     // Process all the rest as custom actions.

@@ -5,6 +5,7 @@
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
+import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {metrics} from '../../common/js/metrics.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import {str, util} from '../../common/js/util.js';
@@ -165,6 +166,7 @@ export class MainWindowComponent {
     document.addEventListener('keydown', this.onKeyDown_.bind(this));
     document.addEventListener('keyup', this.onKeyUp_.bind(this));
     window.addEventListener('focus', this.onWindowFocus_.bind(this));
+    addIsFocusedMethod();
 
     /**
      * @type {!FileTapHandler}
@@ -387,7 +389,7 @@ export class MainWindowComponent {
       return;
     }
 
-    switch (util.getKeyModifiers(event) + event.key) {
+    switch (getKeyModifiers(event) + event.key) {
       case 'Escape':  // Escape => Cancel dialog.
       case 'Ctrl-w':  // Ctrl+W => Cancel dialog.
         if (this.dialogType_ != DialogType.FULL_PAGE) {
@@ -417,7 +419,7 @@ export class MainWindowComponent {
    */
   onDirectoryTreeKeyDown_(event) {
     // Enter => Change directory or perform default action.
-    if (util.getKeyModifiers(event) + event.key === 'Enter') {
+    if (getKeyModifiers(event) + event.key === 'Enter') {
       const selectedItem = this.ui_.directoryTree.selectedItem;
       if (!selectedItem) {
         return;
@@ -439,7 +441,7 @@ export class MainWindowComponent {
    * @private
    */
   onListKeyDown_(event) {
-    switch (util.getKeyModifiers(event) + event.key) {
+    switch (getKeyModifiers(event) + event.key) {
       case 'Backspace':  // Backspace => Up one directory.
         event.preventDefault();
         const store = getStore();
@@ -547,3 +549,23 @@ export class MainWindowComponent {
     }
   }
 }
+
+/** Adds an isFocused method to the current window object.  */
+const addIsFocusedMethod = () => {
+  let focused = true;
+
+  window.addEventListener('focus', () => {
+    focused = true;
+  });
+
+  window.addEventListener('blur', () => {
+    focused = false;
+  });
+
+  /**
+   * @return {boolean} True if focused.
+   */
+  window.isFocused = () => {
+    return focused;
+  };
+};

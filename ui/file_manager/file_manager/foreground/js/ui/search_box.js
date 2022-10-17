@@ -8,6 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
+import {htmlEscape, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {metrics} from '../../../common/js/metrics.js';
 import {strf, util} from '../../../common/js/util.js';
@@ -58,8 +59,8 @@ export class SearchBox extends EventTarget {
      * @const
      */
     this.searchButtonToggleRipple_ =
-        /** @type {!FilesToggleRippleElement} */ (util.queryRequiredElement(
-            'files-toggle-ripple', this.searchButton));
+        /** @type {!FilesToggleRippleElement} */ (
+            queryRequiredElement('files-toggle-ripple', this.searchButton));
 
     /**
      * Text input of the search box.
@@ -398,8 +399,7 @@ SearchBox.AutocompleteListItem_ = class AutocompleteListItem_ extends ListItem {
 
     if (item.isHeaderItem) {
       icon.setAttribute('search-icon', '');
-      text.innerHTML =
-          strf('SEARCH_DRIVE_HTML', util.htmlEscape(item.searchQuery));
+      text.innerHTML = strf('SEARCH_DRIVE_HTML', htmlEscape(item.searchQuery));
     } else {
       const iconType = FileType.getIcon(item.entry);
       icon.setAttribute('file-type-icon', iconType);

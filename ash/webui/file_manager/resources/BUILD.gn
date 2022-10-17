@@ -44,9 +44,8 @@ js_library("main_js") {
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
 
-files_app_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
-                root_build_dir)
+files_app_path = rebase_path("$root_gen_dir/ui/file_manager/tsc/file_manager",
+                             root_build_dir)
 
 js_type_check("closure_compile") {
   deps = [
@@ -152,8 +151,7 @@ optimize_webui("build") {
   deps = [
     ":preprocess",
     ":preprocess_mojo",
-    "//ui/file_manager:preprocess_generated",
-    "//ui/file_manager:preprocess_static",
+    "//ui/file_manager:build_ts",
     "//ui/webui/resources:preprocess",
   ]
 }

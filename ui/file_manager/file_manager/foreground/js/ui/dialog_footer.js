@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
+import {getKeyModifiers, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {str, util} from '../../../common/js/util.js';
 import {FileListModel} from '../file_list_model.js';
@@ -258,8 +259,8 @@ export class DialogFooter {
    */
   static findDialogFooter(dialogType, document) {
     return new DialogFooter(
-        dialogType, util.queryRequiredElement('.dialog-footer'),
-        util.queryRequiredElement('#filename-input-box cr-input'));
+        dialogType, queryRequiredElement('.dialog-footer'),
+        queryRequiredElement('#filename-input-box cr-input'));
   }
 
   /**
@@ -407,7 +408,7 @@ export class DialogFooter {
    * @private
    */
   onFilenameInputKeyDown_(event) {
-    if ((util.getKeyModifiers(event) + event.keyCode) === '13' /* Enter */) {
+    if ((getKeyModifiers(event) + event.keyCode) === '13' /* Enter */) {
       this.okButton.click();
     }
   }

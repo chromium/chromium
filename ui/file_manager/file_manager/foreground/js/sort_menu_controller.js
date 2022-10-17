@@ -4,6 +4,7 @@
 
 import '../elements/files_toggle_ripple.js';
 
+import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {util} from '../../common/js/util.js';
 
 import {FileListModel} from './file_list_model.js';
@@ -24,16 +25,16 @@ export class SortMenuController {
 
     /** @private @const {!HTMLElement} */
     this.sortByNameButton_ =
-        util.queryRequiredElement('#sort-menu-sort-by-name', sortButton.menu);
+        queryRequiredElement('#sort-menu-sort-by-name', sortButton.menu);
     /** @private @const {!HTMLElement} */
     this.sortBySizeButton_ =
-        util.queryRequiredElement('#sort-menu-sort-by-size', sortButton.menu);
+        queryRequiredElement('#sort-menu-sort-by-size', sortButton.menu);
     /** @private @const {!HTMLElement} */
     this.sortByTypeButton_ =
-        util.queryRequiredElement('#sort-menu-sort-by-type', sortButton.menu);
+        queryRequiredElement('#sort-menu-sort-by-type', sortButton.menu);
     /** @private @const {!HTMLElement} */
     this.sortByDateButton_ =
-        util.queryRequiredElement('#sort-menu-sort-by-date', sortButton.menu);
+        queryRequiredElement('#sort-menu-sort-by-date', sortButton.menu);
 
     sortButton.addEventListener('menushow', this.updateCheckmark_.bind(this));
     sortButton.addEventListener('menuhide', this.onHideSortMenu_.bind(this));
