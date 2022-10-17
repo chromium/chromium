@@ -843,7 +843,7 @@
         'siso': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_siso',
       },
       'siso-comparison-win10': {
-        'reclent': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_reclient',
+        'reclient': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_reclient',
         'siso': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_siso',
       },
       'win-autofill-captured-sites-rel': 'release_bot',

@@ -167,7 +167,7 @@
     }
   },
   "siso-comparison-win10": {
-    "reclent": {
+    "reclient": {
       "gn_args": {
         "dcheck_always_on": true,
         "enable_precompiled_headers": false,
