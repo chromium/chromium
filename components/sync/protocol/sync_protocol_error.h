@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/values.h"
 #include "components/sync/base/model_type.h"
 
 namespace syncer {
@@ -78,7 +77,6 @@ struct SyncProtocolError {
   SyncProtocolError();
   SyncProtocolError(const SyncProtocolError& other);
   ~SyncProtocolError();
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
 };
 
 const char* GetSyncErrorTypeString(SyncProtocolErrorType type);

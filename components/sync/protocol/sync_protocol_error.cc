@@ -53,12 +53,4 @@ SyncProtocolError::SyncProtocolError(const SyncProtocolError& other) = default;
 
 SyncProtocolError::~SyncProtocolError() = default;
 
-std::unique_ptr<base::DictionaryValue> SyncProtocolError::ToValue() const {
-  auto value = std::make_unique<base::DictionaryValue>();
-  value->SetStringKey("ErrorType", GetSyncErrorTypeString(error_type));
-  value->SetStringKey("ErrorDescription", error_description);
-  value->SetStringKey("action", GetClientActionString(action));
-  return value;
-}
-
 }  // namespace syncer
