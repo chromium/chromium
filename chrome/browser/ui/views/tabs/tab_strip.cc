@@ -164,8 +164,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
   gfx::Size CalculatePreferredSize() const override {
     int max_child_x = 0;
-    for (views::View* child : children())
+    for (views::View* child : children()) {
+      if (!views::IsViewClass<TabSlotView>(child))
+        continue;
       max_child_x = std::max(max_child_x, child->bounds().right());
+    }
 
     return gfx::Size(max_child_x, GetLayoutConstant(TAB_HEIGHT));
   }
