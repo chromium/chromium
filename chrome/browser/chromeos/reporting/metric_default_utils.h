@@ -11,7 +11,7 @@ namespace reporting::metrics {
 
 // Default audio telemetry collection rate.
 constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
-    base::Minutes(10);
+    base::Minutes(15);
 
 // Default metric collection rate used for testing purposes.
 constexpr base::TimeDelta kDefaultCollectionRateForTesting = base::Minutes(2);

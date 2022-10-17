@@ -11766,14 +11766,14 @@
         'dynamic_refresh': True,
         'unlisted': True,
       },
-      'example_value': 600000,
-      'default': 600000,
+      'example_value': 900000,
+      'default': 900000,
       'id': 929,
       'caption': '''Audio telemetry collection rate in milliseconds.''',
       'tags': ['admin-sharing'],
       'desc': '''Rate at which audio data is sampled and collected. The minimum allowed is 1 minute.
 
-      If not set, the default rate of 10 minutes applies.''',
+      If not set, the default rate of 15 minutes applies.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
