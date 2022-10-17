@@ -1845,14 +1845,14 @@ NavigationRequest::NavigationRequest(
 
   // For navigations that inherit a base URL, snapshot the parent's base URL at
   // the start of the navigation. Currently, this is only stored and sent to the
-  // renderer if kIsolatedSandboxedIframes is enabled, since it is a behavior
-  // change relevant for isolated sandboxed iframes. See
-  // https://crbug.com/1356658.
+  // renderer if kNewBaseUrlInheritanceBehavior or kIsolateSandboxedIframes is
+  // enabled, since it is a behavior change relevant for isolated sandboxed
+  // iframes. See https://crbug.com/1356658.
   // TODO(wjmaclean): about:blank frames may also need to inherit base URLs,
   // possibly from the initiator rather than the parent. See
   // https://crbug.com/1356658#c7.
   if (GetURL().IsAboutSrcdoc() && frame_tree_node_->parent() &&
-      SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+      blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
     commit_params_->fallback_srcdoc_baseurl =
         frame_tree_node_->parent()->GetBaseUrl();
   }

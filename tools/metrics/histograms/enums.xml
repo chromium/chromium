@@ -63145,6 +63145,7 @@ from previous Chrome versions.
   <int value="1712697097" label="QuickAnswersV2:disabled"/>
   <int value="1712880335" label="FiltersInRecents:enabled"/>
   <int value="1713230497" label="ColorCorrectRendering:disabled"/>
+  <int value="1713509078" label="NewBaseUrlInheritanceBehavior:enabled"/>
   <int value="1714016217" label="EnableHeuristicPalmDetectionFilter:enabled"/>
   <int value="1714520147" label="MBIMode:disabled"/>
   <int value="1714746366" label="BookmarksImprovedSaveFlow:disabled"/>
@@ -63577,6 +63578,7 @@ from previous Chrome versions.
   <int value="1973376634" label="WebXRMultiGpu:enabled"/>
   <int value="1974565950" label="enable-experimental-accessibility-labels"/>
   <int value="1974776131" label="MediaFeeds:disabled"/>
+  <int value="1975327115" label="NewBaseUrlInheritanceBehavior:disabled"/>
   <int value="1975657253" label="ScalableAppList:disabled"/>
   <int value="1976644015" label="enable-forbid-sync-xhr-in-page-dismissal"/>
   <int value="1976885976" label="DefaultChatWebApp:disabled"/>

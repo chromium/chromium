@@ -8583,6 +8583,12 @@ const FeatureEntry kFeatureEntries[] = {
          blink::features::
              kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes)},
 
+    {"enable-new-base-url-inheritance-behavior",
+     flag_descriptions::kNewBaseUrlInheritanceBehaviorName,
+     flag_descriptions::kNewBaseUrlInheritanceBehaviorDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kNewBaseUrlInheritanceBehavior)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-input-in-diagnostics-app",
      flag_descriptions::kEnableInputInDiagnosticsAppName,

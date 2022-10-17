@@ -1646,6 +1646,9 @@ extern const char
 extern const char
     kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesDescription[];
 
+extern const char kNewBaseUrlInheritanceBehaviorName[];
+extern const char kNewBaseUrlInheritanceBehaviorDescription[];
+
 extern const char kTouchDragDropName[];
 extern const char kTouchDragDropDescription[];
 

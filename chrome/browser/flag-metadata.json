@@ -2715,6 +2715,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-new-base-url-inheritance-behavior",
+    "owners": [ "wjmaclean", "creis", "alexmos", "domenic" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-new-download-api",
     "owners": [ "sdefresne", "bling-flags@google.com" ],
     "expiry_milestone": 130

@@ -2924,6 +2924,14 @@ const char
         "the frame has zero viewport intersection, a non-zero area, and is "
         "not display:none.";
 
+const char kNewBaseUrlInheritanceBehaviorName[] =
+    "Enable new base url inheritance behaviors for srcdoc and about:blank";
+const char kNewBaseUrlInheritanceBehaviorDescription[] =
+    "When enabled, about:blank and srcdoc frames will use newly proposed "
+    "behaviors around inheriting their base urls, as discussed on  "
+    "https://crbug.com/1356658. Note: this is automatically enabled when "
+    "'isolate sandboxed iframes' is enabled.";
+
 const char kTouchDragDropName[] = "Touch initiated drag and drop";
 const char kTouchDragDropDescription[] =
     "Touch drag and drop can be initiated through long press on a draggable "

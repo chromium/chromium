@@ -7870,7 +7870,7 @@ void RenderFrameHostImpl::DidChangeSrcDoc(
 }
 
 void RenderFrameHostImpl::DidChangeBaseURL(const GURL& base_url) {
-  if (!SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled())
+  if (!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled())
     return;
 
   // TODO(https://crbug.com/1356658,1366593): consider restricting base URL in
@@ -7879,10 +7879,10 @@ void RenderFrameHostImpl::DidChangeBaseURL(const GURL& base_url) {
 }
 
 const GURL& RenderFrameHostImpl::GetBaseUrl() const {
-  if (!SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+  if (!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
     NOTREACHED() << __func__
                  << " should only be invoked when the feature "
-                    "IsolateSandboxedIframes is enabled.";
+                    "NewBaseUrlInheritanceBehavioris enabled.";
     return GURL::EmptyGURL();
   }
 

@@ -886,6 +886,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
     IsolateSandboxedIframesGrouping>
     kIsolateSandboxedIframesGroupingParam;
 
+// Flag to control whether about:blank and srcdoc iframes use newly proposed
+// base url inheritance behavior from https://crbug.com/1356658.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNewBaseUrlInheritanceBehavior);
+
+// This function checks both kNewBaseUrlInheritanceBehavior and
+// kIsolateSandboxedIframes and returns true if either is enabled.
+BLINK_COMMON_EXPORT bool IsNewBaseUrlInheritanceBehaviorEnabled();
+
 }  // namespace features
 }  // namespace blink
 

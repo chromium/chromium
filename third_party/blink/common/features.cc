@@ -1617,6 +1617,18 @@ BASE_FEATURE(kDocumentEventNodePathCaching,
              "DocumentEventNodePathCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNewBaseUrlInheritanceBehavior,
+             "NewBaseUrlInheritanceBehavior",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNewBaseUrlInheritanceBehaviorEnabled() {
+  // The kIsolateSandboxedIframes feature depends on the new base URL behavior,
+  // so it enables the new behavior even if kNewBaseUrlInheritanceBehavior
+  // isn't enabled.
+  return base::FeatureList::IsEnabled(kNewBaseUrlInheritanceBehavior) ||
+         base::FeatureList::IsEnabled(kIsolateSandboxedIframes);
+}
+
 const base::FeatureParam<int> kDocumentMaxEventNodePathCachedEntries{
     &kDocumentEventNodePathCaching, "max-cache-entries", 10};
 

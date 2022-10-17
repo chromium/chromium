@@ -4335,11 +4335,14 @@ KURL Document::FallbackBaseURL() const {
     // `fallback_base_url_for_srcdoc_` will only be sent from the frame host if
     // we are process isolating sandboxed srcdoc iframes (although when the
     // IsolateSandboxedIframes feature is enabled we will send it for all srcdoc
-    // iframes, not just sandboxed ones). If `fallback_base_url_for_srcdoc_`
-    // isn't sent, then we must still check that `ParentDocument()` is non-null,
-    // in case this function is called while the document is detached.
+    // iframes, not just sandboxed ones). The fallback base url will also be
+    // sent from the frame host if kNewBaseUrlInheritanceBehavior is enabled.
+    // If `fallback_base_url_for_srcdoc_` isn't sent, then we must still check
+    // that `ParentDocument()` is non-null, in case this function is called
+    // while the document is detached.
     // TODO(https://crbug.com/751329, https://crbug.com/1336904): Referring to
     // ParentDocument() is not correct.
+    DCHECK(!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled());
     if (ParentDocument())
       return ParentDocument()->BaseURL();
   }
