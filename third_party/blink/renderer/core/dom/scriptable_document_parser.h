@@ -78,6 +78,7 @@ class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
   // The returned streamer is guaranteed to be correct for script text that
   // matches the passed in |source|.
   InlineScriptStreamer* TakeInlineScriptStreamer(const String& source);
+  bool HasInlineScriptStreamerForTesting(const String& source);
 
   // Adds a tokenizer for |source| which can be later retrieved with
   // TakeCSSTokenizer(). This may be called on any thread.

@@ -67,6 +67,12 @@ InlineScriptStreamer* ScriptableDocumentParser::TakeInlineScriptStreamer(
   return nullptr;
 }
 
+bool ScriptableDocumentParser::HasInlineScriptStreamerForTesting(
+    const String& source) {
+  base::AutoLock lock(streamers_lock_);
+  return inline_script_streamers_.Contains(source);
+}
+
 void ScriptableDocumentParser::AddCSSTokenizer(
     const String& source,
     std::unique_ptr<CachedCSSTokenizer> tokenizer) {

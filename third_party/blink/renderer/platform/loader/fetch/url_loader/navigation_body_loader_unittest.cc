@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -143,6 +144,10 @@ class NavigationBodyLoaderTest : public ::testing::Test,
       run_loop_->Quit();
   }
 
+  ProcessBackgroundDataCallback TakeProcessBackgroundDataCallback() override {
+    return std::move(process_background_data_callback_);
+  }
+
   void TakeActions() {
     if (!buffer_to_write_.empty()) {
       std::string buffer = buffer_to_write_;
@@ -227,6 +232,7 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   bool destroy_loader_ = false;
   std::string data_received_;
   absl::optional<WebURLError> error_;
+  ProcessBackgroundDataCallback process_background_data_callback_;
 };
 
 TEST_F(NavigationBodyLoaderTest, SetDefersBeforeStart) {
@@ -244,6 +250,41 @@ TEST_F(NavigationBodyLoaderTest, DecodedDataReceived) {
   Write("hello");
   Wait();
   EXPECT_EQ("HELLO", TakeDataReceived());
+}
+
+TEST_F(NavigationBodyLoaderTest, ProcessBackgroundData) {
+  CreateBodyLoader();
+  StartLoadingInBackground();
+  // First flush data to the off thread reader. The background data callback
+  // should not see this since it is not set yet.
+  Write("hello");
+  To<NavigationBodyLoader>(loader_.get())->FlushOffThreadBodyReaderForTesting();
+
+  String background_data = "";
+  process_background_data_callback_ = CrossThreadBindRepeating(
+      [](String* background_data, const WebString& data) {
+        *background_data = *background_data + String(data);
+      },
+      CrossThreadUnretained(&background_data));
+
+  ExpectDecodedDataReceived();
+  StartLoading();
+  Wait();
+  EXPECT_EQ("HELLO", TakeDataReceived());
+  EXPECT_EQ("", background_data);
+
+  // Now write more data with the background data callback set.
+  ExpectDecodedDataReceived();
+  Write("hello2");
+  Wait();
+  EXPECT_EQ("HELLO2", TakeDataReceived());
+  EXPECT_EQ("HELLO2", background_data);
+
+  ExpectDecodedDataReceived();
+  Write("hello3");
+  Wait();
+  EXPECT_EQ("HELLO3", TakeDataReceived());
+  EXPECT_EQ("HELLO2HELLO3", background_data);
 }
 
 TEST_F(NavigationBodyLoaderTest, DataReceived) {

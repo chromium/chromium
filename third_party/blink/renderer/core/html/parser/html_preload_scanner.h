@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -157,7 +158,7 @@ class TokenPreloadScanner {
   PictureData picture_data_;
   size_t template_count_;
   std::unique_ptr<CachedDocumentParameters> document_parameters_;
-  Persistent<MediaValuesCached> media_values_;
+  CrossThreadPersistent<MediaValuesCached> media_values_;
   ScannerType scanner_type_;
   // TODO(domfarolino): Remove this once Priority Hints is no longer in Origin
   // Trial (see https://crbug.com/821464). This member exists because
@@ -167,7 +168,8 @@ class TokenPreloadScanner {
   bool priority_hints_origin_trial_enabled_;
 };
 
-class CORE_EXPORT HTMLPreloadScanner {
+class CORE_EXPORT HTMLPreloadScanner
+    : public base::SupportsWeakPtr<HTMLPreloadScanner> {
   USING_FAST_MALLOC(HTMLPreloadScanner);
 
  public:
@@ -177,11 +179,23 @@ class CORE_EXPORT HTMLPreloadScanner {
       HTMLParserOptions options,
       TokenPreloadScanner::ScannerType scanner_type);
 
+  using TakePreloadFn = WTF::CrossThreadRepeatingFunction<void(
+      std::unique_ptr<PendingPreloadData>)>;
+
   // Creates a HTMLPreloadScanner which will be bound to |task_runner|.
-  static WTF::SequenceBound<HTMLPreloadScanner> CreateBackground(
+  struct Deleter {
+    void operator()(const HTMLPreloadScanner* ptr) {
+      if (ptr)
+        task_runner_->DeleteSoon(FROM_HERE, ptr);
+    }
+    scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  };
+  using BackgroundPtr = std::unique_ptr<HTMLPreloadScanner, Deleter>;
+  static BackgroundPtr CreateBackground(
       HTMLDocumentParser* parser,
       HTMLParserOptions options,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      TakePreloadFn take_preload);
 
   HTMLPreloadScanner(std::unique_ptr<HTMLTokenizer>,
                      bool priority_hints_origin_trial_enabled,
@@ -190,23 +204,20 @@ class CORE_EXPORT HTMLPreloadScanner {
                      const MediaValuesCached::MediaValuesCachedData&,
                      const TokenPreloadScanner::ScannerType,
                      std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
-                         script_token_scanner);
+                         script_token_scanner,
+                     TakePreloadFn take_preload = TakePreloadFn());
   HTMLPreloadScanner(const HTMLPreloadScanner&) = delete;
   HTMLPreloadScanner& operator=(const HTMLPreloadScanner&) = delete;
   ~HTMLPreloadScanner();
 
   void AppendToEnd(const SegmentedString&);
 
-  using TakePreloadFn = WTF::CrossThreadRepeatingFunction<void(
-      std::unique_ptr<PendingPreloadData>)>;
   std::unique_ptr<PendingPreloadData> Scan(
-      const KURL& document_base_element_url,
-      const TakePreloadFn& take_preload = TakePreloadFn());
+      const KURL& document_base_element_url);
 
   // Scans |source| and calls |take_preload| with the generated preload data.
   void ScanInBackground(const String& source,
-                        const KURL& document_base_element_url,
-                        const TakePreloadFn& take_preload);
+                        const KURL& document_base_element_url);
 
  private:
   TokenPreloadScanner scanner_;
@@ -215,6 +226,7 @@ class CORE_EXPORT HTMLPreloadScanner {
   std::unique_ptr<HTMLTokenizer> tokenizer_;
   std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
       script_token_scanner_;
+  TakePreloadFn take_preload_;
 };
 
 }  // namespace blink

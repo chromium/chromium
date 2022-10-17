@@ -62,8 +62,24 @@ class PLATFORM_EXPORT NavigationBodyLoader
   // callbacks will not be called until StartLoadingBody() is called. If
   // |should_keep_encoded_data| is true, the original data will be copied from
   // the background thread and passed to DecodedBodyDataReceived().
+  //
+  // If the preload scanner is being used in the parser, the flow of data to the
+  // scanner will go like this:
+  //   1. NavigationBodyLoader calls DecodedBodyDataReceived(), which will
+  //      end up getting forwarded to HTMLDocumentParser::Append().
+  //   2. HTMLDocumentParser::Append() will cause the background preload
+  //      scanner to be created and scan the initial data passed to Append().
+  //   3. NavigationBodyLoader calls TakeProcessBackgroundDataCallback()
+  //      which tells HTMLDocumentParser to stop sending data to the
+  //      preload scanner in Append().
+  //   4. NavigationBodyLoader will pass data directly to the callback
+  //      taken from TakeProcessBackgroundDataCallback(), which avoids
+  //      hitting the main thread at all. HTMLDocumentParser will still
+  //      receive data through Append() calls.
   void StartLoadingBodyInBackground(std::unique_ptr<BodyTextDecoder> decoder,
                                     bool should_keep_encoded_data);
+
+  void FlushOffThreadBodyReaderForTesting();
 
  private:
   // The loading flow is outlined below. NavigationBodyLoader can be safely
@@ -176,6 +192,7 @@ class PLATFORM_EXPORT NavigationBodyLoader
   using OffThreadBodyReaderPtr =
       std::unique_ptr<OffThreadBodyReader, OffThreadBodyReaderDeleter>;
   OffThreadBodyReaderPtr off_thread_body_reader_;
+  bool should_send_directly_to_preload_scanner_ = false;
 
   base::WeakPtrFactory<NavigationBodyLoader> weak_factory_{this};
 };
