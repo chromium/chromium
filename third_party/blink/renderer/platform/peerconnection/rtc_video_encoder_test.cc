@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/capture/capture_switches.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "media/video/mock_video_encode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -512,6 +513,37 @@ TEST_F(RTCVideoEncoderTest, SoftwareFallbackAfterError) {
                                      .set_video_frame_buffer(buffer)
                                      .set_timestamp_rtp(0)
                                      .set_timestamp_us(0)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+}
+
+TEST_F(RTCVideoEncoderTest, SoftwareFallbackOnBadEncodeInput) {
+  // Make RTCVideoEncoder expect native input.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kVideoCaptureUseGpuMemoryBuffer);
+
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+  ASSERT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  auto frame = media::VideoFrame::CreateBlackFrame(
+      gfx::Size(kInputFrameWidth, kInputFrameHeight));
+  frame->set_timestamp(base::Milliseconds(1));
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
+      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          frame, std::vector<scoped_refptr<media::VideoFrame>>(),
+          new WebRtcVideoFrameAdapter::SharedResources(nullptr)));
+  std::vector<webrtc::VideoFrameType> frame_types;
+  // Expect SW fallback because the frame isn't a GpuMemoryBuffer-based frame.
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(frame_adapter)
+                                     .set_timestamp_rtp(1000)
+                                     .set_timestamp_us(2000)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
                                  &frame_types));

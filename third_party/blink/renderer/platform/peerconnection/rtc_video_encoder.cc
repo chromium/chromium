@@ -734,7 +734,6 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
   if (!ConvertKbpsToBps(bitrate, &bitrate_bps)) {
     LogAndNotifyError(FROM_HERE, "Overflow converting bitrate from kbps to bps",
                       media::VideoEncodeAccelerator::kInvalidArgumentError);
-    async_init_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERR_PARAMETER);
     return;
   }
 
@@ -1403,7 +1402,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
       if (!frame) {
         LogAndNotifyError(FROM_HERE, "failed to create frame",
                           media::VideoEncodeAccelerator::kPlatformFailureError);
-        async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
         return;
       }
 
@@ -1429,7 +1427,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
               libyuv::kFilterBox)) {
         LogAndNotifyError(FROM_HERE, "Failed to copy buffer",
                           media::VideoEncodeAccelerator::kPlatformFailureError);
-        async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
         return;
       }
 
@@ -1496,7 +1493,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
   frame->set_timestamp(base::Microseconds(next_frame->timestamp_us()));
 
   if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
     LogAndNotifyError(FROM_HERE, "frame isn't GpuMemoryBuffer based VideoFrame",
                       media::VideoEncodeAccelerator::kPlatformFailureError);
     return;
