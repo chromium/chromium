@@ -1419,6 +1419,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Performance.AXTree.Destroy" units="ms"
+    expires_after="2023-03-26">
+  <owner>agarwaltushar@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    Tracks time spent in AXTree::Destroy.
+
+    The primary use is to measure the impact of https://crrev.com/c/3937946,
+    which updates AXTree to internally use a std::map instead of a
+    base::flat_map. Please see the CL description for more context and a
+    performance profile.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.Performance.BrowserAccessibilityManager::OnAccessibilityEvents"
     units="ms" expires_after="2023-03-26">
