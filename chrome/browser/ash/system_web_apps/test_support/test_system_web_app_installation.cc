@@ -191,6 +191,9 @@ bool UnittestingSystemAppDelegate::IsUrlInSystemAppScope(
 bool UnittestingSystemAppDelegate::PreferManifestBackgroundColor() const {
   return prefer_manifest_background_color_;
 }
+bool UnittestingSystemAppDelegate::UseSystemThemeColor() const {
+  return use_system_theme_color_;
+}
 #if BUILDFLAG(IS_CHROMEOS)
 bool UnittestingSystemAppDelegate::ShouldAnimateThemeChanges() const {
   return should_animate_theme_changes_;
@@ -272,6 +275,9 @@ void UnittestingSystemAppDelegate::SetUrlInSystemAppScope(const GURL& url) {
 void UnittestingSystemAppDelegate::SetPreferManifestBackgroundColor(
     bool value) {
   prefer_manifest_background_color_ = value;
+}
+void UnittestingSystemAppDelegate::SetUseSystemThemeColor(bool value) {
+  use_system_theme_color_ = value;
 }
 #if BUILDFLAG(IS_CHROMEOS)
 void UnittestingSystemAppDelegate::SetShouldAnimateThemeChanges(bool value) {

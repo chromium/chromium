@@ -9,6 +9,8 @@ assert(is_chromeos_ash)
 source_set("system_web_apps") {
   sources = [
     "chrome_system_web_app_ui_config.cc",
+    "color_helpers.cc",
+    "color_helpers.h",
     "system_web_app_background_task.cc",
     "system_web_app_background_task.h",
     "system_web_app_manager.cc",
@@ -45,6 +47,7 @@ source_set("system_web_apps") {
     "//components/webapps/browser",
     "//content/public/browser",
     "//ui/base/idle",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
   ]
 
   if (!is_official_build) {

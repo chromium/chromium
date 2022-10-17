@@ -49,7 +49,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #endif
 
@@ -311,7 +313,7 @@ ui::ImageModel WebAppBrowserController::GetWindowIcon() const {
 absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // System App popups (settings pages) always use default theme.
-  if (system_app_ && browser()->is_type_app_popup())
+  if (system_app() && browser()->is_type_app_popup())
     return absl::nullopt;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -332,6 +334,15 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // System Apps with dynamic color ignore manifest and pull theme color from
+  // the OS.
+  if (system_app() && system_app()->UseSystemThemeColor() &&
+      ash::features::IsJellyEnabled()) {
+    return ash::GetSystemThemeColor();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     absl::optional<SkColor> dark_mode_color =
         registrar().GetAppDarkModeThemeColor(app_id());
@@ -347,19 +358,30 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
   auto web_contents_color = AppBrowserController::GetBackgroundColor();
   auto manifest_color = GetResolvedManifestBackgroundColor();
+  // Prefer an available web contents color but when such a color is
+  // unavailable (i.e. in the time between when a window launches and it's web
+  // content loads) attempt to pull the background color from the manifest.
+  absl::optional<SkColor> result =
+      web_contents_color ? web_contents_color : manifest_color;
 
-  bool prefer_manifest_background_color = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (system_app())
-    prefer_manifest_background_color =
-        system_app()->PreferManifestBackgroundColor();
+  if (system_app()) {
+    if (ash::features::IsJellyEnabled()) {
+      // System Apps with dynamic color ignore the manifest and pull background
+      // color from the OS in situations where a background color can not be
+      // extracted from the web contents.
+      SkColor os_color = ash::GetSystemBackgroundColor();
+
+      result = web_contents_color ? web_contents_color : os_color;
+    } else if (system_app()->PreferManifestBackgroundColor()) {
+      // Some system web apps prefer their web content background color to be
+      // ignored in favour of their manifest background color.
+      result = manifest_color ? manifest_color : web_contents_color;
+    }
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  auto [preferred_color, fallback_color] =
-      prefer_manifest_background_color
-          ? std::tie(manifest_color, web_contents_color)
-          : std::tie(web_contents_color, manifest_color);
-  return preferred_color ? preferred_color : fallback_color;
+  return result;
 }
 
 GURL WebAppBrowserController::GetAppStartUrl() const {

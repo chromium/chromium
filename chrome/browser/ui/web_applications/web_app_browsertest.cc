@@ -99,6 +99,8 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #endif
@@ -406,26 +408,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-class BackgroundColorChangeSystemWebAppBrowserTest
-    : public WebAppBrowserTest,
-      public testing::WithParamInterface<
-          /*prefer_manifest_background_color=*/bool> {
+class ColorSystemWebAppBrowserTest : public WebAppBrowserTest {
  public:
-  BackgroundColorChangeSystemWebAppBrowserTest() {
+  ColorSystemWebAppBrowserTest() {
     system_web_app_installation_ =
         ash::TestSystemWebAppInstallation::SetUpAppWithColors(
             /*theme_color=*/SK_ColorWHITE,
             /*dark_mode_theme_color=*/SK_ColorBLACK,
             /*background_color=*/SK_ColorWHITE,
             /*dark_mode_background_color=*/SK_ColorBLACK);
-    static_cast<ash::UnittestingSystemAppDelegate*>(
-        system_web_app_installation_->GetDelegate())
-        ->SetPreferManifestBackgroundColor(PreferManifestBackgroundColor());
   }
-
-  // Returns whether the web app under test prefers manifest background colors
-  // over web contents background colors.
-  bool PreferManifestBackgroundColor() const { return GetParam(); }
 
   // Installs the web app under test, blocking until installation is complete,
   // and returning the `AppId` for the installed web app.
@@ -434,9 +426,44 @@ class BackgroundColorChangeSystemWebAppBrowserTest
     return system_web_app_installation_->GetAppId();
   }
 
- private:
+ protected:
   std::unique_ptr<ash::TestSystemWebAppInstallation>
       system_web_app_installation_;
+};
+
+class BackgroundColorChangeSystemWebAppBrowserTest
+    : public ColorSystemWebAppBrowserTest,
+      public testing::WithParamInterface<
+          /*prefer_manifest_background_color=*/bool> {
+ public:
+  BackgroundColorChangeSystemWebAppBrowserTest() {
+    static_cast<ash::UnittestingSystemAppDelegate*>(
+        system_web_app_installation_->GetDelegate())
+        ->SetPreferManifestBackgroundColor(PreferManifestBackgroundColor());
+  }
+
+  // Returns whether the web app under test prefers manifest background colors
+  // over web contents background colors.
+  bool PreferManifestBackgroundColor() const { return GetParam(); }
+};
+
+class DynamicColorSystemWebAppBrowserTest
+    : public ColorSystemWebAppBrowserTest,
+      public testing::WithParamInterface</*use_system_theme_color=*/bool> {
+ public:
+  DynamicColorSystemWebAppBrowserTest() {
+    auto* delegate = static_cast<ash::UnittestingSystemAppDelegate*>(
+        system_web_app_installation_->GetDelegate());
+
+    delegate->SetUseSystemThemeColor(GetParam());
+  }
+
+  // Returns whether the web app under test wants to use a system sourced theme
+  // color.
+  bool UseSystemThemeColor() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{ash::features::kJelly};
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -486,6 +513,40 @@ IN_PROC_BROWSER_TEST_P(BackgroundColorChangeSystemWebAppBrowserTest,
               PreferManifestBackgroundColor()
                   ? (is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE)
                   : SK_ColorCYAN);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DynamicColorSystemWebAppBrowserTest,
+                         /*use_system_theme_color=*/::testing::Bool(),
+                         [](const testing::TestParamInfo<
+                             /*use_system_theme_color=*/bool>& info) {
+                           return info.param ? "WithUseSystemThemeColor"
+                                             : "WithoutUseSystemThemeColor";
+                         });
+
+IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, BackgroundColor) {
+  const AppId app_id = WaitForSwaInstall();
+  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  auto* app_controller = app_browser->app_controller();
+
+  // Ensure app controller is pulling the color from the OS.
+  EXPECT_EQ(app_controller->GetBackgroundColor().value(),
+            ash::GetSystemBackgroundColor());
+}
+
+IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, ThemeColor) {
+  const AppId app_id = WaitForSwaInstall();
+  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  auto* app_controller = app_browser->app_controller();
+  auto theme_color = app_controller->GetThemeColor().value();
+  if (UseSystemThemeColor()) {
+    // Ensure app controller is pulling the color from the OS.
+    EXPECT_EQ(theme_color, ash::GetSystemThemeColor());
+  } else {
+    // If SWA has opted out, theme color should default to white or black
+    // depending on launch context.
+    EXPECT_TRUE(theme_color == SK_ColorWHITE || theme_color == SK_ColorBLACK);
   }
 }
 
