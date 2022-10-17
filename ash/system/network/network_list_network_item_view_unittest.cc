@@ -68,7 +68,9 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kQuickSettingsNetworkRevamp},
+        /*disabled_features=*/{features::kCaptivePortalUI2022});
 
     SetUpDefaultNetworkDevices();
 

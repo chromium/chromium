@@ -101,7 +101,9 @@ class NetworkPortalDetectorImplBrowserTest
       : LoginManagerTest(),
         test_account_id_(
             AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId)),
-        network_portal_detector_(nullptr) {}
+        network_portal_detector_(nullptr) {
+    feature_list_.InitAndDisableFeature({features::kCaptivePortalUI2022});
+  }
 
   NetworkPortalDetectorImplBrowserTest(
       const NetworkPortalDetectorImplBrowserTest&) = delete;
@@ -217,6 +219,7 @@ class NetworkPortalDetectorImplBrowserTest
   NetworkPortalDetectorImpl* network_portal_detector_;
   std::unique_ptr<NetworkPortalNotificationController>
       network_portal_notification_controller_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
@@ -300,11 +303,9 @@ class NetworkPortalDetectorImplBrowserTestUI2022Update
     : public NetworkPortalDetectorImplBrowserTest {
  public:
   NetworkPortalDetectorImplBrowserTestUI2022Update() {
+    feature_list_.Reset();
     feature_list_.InitAndEnableFeature(features::kCaptivePortalUI2022);
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,

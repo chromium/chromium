@@ -518,7 +518,7 @@ BASE_FEATURE(kBruschettaAlphaMigrate,
 // notifications, network details page, quick settings, and portal signin UI.
 BASE_FEATURE(kCaptivePortalUI2022,
              "CaptivePortalUI2022",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Active Directory management on ChromeOS (Chromad) is
 // supported or not. When this feature is enabled, Chromad continues working

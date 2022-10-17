@@ -69,8 +69,9 @@ suite('internet-detail-dialog', () => {
     mojoApi_.resetForTest();
   });
 
-  async function init() {
+  async function init(captive_portal_2022) {
     internetDetailDialog = document.createElement('internet-detail-dialog');
+    internetDetailDialog.isCaptivePortalUI2022Enabled_ = captive_portal_2022;
     document.body.appendChild(internetDetailDialog);
     await flushAsync();
   }
@@ -125,8 +126,7 @@ suite('internet-detail-dialog', () => {
       wifiNetwork.portalState = PortalState.kPortal;
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-      init();
-      internetDetailDialog.isCaptivePortalUI2022Enabled_ = true;
+      init(/*captive_portal_2022=*/ true);
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailDialog.shadowRoot.querySelector(`#networkState`);
@@ -150,8 +150,7 @@ suite('internet-detail-dialog', () => {
       wifiNetwork.portalState = PortalState.kNoInternet;
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-      init();
-      internetDetailDialog.isCaptivePortalUI2022Enabled_ = true;
+      init(/*captive_portal_2022=*/ true);
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailDialog.shadowRoot.querySelector(`#networkState`);
@@ -176,8 +175,7 @@ suite('internet-detail-dialog', () => {
       wifiNetwork.portalState = PortalState.kProxyAuthRequired;
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-      init();
-      internetDetailDialog.isCaptivePortalUI2022Enabled_ = true;
+      init(/*captive_portal_2022=*/ true);
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailDialog.shadowRoot.querySelector(`#networkState`);
@@ -201,8 +199,7 @@ suite('internet-detail-dialog', () => {
       wifiNetwork.portalState = PortalState.kPortal;
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-      init();
-      internetDetailDialog.isCaptivePortalUI2022Enabled_ = false;
+      init(/*captive_portal_2022=*/ false);
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailDialog.shadowRoot.querySelector(`#networkState`);
