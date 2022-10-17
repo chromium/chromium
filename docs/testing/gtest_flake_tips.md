@@ -51,6 +51,25 @@ If you're unable to reproduce the flake locally, you can also try uploading your
 patch with the debug logging and flaky test enabled to try running the bot to
 reproduce the flake with more information.
 
+Another good solution is to use
+*Swarming* -- which will let you mimic bot conditions to better reproduce flakes
+that actually occur on CQ bots.
+
+### Swarming
+For a more detailed dive into swarming you can follow this
+[link](https://chromium.googlesource.com/chromium/src/+/master/docs/workflow/debugging-with-swarming.md#authenticating).
+
+As an example, suppose we have built Chrome using the GN args from
+above into a directory `out/linux-rel`, then we can simply run this command
+within the `chromium/src` directory:
+
+```
+tools/run-swarmed.py out/linux-rel browser_tests -- --gtest_filter="*<YOUR_TEST_NAME_HERE>*" --gtest_repeat=20 --gtest_also_run_disabled_tests
+```
+
+This allows us to quickly iterate over errors using logs to reproduce flakes and
+even fix them!
+
 >TODO: Add more tips for reproducing flaky tests
 
 ## Debugging the flaky test
@@ -72,6 +91,9 @@ RenderFrameHostImplBrowserTest](https://bugs.chromium.org/p/chromium/issues/deta
 For browsertest flakes that check EvalJs results, make sure test objects are not
 destroyed before JS may read their values (e.g. [flaky
 PaymentAppBrowserTest](https://chromium.googlesource.com/chromium/src/+/6089f3480c5036c73464661b3b1b6b82807b56a3)).
+
+For browsertest flakes that involve dialogs or widgets, make sure that test
+objects are not destroyed because focus is lost on the dialog (e.g [flaky AccessCodeCastHandlerBrowserTest](https://chromium-review.googlesource.com/c/chromium/src/+/3951132)).
 
 ## Preventing similar flakes
 
