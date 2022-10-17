@@ -11,6 +11,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/scoped_observation.h"
+#include "components/session_manager/session_manager_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class PrefRegistrySimple;
@@ -49,6 +50,7 @@ class ASH_EXPORT KeyboardBacklightColorController
   // b/239967737: |OnActiveUserPrefServiceChanged| doesn't get triggered when
   // chrome restarts.
   void OnUserSessionUpdated(const AccountId& account_id) override;
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // WallpaperControllerObserver:
   void OnWallpaperColorsChanged() override;

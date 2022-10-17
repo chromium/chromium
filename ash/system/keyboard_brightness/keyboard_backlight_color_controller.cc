@@ -13,11 +13,11 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_nudge_controller.h"
-#include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/session_manager_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
@@ -81,6 +81,14 @@ KeyboardBacklightColorController::GetBacklightColor(
   }
   return static_cast<personalization_app::mojom::BacklightColor>(
       pref_service->GetInteger(prefs::kPersonalizationKeyboardBacklightColor));
+}
+
+void KeyboardBacklightColorController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  // If we are in OOBE, we should set the backlight to a default of white.
+  if (state != session_manager::SessionState::OOBE)
+    return;
+  DisplayBacklightColor(personalization_app::mojom::BacklightColor::kWhite);
 }
 
 void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(

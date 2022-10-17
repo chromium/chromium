@@ -49,6 +49,17 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
 
   const RgbColor& recently_sent_rgb() const { return rgb_color_; }
 
+  void attempt_run_rgb_keyboard_capabilities_callback() {
+    if (callback_.is_null() || !should_run_callback_)
+      return;
+    std::move(callback_).Run(capabilities_);
+  }
+
+  void set_should_run_rgb_keyboard_capabilities_callback(
+      bool should_run_callback) {
+    should_run_callback_ = should_run_callback;
+  }
+
   int animation_mode_call_count() const { return animation_mode_call_count_; }
 
   void ResetStoredRgbColors();
@@ -59,6 +70,12 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
   bool is_rainbow_mode_set_ = false;
   RgbColor rgb_color_;
   int animation_mode_call_count_ = 0;
+  GetRgbKeyboardCapabilitiesCallback callback_;
+
+  // Set if the the `GetRgbKeyboardCapabilitiesCallback` should be ran right
+  // when `GetRgbKeyboardCapabilities` is called or if it should be delayed to
+  // be manual executed for testing.
+  bool should_run_callback_ = true;
 };
 
 }  // namespace ash
