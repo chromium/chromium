@@ -6590,6 +6590,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "terminal-sftp",
+    "owners": [ "joelhockey", "lxj", "//chrome/browser/ash/guest_os/OWNERS" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "terminal-tmux-integration",
     "owners": [ "lxj", "easy", "//chrome/browser/ash/guest_os/OWNERS" ],
     "expiry_milestone": 112

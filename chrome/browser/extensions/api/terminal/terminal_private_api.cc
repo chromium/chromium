@@ -739,6 +739,8 @@ ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   info.SetBoolKey(
       "multi_profile",
       base::FeatureList::IsEnabled(chromeos::features::kTerminalMultiProfile));
+  info.SetBoolKey(
+      "sftp", base::FeatureList::IsEnabled(chromeos::features::kTerminalSftp));
   info.SetBoolKey("tmux_integration",
                   base::FeatureList::IsEnabled(
                       chromeos::features::kTerminalTmuxIntegration));

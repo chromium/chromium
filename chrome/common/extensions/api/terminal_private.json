@@ -246,6 +246,10 @@
                   "description": "True if multi profile settings is enabled.",
                   "type": "boolean"
                 },
+                "sftp": {
+                  "description": "True if SFTP / mount is enabled.",
+                  "type": "boolean"
+                },
                 "tmux_integration": {
                   "description": "True if tmux control mode integration is enabled.",
                   "type": "boolean"

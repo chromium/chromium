@@ -6231,6 +6231,10 @@ const char kTerminalMultiProfileDescription[] =
     "Enables Terminal System App to set multiple profiles in the settings page "
     "and configure which profile to use for each Linux or SSH connection.";
 
+const char kTerminalSftpName[] = "Terminal SFTP / mount";
+const char kTerminalSftpDescription[] =
+    "Enables Terminal System App to do SFTP and mount remote hosts.";
+
 const char kTerminalTmuxIntegrationName[] = "Terminal tmux integration";
 const char kTerminalTmuxIntegrationDescription[] =
     "Enables integration with tmux control mode (tmux -CC) in the Terminal "

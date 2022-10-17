@@ -56925,6 +56925,7 @@ from previous Chrome versions.
   <int value="-2004231189" label="AppNotificationStatusMessaging:disabled"/>
   <int value="-2003354337"
       label="enable-search-button-in-omnibox-for-str-or-iip"/>
+  <int value="-2003097010" label="TerminalSftp:enabled"/>
   <int value="-2002461806" label="ShoppingAssist:enabled"/>
   <int value="-2001869199" label="ShillSandboxing:enabled"/>
   <int value="-2000567059" label="SimplifyHttpsIndicator:enabled"/>
@@ -57088,6 +57089,7 @@ from previous Chrome versions.
   <int value="-1917031398" label="OmniboxNativeVoiceSuggestProvider:disabled"/>
   <int value="-1916060206" label="enable-display-zoom-setting"/>
   <int value="-1915854488" label="enable-offline-pages"/>
+  <int value="-1914773324" label="TerminalSftp:disabled"/>
   <int value="-1913801713"
       label="UploadCrashReportsUsingJobScheduler:disabled"/>
   <int value="-1913734393" label="CrosPrivacyHub:disabled"/>
