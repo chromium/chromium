@@ -204,6 +204,16 @@ AutofillType AutofillField::ComputedType() const {
     // predictions get precedence over the server predictions.
     believe_server = believe_server && (heuristic_type() != IBAN_VALUE);
 
+    // The numeric quanity heuristic should get granted precedence over the
+    // server prediction since it tries to catch false-positive server
+    // predictions.
+    believe_server =
+        believe_server &&
+        !(heuristic_type() == NUMERIC_QUANTITY &&
+          server_type() != UNKNOWN_TYPE &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillGivePrecedenceToNumericQuantitites));
+
     if (believe_server)
       return AutofillType(server_type());
   }

@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"

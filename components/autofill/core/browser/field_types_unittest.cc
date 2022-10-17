@@ -92,6 +92,7 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
       BIRTHDATE_DAY,
       BIRTHDATE_MONTH,
       BIRTHDATE_4_DIGIT_YEAR,
+      NUMERIC_QUANTITY,
   };
   ServerFieldType kInvalidValue = static_cast<ServerFieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
