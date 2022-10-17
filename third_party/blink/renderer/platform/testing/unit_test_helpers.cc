@@ -61,12 +61,18 @@ base::FilePath WebTestsFilePath() {
 }  // namespace
 
 void RunPendingTasks() {
+  // If we are already in a RunLoop fail. A posted task to exit the another
+  // nested run loop will never execute and lead to a timeout.
+  DCHECK(!base::RunLoop::IsRunningOnCurrentThread());
   Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
       FROM_HERE, WTF::BindOnce(&ExitRunLoop));
   EnterRunLoop();
 }
 
 void RunDelayedTasks(base::TimeDelta delay) {
+  // If we are already in a RunLoop fail. A posted task to exit the another
+  // nested run loop will never execute and lead to a timeout.
+  DCHECK(!base::RunLoop::IsRunningOnCurrentThread());
   Thread::Current()->GetDeprecatedTaskRunner()->PostDelayedTask(
       FROM_HERE, WTF::BindOnce(&ExitRunLoop), delay);
   EnterRunLoop();

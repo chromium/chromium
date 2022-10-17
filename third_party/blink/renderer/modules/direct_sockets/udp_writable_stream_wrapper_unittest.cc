@@ -62,7 +62,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
       : fake_udp_socket_(std::move(socket)),
         receiver_{fake_udp_socket_.get()} {}
 
-  ~StreamCreator() { test::RunPendingTasks(); }
+  ~StreamCreator() = default;
 
   UDPWritableStreamWrapper* Create(const V8TestingScope& scope) {
     auto* udp_socket =
@@ -85,6 +85,11 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
 
   bool CloseCalledWith(bool error) { return close_called_with_ == error; }
 
+  void Cleanup() {
+    fake_udp_socket_.reset();
+    receiver_.reset();
+  }
+
  private:
   void Close(ScriptValue exception) {
     close_called_with_ = !exception.IsEmpty();
@@ -96,10 +101,23 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   Member<UDPWritableStreamWrapper> stream_wrapper_;
 };
 
+class ScopedStreamCreator {
+ public:
+  explicit ScopedStreamCreator(StreamCreator* stream_creator)
+      : stream_creator_(stream_creator) {}
+
+  ~ScopedStreamCreator() { stream_creator_->Cleanup(); }
+
+  StreamCreator* operator->() const { return stream_creator_; }
+
+ private:
+  Persistent<StreamCreator> stream_creator_;
+};
+
 TEST(UDPWritableStreamWrapperTest, Create) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
 
   EXPECT_TRUE(udp_writable_stream_wrapper->Writable());
@@ -108,7 +126,7 @@ TEST(UDPWritableStreamWrapperTest, Create) {
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -137,7 +155,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessage) {
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -169,7 +187,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageFromTypedArray) {
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -201,7 +219,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithEmptyDataField) {
 TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithoutDataField) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -233,7 +251,7 @@ TEST(UDPWritableStreamWrapperTest, WriteUdpMessageWithoutDataField) {
 TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -265,7 +283,7 @@ TEST(UDPWritableStreamWrapperTest, WriteAfterFinishedWrite) {
 TEST(UDPWritableStreamWrapperTest, WriteAfterClose) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -315,8 +333,8 @@ TEST(UDPWritableStreamWrapperTest, WriteFailed) {
 
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>(
-      std::make_unique<FailingFakeDirectUDPSocket>());
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>(
+      std::make_unique<FailingFakeDirectUDPSocket>()));
   auto* udp_writable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();

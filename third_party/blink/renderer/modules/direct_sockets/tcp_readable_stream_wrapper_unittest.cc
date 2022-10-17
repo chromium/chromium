@@ -29,11 +29,7 @@ using ::testing::ElementsAre;
 class StreamCreator : public GarbageCollected<StreamCreator> {
  public:
   StreamCreator() = default;
-  ~StreamCreator() {
-    // Let the TCPReadableStreamWrapper object respond to the closure if it
-    // needs to.
-    test::RunPendingTasks();
-  }
+  ~StreamCreator() = default;
 
   // The default value of |capacity| means some sensible value selected by mojo.
   TCPReadableStreamWrapper* Create(const V8TestingScope& scope,
@@ -128,6 +124,8 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
 
   void Trace(Visitor* visitor) const { visitor->Trace(stream_wrapper_); }
 
+  void Cleanup() { data_pipe_producer_.reset(); }
+
  private:
   void Close(ScriptValue exception) {
     close_called_with_ = !exception.IsEmpty();
@@ -138,10 +136,23 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   Member<TCPReadableStreamWrapper> stream_wrapper_;
 };
 
+class ScopedStreamCreator {
+ public:
+  explicit ScopedStreamCreator(StreamCreator* stream_creator)
+      : stream_creator_(stream_creator) {}
+
+  ~ScopedStreamCreator() { stream_creator_->Cleanup(); }
+
+  StreamCreator* operator->() const { return stream_creator_; }
+
+ private:
+  Persistent<StreamCreator> stream_creator_;
+};
+
 TEST(TCPReadableStreamWrapperTest, Create) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
 
   EXPECT_TRUE(tcp_readable_stream_wrapper->Readable());
@@ -150,7 +161,7 @@ TEST(TCPReadableStreamWrapperTest, Create) {
 TEST(TCPReadableStreamWrapperTest, ReadArrayBuffer) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -167,7 +178,7 @@ TEST(TCPReadableStreamWrapperTest, ReadArrayBuffer) {
 TEST(TCPReadableStreamWrapperTest, WriteToPipeWithPendingRead) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -200,7 +211,7 @@ INSTANTIATE_TEST_SUITE_P(/**/,
 TEST_P(TCPReadableStreamWrapperCloseTest, TriggerClose) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -234,7 +245,7 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerClose) {
 TEST_P(TCPReadableStreamWrapperCloseTest, TriggerCloseInReverseOrder) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -269,7 +280,7 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerCloseInReverseOrder) {
 TEST_P(TCPReadableStreamWrapperCloseTest, ErrorCancelReset) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
@@ -299,7 +310,7 @@ TEST_P(TCPReadableStreamWrapperCloseTest, ErrorCancelReset) {
 TEST_P(TCPReadableStreamWrapperCloseTest, ResetCancelError) {
   V8TestingScope scope;
 
-  auto* stream_creator = MakeGarbageCollected<StreamCreator>();
+  ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
   auto* tcp_readable_stream_wrapper = stream_creator->Create(scope);
 
   auto* script_state = scope.GetScriptState();
