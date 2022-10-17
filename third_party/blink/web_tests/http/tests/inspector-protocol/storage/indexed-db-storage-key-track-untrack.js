@@ -3,7 +3,8 @@
       `Tests that tracking and untracking IndexedDB for storage key works\n`);
 
   await dp.Page.enable();
-
+  let errorForLog = new Error();
+  setTimeout(() => {testRunner.die('Timeout', errorForLog)}, 9000);
   testRunner.startDumpingProtocolMessages();
 
   const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
