@@ -4,24 +4,24 @@
 
 #import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/check_op.h"
-#include "base/memory/ptr_util.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
-#include "components/translate/core/browser/translate_download_manager.h"
+#import "base/check_op.h"
+#import "base/memory/ptr_util.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "components/translate/core/browser/translate_download_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
 #import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/public/cwv_translation_controller_delegate.h"
 #import "ios/web_view/public/cwv_translation_policy.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

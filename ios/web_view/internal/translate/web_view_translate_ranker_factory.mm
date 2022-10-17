@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
+#import "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/translate/core/browser/translate_ranker_impl.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/translate/core/browser/translate_ranker_impl.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

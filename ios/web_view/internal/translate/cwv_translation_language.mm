@@ -4,9 +4,9 @@
 
 #import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
 
-#include <string>
+#import <string>
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

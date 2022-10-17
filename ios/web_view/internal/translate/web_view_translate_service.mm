@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/translate/web_view_translate_service.h"
+#import "ios/web_view/internal/translate/web_view_translate_service.h"
 
-#include "base/bind.h"
-#include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
-#include "components/translate/core/browser/translate_download_manager.h"
-#include "ios/web_view/internal/app/application_context.h"
+#import "base/bind.h"
+#import "base/memory/ptr_util.h"
+#import "base/no_destructor.h"
+#import "components/translate/core/browser/translate_download_manager.h"
+#import "ios/web_view/internal/app/application_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,21 +4,21 @@
 
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "components/infobars/core/infobar.h"
-#include "components/language/core/browser/language_model_manager.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/translate/core/browser/page_translated_details.h"
-#include "components/translate/core/browser/translate_infobar_delegate.h"
-#include "components/translate/core/browser/translate_step.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
-#include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
-#include "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
-#include "url/gurl.h"
+#import "base/check.h"
+#import "base/notreached.h"
+#import "components/infobars/core/infobar.h"
+#import "components/language/core/browser/language_model_manager.h"
+#import "components/language/core/browser/pref_names.h"
+#import "components/translate/core/browser/page_translated_details.h"
+#import "components/translate/core/browser/translate_infobar_delegate.h"
+#import "components/translate/core/browser/translate_step.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
+#import "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
+#import "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
