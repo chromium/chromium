@@ -14,8 +14,8 @@
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
-@class ChromeIdentity;
 class SyncSetupService;
+@protocol SystemIdentity;
 
 namespace consent_auditor {
 class ConsentAuditor;
@@ -53,7 +53,7 @@ class UnifiedConsentService;
 // User's sign-in state before starting the coordinator.
 @property(nonatomic, assign, readonly) IdentitySigninState signinStateOnStart;
 // Users's sign-in identity before starting the coordinator.
-@property(nonatomic, strong, readonly) ChromeIdentity* signinIdentityOnStart;
+@property(nonatomic, strong, readonly) id<SystemIdentity> signinIdentityOnStart;
 
 @end
 
@@ -83,7 +83,7 @@ class UnifiedConsentService;
 // Enters the authentication state following identity selection. If there is an
 // error transitions to the identity selection state, otherwise enters the final
 // authentication completed state.
-- (void)authenticateWithIdentity:(ChromeIdentity*)identity
+- (void)authenticateWithIdentity:(id<SystemIdentity>)identity
               authenticationFlow:(AuthenticationFlow*)authenticationFlow;
 
 // Reverts the sign-in operation.

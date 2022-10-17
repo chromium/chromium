@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 
 @class UserSigninLogger;
+@protocol SystemIdentity;
 
 // Coordinates the user sign-in with different intents:
 //  + user sign-in when triggered from UI (settings, bookmarks...)
@@ -26,7 +27,7 @@
 // `logger` is the logger for sign-in flow operations. This should not be nil.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  identity:(ChromeIdentity*)identity
+                                  identity:(id<SystemIdentity>)identity
                               signinIntent:(UserSigninIntent)signinIntent
                                     logger:(UserSigninLogger*)logger
     NS_DESIGNATED_INITIALIZER;

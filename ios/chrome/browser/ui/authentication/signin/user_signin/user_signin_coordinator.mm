@@ -62,7 +62,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 // Mediator that handles the sign-in authentication state.
 @property(nonatomic, strong) UserSigninMediator* mediator;
 // Suggested identity shown at sign-in.
-@property(nonatomic, strong, readonly) ChromeIdentity* defaultIdentity;
+@property(nonatomic, strong, readonly) id<SystemIdentity> defaultIdentity;
 // Logger for sign-in operations.
 @property(nonatomic, strong, readonly) UserSigninLogger* logger;
 // Sign-in intent.
@@ -78,7 +78,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 @property(nonatomic, assign) IdentitySigninState signinStateOnStart;
 // Sign-in identity when the coordiantor starts. This is used as the
 // identity to revert to in case the user is interrupted during sign-in.
-@property(nonatomic, strong) ChromeIdentity* signinIdentityOnStart;
+@property(nonatomic, strong) id<SystemIdentity> signinIdentityOnStart;
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 // YES if the user tapped on the managed, learn more link.
@@ -109,7 +109,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  identity:(ChromeIdentity*)identity
+                                  identity:(id<SystemIdentity>)identity
                               signinIntent:(UserSigninIntent)signinIntent
                                     logger:(UserSigninLogger*)logger {
   self = [super initWithBaseViewController:viewController browser:browser];
@@ -629,9 +629,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   self.unifiedConsentCoordinator.uiDisabled = YES;
   [self.viewController signinWillStart];
   [self.mediator
-      authenticateWithIdentity:base::mac::ObjCCastStrict<ChromeIdentity>(
-                                   self.unifiedConsentCoordinator
-                                       .selectedIdentity)
+      authenticateWithIdentity:self.unifiedConsentCoordinator.selectedIdentity
             authenticationFlow:authenticationFlow];
 }
 
@@ -640,7 +638,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 // `self.advancedSettingsSigninCoordinator` is done.
 - (void)advancedSettingsSigninCoordinatorFinishedWithResult:
             (SigninCoordinatorResult)signinResult
-                                                   identity:(ChromeIdentity*)
+                                                   identity:(id<SystemIdentity>)
                                                                 identity {
   DCHECK(self.advancedSettingsSigninCoordinator);
   [self.advancedSettingsSigninCoordinator stop];

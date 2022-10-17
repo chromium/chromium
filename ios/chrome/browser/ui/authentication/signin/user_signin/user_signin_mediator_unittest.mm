@@ -499,7 +499,7 @@ TEST_F(UserSigninMediatorTest, CancelSyncAndStaySignin) {
 //   * Cancel the user sign-in dialog
 TEST_F(UserSigninMediatorTest, OpenSettingsLinkWithDifferentIdentityAndCancel) {
   // Signs in with identity 2.
-  ChromeIdentity* identity2 =
+  id<SystemIdentity> identity2 =
       [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
                                      gaiaID:@"foo2ID"
                                        name:@"Fake Foo 2"];
@@ -551,7 +551,7 @@ TEST_F(UserSigninMediatorTest, OpenSettingsLinkWithDifferentIdentityAndCancel) {
 TEST_F(UserSigninMediatorTest,
        OpenSettingsLinkWithDifferentIdentityAndForgetIdentity) {
   // Signs in with identity 2.
-  ChromeIdentity* identity2 =
+  id<SystemIdentity> identity2 =
       [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
                                      gaiaID:@"foo2ID"
                                        name:@"Fake Foo 2"];

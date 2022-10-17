@@ -83,7 +83,7 @@
   DCHECK(!self.delegate);
 }
 
-- (void)authenticateWithIdentity:(ChromeIdentity*)identity
+- (void)authenticateWithIdentity:(id<SystemIdentity>)identity
               authenticationFlow:(AuthenticationFlow*)authenticationFlow {
   DCHECK(!self.authenticationFlow);
 
@@ -164,19 +164,7 @@
         self.authenticationService->SignOut(
             signin_metrics::ABORT_SIGNIN,
             /*force_clear_browsing_data=*/false, ^() {
-              AuthenticationService* authenticationService =
-                  weakSelf.authenticationService;
-              ChromeIdentity* identity =
-                  weakSelf.delegate.signinIdentityOnStart;
-              ChromeAccountManagerService* accountManagerService =
-                  weakSelf.accountManagerService;
-              if (authenticationService && identity &&
-                  accountManagerService->IsValidIdentity(identity)) {
-                // Make sure the mediator is still alive, and the identity is
-                // stil valid (for example the identity can be removed by
-                // another app.
-                authenticationService->SignIn(identity);
-              }
+              [weakSelf signinWithIdentityOnStartAfterSignout];
               if (completion)
                 completion();
             });
@@ -189,6 +177,26 @@
       break;
     }
   }
+}
+
+- (void)signinWithIdentityOnStartAfterSignout {
+  ChromeAccountManagerService* accountManagerService =
+      self.accountManagerService;
+  if (!accountManagerService)
+    return;
+
+  // Make sure the mediator is still alive and the identity is
+  // still valid (for example, the identity can be removed by
+  // another application).
+  id<SystemIdentity> identity = self.delegate.signinIdentityOnStart;
+  if (!accountManagerService->IsValidIdentity(identity))
+    return;
+
+  AuthenticationService* authenticationService = self.authenticationService;
+  if (!authenticationService)
+    return;
+
+  authenticationService->SignIn(identity);
 }
 
 - (void)disconnect {
@@ -209,7 +217,7 @@
 
 // Called when signin is complete, after tapping "Yes, I'm in".
 - (void)onAccountSigninCompletion:(BOOL)success
-                         identity:(ChromeIdentity*)identity {
+                         identity:(id<SystemIdentity>)identity {
   self.authenticationFlow = nil;
   if (!success) {
     [self.delegate userSigninMediatorSigninFailed];
@@ -219,7 +227,7 @@
 }
 
 // Grants and records Sync consent, and finishes the Sync setup flow.
-- (void)signinCompletedWithIdentity:(ChromeIdentity*)identity {
+- (void)signinCompletedWithIdentity:(id<SystemIdentity>)identity {
   self.unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 
   sync_pb::UserConsentTypes::SyncConsent syncConsent;
@@ -239,8 +247,8 @@
   }
 
   CoreAccountId coreAccountId = self.identityManager->PickAccountIdForAccount(
-      base::SysNSStringToUTF8([identity gaiaID]),
-      base::SysNSStringToUTF8([identity userEmail]));
+      base::SysNSStringToUTF8(identity.gaiaID),
+      base::SysNSStringToUTF8(identity.userEmail));
   self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
   self.authenticationService->GrantSyncConsent(identity);
 
