@@ -3365,7 +3365,7 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
   ~DownloadManagerWaiter() override { download_manager_->RemoveObserver(this); }
 
   void WaitForInitialized() {
-    if (initialized_)
+    if (initialized_ || download_manager_->IsManagerInitialized())
       return;
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -3494,10 +3494,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PRE_DownloadCookieIsolation_CrossSession) {
 
   content::DownloadManager* download_manager =
       web_contents->GetBrowserContext()->GetDownloadManager();
-  std::unique_ptr<content::DownloadTestObserver> interrupted_observer(
-      new content::DownloadTestObserverInterrupted(
-          download_manager, 2,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
 
   scoped_refptr<content::TestFileErrorInjector> error_injector(
       content::TestFileErrorInjector::Create(download_manager));
@@ -3508,22 +3504,30 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PRE_DownloadCookieIsolation_CrossSession) {
   error_info.stream_offset = 0;
   error_injector->InjectError(error_info);
 
-  EXPECT_TRUE(content::ExecuteScript(
-      web_contents,
-      base::StringPrintf(
-          "startDownload('first', '%s?cookie=first')",
-          embedded_test_server()->GetURL(kDownloadPathPrefix).spec().c_str())));
+  auto download_op = [&](std::string cookie) {
+    // DownloadTestObserverInterrupted does not seem to reliably wait for
+    // multiple failed downloads, so we perform one download at a time.
+    content::DownloadTestObserverInterrupted interrupted_observer(
+        download_manager, 1,
+        content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
-  // Note that the second webview uses an in-memory partition.
-  EXPECT_TRUE(content::ExecuteScript(
-      web_contents,
-      base::StringPrintf(
-          "startDownload('second', '%s?cookie=second')",
-          embedded_test_server()->GetURL(kDownloadPathPrefix).spec().c_str())));
+    EXPECT_TRUE(content::ExecuteScript(
+        web_contents,
+        base::StringPrintf(
+            "startDownload('%s', '%s?cookie=%s')", cookie.c_str(),
+            embedded_test_server()->GetURL(kDownloadPathPrefix).spec().c_str(),
+            cookie.c_str())));
+
+    // This maps to DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED.
+    interrupted_observer.WaitForFinished();
+  };
 
   // Both downloads should fail due to the error that was injected above to the
-  // download manager. This maps to DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED.
-  interrupted_observer->WaitForFinished();
+  // download manager.
+  download_op("first");
+
+  // Note that the second webview uses an in-memory partition.
+  download_op("second");
 
   // Wait for both downloads to be stored.
   task_runner->FastForwardUntilNoTasksRemain();
@@ -3531,19 +3535,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PRE_DownloadCookieIsolation_CrossSession) {
   content::EnsureCookiesFlushed(profile());
 }
 
-// TODO(crbug.com/994789): Flaky on MSan, Linux, and ChromeOS.
-// TODO(crbug.com/1204299): Flaky on Windows. Consistently failing on Mac.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_DownloadCookieIsolation_CrossSession \
-  DISABLED_DownloadCookieIsolation_CrossSession
-#else
-#define MAYBE_DownloadCookieIsolation_CrossSession \
-  DownloadCookieIsolation_CrossSession
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-IN_PROC_BROWSER_TEST_P(WebViewTest,
-                       MAYBE_DownloadCookieIsolation_CrossSession) {
+IN_PROC_BROWSER_TEST_P(WebViewTest, DownloadCookieIsolation_CrossSession) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&HandleDownloadRequestWithCookie));
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
@@ -3594,20 +3586,21 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
         download->GetRerouteInfo()));
   }
 
-  std::unique_ptr<content::DownloadTestObserver> completion_observer(
-      new content::DownloadTestObserverTerminal(
-          download_manager, 2,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+  content::DownloadTestObserverTerminal completion_observer(
+      download_manager, 2,
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
   for (auto* download : downloads) {
     ASSERT_TRUE(download->CanResume());
     ASSERT_TRUE(download->GetFullPath().empty());
-    EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
-              download->GetLastReason());
+    ASSERT_TRUE(download::DOWNLOAD_INTERRUPT_REASON_CRASH ==
+                    download->GetLastReason() ||
+                download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED ==
+                    download->GetLastReason());
     download->Resume(true);
   }
 
-  completion_observer->WaitForFinished();
+  completion_observer.WaitForFinished();
 
   // Of the two downloads, ?cookie=first will succeed and ?cookie=second will
   // fail. The latter fails because the underlying storage partition was not
