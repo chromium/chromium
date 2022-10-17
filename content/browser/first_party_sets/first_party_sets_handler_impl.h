@@ -93,6 +93,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   void Init(const base::FilePath& user_data_dir,
             const LocalSetDeclaration& local_set);
 
+  // Factory method that exposes the ctor for testing.
+  static FirstPartySetsHandlerImpl CreateForTesting(
+      bool enabled,
+      bool embedder_will_provide_public_sets);
+
   // Returns the fully-parsed and validated global First-Party Sets data.
   // Returns the data synchronously via an optional if it's already available,
   // or via an asynchronously-invoked callback if the data is not ready yet.
@@ -125,17 +130,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       base::OnceCallback<void(net::FirstPartySetsContextConfig,
                               net::FirstPartySetsCacheFilter)> callback)
       override;
-
-  // Sets whether FPS is enabled (for testing).
-  void SetEnabledForTesting(bool enabled) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    enabled_ = enabled;
-  }
-
-  void SetEmbedderWillProvidePublicSetsForTesting(bool will_provide) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    embedder_will_provide_public_sets_ = enabled_ && will_provide;
-  }
 
   void GetPersistedGlobalSetsForTesting(
       const std::string& browser_context_id,

@@ -102,6 +102,13 @@ FirstPartySetsHandler::ValidateEnterprisePolicy(
   return {absl::nullopt, parsed_or_error.value().second};
 }
 
+// static
+FirstPartySetsHandlerImpl FirstPartySetsHandlerImpl::CreateForTesting(
+    bool enabled,
+    bool embedder_will_provide_public_sets) {
+  return FirstPartySetsHandlerImpl(enabled, embedder_will_provide_public_sets);
+}
+
 void FirstPartySetsHandlerImpl::GetContextConfigForPolicy(
     const base::Value::Dict* policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
