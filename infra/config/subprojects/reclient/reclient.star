@@ -66,6 +66,14 @@ def fyi_reclient_staging_builder(
         **kwargs):
     trusted_instance = reclient_instance % "trusted"
     unstrusted_instance = reclient_instance % "untrusted"
+    reclient_bootstrap_env = kwargs.pop("reclient_bootstrap_env", {})
+
+    # TODO(b/233275188) remove once reproxy 0.83.0 is rolled out
+    reclient_bootstrap_env.update({
+        "RBE_experimental_goma_deps_cache": "True",
+        "RBE_ip_reset_min_delay": "-1s",
+        "RBE_deps_cache_mode": "reproxy",
+    })
     return [
         ci.builder(
             name = name,
@@ -76,6 +84,7 @@ def fyi_reclient_staging_builder(
                 category = "rbe|" + console_view_category,
                 short_name = "rcs",
             ),
+            reclient_bootstrap_env = reclient_bootstrap_env,
             **kwargs
         ),
         ci.builder(
@@ -88,6 +97,7 @@ def fyi_reclient_staging_builder(
                 short_name = "rcs",
             ),
             service_account = untrusted_service_account,
+            reclient_bootstrap_env = reclient_bootstrap_env,
             **kwargs
         ),
     ]
@@ -192,7 +202,6 @@ fyi_reclient_test_builder(
     cores = None,
     priority = 35,
     reclient_bootstrap_env = {
-        "RBE_ip_timeout": "-1s",
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_profiler_service = "reclient-mac",
@@ -309,7 +318,6 @@ fyi_reclient_test_builder(
     xcode = xcode.x13main,
     priority = 35,
     reclient_bootstrap_env = {
-        "RBE_ip_timeout": "-1s",
         "GLOG_vmodule": "bridge*=2",
     },
 )
@@ -389,7 +397,6 @@ fyi_reclient_test_builder(
     cores = None,
     priority = 35,
     reclient_bootstrap_env = {
-        "RBE_ip_timeout": "-1s",
         "GLOG_vmodule": "bridge*=2",
     },
 )

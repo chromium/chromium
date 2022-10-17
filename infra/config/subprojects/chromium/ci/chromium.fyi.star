@@ -1058,6 +1058,11 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
     ssd = True,
     cores = 16,
+    reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
+        "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
+    },
 )
 
 ci.builder(
@@ -1081,7 +1086,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ssd = True,
     cores = 16,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1099,7 +1106,9 @@ ci.builder(
     reclient_jobs = 250,
     os = os.LINUX_DEFAULT,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1119,9 +1128,10 @@ ci.builder(
     os = os.MAC_DEFAULT,
     cores = None,
     reclient_bootstrap_env = {
-        "RBE_ip_timeout": "-1s",
+        "RBE_ip_reset_min_delay": "-1s",
         "GLOG_vmodule": "bridge*=2",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1141,8 +1151,10 @@ ci.builder(
     os = os.MAC_DEFAULT,
     cores = None,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "GLOG_vmodule": "bridge*=2",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1163,8 +1175,10 @@ ci.builder(
     cores = None,
     cpu = cpu.ARM64,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "GLOG_vmodule": "bridge*=2",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1184,7 +1198,9 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1205,7 +1221,9 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1223,6 +1241,11 @@ ci.builder(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = 250,
     os = os.LINUX_DEFAULT,
+    reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
+        "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
+    },
 )
 
 ci.builder(
@@ -1242,7 +1265,9 @@ ci.builder(
     cores = None,
     xcode = xcode.x14main,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1266,7 +1291,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     cores = 32,
     ssd = True,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1290,7 +1317,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     cores = 16,
     ssd = True,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1316,7 +1345,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     cores = None,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1342,7 +1373,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ssd = True,
     cores = 32,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1367,7 +1400,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     cores = 32,
     ssd = True,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 
@@ -1393,7 +1428,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ssd = True,
     xcode = xcode.x14main,
     reclient_bootstrap_env = {
+        "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
     },
 )
 

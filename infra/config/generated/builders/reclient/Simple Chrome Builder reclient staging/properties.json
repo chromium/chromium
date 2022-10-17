@@ -47,6 +47,11 @@
     }
   },
   "$build/reclient": {
+    "bootstrap_env": {
+      "RBE_deps_cache_mode": "reproxy",
+      "RBE_experimental_goma_deps_cache": "True",
+      "RBE_ip_reset_min_delay": "-1s"
+    },
     "instance": "rbe-chromium-trusted",
     "metrics_project": "chromium-reclient-metrics"
   },
