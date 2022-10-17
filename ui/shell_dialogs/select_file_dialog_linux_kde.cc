@@ -200,7 +200,7 @@ bool SelectFileDialogLinux::CheckKDEDialogWorksOnUIThread(
   return base::GetAppOutput(command_line, &kdialog_version);
 }
 
-SelectFileDialogLinuxKde* NewSelectFileDialogLinuxKde(
+SelectFileDialog* NewSelectFileDialogLinuxKde(
     SelectFileDialog::Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy,
     base::nix::DesktopEnvironment desktop,

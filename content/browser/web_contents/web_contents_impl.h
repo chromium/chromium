@@ -105,9 +105,7 @@ class InterfaceProvider;
 }  // namespace service_manager
 
 namespace content {
-namespace {
 class JavaScriptDialogDismissNotifier;
-}
 enum class PictureInPictureResult;
 class BeforeUnloadBlockingDelegate;  // content_browser_test_utils_internal.h
 class BrowserPluginEmbedder;

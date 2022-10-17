@@ -285,32 +285,6 @@ class CloseDialogCallbackWrapper
   CloseCallback callback_;
 };
 
-// This is a small helper class created while a JavaScript dialog is showing
-// and destroyed when it's dismissed. Clients can register callbacks to receive
-// a notification when the dialog is dismissed.
-class JavaScriptDialogDismissNotifier {
- public:
-  JavaScriptDialogDismissNotifier() = default;
-
-  JavaScriptDialogDismissNotifier(const JavaScriptDialogDismissNotifier&) =
-      delete;
-  JavaScriptDialogDismissNotifier& operator=(
-      const JavaScriptDialogDismissNotifier&) = delete;
-
-  ~JavaScriptDialogDismissNotifier() {
-    for (auto& callback : callbacks_) {
-      std::move(callback).Run();
-    }
-  }
-
-  void NotifyOnDismiss(base::OnceClosure callback) {
-    callbacks_.push_back(std::move(callback));
-  }
-
- private:
-  std::vector<base::OnceClosure> callbacks_;
-};
-
 bool FrameCompareDepth(RenderFrameHostImpl* a, RenderFrameHostImpl* b) {
   return a->GetFrameDepth() < b->GetFrameDepth();
 }
@@ -537,6 +511,32 @@ size_t GetFrameTreeSize(FrameTree* frame_tree) {
 }
 
 }  // namespace
+
+// This is a small helper class created while a JavaScript dialog is showing
+// and destroyed when it's dismissed. Clients can register callbacks to receive
+// a notification when the dialog is dismissed.
+class JavaScriptDialogDismissNotifier {
+ public:
+  JavaScriptDialogDismissNotifier() = default;
+
+  JavaScriptDialogDismissNotifier(const JavaScriptDialogDismissNotifier&) =
+      delete;
+  JavaScriptDialogDismissNotifier& operator=(
+      const JavaScriptDialogDismissNotifier&) = delete;
+
+  ~JavaScriptDialogDismissNotifier() {
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run();
+    }
+  }
+
+  void NotifyOnDismiss(base::OnceClosure callback) {
+    callbacks_.push_back(std::move(callback));
+  }
+
+ private:
+  std::vector<base::OnceClosure> callbacks_;
+};
 
 CreatedWindow::CreatedWindow() = default;
 CreatedWindow::CreatedWindow(std::unique_ptr<WebContentsImpl> contents,
