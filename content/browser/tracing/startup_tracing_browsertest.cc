@@ -354,21 +354,14 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OutputType::kJSON, OutputType::kProto),
         testing::Values(OutputLocation::kDirectoryWithDefaultBasename)));
 
-// Flaky; see https://crbug.com/1341341 .
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_StopOnUIThread DISABLED_StopOnUIThread
-#else
-#define MAYBE_StopOnUIThread StopOnUIThread
-#endif
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnUIThread) {
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnUIThread) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   StartupTracingController::EmergencyStop();
   CheckOutput(GetExpectedPath(), GetOutputType());
 }
 
-// Flaky: crbug.com/1372387
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, DISABLED_StopOnThreadPool) {
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPool) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   auto expected_path = GetExpectedPath();
@@ -385,8 +378,7 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, DISABLED_StopOnThreadPool) {
   run_loop.Run();
 }
 
-// Flaky: crbug.com/1372387
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, DISABLED_StopOnThreadPoolTwice) {
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPoolTwice) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   auto expected_path = GetExpectedPath();
