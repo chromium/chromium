@@ -10,12 +10,9 @@ promise_test(async t => {
   document.cookie = "test0=0";
   const cookies = await test_driver.get_all_cookies();
   assert_equals(cookies.length, 1);
-  let cookieMap = new Map();
-  for (const cookie of cookies) {
-    cookieMap.set(cookie["name"], cookie);
-  }
-  assert_equals(cookieMap.get("test0")["name"], "test0");
-  assert_equals(cookieMap.get("test0")["value"], "0");
-  assert_equals(cookieMap.get("test0")["sameSite"], "Lax");
+  const cookie = cookies[0];
+  assert_equals(cookie["name"], "test0");
+  assert_equals(cookie["value"], "0");
+  assert_equals(cookie["sameSite"], "Lax");
 }, "Get all cookies w/ default SameSite");
 </script>
