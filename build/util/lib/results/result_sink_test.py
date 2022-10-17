@@ -21,6 +21,11 @@ if _BUILD_UTIL_PATH not in sys.path:
 from lib.results import result_sink
 from lib.results import result_types
 
+_FAKE_CONTEXT = {
+    'address': 'some-ip-address',
+    'auth_token': 'some-auth-token',
+}
+
 
 class InitClientTest(unittest.TestCase):
   @mock.patch.dict(os.environ, {}, clear=True)
@@ -32,10 +37,7 @@ class InitClientTest(unittest.TestCase):
   @mock.patch.dict(os.environ, {'LUCI_CONTEXT': 'some-file.json'})
   def testBasicClient(self):
     luci_context_json = {
-        'result_sink': {
-            'address': 'some-ip-address',
-            'auth_token': 'some-auth-token',
-        },
+        'result_sink': _FAKE_CONTEXT,
     }
     if six.PY2:
       open_builtin_path = '__builtin__.open'
@@ -47,19 +49,35 @@ class InitClientTest(unittest.TestCase):
     self.assertEqual(
         client.test_results_url,
         'http://some-ip-address/prpc/luci.resultsink.v1.Sink/ReportTestResults')
-    self.assertEqual(client.headers['Authorization'],
+    self.assertEqual(client.session.headers['Authorization'],
                      'ResultSink some-auth-token')
+
+  @mock.patch('requests.Session')
+  def testReuseSession(self, mock_session):
+    client = result_sink.ResultSinkClient(_FAKE_CONTEXT)
+    client.Post('some-test', result_types.PASS, 0, 'some-test-log', None)
+    client.Post('some-test', result_types.PASS, 0, 'some-test-log', None)
+    self.assertEqual(mock_session.call_count, 1)
+    self.assertEqual(client.session.post.call_count, 2)
+
+  @mock.patch('requests.Session.close')
+  def testCloseClient(self, mock_close):
+    client = result_sink.ResultSinkClient(_FAKE_CONTEXT)
+    client.close()
+    mock_close.assert_called_once()
+
+  @mock.patch('requests.Session.close')
+  def testClientAsContextManager(self, mock_close):
+    with result_sink.ResultSinkClient(_FAKE_CONTEXT) as client:
+      mock_close.assert_not_called()
+    mock_close.assert_called_once()
 
 
 class ClientTest(unittest.TestCase):
   def setUp(self):
-    context = {
-        'address': 'some-ip-address',
-        'auth_token': 'some-auth-token',
-    }
-    self.client = result_sink.ResultSinkClient(context)
+    self.client = result_sink.ResultSinkClient(_FAKE_CONTEXT)
 
-  @mock.patch('requests.post')
+  @mock.patch('requests.Session.post')
   def testPostPassingTest(self, mock_post):
     self.client.Post('some-test', result_types.PASS, 0, 'some-test-log', None)
     self.assertEqual(
@@ -69,7 +87,7 @@ class ClientTest(unittest.TestCase):
     self.assertEqual(data['testResults'][0]['testId'], 'some-test')
     self.assertEqual(data['testResults'][0]['status'], 'PASS')
 
-  @mock.patch('requests.post')
+  @mock.patch('requests.Session.post')
   def testPostFailingTest(self, mock_post):
     self.client.Post('some-test',
                      result_types.FAIL,
@@ -85,7 +103,7 @@ class ClientTest(unittest.TestCase):
         data['testResults'][0]['failureReason']['primaryErrorMessage'],
         'omg test failure')
 
-  @mock.patch('requests.post')
+  @mock.patch('requests.Session.post')
   def testPostWithTestFile(self, mock_post):
     self.client.Post('some-test', result_types.PASS, 0, 'some-test-log',
                      '//some/test.cc')

@@ -53,11 +53,23 @@ class ResultSinkClient(object):
     self.test_results_url = base_url + '/ReportTestResults'
     self.report_artifacts_url = base_url + '/ReportInvocationLevelArtifacts'
 
-    self.headers = {
+    headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'ResultSink %s' % context['auth_token'],
     }
+    self.session = requests.Session()
+    self.session.headers.update(headers)
+
+  def __enter__(self):
+    return self
+
+  def __exit__(self, exc_type, exc_value, traceback):
+    self.close()
+
+  def close(self):
+    """Closes the session backing the sink."""
+    self.session.close()
 
   def Post(self,
            test_id,
@@ -142,9 +154,8 @@ class ResultSinkClient(object):
           'repo': 'https://chromium.googlesource.com/chromium/src',
       }
 
-    res = requests.post(url=self.test_results_url,
-                        headers=self.headers,
-                        data=json.dumps({'testResults': [tr]}))
+    res = self.session.post(url=self.test_results_url,
+                            data=json.dumps({'testResults': [tr]}))
     res.raise_for_status()
 
   def ReportInvocationLevelArtifacts(self, artifacts):
@@ -157,9 +168,7 @@ class ResultSinkClient(object):
       artifacts: A dict of artifacts to attach to the invocation.
     """
     req = {'artifacts': artifacts}
-    res = requests.post(url=self.report_artifacts_url,
-                        headers=self.headers,
-                        data=json.dumps(req))
+    res = self.session.post(url=self.report_artifacts_url, data=json.dumps(req))
     res.raise_for_status()
 
 
