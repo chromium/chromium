@@ -13,5 +13,9 @@ BASE_FEATURE(kKeyboardShortcutsMenu,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsKeyboardShortcutsMenuEnabled() {
-  return base::FeatureList::IsEnabled(kKeyboardShortcutsMenu);
+  if (@available(iOS 15.0, *)) {
+    return base::FeatureList::IsEnabled(kKeyboardShortcutsMenu);
+  } else {
+    return false;
+  }
 }
