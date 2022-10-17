@@ -5,6 +5,8 @@
 # PartitionAlloc is planned to be extracted into a standalone library, and
 # therefore dependencies need to be strictly controlled and minimized.
 
+gclient_gn_args_file = 'partition_allocator/build/config/gclient_args.gni'
+
 # Only these hosts are allowed for dependencies in this DEPS file.
 # This is a subset of chromium/src/DEPS's allowed_hosts.
 allowed_hosts = [
@@ -16,6 +18,10 @@ vars = {
 }
 
 deps = {
+  'partition_allocator/build':
+      Var('chromium_git') + '/chromium/src/build.git',
+  'partition_allocator/buildtools':
+      Var('chromium_git') + '/chromium/src/buildtools.git',
   'partition_allocator/buildtools/clang_format/script':
       Var('chromium_git') + '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git',
   'partition_allocator/buildtools/linux64': {
@@ -48,6 +54,8 @@ deps = {
     'dep_type': 'cipd',
     'condition': 'host_os == "win"',
   },
+  'partition_allocator/buildtools/third_party/libc++/trunk':
+      Var('chromium_git') + '/external/github.com/llvm/llvm-project/libcxx.git',
 }
 
 noparent = True
