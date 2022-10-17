@@ -299,10 +299,6 @@
             field_dependencies: ["shape-outside"]
           },
           {
-            predicate: "a.ClipPathDataEquivalent(b)",
-            field_dependencies: ["clip-path"]
-          },
-          {
             predicate: "a.OutlineVisuallyEqual(b)",
             field_dependencies: ["outline-width", "outline-color", "outline-offset", "outline-style", "OutlineStyleIsAuto"]
           },

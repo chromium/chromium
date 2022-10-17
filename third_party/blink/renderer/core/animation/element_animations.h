@@ -120,6 +120,14 @@ class CORE_EXPORT ElementAnimations final
 
   void SetCompositedBackgroundColorStatus(CompositedPaintStatus status);
 
+  CompositedPaintStatus CompositedClipPathStatus() {
+    return static_cast<CompositedPaintStatus>(composited_clip_path_status_);
+  }
+
+  void SetCompositedClipPathStatus(CompositedPaintStatus status) {
+    composited_clip_path_status_ = static_cast<unsigned>(status);
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -138,11 +146,12 @@ class CORE_EXPORT ElementAnimations final
   // See also StyleBaseData.
   bool animation_style_change_ : 1;
 
-  // The decision of whether to composite a background color animation needs to
+  // The decision of whether to composite a compositable animations needs to
   // be made at Paint time and respected by the compositor.
   // The size of the bit-field must be updated if adding new
   // CompositedPaintStatus values to ensure that it can hold the value.
   unsigned composited_background_color_status_ : 2;
+  unsigned composited_clip_path_status_ : 2;
 
   FRIEND_TEST_ALL_PREFIXES(StyleEngineTest, PseudoElementBaseComputedStyle);
 };

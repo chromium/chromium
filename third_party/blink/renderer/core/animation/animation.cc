@@ -1028,7 +1028,6 @@ absl::optional<AnimationTimeDelta> Animation::CalculateCurrentTime() const {
 // https://www.w3.org/TR/web-animations-1/#setting-the-start-time-of-an-animation
 void Animation::setStartTime(const V8CSSNumberish* start_time,
                              ExceptionState& exception_state) {
-
   absl::optional<AnimationTimeDelta> new_start_time;
   // Failure to convert results in a thrown exception and returning false.
   if (!ConvertCSSNumberishToTime(start_time, new_start_time, "startTime",
@@ -2827,17 +2826,13 @@ bool Animation::IsInDisplayLockedSubtree() {
 }
 
 void Animation::UpdateCompositedPaintStatus() {
-  if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled())
+  if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+      !RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled())
     return;
 
   KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
   if (!keyframe_effect)
     return;
-
-  if (!keyframe_effect->Affects(
-          PropertyHandle(GetCSSPropertyBackgroundColor()))) {
-    return;
-  }
 
   Element* target = keyframe_effect->EffectTarget();
   if (!target)
@@ -2846,8 +2841,17 @@ void Animation::UpdateCompositedPaintStatus() {
   ElementAnimations* element_animations = target->GetElementAnimations();
   DCHECK(element_animations);
 
-  element_animations->SetCompositedBackgroundColorStatus(
-      ElementAnimations::CompositedPaintStatus::kNeedsRepaintOrNoAnimation);
+  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+      keyframe_effect->Affects(
+          PropertyHandle(GetCSSPropertyBackgroundColor()))) {
+    element_animations->SetCompositedBackgroundColorStatus(
+        ElementAnimations::CompositedPaintStatus::kNeedsRepaintOrNoAnimation);
+  }
+  if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
+      keyframe_effect->Affects(PropertyHandle(GetCSSPropertyClipPath()))) {
+    element_animations->SetCompositedClipPathStatus(
+        ElementAnimations::CompositedPaintStatus::kNeedsRepaintOrNoAnimation);
+  }
 }
 
 void Animation::Trace(Visitor* visitor) const {

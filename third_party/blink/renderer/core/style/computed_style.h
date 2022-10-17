@@ -1849,6 +1849,9 @@ class ComputedStyle : public ComputedStyleBase,
     return BorderImage().Outset() == o.BorderImage().Outset();
   }
 
+  CORE_EXPORT void AdjustDiffForClipPath(const ComputedStyle& o,
+                                         StyleDifference& diff) const;
+
   CORE_EXPORT void AdjustDiffForBackgroundVisuallyEqual(
       const ComputedStyle& o,
       StyleDifference& diff) const;

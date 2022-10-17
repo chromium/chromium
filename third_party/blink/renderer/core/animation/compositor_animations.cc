@@ -429,6 +429,13 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
              element_animations->CompositedBackgroundColorStatus() !=
                  ElementAnimations::CompositedPaintStatus::kComposited);
     }
+    if (effect.Affects(PropertyHandle(GetCSSPropertyClipPath()))) {
+      ElementAnimations* element_animations =
+          target_element.GetElementAnimations();
+      DCHECK(element_animations &&
+             element_animations->CompositedClipPathStatus() !=
+                 ElementAnimations::CompositedPaintStatus::kComposited);
+    }
 #endif
     reasons |= kCompositorPropertyAnimationsHaveNoEffect;
   }

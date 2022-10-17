@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -26,6 +27,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 
 namespace blink {
+
+using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
 
 namespace {
 
@@ -66,29 +69,63 @@ static bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner) {
          clip_path_owner.IsSVGForeignObjectIncludingNG();
 }
 
+CompositedPaintStatus CompositeClipPathStatus(Node* node) {
+  if (!node || !node->IsElementNode())
+    return CompositedPaintStatus::kNotComposited;
+
+  ElementAnimations* element_animations =
+      static_cast<Element*>(node)->GetElementAnimations();
+  DCHECK(element_animations);
+
+  return element_animations->CompositedClipPathStatus();
+}
+
+void SetCompositeClipPathStatus(Node* node, bool is_compositable) {
+  if (!node || !node->IsElementNode())
+    return;
+
+  ElementAnimations* element_animations =
+      static_cast<Element*>(node)->GetElementAnimations();
+  DCHECK(element_animations || !is_compositable);
+  if (element_animations) {
+    element_animations->SetCompositedClipPathStatus(
+        is_compositable ? CompositedPaintStatus::kComposited
+                        : CompositedPaintStatus::kNotComposited);
+  }
+}
+
 static bool HasCompositeClipPathAnimation(const LayoutObject& layout_object) {
   if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() ||
       !layout_object.StyleRef().HasCurrentClipPathAnimation())
     return false;
+
+  CompositedPaintStatus status =
+      CompositeClipPathStatus(layout_object.GetNode());
+
+  if (status == CompositedPaintStatus::kComposited) {
+    return true;
+  } else if (status == CompositedPaintStatus::kNotComposited) {
+    return false;
+  }
 
   ClipPathPaintImageGenerator* generator =
       layout_object.GetFrame()->GetClipPathPaintImageGenerator();
   // TODO(crbug.com/686074): The generator may be null in tests.
   // Fix and remove this test-only branch.
   if (!generator) {
+    SetCompositeClipPathStatus(layout_object.GetNode(), false);
     return false;
   }
 
   const Element* element = To<Element>(layout_object.GetNode());
   const Animation* animation = generator->GetAnimationIfCompositable(element);
 
-  if (!animation) {
-    return false;
-  }
-  // TODO(crbug.com/1248622): Cache this function to avoid this heavy check,
-  // See also: work done for bgcolor animations on crbug.com/1301961
-  return animation->CheckCanStartAnimationOnCompositor(nullptr) ==
-         CompositorAnimations::kNoFailure;
+  bool has_compositable_clip_path_animation =
+      animation && (animation->CheckCanStartAnimationOnCompositor(nullptr) ==
+                    CompositorAnimations::kNoFailure);
+  SetCompositeClipPathStatus(layout_object.GetNode(),
+                             has_compositable_clip_path_animation);
+  return has_compositable_clip_path_animation;
 }
 
 static void PaintWorkletBasedClip(GraphicsContext& context,
@@ -355,8 +392,9 @@ absl::optional<Path> ClipPathClipper::PathBasedClip(
   // will be impossible to tell if a composited clip path animation is possible
   // or not based only on the layout object. Exclude the possibility if we're
   // fragmented.
-  if (!is_in_block_fragmentation &&
-      HasCompositeClipPathAnimation(clip_path_owner))
+  if (is_in_block_fragmentation)
+    SetCompositeClipPathStatus(clip_path_owner.GetNode(), false);
+  else if (HasCompositeClipPathAnimation(clip_path_owner))
     return absl::nullopt;
 
   return PathBasedClipInternal(clip_path_owner,
