@@ -1,5 +1,7 @@
 'use strict';
 
+const ROOT_NAME = 'pending-beacon';
+
 function parallelPromiseTest(func, description) {
   async_test((t) => {
     Promise.resolve(func(t)).then(() => t.done()).catch(t.step_func((e) => {
@@ -92,7 +94,7 @@ function generatePayload(size) {
 
 function generateSetBeaconURL(uuid, options) {
   const host = (options && options.host) || '';
-  let url = `${host}/unload-beacon/resources/set_beacon.py?uuid=${uuid}`;
+  let url = `${host}/${ROOT_NAME}/resources/set_beacon.py?uuid=${uuid}`;
   if (options) {
     if (options.expectOrigin !== undefined) {
       url = `${url}&expectOrigin=${options.expectOrigin}`;
@@ -141,7 +143,7 @@ async function expectBeacon(uuid, options) {
   const res = await poll(
       async () => {
         const res = await fetch(
-            `/unload-beacon/resources/get_beacon.py?uuid=${uuid}`,
+            `/${ROOT_NAME}/resources/get_beacon.py?uuid=${uuid}`,
             {cache: 'no-store'});
         return await res.json();
       },

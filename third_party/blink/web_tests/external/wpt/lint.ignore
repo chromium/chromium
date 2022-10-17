@@ -229,7 +229,7 @@ SET TIMEOUT: shadow-dom/scroll-to-the-fragment-in-shadow-tree.html
 SET TIMEOUT: shadow-dom/slotchange-event.html
 SET TIMEOUT: trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.tentative.html
 SET TIMEOUT: trusted-types/DOMWindowTimers-setTimeout-setInterval.tentative.html
-SET TIMEOUT: unload-beacon/resources/pending_beacon-helper.js
+SET TIMEOUT: pending-beacon/resources/pending_beacon-helper.js
 SET TIMEOUT: user-timing/*
 SET TIMEOUT: web-animations/crashtests/reparent-animating-element-002.html
 SET TIMEOUT: web-animations/timing-model/animations/*
