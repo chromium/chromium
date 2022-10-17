@@ -1160,11 +1160,9 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       CaptionResult caption = LayoutCaption(
           ConstraintSpace(), Style(), container_builder_.InlineSize(),
           child_space, child, margins, child_break_token, early_break_in_child);
-      if (caption.layout_result->Status() != NGLayoutResult::kSuccess) {
-        DCHECK_EQ(caption.layout_result->Status(),
-                  NGLayoutResult::kOutOfFragmentainerSpace);
-        return container_builder_.Abort(caption.layout_result->Status());
-      }
+      DCHECK(caption.layout_result->Status() == NGLayoutResult::kSuccess ||
+             caption.layout_result->Status() ==
+                 NGLayoutResult::kOutOfFragmentainerSpace);
       child_result = caption.layout_result;
       child_inline_offset = caption.margins.inline_start;
     } else {
