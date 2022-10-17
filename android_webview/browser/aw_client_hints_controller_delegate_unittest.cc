@@ -71,14 +71,15 @@ TEST_F(AwClientHintsControllerDelegateTest, ClearAdditionalClientHints) {
 
 TEST_F(AwClientHintsControllerDelegateTest,
        SetMostRecentMainFrameViewportSize) {
-  // TODO(crbug.com/921655): Actually test function once implemented.
   client_hints_controller_delegate_->SetMostRecentMainFrameViewportSize(
-      gfx::Size(0, 0));
+      gfx::Size(1, 1));
+  EXPECT_EQ(
+      gfx::Size(1, 1),
+      client_hints_controller_delegate_->GetMostRecentMainFrameViewportSize());
 }
 
 TEST_F(AwClientHintsControllerDelegateTest,
        GetMostRecentMainFrameViewportSize) {
-  // TODO(crbug.com/921655): Actually test function once implemented.
   EXPECT_EQ(
       gfx::Size(0, 0),
       client_hints_controller_delegate_->GetMostRecentMainFrameViewportSize());

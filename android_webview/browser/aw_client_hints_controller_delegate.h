@@ -7,6 +7,7 @@
 
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-forward.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 class EnabledClientHints;
@@ -16,10 +17,6 @@ struct UserAgentMetadata;
 namespace content {
 class RenderFrameHost;
 }  // namespace content
-
-namespace gfx {
-class Size;
-}  // namespace gfx
 
 namespace network {
 class NetworkQualityTracker;
@@ -65,6 +62,9 @@ class AwClientHintsControllerDelegate
       const gfx::Size& viewport_size) override;
 
   gfx::Size GetMostRecentMainFrameViewportSize() override;
+
+ private:
+  gfx::Size viewport_size_;
 };
 
 }  // namespace android_webview

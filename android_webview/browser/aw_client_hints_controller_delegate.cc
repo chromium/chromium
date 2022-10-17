@@ -11,7 +11,6 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "ui/gfx/geometry/size_f.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -83,15 +82,12 @@ void AwClientHintsControllerDelegate::ClearAdditionalClientHints() {
 
 void AwClientHintsControllerDelegate::SetMostRecentMainFrameViewportSize(
     const gfx::Size& viewport_size) {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
+  viewport_size_ = viewport_size;
 }
 
 gfx::Size
 AwClientHintsControllerDelegate::GetMostRecentMainFrameViewportSize() {
-  // TODO(crbug.com/921655): Actually implement function.
-  NOTIMPLEMENTED();
-  return gfx::Size(0, 0);
+  return viewport_size_;
 }
 
 }  // namespace android_webview
