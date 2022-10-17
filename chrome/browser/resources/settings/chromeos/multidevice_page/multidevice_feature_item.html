@@ -63,7 +63,7 @@
     </template>
     <template is="dom-if" if="[[iconTooltip]]" restamp>
       <iron-icon id="help-icon" tabindex="0" icon="[[icon]]"
-          aria-labelledby="tooltip">
+          aria-labelledby="tooltip" aria-disabled="true">
       </iron-icon>
       <paper-tooltip id="tooltip" for="help-icon" position="top"
           aria-hidden="true" fit-to-visible-bounds>
