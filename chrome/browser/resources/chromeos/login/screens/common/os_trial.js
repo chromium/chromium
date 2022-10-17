@@ -6,7 +6,25 @@
  * @fileoverview Polymer element for OS trial screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/cr_card_radio_group_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/hd_iron_icon.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 /**
  * Trial option for setting up the device.
@@ -23,9 +41,9 @@ const TrialOption = {
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const OsTrialScreenElementBase = Polymer.mixinBehaviors(
+const OsTrialScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @polymer
@@ -35,7 +53,10 @@ class OsTrial extends OsTrialScreenElementBase {
     return 'os-trial-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
   static get properties() {
     return {
       /**

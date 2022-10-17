@@ -19,7 +19,6 @@ group("polymer3_elements") {
     ":guest_tos_module",
     ":hw_data_collection_module",
     ":multidevice_setup_module",
-    ":os_trial_module",
     ":recommend_apps_module",
     ":signin_fatal_error_module",
     ":smart_privacy_protection_module",
@@ -69,7 +68,7 @@ js_type_check("closure_compile_local") {
     ":oobe_eula",
     ":oobe_reset",
     ":os_install",
-    ":os_trial.m",
+    ":os_trial",
     ":parental_handoff",
     ":pin_setup",
     ":recommend_apps.m",
@@ -482,8 +481,8 @@ js_library("parental_handoff") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("os_trial.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/os_trial.m.js" ]
+js_library("os_trial") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/os_trial.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -500,7 +499,7 @@ js_library("os_trial.m") {
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
 
-  extra_deps = [ ":os_trial_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("pin_setup") {
@@ -723,15 +722,6 @@ polymer_modulizer("multidevice_setup") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("os_trial") {
-  js_file = "os_trial.js"
-  html_file = "os_trial.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("recommend_apps") {
   js_file = "recommend_apps.js"
   html_file = "recommend_apps.html"
@@ -797,6 +787,7 @@ html_to_js("web_components") {
     "oobe_eula.js",
     "oobe_reset.js",
     "os_install.js",
+    "os_trial.js",
     "parental_handoff.js",
     "pin_setup.js",
     "saml_confirm_password.js",

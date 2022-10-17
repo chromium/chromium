@@ -1,80 +1,61 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_shared_vars.css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<style include="oobe-dialog-host-styles cr-card-radio-group-styles">
+  @media screen and (max-width: 920px) {
+  :host {
+      --radio-button-height: 155px;
+    }
+  }
+</style>
 
-<link rel="import" href="../../components/oobe_icons.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/common_styles/cr_card_radio_group_styles.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="../../components/hd_iron_icon.html">
+<oobe-adaptive-dialog id="osTrialDialog" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'osTrialTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'osTrialTitle')]]</h1>
+  <span inner-h-t-m-l="[[i18nAdvancedDynamic(locale, 'osTrialSubtitle')]]"
+      slot="subtitle"></span>
 
-<dom-module id="os-trial-element">
-  <template>
-    <style include="oobe-dialog-host-styles cr-card-radio-group-styles">
-      @media screen and (max-width: 920px) {
-      :host {
-          --radio-button-height: 155px;
-        }
-      }
-    </style>
-
-    <oobe-adaptive-dialog id="osTrialDialog" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'osTrialTitle')]]">
-      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-      <h1 slot="title">[[i18nDynamic(locale, 'osTrialTitle')]]</h1>
-      <span inner-h-t-m-l="[[i18nAdvancedDynamic(locale, 'osTrialSubtitle')]]"
-          slot="subtitle"></span>
-
-      <div slot="content" class="layout vertical landscape-vertical-centered">
-        <cr-radio-group selected="{{selectedTrialOption}}">
-          <cr-card-radio-button id="installButton" class="flex" name="install">
-            <div class="card-container">
-              <hd-iron-icon class="card-icon"
-                  icon1x="oobe-24:os-trial-install"
-                  icon2x="oobe-48:os-trial-install">
-              </hd-iron-icon>
-              <div class="card-content">
-                <div class="card-label">
-                  [[i18nDynamic(locale, 'osTrialInstallTitle')]]
-                </div>
-                <div class="card-text">
-                  [[i18nDynamic(locale, 'osTrialInstallSubtitle')]]
-                </div>
-              </div>
+  <div slot="content" class="layout vertical landscape-vertical-centered">
+    <cr-radio-group selected="{{selectedTrialOption}}">
+      <cr-card-radio-button id="installButton" class="flex" name="install">
+        <div class="card-container">
+          <hd-iron-icon class="card-icon"
+              icon1x="oobe-24:os-trial-install"
+              icon2x="oobe-48:os-trial-install">
+          </hd-iron-icon>
+          <div class="card-content">
+            <div class="card-label">
+              [[i18nDynamic(locale, 'osTrialInstallTitle')]]
             </div>
-          </cr-card-radio-button>
-          <cr-card-radio-button id="tryButton" class="flex" name="try">
-            <div class="card-container">
-              <hd-iron-icon class="card-icon" icon1x="oobe-24:os-trial-try"
-                icon2x="oobe-48:os-trial-try">
-              </hd-iron-icon>
-              <div class="card-content">
-                <div class="card-label">
-                  [[i18nDynamic(locale, 'osTrialTryTitle')]]
-                </div>
-                <div class="card-text">
-                  [[i18nDynamic(locale, 'osTrialTrySubtitle')]]
-                </div>
-              </div>
+            <div class="card-text">
+              [[i18nDynamic(locale, 'osTrialInstallSubtitle')]]
             </div>
-          </cr-card-radio-button>
-        </cr-radio-group>
+          </div>
         </div>
-      </div>
-      <div slot="back-navigation">
-        <oobe-back-button id="backButton"
-            on-click="onBackButtonClick_"></oobe-back-button>
-      </div>
-      <div slot="bottom-buttons">
-        <oobe-next-button
-            class="focus-on-show" id="nextButton"
-            inverse on-click="onNextButtonClick_"></oobe-next-button>
-      </div>
-    </oobe-adaptive-dialog>
-  </template>
-  <script src="os_trial.js"></script>
-</dom-module>
+      </cr-card-radio-button>
+      <cr-card-radio-button id="tryButton" class="flex" name="try">
+        <div class="card-container">
+          <hd-iron-icon class="card-icon" icon1x="oobe-24:os-trial-try"
+            icon2x="oobe-48:os-trial-try">
+          </hd-iron-icon>
+          <div class="card-content">
+            <div class="card-label">
+              [[i18nDynamic(locale, 'osTrialTryTitle')]]
+            </div>
+            <div class="card-text">
+              [[i18nDynamic(locale, 'osTrialTrySubtitle')]]
+            </div>
+          </div>
+        </div>
+      </cr-card-radio-button>
+    </cr-radio-group>
+    </div>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="backButton"
+        on-click="onBackButtonClick_"></oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button
+        class="focus-on-show" id="nextButton"
+        inverse on-click="onNextButtonClick_"></oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>

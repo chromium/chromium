@@ -30,7 +30,7 @@ import './screens/common/offline_ad_login.js';
 import './screens/common/oobe_eula.js';
 import './screens/common/oobe_reset.js';
 import './screens/common/os_install.js';
-import './screens/common/os_trial.m.js';
+import './screens/common/os_trial.js';
 import './screens/common/parental_handoff.js';
 import './screens/common/pin_setup.js';
 import './screens/common/recommend_apps.m.js';
