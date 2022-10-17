@@ -27,10 +27,10 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodes) {
   content::WindowedNotificationObserver load(
       content::NOTIFICATION_NAV_ENTRY_COMMITTED,
       content::NotificationService::AllSources());
-  content::OpenURLParams page(
-      embedded_test_server()->GetURL("a.com", "/foo.html"), content::Referrer(),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_TYPED,
-      false);
+  content::OpenURLParams page(embedded_test_server()->GetURL("/title1.html"),
+                              content::Referrer(),
+                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                              ui::PAGE_TRANSITION_TYPED, false);
   auto* contents = browser()->OpenURL(page);
   load.Wait();
 
