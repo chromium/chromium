@@ -78,6 +78,10 @@ bool PopulateOrUpdateBookmarkMetaIfNeeded(
 // a noop.
 void MaybeEnableEmailNotifications(PrefService* pref_service);
 
+// Whether the email notification is explicitly disabled by the user. Return
+// false if we are using the default preference value.
+bool IsEmailDisabledByUser(PrefService* pref_service);
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_PRICE_TRACKING_UTILS_H_

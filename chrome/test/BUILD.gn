@@ -8742,6 +8742,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views",
       "//components/app_constants",
+      "//components/commerce/core:pref_names",
       "//components/commerce/core:shopping_service_test_support",
       "//components/constrained_window",
       "//components/global_media_controls",

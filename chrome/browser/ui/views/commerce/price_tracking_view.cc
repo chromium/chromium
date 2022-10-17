@@ -66,9 +66,12 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
   // Body label
+  int body_string_id = IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION;
+  if (profile_ && commerce::IsEmailDisabledByUser(profile_->GetPrefs())) {
+    body_string_id = IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION_EMAIL_OFF;
+  }
   body_label_ = text_container->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(
-          IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION),
+      l10n_util::GetStringUTF16(body_string_id),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   body_label_->SetProperty(views::kMarginsKey,
                            gfx::Insets::TLBR(kLableSpacing, 0, 0, 0));
