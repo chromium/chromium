@@ -24,10 +24,11 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './date_time_page.html.js';
 import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
@@ -37,10 +38,11 @@ const SettingsDateTimePageElementBase =
         [
           DeepLinkingBehavior,
           PrefsBehavior,
+          RouteObserverBehavior,
         ],
-        RouteObserverMixin(I18nMixin(WebUIListenerMixin(PolymerElement)))) as {
+        I18nMixin(WebUIListenerMixin(PolymerElement))) as {
       new (): PolymerElement & DeepLinkingBehaviorInterface &
-          PrefsBehaviorInterface & RouteObserverMixinInterface &
+          PrefsBehaviorInterface & RouteObserverBehaviorInterface &
           I18nMixinInterface & WebUIListenerMixinInterface,
     };
 
