@@ -254,12 +254,13 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
 }
 
 NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
+    const NGConstraintSpace& space,
     const NGInlineItem& item,
     const NGInlineItemResult& item_result,
     FontBaseline baseline_type,
     NGLogicalLineItems* line_box) {
   NGInlineBoxState* box =
-      OnOpenTag(item, item_result, baseline_type, *line_box);
+      OnOpenTag(space, item, item_result, baseline_type, *line_box);
   box->needs_box_fragment = item.ShouldCreateBoxFragment();
   if (box->needs_box_fragment)
     AddBoxFragmentPlaceholder(box, line_box, baseline_type);
@@ -267,6 +268,7 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
 }
 
 NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
+    const NGConstraintSpace& space,
     const NGInlineItem& item,
     const NGInlineItemResult& item_result,
     FontBaseline baseline_type,
@@ -283,6 +285,13 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
   box->margin_inline_end = item_result.margins.inline_end;
   box->borders = item_result.borders;
   box->padding = item_result.padding;
+  if (space.IsInsideRepeatableContent()) {
+    // Avoid culled inlines when inside repeatable content (fixed-positioned
+    // elements when printing and fragmented tables with headers and footers).
+    // We cannot represent them correctly as culled.
+    if (auto* layout_inline = DynamicTo<LayoutInline>(item.GetLayoutObject()))
+      layout_inline->SetShouldCreateBoxFragment();
+  }
   return box;
 }
 

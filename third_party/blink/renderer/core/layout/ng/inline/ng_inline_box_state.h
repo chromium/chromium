@@ -155,12 +155,14 @@ class CORE_EXPORT NGInlineLayoutStateStack {
                                       NGLogicalLineItems* line_box);
 
   // Push a box state stack.
-  NGInlineBoxState* OnOpenTag(const NGInlineItem&,
+  NGInlineBoxState* OnOpenTag(const NGConstraintSpace&,
+                              const NGInlineItem&,
                               const NGInlineItemResult&,
                               FontBaseline baseline_type,
                               const NGLogicalLineItems&);
   // This variation adds a box placeholder to |line_box|.
-  NGInlineBoxState* OnOpenTag(const NGInlineItem&,
+  NGInlineBoxState* OnOpenTag(const NGConstraintSpace&,
+                              const NGInlineItem&,
                               const NGInlineItemResult&,
                               FontBaseline baseline_type,
                               NGLogicalLineItems* line_box);
