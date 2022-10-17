@@ -51,6 +51,9 @@ const char* kSkiaGoldCtl = "tools/skia_goldctl/linux/goldctl";
 
 const char* kBuildRevisionKey = "git-revision";
 
+// A dummy build revision used only under a dry run.
+constexpr char kDummyBuildRevision[] = "12345";
+
 // The switch keys for tryjob.
 const char* kIssueKey = "gerrit-issue";
 const char* kPatchSetKey = "gerrit-patchset";
@@ -214,8 +217,19 @@ void SkiaGoldPixelDiff::InitSkiaGold() {
 void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
                              const std::string& corpus) {
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  ASSERT_TRUE(cmd_line->HasSwitch(kBuildRevisionKey))
+  if (!BotModeEnabled(base::CommandLine::ForCurrentProcess())) {
+    cmd_line->AppendSwitch(kDryRun);
+  }
+
+  ASSERT_TRUE(cmd_line->HasSwitch(kBuildRevisionKey) ||
+              cmd_line->HasSwitch(kDryRun))
       << "Missing switch " << kBuildRevisionKey;
+
+  // Use the dummy revision code for dry run.
+  build_revision_ = cmd_line->HasSwitch(kDryRun)
+                        ? kDummyBuildRevision
+                        : cmd_line->GetSwitchValueASCII(kBuildRevisionKey);
+
   ASSERT_TRUE(
       cmd_line->HasSwitch(kIssueKey) && cmd_line->HasSwitch(kPatchSetKey) &&
           cmd_line->HasSwitch(kJobIdKey) ||
@@ -224,7 +238,6 @@ void SkiaGoldPixelDiff::Init(const std::string& screenshot_prefix,
       << "Missing switch. If it's running for tryjob, you should pass --"
       << kIssueKey << " --" << kPatchSetKey << " --" << kJobIdKey
       << ". Otherwise, do not pass any one of them.";
-  build_revision_ = cmd_line->GetSwitchValueASCII(kBuildRevisionKey);
   if (cmd_line->HasSwitch(kIssueKey)) {
     issue_ = cmd_line->GetSwitchValueASCII(kIssueKey);
     patchset_ = cmd_line->GetSwitchValueASCII(kPatchSetKey);
@@ -252,11 +265,11 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
     const std::string& remote_golden_image_name,
     const SkiaGoldMatchingAlgorithm* algorithm) const {
   // Copy the png file to another place for local debugging.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kPngFilePathDebugging)) {
+  base::CommandLine* process_command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (process_command_line->HasSwitch(kPngFilePathDebugging)) {
     base::FilePath path =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-            kPngFilePathDebugging);
+        process_command_line->GetSwitchValuePath(kPngFilePathDebugging);
     if (!base::PathExists(path)) {
       base::CreateDirectory(path);
     }
@@ -272,8 +285,7 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
     base::CopyFile(local_file_path, filepath);
   }
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kBypassSkiaGoldFunctionality)) {
+  if (process_command_line->HasSwitch(kBypassSkiaGoldFunctionality)) {
     LOG(WARNING) << "Bypassing Skia Gold comparison due to "
                  << "--bypass-skia-gold-functionality being present.";
     return true;
@@ -285,8 +297,7 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
   cmd.AppendSwitchASCII("corpus", corpus_);
   cmd.AppendSwitchPath("png-file", local_file_path);
   cmd.AppendSwitchPath("work-dir", working_dir_);
-
-  if (!BotModeEnabled(base::CommandLine::ForCurrentProcess())) {
+  if (process_command_line->HasSwitch(kDryRun)) {
     cmd.AppendSwitch(kDryRun);
   }
 
