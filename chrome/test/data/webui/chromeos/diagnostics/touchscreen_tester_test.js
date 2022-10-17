@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DialogType, SCREEN_MAX_LENGTH} from 'chrome://diagnostics/touchscreen_tester.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertTrue} from '../../chai_assert.js';
-
-const SCREEN_MAX_LENGTH = 9999;
+import {assertDeepEquals, assertEquals, assertTrue} from '../../chai_assert.js';
+import {MockController} from '../../mock_controller.js';
 
 export function touchscreenTesterTestSuite() {
   /** @type {?TouchscreenTesterElement} */
@@ -32,17 +32,13 @@ export function touchscreenTesterTestSuite() {
     return flushTasks();
   }
 
-  test('openIntroDialog', async () => {
-    await initializeTouchscreenTester();
-    const introDialog = touchscreenTesterElement.getDialog('intro-dialog');
-    introDialog.showModal();
-    await flushTasks();
-    assertTrue(introDialog.open);
-  });
-
-  test('openCanvasDialog', async () => {
-    await initializeTouchscreenTester();
-    const introDialog = touchscreenTesterElement.getDialog('intro-dialog');
+  /**
+   * openTester is a helper function for some boilerplate code. It opens the
+   * intro dialog, clicks the start testing button and makes sure canvas dialog
+   * is open. The function then returns the canvas dialog.
+   */
+  async function openTester() {
+    const introDialog = touchscreenTesterElement.getDialog(DialogType.INTRO);
     introDialog.showModal();
     await flushTasks();
     assertTrue(introDialog.open);
@@ -52,11 +48,65 @@ export function touchscreenTesterTestSuite() {
     await flushTasks();
     assertFalse(introDialog.open);
 
-    const canvasDialog = touchscreenTesterElement.getDialog('canvas-dialog');
+    const canvasDialog = touchscreenTesterElement.getDialog(DialogType.CANVAS);
     assertTrue(canvasDialog.open);
+
+    return canvasDialog;
+  }
+
+  test('OpenIntroDialog', async () => {
+    await initializeTouchscreenTester();
+    const introDialog = touchscreenTesterElement.getDialog(DialogType.INTRO);
+    introDialog.showModal();
+    await flushTasks();
+    assertTrue(introDialog.open);
+  });
+
+  test('OpenCanvasDialog', async () => {
+    await initializeTouchscreenTester();
+    const canvasDialog = await openTester();
 
     const canvas = canvasDialog.querySelector('canvas');
     assertEquals(canvas.width, SCREEN_MAX_LENGTH);
     assertEquals(canvas.height, SCREEN_MAX_LENGTH);
+  });
+
+  test('OnDrawStart', async () => {
+    await initializeTouchscreenTester();
+    await openTester();
+
+    // Mock drawTrailMark and drawTrail function.
+    const drawingProvider = touchscreenTesterElement.getDrawingProvider();
+    const mockController = new MockController();
+    const mockDrawTrailMark =
+        mockController.createFunctionMock(drawingProvider, 'drawTrailMark');
+    const mockDrawTrail =
+        mockController.createFunctionMock(drawingProvider, 'drawTrail');
+
+    const expectedTouches = new Map();
+    const touchStartEvents = [
+      {
+        id: 1,
+        point: {x: 100, y: 150},
+        pressure: 50,
+      },
+      {
+        id: 2,
+        point: {x: 500, y: 550},
+        pressure: 30,
+      },
+    ];
+
+    for (const {id, point, pressure} of touchStartEvents) {
+      // Add expected function call signature.
+      mockDrawTrailMark.addExpectation(point.x, point.y);
+      mockDrawTrail.addExpectation(
+          point.x - 1, point.y, point.x, point.y, pressure);
+      expectedTouches.set(id, point);
+      touchscreenTesterElement.onDrawStart(id, point, pressure);
+
+      assertDeepEquals(expectedTouches, touchscreenTesterElement.getTouches());
+      mockController.verifyMocks();
+    }
   });
 }

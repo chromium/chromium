@@ -17,7 +17,19 @@ import {getTemplate} from './touchscreen_tester.html.js';
 // Rather than looking for the correct display and find their size
 // from backend, we take a simpler approach to set it as a very large
 // number. The number is based on largest known supported resolution.
-const SCREEN_MAX_LENGTH = 9999;
+export const SCREEN_MAX_LENGTH = 9999;
+
+// The dialog type enum, including intro-dialog and canvas-dialog.
+export enum DialogType {
+  INTRO = 'intro-dialog',
+  CANVAS = 'canvas-dialog',
+}
+
+// The x and y coordinates to describe the touch location.
+interface Point {
+  x: number;
+  y: number;
+}
 
 const TouchscreenTesterElementBase = I18nMixin(PolymerElement);
 
@@ -33,6 +45,25 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   // Drawing provider.
   private drawingProvider: CanvasDrawingProvider;
 
+  // A map that stores all the touches.
+  // The key is the identifier of the touch. Value is the x and y coordinates
+  // of the touch point.
+  private touches: Map<number, Point> = new Map<number, Point>();
+
+  /**
+   * For testing only.
+   */
+  getDrawingProvider(): CanvasDrawingProvider {
+    return this.drawingProvider;
+  }
+
+  /**
+   * For testing only.
+   */
+  getTouches(): Map<number, Point> {
+    return this.touches;
+  }
+
   getDialog(dialogId: string): CrDialogElement {
     const dialog = this.shadowRoot!.getElementById(dialogId);
     assert(dialog);
@@ -43,7 +74,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    * Shows the tester's dialog.
    */
   async showTester(): Promise<void> {
-    const introDialog = this.getDialog('intro-dialog');
+    const introDialog = this.getDialog(DialogType.INTRO);
     await introDialog.requestFullscreen();
     introDialog.showModal();
 
@@ -60,8 +91,8 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     this.shadowRoot!.addEventListener('fullscreenchange', (e: Event) => {
       e.preventDefault();
       if (!document.fullscreenElement) {
-        this.getDialog('intro-dialog').close();
-        this.getDialog('canvas-dialog').close();
+        this.getDialog(DialogType.INTRO).close();
+        this.getDialog(DialogType.CANVAS).close();
       }
     });
   }
@@ -70,8 +101,8 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    * Handle when get start button is clicked.
    */
   private onStartClick(): void {
-    this.getDialog('intro-dialog').close();
-    this.getDialog('canvas-dialog').showModal();
+    this.getDialog(DialogType.INTRO).close();
+    this.getDialog(DialogType.CANVAS).showModal();
 
     this.setupCanvas();
   }
@@ -90,13 +121,27 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     // CSS in .html file does not have access to this element,
     // therefore adjust it here to make the canvas cover the whole screen.
     const topContainer =
-        this.getDialog('canvas-dialog')!.shadowRoot!.querySelector(
+        this.getDialog(DialogType.CANVAS)!.shadowRoot!.querySelector(
             '.top-container') as HTMLElement;
     topContainer!.style.display = 'none';
 
     const ctx = canvas.getContext('2d');
     assert(ctx);
     this.drawingProvider = new CanvasDrawingProvider(ctx);
+  }
+
+  /**
+   * Handle when a 'touchstart' event is fired from Touch API, or a new touch
+   * starts from evdev.
+   * @param touchId The identifier of a touch.
+   * @param touchPt The coordinates of a touch point.
+   * @param pressure The pressure of a touch.
+   */
+  onDrawStart(touchId: number, touchPt: Point, pressure: number): void {
+    this.touches.set(touchId, touchPt);
+    this.drawingProvider.drawTrailMark(touchPt.x, touchPt.y);
+    this.drawingProvider.drawTrail(
+        touchPt.x - 1, touchPt.y, touchPt.x, touchPt.y, pressure);
   }
 }
 
