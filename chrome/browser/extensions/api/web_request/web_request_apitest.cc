@@ -709,10 +709,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDevToolsProtocolTest,
   ASSERT_EQ(*cookie_value, "cookieValue");
 }
 
-// This test times out regularly on ASAN/MSAN trybots. See
-// https://crbug.com/733395.
-// TODO(crbug.com/1177120) Re-enable test
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebRequestTypes) {
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestTypes) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_types")) << message_;
 }

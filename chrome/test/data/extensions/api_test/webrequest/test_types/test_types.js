@@ -77,10 +77,9 @@ loadScript.then(async function() {
           type: 'stylesheet',
           url: getStyleURL(),
           frameUrl: 'unknown frame URL',
-          // tabId 0 = tab opened by test runner;
-          // tabId 1 = this tab.
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -88,8 +87,9 @@ loadScript.then(async function() {
         details: {
           type: 'stylesheet',
           url: getStyleURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onSendHeaders',
@@ -97,8 +97,9 @@ loadScript.then(async function() {
         details: {
           type: 'stylesheet',
           url: getStyleURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onHeadersReceived',
@@ -106,10 +107,11 @@ loadScript.then(async function() {
         details: {
           type: 'stylesheet',
           url: getStyleURL(),
-          tabId: 1,
+          tabId: -1,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onResponseStarted',
@@ -117,12 +119,13 @@ loadScript.then(async function() {
         details: {
           type: 'stylesheet',
           url: getStyleURL(),
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onCompleted',
@@ -130,12 +133,13 @@ loadScript.then(async function() {
         details: {
           type: 'stylesheet',
           url: getStyleURL(),
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
@@ -164,10 +168,11 @@ loadScript.then(async function() {
           frameUrl: 'unknown frame URL',
           frameId: 1,
           parentFrameId: 0,
-          // tabId 0 = tab opened by test runner;
-          // tabId 1 = this tab.
-          tabId: 1,
+          tabId: -1,
           initiator: "null",
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -177,8 +182,11 @@ loadScript.then(async function() {
           url: getScriptURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
+          tabId: -1,
           initiator: "null",
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       },
       { label: 'onSendHeaders',
@@ -188,8 +196,11 @@ loadScript.then(async function() {
           url: getScriptURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
+          tabId: -1,
           initiator: "null",
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       },
       { label: 'onHeadersReceived',
@@ -199,10 +210,13 @@ loadScript.then(async function() {
           url: getScriptURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
+          tabId: -1,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
           initiator: "null",
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       },
       { label: 'onResponseStarted',
@@ -212,12 +226,15 @@ loadScript.then(async function() {
           url: getScriptURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
           initiator: "null",
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       },
       { label: 'onCompleted',
@@ -227,12 +244,15 @@ loadScript.then(async function() {
           url: getScriptURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
           initiator: "null",
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
@@ -244,6 +264,10 @@ loadScript.then(async function() {
     document.body.appendChild(frame);
   },
 
+  // TODO(crbug.com/1374025): This test fails with an error in the call to
+  // the FontFace constructor:
+  //    SyntaxError: Failed to set 'normal' as a property value.
+  /*
   function typeFont() {
     expect([
       { label: 'onBeforeRequest',
@@ -252,8 +276,6 @@ loadScript.then(async function() {
           type: 'font',
           url: getFontURL(),
           frameUrl: 'unknown frame URL',
-          // tabId 0 = tab opened by test runner;
-          // tabId 1 = this tab.
           tabId: 1,
           initiator: getDomain(initiators.WEB_INITIATED)
         }
@@ -367,6 +389,7 @@ loadScript.then(async function() {
           'url(' + getFontURL() + ')').load();
     });
   },
+  */
 
   function typeWorker() {
     expect([
@@ -376,10 +399,9 @@ loadScript.then(async function() {
           type: 'script',
           url: getWorkerURL(),
           frameUrl: 'unknown frame URL',
-          // tabId 0 = tab opened by test runner;
-          // tabId 1 = this tab.
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -387,8 +409,9 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getWorkerURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onSendHeaders',
@@ -396,8 +419,9 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getWorkerURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onHeadersReceived',
@@ -405,10 +429,11 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getWorkerURL(),
-          tabId: 1,
+          tabId: -1,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onResponseStarted',
@@ -416,12 +441,13 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getWorkerURL(),
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onCompleted',
@@ -429,12 +455,13 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getWorkerURL(),
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
@@ -460,10 +487,9 @@ loadScript.then(async function() {
           type: 'script',
           url: getSharedWorkerURL(),
           frameUrl: 'unknown frame URL',
-          // tabId 0 = tab opened by test runner;
-          // tabId 1 = this tab.
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -471,8 +497,9 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getSharedWorkerURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onSendHeaders',
@@ -480,8 +507,9 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getSharedWorkerURL(),
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onHeadersReceived',
@@ -489,10 +517,11 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getSharedWorkerURL(),
-          tabId: 1,
+          tabId: -1,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onResponseStarted',
@@ -500,12 +529,13 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getSharedWorkerURL(),
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onCompleted',
@@ -513,12 +543,13 @@ loadScript.then(async function() {
         details: {
           type: 'script',
           url: getSharedWorkerURL(),
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
@@ -541,8 +572,9 @@ loadScript.then(async function() {
           url: getPingURL(),
           frameUrl: 'unknown frame URL',
           frameId: 0,
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -552,8 +584,9 @@ loadScript.then(async function() {
           method: 'POST',
           url: getPingURL(),
           frameId: 0,
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onSendHeaders',
@@ -563,8 +596,9 @@ loadScript.then(async function() {
           method: 'POST',
           url: getPingURL(),
           frameId: 0,
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onHeadersReceived',
@@ -574,10 +608,11 @@ loadScript.then(async function() {
           method: 'POST',
           url: getPingURL(),
           frameId: 0,
-          tabId: 1,
+          tabId: -1,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onResponseStarted',
@@ -587,12 +622,13 @@ loadScript.then(async function() {
           method: 'POST',
           url: getPingURL(),
           frameId: 0,
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onCompleted',
@@ -602,12 +638,13 @@ loadScript.then(async function() {
           method: 'POST',
           url: getPingURL(),
           frameId: 0,
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
@@ -633,8 +670,9 @@ loadScript.then(async function() {
           url: getBeaconURL(),
           frameUrl: 'unknown frame URL',
           frameId: 0,
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -644,8 +682,9 @@ loadScript.then(async function() {
           method: 'POST',
           url: getBeaconURL(),
           frameId: 0,
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onSendHeaders',
@@ -655,8 +694,9 @@ loadScript.then(async function() {
           method: 'POST',
           url: getBeaconURL(),
           frameId: 0,
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onHeadersReceived',
@@ -666,10 +706,11 @@ loadScript.then(async function() {
           method: 'POST',
           url: getBeaconURL(),
           frameId: 0,
-          tabId: 1,
+          tabId: -1,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onResponseStarted',
@@ -679,12 +720,13 @@ loadScript.then(async function() {
           method: 'POST',
           url: getBeaconURL(),
           frameId: 0,
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onCompleted',
@@ -694,12 +736,13 @@ loadScript.then(async function() {
           method: 'POST',
           url: getBeaconURL(),
           frameId: 0,
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
@@ -712,6 +755,8 @@ loadScript.then(async function() {
     });
   },
 
+  // TODO(crbug.com/1374025): This test is flaky.
+  /*
   function sendBeaconInFrameOnUnload() {
     expect([
       { label: 'onBeforeRequest',
@@ -721,10 +766,11 @@ loadScript.then(async function() {
           method: 'POST',
           url: getSlowURL(),
           frameUrl: 'unknown frame URL',
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          frameId: 0,
+          parentFrameId: -1,
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -733,10 +779,11 @@ loadScript.then(async function() {
           type: 'ping',
           method: 'POST',
           url: getSlowURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          frameId: 0,
+          parentFrameId: -1,
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onSendHeaders',
@@ -745,10 +792,11 @@ loadScript.then(async function() {
           type: 'ping',
           method: 'POST',
           url: getSlowURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: 1,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          frameId: 0,
+          parentFrameId: -1,
+          tabId: -1,
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onHeadersReceived',
@@ -757,12 +805,13 @@ loadScript.then(async function() {
           type: 'ping',
           method: 'POST',
           url: getSlowURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: 1,
+          frameId: 0,
+          parentFrameId: -1,
+          tabId: -1,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onResponseStarted',
@@ -771,14 +820,15 @@ loadScript.then(async function() {
           type: 'ping',
           method: 'POST',
           url: getSlowURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: 1,
+          frameId: 0,
+          parentFrameId: -1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       },
       { label: 'onCompleted',
@@ -787,14 +837,15 @@ loadScript.then(async function() {
           type: 'ping',
           method: 'POST',
           url: getSlowURL(),
-          frameId: 1,
-          parentFrameId: 0,
-          tabId: 1,
+          frameId: 0,
+          parentFrameId: -1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 200 OK',
           statusCode: 200,
-          initiator: getDomain(initiators.WEB_INITIATED)
+          initiator: getDomain(initiators.WEB_INITIATED),
+          documentId: 1,
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
@@ -813,7 +864,7 @@ loadScript.then(async function() {
       frame.remove();
     });
   },
-
+  */
   function typeOther_cspreport() {
     expect([
       { label: 'onBeforeRequest',
@@ -825,8 +876,11 @@ loadScript.then(async function() {
           frameUrl: 'unknown frame URL',
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
-          initiator: getServerDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getServerDomain(initiators.WEB_INITIATED),
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         }
       },
       { label: 'onBeforeSendHeaders',
@@ -837,8 +891,11 @@ loadScript.then(async function() {
           url: getCSPReportURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
-          initiator: getServerDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getServerDomain(initiators.WEB_INITIATED),
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       },
       { label: 'onSendHeaders',
@@ -849,8 +906,11 @@ loadScript.then(async function() {
           url: getCSPReportURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
-          initiator: getServerDomain(initiators.WEB_INITIATED)
+          tabId: -1,
+          initiator: getServerDomain(initiators.WEB_INITIATED),
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       },
       { label: 'onHeadersReceived',
@@ -861,10 +921,13 @@ loadScript.then(async function() {
           url: getCSPReportURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
+          tabId: -1,
           statusLine: 'HTTP/1.1 404 Not Found',
           statusCode: 404,
-          initiator: getServerDomain(initiators.WEB_INITIATED)
+          initiator: getServerDomain(initiators.WEB_INITIATED),
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       },
       { label: 'onResponseStarted',
@@ -875,12 +938,15 @@ loadScript.then(async function() {
           url: getCSPReportURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 404 Not Found',
           statusCode: 404,
-          initiator: getServerDomain(initiators.WEB_INITIATED)
+          initiator: getServerDomain(initiators.WEB_INITIATED),
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       },
       { label: 'onCompleted',
@@ -891,12 +957,15 @@ loadScript.then(async function() {
           url: getCSPReportURL(),
           frameId: 1,
           parentFrameId: 0,
-          tabId: 1,
+          tabId: -1,
           ip: '127.0.0.1',
           fromCache: false,
           statusLine: 'HTTP/1.1 404 Not Found',
           statusCode: 404,
-          initiator: getServerDomain(initiators.WEB_INITIATED)
+          initiator: getServerDomain(initiators.WEB_INITIATED),
+          documentId: 2,
+          parentDocumentId: 1,
+          frameType: "sub_frame",
         },
       }],
       [['onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
