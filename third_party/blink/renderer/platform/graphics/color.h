@@ -245,6 +245,22 @@ class PLATFORM_EXPORT Color {
     kDecreasing,
     kSpecified,
   };
+  // For appending color interpolation spaces to the serialization of gradients
+  // and color-mix functions.
+  static String ColorInterpolationSpaceToString(
+      Color::ColorInterpolationSpace color_space,
+      Color::HueInterpolationMethod hue_interpolation_method);
+
+  // TODO(crbug.com/1362022): This is just a stub right now.
+  static Color InterpolateColors(
+      const Color& color1,
+      const Color& color2,
+      float mix_amount,
+      Color::ColorInterpolationSpace color_interpolation_space,
+      Color::HueInterpolationMethod hue_interpolation_method =
+          Color::HueInterpolationMethod::kShorter);
+
+  void MultiplyAlpha(float alpha_multiplier);
 
  private:
   constexpr explicit Color(RGBA32 color)

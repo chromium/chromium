@@ -821,4 +821,91 @@ Color::ColorInterpolationSpace Color::GetColorInterpolationSpace() const {
   return ColorInterpolationSpace::kOKLab;
 }
 
+void Color::MultiplyAlpha(float alpha_multiplier) {
+  alpha_ *= alpha_multiplier;
+}
+
+Color Color::InterpolateColors(
+    const Color& color1,
+    const Color& color2,
+    float mix_amount,
+    Color::ColorInterpolationSpace color_interpolation_space,
+    Color::HueInterpolationMethod hue_interpolation_method) {
+  // TODO(crbug.com/1362022): Can only do this if the color_interpolation_space
+  // matches.
+  if (mix_amount == 0.0f)
+    return color2;
+  if (mix_amount == 1.0f)
+    return color1;
+
+  // TODO(crbug.com/1362022): We need to actually interpolate colors.
+  return Color::kDarkGray;
+}
+
+String Color::ColorInterpolationSpaceToString(
+    Color::ColorInterpolationSpace color_space,
+    Color::HueInterpolationMethod hue_interpolation_method) {
+  StringBuilder result;
+  switch (color_space) {
+    case Color::ColorInterpolationSpace::kLab:
+      result.Append("lab");
+      break;
+    case Color::ColorInterpolationSpace::kLCH:
+      result.Append("lch");
+      break;
+    case Color::ColorInterpolationSpace::kOKLab:
+      result.Append("oklab");
+      break;
+    case Color::ColorInterpolationSpace::kOKLCH:
+      result.Append("oklch");
+      break;
+    case Color::ColorInterpolationSpace::kSRGBLinear:
+      result.Append("srgb-linear");
+      break;
+    case Color::ColorInterpolationSpace::kSRGB:
+      result.Append("srgb");
+      break;
+    case Color::ColorInterpolationSpace::kXYZD65:
+      result.Append("xyz-d65");
+      break;
+    case Color::ColorInterpolationSpace::kXYZD50:
+      result.Append("xyz-d50");
+      break;
+    case Color::ColorInterpolationSpace::kHSL:
+      result.Append("hsl");
+      break;
+    case Color::ColorInterpolationSpace::kHWB:
+      result.Append("hwb");
+      break;
+    case Color::ColorInterpolationSpace::kNone:
+      NOTREACHED();
+      break;
+  }
+
+  if (color_space == Color::ColorInterpolationSpace::kLCH ||
+      color_space == Color::ColorInterpolationSpace::kOKLCH ||
+      color_space == Color::ColorInterpolationSpace::kHSL ||
+      color_space == Color::ColorInterpolationSpace::kHWB) {
+    switch (hue_interpolation_method) {
+      case Color::HueInterpolationMethod::kDecreasing:
+        result.Append(" decreasing hue");
+        break;
+      case Color::HueInterpolationMethod::kIncreasing:
+        result.Append(" increasing hue");
+        break;
+      case Color::HueInterpolationMethod::kLonger:
+        result.Append(" longer hue");
+        break;
+      case Color::HueInterpolationMethod::kSpecified:
+        result.Append(" specified hue");
+        break;
+      // Shorter is the default value and does not get serialized
+      case Color::HueInterpolationMethod::kShorter:
+        break;
+    }
+  }
+
+  return result.ReleaseString();
+}
+
 }  // namespace blink

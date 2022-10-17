@@ -29,13 +29,14 @@
 
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -129,6 +130,30 @@ Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
                                         bool for_visited_link) const {
   if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value))
     return color_value->Value();
+
+  if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
+    // TODO(crbug.com/1362022): This is not correct for CurrentColor
+    Color c1 = ColorFromCSSValue(color_mix_value->Color1(), current_color,
+                                 color_scheme, for_visited_link);
+    Color c2 = ColorFromCSSValue(color_mix_value->Color2(), current_color,
+                                 color_scheme, for_visited_link);
+
+    double alpha_multiplier;
+    double mix_amount;
+    if (cssvalue::CSSColorMixValue::NormalizePercentages(
+            color_mix_value->Percentage1(), color_mix_value->Percentage2(),
+            mix_amount, alpha_multiplier)) {
+      Color result = Color::InterpolateColors(
+          c1, c2, mix_amount, color_mix_value->ColorInterpolationSpace(),
+          color_mix_value->HueInterpolationMethod());
+      result.MultiplyAlpha(alpha_multiplier);
+      return result;
+    } else {
+      // TODO(crbug.com/1362022): Not sure what is appropriate to return when
+      // both mix amounts are zero.
+      return Color();
+    }
+  }
 
   if (auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {
     const CSSValue& color_value =

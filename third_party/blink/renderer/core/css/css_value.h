@@ -79,6 +79,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return class_type_ == kBorderImageSliceClass;
   }
   bool IsColorValue() const { return class_type_ == kColorClass; }
+  bool IsColorMixValue() const { return class_type_ == kColorMixClass; }
   bool IsCounterValue() const { return class_type_ == kCounterClass; }
   bool IsCursorImageValue() const { return class_type_ == kCursorImageClass; }
   bool IsCrossfadeValue() const { return class_type_ == kCrossfadeClass; }
@@ -201,6 +202,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kMathFunctionClass,
     kIdentifierClass,
     kColorClass,
+    kColorMixClass,
     kCounterClass,
     kQuadClass,
     kCustomIdentClass,

@@ -1309,6 +1309,8 @@
 
     // For gradient interpolations in certain color spaces
     "in",
+    // The color-mix function https://www.w3.org/TR/css-color-5/#color-mix
+    "color-mix",
 
     // transform
     "matrix",
@@ -1480,7 +1482,7 @@
     // (device-posture) media feature
     "continuous",
     "folded",
-    
+
     // scrollbar-gutter
     // auto
     "stable",

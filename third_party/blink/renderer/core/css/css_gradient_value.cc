@@ -816,70 +816,6 @@ void CSSGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSImageGeneratorValue::TraceAfterDispatch(visitor);
 }
 
-static void AppendColorInterpolationSpace(
-    StringBuilder& result,
-    Color::ColorInterpolationSpace color_space,
-    Color::HueInterpolationMethod hue_interpolation_method) {
-  switch (color_space) {
-    case Color::ColorInterpolationSpace::kLab:
-      result.Append("lab");
-      break;
-    case Color::ColorInterpolationSpace::kLCH:
-      result.Append("lch");
-      break;
-    case Color::ColorInterpolationSpace::kOKLab:
-      result.Append("oklab");
-      break;
-    case Color::ColorInterpolationSpace::kOKLCH:
-      result.Append("oklch");
-      break;
-    case Color::ColorInterpolationSpace::kSRGBLinear:
-      result.Append("srgb-linear");
-      break;
-    case Color::ColorInterpolationSpace::kSRGB:
-      result.Append("srgb");
-      break;
-    case Color::ColorInterpolationSpace::kXYZD65:
-      result.Append("xyz-d65");
-      break;
-    case Color::ColorInterpolationSpace::kXYZD50:
-      result.Append("xyz-d50");
-      break;
-    case Color::ColorInterpolationSpace::kHSL:
-      result.Append("hsl");
-      break;
-    case Color::ColorInterpolationSpace::kHWB:
-      result.Append("hwb");
-      break;
-    case Color::ColorInterpolationSpace::kNone:
-      NOTREACHED();
-      break;
-  }
-
-  if (color_space == Color::ColorInterpolationSpace::kLCH ||
-      color_space == Color::ColorInterpolationSpace::kOKLCH ||
-      color_space == Color::ColorInterpolationSpace::kHSL ||
-      color_space == Color::ColorInterpolationSpace::kHWB) {
-    switch (hue_interpolation_method) {
-      case Color::HueInterpolationMethod::kDecreasing:
-        result.Append(" decreasing hue");
-        break;
-      case Color::HueInterpolationMethod::kIncreasing:
-        result.Append(" increasing hue");
-        break;
-      case Color::HueInterpolationMethod::kLonger:
-        result.Append(" longer hue");
-        break;
-      case Color::HueInterpolationMethod::kSpecified:
-        result.Append(" specified hue");
-        break;
-      // Shorter is the default value and does not get serialized
-      case Color::HueInterpolationMethod::kShorter:
-        break;
-    }
-  }
-}
-
 bool CSSGradientValue::ShouldSerializeColorSpace() const {
   if (color_interpolation_space_ == Color::ColorInterpolationSpace::kNone)
     return false;
@@ -976,8 +912,8 @@ String CSSLinearGradientValue::CustomCSSText() const {
         result.Append(" ");
       wrote_something = true;
       result.Append("in ");
-      AppendColorInterpolationSpace(result, color_interpolation_space_,
-                                    hue_interpolation_method_);
+      result.Append(Color::ColorInterpolationSpaceToString(
+          color_interpolation_space_, hue_interpolation_method_));
     }
 
     AppendCSSTextForColorStops(result, wrote_something);
@@ -1341,8 +1277,8 @@ String CSSRadialGradientValue::CustomCSSText() const {
 
     if (ShouldSerializeColorSpace()) {
       result.Append(" in ");
-      AppendColorInterpolationSpace(result, color_interpolation_space_,
-                                    hue_interpolation_method_);
+      result.Append(Color::ColorInterpolationSpaceToString(
+          color_interpolation_space_, hue_interpolation_method_));
     }
 
     AppendCSSTextForColorStops(result, kAppendSeparator);
@@ -1387,8 +1323,8 @@ String CSSRadialGradientValue::CustomCSSText() const {
         result.Append(" ");
       result.Append("in ");
       wrote_something = true;
-      AppendColorInterpolationSpace(result, color_interpolation_space_,
-                                    hue_interpolation_method_);
+      result.Append(Color::ColorInterpolationSpaceToString(
+          color_interpolation_space_, hue_interpolation_method_));
     }
 
     AppendCSSTextForColorStops(result, wrote_something);
@@ -1695,8 +1631,8 @@ String CSSConicGradientValue::CustomCSSText() const {
       result.Append(" ");
     result.Append("in ");
     wrote_something = true;
-    AppendColorInterpolationSpace(result, color_interpolation_space_,
-                                  hue_interpolation_method_);
+    result.Append(Color::ColorInterpolationSpaceToString(
+        color_interpolation_space_, hue_interpolation_method_));
   }
 
   AppendCSSTextForColorStops(result, wrote_something);

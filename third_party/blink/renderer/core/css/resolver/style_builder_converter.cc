@@ -1748,6 +1748,8 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
           value_id);
     }
   }
+  // TODO(crbug.com/1362022): We will need to store an unresolved color-mix
+  // value in order to account for currentColor.
   return StyleColor(state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
       value, Color(), state.Style()->UsedColorScheme(), for_visited_link));
 }

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
 #include "third_party/blink/renderer/core/css/css_bracketed_value_list.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
@@ -187,6 +188,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
                                                                     other);
       case kColorClass:
         return CompareCSSValues<cssvalue::CSSColor>(*this, other);
+      case kColorMixClass:
+        return CompareCSSValues<cssvalue::CSSColorMixValue>(*this, other);
       case kCounterClass:
         return CompareCSSValues<cssvalue::CSSCounterValue>(*this, other);
       case kCursorImageClass:
@@ -327,6 +330,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSBorderImageSliceValue>(this)->CustomCSSText();
     case kColorClass:
       return To<cssvalue::CSSColor>(this)->CustomCSSText();
+    case kColorMixClass:
+      return To<cssvalue::CSSColorMixValue>(this)->CustomCSSText();
     case kCounterClass:
       return To<cssvalue::CSSCounterValue>(this)->CustomCSSText();
     case kCursorImageClass:
@@ -469,6 +474,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kColorClass:
       To<cssvalue::CSSColor>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kColorMixClass:
+      To<cssvalue::CSSColorMixValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kCounterClass:
       To<cssvalue::CSSCounterValue>(this)->TraceAfterDispatch(visitor);
