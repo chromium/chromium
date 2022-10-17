@@ -45,7 +45,9 @@ CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
                      options.reference_element_.value_or(
                          document->ScrollingElementNoLayout()),
                      options.direction_),
-      name_(options.name_) {}
+      name_(options.name_) {
+  SnapshotState();
+}
 
 bool CSSScrollTimeline::Matches(const Options& options) const {
   return (GetReferenceType() == options.reference_type_) &&
