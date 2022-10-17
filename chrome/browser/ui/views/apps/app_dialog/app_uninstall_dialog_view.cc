@@ -39,7 +39,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -51,85 +51,70 @@ namespace {
 
 AppUninstallDialogView* g_app_uninstall_dialog_view = nullptr;
 
-// TODO(crbug.com/1319390): The height should adapt to the width.
-// We request a height of 4 times the line height, with the goal of providing
-// sufficient space for the label, allowing for variations in label length
-// arising from translations and domain names.
-class UninstallLabel : public views::StyledLabel {
+class UninstallCheckboxView : public views::View,
+                              public views::ViewTargeterDelegate {
  public:
-  METADATA_HEADER(UninstallLabel);
-  UninstallLabel() = default;
-  ~UninstallLabel() override = default;
+  METADATA_HEADER(UninstallCheckboxView);
 
-  // views::StyledLabel:
-  int GetHeightForWidth(int width) const override {
-    int height = views::StyledLabel::GetHeightForWidth(width);
-    return std::max(height, GetLineHeight() * 4);
-  }
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size preferred_size = views::StyledLabel::CalculatePreferredSize();
-    preferred_size.set_height(
-        std::max(preferred_size.height(), GetLineHeight() * 4));
-    return preferred_size;
-  }
-};
+  class CheckboxTargeter : public views::ViewTargeterDelegate {
+   public:
+    CheckboxTargeter() = default;
+    ~CheckboxTargeter() override = default;
 
-BEGIN_METADATA(UninstallLabel, views::StyledLabel)
-END_METADATA
+    // views::ViewTargeterDelegate:
+    bool DoesIntersectRect(const views::View* target,
+                           const gfx::Rect& rect) const override {
+      return true;
+    }
+  };
 
-// TODO(crbug.com/1349456): Consolidate with
-// ui/views/bubble/bubble_dialog_model_host.cc
+  explicit UninstallCheckboxView(std::unique_ptr<views::StyledLabel> label) {
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-// A subclass of Checkbox that allows using an external Label/StyledLabel view
-// instead of LabelButton's internal label. This is required for the
-// Label/StyledLabel to be clickable, while supporting Links which requires a
-// StyledLabel.
-class UninstallCheckbox : public views::Checkbox {
- public:
-  METADATA_HEADER(UninstallCheckbox);
-  UninstallCheckbox(std::unique_ptr<View> label, int label_line_height)
-      : label_line_height_(label_line_height) {
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
-    layout->set_between_child_spacing(
-        views::LayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-    layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
+    views::TableLayout* layout =
+        SetLayoutManager(std::make_unique<views::TableLayout>());
+    layout
+        ->AddColumn(views::LayoutAlignment::kStretch,
+                    views::LayoutAlignment::kStretch,
+                    views::TableLayout::kFixedSize,
+                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+        .AddPaddingColumn(views::TableLayout::kFixedSize,
+                          ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_LABEL_HORIZONTAL))
+        .AddColumn(views::LayoutAlignment::kStretch,
+                   views::LayoutAlignment::kStretch, 1.0f,
+                   views::TableLayout::ColumnSize::kFixed, 0, 0)
+        .AddRows(1, views::TableLayout::kFixedSize);
 
-    SetAssociatedLabel(label.get());
-
+    auto checkbox = std::make_unique<views::Checkbox>();
+    checkbox->SetAssociatedLabel(label.get());
+    checkbox_targeter_ = std::make_unique<CheckboxTargeter>();
+    checkbox->SetEventTargeter(
+        std::make_unique<views::ViewTargeter>(checkbox_targeter_.get()));
+    checkbox_ = AddChildView(std::move(checkbox));
     AddChildView(std::move(label));
   }
-  ~UninstallCheckbox() override = default;
+  ~UninstallCheckboxView() override = default;
 
-  void Layout() override {
-    // Skip LabelButton to use LayoutManager.
-    View::Layout();
+  // views::ViewTargeterDelegate:
+  View* TargetForRect(View* root, const gfx::Rect& rect) override {
+    views::View* target =
+        views::ViewTargeterDelegate::TargetForRect(root, rect);
+
+    if (target->parent() != this)
+      return target;
+
+    return checkbox_;
   }
 
-  gfx::Size CalculatePreferredSize() const override {
-    // Skip LabelButton to use LayoutManager.
-    return View::CalculatePreferredSize();
-  }
+  views::Checkbox* checkbox() { return checkbox_; }
 
-  int GetHeightForWidth(int width) const override {
-    // Skip LabelButton to use LayoutManager.
-    return View::GetHeightForWidth(width);
-  }
-
-  void OnThemeChanged() override {
-    Checkbox::OnThemeChanged();
-    // This offsets the image to align with the first line of text. See
-    // LabelButton::Layout().
-    image()->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        (label_line_height_ - image()->GetPreferredSize().height()) / 2, 0, 0,
-        0)));
-  }
-
-  const int label_line_height_;
+ private:
+  views::Checkbox* checkbox_;
+  std::unique_ptr<CheckboxTargeter> checkbox_targeter_;
 };
 
-BEGIN_METADATA(UninstallCheckbox, views::Checkbox)
+BEGIN_METADATA(UninstallCheckboxView, views::View)
 END_METADATA
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -310,7 +295,7 @@ void AppUninstallDialogView::InitializeCheckbox(const GURL& app_start_url) {
       l10n_util::GetStringUTF16(IDS_APP_UNINSTALL_PROMPT_LEARN_MORE);
   replacements.push_back(learn_more_text);
 
-  auto checkbox_label = std::make_unique<UninstallLabel>();
+  auto checkbox_label = std::make_unique<views::StyledLabel>();
   std::vector<size_t> offsets;
   checkbox_label->SetText(l10n_util::GetStringFUTF16(
       is_google ? IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_GOOGLE
@@ -340,17 +325,9 @@ void AppUninstallDialogView::InitializeCheckbox(const GURL& app_start_url) {
       views::CreateEmptyBorder(gfx::Insets::TLBR(3, 0, 0, 0)));
 
   // Create a view to hold the checkbox and the text.
-  auto checkbox_view = std::make_unique<views::BoxLayoutView>();
-  checkbox_view->SetBetweenChildSpacing(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-
-  const int line_height = checkbox_label->GetLineHeight();
-  auto clear_site_data_checkbox = std::make_unique<UninstallCheckbox>(
-      std::move(checkbox_label), line_height);
-
-  clear_site_data_checkbox_ =
-      checkbox_view->AddChildView(std::move(clear_site_data_checkbox));
+  auto checkbox_view =
+      std::make_unique<UninstallCheckboxView>(std::move(checkbox_label));
+  clear_site_data_checkbox_ = checkbox_view->checkbox();
   AddChildView(std::move(checkbox_view));
 }
 
