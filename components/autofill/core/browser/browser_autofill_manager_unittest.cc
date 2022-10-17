@@ -36,6 +36,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -3925,88 +3926,140 @@ TEST_F(BrowserAutofillManagerTest, FillAddressAndCreditCardForm) {
   }
 }
 
-// Test that a field with an unrecognized autocomplete attribute is not filled.
-TEST_F(BrowserAutofillManagerTest, FillAddressForm_UnrecognizedAttribute) {
-  FormData address_form;
-  address_form.name = u"MyForm";
-  address_form.url = GURL("https://myform.com/form.html");
-  address_form.action = GURL("https://myform.com/submit.html");
-  FormFieldData field;
-  // Set a valid autocomplete attribute for the first name.
-  test::CreateTestFormField("First name", "firstname", "", "text", "given-name",
-                            &field);
-  address_form.fields.push_back(field);
-  // Set no autocomplete attribute for the middle name.
-  test::CreateTestFormField("Middle name", "middle", "", "text", "", &field);
-  address_form.fields.push_back(field);
-  // Set an unrecognized autocomplete attribute for the last name.
-  test::CreateTestFormField("Last name", "lastname", "", "text", "unrecognized",
-                            &field);
-  address_form.fields.push_back(field);
-  std::vector<FormData> address_forms(1, address_form);
-  FormsSeen(address_forms);
+// Test parameter data for tests with a simple structure: Create a form,
+// autofill it, check that values have been correctly filled.
+struct AutofillSimpleFormCase {
+  struct FormFieldExpectedData {
+    const char* label;
+    const char* name;
+    const char* value = "";
+  };
 
-  // Fill the address form.
-  const char guid[] = "00000000-0000-0000-0000-000000000001";
+  const std::string test_name;
+  const std::string cc_guid = "";
+  const std::string profile_guid = "00000000-0000-0000-0000-000000000001";
+
+  const test::FormDescription form_description;
+  const std::vector<FormFieldExpectedData> expected_form_fields;
+};
+
+class AutofillSimpleFormTest
+    : public BrowserAutofillManagerTest,
+      public ::testing::WithParamInterface<AutofillSimpleFormCase> {};
+
+const AutofillSimpleFormCase kAutofillSimpleFormCases[] = {
+    // Test that a field with an unrecognized autocomplete attribute is not
+    // filled.
+    {.test_name = "FillAddressForm_UnrecognizedAttribute",
+     .form_description =
+         {.fields = {{.label = u"First name",
+                      .name = u"firstname",
+                      .autocomplete_attribute = "given-name"},
+                     {.label = u"Middle name", .name = u"middle"},
+                     {.label = u"Last name",
+                      .name = u"lastname",
+                      .autocomplete_attribute = "unrecognized"}}},
+     .expected_form_fields =
+         {{.label = "First name", .name = "firstname", .value = "Elvis"},
+          {.label = "Middle name", .name = "middle", .value = "Aaron"},
+          {.label = "Last name", .name = "lastname"}}},
+
+    // Test that non credit card related fields with the autocomplete attribute
+    // set to off are filled on all platforms when the feature to autofill all
+    // addresses is enabled (default).
+    {.test_name = "FillAddressForm_AutocompleteOffNotRespected",
+     .form_description =
+         {.fields = {{.label = u"First name", .name = u"firstname"},
+                     {.label = u"Middle name",
+                      .name = u"middle",
+                      .should_autocomplete = false},
+                     {.label = u"Last name", .name = u"lastname"},
+                     {.label = u"Address Line 1",
+                      .name = u"addr1",
+                      .should_autocomplete = false}}},
+     .expected_form_fields =
+         {{.label = "First name", .name = "firstname", .value = "Elvis"},
+          {.label = "Middle name", .name = "middle", .value = "Aaron"},
+          {.label = "Last name", .name = "lastname", .value = "Presley"},
+          {.label = "Address Line 1",
+           .name = "addr1",
+           .value = "3734 Elvis Presley Blvd."}}},
+
+    // Test that a field with a value equal to it's placeholder attribute is
+    // filled.
+    {.test_name = "FillAddressForm_PlaceholderEqualsValue",
+     .form_description = {.fields = {{.label = u"First name",
+                                      .name = u"firstname",
+                                      .value = u"First Name",
+                                      .placeholder = u"First Name"},
+                                     {.label = u"Middle name",
+                                      .name = u"middle",
+                                      .value = u"Middle Name",
+                                      .placeholder = u"Middle Name"},
+                                     {.label = u"Last name",
+                                      .name = u"lastname",
+                                      .value = u"Last Name",
+                                      .placeholder = u"Last Name"}}},
+     .expected_form_fields =
+         {{.label = "First name", .name = "firstname", .value = "Elvis"},
+          {.label = "Middle name", .name = "middle", .value = "Aaron"},
+          {.label = "Last name", .name = "lastname", .value = "Presley"}}},
+
+    // Test that a credit card field with an unrecognized autocomplete attribute
+    // gets filled.
+    {.test_name = "FillCreditCardForm_UnrecognizedAttribute",
+     .cc_guid = "00000000-0000-0000-0000-000000000004",
+     .profile_guid = "",
+     .form_description =
+         {.fields = {{.label = u"Name on Card",
+                      .name = u"nameoncard",
+                      .autocomplete_attribute = "cc-name"},
+                     {.label = u"Card Number", .name = u"cardnumber"},
+                     {.label = u"Expiration Date",
+                      .name = u"ccmonth",
+                      .autocomplete_attribute = "unrecognized"}}},
+     .expected_form_fields = {{.label = "Name on Card",
+                               .name = "nameoncard",
+                               .value = "Elvis Presley"},
+                              {.label = "Card Number",
+                               .name = "cardnumber",
+                               .value = "4234567890123456"},
+                              {.label = "Expiration Date",
+                               .name = "ccmonth",
+                               .value = "04/2999"}}},
+
+};
+
+TEST_P(AutofillSimpleFormTest, FillSimpleForm) {
+  const AutofillSimpleFormCase& params = GetParam();
+  FormData form = test::GetFormData(params.form_description);
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+
+  FormsSeen({form});
+
   int response_page_id = 0;
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
-      kDefaultPageID, address_form, address_form.fields[0],
-      MakeFrontendId(std::string(), guid), &response_page_id, &response_data);
+      kDefaultPageID, form, form.fields[0],
+      MakeFrontendId(params.cc_guid, params.profile_guid), &response_page_id,
+      &response_data);
 
-  // The fist and middle names should be filled.
-  ExpectFilledField("First name", "firstname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Middle name", "middle", "Aaron", "text",
-                    response_data.fields[1]);
-
-  // The last name should not be filled.
-  ExpectFilledField("Last name", "lastname", "", "text",
-                    response_data.fields[2]);
+  ASSERT_EQ(response_data.fields.size(), params.expected_form_fields.size());
+  for (size_t i = 0; i < response_data.fields.size(); ++i) {
+    SCOPED_TRACE(params.test_name + ", fields expectations");
+    const auto& [label, name, value] = params.expected_form_fields[i];
+    ExpectFilledField(label, name, value, "text", response_data.fields[i]);
+  }
 }
 
-// Test that non credit card related fields with the autocomplete attribute set
-// to off are filled on all platforms when the feature to autofill all addresses
-// is enabled (default).
-TEST_F(BrowserAutofillManagerTest,
-       FillAddressForm_AutocompleteOffNotRespected) {
-  FormData address_form;
-  address_form.name = u"MyForm";
-  address_form.url = GURL("https://myform.com/form.html");
-  address_form.action = GURL("https://myform.com/submit.html");
-  FormFieldData field;
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Middle name", "middle", "", "text", &field);
-  field.should_autocomplete = false;
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Last name", "lastname", "", "text", &field);
-  field.should_autocomplete = true;
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Address Line 1", "addr1", "", "text", &field);
-  field.should_autocomplete = false;
-  address_form.fields.push_back(field);
-  std::vector<FormData> address_forms(1, address_form);
-  FormsSeen(address_forms);
-
-  // Fill the address form.
-  const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
-  FormData response_data;
-  FillAutofillFormDataAndSaveResults(
-      kDefaultPageID, address_form, address_form.fields[0],
-      MakeFrontendId(std::string(), guid), &response_page_id, &response_data);
-
-  // All fields should be filled.
-  ExpectFilledField("First name", "firstname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Middle name", "middle", "Aaron", "text",
-                    response_data.fields[1]);
-  ExpectFilledField("Last name", "lastname", "Presley", "text",
-                    response_data.fields[2]);
-  ExpectFilledField("Address Line 1", "addr1", "3734 Elvis Presley Blvd.",
-                    "text", response_data.fields[3]);
-}
+INSTANTIATE_TEST_SUITE_P(
+    BrowserAutofillManagerTest,
+    AutofillSimpleFormTest,
+    ::testing::ValuesIn(kAutofillSimpleFormCases),
+    [](const ::testing::TestParamInfo<AutofillSimpleFormTest::ParamType>&
+           info) { return info.param.test_name; });
 
 // Test that if a company is of a format of a birthyear and the relevant feature
 // is enabled, we would not fill it.
@@ -4053,89 +4106,6 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CompanyBirthyear) {
   ExpectFilledField("Last name", "lastname", "Presley", "text",
                     response_data.fields[2]);
   ExpectFilledField("Company", "company", "", "text", response_data.fields[3]);
-}
-
-// Test that a field with a value equal to it's placeholder attribute is filled.
-TEST_F(BrowserAutofillManagerTest, FillAddressForm_PlaceholderEqualsValue) {
-  FormData address_form;
-  address_form.name = u"MyForm";
-  address_form.url = GURL("https://myform.com/form.html");
-  address_form.action = GURL("https://myform.com/submit.html");
-  FormFieldData field;
-  // Set the same placeholder and value for each field.
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  field.placeholder = u"First Name";
-  field.value = u"First Name";
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Middle name", "middle", "", "text", &field);
-  field.placeholder = u"Middle Name";
-  field.value = u"Middle Name";
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Last name", "lastname", "", "text", &field);
-  field.placeholder = u"Last Name";
-  field.value = u"Last Name";
-  address_form.fields.push_back(field);
-  std::vector<FormData> address_forms(1, address_form);
-  FormsSeen(address_forms);
-
-  // Fill the address form.
-  const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
-  FormData response_data;
-  FillAutofillFormDataAndSaveResults(
-      kDefaultPageID, address_form, address_form.fields[0],
-      MakeFrontendId(std::string(), guid), &response_page_id, &response_data);
-
-  // All the fields should be filled.
-  ExpectFilledField("First name", "firstname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Middle name", "middle", "Aaron", "text",
-                    response_data.fields[1]);
-  ExpectFilledField("Last name", "lastname", "Presley", "text",
-                    response_data.fields[2]);
-}
-
-// Test that a credit card field with an unrecognized autocomplete attribute
-// gets filled.
-TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_UnrecognizedAttribute) {
-  // Set up the form data.
-  FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-
-  FormFieldData field;
-  // Set a valid autocomplete attribute on the card name.
-  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", "cc-name",
-                            &field);
-  form.fields.push_back(field);
-  // Set no autocomplete attribute on the card number.
-  test::CreateTestFormField("Card Number", "cardnumber", "", "text", "",
-                            &field);
-  form.fields.push_back(field);
-  // Set an unrecognized autocomplete attribute on the expiration month.
-  test::CreateTestFormField("Expiration Date", "ccmonth", "", "text",
-                            "unrecognized", &field);
-  form.fields.push_back(field);
-  std::vector<FormData> forms(1, form);
-  FormsSeen(forms);
-
-  const char guid[] = "00000000-0000-0000-0000-000000000004";
-  int response_page_id = 0;
-  FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
-                                     MakeFrontendId(guid, std::string()),
-                                     &response_page_id, &response_data);
-
-  // The credit card name and number should be filled.
-  ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Card Number", "cardnumber", "4234567890123456", "text",
-                    response_data.fields[1]);
-
-  // The expiration month should be filled.
-  ExpectFilledField("Expiration Date", "ccmonth", "04/2999", "text",
-                    response_data.fields[2]);
 }
 
 // Test that credit card fields are filled even if they have the autocomplete

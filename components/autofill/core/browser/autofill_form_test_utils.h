@@ -49,6 +49,7 @@ struct FieldDescription {
   absl::optional<std::u16string> label;
   absl::optional<std::u16string> name;
   absl::optional<std::u16string> value;
+  absl::optional<std::u16string> placeholder;
   const std::string autocomplete_attribute;
   absl::optional<AutocompleteParsingResult> parsed_autocomplete;
   const std::string form_control_type = "text";
