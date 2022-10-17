@@ -229,10 +229,6 @@ TEST_F(FormStructureRationalizerTest,
 }
 
 TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndAddressLine) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillRationalizeStreetAddressAndAddressLine);
-
   auto [form, response_string] = CreateFormAndServerClassification({
       {"Full Name", "fullName", NAME_FULL},
       {"Address1", "address1", ADDRESS_HOME_STREET_ADDRESS},

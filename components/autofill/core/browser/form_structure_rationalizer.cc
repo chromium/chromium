@@ -286,11 +286,6 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
         previous_field.server_type_prediction_is_override()) {
       continue;
     }
-    // TODO(crbug.com/1326425): Remove once feature is lanuched.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillRationalizeStreetAddressAndAddressLine)) {
-      continue;
-    }
     LOG_AF(log_manager)
         << LoggingScope::kRationalization << LogMessage::kRationalization
         << "Street Address Rationalization: Converting sequence of (street "

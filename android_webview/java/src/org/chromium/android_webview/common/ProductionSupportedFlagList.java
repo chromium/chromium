@@ -177,9 +177,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PARSE_MERCHANT_PROMO_CODE_FIELDS,
                     "When enabled, Autofill will attempt to find merchant promo/coupon/gift code "
                             + "fields when parsing forms."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_RATIONALIZE_STREET_ADDRESS_AND_ADDRESS_LINE,
-                    "Rationalizes (street address, address line 2) field sequences to "
-                            + "(address line1, address line 2)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_FILL_CREDIT_CARD_AS_PER_FORMAT_STRING,
                     "When enabled, Autofill tries to infer the credit card expiry date format "
                             + "from the label and placeholder."),
