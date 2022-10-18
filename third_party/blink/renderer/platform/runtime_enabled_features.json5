@@ -1416,6 +1416,12 @@
       status: "stable",
     },
     {
+      // A kill-switch for a fix of crbug.com/108489.
+      name: "HTMLMapToImgMatchingByNameAndId",
+      status: "stable",
+      base_feature: "HTMLMapToImgMatchingByNameAndId",
+    },
+    {
       // TODO(crbug.com/1315717): This flag is being used to deprecate support for <param> urls within <object> elements. This feature is controlled by blink::features::kHTMLParamElementUrlSupport.
       name: "HTMLParamElementUrlSupport",
       status: "stable",
