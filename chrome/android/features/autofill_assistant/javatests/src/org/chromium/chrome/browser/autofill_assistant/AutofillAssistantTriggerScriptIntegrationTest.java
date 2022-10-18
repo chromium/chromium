@@ -45,6 +45,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -88,6 +89,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Integration tests for trigger scripts. */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantTriggerScriptIntegrationTest {
     private static final String TEST_PAGE_A = "autofill_assistant_target_website.html";
@@ -414,11 +416,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
-    @DisableIf.
-    Build(message = "Fails on Lollipop and Marshmallow Tablet Tester, https://crbug.com/1158435",
-            sdk_is_less_than = VERSION_CODES.N)
-    public void
-    switchToNewTabAndThenBack() {
+    public void switchToNewTabAndThenBack() {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
                         .newBuilder()
