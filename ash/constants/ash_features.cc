@@ -839,11 +839,6 @@ BASE_FEATURE(kExoHapticFeedbackSupport,
              "ExoHapticFeedbackSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable or disable bubble showing when an application gains any UI lock.
-BASE_FEATURE(kExoLockNotification,
-             "ExoLockNotification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable or disable use of ordinal (unaccelerated) motion by Exo clients.
 BASE_FEATURE(kExoOrdinalMotion,
              "ExoOrdinalMotion",

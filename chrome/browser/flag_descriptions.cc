@@ -5411,11 +5411,6 @@ const char kExoOrdinalMotionName[] =
 const char kExoOrdinalMotionDescription[] =
     "Send unaccelerated values as raw motion events to linux applications.";
 
-const char kExoLockNotificationName[] = "Notification bubble for UI lock";
-const char kExoLockNotificationDescription[] =
-    "Show a notification bubble once an application has switched to "
-    "non-immersive fullscreen mode or obtained pointer lock.";
-
 const char kExperimentalAccessibilityDictationWithPumpkinName[] =
     "Experimental accessibility dictation using the pumpkin semantic parser.";
 const char kExperimentalAccessibilityDictationWithPumpkinDescription[] =
