@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "android-nougat-x86-rel-compilator",
+    "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -41,26 +45,13 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-nougat-x86-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-nougat-x86-rel-inverse-fyi",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-nougat-x86-rel-reclient",
-          "group": "tryserver.chromium.android"
-        }
-      ]
+      "rts_config": {
+        "condition": "QUICK_RUN_ONLY"
+      }
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+  "$build/flakiness": {
+    "check_for_flakiness": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -69,9 +60,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "android"
-  ]
+  "builder_group": "tryserver.chromium.android",
+  "recipe": "chromium/orchestrator"
 }

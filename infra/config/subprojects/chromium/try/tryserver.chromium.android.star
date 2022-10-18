@@ -262,6 +262,25 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
 )
 
+try_.orchestrator_builder(
+    name = "android-nougat-x86-rel-inverse-fyi",
+    mirrors = [
+        "ci/android-nougat-x86-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    check_for_flakiness = True,
+    compilator = "android-nougat-x86-rel-compilator",
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+        "chromium_rts.inverted_rts": 100,
+        "chromium_rts.inverted_rts_bail_early": 100,
+    },
+)
+
 try_.compilator_builder(
     name = "android-nougat-x86-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
