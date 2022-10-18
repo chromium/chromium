@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_mediator.h"
 
 #import "base/cancelable_callback.h"
-#import "base/mac/foundation_util.h"
 #import "base/threading/thread_task_runner_handle.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
@@ -263,10 +262,8 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
         signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
       self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
     }
-    ChromeIdentity* chromeIdentity =
-        base::mac::ObjCCastStrict<ChromeIdentity>(signingIdentity);
     [self.delegate consistencyPromoSigninMediatorSignInDone:self
-                                               withIdentity:chromeIdentity];
+                                               withIdentity:signingIdentity];
     return;
   }
   [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorGeneric];

@@ -205,9 +205,10 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemoved) {
                                           version_1_0);
   signin::RecordUpgradePromoSigninStarted(account_manager_service_,
                                           version_3_0);
-  NSArray* allIdentities = account_manager_service_->GetAllIdentities();
-  ChromeIdentity* foo1Identity = nil;
-  for (ChromeIdentity* identity in allIdentities) {
+  NSArray<id<SystemIdentity>>* allIdentities =
+      account_manager_service_->GetAllIdentities();
+  id<SystemIdentity> foo1Identity = nil;
+  for (id<SystemIdentity> identity in allIdentities) {
     if ([identity.userFullName isEqualToString:newAccountGaiaId]) {
       ASSERT_EQ(nil, foo1Identity);
       foo1Identity = identity;

@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
 // Called if the sign-in is successful.
 - (void)consistencyPromoSigninMediatorSignInDone:
             (ConsistencyPromoSigninMediator*)mediator
-                                    withIdentity:(ChromeIdentity*)identity;
+                                    withIdentity:(id<SystemIdentity>)identity;
 
 // Called if there is sign-in error.
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator

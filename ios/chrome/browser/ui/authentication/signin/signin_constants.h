@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class ChromeIdentity;
-
 // Sign-in result returned Sign-in result.
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // Sign-in has been canceled by the user or by another reason.

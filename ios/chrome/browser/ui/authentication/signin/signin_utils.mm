@@ -46,9 +46,9 @@ constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
 
 // Converts an array of identities to a set of gaia ids.
 NSSet<NSString*>* GaiaIdSetWithIdentities(
-    NSArray<ChromeIdentity*>* identities) {
+    NSArray<id<SystemIdentity>>* identities) {
   NSMutableSet* gaia_id_set = [NSMutableSet set];
-  for (ChromeIdentity* identity in identities) {
+  for (id<SystemIdentity> identity in identities) {
     [gaia_id_set addObject:identity.gaiaID];
   }
   return [gaia_id_set copy];
@@ -58,7 +58,7 @@ NSSet<NSString*>* GaiaIdSetWithIdentities(
 // current `identities` (i.e. all the gaia ids are in identities but there is
 // at least one new identity).
 bool IsStrictSubset(NSArray<NSString*>* recorded_gaia_ids,
-                    NSArray<ChromeIdentity*>* identities) {
+                    NSArray<id<SystemIdentity>>* identities) {
   // Optimisation for the case of a nil or empty `recorded_gaia_ids`.
   // This allow not special casing the construction of the NSSet (as
   // -[NSSet setWithArray:] does not support nil for the array).
@@ -134,7 +134,8 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   // ForceStartupSigninPromo() returns true.
   ChromeAccountManagerService* account_manager_service =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
-  NSArray* identities = account_manager_service->GetAllIdentities();
+  NSArray<id<SystemIdentity>>* identities =
+      account_manager_service->GetAllIdentities();
   if (identities.count == 0)
     return false;
 
@@ -182,7 +183,7 @@ void RecordUpgradePromoSigninStarted(
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
                forKey:kDisplayedSSORecallForMajorVersionKey];
-  NSArray<ChromeIdentity*>* identities =
+  NSArray<id<SystemIdentity>>* identities =
       account_manager_service->GetAllIdentities();
   NSSet<NSString*>* gaia_id_set = GaiaIdSetWithIdentities(identities);
   [defaults setObject:gaia_id_set.allObjects

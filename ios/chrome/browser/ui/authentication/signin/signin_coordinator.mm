@@ -45,7 +45,7 @@ using signin_metrics::PromoAction;
     userSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                         browser:(Browser*)browser
-                                       identity:(ChromeIdentity*)identity
+                                       identity:(id<SystemIdentity>)identity
                                     accessPoint:(AccessPoint)accessPoint
                                     promoAction:(PromoAction)promoAction {
   UserSigninLogger* logger = [[UserSigninLogger alloc]

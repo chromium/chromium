@@ -382,7 +382,7 @@
 
 - (void)consistencyPromoSigninMediatorSignInDone:
             (ConsistencyPromoSigninMediator*)mediator
-                                    withIdentity:(ChromeIdentity*)identity {
+                                    withIdentity:(id<SystemIdentity>)identity {
   DCHECK([identity isEqual:self.selectedIdentity]);
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
