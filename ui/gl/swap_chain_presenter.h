@@ -140,10 +140,23 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   gfx::Size GetMonitorSize();
 
+  // Takes in input DC layer params and the video overlay quad. The swap chain
+  // backbuffer size will be rounded to the monitor size if it is within a close
+  // margin. The visual_transform will be calculated by what scaling factor is
+  // needed to scale the swap chain backbuffer to the monitor size.
+  // The visual_clip_rect will be adjusted to the monitor size for fullscreen
+  // mode, and to the video overlay quad for letterboxing mode.
+  void AdjustTargetToOptimalSizeIfNeeded(
+      const ui::DCRendererLayerParams& params,
+      const gfx::Rect& overlay_onscreen_rect,
+      gfx::Size* swap_chain_size,
+      gfx::Transform* visual_transform,
+      gfx::Rect* visual_clip_rect);
+
   // If the swap chain size is very close to the screen size but not exactly the
   // same, the swap chain should be adjusted to fit the screen size in order to
   // get the fullscreen DWM optimizations.
-  bool AdjustSwapChainToFullScreenSizeIfNeeded(
+  bool AdjustTargetToFullScreenSizeIfNeeded(
       const gfx::Size& monitor_size,
       const ui::DCRendererLayerParams& params,
       const gfx::Rect& overlay_onscreen_rect,
@@ -151,7 +164,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
       gfx::Transform* visual_transform,
       gfx::Rect* visual_clip_rect);
 
-  void AdjustSwapChainForFullScreenLetterboxing(
+  void AdjustTargetForFullScreenLetterboxing(
       const gfx::Size& monitor_size,
       const ui::DCRendererLayerParams& params,
       const gfx::Rect& overlay_onscreen_rect,
@@ -207,7 +220,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Present the Direct Composition surface from MediaFoundationRenderer.
   bool PresentDCOMPSurface(const ui::DCRendererLayerParams& overlay,
-                           gfx::Transform* visual_transform);
+                           gfx::Transform* visual_transform,
+                           gfx::Rect* visual_clip_rect);
 
   // Release resources related to `PresentDCOMPSurface()`.
   void ReleaseDCOMPSurfaceResourcesIfNeeded();

@@ -485,7 +485,27 @@ gfx::Size SwapChainPresenter::GetMonitorSize() {
   }
 }
 
-bool SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
+void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
+    const ui::DCRendererLayerParams& params,
+    const gfx::Rect& overlay_onscreen_rect,
+    gfx::Size* swap_chain_size,
+    gfx::Transform* visual_transform,
+    gfx::Rect* visual_clip_rect) {
+  // First try to adjust the full screen overlay that can fit the whole
+  // screen. If it cannot fit the whole screen and we know it's in
+  // letterboxing mode, try to center the overlay and adjust only x or only y.
+  gfx::Size monitor_size = GetMonitorSize();
+  bool size_adjusted = AdjustTargetToFullScreenSizeIfNeeded(
+      monitor_size, params, overlay_onscreen_rect, swap_chain_size,
+      visual_transform, visual_clip_rect);
+  if (!size_adjusted && params.is_video_fullscreen_letterboxing) {
+    AdjustTargetForFullScreenLetterboxing(
+        monitor_size, params, overlay_onscreen_rect, swap_chain_size,
+        visual_transform, visual_clip_rect);
+  }
+}
+
+bool SwapChainPresenter::AdjustTargetToFullScreenSizeIfNeeded(
     const gfx::Size& monitor_size,
     const ui::DCRendererLayerParams& params,
     const gfx::Rect& overlay_onscreen_rect,
@@ -577,7 +597,7 @@ bool SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
   return true;
 }
 
-void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
+void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
     const gfx::Size& monitor_size,
     const ui::DCRendererLayerParams& params,
     const gfx::Rect& overlay_onscreen_rect,
@@ -789,18 +809,9 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   // |overlay_onscreen_rect| will be placed in the center of the screen, and
   // either left/right edges or top/bottom edges will touch the monitor edges.
   if (visual_transform->IsScaleOrTranslation()) {
-    gfx::Size monitor_size = GetMonitorSize();
-    // First try to adjust the full screen overlay that can fit the whole
-    // screen. If it cannot fit the whole screen and we know it's in
-    // letterboxing mode, try to center the overlay and adjust only x or only y.
-    bool size_adjusted = AdjustSwapChainToFullScreenSizeIfNeeded(
-        monitor_size, params, overlay_onscreen_rect, &swap_chain_size,
-        visual_transform, visual_clip_rect);
-    if (!size_adjusted && params.is_video_fullscreen_letterboxing) {
-      AdjustSwapChainForFullScreenLetterboxing(
-          monitor_size, params, overlay_onscreen_rect, &swap_chain_size,
-          visual_transform, visual_clip_rect);
-    }
+    AdjustTargetToOptimalSizeIfNeeded(params, overlay_onscreen_rect,
+                                      &swap_chain_size, visual_transform,
+                                      visual_clip_rect);
   }
 
   return swap_chain_size;
@@ -1026,7 +1037,7 @@ bool SwapChainPresenter::PresentToSwapChain(
   *visual_clip_rect = params.clip_rect.value_or(gfx::Rect());
 
   if (params.dcomp_surface_proxy)
-    return PresentDCOMPSurface(params, visual_transform);
+    return PresentDCOMPSurface(params, visual_transform, visual_clip_rect);
 
   // SwapChainPresenter can be reused when switching between MediaFoundation
   // (MF) video content and non-MF content; in such cases, the DirectComposition
@@ -1322,7 +1333,8 @@ void SwapChainPresenter::RecordPresentationStatistics() {
 
 bool SwapChainPresenter::PresentDCOMPSurface(
     const ui::DCRendererLayerParams& params,
-    gfx::Transform* visual_transform) {
+    gfx::Transform* visual_transform,
+    gfx::Rect* visual_clip_rect) {
   // TODO(crbug.com/999747): Include an early out path in case the same dcomp
   // surface is being presented.
 
@@ -1332,8 +1344,14 @@ bool SwapChainPresenter::PresentDCOMPSurface(
 
   dcomp_surface_proxy->SetParentWindow(layer_tree_->window());
 
-  // Apply transform to video and notify DCOMPTexture.
-  dcomp_surface_proxy->SetRect(params.transform.MapRect(params.quad_rect));
+  // Apply fullscreen rounding and transform to video and notify DCOMPTexture.
+  gfx::Rect overlay_onscreen_rect = params.quad_rect;
+  gfx::Size on_screen_size = overlay_onscreen_rect.size();
+  AdjustTargetToOptimalSizeIfNeeded(params, overlay_onscreen_rect,
+                                    &on_screen_size, visual_transform,
+                                    visual_clip_rect);
+  dcomp_surface_proxy->SetRect(visual_transform->MapRect(
+      gfx::Rect(params.quad_rect.origin(), on_screen_size)));
 
   // If |dcomp_surface_proxy| size is {1, 1}, the texture was initialized
   // without knowledge of output size; reset |content_| so it's not added to the
