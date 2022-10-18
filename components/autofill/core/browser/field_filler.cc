@@ -759,34 +759,32 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
   // Check whether we find one of the standard format descriptors like
   // "mm/yy", "mm/yyyy", "mm / yy", "mm-yyyy", ... in one of the human
   // readable labels. In that case, follow the specified pattern.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillFillCreditCardAsPerFormatString)) {
-    std::vector<std::u16string> groups;
-    static const char16_t kFormatRegEx[] = u"mm(\\s?[/-]?\\s?)?yy(yy)?";
-    //                                          ^^^^ opt white space
-    //                                              ^^^^^ opt separator
-    //                                                   ^^^ opt white space
-    //                                                           ^^^^^ 4 digit
-    //                                                                 year?
-    if (MatchesRegex<kFormatRegEx>(field.placeholder, &groups) ||
-        MatchesRegex<kFormatRegEx>(field.label, &groups)) {
-      bool is_two_digit_year = groups[2].empty();
-      std::u16string expiration_candidate =
-          base::StrCat({month, groups[1],
-                        is_two_digit_year ? two_digit_year : four_digit_year});
-      if (field.max_length == 0 ||
-          expiration_candidate.size() <= field.max_length) {
-        return expiration_candidate;
-      }
-      // Try once more with a stripped version of the separator if the previous
-      // version did not fit.
-      expiration_candidate =
-          base::StrCat({month, base::TrimWhitespace(groups[1], base::TRIM_ALL),
-                        is_two_digit_year ? two_digit_year : four_digit_year});
-      if (field.max_length == 0 ||
-          expiration_candidate.size() <= field.max_length) {
-        return expiration_candidate;
-      }
+  std::vector<std::u16string> groups;
+  static const char16_t kFormatRegEx[] = u"mm(\\s?[/-]?\\s?)?yy(yy)?";
+  //                                          ^^^^ opt white space
+  //                                              ^^^^^ opt separator
+  //                                                   ^^^ opt white space
+  //                                                           ^^^^^ 4 digit
+  //                                                                 year?
+  // TODO(crbug/1326244): We should use language specific regex.
+  if (MatchesRegex<kFormatRegEx>(field.placeholder, &groups) ||
+      MatchesRegex<kFormatRegEx>(field.label, &groups)) {
+    bool is_two_digit_year = groups[2].empty();
+    std::u16string expiration_candidate =
+        base::StrCat({month, groups[1],
+                      is_two_digit_year ? two_digit_year : four_digit_year});
+    if (field.max_length == 0 ||
+        expiration_candidate.size() <= field.max_length) {
+      return expiration_candidate;
+    }
+    // Try once more with a stripped version of the separator if the previous
+    // version did not fit.
+    expiration_candidate =
+        base::StrCat({month, base::TrimWhitespace(groups[1], base::TRIM_ALL),
+                      is_two_digit_year ? two_digit_year : four_digit_year});
+    if (field.max_length == 0 ||
+        expiration_candidate.size() <= field.max_length) {
+      return expiration_candidate;
     }
   }
 

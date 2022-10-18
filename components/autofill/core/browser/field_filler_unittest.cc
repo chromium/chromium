@@ -676,15 +676,8 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
   field.max_length = test_case.field_max_length;
 
-  base::test::ScopedFeatureList enabled;
-  if (test_case.opt_label) {
+  if (test_case.opt_label)
     field.label = base::UTF8ToUTF16(test_case.opt_label);
-    // We take the addition of label also as an indication to test the
-    // features::kAutofillFillCreditCardAsPerFormatString feature. When this
-    // lands, we can just drop all references to |enabled| from this function.
-    enabled.InitAndEnableFeature(
-        features::kAutofillFillCreditCardAsPerFormatString);
-  }
 
   CreditCard card = test::GetCreditCard();
   card.SetExpirationDateFromString(u"03/2022");

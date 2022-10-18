@@ -179,14 +179,6 @@ BASE_FEATURE(kAutofillFillAndImportFromMoreFields,
              "AutofillFillAndImportFromMoreFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, autofill searches for format strings (like "MM/YY", "MM / YY",
-// "MM/YYYY") in the label or placeholder of input elements and uses these
-// to fill expiration dates.
-// TODO(crbug.com/1326244): Cleanup when launched.
-BASE_FEATURE(kAutofillFillCreditCardAsPerFormatString,
-             "AutofillFillCreditCardAsPerFormatString",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
              "AutofillDisableFilling",
