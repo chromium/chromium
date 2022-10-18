@@ -1326,8 +1326,14 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     // Sweep any descendants that might have been bubbled up from the fragment
     // to the |container_builder_|. This happens when we have nested absolute
     // position elements.
+    //
+    // Don't do this if we are in a column balancing pass, though, since we
+    // won't propagate OOF info of nested OOFs in this case. Any OOFs already
+    // added to the builder should remain there so that they can be handled
+    // later.
     descendants->Shrink(0);
-    container_builder_->SwapOutOfFlowFragmentainerDescendants(descendants);
+    if (!column_balancing_info_)
+      container_builder_->SwapOutOfFlowFragmentainerDescendants(descendants);
   }
 }
 
