@@ -31,7 +31,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
     public ReaderModeToolbarButtonController(Supplier<Tab> activeTabSupplier,
             ModalDialogManager modalDialogManager, Drawable buttonDrawable) {
         super(activeTabSupplier, modalDialogManager, buttonDrawable, R.string.reader_view_text_alt,
-                /* contentDescriptionResId= */ R.string.reader_mode_message_title,
+                /* actionChipLabelResId= */ R.string.reader_mode_action_chip_label_simplify_page,
                 /* supportsTinting= */ true, /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.READER_MODE);
     }
