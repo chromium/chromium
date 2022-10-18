@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
+#include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/bluetooth_gatt_service_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_descriptor_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
@@ -134,7 +135,7 @@ void BluetoothRemoteGattCharacteristicFloss::WriteRemoteCharacteristicImpl(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristicFloss::OnWriteCharacteristic,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          std::move(error_callback)),
+          std::move(error_callback), value),
       service_->GetDevice()->GetAddress(), characteristic_->instance_id,
       write_type, auth, value);
 }
@@ -154,8 +155,10 @@ void BluetoothRemoteGattCharacteristicFloss::GattCharacteristicRead(
 
   if (status == GattStatus::kSuccess) {
     cached_data_ = data;
+
     std::move(pending_read_callback_)
         .Run(/*error_code=*/absl::nullopt, cached_data_);
+    NotifyValueChanged();
   } else {
     std::move(pending_read_callback_)
         .Run(BluetoothGattServiceFloss::GattStatusToServiceError(status), {});
@@ -171,10 +174,13 @@ void BluetoothRemoteGattCharacteristicFloss::GattCharacteristicWrite(
     return;
   }
 
-  auto [callback, error_callback] = std::move(pending_write_callbacks_);
+  auto [callback, error_callback, data] = std::move(pending_write_callbacks_);
 
   if (status == GattStatus::kSuccess) {
+    cached_data_ = data;
+
     std::move(callback).Run();
+    NotifyValueChanged();
   } else {
     std::move(error_callback)
         .Run(BluetoothGattServiceFloss::GattStatusToServiceError(status));
@@ -199,6 +205,7 @@ void BluetoothRemoteGattCharacteristicFloss::OnReadCharacteristic(
 void BluetoothRemoteGattCharacteristicFloss::OnWriteCharacteristic(
     base::OnceClosure callback,
     ErrorCallback error_callback,
+    std::vector<uint8_t> data,
     DBusResult<Void> result) {
   if (!result.has_value()) {
     std::move(error_callback)
@@ -206,8 +213,8 @@ void BluetoothRemoteGattCharacteristicFloss::OnWriteCharacteristic(
     return;
   }
 
-  pending_write_callbacks_ =
-      std::make_pair(std::move(callback), std::move(error_callback));
+  pending_write_callbacks_ = std::make_tuple(
+      std::move(callback), std::move(error_callback), std::move(data));
 }
 
 void BluetoothRemoteGattCharacteristicFloss::SubscribeToNotifications(
@@ -217,14 +224,26 @@ void BluetoothRemoteGattCharacteristicFloss::SubscribeToNotifications(
 #endif  // BUILDFLAG(IS_CHROMEOS)
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  // TODO(b/193685841) - Figure out what to do about notification_type.
+  // Currently it is unused in Floss.
+  BluetoothRemoteGattDescriptorFloss* descriptor =
+      static_cast<BluetoothRemoteGattDescriptorFloss*>(ccc_descriptor);
+
+  DCHECK(descriptor);
+  descriptor->RegisterForNotification(std::move(callback),
+                                      std::move(error_callback));
 }
 
 void BluetoothRemoteGattCharacteristicFloss::UnsubscribeFromNotifications(
     device::BluetoothRemoteGattDescriptor* ccc_descriptor,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  BluetoothRemoteGattDescriptorFloss* descriptor =
+      static_cast<BluetoothRemoteGattDescriptorFloss*>(ccc_descriptor);
+
+  DCHECK(descriptor);
+  descriptor->UnregisterForNotification(std::move(callback),
+                                        std::move(error_callback));
 }
 
 AuthRequired BluetoothRemoteGattCharacteristicFloss::GetAuthForRead() const {
@@ -257,6 +276,13 @@ AuthRequired BluetoothRemoteGattCharacteristicFloss::GetAuthForWrite() const {
   }
 
   return auth;
+}
+
+void BluetoothRemoteGattCharacteristicFloss::NotifyValueChanged() {
+  DCHECK(service_->GetAdapter());
+
+  service_->GetAdapter()->NotifyGattCharacteristicValueChanged(this,
+                                                               cached_data_);
 }
 
 }  // namespace floss

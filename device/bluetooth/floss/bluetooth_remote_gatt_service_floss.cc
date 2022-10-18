@@ -31,6 +31,12 @@ BluetoothRemoteGattServiceFloss::BluetoothRemoteGattServiceFloss(
   for (GattCharacteristic& c : remote_service_.characteristics) {
     AddCharacteristic(BluetoothRemoteGattCharacteristicFloss::Create(this, &c));
   }
+
+  if (primary_) {
+    for (GattService& s : remote_service_.included_services) {
+      included_services_.push_back(Create(adapter, device, s, false));
+    }
+  }
 }
 
 BluetoothRemoteGattServiceFloss::~BluetoothRemoteGattServiceFloss() = default;
@@ -53,8 +59,18 @@ bool BluetoothRemoteGattServiceFloss::IsPrimary() const {
 
 std::vector<device::BluetoothRemoteGattService*>
 BluetoothRemoteGattServiceFloss::GetIncludedServices() const {
-  // TODO(b/193686564) - Iterate secondary services and create more.
-  return {};
+  std::vector<device::BluetoothRemoteGattService*> services;
+
+  // TODO(b/193686564) - It's likely that we need to surface this up to
+  // BluetoothDevice in some other way and let it take ownership of these
+  // services since |GetIncludedServices| doesn't seem to be correctly used
+  // everywhere.
+  for (const auto& s : included_services_) {
+    services.push_back(
+        static_cast<device::BluetoothRemoteGattService*>(s.get()));
+  }
+
+  return services;
 }
 
 }  // namespace floss

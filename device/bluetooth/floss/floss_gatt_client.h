@@ -385,11 +385,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
  private:
   friend class FlossGattClientTest;
 
+  // Register this client to get a client id.
+  void RegisterClient();
+
   template <typename R, typename... Args>
   void CallGattMethod(ResponseCallback<R> callback,
                       const char* member,
                       Args... args) {
-    CallMethod(std::move(callback), bus_, service_name_, kAdapterInterface,
+    CallMethod(std::move(callback), bus_, service_name_, kGattInterface,
                gatt_adapter_path_, member, args...);
   }
 

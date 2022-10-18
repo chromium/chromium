@@ -89,7 +89,7 @@ void BluetoothRemoteGattDescriptorFloss::WriteRemoteDescriptor(
   FlossDBusManager::Get()->GetGattClient()->WriteDescriptor(
       base::BindOnce(&BluetoothRemoteGattDescriptorFloss::OnWriteDescriptor,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(error_callback)),
+                     std::move(error_callback), new_value),
       service_->GetDevice()->GetAddress(), descriptor_->instance_id, auth,
       new_value);
 }
@@ -109,9 +109,9 @@ void BluetoothRemoteGattDescriptorFloss::GattDescriptorRead(
 
   if (status == GattStatus::kSuccess) {
     cached_data_ = data;
+
     std::move(pending_read_callback_)
         .Run(/*error_code=*/absl::nullopt, cached_data_);
-
     NotifyValueChanged();
   } else {
     std::move(pending_read_callback_)
@@ -128,10 +128,13 @@ void BluetoothRemoteGattDescriptorFloss::GattDescriptorWrite(
     return;
   }
 
-  auto [callback, error_callback] = std::move(pending_write_callbacks_);
+  auto [callback, error_callback, data] = std::move(pending_write_callbacks_);
 
   if (status == GattStatus::kSuccess) {
+    cached_data_ = data;
+
     std::move(callback).Run();
+    NotifyValueChanged();
   } else {
     std::move(error_callback)
         .Run(BluetoothGattServiceFloss::GattStatusToServiceError(status));
@@ -149,6 +152,28 @@ void BluetoothRemoteGattDescriptorFloss::GattNotify(
 
   cached_data_ = data;
   NotifyValueChanged();
+}
+
+void BluetoothRemoteGattDescriptorFloss::RegisterForNotification(
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  FlossDBusManager::Get()->GetGattClient()->RegisterForNotification(
+      base::BindOnce(
+          &BluetoothRemoteGattDescriptorFloss::OnRegisterForNotification,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          std::move(error_callback)),
+      service_->GetDevice()->GetAddress(), descriptor_->instance_id);
+}
+
+void BluetoothRemoteGattDescriptorFloss::UnregisterForNotification(
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  FlossDBusManager::Get()->GetGattClient()->UnregisterNotification(
+      base::BindOnce(
+          &BluetoothRemoteGattDescriptorFloss::OnRegisterForNotification,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          std::move(error_callback)),
+      service_->GetDevice()->GetAddress(), descriptor_->instance_id);
 }
 
 void BluetoothRemoteGattDescriptorFloss::OnReadDescriptor(
@@ -169,6 +194,7 @@ void BluetoothRemoteGattDescriptorFloss::OnReadDescriptor(
 void BluetoothRemoteGattDescriptorFloss::OnWriteDescriptor(
     base::OnceClosure callback,
     ErrorCallback error_callback,
+    std::vector<uint8_t> data,
     DBusResult<Void> result) {
   if (!result.has_value()) {
     std::move(error_callback)
@@ -176,8 +202,27 @@ void BluetoothRemoteGattDescriptorFloss::OnWriteDescriptor(
     return;
   }
 
-  pending_write_callbacks_ =
-      std::make_pair(std::move(callback), std::move(error_callback));
+  pending_write_callbacks_ = std::make_tuple(
+      std::move(callback), std::move(error_callback), std::move(data));
+}
+
+void BluetoothRemoteGattDescriptorFloss::OnRegisterForNotification(
+    base::OnceClosure callback,
+    ErrorCallback error_callback,
+    DBusResult<GattStatus> result) {
+  if (!result.has_value()) {
+    std::move(error_callback)
+        .Run(BluetoothGattServiceFloss::GattErrorCode::kFailed);
+    return;
+  }
+
+  if (result.value() == GattStatus::kSuccess) {
+    std::move(callback).Run();
+  } else {
+    std::move(error_callback)
+        .Run(/*error_code=*/BluetoothGattServiceFloss::GattStatusToServiceError(
+            result.value()));
+  }
 }
 
 void BluetoothRemoteGattDescriptorFloss::NotifyValueChanged() {

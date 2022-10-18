@@ -143,7 +143,7 @@ const char kReadRemoteRssi[] = "ReadRemoteRssi";
 const char kConfigureMtu[] = "ConfigureMtu";
 const char kConnectionParameterUpdate[] = "ConnectionParameterUpdate";
 const char kCallbackInterface[] =
-    "org.chromium.bluetooth.BluetoothGattClientCallback";
+    "org.chromium.bluetooth.BluetoothGattCallback";
 
 const char kOnClientRegistered[] = "OnClientRegistered";
 const char kOnClientConnectionState[] = "OnClientConnectionState";

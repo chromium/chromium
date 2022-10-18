@@ -4,6 +4,8 @@
 #ifndef DEVICE_BLUETOOTH_FLOSS_BLUETOOTH_REMOTE_GATT_CHARACTERISTIC_FLOSS_H_
 #define DEVICE_BLUETOOTH_FLOSS_BLUETOOTH_REMOTE_GATT_CHARACTERISTIC_FLOSS_H_
 
+#include <tuple>
+
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_gatt_client.h"
@@ -108,6 +110,7 @@ class BluetoothRemoteGattCharacteristicFloss
   // Handle result of calling |WriteRemoteCharacteristic|.
   void OnWriteCharacteristic(base::OnceClosure callback,
                              ErrorCallback error_callback,
+                             std::vector<uint8_t> data,
                              DBusResult<Void> result);
 
  private:
@@ -116,6 +119,9 @@ class BluetoothRemoteGattCharacteristicFloss
   BluetoothRemoteGattCharacteristicFloss(
       BluetoothRemoteGattServiceFloss* service,
       GattCharacteristic* characteristic);
+
+  // Send notifications to observer on adapter.
+  void NotifyValueChanged();
 
   // Cached data from the last read that was done.
   std::vector<uint8_t> cached_data_;
@@ -128,13 +134,14 @@ class BluetoothRemoteGattCharacteristicFloss
   bool has_notify_session_ = false;
 
   // Number of gatt read requests in progress.
-  int num_of_reads_in_progress_;
+  int num_of_reads_in_progress_ = 0;
 
   // Callback for pending |ReadRemoteCharacteristic|.
   ValueCallback pending_read_callback_;
 
   // Callback for pending |WriteRemoteCharacteristic|.
-  std::pair<base::OnceClosure, ErrorCallback> pending_write_callbacks_;
+  std::tuple<base::OnceClosure, ErrorCallback, std::vector<uint8_t>>
+      pending_write_callbacks_;
 
   // Service which this characteristic belongs to. We can keep a raw_ptr<> here
   // because the Service linked here owns a unique_ptr<> to this class instance

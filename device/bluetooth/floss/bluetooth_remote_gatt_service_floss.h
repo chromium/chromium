@@ -57,6 +57,10 @@ class BluetoothRemoteGattServiceFloss
   // Data about the remote gatt service represented by this class.
   GattService remote_service_;
 
+  // Services that are included in a primary service.
+  std::vector<std::unique_ptr<BluetoothRemoteGattServiceFloss>>
+      included_services_;
+
   // The device this GATT service belongs to. Ok to store raw pointer here since
   // |device_| owns this instance.
   raw_ptr<BluetoothDeviceFloss> device_;

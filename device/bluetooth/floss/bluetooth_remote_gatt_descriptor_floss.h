@@ -5,6 +5,7 @@
 #define DEVICE_BLUETOOTH_FLOSS_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_FLOSS_H_
 
 #include <memory>
+#include <tuple>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -60,6 +61,14 @@ class BluetoothRemoteGattDescriptorFloss
                   int32_t handle,
                   const std::vector<uint8_t>& data) override;
 
+  // Register for notifications when this descriptor's value is updated.
+  void RegisterForNotification(base::OnceClosure callback,
+                               ErrorCallback error_callback);
+
+  // Unregister any notifications on this descriptor.
+  void UnregisterForNotification(base::OnceClosure callback,
+                                 ErrorCallback error_callback);
+
  private:
   BluetoothRemoteGattDescriptorFloss(
       BluetoothRemoteGattServiceFloss* service,
@@ -72,7 +81,14 @@ class BluetoothRemoteGattDescriptorFloss
   // Handle result of calling |WriteRemoteCharacateristic|.
   void OnWriteDescriptor(base::OnceClosure callback,
                          ErrorCallback error_callback,
+                         std::vector<uint8_t> data,
                          DBusResult<Void> result);
+
+  // Handles response to |RegisterForNotification| and
+  // |UnregisterForNotification|.
+  void OnRegisterForNotification(base::OnceClosure callback,
+                                 ErrorCallback error_callback,
+                                 DBusResult<GattStatus> result);
 
   // Send notifications to observer on adapter.
   void NotifyValueChanged();
@@ -88,13 +104,14 @@ class BluetoothRemoteGattDescriptorFloss
   raw_ptr<GattDescriptor> descriptor_;
 
   // Number of gatt read requests in progress.
-  int num_of_reads_in_progress_;
+  int num_of_reads_in_progress_ = 0;
 
   // Callback for pending |ReadRemoteDescriptor|.
   ValueCallback pending_read_callback_;
 
   // Callback for pending |WriteRemoteDescriptor|.
-  std::pair<base::OnceClosure, ErrorCallback> pending_write_callbacks_;
+  std::tuple<base::OnceClosure, ErrorCallback, std::vector<uint8_t>>
+      pending_write_callbacks_;
 
   // Service where this descriptor belongs. The |service_| pointer owns this
   // descriptor so we can keep a pointer to it safely.
