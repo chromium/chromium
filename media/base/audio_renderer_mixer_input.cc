@@ -16,6 +16,8 @@
 
 namespace media {
 
+constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(5);
+
 // TODO(dalecurtis): Merge with AudioDeviceDescription::IsDefaultDevice() once
 // that file has been moved to media/base.
 bool IsDefaultDevice(const std::string& device_id) {
@@ -65,6 +67,9 @@ void AudioRendererMixerInput::Initialize(
 
   params_ = params;
   callback_ = callback;
+
+  total_fade_in_frames_ = AudioTimestampHelper::TimeToFrames(
+      kFadeInDuration, params_.sample_rate());
 }
 
 void AudioRendererMixerInput::Start() {
@@ -101,6 +106,9 @@ void AudioRendererMixerInput::Stop() {
 void AudioRendererMixerInput::Play() {
   if (playing_ || !mixer_)
     return;
+
+  // Fading in the first few frames avoids an audible pop.
+  remaining_fade_in_frames_ = total_fade_in_frames_;
 
   mixer_->AddMixerInput(params_, this);
   playing_ = true;
@@ -223,6 +231,29 @@ double AudioRendererMixerInput::ProvideInput(AudioBus* audio_bus,
   if (frames_filled < audio_bus->frames()) {
     audio_bus->ZeroFramesPartial(frames_filled,
                                  audio_bus->frames() - frames_filled);
+  }
+
+  if (remaining_fade_in_frames_) {
+    // On MacOS, `audio_bus` might be 2ms long, and the fade needs to be applied
+    // over multiple buffers.
+    const int frames = std::min(remaining_fade_in_frames_, audio_bus->frames());
+
+    DCHECK_LE(remaining_fade_in_frames_, total_fade_in_frames_);
+    const int start_volume = total_fade_in_frames_ - remaining_fade_in_frames_;
+    DCHECK_GE(start_volume, 0);
+
+    // Apply a perfect linear fade-in. Fading-in in steps (e.g. increasing
+    // volume by 10% every 1ms over 10ms) introduces high frequency distortions.
+    for (int ch = 0; ch < audio_bus->channels(); ++ch) {
+      float* data = audio_bus->channel(ch);
+
+      for (int i = 0; i < frames; ++i)
+        data[i] *= static_cast<float>(start_volume + i) / total_fade_in_frames_;
+    }
+
+    remaining_fade_in_frames_ -= frames;
+
+    DCHECK_GE(remaining_fade_in_frames_, 0);
   }
 
   // We're reading |volume_| from the audio device thread and must avoid racing

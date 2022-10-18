@@ -17,9 +17,8 @@ namespace media {
 // Fake RenderCallback which will fill each request with a sine wave.  Sine
 // state is kept across callbacks.  State can be reset to default via reset().
 // Also provide an interface to AudioTransformInput.
-class FakeAudioRenderCallback
-    : public AudioRendererSink::RenderCallback,
-      public AudioConverter::InputCallback {
+class FakeAudioRenderCallback : public AudioRendererSink::RenderCallback,
+                                public AudioConverter::InputCallback {
  public:
   // The function used to fulfill Render() is f(x) = sin(2 * PI * x * |step|),
   // where x = [|number_of_frames| * m, |number_of_frames| * (m + 1)] and m =
@@ -39,7 +38,7 @@ class FakeAudioRenderCallback
              AudioBus* audio_bus) override;
   MOCK_METHOD0(OnRenderError, void());
 
-  // AudioTransform::ProvideAudioTransformInput implementation.
+  // AudioConverter::InputCallback implementation.
   double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
 
   // Toggles only filling half the requested amount during Render().
@@ -52,8 +51,10 @@ class FakeAudioRenderCallback
   // if no Render() call occurred.
   base::TimeDelta last_delay() const { return last_delay_; }
 
-  // Set volume information used by ProvideAudioTransformInput().
+  // Set volume information used by ProvideInput().
   void set_volume(double volume) { volume_ = volume; }
+
+  void set_needs_fade_in(bool needs_fade_in) { needs_fade_in_ = needs_fade_in; }
 
   int last_channel_count() const { return last_channel_count_; }
 
@@ -67,6 +68,7 @@ class FakeAudioRenderCallback
   int last_channel_count_;
   double volume_;
   int sample_rate_;
+  bool needs_fade_in_ = false;
 };
 
 }  // namespace media

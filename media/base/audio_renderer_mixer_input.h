@@ -109,6 +109,11 @@ class MEDIA_EXPORT AudioRendererMixerInput
   // AudioParameters received during Initialize().
   AudioParameters params_;
 
+  // Linearly fades in the input volume during the first ProvideInput() calls,
+  // avoiding audible pops.
+  int total_fade_in_frames_;
+  int remaining_fade_in_frames_ = 0;
+
   const base::UnguessableToken owner_token_;
   std::string device_id_;  // ID of hardware device to use
   const AudioLatency::LatencyType latency_;
