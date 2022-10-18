@@ -584,9 +584,7 @@ GURL FederatedAuthRequestImpl::ResolveManifestUrl(const IdentityProvider& idp,
                                                   const std::string& endpoint) {
   if (endpoint.empty())
     return GURL();
-  GURL manifest_url =
-      idp.config_url.Resolve(IdpNetworkRequestManager::kManifestFilePath);
-  return manifest_url.Resolve(endpoint);
+  return idp.config_url.Resolve(endpoint);
 }
 
 bool FederatedAuthRequestImpl::IsEndpointUrlValid(const IdentityProvider& idp,
