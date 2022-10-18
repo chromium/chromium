@@ -12,6 +12,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -127,6 +128,26 @@ gfx::ImageSkia CreateStandardImageOnWorkerThread(const gfx::ImageSkia& image) {
   if (!standard_image.isNull())
     standard_image.MakeThreadSafe();
   return standard_image;
+}
+
+// Report shelf buttons initialized to LoginUnlockThroughputRecorder.
+void ReportInitShelfIconList(const ash::ShelfModel* model) {
+  // Shell is not always initializaed in tests.
+  if (!ash::Shell::HasInstance())
+    return;
+
+  ash::Shell::Get()->login_unlock_throughput_recorder()->InitShelfIconList(
+      model);
+}
+
+// Report shelf buttons updated to LoginUnlockThroughputRecorder.
+void ReportUpdateShelfIconList(const ash::ShelfModel* model) {
+  // Shell is not always initializaed in tests.
+  if (!ash::Shell::HasInstance())
+    return;
+
+  ash::Shell::Get()->login_unlock_throughput_recorder()->UpdateShelfIconList(
+      model);
 }
 
 }  // namespace
@@ -316,6 +337,7 @@ void ChromeShelfController::Init() {
   if (browser_status_monitor_) {
     browser_status_monitor_->Initialize();
   }
+  ReportInitShelfIconList(model_);
 }
 
 ash::ShelfID ChromeShelfController::CreateAppItem(
@@ -465,6 +487,8 @@ void ChromeShelfController::SetItemImage(const ash::ShelfID& shelf_id,
             new_item.id.app_id, image);
     model_->Set(model_->ItemIndexByID(shelf_id), new_item);
   }
+
+  ReportUpdateShelfIconList(model_);
 }
 
 void ChromeShelfController::UpdateItemImage(const std::string& app_id) {
@@ -687,6 +711,7 @@ void ChromeShelfController::UpdateBrowserItemState() {
         model_->GetItemIndexForType(ash::TYPE_UNPINNED_BROWSER_SHORTCUT);
     if (item_index >= 0) {
       model_->RemoveItemAt(item_index);
+      ReportUpdateShelfIconList(model_);
       return;
     }
   }
@@ -712,6 +737,8 @@ void ChromeShelfController::UpdateBrowserItemState() {
 
   browser_item.status = browser_status;
   model_->Set(browser_index, browser_item);
+
+  ReportUpdateShelfIconList(model_);
 }
 
 void ChromeShelfController::SetShelfIDForBrowserWindowContents(
@@ -796,6 +823,8 @@ void ChromeShelfController::ReplacePinnedItem(const std::string& old_app_id,
   model_->RemoveItemAt(index);
   model_->AddAt(index, item,
                 std::make_unique<AppShortcutShelfItemController>(item.id));
+
+  ReportUpdateShelfIconList(model_);
 }
 
 void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
@@ -810,6 +839,8 @@ void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
 
   model_->AddAt(target_index, item,
                 std::make_unique<AppShortcutShelfItemController>(item.id));
+
+  ReportUpdateShelfIconList(model_);
 }
 
 int ChromeShelfController::PinnedItemIndexByAppID(const std::string& app_id) {
@@ -1100,6 +1131,8 @@ void ChromeShelfController::UpdateAppImage(const std::string& app_id,
     model_->Set(index, item);
     // It's possible we're waiting on more than one item, so don't break.
   }
+
+  ReportUpdateShelfIconList(model_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1141,6 +1174,8 @@ void ChromeShelfController::RemoveShelfItem(const ash::ShelfID& id) {
   const int index = model_->ItemIndexByID(id);
   if (index >= 0 && index < model_->item_count())
     model_->RemoveItemAt(index);
+
+  ReportUpdateShelfIconList(model_);
 }
 
 void ChromeShelfController::PinRunningAppInternal(
@@ -1273,6 +1308,8 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
   }
 
   UpdatePolicyPinnedAppsFromPrefs();
+
+  ReportUpdateShelfIconList(model_);
 }
 
 bool ChromeShelfController::EnsureAppPinnedInModelAtIndex(
@@ -1330,6 +1367,8 @@ void ChromeShelfController::UpdatePinnedByPolicyForItemAtIndex(
     item.pinned_by_policy = pinned_by_policy;
     model_->Set(model_index, item);
   }
+
+  ReportUpdateShelfIconList(model_);
 }
 
 ash::ShelfItemStatus ChromeShelfController::GetAppState(
@@ -1373,6 +1412,8 @@ ash::ShelfID ChromeShelfController::InsertAppItem(
   item.app_status = ShelfControllerHelper::GetAppStatus(
       latest_active_profile_, item_delegate->shelf_id().app_id);
   model_->AddAt(index, item, std::move(item_delegate));
+
+  ReportUpdateShelfIconList(model_);
   return item.id;
 }
 
@@ -1402,6 +1443,8 @@ void ChromeShelfController::CreateBrowserShortcutItem(bool pinned) {
     model_->Add(browser_shortcut,
                 std::make_unique<BrowserShortcutShelfItemController>(model_));
   }
+
+  ReportUpdateShelfIconList(model_);
 }
 
 int ChromeShelfController::FindInsertionPoint() {
@@ -1568,6 +1611,8 @@ void ChromeShelfController::ShelfItemAdded(int index) {
   // Update the pin position preference as needed.
   if (ShouldSyncItemWithReentrancy(item))
     SyncPinPosition(item.id);
+
+  ReportUpdateShelfIconList(model_);
 }
 
 void ChromeShelfController::ShelfItemRemoved(int index,
@@ -1594,4 +1639,6 @@ void ChromeShelfController::ShelfItemChanged(int index,
     SyncPinPosition(item.id);
   else if (ShouldSyncItemWithReentrancy(old_item) && !ItemTypeIsPinned(item))
     shelf_prefs_->RemovePinPosition(profile(), old_item.id);
+
+  ReportUpdateShelfIconList(model_);
 }

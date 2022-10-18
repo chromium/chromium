@@ -106,6 +106,10 @@ void WriteTimes(const std::string base_name,
   total_hist->AddTime(total);
   std::string output =
       base::StringPrintf("%s: %.2f", uma_name.c_str(), total.InSecondsF());
+  if (uma_name == "BootTime.Login2" || uma_name == "BootTime.LoginNewUser") {
+    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Tast.BootTime.Login2", total,
+                               base::Milliseconds(1), base::Seconds(300), 100);
+  }
   base::Time prev = first;
   // Convert base::Time to base::TimeTicks for tracing.
   auto time2timeticks = [](const base::Time& ts) {
