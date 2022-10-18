@@ -155,8 +155,7 @@ try_.builder(
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
-    #TODO(morawand): Add this back to CQ after outage is over.
-    # tryjob = try_.job(),
+    tryjob = try_.job(),
     mirrors = [
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
