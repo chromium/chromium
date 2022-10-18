@@ -51,3 +51,94 @@ index 19938efe0b622..0537e0b3b9884 100644
           // TODO(rictic): fix typing
           this._parseTemplateContent(
               template, templateInfo, /** @type {?} */ ({parent: null}));
+diff --git a/components-chromium/polymer/lib/utils/settings.js b/components-chromium/polymer/lib/utils/settings.js
+index ee70d3c14b0c2..265940bf4c6c8 100644
+--- a/components-chromium/polymer/lib/utils/settings.js
++++ b/components-chromium/polymer/lib/utils/settings.js
+@@ -173,8 +173,8 @@ export const setLegacyOptimizations = function(useLegacyOptimizations) {
+ /**
+  * Setting to add warnings useful when migrating from Polymer 1.x to 2.x.
+  */
+-export let legacyWarnings =
+-  window.Polymer && window.Polymer.legacyWarnings || false;
++// Turn off option for Chromium.
++export const legacyWarnings = false;
+ 
+ /**
+  * Sets `legacyWarnings` globally for all elements to migration warnings.
+@@ -190,8 +190,8 @@ export const setLegacyWarnings = function(useLegacyWarnings) {
+  * Setting to perform initial rendering synchronously when running under ShadyDOM.
+  * This matches the behavior of Polymer 1.
+  */
+-export let syncInitialRender =
+-  window.Polymer && window.Polymer.syncInitialRender || false;
++// Turn off option for Chromium.
++export const syncInitialRender = false;
+ 
+ /**
+  * Sets `syncInitialRender` globally for all elements to enable synchronous
+@@ -210,8 +210,8 @@ export const setSyncInitialRender = function(useSyncInitialRender) {
+  * observers around undefined values. Observers and computed property methods
+  * are not called until no argument is undefined.
+  */
+-export let legacyUndefined =
+-  window.Polymer && window.Polymer.legacyUndefined || false;
++// Turn off option for Chromium.
++export const legacyUndefined = false;
+ 
+ /**
+  * Sets `legacyUndefined` globally for all elements to enable legacy
+@@ -267,8 +267,8 @@ export const setCancelSyntheticClickEvents = function(useCancelSyntheticClickEve
+  * eliminates most of the tax of needing two elements due to the loss of
+  * type-extended templates as a result of the V1 specification changes.
+  */
+-export let removeNestedTemplates =
+-  window.Polymer && window.Polymer.removeNestedTemplates || false;
++// Turn off option for Chromium.
++export const removeNestedTemplates = false;
+ 
+ /**
+  * Sets `removeNestedTemplates` globally, to eliminate nested templates
+@@ -290,7 +290,8 @@ export const setRemoveNestedTemplates = function(useRemoveNestedTemplates) {
+  * such as `modelForElement` will not be available for nodes stamped by
+  * `dom-if`.
+  */
+-export let fastDomIf = window.Polymer && window.Polymer.fastDomIf || false;
++// Turn off option for Chromium.
++export const fastDomIf = false;
+ 
+ /**
+  * Sets `fastDomIf` globally, to put `dom-if` in a performance-optimized mode.
+@@ -308,8 +309,8 @@ export const setFastDomIf = function(useFastDomIf) {
+  * setting the `notify-dom-change` attribute (`notifyDomChange: true` property)
+  * to `dom-if`/`don-repeat` instances.
+  */
+-export let suppressTemplateNotifications =
+-  window.Polymer && window.Polymer.suppressTemplateNotifications || false;
++// Turn off option for Chromium.
++export const suppressTemplateNotifications = false;
+ 
+ /**
+  * Sets `suppressTemplateNotifications` globally, to disable `dom-change` and
+@@ -327,8 +328,8 @@ export const setSuppressTemplateNotifications = function(suppress) {
+  * to avoid setting `observedAttributes`. Instead attributes are read
+  * once at create time and set/removeAttribute are patched.
+  */
+-export let legacyNoObservedAttributes =
+-  window.Polymer && window.Polymer.legacyNoObservedAttributes || false;
++// Turn off option for Chromium.
++export const legacyNoObservedAttributes = false;
+ 
+ /**
+  * Sets `legacyNoObservedAttributes` globally, to disable `observedAttributes`.
+@@ -345,8 +346,8 @@ export const setLegacyNoObservedAttributes = function(noObservedAttributes) {
+  * between component instances' shadow roots, if the app uses built Shady CSS
+  * styles.
+  */
+-export let useAdoptedStyleSheetsWithBuiltCSS =
+-  window.Polymer && window.Polymer.useAdoptedStyleSheetsWithBuiltCSS || false;
++// Turn off option for Chromium.
++export const useAdoptedStyleSheetsWithBuiltCSS = false;
+ 
+ /**
+  * Sets `useAdoptedStyleSheetsWithBuiltCSS` globally.

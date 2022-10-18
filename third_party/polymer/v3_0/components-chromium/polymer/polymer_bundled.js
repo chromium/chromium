@@ -540,7 +540,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 const useShadow = !(window.ShadyDOM) || !(window.ShadyDOM.inUse);
 Boolean(!window.ShadyCSS || window.ShadyCSS.nativeCss);
-const supportsAdoptingStyleSheets = useShadow &&
+useShadow &&
     ('adoptedStyleSheets' in Document.prototype) &&
     ('replaceSync' in CSSStyleSheet.prototype) &&
     // Since spec may change, feature detect exact API we need
@@ -624,27 +624,6 @@ let legacyOptimizations =
   window.Polymer && window.Polymer.legacyOptimizations || false;
 
 /**
- * Setting to add warnings useful when migrating from Polymer 1.x to 2.x.
- */
-let legacyWarnings =
-  window.Polymer && window.Polymer.legacyWarnings || false;
-
-/**
- * Setting to perform initial rendering synchronously when running under ShadyDOM.
- * This matches the behavior of Polymer 1.
- */
-let syncInitialRender =
-  window.Polymer && window.Polymer.syncInitialRender || false;
-
-/**
- * Setting to retain the legacy Polymer 1 behavior for multi-property
- * observers around undefined values. Observers and computed property methods
- * are not called until no argument is undefined.
- */
-let legacyUndefined =
-  window.Polymer && window.Polymer.legacyUndefined || false;
-
-/**
  * Setting to ensure computed properties are computed in order to ensure
  * re-computation never occurs in a given turn.
  */
@@ -652,48 +631,13 @@ let orderedComputed =
   window.Polymer && window.Polymer.orderedComputed || false;
 
 /**
- * Setting to remove nested templates inside `dom-if` and `dom-repeat` as
- * part of element template parsing.  This is a performance optimization that
- * eliminates most of the tax of needing two elements due to the loss of
- * type-extended templates as a result of the V1 specification changes.
- */
-let removeNestedTemplates =
-  window.Polymer && window.Polymer.removeNestedTemplates || false;
-
-/**
- * Setting to place `dom-if` elements in a performance-optimized mode that takes
- * advantage of lighter-weight host runtime template stamping to eliminate the
- * need for an intermediate Templatizer `TemplateInstance` to mange the nodes
- * stamped by `dom-if`.  Under this setting, any Templatizer-provided API's
- * such as `modelForElement` will not be available for nodes stamped by
- * `dom-if`.
- */
-let fastDomIf = window.Polymer && window.Polymer.fastDomIf || false;
-
-/**
  * Setting to disable `dom-change` and `rendered-item-count` events from
  * `dom-if` and `dom-repeat`. Users can opt back into `dom-change` events by
  * setting the `notify-dom-change` attribute (`notifyDomChange: true` property)
  * to `dom-if`/`don-repeat` instances.
  */
-let suppressTemplateNotifications =
-  window.Polymer && window.Polymer.suppressTemplateNotifications || false;
-
-/**
- * Setting to disable use of dynamic attributes. This is an optimization
- * to avoid setting `observedAttributes`. Instead attributes are read
- * once at create time and set/removeAttribute are patched.
- */
-let legacyNoObservedAttributes =
-  window.Polymer && window.Polymer.legacyNoObservedAttributes || false;
-
-/**
- * Setting to enable use of `adoptedStyleSheets` for sharing style sheets
- * between component instances' shadow roots, if the app uses built Shady CSS
- * styles.
- */
-let useAdoptedStyleSheetsWithBuiltCSS =
-  window.Polymer && window.Polymer.useAdoptedStyleSheetsWithBuiltCSS || false;
+// Turn off option for Chromium.
+const suppressTemplateNotifications = false;
 
 /**
 @license
@@ -715,9 +659,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
  * of legacy (Polymer.dom) API.
  * @type {function(Node):Node}
  */
-const wrap = (window['ShadyDOM'] && window['ShadyDOM']['noPatch'] && window['ShadyDOM']['wrap']) ?
-  window['ShadyDOM']['wrap'] :
-  (window['ShadyDOM'] ? (n) => ShadyDOM['patch'](n) : (n) => n);
+const wrap = (window.ShadyDOM && window.ShadyDOM['noPatch'] && window.ShadyDOM['wrap']) ?
+  window.ShadyDOM['wrap'] :
+  (window.ShadyDOM ? (n) => ShadyDOM['patch'](n) : (n) => n);
 
 /**
 @license
@@ -5225,17 +5169,8 @@ function getArgValue(data, props, path) {
  */
 function notifySplices(inst, array, path, splices) {
   const splicesData = { indexSplices: splices };
-  // Legacy behavior stored splices in `__data__` so it was *not* ephemeral.
-  // To match this behavior, we store splices directly on the array.
-  if (legacyUndefined && !inst._overrideLegacyUndefined) {
-    array.splices = splicesData;
-  }
   inst.notifyPath(path + '.splices', splicesData);
   inst.notifyPath(path + '.length', array.length);
-  // Clear splice data only when it's stored on the array.
-  if (legacyUndefined && !inst._overrideLegacyUndefined) {
-    splicesData.indexSplices = [];
-  }
 }
 
 /**
@@ -6466,11 +6401,6 @@ const PropertyEffects = dedupingMixin(superClass => {
             value = structured ? getArgValue(data, props, name) : data[name];
           }
         }
-        // When the `legacyUndefined` flag is enabled, pass a no-op value
-        // so that the observer, computed property, or compound binding is aborted.
-        if (legacyUndefined && !this._overrideLegacyUndefined && value === undefined && args.length > 1) {
-          return NOOP;
-        }
         values[i] = value;
       }
       return values;
@@ -6989,42 +6919,11 @@ const PropertyEffects = dedupingMixin(superClass => {
         this, node, templateInfo, nodeInfo);
       const parent = node.parentNode;
       const nestedTemplateInfo = nodeInfo.templateInfo;
-      const isDomIf = parent.localName === 'dom-if';
-      const isDomRepeat = parent.localName === 'dom-repeat';
-      // Remove nested template and redirect its host bindings & templateInfo
-      // onto the parent (dom-if/repeat element)'s nodeInfo
-      if (removeNestedTemplates && (isDomIf || isDomRepeat)) {
-        parent.removeChild(node);
-        // Use the parent's nodeInfo (for the dom-if/repeat) to record the
-        // templateInfo, and use that for any host property bindings below
-        nodeInfo = nodeInfo.parentInfo;
-        nodeInfo.templateInfo = nestedTemplateInfo;
-        // Ensure the parent dom-if/repeat is noted since it now may have host
-        // bindings; it may not have been if it did not have its own bindings
-        nodeInfo.noted = true;
-        noted = false;
-      }
+      parent.localName === 'dom-if';
+      parent.localName === 'dom-repeat';
       // Merge host props into outer template and add bindings
       let hostProps = nestedTemplateInfo.hostProps;
-      if (fastDomIf && isDomIf) {
-        // `fastDomIf` mode uses runtime-template stamping to add accessors/
-        // effects to properties used in its template; as such we don't need to
-        // tax the host element with `_host_` bindings for the `dom-if`.
-        // However, in the event it is nested in a `dom-repeat`, it is still
-        // important that its host properties are added to the
-        // TemplateInstance's `hostProps` so that they are forwarded to the
-        // TemplateInstance.
-        if (hostProps) {
-          templateInfo.hostProps =
-            Object.assign(templateInfo.hostProps || {}, hostProps);
-          // Ensure the dom-if is noted so that it has a __dataHost, since
-          // `fastDomIf` uses the host for runtime template stamping; note this
-          // was already ensured above in the `removeNestedTemplates` case
-          if (!removeNestedTemplates) {
-            nodeInfo.parentInfo.noted = true;
-          }
-        }
-      } else {
+      {
         let mode = '{';
         for (let source in hostProps) {
           let parts = [{ mode, source, dependencies: [source], hostProp: true }];
@@ -7750,30 +7649,6 @@ const ElementMixin = dedupingMixin(base => {
     if (window.ShadyCSS) {
       window.ShadyCSS.prepareTemplate(template, is);
     }
-    // Support for `adoptedStylesheets` relies on using native Shadow DOM
-    // and built CSS. Built CSS is required because runtime transformation of
-    // `@apply` is not supported. This is because ShadyCSS relies on being able
-    // to update a `style` element in the element template and this is
-    // removed when using `adoptedStyleSheets`.
-    // Note, it would be more efficient to allow style includes to become
-    // separate stylesheets; however, because of `@apply` these are
-    // potentially not shareable and sharing the ones that could be shared
-    // would require some coordination. To keep it simple, all the includes
-    // and styles are collapsed into a single shareable stylesheet.
-    if (useAdoptedStyleSheetsWithBuiltCSS && builtCSS &&
-        supportsAdoptingStyleSheets) {
-      // Remove styles in template and make a shareable stylesheet
-      const styles = template.content.querySelectorAll('style');
-      if (styles) {
-        let css = '';
-        Array.from(styles).forEach(s => {
-          css += s.textContent;
-          s.parentNode.removeChild(s);
-        });
-        klass._styleSheet = new CSSStyleSheet();
-        klass._styleSheet.replaceSync(css);
-      }
-    }
   }
 
   /**
@@ -8202,9 +8077,6 @@ const ElementMixin = dedupingMixin(base => {
               n.shadowRoot.adoptedStyleSheets = [this.constructor._styleSheet];
             }
           }
-          if (syncInitialRender && window.ShadyDOM) {
-            window.ShadyDOM.flushInitial(n.shadowRoot);
-          }
           return n.shadowRoot;
         }
         return null;
@@ -8301,26 +8173,6 @@ const ElementMixin = dedupingMixin(base => {
      * @nocollapse
      */
     static _addTemplatePropertyEffect(templateInfo, prop, effect) {
-      // Warn if properties are used in template without being declared.
-      // Properties must be listed in `properties` to be included in
-      // `observedAttributes` since CE V1 reads that at registration time, and
-      // since we want to keep template parsing lazy, we can't automatically
-      // add undeclared properties used in templates to `observedAttributes`.
-      // The warning is only enabled in `legacyOptimizations` mode, since
-      // we don't want to spam existing users who might have adopted the
-      // shorthand when attribute deserialization is not important.
-      if (legacyWarnings && !(prop in this._properties) &&
-          // Methods used in templates with no dependencies (or only literal
-          // dependencies) become accessors with template effects; ignore these
-          !(effect.info.part.signature && effect.info.part.signature.static) &&
-          // Warnings for bindings added to nested templates are handled by
-          // templatizer so ignore both the host-to-template bindings
-          // (`hostProp`) and TemplateInstance-to-child bindings
-          // (`nestedTemplate`)
-          !effect.info.part.hostProp && !templateInfo.nestedTemplate) {
-        console.warn(`Property '${prop}' used in template but not declared in 'properties'; ` +
-          `attribute will not be observed.`);
-      }
       // TODO(https://github.com/google/closure-compiler/issues/3240):
       //     Change back to just super.methodCall()
       return polymerElementBase._addTemplatePropertyEffect.call(
@@ -9146,9 +8998,6 @@ function addPropagateEffects(target, templateInfo, options, methodHost) {
           {fn: createForwardHostPropEffect(prop, userForwardHostProp)});
         klass.prototype._createNotifyingProperty('_host_' + prop);
       }
-      if (legacyWarnings && methodHost) {
-        warnOnUndeclaredProperties(templateInfo, options, methodHost);
-      }
     }
     // Mix any pre-bound data into __data; no need to flush this to
     // instances since they pull from the template at instance-time
@@ -9335,7 +9184,7 @@ function templatize(template, owner, options) {
   }
   const methodHost = findMethodHost(template);
   // Host property forwarding must be installed onto template instance
-  addPropagateEffects(template, templateInfo, options, methodHost);
+  addPropagateEffects(template, templateInfo, options);
   // Subclass base class and add reference for this specific template
   /** @private */
   let klass = class TemplateInstance extends baseClass {};
@@ -9349,27 +9198,6 @@ function templatize(template, owner, options) {
   klass.prototype.__hostProps = templateInfo.hostProps;
   klass = /** @type {function(new:TemplateInstanceBase)} */(klass); //eslint-disable-line no-self-assign
   return klass;
-}
-
-function warnOnUndeclaredProperties(templateInfo, options, methodHost) {
-  const declaredProps = methodHost.constructor._properties;
-  const {propertyEffects} = templateInfo;
-  const {instanceProps} = options;
-  for (let prop in propertyEffects) {
-    // Ensure properties with template effects are declared on the outermost
-    // host (`methodHost`), unless they are instance props or static functions
-    if (!declaredProps[prop] && !(instanceProps && instanceProps[prop])) {
-      const effects = propertyEffects[prop];
-      for (let i=0; i<effects.length; i++) {
-        const {part} = effects[i].info;
-        if (!(part.signature && part.signature.static)) {
-          console.warn(`Property '${prop}' used in template but not ` +
-            `declared in 'properties'; attribute will not be observed.`);
-          break;
-        }
-      }
-    }
-  }
 }
 
 /**
@@ -9661,8 +9489,7 @@ class DomIfBase extends PolymerElement {
       this.__teardownInstance();
     }
     this._showHideChildren();
-    if ((!suppressTemplateNotifications || this.notifyDomChange)
-        && this.if != this._lastIf) {
+    if (this.if != this._lastIf) {
       this.dispatchEvent(new CustomEvent('dom-change', {
         bubbles: true,
         composed: true
@@ -9722,180 +9549,6 @@ class DomIfBase extends PolymerElement {
    */
   _showHideChildren() { }
   /* eslint-enable valid-jsdoc */
-}
-
-/**
- * The version of DomIf used when `fastDomIf` setting is in use, which is
- * optimized for first-render (but adds a tax to all subsequent property updates
- * on the host, whether they were used in a given `dom-if` or not).
- *
- * This implementation avoids use of `Templatizer`, which introduces a new scope
- * (a non-element PropertyEffects instance), which is not strictly necessary
- * since `dom-if` never introduces new properties to its scope (unlike
- * `dom-repeat`). Taking advantage of this fact, the `dom-if` reaches up to its
- * `__dataHost` and stamps the template directly from the host using the host's
- * runtime `_stampTemplate` API, which binds the property effects of the
- * template directly to the host. This both avoids the intermediary
- * `Templatizer` instance, but also avoids the need to bind host properties to
- * the `<template>` element and forward those into the template instance.
- *
- * In this version of `dom-if`, the `this.__instance` method is the
- * `DocumentFragment` returned from `_stampTemplate`, which also serves as the
- * handle for later removing it using the `_removeBoundDom` method.
- */
-class DomIfFast extends DomIfBase {
-
-  constructor() {
-    super();
-    this.__instance = null;
-    this.__syncInfo = null;
-  }
-
-  /**
-   * Implementation of abstract API needed by DomIfBase.
-   *
-   * @override
-   * @return {boolean} True when an instance has been created.
-   */
-  __hasInstance() {
-    return Boolean(this.__instance);
-  }
-
-  /**
-   * Implementation of abstract API needed by DomIfBase.
-   *
-   * @override
-   * @return {Array<Node>} Array of child nodes stamped from the template
-   * instance.
-   */
-  __getInstanceNodes() {
-    return this.__instance.templateInfo.childNodes;
-  }
-
-  /**
-   * Implementation of abstract API needed by DomIfBase.
-   *
-   * Stamps the template by calling `_stampTemplate` on the `__dataHost` of this
-   * element and then inserts the resulting nodes into the given `parentNode`.
-   *
-   * @override
-   * @param {Node} parentNode The parent node to insert the instance into
-   * @return {void}
-   */
-  __createAndInsertInstance(parentNode) {
-    const host = this.__dataHost || this;
-    if (strictTemplatePolicy) {
-      if (!this.__dataHost) {
-        throw new Error('strictTemplatePolicy: template owner not trusted');
-      }
-    }
-    // Pre-bind and link the template into the effects system
-    const templateInfo = host._bindTemplate(
-        /** @type {!HTMLTemplateElement} */ (this.__template), true);
-    // Install runEffects hook that prevents running property effects
-    // (and any nested template effects) when the `if` is false
-    templateInfo.runEffects = (runEffects, changedProps, hasPaths) => {
-      let syncInfo = this.__syncInfo;
-      if (this.if) {
-        // Mix any props that changed while the `if` was false into `changedProps`
-        if (syncInfo) {
-          // If there were properties received while the `if` was false, it is
-          // important to sync the hidden state with the element _first_, so that
-          // new bindings to e.g. `textContent` do not get stomped on by
-          // pre-hidden values if `_showHideChildren` were to be called later at
-          // the next render. Clearing `__invalidProps` here ensures
-          // `_showHideChildren`'s call to `__syncHostProperties` no-ops, so
-          // that we don't call `runEffects` more often than necessary.
-          this.__syncInfo = null;
-          this._showHideChildren();
-          changedProps = Object.assign(syncInfo.changedProps, changedProps);
-        }
-        runEffects(changedProps, hasPaths);
-      } else {
-        // Accumulate any values changed while `if` was false, along with the
-        // runEffects method to sync them, so that we can replay them once `if`
-        // becomes true
-        if (this.__instance) {
-          if (!syncInfo) {
-            syncInfo = this.__syncInfo = { runEffects, changedProps: {} };
-          }
-          if (hasPaths) {
-            // Store root object of any paths; this will ensure direct bindings
-            // like [[obj.foo]] bindings run after a `set('obj.foo', v)`, but
-            // note that path notifications like `set('obj.foo.bar', v)` will
-            // not propagate. Since batched path notifications are not
-            // supported, we cannot simply accumulate path notifications. This
-            // is equivalent to the non-fastDomIf case, which stores root(p) in
-            // __invalidProps.
-            for (const p in changedProps) {
-              const rootProp = root(p);
-              syncInfo.changedProps[rootProp] = this.__dataHost[rootProp];
-            }
-          } else {
-            Object.assign(syncInfo.changedProps, changedProps);
-          }
-        }
-      }
-    };
-    // Stamp the template, and set its DocumentFragment to the "instance"
-    this.__instance = host._stampTemplate(
-        /** @type {!HTMLTemplateElement} */ (this.__template), templateInfo);
-    wrap(parentNode).insertBefore(this.__instance, this);
-  }
-
-  /**
-   * Run effects for any properties that changed while the `if` was false.
-   *
-   * @return {void}
-   */
-  __syncHostProperties() {
-    const syncInfo = this.__syncInfo;
-    if (syncInfo) {
-      this.__syncInfo = null;
-      syncInfo.runEffects(syncInfo.changedProps, false);
-    }
-  }
-
-  /**
-   * Implementation of abstract API needed by DomIfBase.
-   *
-   * Remove the instance and any nodes it created.  Uses the `__dataHost`'s
-   * runtime `_removeBoundDom` method.
-   *
-   * @override
-   * @return {void}
-   */
-  __teardownInstance() {
-    const host = this.__dataHost || this;
-    if (this.__instance) {
-      host._removeBoundDom(this.__instance);
-      this.__instance = null;
-      this.__syncInfo = null;
-    }
-  }
-
-  /**
-   * Implementation of abstract API needed by DomIfBase.
-   *
-   * Shows or hides the template instance top level child nodes. For
-   * text nodes, `textContent` is removed while "hidden" and replaced when
-   * "shown."
-   *
-   * @override
-   * @return {void}
-   * @protected
-   * @suppress {visibility}
-   */
-  _showHideChildren() {
-    const hidden = this.__hideTemplateChildren__ || !this.if;
-    if (this.__instance && Boolean(this.__instance.__hidden) !== hidden) {
-      this.__instance.__hidden = hidden;
-      showHideChildren(hidden, this.__instance.templateInfo.childNodes);
-    }
-    if (!hidden) {
-      this.__syncHostProperties();
-    }
-  }
 }
 
 /**
@@ -10071,7 +9724,7 @@ class DomIfLegacy extends DomIfBase {
  * @summary Custom element that conditionally stamps and hides or removes
  *   template content based on a boolean flag.
  */
-const DomIf = fastDomIf ? DomIfFast : DomIfLegacy;
+const DomIf = DomIfLegacy;
 
 customElements.define(DomIf.is, DomIf);
 
@@ -10634,7 +10287,7 @@ class DomRepeat extends domRepeatBase {
     // Set rendered item count
     this._setRenderedItemCount(this.__instances.length);
     // Notify users
-    if (!suppressTemplateNotifications || this.notifyDomChange) {
+    {
       this.dispatchEvent(new CustomEvent('dom-change', {
         bubbles: true,
         composed: true
@@ -10886,7 +10539,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-const nativeShadow = !(window['ShadyDOM'] && window['ShadyDOM']['inUse']);
+const nativeShadow = !(window.ShadyDOM && window.ShadyDOM['inUse']);
 let nativeCssVariables_;
 
 /**
@@ -11371,7 +11024,7 @@ function processVariableAndFallback(str, callback) {
 /**
  * @type {function(*):*}
  */
-window['ShadyDOM'] && window['ShadyDOM']['wrap'] || ((node) => node);
+window.ShadyDOM && window.ShadyDOM['wrap'] || ((node) => node);
 
 /**
  * @param {Element | {is: string, extends: string}} element
@@ -12191,8 +11844,8 @@ class CustomStyleInterface$1 {
     this['enqueued'] = false;
     // NOTE(dfreedm): use quotes here to prevent closure inlining to `function(){}`;
     documentWait(() => {
-      if (window['ShadyCSS']['flushCustomStyles']) {
-        window['ShadyCSS']['flushCustomStyles']();
+      if (window.ShadyCSS['flushCustomStyles']) {
+        window.ShadyCSS['flushCustomStyles']();
       }
     });
   }
@@ -13346,8 +12999,8 @@ class DomApiNative {
    * @param {!Node} node Node for which to create a Polymer.dom helper object.
    */
   constructor(node) {
-    if (window['ShadyDOM'] && window['ShadyDOM']['inUse']) {
-      window['ShadyDOM']['patch'](node);
+    if (window.ShadyDOM && window.ShadyDOM['inUse']) {
+      window.ShadyDOM['patch'](node);
     }
     this.node = node;
   }
@@ -13681,13 +13334,13 @@ DomApiNative.prototype.innerHTML;
 
 let DomApiImpl = DomApiNative;
 
-if (window['ShadyDOM'] && window['ShadyDOM']['inUse'] && window['ShadyDOM']['noPatch'] && window['ShadyDOM']['Wrapper']) {
+if (window.ShadyDOM && window.ShadyDOM['inUse'] && window.ShadyDOM['noPatch'] && window.ShadyDOM['Wrapper']) {
 
   /**
    * @private
    * @extends {HTMLElement}
    */
-  class Wrapper extends window['ShadyDOM']['Wrapper'] {}
+  class Wrapper extends window.ShadyDOM['Wrapper'] {}
 
   // copy bespoke API onto wrapper
   Object.getOwnPropertyNames(DomApiNative.prototype).forEach((prop) => {
@@ -13726,7 +13379,7 @@ if (window['ShadyDOM'] && window['ShadyDOM']['inUse'] && window['ShadyDOM']['noP
 
     path: {
       get() {
-        return window['ShadyDOM']['composedPath'](this.event);
+        return window.ShadyDOM['composedPath'](this.event);
       },
       configurable: true
     }
@@ -14180,12 +13833,7 @@ const LegacyElementMixin = dedupingMixin((base) => {
      * @override
      */
     setAttribute(name, value) {
-      if (legacyNoObservedAttributes && !this._legacyForceObservedAttributes) {
-        const oldValue = this.getAttribute(name);
-        super.setAttribute(name, value);
-        // value coerced to String for closure's benefit
-        this.__attributeReaction(name, oldValue, String(value));
-      } else {
+      {
         super.setAttribute(name, value);
       }
     }
@@ -14195,25 +13843,14 @@ const LegacyElementMixin = dedupingMixin((base) => {
      * @override
      */
     removeAttribute(name) {
-      if (legacyNoObservedAttributes && !this._legacyForceObservedAttributes) {
-        const oldValue = this.getAttribute(name);
-        super.removeAttribute(name);
-        this.__attributeReaction(name, oldValue, null);
-      } else {
+      {
         super.removeAttribute(name);
       }
     }
 
     // NOTE: Inlined for perf from version of DisableUpgradeMixin.
     static get observedAttributes() {
-      if (legacyNoObservedAttributes && !this.prototype._legacyForceObservedAttributes) {
-        // Ensure this element is property registered with the telemetry system.
-        if (!this.hasOwnProperty(JSCompiler_renameProperty('__observedAttributes', this))) {
-          this.__observedAttributes = [];
-          register(this.prototype);
-        }
-        return this.__observedAttributes;
-      } else {
+      {
         return observedAttributesGetter.call(this).concat(DISABLED_ATTR);
       }
     }
@@ -14354,15 +13991,6 @@ const LegacyElementMixin = dedupingMixin((base) => {
         super._initializeProperties();
         this.root = /** @type {HTMLElement} */(this);
         this.created();
-        // Pull all attribute values 1x if `legacyNoObservedAttributes` is set.
-        if (legacyNoObservedAttributes && !this._legacyForceObservedAttributes) {
-          if (this.hasAttributes()) {
-            this._takeAttributes();
-          // Element created from scratch or parser generated
-          } else if (!this.parentNode) {
-            this.__needsAttributesAtConnected = true;
-          }
-        }
         // Ensure listeners are applied immediately so that they are
         // added before declarative event listeners. This allows an element to
         // decorate itself via an event prior to any declarative listeners

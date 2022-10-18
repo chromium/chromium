@@ -26,11 +26,7 @@ becomes smaller and better over time.
 technologies called the Polymer.
 
 Local Modifications:
-- Applied modifications that can be found in v3_0/chromium.patch.
-- All inline JavaScript blocks are extracted from Polymer HTML elements to
-external JS files. This version of the Polymer is used in a web UI, where CSP
-forbids an execution of inline scripts. The extraction was made with the help of
-the Crisper tool (https://github.com/PolymerLabs/crisper).
+- Applied modifications that can be found in various v3_0/*.patch files.
 - Removed executable bit from some files.
 - Resolved encoding issues.
 - Replaced CRLF line endings with LF line endings in text files.
@@ -45,6 +41,17 @@ the Crisper tool (https://github.com/PolymerLabs/crisper).
 - Note that the Polymer 3 bundle does not include dir-mixin.js which is
   responsible for polyfylling :dir() CSS rules, because it causes a performance
   regression (and it is unnecessary), see crbug.com/899603 for more context.
+- Several modifications were introduced in v3.5.0 to save size, by pruning out
+  codepaths related to
+  1) ShadyDOM support (not needed by Chromium since native ShadowDOM is used).
+     Done by passing --define window.ShadyDOM=false flag to Terser.
+  2) Polymer codepaths guarded by flags to preserve legacy Polymer
+     behavior. Specifically legacyWarnings, syncInitialRender,
+     legacyUndefined, legacyNoObservedAttributes,
+  3) Polymer codepaths guarded by flags implementing various
+     new optimizations introduced to v3.5.0. Specifically
+     removeNestedTemplates, fastDomIf, suppressTemplateNotifications,
+     useAdoptedStyleSheetsWithBuiltCSS.
 
 To restore a content of the 'components-chromium' directory from scratch, run
 ./v3_0/reproduce.sh on a Linux machine.

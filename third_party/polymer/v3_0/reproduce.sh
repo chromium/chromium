@@ -58,10 +58,9 @@ patch -p1 --forward < iron_list.patch
 patch -p1 --forward < iron_overlay_backdrop.patch
 patch -p1 --forward < paper_progress.patch
 patch -p1 --forward < paper_tooltip.patch
-patch -p1 --forward < polymer.patch
 
 echo 'Minifying Polymer 3, since it comes non-minified from NPM.'
-python minify_polymer.py
+./minify_polymer.sh
 
 echo 'Copying TypeScript .d.ts files to the final Polymer directory.'
 # Copy all .d.ts files to the final Polymer directory. Note that the order of
