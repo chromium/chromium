@@ -1663,7 +1663,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
         "Ash.NotificationView.ExpandedMessageLabel.FadeIn.AnimationSmoothness");
   }
 
-  if (!image_container_view()->children().empty()) {
+  if (!image_container_view()->children().empty() && icon_view()) {
     PerformLargeImageAnimation();
   }
 

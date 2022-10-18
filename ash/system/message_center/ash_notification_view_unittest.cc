@@ -1099,4 +1099,15 @@ TEST_F(AshNotificationViewTest, DuplicateGroupChildRemovalWithAnimation) {
   notification_view->RemoveGroupNotification(child_view->notification_id());
 }
 
+// Regression test for b/253668543. Ensures toggling the expand state for a
+// progress notification with a large image does not result in a crash.
+TEST_F(AshNotificationViewTest, CollapseProgressNotificationWithImage) {
+  std::unique_ptr<Notification> notification = CreateTestNotification(
+      /*has_image=*/true, /*show_snooze_button=*/false, /*has_message=*/false,
+      message_center::NOTIFICATION_TYPE_PROGRESS);
+  notification_view()->UpdateWithNotification(*notification);
+
+  notification_view()->ToggleExpand();
+}
+
 }  // namespace ash
