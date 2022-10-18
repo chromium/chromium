@@ -117,6 +117,10 @@ class StorageKey;
 struct FrameVisualProperties;
 }  // namespace blink
 
+namespace storage {
+class BlobUrlRegistry;
+}
+
 namespace content {
 
 class BoundingBoxUpdateWaiterImpl;
@@ -2055,10 +2059,14 @@ class UpdateUserActivationStateInterceptor
 class BlobURLStoreInterceptor
     : public blink::mojom::BlobURLStoreInterceptorForTesting {
  public:
-  static void Intercept(
+  static void InterceptDeprecated(
       GURL target_url,
       mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::BlobURLStore>
           receiver);
+
+  static void Intercept(GURL target_url,
+                        storage::BlobUrlRegistry* registry,
+                        mojo::ReceiverId receiver_id);
 
   ~BlobURLStoreInterceptor() override;
 

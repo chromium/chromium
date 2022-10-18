@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -29,6 +30,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "net/base/features.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -74,9 +76,15 @@ class BlobRegistryImplTest : public testing::Test {
         data_dir_.GetPath(), data_dir_.GetPath(),
         base::ThreadPool::CreateTaskRunner({base::MayBlock()}));
     auto storage_policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
-    registry_impl_ = std::make_unique<BlobRegistryImpl>(
-        context_->AsWeakPtr(), url_registry_.AsWeakPtr(),
-        base::SequencedTaskRunnerHandle::Get());
+    if (base::FeatureList::IsEnabled(
+            net::features::kSupportPartitionedBlobUrl)) {
+      registry_impl_ =
+          std::make_unique<BlobRegistryImpl>(context_->AsWeakPtr());
+    } else {
+      registry_impl_ = std::make_unique<BlobRegistryImpl>(
+          context_->AsWeakPtr(), url_registry_.AsWeakPtr(),
+          base::SequencedTaskRunnerHandle::Get());
+    }
     auto delegate = std::make_unique<MockBlobRegistryDelegate>();
     delegate_ptr_ = delegate.get();
     registry_impl_->Bind(registry_.BindNewPipeAndPassReceiver(),

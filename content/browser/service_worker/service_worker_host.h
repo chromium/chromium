@@ -29,6 +29,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
@@ -112,6 +113,9 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
 
   void CreateBroadcastChannelProvider(
       mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
+
+  void CreateBlobUrlStoreProvider(
+      mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
 
   void CreateBucketManagerHost(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);

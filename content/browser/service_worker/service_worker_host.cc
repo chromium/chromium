@@ -26,6 +26,7 @@
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/origin_util.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "storage/browser/blob/blob_url_store_impl.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -186,6 +187,18 @@ void ServiceWorkerHost::CreateBroadcastChannelProvider(
       std::make_unique<BroadcastChannelProvider>(broadcast_channel_service,
                                                  version()->key()),
       std::move(receiver));
+}
+
+void ServiceWorkerHost::CreateBlobUrlStoreProvider(
+    mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver) {
+  auto* storage_partition_impl =
+      static_cast<StoragePartitionImpl*>(GetStoragePartition());
+  if (!storage_partition_impl) {
+    return;
+  }
+
+  storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
+      version()->key(), std::move(receiver));
 }
 
 void ServiceWorkerHost::CreateBucketManagerHost(

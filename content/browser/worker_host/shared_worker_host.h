@@ -35,6 +35,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
@@ -138,6 +139,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
   void CreateBroadcastChannelProvider(
       mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
+  void CreateBlobUrlStoreProvider(
+      mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
   void CreateBucketManagerHost(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
 

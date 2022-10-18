@@ -342,6 +342,14 @@ const base::FeatureParam<bool> kStorageAccessAPIAutoDenyOutsideFPS{
 BASE_FEATURE(kThirdPartyStoragePartitioning,
              "ThirdPartyStoragePartitioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Whether to use the new code paths needed to support partitioning Blob URLs.
+// This exists as a kill-switch in case an issue is identified with the Blob
+// URL implementation that causes breakage.
+// TODO(https://crbug.com/1261328): Once the renderer portion is implemented,
+// we will make this feature enabled by default.
+BASE_FEATURE(kSupportPartitionedBlobUrl,
+             "SupportPartitionedBlobUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAlpsParsing, "AlpsParsing", base::FEATURE_ENABLED_BY_DEFAULT);
 

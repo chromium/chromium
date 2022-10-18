@@ -112,6 +112,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-forward.h"
@@ -1908,6 +1909,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 
+  // For threaded worklets we expose an interface via BrowserInterfaceBrokers to
+  // bind `receiver` to a `BlobURLStore` instance, which implements the Blob URL
+  // API in the browser process. Note that this is only exposed when the
+  // kSupportPartitionedBlobUrl flag is enabled.
+  void BindBlobUrlStoreReceiver(
+      mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
+
   void BindInputInjectorReceiver(
       mojo::PendingReceiver<mojom::InputInjector> receiver);
 
@@ -3574,6 +3582,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreateBroadcastChannelProvider(
       mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
           receiver);
+
+  // For frames and main thread worklets we use a navigation-associated
+  // interface and bind `receiver` to a `BlobURLStore` instance, which
+  // implements the Blob URL API in the browser process. Note that this is only
+  // exposed when the kSupportPartitionedBlobUrl flag is enabled.
+  void BindBlobUrlStoreAssociatedReceiver(
+      mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver);
 
   TraceProto::LifecycleState LifecycleStateToProto() const;
 

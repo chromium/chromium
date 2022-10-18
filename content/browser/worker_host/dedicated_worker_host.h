@@ -29,6 +29,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
@@ -145,6 +146,8 @@ class DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
   void CreateBroadcastChannelProvider(
       mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
+  void CreateBlobUrlStoreProvider(
+      mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
   void CreateBucketManagerHost(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
 

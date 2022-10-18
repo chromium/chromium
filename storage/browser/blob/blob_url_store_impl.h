@@ -12,10 +12,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/blob/blob_storage_constants.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
-#include "url/origin.h"
 
 namespace storage {
 
@@ -25,7 +25,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
     : public blink::mojom::BlobURLStore {
  public:
   BlobURLStoreImpl(const blink::StorageKey& storage_key,
-                   base::WeakPtr<BlobUrlRegistry> registry);
+                   base::WeakPtr<BlobUrlRegistry> registry,
+                   BlobURLValidityCheckBehavior validity_check_options =
+                       BlobURLValidityCheckBehavior::DEFAULT);
 
   BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
   BlobURLStoreImpl& operator=(const BlobURLStoreImpl&) = delete;
@@ -52,12 +54,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
 
  private:
   // Checks if the passed in url is a valid blob url for this blob url store.
-  // Returns false and reports a bad mojo message if not.
+  // Returns false and reports a bad mojo message if not. Note that currently
+  // this function is only suitable to be called from `Register()` and
+  // `Revoke()`.
   bool BlobUrlIsValid(const GURL& url, const char* method) const;
 
   const blink::StorageKey storage_key_;
 
   base::WeakPtr<BlobUrlRegistry> registry_;
+
+  const BlobURLValidityCheckBehavior validity_check_behavior_;
 
   std::set<GURL> urls_;
 

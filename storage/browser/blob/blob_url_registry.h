@@ -12,9 +12,13 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/schemeful_site.h"
 #include "storage/browser/blob/blob_storage_constants.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 
 class GURL;
 
@@ -30,20 +34,46 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
 
   ~BlobUrlRegistry();
 
-  // Creates a url mapping from blob to the given url. Returns false if
-  // there already is a map for the URL.
+  // Binds receivers corresponding to connections from renderer frame
+  // contexts and stores them in `frame_receivers_`.
+  void AddReceiver(
+      const blink::StorageKey& storage_key,
+      mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver);
+
+  // Binds receivers corresponding to connections from renderer worker
+  // contexts and stores them in `worker_receivers_`.
+  void AddReceiver(const blink::StorageKey& storage_key,
+                   mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver,
+                   BlobURLValidityCheckBehavior validity_check_behavior =
+                       BlobURLValidityCheckBehavior::DEFAULT);
+
+  // Returns the receivers corresponding to renderer frame contexts for use in
+  // tests.
+  auto& receivers_for_testing() { return frame_receivers_; }
+
+  // Creates a URL mapping from blob to the given URL. Returns false if
+  // there already is a map for the URL. The URL mapping will be associated with
+  // the `storage_key`, and most subsequent URL lookup attempts will require a
+  // matching StorageKey to succeed (unless the kSupportPartitionedBlobUrl flag
+  // is disabled, in which case `storage_key` is not used).
   bool AddUrlMapping(
       const GURL& url,
       mojo::PendingRemote<blink::mojom::Blob> blob,
+      const blink::StorageKey& storage_key,
       // TODO(https://crbug.com/1224926): Remove these once experiment is over.
       const base::UnguessableToken& unsafe_agent_cluster_id,
       const absl::optional<net::SchemefulSite>& unsafe_top_level_site);
 
-  // Removes the given URL mapping. Returns false if the url wasn't mapped.
-  bool RemoveUrlMapping(const GURL& url);
+  // Removes the given URL mapping associated with `storage_key` (unless the
+  // kSupportPartitionedBlobUrl flag is disabled, in which case `storage_key` is
+  // not used). Returns false if the URL wasn't mapped.
+  bool RemoveUrlMapping(const GURL& url, const blink::StorageKey& storage_key);
 
-  // Returns if the url is mapped to a blob.
-  bool IsUrlMapped(const GURL& blob_url) const;
+  // Returns whether the URL is mapped to a blob and whether the URL is
+  // associated with `storage_key` (unless the kSupportPartitionedBlobUrl flag
+  // is disabled, in which case `storage_key` is not used).
+  bool IsUrlMapped(const GURL& blob_url,
+                   const blink::StorageKey& storage_key) const;
 
   // TODO(https://crbug.com/1224926): Remove this once experiment is over.
   absl::optional<base::UnguessableToken> GetUnsafeAgentClusterID(
@@ -65,6 +95,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
                        GURL* url,
                        mojo::PendingRemote<blink::mojom::Blob>* blob);
 
+  // Support adding a handler to be run when AddReceiver is called. This allows
+  // browser tests to intercept incoming BlobURLStore connections and swap in
+  // arbitrary BlobURLs to ensure that attempting to register certain blobs
+  // causes the renderer to be terminated.
+  using URLStoreCreationHook =
+      base::RepeatingCallback<void(BlobUrlRegistry*, mojo::ReceiverId)>;
+  static void SetURLStoreCreationHookForTesting(URLStoreCreationHook* hook);
+
   base::WeakPtr<BlobUrlRegistry> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -85,6 +123,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   std::map<base::UnguessableToken,
            std::pair<GURL, mojo::PendingRemote<blink::mojom::Blob>>>
       token_to_url_and_blob_;
+
+  std::map<GURL, blink::StorageKey> url_to_storage_key_;
+
+  // When the renderer uses the BlobUrlRegistry from a frame context or from a
+  // main thread worklet context, a navigation-associated interface is used to
+  // preserve message ordering. The receiver corresponding to that connection is
+  // an AssociatedReceiver and gets stored in `frame_receivers_`. For workers
+  // and threaded worklets, the receiver is a Receiver and gets stored in
+  // `worker_receivers_`.
+  mojo::UniqueAssociatedReceiverSet<blink::mojom::BlobURLStore>
+      frame_receivers_;
+  mojo::UniqueReceiverSet<blink::mojom::BlobURLStore> worker_receivers_;
 
   base::WeakPtrFactory<BlobUrlRegistry> weak_ptr_factory_{this};
 };

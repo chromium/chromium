@@ -41,6 +41,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
                    base::WeakPtr<BlobUrlRegistry> url_registry,
                    scoped_refptr<base::TaskRunner> url_registry_runner);
 
+  explicit BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context);
+
   BlobRegistryImpl(const BlobRegistryImpl&) = delete;
   BlobRegistryImpl& operator=(const BlobRegistryImpl&) = delete;
 

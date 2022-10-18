@@ -404,6 +404,7 @@ NET_EXPORT extern const base::FeatureParam<bool>
     kStorageAccessAPIAutoDenyOutsideFPS;
 
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
+NET_EXPORT BASE_DECLARE_FEATURE(kSupportPartitionedBlobUrl);
 
 // Whether ALPS parsing is on for any type of frame.
 NET_EXPORT BASE_DECLARE_FEATURE(kAlpsParsing);

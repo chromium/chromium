@@ -113,6 +113,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
+#include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -3871,12 +3872,27 @@ void UpdateUserActivationStateInterceptor::UpdateUserActivationState(
 }
 
 // static
-void BlobURLStoreInterceptor::Intercept(
+void BlobURLStoreInterceptor::InterceptDeprecated(
     GURL target_url,
     mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::BlobURLStore> receiver) {
+  DCHECK(
+      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
   auto interceptor = base::WrapUnique(new BlobURLStoreInterceptor(target_url));
   auto* raw_interceptor = interceptor.get();
   auto impl = receiver->SwapImplForTesting(std::move(interceptor));
+  raw_interceptor->url_store_ = std::move(impl);
+}
+
+// static
+void BlobURLStoreInterceptor::Intercept(GURL target_url,
+                                        storage::BlobUrlRegistry* registry,
+                                        mojo::ReceiverId receiver_id) {
+  DCHECK(
+      base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
+  auto interceptor = base::WrapUnique(new BlobURLStoreInterceptor(target_url));
+  auto* raw_interceptor = interceptor.get();
+  auto impl = registry->receivers_for_testing().SwapImplForTesting(
+      receiver_id, std::move(interceptor));
   raw_interceptor->url_store_ = std::move(impl);
 }
 

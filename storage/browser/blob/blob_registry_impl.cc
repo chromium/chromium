@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "net/base/features.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -496,7 +497,16 @@ BlobRegistryImpl::BlobRegistryImpl(
     scoped_refptr<base::TaskRunner> url_registry_runner)
     : context_(std::move(context)),
       url_registry_(std::move(url_registry)),
-      url_registry_runner_(std::move(url_registry_runner)) {}
+      url_registry_runner_(std::move(url_registry_runner)) {
+  DCHECK(
+      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
+}
+
+BlobRegistryImpl::BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context)
+    : context_(std::move(context)) {
+  DCHECK(
+      base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
+}
 
 BlobRegistryImpl::~BlobRegistryImpl() {
   // BlobBuilderFromStream needs to be aborted before it can be destroyed, but
@@ -618,6 +628,12 @@ void BlobRegistryImpl::URLStoreForOrigin(
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
   Delegate* delegate = receivers_.current_context().get();
   DCHECK(delegate);
+  if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
+    mojo::ReportBadMessage(
+        "BlobRegistryImpl::URLStoreForOrigin isn't available when the "
+        "kSupportPartitionedBlobUrl flag is enabled");
+    return;
+  }
   if (!origin.opaque() && !delegate->CanAccessDataForOrigin(origin)) {
     mojo::ReportBadMessage(
         "Cannot access data for origin passed to "
@@ -645,6 +661,8 @@ void BlobRegistryImpl::URLStoreForOrigin(
 // static
 void BlobRegistryImpl::SetURLStoreCreationHookForTesting(
     URLStoreCreationHook* hook) {
+  DCHECK(
+      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
   g_url_store_creation_hook = hook;
 }
 

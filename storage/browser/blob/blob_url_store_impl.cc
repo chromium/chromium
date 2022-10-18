@@ -5,9 +5,11 @@
 #include "storage/browser/blob/blob_url_store_impl.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/features.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "storage/browser/blob/blob_url_registry.h"
@@ -61,14 +63,24 @@ class BlobURLTokenImpl : public blink::mojom::BlobURLToken {
   const base::UnguessableToken token_;
 };
 
-BlobURLStoreImpl::BlobURLStoreImpl(const blink::StorageKey& storage_key,
-                                   base::WeakPtr<BlobUrlRegistry> registry)
-    : storage_key_(storage_key), registry_(std::move(registry)) {}
+BlobURLStoreImpl::BlobURLStoreImpl(
+    const blink::StorageKey& storage_key,
+    base::WeakPtr<BlobUrlRegistry> registry,
+    BlobURLValidityCheckBehavior validity_check_behavior)
+    : storage_key_(storage_key),
+      registry_(std::move(registry)),
+      validity_check_behavior_(validity_check_behavior) {
+  if (validity_check_behavior_ ==
+      BlobURLValidityCheckBehavior::ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH) {
+    DCHECK(base::FeatureList::IsEnabled(
+        net::features::kSupportPartitionedBlobUrl));
+  }
+}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
   if (registry_) {
     for (const auto& url : urls_)
-      registry_->RemoveUrlMapping(url);
+      registry_->RemoveUrlMapping(url, storage_key_);
   }
 }
 
@@ -79,16 +91,16 @@ void BlobURLStoreImpl::Register(
     const base::UnguessableToken& unsafe_agent_cluster_id,
     const absl::optional<net::SchemefulSite>& unsafe_top_level_site,
     RegisterCallback callback) {
-  // TODO(mek): Generate blob URLs here, rather than validating the URLs the
-  // renderer process generated.
+  // TODO(https://crbug.com/1376126): Generate blob URLs here, rather than
+  // validating the URLs the renderer process generated.
   if (!BlobUrlIsValid(url, "Register")) {
     std::move(callback).Run();
     return;
   }
 
   if (registry_)
-    registry_->AddUrlMapping(url, std::move(blob), unsafe_agent_cluster_id,
-                             unsafe_top_level_site);
+    registry_->AddUrlMapping(url, std::move(blob), storage_key_,
+                             unsafe_agent_cluster_id, unsafe_top_level_site);
   urls_.insert(url);
   std::move(callback).Run();
 }
@@ -98,7 +110,7 @@ void BlobURLStoreImpl::Revoke(const GURL& url) {
     return;
 
   if (registry_)
-    registry_->RemoveUrlMapping(url);
+    registry_->RemoveUrlMapping(url, storage_key_);
   urls_.erase(url);
 }
 
@@ -174,9 +186,15 @@ bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
   if (url_origin.scheme() == url::kFileScheme) {
     valid_origin = storage_key_origin.scheme() == url::kFileScheme;
   } else if (url_origin.opaque()) {
+    // TODO(https://crbug.com/1058759): Once `storage_key_` corresponds to an
+    // opaque origin under the circumstances described in the crbug, remove the
+    // ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH workaround here.
     valid_origin =
         storage_key_origin.opaque() ||
-        base::Contains(url::GetLocalSchemes(), storage_key_origin.scheme());
+        base::Contains(url::GetLocalSchemes(), storage_key_origin.scheme()) ||
+        validity_check_behavior_ ==
+            BlobURLValidityCheckBehavior::
+                ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH;
   } else {
     valid_origin = storage_key_origin == url_origin;
   }

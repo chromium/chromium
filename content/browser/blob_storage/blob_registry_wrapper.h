@@ -31,6 +31,9 @@ class BlobRegistryWrapper
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
       base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry);
 
+  static scoped_refptr<BlobRegistryWrapper> Create(
+      scoped_refptr<ChromeBlobStorageContext> blob_storage_context);
+
   void Bind(int process_id,
             mojo::PendingReceiver<blink::mojom::BlobRegistry> receiver);
 
@@ -40,9 +43,12 @@ class BlobRegistryWrapper
   friend class base::DeleteHelper<BlobRegistryWrapper>;
   ~BlobRegistryWrapper();
 
-  void InitializeOnIOThread(
+  void InitializeOnIOThreadDeprecated(
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
       base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry);
+
+  void InitializeOnIOThread(
+      scoped_refptr<ChromeBlobStorageContext> blob_storage_context);
 
   std::unique_ptr<storage::BlobRegistryImpl> blob_registry_;
 };
