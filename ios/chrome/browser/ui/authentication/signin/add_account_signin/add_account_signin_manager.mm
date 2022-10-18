@@ -109,7 +109,7 @@
     signinResult = SigninCoordinatorResultInterrupted;
     identity = nil;
   } else if (error) {
-    // Filter out errors handled internally by ChromeIdentity.
+    // Filter out errors handled internally by `identity`.
     if (ShouldHandleSigninError(error)) {
       [self.delegate addAccountSigninManagerFailedWithError:error];
       return;

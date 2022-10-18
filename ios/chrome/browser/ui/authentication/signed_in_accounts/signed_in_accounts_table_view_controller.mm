@@ -110,7 +110,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark Private
 
-// Creates an item and sets all the values based on a ChromeIdentity.
+// Creates an item and sets all the values based on `identity`.
 - (TableViewIdentityItem*)accountItem:(id<SystemIdentity>)identity {
   TableViewIdentityItem* item =
       [[TableViewIdentityItem alloc] initWithType:ItemTypeAccount];
@@ -119,7 +119,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return item;
 }
 
-// Updates an item based on a ChromeIdentity.
+// Updates an item based on `identity`.
 - (void)updateAccountItem:(TableViewIdentityItem*)item
              withIdentity:(id<SystemIdentity>)identity {
   item.gaiaID = identity.gaiaID;

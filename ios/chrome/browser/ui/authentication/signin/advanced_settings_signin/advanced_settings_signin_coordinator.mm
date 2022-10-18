@@ -185,7 +185,7 @@ using l10n_util::GetNSString;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       (signinResult == SigninCoordinatorResultSuccess)
           ? authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
           : nil;
