@@ -34,7 +34,7 @@ def CheckAttributionStorageSchemaModification(input_api, output_api):
 
     if basename == 'attribution_storage_sql.cc':
       for (_, line) in affected_file.ChangedContents():
-        if 'const int kCurrentVersionNumber' in line:
+        if 'const int AttributionStorageSql::kCurrentVersionNumber' in line:
           database_version_changed = True
           break
 
