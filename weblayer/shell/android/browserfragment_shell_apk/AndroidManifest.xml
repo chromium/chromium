@@ -25,6 +25,12 @@ found in the LICENSE file.
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name="InstrumentationActivity"
+                  android:launchMode="singleTask"
+                  android:theme="@style/ShellTheme"
+                  android:windowSoftInputMode="adjustResize"
+                  android:exported="true">
+        </activity>
 
         <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
 
