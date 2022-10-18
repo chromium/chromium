@@ -25,6 +25,13 @@ export enum DialogType {
   CANVAS = 'canvas-dialog',
 }
 
+// The touch event type enum.
+export enum TouchEventType {
+  START = 'touchstart',
+  MOVE = 'touchmove',
+  END = 'touchend',
+}
+
 // The x and y coordinates to describe the touch location.
 interface Point {
   x: number;
@@ -128,6 +135,39 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     const ctx = canvas.getContext('2d');
     assert(ctx);
     this.drawingProvider = new CanvasDrawingProvider(ctx);
+    this.observeDataSource(canvas);
+  }
+
+  /**
+   * This is the only place that deals with Touch API.
+   * In future enhancement to use evdev as data source, this is the place
+   * to interact with mojo interface.
+   */
+  private observeDataSource(canvas: HTMLCanvasElement): void {
+    for (const eventType
+             of [TouchEventType.START, TouchEventType.MOVE,
+                 TouchEventType.END]) {
+      canvas.addEventListener(eventType, (e: Event) => {
+        e.preventDefault();
+        for (let i = 0; i < (e as TouchEvent).changedTouches.length; i++) {
+          const currentTouch = (e as TouchEvent).changedTouches[i];
+          const touchPt = {
+            x: currentTouch.pageX - canvas.offsetLeft,
+            y: currentTouch.pageY - canvas.offsetTop,
+          };
+
+          // Call corresponding function to handle those events.
+          if (eventType === TouchEventType.START) {
+            this.onDrawStart(
+                currentTouch.identifier, touchPt, currentTouch.force);
+          } else if (eventType === TouchEventType.MOVE) {
+            this.onDraw(currentTouch.identifier, touchPt, currentTouch.force);
+          } else if (eventType === TouchEventType.END) {
+            this.onDrawEnd(currentTouch.identifier, touchPt);
+          }
+        }
+      });
+    }
   }
 
   /**

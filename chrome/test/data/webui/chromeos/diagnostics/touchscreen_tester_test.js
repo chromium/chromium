@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogType, SCREEN_MAX_LENGTH} from 'chrome://diagnostics/touchscreen_tester.js';
+import {DialogType, SCREEN_MAX_LENGTH, TouchEventType} from 'chrome://diagnostics/touchscreen_tester.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertTrue} from '../../chai_assert.js';
@@ -123,13 +123,13 @@ export function touchscreenTesterTestSuite() {
     const expectedTouches = new Map();
     const mockTouchEvents = [
       {
-        type: 'touchstart',
+        type: TouchEventType.START,
         id: 1,
         point: {x: 100, y: 150},
         pressure: 40,
       },
       {
-        type: 'touchmove',
+        type: TouchEventType.MOVE,
         id: 1,
         point: {x: 110, y: 160},
         pressure: 30,
@@ -137,11 +137,11 @@ export function touchscreenTesterTestSuite() {
     ];
 
     for (const {type, id, point, pressure} of mockTouchEvents) {
-      if (type === 'touchstart') {
+      if (type === TouchEventType.START) {
         mockDrawTrail.addExpectation(
             point.x - 1, point.y, point.x, point.y, pressure);
         touchscreenTesterElement.onDrawStart(id, point, pressure);
-      } else if (type === 'touchmove') {
+      } else if (type === TouchEventType.MOVE) {
         const previousPt = expectedTouches.get(id);
         mockDrawTrail.addExpectation(
             previousPt.x, previousPt.y, point.x, point.y, pressure);
@@ -169,19 +169,19 @@ export function touchscreenTesterTestSuite() {
     const expectedTouches = new Map();
     const mockTouchEvents = [
       {
-        type: 'touchstart',
+        type: TouchEventType.START,
         id: 1,
         point: {x: 100, y: 150},
         pressure: 40,
       },
       {
-        type: 'touchmove',
+        type: TouchEventType.MOVE,
         id: 1,
         point: {x: 110, y: 160},
         pressure: 30,
       },
       {
-        type: 'touchend',
+        type: TouchEventType.END,
         id: 1,
         point: {x: 110, y: 160},
         pressure: 30,
@@ -189,25 +189,63 @@ export function touchscreenTesterTestSuite() {
     ];
 
     for (const {type, id, point, pressure} of mockTouchEvents) {
-      if (type === 'touchstart') {
+      if (type === TouchEventType.START) {
         mockDrawTrailMark.addExpectation(point.x, point.y);
         mockDrawTrail.addExpectation(
             point.x - 1, point.y, point.x, point.y, pressure);
         touchscreenTesterElement.onDrawStart(id, point, pressure);
         expectedTouches.set(id, point);
-      } else if (type === 'touchmove') {
+      } else if (type === TouchEventType.MOVE) {
         const previousPt = expectedTouches.get(id);
         mockDrawTrail.addExpectation(
             previousPt.x, previousPt.y, point.x, point.y, pressure);
         touchscreenTesterElement.onDraw(id, point, pressure);
         expectedTouches.set(id, point);
-      } else if (type === 'touchend') {
+      } else if (type === TouchEventType.END) {
         mockDrawTrailMark.addExpectation(point.x, point.y);
         touchscreenTesterElement.onDrawEnd(id, point);
         expectedTouches.delete(id);
       }
 
       assertDeepEquals(expectedTouches, touchscreenTesterElement.getTouches());
+      mockController.verifyMocks();
+    }
+  });
+
+  test('ObserveDataSource', async () => {
+    await initializeTouchscreenTester();
+    const canvasDialog = await openTester();
+    const canvas = canvasDialog.querySelector('canvas');
+    const mockController = new MockController();
+
+    // Create a mock touch.
+    const touch = new Touch({
+      identifier: 1,
+      target: canvas,
+      pageX: 300,
+      pageY: 200,
+      force: 0.3,
+    });
+    const expectedTouchPt = {
+      x: touch.pageX - canvas.offsetLeft,
+      y: touch.pageY - canvas.offsetTop,
+    };
+
+    for (const [eventType, mockFunctionName] of [
+             [TouchEventType.START, 'onDrawStart'],
+             [TouchEventType.MOVE, 'onDraw'],
+             [TouchEventType.END, 'onDrawEnd']]) {
+      const mockFunction = mockController.createFunctionMock(
+          touchscreenTesterElement, mockFunctionName);
+      if (mockFunctionName === 'onDrawEnd') {
+        mockFunction.addExpectation(touch.identifier, expectedTouchPt);
+      } else {
+        mockFunction.addExpectation(
+            touch.identifier, expectedTouchPt, touch.force);
+      }
+
+      const touchEvent = new TouchEvent(eventType, {changedTouches: [touch]});
+      canvas.dispatchEvent(touchEvent);
       mockController.verifyMocks();
     }
   });
