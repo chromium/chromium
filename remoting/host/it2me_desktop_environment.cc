@@ -23,6 +23,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
+#include "components/user_manager/user_manager.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/curtain_mode_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -94,6 +95,15 @@ bool It2MeDesktopEnvironment::InitializeCurtainMode() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kEnableCrdAdminRemoteAccess)) {
     if (desktop_environment_options().enable_curtaining()) {
+      const auto* user_manager = user_manager::UserManager::Get();
+      // Don't allow the remote admin to hijack and curtain off a user's
+      // session.
+      if (user_manager->IsUserLoggedIn()) {
+        LOG(ERROR) << "Failed to activate curtain mode because a user is "
+                      "currently logged in.";
+        return false;
+      }
+
       curtain_mode_ = std::make_unique<CurtainModeChromeOs>(ui_task_runner());
       if (!curtain_mode_->Activate()) {
         LOG(ERROR) << "Failed to activate the curtain mode.";

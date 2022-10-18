@@ -45,4 +45,7 @@ specific_include_rules = {
   ".*wayland.*\.(h|cc)": [
     "+third_party/wayland-protocols",
   ],
+  "it2me_desktop_environment*": [
+    "+components/user_manager"
+  ],
 }

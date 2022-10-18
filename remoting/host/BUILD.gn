@@ -848,6 +848,7 @@ source_set("unit_tests") {
       "it2me/it2me_confirmation_dialog_chromeos_unittest.cc",
     ]
     deps += [
+      "//components/user_manager:test_support",
       "//remoting/host/chromeos",
       "//remoting/host/chromeos:features",
       "//remoting/host/chromeos:reporter_unit_tests",

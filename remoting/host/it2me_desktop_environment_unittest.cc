@@ -20,14 +20,25 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/scoped_fake_ash_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace remoting {
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kTestEmail[] = "test@localhost";
+#endif
+
+}  // namespace
 namespace {
 
 using ::testing::Eq;
+using ::testing::IsNull;
 
 class FakeClientSessionControl : public ClientSessionControl {
  public:
@@ -105,7 +116,13 @@ class FakeSecurityCurtainController
 
 class It2MeDesktopEnvironmentTest : public ::testing::Test {
  public:
-  It2MeDesktopEnvironmentTest() = default;
+#if BUILDFLAG(IS_CHROMEOS)
+  It2MeDesktopEnvironmentTest()
+      : scoped_user_manager_(std::make_unique<user_manager::FakeUserManager>()),
+        fake_user_manager_(*static_cast<user_manager::FakeUserManager*>(
+            user_manager::UserManager::Get())) {}
+#endif
+
   ~It2MeDesktopEnvironmentTest() override = default;
 
   void SetUp() override {
@@ -155,6 +172,22 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
   }
 
   test::ScopedFakeAshProxy& ash_proxy() { return ash_proxy_; }
+
+  user_manager::FakeUserManager& user_manager() { return *fake_user_manager_; }
+
+  void LogInUser() {
+    auto account_id = AccountId::FromUserEmail(kTestEmail);
+    user_manager().AddPublicAccountUser(account_id);
+    user_manager().UserLoggedIn(account_id, account_id.GetUserEmail(), false,
+                                false);
+  }
+
+  void LogOutUser() {
+    user_manager().LogoutAllUsers();
+    auto account_id = AccountId::FromUserEmail(kTestEmail);
+    user_manager().RemoveUserFromList(account_id);
+  }
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
@@ -167,6 +200,9 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
   FakeSecurityCurtainController security_curtain_controller_;
   test::ScopedFakeAshProxy ash_proxy_{&security_curtain_controller_};
+
+  user_manager::ScopedUserManager scoped_user_manager_;
+  const raw_ref<user_manager::FakeUserManager> fake_user_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
@@ -274,8 +310,8 @@ TEST_F(It2MeDesktopEnvironmentTest,
 
 TEST_F(It2MeDesktopEnvironmentTest,
        ShouldNotLogoutUserInDestructorIfCurtainModeIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnableCrdAdminRemoteAccess);
+  base::test::ScopedFeatureList feature_list{
+      features::kEnableCrdAdminRemoteAccess};
   DesktopEnvironmentOptions options(default_options());
 
   options.set_enable_curtaining(false);
@@ -284,6 +320,28 @@ TEST_F(It2MeDesktopEnvironmentTest,
   desktop_environment = nullptr;
 
   FlushUiSequence();
+  EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
+}
+
+TEST_F(It2MeDesktopEnvironmentTest,
+       ShouldRefuseCurtainSessionIfUserIsLoggedIn) {
+  base::test::ScopedFeatureList feature_list{
+      features::kEnableCrdAdminRemoteAccess};
+
+  LogInUser();
+  auto desktop_environment = CreateCurtainedSession();
+
+  EXPECT_THAT(desktop_environment, IsNull());
+}
+
+TEST_F(It2MeDesktopEnvironmentTest,
+       ShouldNotForceLogoutUserIfInitializeCurtainModeFails) {
+  base::test::ScopedFeatureList feature_list{
+      features::kEnableCrdAdminRemoteAccess};
+
+  LogInUser();
+  auto desktop_environment = CreateCurtainedSession();
+
   EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
