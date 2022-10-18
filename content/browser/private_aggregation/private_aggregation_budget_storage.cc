@@ -38,7 +38,6 @@ constexpr char kBudgetsTableName[] = "private_aggregation_api_budgets";
 // When updating the database's schema, please increment the schema version.
 // This will raze the database. This is not necessary for backwards-compatible
 // updates to the proto format.
-// TODO(crbug.com/1335490): Add presubmit to enforce updating.
 constexpr int kCurrentSchemaVersion = 1;
 
 }  // namespace
