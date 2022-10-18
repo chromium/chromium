@@ -127,7 +127,6 @@ using OnDidRenderPrintedDocumentCallback =
 using OnDidDocumentDoneCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
 using OnDidShowErrorDialog = base::RepeatingCallback<void()>;
-using OnStopCallback = base::RepeatingCallback<void()>;
 
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
@@ -2418,7 +2417,6 @@ class TestPrintJobWorker : public PrintJobWorker {
   struct PrintCallbacks {
     OnUseDefaultSettingsCallback did_use_default_settings_callback;
     OnGetSettingsWithUICallback did_get_settings_with_ui_callback;
-    OnStopCallback did_stop_callback;
   };
 
   TestPrintJobWorker(content::GlobalRenderFrameHostId rfh_id,
@@ -2443,12 +2441,6 @@ class TestPrintJobWorker : public PrintJobWorker {
     PrintJobWorker::GetSettingsWithUI(document_page_count, has_selection,
                                       is_scripted, std::move(callback));
     callbacks_->did_get_settings_with_ui_callback.Run();
-  }
-
-  void Stop() override {
-    DVLOG(1) << "Observed: stop print job worker";
-    PrintJobWorker::Stop();
-    callbacks_->did_stop_callback.Run();
   }
 
   raw_ptr<PrintCallbacks> callbacks_;
@@ -2479,13 +2471,10 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
     OnDidRenderPrintedDocumentCallback did_render_printed_document_callback;
     OnDidDocumentDoneCallback did_document_done_callback;
 
-    // The exceptions to the callback steps are `did_show_error_dialog` and
-    // `did_stop_callback`.  For `did_stop_callback` there is no result code
-    // provided to it and thus no need to call `error_check_callback`.  For
+    // The exception to the callback steps is `did_show_error_dialog`.  For
     // `did_show_error_dialog` there is only the need to propagate the
     // notification that it happened, no other calls will be needed.
     OnDidShowErrorDialog did_show_error_dialog;
-    OnStopCallback did_stop_callback;
   };
 
   TestPrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
@@ -2563,12 +2552,6 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
     callbacks_->did_show_error_dialog.Run();
   }
 
-  void Stop() override {
-    DVLOG(1) << "Observed: stop print job worker";
-    PrintJobWorkerOop::Stop();
-    callbacks_->did_stop_callback.Run();
-  }
-
   raw_ptr<PrintCallbacks> callbacks_;
 };
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -2632,10 +2615,6 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnDidShowErrorDialog,
               base::Unretained(this));
-      test_print_job_worker_oop_callbacks_.did_stop_callback =
-          base::BindRepeating(
-              &SystemAccessProcessPrintBrowserTestBase::OnDidStop,
-              base::Unretained(this));
     } else {
       test_print_job_worker_callbacks_.did_use_default_settings_callback =
           base::BindRepeating(
@@ -2645,9 +2624,6 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnGetSettingsWithUI,
               base::Unretained(this));
-      test_print_job_worker_callbacks_.did_stop_callback = base::BindRepeating(
-          &SystemAccessProcessPrintBrowserTestBase::OnDidStop,
-          base::Unretained(this));
     }
     test_create_print_job_worker_callback_ = base::BindRepeating(
         &SystemAccessProcessPrintBrowserTestBase::CreatePrintJobWorker,
@@ -2818,8 +2794,6 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
 
   bool error_dialog_shown() const { return error_dialog_shown_; }
 
-  bool stop_invoked() const { return stop_invoked_; }
-
   int print_job_construction_count() const {
     return print_job_construction_count_;
   }
@@ -2913,7 +2887,10 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
     CheckForQuit();
   }
 
-  void OnDidStop() { stop_invoked_ = true; }
+  void OnDidDestroyPrintJob() {
+    ++print_job_destruction_count_;
+    CheckForQuit();
+  }
 
   void ResetForNoAccessDeniedErrors() {
     // Don't do the reset if test scenario is repeatedly return errors.
@@ -2959,7 +2936,6 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
       mojom::ResultCode::kFailed;
   mojom::ResultCode document_done_result_ = mojom::ResultCode::kFailed;
   bool error_dialog_shown_ = false;
-  bool stop_invoked_ = false;
   int print_job_construction_count_ = 0;
   int print_job_destruction_count_ = 0;
 };
