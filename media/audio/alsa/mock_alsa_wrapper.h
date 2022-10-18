@@ -169,7 +169,19 @@ class MockAlsaWrapper : public AlsaWrapper {
                    long* value));
   MOCK_METHOD3(MixerSelemGetPlaybackVolumeRange,
                int(snd_mixer_elem_t* elem, long* min, long* max));
+  MOCK_METHOD(int,
+              MixerSelemAskPlaybackVolDb,
+              (snd_mixer_elem_t * elem, long value, long* db_value),
+              (override));
+  MOCK_METHOD(int,
+              MixerSelemAskPlaybackDbVol,
+              (snd_mixer_elem_t * elem, long db_value, long* value),
+              (override));
   MOCK_METHOD1(MixerSelemHasPlaybackSwitch, int(snd_mixer_elem_t* elem));
+  MOCK_METHOD(int,
+              MixerSelemHasPlaybackVolume,
+              (snd_mixer_elem_t * elem),
+              (override));
   MOCK_METHOD2(MixerSelemIdSetIndex,
                void(snd_mixer_selem_id_t* obj, unsigned int val));
   MOCK_METHOD2(MixerSelemIdSetName,
@@ -178,6 +190,10 @@ class MockAlsaWrapper : public AlsaWrapper {
                int(snd_mixer_elem_t* elem,
                    snd_mixer_selem_channel_id_t channel,
                    int value));
+  MOCK_METHOD(int,
+              MixerSelemSetPlaybackSwitchAll,
+              (snd_mixer_elem_t * elem, int value),
+              (override));
   MOCK_METHOD2(MixerSelemSetPlaybackVolumeAll,
                int(snd_mixer_elem_t* elem, long value));
   MOCK_METHOD1(MixerSelemIdMalloc, int(snd_mixer_selem_id_t** ptr));
