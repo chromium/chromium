@@ -8611,31 +8611,6 @@
             ]
         }
     ],
-    "ProcessHtmlDataImmediately": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AllChunks",
-                    "params": {
-                        "first": "true",
-                        "rest": "true"
-                    },
-                    "enable_features": [
-                        "ProcessHtmlDataImmediately"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProductivityLauncherStudy": [
         {
             "platforms": [
