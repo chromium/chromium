@@ -520,7 +520,7 @@ void DemoSetupController::LoadDemoResourcesCrOSComponent() {
     return;
   }
 
-  demo_resources_->EnsureLoaded(
+  demo_resources_->EnsureResourcesLoaded(
       base::BindOnce(&DemoSetupController::OnDemoResourcesCrOSComponentLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -534,10 +534,10 @@ void DemoSetupController::OnDemoResourcesCrOSComponentLoaded() {
                                  download_duration);
   SetCurrentSetupStep(DemoSetupStep::kEnrollment);
 
-  if (demo_resources_->component_error().value() !=
+  if (demo_resources_->resources_component_error().value() !=
       component_updater::CrOSComponentManager::Error::NONE) {
     SetupFailed(DemoSetupError::CreateFromComponentError(
-        demo_resources_->component_error().value()));
+        demo_resources_->resources_component_error().value()));
     return;
   }
 

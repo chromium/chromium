@@ -54,27 +54,27 @@ DemoResources::~DemoResources() = default;
 
 base::FilePath DemoResources::GetAbsolutePath(
     const base::FilePath& relative_path) const {
-  if (path_.empty())
+  if (resources_component_path_.empty())
     return base::FilePath();
   if (relative_path.ReferencesParent())
     return base::FilePath();
-  return path_.Append(relative_path);
+  return resources_component_path_.Append(relative_path);
 }
 
-base::FilePath DemoResources::GetDemoAppsPath() const {
-  if (path_.empty())
+base::FilePath DemoResources::GetDemoAndroidAppsPath() const {
+  if (resources_component_path_.empty())
     return base::FilePath();
-  return path_.Append(kDemoAppsPath);
+  return resources_component_path_.Append(kDemoAppsPath);
 }
 
 base::FilePath DemoResources::GetExternalExtensionsPrefsPath() const {
-  if (path_.empty())
+  if (resources_component_path_.empty())
     return base::FilePath();
-  return path_.Append(kExternalExtensionsPrefsPath);
+  return resources_component_path_.Append(kExternalExtensionsPrefsPath);
 }
 
-void DemoResources::EnsureLoaded(base::OnceClosure load_callback) {
-  if (loaded_) {
+void DemoResources::EnsureResourcesLoaded(base::OnceClosure load_callback) {
+  if (resources_loaded_) {
     if (load_callback)
       std::move(load_callback).Run();
     return;
@@ -83,9 +83,9 @@ void DemoResources::EnsureLoaded(base::OnceClosure load_callback) {
   if (load_callback)
     load_callbacks_.emplace_back(std::move(load_callback));
 
-  if (load_requested_)
+  if (resources_load_requested_)
     return;
-  load_requested_ = true;
+  resources_load_requested_ = true;
 
   auto cros_component_manager =
       g_browser_process->platform_part()->cros_component_manager();
@@ -115,16 +115,16 @@ void DemoResources::SetPreinstalledOfflineResourcesLoadedForTesting(
 void DemoResources::InstalledComponentLoaded(
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
-  component_error_ = error;
+  resources_component_error_ = error;
   OnDemoResourcesLoaded(absl::make_optional(path));
 }
 
 void DemoResources::OnDemoResourcesLoaded(
     absl::optional<base::FilePath> mounted_path) {
-  loaded_ = true;
+  resources_loaded_ = true;
 
   if (mounted_path.has_value())
-    path_ = mounted_path.value();
+    resources_component_path_ = mounted_path.value();
 
   std::list<base::OnceClosure> load_callbacks;
   load_callbacks.swap(load_callbacks_);

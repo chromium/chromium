@@ -23,7 +23,7 @@ namespace {
 
 using ::component_updater::FakeCrOSComponentManager;
 
-constexpr char kOfflineResourcesComponent[] = "demo-mode-resources";
+constexpr char kResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
     "/run/imageloader/demo_mode_resources";
 constexpr char kDemoAppsImageFile[] = "android_demo_apps.squash";
@@ -52,14 +52,13 @@ class DemoResourcesTest : public testing::Test {
   }
 
  protected:
-  bool FinishResourcesComponentLoad(const base::FilePath& mount_path) {
-    EXPECT_TRUE(
-        cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-    EXPECT_TRUE(
-        cros_component_manager_->UpdateRequested(kOfflineResourcesComponent));
+  bool FinishComponentLoad(const std::string& component_name,
+                           const base::FilePath& mount_path) {
+    EXPECT_TRUE(cros_component_manager_->HasPendingInstall(component_name));
+    EXPECT_TRUE(cros_component_manager_->UpdateRequested(component_name));
 
     return cros_component_manager_->FinishLoadRequest(
-        kOfflineResourcesComponent,
+        component_name,
         FakeCrOSComponentManager::ComponentInfo(
             component_updater::CrOSComponentManager::Error::NONE,
             base::FilePath("/dev/null"), mount_path));
@@ -70,7 +69,7 @@ class DemoResourcesTest : public testing::Test {
         base::MakeRefCounted<FakeCrOSComponentManager>();
     fake_cros_component_manager->set_queue_load_requests(true);
     fake_cros_component_manager->set_supported_components(
-        {kOfflineResourcesComponent});
+        {kResourcesComponent});
     cros_component_manager_ = fake_cros_component_manager.get();
 
     browser_process_platform_part_test_api_.InitializeCrosComponentManager(
@@ -86,16 +85,16 @@ class DemoResourcesTest : public testing::Test {
 
 TEST_F(DemoResourcesTest, GetPaths) {
   DemoResources demo_resources(DemoSession::DemoModeConfig::kOnline);
-  demo_resources.EnsureLoaded(base::DoNothing());
-  EXPECT_FALSE(demo_resources.loaded());
+  demo_resources.EnsureResourcesLoaded(base::DoNothing());
+  EXPECT_FALSE(demo_resources.resources_component_loaded());
 
   const base::FilePath component_mount_point =
       base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
+  ASSERT_TRUE(FinishComponentLoad(kResourcesComponent, component_mount_point));
 
-  EXPECT_TRUE(demo_resources.loaded());
+  EXPECT_TRUE(demo_resources.resources_component_loaded());
   EXPECT_EQ(component_mount_point.AppendASCII(kDemoAppsImageFile),
-            demo_resources.GetDemoAppsPath());
+            demo_resources.GetDemoAndroidAppsPath());
   EXPECT_EQ(component_mount_point.AppendASCII(kExternalExtensionsPrefsFile),
             demo_resources.GetExternalExtensionsPrefsPath());
   EXPECT_EQ(component_mount_point.AppendASCII("foo.txt"),
@@ -110,60 +109,58 @@ TEST_F(DemoResourcesTest, GetPaths) {
       demo_resources.GetAbsolutePath(base::FilePath("foo/../bar")).empty());
 }
 
-TEST_F(DemoResourcesTest, LoadResourcesOnline) {
+TEST_F(DemoResourcesTest, LoadResourcesComponent) {
   DemoResources demo_resources(DemoSession::DemoModeConfig::kOnline);
-  demo_resources.EnsureLoaded(base::DoNothing());
+  demo_resources.EnsureResourcesLoaded(base::DoNothing());
 
-  EXPECT_FALSE(demo_resources.loaded());
+  EXPECT_FALSE(demo_resources.resources_component_loaded());
 
-  ASSERT_TRUE(FinishResourcesComponentLoad(
-      base::FilePath(kTestDemoModeResourcesMountPoint)));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-  EXPECT_TRUE(demo_resources.loaded());
+  ASSERT_TRUE(FinishComponentLoad(
+      kResourcesComponent, base::FilePath(kTestDemoModeResourcesMountPoint)));
+  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kResourcesComponent));
+  EXPECT_TRUE(demo_resources.resources_component_loaded());
 }
 
-TEST_F(DemoResourcesTest, EnsureLoadedRepeatedlyOnline) {
+TEST_F(DemoResourcesTest, EnsureResourcesLoadedRepeatedly) {
   DemoResources demo_resources(DemoSession::DemoModeConfig::kOnline);
 
   bool first_callback_called = false;
-  demo_resources.EnsureLoaded(
+  demo_resources.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &first_callback_called));
 
   bool second_callback_called = false;
-  demo_resources.EnsureLoaded(
+  demo_resources.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &second_callback_called));
 
   bool third_callback_called = false;
-  demo_resources.EnsureLoaded(
+  demo_resources.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &third_callback_called));
 
-  EXPECT_FALSE(demo_resources.loaded());
+  EXPECT_FALSE(demo_resources.resources_component_loaded());
   EXPECT_FALSE(first_callback_called);
   EXPECT_FALSE(second_callback_called);
   EXPECT_FALSE(third_callback_called);
 
-  ASSERT_TRUE(FinishResourcesComponentLoad(
-      base::FilePath(kTestDemoModeResourcesMountPoint)));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
+  ASSERT_TRUE(FinishComponentLoad(
+      kResourcesComponent, base::FilePath(kTestDemoModeResourcesMountPoint)));
+  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kResourcesComponent));
 
-  EXPECT_TRUE(demo_resources.loaded());
+  EXPECT_TRUE(demo_resources.resources_component_loaded());
   EXPECT_TRUE(first_callback_called);
   EXPECT_TRUE(second_callback_called);
   EXPECT_TRUE(third_callback_called);
 
   bool fourth_callback_called = false;
-  demo_resources.EnsureLoaded(
+  demo_resources.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &fourth_callback_called));
   EXPECT_TRUE(fourth_callback_called);
 
   bool fifth_callback_called = false;
-  demo_resources.EnsureLoaded(
+  demo_resources.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &fifth_callback_called));
   EXPECT_TRUE(fifth_callback_called);
 
-  EXPECT_TRUE(demo_resources.loaded());
+  EXPECT_TRUE(demo_resources.resources_component_loaded());
 }
 
 }  // namespace

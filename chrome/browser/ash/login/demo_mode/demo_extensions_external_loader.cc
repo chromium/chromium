@@ -120,7 +120,7 @@ void DemoExtensionsExternalLoader::OnExtensionListsUpdated(
 
 void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
   DemoSession* demo_session = DemoSession::Get();
-  DCHECK(demo_session->resources()->loaded());
+  DCHECK(demo_session->resources()->resources_component_loaded());
 
   base::FilePath demo_extension_list =
       demo_session->resources()->GetExternalExtensionsPrefsPath();

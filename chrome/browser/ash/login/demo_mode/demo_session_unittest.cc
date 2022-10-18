@@ -46,7 +46,7 @@ namespace {
 
 using ::component_updater::FakeCrOSComponentManager;
 
-constexpr char kOfflineResourcesComponent[] = "demo-mode-resources";
+constexpr char kResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
     "/run/imageloader/demo_mode_resources";
 
@@ -90,12 +90,11 @@ class DemoSessionTest : public testing::Test {
  protected:
   bool FinishResourcesComponentLoad(const base::FilePath& mount_path) {
     EXPECT_TRUE(
-        cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-    EXPECT_TRUE(
-        cros_component_manager_->UpdateRequested(kOfflineResourcesComponent));
+        cros_component_manager_->HasPendingInstall(kResourcesComponent));
+    EXPECT_TRUE(cros_component_manager_->UpdateRequested(kResourcesComponent));
 
     return cros_component_manager_->FinishLoadRequest(
-        kOfflineResourcesComponent,
+        kResourcesComponent,
         FakeCrOSComponentManager::ComponentInfo(
             component_updater::CrOSComponentManager::Error::NONE,
             base::FilePath("/dev/null"), mount_path));
@@ -106,7 +105,7 @@ class DemoSessionTest : public testing::Test {
         base::MakeRefCounted<FakeCrOSComponentManager>();
     fake_cros_component_manager->set_queue_load_requests(true);
     fake_cros_component_manager->set_supported_components(
-        {kOfflineResourcesComponent});
+        {kResourcesComponent});
     cros_component_manager_ = fake_cros_component_manager.get();
 
     browser_process_platform_part_test_api_.InitializeCrosComponentManager(
@@ -159,8 +158,7 @@ TEST_F(DemoSessionTest, StartForDemoDeviceNotInDemoMode) {
   EXPECT_FALSE(DemoSession::StartIfInDemoMode());
   EXPECT_FALSE(DemoSession::Get());
 
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
+  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kResourcesComponent));
 }
 
 TEST_F(DemoSessionTest, ShutdownResetsInstance) {

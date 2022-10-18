@@ -23,7 +23,7 @@ void ArcDemoModeDelegateImpl::EnsureResourcesLoaded(
 base::FilePath ArcDemoModeDelegateImpl::GetDemoAppsPath() {
   if (!ash::DemoSession::IsDeviceInDemoMode())
     return base::FilePath();
-  return ash::DemoSession::Get()->resources()->GetDemoAppsPath();
+  return ash::DemoSession::Get()->resources()->GetDemoAndroidAppsPath();
 }
 
 }  // namespace arc

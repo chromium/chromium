@@ -1329,9 +1329,9 @@ void ArcSessionManager::StartArc() {
   const auto* demo_session = ash::DemoSession::Get();
   params.is_demo_session = demo_session && demo_session->started();
   if (params.is_demo_session) {
-    DCHECK(demo_session->resources()->loaded());
+    DCHECK(demo_session->resources()->resources_component_loaded());
     params.demo_session_apps_path =
-        demo_session->resources()->GetDemoAppsPath();
+        demo_session->resources()->GetDemoAndroidAppsPath();
   }
 
   params.management_transition = GetManagementTransition(profile_);

@@ -46,7 +46,7 @@ class DemoResources {
 
   // Gets the path of the image containing demo session Android apps. The path
   // will be set when the demo resources get loaded.
-  base::FilePath GetDemoAppsPath() const;
+  base::FilePath GetDemoAndroidAppsPath() const;
 
   // Gets the path under demo resources mount point that contains
   // external extensions prefs (JSON containing set of extensions to be loaded
@@ -54,9 +54,9 @@ class DemoResources {
   // to the associated CRX path and version).
   base::FilePath GetExternalExtensionsPrefsPath() const;
 
-  // Ensures that the load of demo session resources is requested.
+  // Ensures that the load of demo-mode-resources component is requested.
   // `load_callback` will be run once the resources finish loading.
-  void EnsureLoaded(base::OnceClosure load_callback);
+  void EnsureResourcesLoaded(base::OnceClosure load_callback);
 
   // Fakes the demo mode resources CrOS component having been requested and
   // mounted at the given path (or not mounted if `path` is empty).
@@ -69,14 +69,16 @@ class DemoResources {
   void SetPreinstalledOfflineResourcesLoadedForTesting(
       const base::FilePath& path);
 
-  bool loaded() const { return loaded_; }
-  const base::FilePath& path() const { return path_; }
+  bool resources_component_loaded() const { return resources_loaded_; }
+  const base::FilePath& resources_component_path() const {
+    return resources_component_path_;
+  }
 
   // The error from trying to load the demo mode resources CrOS component from
   // the CrOSComponentManager.
   const absl::optional<component_updater::CrOSComponentManager::Error>&
-  component_error() const {
-    return component_error_;
+  resources_component_error() const {
+    return resources_component_error_;
   }
 
  private:
@@ -95,16 +97,16 @@ class DemoResources {
   // Which config to load resources for: online or offline.
   DemoSession::DemoModeConfig config_;
 
-  bool load_requested_ = false;
-  bool loaded_ = false;
+  bool resources_load_requested_ = false;
+  bool resources_loaded_ = false;
 
-  // Last error (or NONE) seen when trying to load the CrOS component. Has no
-  // value until the load attempt has completed.
+  // Last error (or NONE) seen when trying to load the demo-mode-resources CrOS
+  // component. Has no value until the load attempt has completed.
   absl::optional<component_updater::CrOSComponentManager::Error>
-      component_error_;
+      resources_component_error_;
 
-  // Path at which demo mode resources were loaded.
-  base::FilePath path_;
+  // Path at which the demo-mode-resources component was loaded.
+  base::FilePath resources_component_path_;
 
   // List of pending callbacks passed to EnsureLoaded().
   std::list<base::OnceClosure> load_callbacks_;

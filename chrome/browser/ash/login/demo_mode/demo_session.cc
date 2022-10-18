@@ -409,7 +409,7 @@ void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
   if (!demo_resources_)
     demo_resources_ = std::make_unique<DemoResources>(GetDemoConfig());
-  demo_resources_->EnsureLoaded(std::move(load_callback));
+  demo_resources_->EnsureResourcesLoaded(std::move(load_callback));
 }
 
 // static
@@ -507,7 +507,7 @@ DemoSession::GetSortedCountryCodeAndNamePairList() {
 }
 
 void DemoSession::InstallDemoResources() {
-  DCHECK(demo_resources_->loaded());
+  DCHECK(demo_resources_->resources_component_loaded());
 
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
@@ -515,7 +515,8 @@ void DemoSession::InstallDemoResources() {
       file_manager::util::GetDownloadsFolderForProfile(profile);
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&InstallDemoMedia, demo_resources_->path(), downloads));
+      base::BindOnce(&InstallDemoMedia,
+                     demo_resources_->resources_component_path(), downloads));
 }
 
 void DemoSession::InstallAppFromUpdateUrl(const std::string& id) {
@@ -673,11 +674,13 @@ void DemoSession::ShowSplashScreen(base::FilePath image_path) {
 
 void DemoSession::ConfigureAndStartSplashScreen() {
   const std::string current_locale = g_browser_process->GetApplicationLocale();
-  base::FilePath localized_image_path = demo_resources_->path()
-                                            .Append(kSplashScreensPath)
-                                            .Append(current_locale + ".jpg");
-  base::FilePath fallback_path =
-      demo_resources_->path().Append(kSplashScreensPath).Append("en-US.jpg");
+  base::FilePath localized_image_path =
+      demo_resources_->resources_component_path()
+          .Append(kSplashScreensPath)
+          .Append(current_locale + ".jpg");
+  base::FilePath fallback_path = demo_resources_->resources_component_path()
+                                     .Append(kSplashScreensPath)
+                                     .Append("en-US.jpg");
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GetSplashScreenImagePath, localized_image_path,

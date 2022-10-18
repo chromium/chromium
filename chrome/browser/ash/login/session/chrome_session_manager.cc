@@ -159,7 +159,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     // In demo session, delay starting user session until the demo
     // session resources have been loaded.
     if (demo_session && demo_session->started() &&
-        !demo_session->resources()->loaded()) {
+        !demo_session->resources()->resources_component_loaded()) {
       demo_session->EnsureResourcesLoaded(
           base::BindOnce(&StartUserSession, user_profile, login_user_id));
       LOG(WARNING) << "Delay demo user session start until demo "
