@@ -81,4 +81,7 @@
   <message name="DICTATION_COMMAND_DELETE_ALL_TEXT" desc="A spoken command to delete all text in the input field." is_accessibility_with_no_ui="true">
     delete all
   </message>
+  <message name="DICTATION_COMMAND_NAV_START_TEXT" desc="A spoken command to move the cursor to the start of the input field." is_accessibility_with_no_ui="true">
+    move to the start
+  </message>
 </grit-part>

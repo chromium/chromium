@@ -241,6 +241,10 @@ class SimpleMacroFactory {
         messageId: 'dictation_command_delete_all_text',
         build: RepeatableKeyPress.DeleteAllText,
       },
+      [MacroName.NAV_START_TEXT]: {
+        messageId: 'dictation_command_nav_start_text',
+        build: RepeatableKeyPress.NavStartText,
+      },
     };
   }
 }
@@ -265,7 +269,8 @@ export class SimpleParseStrategy extends ParseStrategy {
     this.isMoreCommandsFeatureEnabled_ = false;
 
     /** @private {!Array<!MacroName>}*/
-    this.moreCommandsSet_ = [MacroName.DELETE_ALL_TEXT];
+    this.moreCommandsSet_ =
+        [MacroName.DELETE_ALL_TEXT, MacroName.NAV_START_TEXT];
 
     this.initialize_();
   }

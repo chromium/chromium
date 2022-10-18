@@ -260,3 +260,16 @@ export class DeleteAllText extends RepeatableKeyPressMacro {
     EventGenerator.sendKeyPress(KeyCode.BACK);
   }
 }
+
+/** Macro to move the cursor to the start of the input field. */
+export class NavStartText extends RepeatableKeyPressMacro {
+  constructor() {
+    super(MacroName.NAV_START_TEXT, 1);
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(KeyCode.A, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.LEFT, {});
+  }
+}

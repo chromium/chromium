@@ -103,5 +103,8 @@ export const MacroName = {
   // Deletes all text in the input box.
   DELETE_ALL_TEXT: 27,
 
+  // Moves the cursor to the start of the input field.
+  NAV_START_TEXT: 28,
+
   // Any new actions should match with Voice Access's semantic tags.
 };

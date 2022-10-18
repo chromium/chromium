@@ -1176,7 +1176,22 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextMultiLineString) {
 // TODO(crbug.com/1362842) Add a test where
 // you disable the MoreCommands Feature Flag
 // and ensure that you can't run the Dictation
-// Commands under that feature flag
+// Commands under that feature flag.
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextSimple) {
+  SendFinalResultAndWaitForTextAreaValue("Is good", "Is good");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
+  SendFinalResultAndWaitForTextAreaValue("the weather outside",
+                                         "the weather outside Is good");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextMultiLineString) {
+  std::string text = "Is good\n and we should go for a run.";
+  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
+  std::string expected = "the weather outside " + text;
+  SendFinalResultAndWaitForTextAreaValue("the weather outside", expected);
+}
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
   SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");
