@@ -738,6 +738,113 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
+      r'/\babsl::bind_front\b',
+      (
+        'absl::bind_front is banned. Use base::Bind instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\bABSL_FLAG\b',
+      (
+        'ABSL_FLAG is banned. Use base::CommandLine instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\babsl::c_',
+      (
+        'Abseil container utilities are banned. Use base/ranges/algorithm.h',
+        'instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\babsl::FunctionRef\b',
+      (
+        'absl::FunctionRef is banned. Use base::FunctionRef instead.',
+      ),
+      True,
+      [
+        # base::Bind{Once,Repeating} references absl::FunctionRef to disallow
+        # interoperability.
+        r'^base/functional/bind_internal\.h',
+        # base::FunctionRef is implemented on top of absl::FunctionRef.
+        r'^base/functional/function_ref.*\..+',
+        # Not an error in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK,
+      ],
+    ),
+    BanRule(
+      r'/\babsl::(Insecure)?BitGen\b',
+      (
+        'Abseil random number generators are banned. Use base/rand_util.h',
+        'instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\babsl::Span\b',
+      (
+        'absl::Span is banned. Use base::span instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\babsl::StatusOr\b',
+      (
+        'absl::StatusOr is banned. Use base::expected instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\babsl::StrFormat\b',
+      (
+        'absl::StrFormat is banned for now. Use base::StringPrintf instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\babsl::string_view\b',
+      (
+        'absl::string_view is banned. Use base::StringPiece instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\babsl::(StrSplit|StrJoin|StrCat|StrAppend|Substitute|StrContains)\b',
+      (
+        'Abseil string utilities are banned. Use base/strings instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\babsl::(Mutex|CondVar|Notification|Barrier|BlockingCounter)\b',
+      (
+        'Abseil synchronization primitives are banned. Use',
+        'base/synchronization instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
+      r'/\babsl::(Duration|Time|TimeZone|CivilDay)\b',
+      (
+        'Abseil\'s time library is banned. Use base/time instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
       r'/\bstd::optional\b',
       (
         'std::optional is banned. Use absl::optional instead.',
@@ -1141,22 +1248,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'^base[\\/]functional[\\/]bind\.h',
         r'^base[\\/]functional[\\/]bind_internal\.h',
       ),
-    ),
-    BanRule(
-      r'/\babsl::FunctionRef\b',
-      (
-        'absl::FunctionRef is banned. Use base::FunctionRef instead.',
-      ),
-      True,
-      [
-        # base::Bind{Once,Repeating} references absl::FunctionRef to disallow
-        # interoperability.
-        r'^base/functional/bind_internal\.h',
-        # base::FunctionRef is implemented on top of absl::FunctionRef.
-        r'^base/functional/function_ref.*\..+',
-        # Not an error in third_party folders.
-        _THIRD_PARTY_EXCEPT_BLINK,
-      ],
     ),
     BanRule(
       r'base::Feature k',

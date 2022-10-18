@@ -3875,13 +3875,11 @@ include_rules = [
   '-third_party/shell-encryption',
   '-third_party/private_membership',
 
-  # Abseil features must be allowlisted explicitly for now. See
-  # //styleguide/c++/c++11.html. Allowed features' headers will be listed
-  # explicitly here.
+  # Abseil features are allowlisted explicitly. See
+  # //styleguide/c++/c++-features.md.
   '-absl',
   '-third_party/abseil-cpp',
   '+third_party/abseil-cpp/absl/base/attributes.h',
-  "+third_party/abseil-cpp/absl/functional/function_ref.h",
   "+third_party/abseil-cpp/absl/numeric/int128.h",
   '+third_party/abseil-cpp/absl/types/optional.h',
   '+third_party/abseil-cpp/absl/types/variant.h',

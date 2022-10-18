@@ -34,9 +34,8 @@ The current status of existing standards and Abseil features is:
     features below
 *   **C++20:** _Not yet supported in Chromium_
 *   **C++23:** _Not yet standardized_
-*   **Abseil:** Initially supported July 31, 2020; see allowed/banned/TBD
-    features below
-    *   absl::StatusOr: Initially supported September 3, 2020
+*   **Abseil:** _Default allowed; see banned/TBD
+    features below_
     *   absl::Cleanup: Initially supported February 4, 2021
     *   absl::AnyInvocable: Initially supported June 20, 2022
     *   Log library: Initially supported Aug 31, 2022
@@ -1627,124 +1626,6 @@ std::timespec_get(&ts, TIME_UTC);
 None
 ***
 
-## Abseil Allowed Library Features {#absl-allowlist}
-
-The following Abseil library features are allowed in the Chromium codebase.
-
-### Attribute macros <sup>[allowed]</sup>
-
-```c++
-const char* name() ABSL_ATTRIBUTE_RETURNS_NONNULL { return "hello world"; }
-```
-
-**Description:** Macros that conditionally resolve to attributes. Prefer to use
-standard C++ attributes, such as `[[fallthrough]]`. Use these macros for
-non-standard attributes, which may not be present in all compilers.
-
-**Documentation:**
-[attributes.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/attributes.h)
-
-**Notes:**
-*** promo
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/vQmaBfbyBGM/m/HHOYUZ5YAwAJ)
-***
-
-### 128bit integer <sup>[allowed]</sup>
-
-```c++
-uint64_t a;
-absl::uint128 v = a;
-```
-
-**Description:** Signed and unsigned 128-bit integer types meant to mimic
-intrinsic types as closely as possible.
-
-**Documentation:**
-[Numerics](https://abseil.io/docs/cpp/guides/numeric)
-
-**Notes:**
-*** promo
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/6l8MlO7vEek)
-***
-
-### Optional <sup>[allowed]</sup>
-
-```c++
-absl::optional
-```
-
-**Description:** Early adaptation of C++17 `std::optional`.
-
-**Documentation:**
-[std::optional](https://en.cppreference.com/w/cpp/utility/optional)
-
-**Notes:**
-*** promo
-Replaces `base::Optional`.
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/zUGqagX1NFU)
-***
-
-### Status <sup>[allowed]</sup>
-
-```c++
-absl::Status
-```
-
-**Description:** Type for returning detailed errors.
-
-**Documentation:**
-[status.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/status/status.h)
-
-**Notes:**
-*** promo
-Approved for use inside a wrapper type. Use
-[abseil_string_conversions.h](https://source.chromium.org/chromium/chromium/src/+/main:base/strings/abseil_string_conversions.h)
-to convert to and from
-[absl::string_view](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/strings/string_view.h)
-so the wrapper can expose
-[base::StringPiece](https://source.chromium.org/chromium/chromium/src/+/main:base/strings/string_piece.h).
-Use
-[absl::Cord](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/strings/cord.h)
-directly as minimally necessary to interface; do not expose in the wrapper type
-API.
-
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ImdFCSZ-NMA)
-***
-
-### Variant <sup>[allowed]</sup>
-
-```c++
-absl::variant
-```
-
-**Description:** Early adaptation of C++17 `std::variant`.
-
-**Documentation:**
-[std::variant](https://en.cppreference.com/w/cpp/utility/variant)
-
-**Notes:**
-*** promo
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/DqvG-TpvMyU)
-***
-
-### in_place <sup>[allowed]</sup>
-
-```c++
-absl::in_place
-```
-
-**Description:** Early adaptation of C++17 `std::in_place`.
-
-**Documentation:**
-[std::in_place](https://en.cppreference.com/w/cpp/utility/in_place)
-
-**Notes:**
-*** promo
-Because the Abseil versions of `optional` and `variant` are used, the Abseil
-version of `in_place` is used in Chromium. See the
-[discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZspmuJPpv6s/m/wYYTCiRwAAAJ).
-***
-
 ## Abseil Banned Library Features {#absl-blocklist}
 
 The following Abseil library features are not allowed in the Chromium codebase.
@@ -1767,6 +1648,23 @@ Banned since workaround for lack of RTTI isn't compatible with the component
 build ([Bug](https://crbug.com/1096380)). Also see `std::any`.
 ***
 
+### bind_front <sup>[banned]</sup>
+
+```c++
+absl::bind_front
+```
+
+**Description:** Binds the first N arguments of an invocable object and stores them by value.
+
+**Documentation:**
+*   [bind_front.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/bind_front.h)
+*   [Avoid std::bind](https://abseil.io/tips/108)
+
+**Notes:**
+*** promo
+Banned due to overlap with `base::Bind`. Use `base::Bind` instead.
+***
+
 ### Command line flags <sup>[banned]</sup>
 
 ```c++
@@ -1785,36 +1683,22 @@ Banned since workaround for lack of RTTI isn't compatible with the component
 build. ([Bug](https://crbug.com/1096380)) Use `base::CommandLine` instead.
 ***
 
-### Span <sup>[banned]</sup>
+### Container utilities <sup>[banned]</sup>
 
 ```c++
-absl::Span
+auto it = absl::c_find(container, value);
 ```
 
-**Description:** Early adaptation of C++20 `std::span`.
+**Description:** Container-based versions of algorithmic functions within C++
+standard library.
 
-**Documentation:** [Using absl::Span](https://abseil.io/tips/93)
+**Documentation:**
+[container.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/algorithm/container.h)
 
 **Notes:**
 *** promo
-Banned due to being less std::-compliant than `base::span`. Keep using
-`base::span`.
-***
-
-### string_view <sup>[banned]</sup>
-
-```c++
-absl::string_view
-```
-
-**Description:** Early adaptation of C++17 `std::string_view`.
-
-**Documentation:** [absl::string_view](https://abseil.io/tips/1)
-
-**Notes:**
-*** promo
-Banned due to only working with 8-bit characters. Keep using
-`base::StringPiece` from `base/strings/`.
+Banned due to overlap with `base/ranges/algorithm.h`. Use the `base/ranges/`
+facilities instead.
 ***
 
 ### FunctionRef <sup>[banned]</sup>
@@ -1856,6 +1740,154 @@ invocable type.
 - [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/JVN4E4IIYA0/m/V0EVUVLiBwAJ)
 ***
 
+### Random <sup>[banned]</sup>
+
+```c++
+absl::BitGen bitgen;
+size_t index = absl::Uniform(bitgen, 0u, elems.size());
+```
+
+**Description:** Functions and utilities for generating pseudorandom data.
+
+**Documentation:** [Random library](https://abseil.io/docs/cpp/guides/random)
+
+**Notes:**
+*** promo
+Banned because most uses of random values in Chromium should be using a
+cryptographically secure generator. Use `base/rand_util.h` instead.
+***
+
+### Span <sup>[banned]</sup>
+
+```c++
+absl::Span
+```
+
+**Description:** Early adaptation of C++20 `std::span`.
+
+**Documentation:** [Using absl::Span](https://abseil.io/tips/93)
+
+**Notes:**
+*** promo
+Banned due to being less std::-compliant than `base::span`. Keep using
+`base::span`.
+***
+
+### StatusOr <sup>[banned]</sup>
+
+```c++
+absl::StatusOr<T>
+```
+
+**Description:** An object that is either a usable value, or an error Status
+explaining why such a value is not present.
+
+**Documentation:**
+[statusor.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/status/statusor.h)
+
+**Notes:**
+*** promo
+Banned due to overlap with `base::expected`. Use `base::expected` instead.
+***
+
+### String Formatting <sup>[banned]</sup>
+
+```c++
+absl::StrFormat
+```
+
+**Description:** A typesafe replacement for the family of printf() string
+formatting routines.
+
+**Documentation:**
+[String Formatting](https://abseil.io/docs/cpp/guides/format)
+
+**Notes:**
+*** promo
+Banned for now due to overlap with `base::StringPrintf()`. See
+[migration bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1371963).
+***
+
+### string_view <sup>[banned]</sup>
+
+```c++
+absl::string_view
+```
+
+**Description:** Early adaptation of C++17 `std::string_view`.
+
+**Documentation:** [absl::string_view](https://abseil.io/tips/1)
+
+**Notes:**
+*** promo
+Banned due to only working with 8-bit characters. Keep using
+`base::StringPiece` from `base/strings/`.
+***
+
+### Strings Library <sup>[banned]</sup>
+
+```c++
+absl::StrSplit
+absl::StrJoin
+absl::StrCat
+absl::StrAppend
+absl::Substitute
+absl::StrContains
+```
+
+**Description:** Classes and utility functions for manipulating and comparing
+strings.
+
+**Documentation:**
+[String Utilities](https://abseil.io/docs/cpp/guides/strings)
+
+**Notes:**
+*** promo
+Banned for now due to overlap with `base/strings`. We
+[should re-evalute](https://bugs.chromium.org/p/chromium/issues/detail?id=1371966)
+when we've
+[migrated](https://bugs.chromium.org/p/chromium/issues/detail?id=691162) from
+`base::StringPiece` to `std::string_view`.
+***
+
+### Synchronization <sup>[banned]</sup>
+
+```c++
+absl::Mutex
+```
+
+**Description:** Primitives for managing tasks across different threads.
+
+**Documentation:**
+[Synchronization](https://abseil.io/docs/cpp/guides/synchronization)
+
+**Notes:**
+*** promo
+Banned due to overlap with `base/synchronization/`. We would love
+[more testing](https://bugs.chromium.org/p/chromium/issues/detail?id=1371969) on
+whether there are compelling reasons to prefer base, absl, or std
+synchronization primitives; for now, use `base/synchronization/`.
+***
+
+### Time library <sup>[banned]</sup>
+
+```c++
+absl::Duration
+absl::Time
+absl::TimeZone
+absl::CivilDay
+```
+
+**Description:** Abstractions for holding time values, both in terms of
+absolute time and civil time.
+
+**Documentation:** [Time](https://abseil.io/docs/cpp/guides/time)
+
+**Notes:**
+*** promo
+Banned due to overlap with `base/time/`. Use `base/time/` instead.
+***
+
 ## Abseil TBD Features {#absl-review}
 
 The following Abseil library features are not allowed in the Chromium codebase.
@@ -1877,23 +1909,6 @@ absl::AnyInvocable
 **Notes:**
 *** promo
 Overlaps with `base::RepeatingCallback`, `base::OnceCallback`.
-***
-
-### bind_front <sup>[tbd]</sup>
-
-```c++
-absl::bind_front
-```
-
-**Description:** Binds the first N arguments of an invocable object and stores them by value.
-
-**Documentation:**
-*   [bind_front.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/bind_front.h)
-*   [Avoid std::bind](https://abseil.io/tips/108)
-
-**Notes:**
-*** promo
-Overlaps with `base::Bind`.
 ***
 
 ### Cleanup <sup>[tbd]</sup>
@@ -1941,24 +1956,7 @@ in the general case.
 Supplements `base/containers/`.
 ***
 
-### Container utilities <sup>[tbd]</sup>
-
-```c++
-auto it = absl::c_find(container, value);
-```
-
-**Description:** Container-based versions of algorithmic functions within C++
-standard library.
-
-**Documentation:**
-[container.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/algorithm/container.h)
-
-**Notes:**
-*** promo
-Overlaps with `base/ranges/algorithm.h`.
-***
-
-### Log macros are related classes <sup>[tbd]</sup>
+### Log macros and related classes <sup>[tbd]</sup>
 
 ```c++
 LOG(INFO) << message;
@@ -1975,111 +1973,4 @@ absl::AddLogSink(&custom_sink_to_capture_absl_logs);
 **Notes:**
 *** promo
 Overlaps and uses same macros names as `base/logging.h`.
-***
-
-### Random <sup>[tbd]</sup>
-
-```c++
-absl::BitGen bitgen;
-size_t index = absl::Uniform(bitgen, 0u, elems.size());
-```
-
-**Description:** Functions and utilities for generating pseudorandom data.
-
-**Documentation:** [Random library](https://abseil.io/docs/cpp/guides/random)
-
-**Notes:**
-*** promo
-Overlaps with `base/rand_util.h`.
-***
-
-### StatusOr <sup>[tbd]</sup>
-
-```c++
-absl::StatusOr<T>
-```
-
-**Description:** An object that is either a usable value, or an error Status
-explaining why such a value is not present.
-
-**Documentation:**
-[statusor.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/status/statusor.h)
-
-**Notes:**
-*** promo
-None
-***
-
-### String Formatting <sup>[tbd]</sup>
-
-```c++
-absl::StrFormat
-```
-
-**Description:** A typesafe replacement for the family of printf() string
-formatting routines.
-
-**Documentation:**
-[String Formatting](https://abseil.io/docs/cpp/guides/format)
-
-**Notes:**
-*** promo
-None
-***
-
-### Strings Library <sup>[tbd]</sup>
-
-```c++
-absl::StrSplit
-absl::StrJoin
-absl::StrCat
-absl::StrAppend
-absl::Substitute
-absl::StrContains
-```
-
-**Description:** Classes and utility functions for manipulating and comparing
-strings.
-
-**Documentation:**
-[String Utilities](https://abseil.io/docs/cpp/guides/strings)
-
-**Notes:**
-*** promo
-Overlaps with `base/strings`.
-***
-
-### Synchronization <sup>[tbd]</sup>
-
-```c++
-absl::Mutex
-```
-
-**Description:** Primitives for managing tasks across different threads.
-
-**Documentation:**
-[Synchronization](https://abseil.io/docs/cpp/guides/synchronization)
-
-**Notes:**
-*** promo
-Overlaps with `Lock` in `base/synchronization/`.
-***
-
-### Time library <sup>[tbd]</sup>
-
-```c++
-absl::Duration
-absl::Time
-absl::TimeZone
-absl::CivilDay
-```
-
-**Description:** Abstractions for holding time values, both in terms of
-absolute time and civil time.
-
-**Documentation:** [Time](https://abseil.io/docs/cpp/guides/time)
-
-**Notes:**
-*** promo
-Overlaps with `Time` APIs in `base/`.
 ***
