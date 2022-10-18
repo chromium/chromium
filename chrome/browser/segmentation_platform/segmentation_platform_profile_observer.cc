@@ -41,7 +41,7 @@ SegmentationPlatformProfileObserver::SegmentationPlatformProfileObserver(
     ProfileManager* profile_manager)
     : segmentation_platform_service_(segmentation_platform_service),
       profile_manager_(profile_manager) {
-  profile_manager_->AddObserver(this);
+  profile_manager_observation_.Observe(profile_manager);
   // Start observing all the regular and OTR profiles.
   for (auto* profile : profile_manager_->GetLoadedProfiles()) {
     OnProfileAdded(profile);
@@ -50,10 +50,8 @@ SegmentationPlatformProfileObserver::SegmentationPlatformProfileObserver(
   }
 }
 
-SegmentationPlatformProfileObserver::~SegmentationPlatformProfileObserver() {
-  if (profile_manager_)
-    profile_manager_->RemoveObserver(this);
-}
+SegmentationPlatformProfileObserver::~SegmentationPlatformProfileObserver() =
+    default;
 
 void SegmentationPlatformProfileObserver::OnProfileAdded(Profile* profile) {
   // We might call this method for the same profile more than once, but should
@@ -78,6 +76,7 @@ void SegmentationPlatformProfileObserver::OnProfileAdded(Profile* profile) {
 }
 
 void SegmentationPlatformProfileObserver::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
   profile_manager_ = nullptr;
 }
 

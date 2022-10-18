@@ -7,8 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,6 +52,9 @@ class SegmentationPlatformProfileObserver : public base::SupportsUserData::Data,
 
   raw_ptr<SegmentationPlatformService> segmentation_platform_service_;
   raw_ptr<ProfileManager> profile_manager_;
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
