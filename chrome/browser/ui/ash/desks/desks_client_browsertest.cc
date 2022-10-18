@@ -2171,9 +2171,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
-// Flaky, b/250558930.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       DISABLED_SystemUILaunchMultipleDeskTemplates) {
+                       SystemUILaunchMultipleDeskTemplates) {
   const base::GUID kDeskUuid = base::GUID::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
