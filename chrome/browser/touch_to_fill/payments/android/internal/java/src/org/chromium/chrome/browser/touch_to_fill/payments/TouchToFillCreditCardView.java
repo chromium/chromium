@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -54,7 +55,8 @@ class TouchToFillCreditCardView implements BottomSheetContent {
      */
     TouchToFillCreditCardView(Context context, BottomSheetController bottomSheetController) {
         mBottomSheetController = bottomSheetController;
-        mContentView = new RelativeLayout(context);
+        mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
+                R.layout.touch_to_fill_credit_card_sheet, null);
     }
 
     /**

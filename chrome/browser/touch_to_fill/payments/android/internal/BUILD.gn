@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
@@ -27,4 +28,9 @@ android_library("java") {
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.touch_to_fill.payments"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/touch_to_fill_credit_card_sheet.xml" ]
 }
