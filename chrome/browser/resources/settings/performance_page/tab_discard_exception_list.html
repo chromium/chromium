@@ -13,7 +13,10 @@
 </style>
 <div class="cr-row first">
   <div class="cr-padded-text">$i18n{tabDiscardingExceptionsHeader}</div>
-  <cr-button id="addButton" on-click="onAddClick_">$i18n{add}</cr-button>
+  <cr-button id="addButton" on-click="onAddClick_"
+      aria-label="$i18n{tabDiscardingExceptionsAddButtonAriaLabel}">
+    $i18n{add}
+  </cr-button>
 </div>
 <div id="noSitesAdded" class="list-frame" hidden$="[[hasSites_(siteList_.*)]]">
   <div class="list-item secondary">$i18n{noSitesAdded}</div>
