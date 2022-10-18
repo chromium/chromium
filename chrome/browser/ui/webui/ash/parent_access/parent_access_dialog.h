@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_
 
 #include <memory>
 #include <string>
 
 #include "base/callback_forward.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 // Dialog which embeds the Parent Access UI, which verifies a parent during
 // a child session.
@@ -81,11 +81,11 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
 // is can be overridden by tests to provide a fake implementation like this:
 //
 // class FakeParentAccessDialogProvider
-//    : public chromeos::ParentAccessDialogProvider {
+//    : public ash::ParentAccessDialogProvider {
 // public:
 //  ParentAccessDialogProvider::ShowError Show(
 //      parent_access_ui::mojom::ParentAccessParamsPtr params,
-//      chromeos::ParentAccessDialog::Callback callback) override {}
+//      ash::ParentAccessDialog::Callback callback) override {}
 class ParentAccessDialogProvider {
  public:
   // Error state returned by the Show() function.
@@ -103,6 +103,6 @@ class ParentAccessDialogProvider {
                          ParentAccessDialog::Callback callback);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_

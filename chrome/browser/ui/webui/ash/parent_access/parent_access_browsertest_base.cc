@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
 
 #include <string>
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 ParentAccessBrowserTestBase::ParentAccessBrowserTestBase() = default;
 ParentAccessBrowserTestBase::~ParentAccessBrowserTestBase() = default;
@@ -32,7 +32,7 @@ content::WebUI* ParentAccessBrowserTestBase::GetWebUI() {
 }
 
 ParentAccessUI* ParentAccessBrowserTestBase::GetParentAccessUI() {
-  return static_cast<chromeos::ParentAccessUI*>(GetWebUI()->GetController());
+  return static_cast<ParentAccessUI*>(GetWebUI()->GetController());
 }
 
 content::WebContents* ParentAccessBrowserTestBase::GetContents() {
@@ -82,4 +82,4 @@ ParentAccessChildUserBrowserTestBase::GetLogInType() {
   return LoggedInUserMixin::LogInType::kChild;
 }
 
-}  // namespace chromeos
+}  // namespace ash

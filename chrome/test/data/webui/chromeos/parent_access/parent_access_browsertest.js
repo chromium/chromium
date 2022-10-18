@@ -6,7 +6,7 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
-GEN('#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"');
+GEN('#include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 

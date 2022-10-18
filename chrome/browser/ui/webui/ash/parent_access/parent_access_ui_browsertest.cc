@@ -8,8 +8,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/google/core/common/google_util.h"
@@ -17,7 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 using ParentAccessUIBrowserTest = ParentAccessChildUserBrowserTestBase;
 
@@ -61,4 +61,4 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIBrowserTest, URLParameters) {
       google_util::GetGoogleLocale(g_browser_process->GetApplicationLocale()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

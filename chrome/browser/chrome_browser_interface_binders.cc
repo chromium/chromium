@@ -271,6 +271,8 @@
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals.mojom.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
@@ -278,8 +280,6 @@
 #include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
@@ -1105,8 +1105,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::multidevice_setup::MultiDeviceSetupDialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      parent_access_ui::mojom::ParentAccessUIHandler, chromeos::ParentAccessUI>(
-      map);
+      parent_access_ui::mojom::ParentAccessUIHandler, ash::ParentAccessUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter,

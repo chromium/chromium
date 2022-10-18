@@ -14,7 +14,7 @@ js_type_check("closure_compile_local") {
   closure_flags = default_closure_args + mojom_js_args + [
                     "js_module_root=" + rebase_path(".", root_build_dir),
                     "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/parent_access/",
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/parent_access/",
                             root_build_dir),
                   ]
   deps = [
@@ -42,7 +42,7 @@ js_library("parent_access_app") {
     ":parent_access_after",
     ":parent_access_ui",
     ":parent_access_ui_handler",
-    "//chrome/browser/ui/webui/chromeos/parent_access:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js" ]
@@ -59,7 +59,7 @@ js_library("parent_access_ui") {
   deps = [
     ":parent_access_controller",
     ":parent_access_ui_handler",
-    "//chrome/browser/ui/webui/chromeos/parent_access:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -70,9 +70,8 @@ js_library("parent_access_ui") {
 }
 
 js_library("parent_access_ui_handler") {
-  deps = [
-    "//chrome/browser/ui/webui/chromeos/parent_access:mojo_bindings_webui_js",
-  ]
+  deps =
+      [ "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_webui_js" ]
 }
 
 js_library("webview_manager") {

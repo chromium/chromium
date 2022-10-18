@@ -25,8 +25,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #endif
 
 namespace {
@@ -87,14 +87,13 @@ void WebApprovalsManager::RequestLocalApproval(
               parent_access_ui::mojom::WebApprovalsParams::New(
                   url.GetWithEmptyPath(), child_display_name, favicon_bytes)));
 
-  chromeos::ParentAccessDialogProvider provider;
-  chromeos::ParentAccessDialogProvider::ShowError result = provider.Show(
+  ash::ParentAccessDialogProvider provider;
+  ash::ParentAccessDialogProvider::ShowError result = provider.Show(
       std::move(params),
-      base::BindOnce(
-          [](std::unique_ptr<chromeos::ParentAccessDialog::Result> result)
-              -> void {}));
+      base::BindOnce([](std::unique_ptr<ash::ParentAccessDialog::Result> result)
+                         -> void {}));
 
-  if (result != chromeos::ParentAccessDialogProvider::ShowError::kNone) {
+  if (result != ash::ParentAccessDialogProvider::ShowError::kNone) {
     LOG(ERROR) << "Error showing ParentAccessDialog: " << result;
     std::move(callback).Run(false);
     return;

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -13,28 +13,28 @@
 namespace crosapi {
 
 crosapi::mojom::ParentAccessResultPtr DialogResultToParentAccessResult(
-    std::unique_ptr<chromeos::ParentAccessDialog::Result> result) {
+    std::unique_ptr<ash::ParentAccessDialog::Result> result) {
   crosapi::mojom::ParentAccessResultPtr parent_access_result;
 
   switch (result->status) {
-    case chromeos::ParentAccessDialog::Result::Status::kApproved:
+    case ash::ParentAccessDialog::Result::Status::kApproved:
       parent_access_result = mojom::ParentAccessResult::NewApproved(
           crosapi::mojom::ParentAccessApprovedResult::New(
               result->parent_access_token,
               result->parent_access_token_expire_timestamp));
       break;
 
-    case chromeos::ParentAccessDialog::Result::Status::kDeclined:
+    case ash::ParentAccessDialog::Result::Status::kDeclined:
       parent_access_result = mojom::ParentAccessResult::NewDeclined(
           crosapi::mojom::ParentAccessDeclinedResult::New());
       break;
 
-    case chromeos::ParentAccessDialog::Result::Status::kCancelled:
+    case ash::ParentAccessDialog::Result::Status::kCancelled:
       parent_access_result = mojom::ParentAccessResult::NewCancelled(
           crosapi::mojom::ParentAccessCancelledResult::New());
       break;
 
-    case chromeos::ParentAccessDialog::Result::Status::kError:
+    case ash::ParentAccessDialog::Result::Status::kError:
       parent_access_result = mojom::ParentAccessResult::NewError(
           crosapi::mojom::ParentAccessErrorResult::New(
               crosapi::mojom::ParentAccessErrorResult::Type::kUnknown));
@@ -45,22 +45,22 @@ crosapi::mojom::ParentAccessResultPtr DialogResultToParentAccessResult(
 }
 
 crosapi::mojom::ParentAccessResultPtr ShowErrorToParentAccessResultError(
-    chromeos::ParentAccessDialogProvider::ShowError show_dialog_result) {
+    ash::ParentAccessDialogProvider::ShowError show_dialog_result) {
   crosapi::mojom::ParentAccessResultPtr parent_access_result;
 
   // This result indicates basic errors that can occur synchronously.
   switch (show_dialog_result) {
-    case chromeos::ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible:
+    case ash::ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible:
       parent_access_result = mojom::ParentAccessResult::NewError(
           crosapi::mojom::ParentAccessErrorResult::New(
               crosapi::mojom::ParentAccessErrorResult::Type::kAlreadyVisible));
       break;
-    case chromeos::ParentAccessDialogProvider::ShowError::kNotAChildUser:
+    case ash::ParentAccessDialogProvider::ShowError::kNotAChildUser:
       parent_access_result = mojom::ParentAccessResult::NewError(
           crosapi::mojom::ParentAccessErrorResult::New(
               crosapi::mojom::ParentAccessErrorResult::Type::kNotAChildUser));
       break;
-    case chromeos::ParentAccessDialogProvider::ShowError::kNone:
+    case ash::ParentAccessDialogProvider::ShowError::kNone:
       // The dialog is showing successfully. Wait until we get the result from
       // the dialog before running the crosapi callback. This will be handled
       // in OnParentAccessDialogClosed.
@@ -99,9 +99,9 @@ void ParentAccessAsh::GetWebsiteParentApproval(
   ShowParentAccessDialog(std::move(params), std::move(callback));
 }
 
-chromeos::ParentAccessDialogProvider* ParentAccessAsh::GetDialogProvider() {
+ash::ParentAccessDialogProvider* ParentAccessAsh::GetDialogProvider() {
   if (!dialog_provider_)
-    dialog_provider_ = std::make_unique<chromeos::ParentAccessDialogProvider>();
+    dialog_provider_ = std::make_unique<ash::ParentAccessDialogProvider>();
 
   return dialog_provider_.get();
 }
@@ -109,7 +109,7 @@ chromeos::ParentAccessDialogProvider* ParentAccessAsh::GetDialogProvider() {
 void ParentAccessAsh::ShowParentAccessDialog(
     parent_access_ui::mojom::ParentAccessParamsPtr params,
     ParentAccessAsh::ParentAccessCallback callback) {
-  chromeos::ParentAccessDialogProvider::ShowError show_error =
+  ash::ParentAccessDialogProvider::ShowError show_error =
       GetDialogProvider()->Show(
           std::move(params),
           base::BindOnce(&ParentAccessAsh::OnParentAccessDialogClosed,
@@ -130,14 +130,14 @@ void ParentAccessAsh::ShowParentAccessDialog(
   }
 }
 
-chromeos::ParentAccessDialogProvider* ParentAccessAsh::SetDialogProviderForTest(
-    std::unique_ptr<chromeos::ParentAccessDialogProvider> provider) {
+ash::ParentAccessDialogProvider* ParentAccessAsh::SetDialogProviderForTest(
+    std::unique_ptr<ash::ParentAccessDialogProvider> provider) {
   dialog_provider_ = std::move(provider);
   return dialog_provider_.get();
 }
 
 void ParentAccessAsh::OnParentAccessDialogClosed(
-    std::unique_ptr<chromeos::ParentAccessDialog::Result> result) {
+    std::unique_ptr<ash::ParentAccessDialog::Result> result) {
   if (callback_) {
     std::move(callback_).Run(
         DialogResultToParentAccessResult(std::move(result)));

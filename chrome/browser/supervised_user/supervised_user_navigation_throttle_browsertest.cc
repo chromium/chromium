@@ -51,7 +51,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1058,13 +1058,13 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
 
   // Trigger local approval flow - native dialog should appear.
   SendCommandToFrame(kLocalUrlAccessCommand, blocked_frame);
-  EXPECT_TRUE(chromeos::ParentAccessDialog::GetInstance());
+  EXPECT_TRUE(ash::ParentAccessDialog::GetInstance());
 
   // Close the flow without approval - interstitial should be still shown.
   ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
   generator.PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
-  EXPECT_FALSE(chromeos::ParentAccessDialog::GetInstance());
+  EXPECT_FALSE(ash::ParentAccessDialog::GetInstance());
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
   EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));
   EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
@@ -1099,13 +1099,13 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
 
   // Trigger local approval flow - native dialog should appear.
   SendCommandToFrame(kLocalUrlAccessCommand, blocked_frame);
-  EXPECT_TRUE(chromeos::ParentAccessDialog::GetInstance());
+  EXPECT_TRUE(ash::ParentAccessDialog::GetInstance());
 
   // Close the flow without approval - interstitial should be still shown.
   ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
   generator.PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
-  EXPECT_FALSE(chromeos::ParentAccessDialog::GetInstance());
+  EXPECT_FALSE(ash::ParentAccessDialog::GetInstance());
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
   EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame));
   EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));

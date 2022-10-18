@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_UI_HANDLER_IMPL_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_UI_HANDLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_UI_HANDLER_IMPL_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_UI_HANDLER_IMPL_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_callback.pb.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_callback.pb.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -25,7 +25,7 @@ class IdentityManager;
 
 class GoogleServiceAuthError;
 
-namespace chromeos {
+namespace ash {
 
 class ParentAccessUIHandlerImpl
     : public parent_access_ui::mojom::ParentAccessUIHandler {
@@ -76,6 +76,6 @@ class ParentAccessUIHandlerImpl
   base::WeakPtrFactory<ParentAccessUIHandlerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_UI_HANDLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_UI_HANDLER_IMPL_H_

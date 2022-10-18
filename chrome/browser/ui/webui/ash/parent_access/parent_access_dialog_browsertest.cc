@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
+#include <memory>
 
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -23,14 +23,14 @@
 #include "url/gurl.h"
 
 namespace {
-bool DialogResultsEqual(const chromeos::ParentAccessDialog::Result& first,
-                        const chromeos::ParentAccessDialog::Result& second) {
+bool DialogResultsEqual(const ash::ParentAccessDialog::Result& first,
+                        const ash::ParentAccessDialog::Result& second) {
   return first.status == second.status &&
          first.parent_access_token == second.parent_access_token;
 }
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 using ParentAccessDialogBrowserTest = ParentAccessChildUserBrowserTestBase;
 
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
 
   // Send ESCAPE keypress.  EventGenerator requires the root window, which has
   // to be fetched from the Ash shell.
-  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
+  ui::test::EventGenerator generator(Shell::Get()->GetPrimaryRootWindow());
   generator.PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   // The dialog instance should be gone after ESC is pressed.
@@ -180,4 +180,4 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogRegularUserBrowserTest,
 // TODO(b/241166361) Add test to ensure PAT is communicated back to caller via
 // the the ParentAccessDialog::Callback.
 
-}  // namespace chromeos
+}  // namespace ash

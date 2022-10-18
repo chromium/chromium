@@ -266,6 +266,7 @@
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/certificate_manager_dialog_ui.h"
@@ -278,7 +279,6 @@
 #include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/notification_tester/notification_tester_ui.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/chromeos/power_ui.h"
 #include "chrome/browser/ui/webui/chromeos/set_time_ui.h"
 #include "chrome/browser/ui/webui/chromeos/slow_trace_ui.h"
@@ -992,7 +992,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIAddSupervisionHost)
     return &NewWebUI<ash::AddSupervisionUI>;
   if (url.host_piece() == chrome::kChromeUIParentAccessHost)
-    return &NewWebUI<chromeos::ParentAccessUI>;
+    return &NewWebUI<ash::ParentAccessUI>;
   if (url.host_piece() == chrome::kChromeUIAudioHost &&
       base::FeatureList::IsEnabled(chromeos::features::kAudioUrl)) {
     return &NewWebUI<ash::AudioUI>;

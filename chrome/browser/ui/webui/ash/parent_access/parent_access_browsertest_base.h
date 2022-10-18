@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_BROWSERTEST_BASE_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_BROWSERTEST_BASE_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_BROWSERTEST_BASE_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_BROWSERTEST_BASE_H_
 
 #include <memory>
 
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 
 namespace content {
 class WebContents;
@@ -19,7 +19,7 @@ namespace signin {
 class IdentityTestEnvironment;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Base class for ParentAccessUI tests.
 class ParentAccessBrowserTestBase : public MixinBasedInProcessBrowserTest {
@@ -39,7 +39,7 @@ class ParentAccessBrowserTestBase : public MixinBasedInProcessBrowserTest {
   // WebUI should not exist unless a dialog has been created. When writing
   // tests, create a dialog if the WebUI needs to be created.
   content::WebUI* GetWebUI();
-  chromeos::ParentAccessUI* GetParentAccessUI();
+  ParentAccessUI* GetParentAccessUI();
   content::WebContents* GetContents();
 
  protected:
@@ -85,6 +85,6 @@ class ParentAccessChildUserBrowserTestBase
   LoggedInUserMixin::LogInType GetLogInType() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_BROWSERTEST_BASE_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_BROWSERTEST_BASE_H_

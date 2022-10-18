@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -45,8 +45,8 @@ class ParentAccessAsh : public mojom::ParentAccess {
   using ParentAccessCallback =
       base::OnceCallback<void(crosapi::mojom::ParentAccessResultPtr)>;
 
-  chromeos::ParentAccessDialogProvider* SetDialogProviderForTest(
-      std::unique_ptr<chromeos::ParentAccessDialogProvider> provider);
+  ash::ParentAccessDialogProvider* SetDialogProviderForTest(
+      std::unique_ptr<ash::ParentAccessDialogProvider> provider);
 
  private:
   // Shows the dialog with the specified parameters.
@@ -60,13 +60,13 @@ class ParentAccessAsh : public mojom::ParentAccess {
   // callback:  The crosapi callback to call with the result.
   // result: The result returned from the dialog.
   void OnParentAccessDialogClosed(
-      std::unique_ptr<chromeos::ParentAccessDialog::Result> result);
+      std::unique_ptr<ash::ParentAccessDialog::Result> result);
 
   // The returned object is lazy initialized.
-  chromeos::ParentAccessDialogProvider* GetDialogProvider();
+  ash::ParentAccessDialogProvider* GetDialogProvider();
 
   mojo::ReceiverSet<mojom::ParentAccess> receivers_;
-  std::unique_ptr<chromeos::ParentAccessDialogProvider> dialog_provider_;
+  std::unique_ptr<ash::ParentAccessDialogProvider> dialog_provider_;
   ParentAccessCallback callback_;
 };
 

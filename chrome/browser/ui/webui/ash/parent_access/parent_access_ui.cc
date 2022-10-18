@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 
 #include <string>
 #include <utility>
@@ -13,7 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -25,7 +25,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -160,4 +160,4 @@ void ParentAccessUI::SetUpResources() {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ParentAccessUI)
 
-}  // namespace chromeos
+}  // namespace ash

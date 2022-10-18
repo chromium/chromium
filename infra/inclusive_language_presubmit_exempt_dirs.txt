@@ -55,7 +55,7 @@ chrome/browser/speech/extension_api 1 1
 chrome/browser/ui 2 1
 chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox 1 1
 chrome/browser/ui/commander 1 1
-chrome/browser/ui/webui/chromeos/parent_access 1 1
+chrome/browser/ui/webui/ash/parent_access 1 1
 chrome/browser/ui/webui/settings 1 1
 chrome/browser/win 2 1
 chromecast 1 1

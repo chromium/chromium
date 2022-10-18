@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl.h"
+
 #include <memory>
 #include <string>
-
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui_handler_impl.h"
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_callback.pb.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_callback.pb.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -30,7 +30,7 @@ parent_access_ui::mojom::ParentAccessParamsPtr GetParamsForWebApprovals() {
 }
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 using ParentAccessUIHandlerImplBrowserTest =
     ParentAccessChildUserBrowserTestBase;
@@ -159,8 +159,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
       GetParamsForWebApprovals(),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
-             std::unique_ptr<chromeos::ParentAccessDialog::Result> result)
-              -> void {
+             std::unique_ptr<ParentAccessDialog::Result> result) -> void {
             // The dialog result should contain the test token and expire
             // timestamp.
             EXPECT_EQ("TEST_TOKEN", result->parent_access_token);
@@ -233,11 +232,9 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest, OnParentDeclined) {
       GetParamsForWebApprovals(),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
-             std::unique_ptr<chromeos::ParentAccessDialog::Result> result)
-              -> void {
+             std::unique_ptr<ParentAccessDialog::Result> result) -> void {
             // The dialog result should contain the test token.
-            EXPECT_EQ(chromeos::ParentAccessDialog::Result::kDeclined,
-                      result->status);
+            EXPECT_EQ(ParentAccessDialog::Result::kDeclined, result->status);
             std::move(quit_closure).Run();
           },
           show_dialog_run_loop.QuitClosure()));
@@ -393,4 +390,4 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
           }));
 }
 
-}  // namespace chromeos
+}  // namespace ash

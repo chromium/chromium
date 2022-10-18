@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -21,18 +21,17 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
-class FakeParentAccessDialogProvider
-    : public chromeos::ParentAccessDialogProvider {
+class FakeParentAccessDialogProvider : public ash::ParentAccessDialogProvider {
  public:
   ParentAccessDialogProvider::ShowError Show(
       parent_access_ui::mojom::ParentAccessParamsPtr params,
-      chromeos::ParentAccessDialog::Callback callback) override {
+      ash::ParentAccessDialog::Callback callback) override {
     callback_ = std::move(callback);
     last_params_received_ = std::move(params);
     return next_show_error_;
   }
 
-  void SetNextShowError(chromeos::ParentAccessDialogProvider::ShowError error) {
+  void SetNextShowError(ash::ParentAccessDialogProvider::ShowError error) {
     next_show_error_ = error;
   }
 
@@ -41,14 +40,14 @@ class FakeParentAccessDialogProvider
   }
 
   void TriggerCallbackWithResult(
-      std::unique_ptr<chromeos::ParentAccessDialog::Result> result) {
+      std::unique_ptr<ash::ParentAccessDialog::Result> result) {
     std::move(callback_).Run(std::move(result));
   }
 
  private:
-  chromeos::ParentAccessDialog::Callback callback_;
+  ash::ParentAccessDialog::Callback callback_;
   parent_access_ui::mojom::ParentAccessParamsPtr last_params_received_;
-  chromeos::ParentAccessDialogProvider::ShowError next_show_error_;
+  ash::ParentAccessDialogProvider::ShowError next_show_error_;
 };
 
 namespace {
@@ -132,9 +131,8 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Approved) {
           },
           run_loop.QuitClosure()));
 
-  auto dialog_result = std::make_unique<chromeos::ParentAccessDialog::Result>();
-  dialog_result->status =
-      chromeos::ParentAccessDialog::Result::Status::kApproved;
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kApproved;
   dialog_result->parent_access_token = "ABC123";
   dialog_result->parent_access_token_expire_timestamp =
       base::Time::FromDoubleT(123456UL);
@@ -157,9 +155,8 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Declined) {
           },
           run_loop.QuitClosure()));
 
-  auto dialog_result = std::make_unique<chromeos::ParentAccessDialog::Result>();
-  dialog_result->status =
-      chromeos::ParentAccessDialog::Result::Status::kDeclined;
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kDeclined;
   dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
   run_loop.Run();
 }
@@ -181,8 +178,8 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_Error) {
           },
           run_loop.QuitClosure()));
 
-  auto dialog_result = std::make_unique<chromeos::ParentAccessDialog::Result>();
-  dialog_result->status = chromeos::ParentAccessDialog::Result::Status::kError;
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kError;
   dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
   run_loop.Run();
 }
@@ -202,7 +199,7 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_AlreadyVisible) {
           successful_show_run_loop.QuitClosure()));
 
   dialog_provider_->SetNextShowError(
-      chromeos::ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible);
+      ash::ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible);
 
   // Show dialog again, should be blocked because it is already visible.
   base::RunLoop already_visible_run_loop;
@@ -224,9 +221,8 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_AlreadyVisible) {
   // The second run loop completes.
   already_visible_run_loop.Run();
 
-  auto dialog_result = std::make_unique<chromeos::ParentAccessDialog::Result>();
-  dialog_result->status =
-      chromeos::ParentAccessDialog::Result::Status::kApproved;
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kApproved;
   dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
 
   // The original run loop completes.
@@ -236,7 +232,7 @@ TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_AlreadyVisible) {
 // Makes sure regular users can't request parent access.
 TEST_F(ParentAccessAshTest, GetWebsiteParentApproval_NotAChildUser) {
   dialog_provider_->SetNextShowError(
-      chromeos::ParentAccessDialogProvider::ShowError::kNotAChildUser);
+      ash::ParentAccessDialogProvider::ShowError::kNotAChildUser);
 
   base::RunLoop run_loop;
   parent_access_ash_->GetWebsiteParentApproval(
