@@ -193,6 +193,11 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kDiscoverFeedInNtpName[];
 extern const char kDiscoverFeedInNtpDescription[];
 
+// Title and description for the flag to enable checking feed visibility on
+// attention log start.
+extern const char kEnableCheckVisibilityOnAttentionLogStartName[];
+extern const char kEnableCheckVisibilityOnAttentionLogStartDescription[];
+
 // Title and description for the flag to enable the sync promotion on top of the
 // discover feed.
 extern const char kEnableDiscoverFeedTopSyncPromoName[];
@@ -287,6 +292,11 @@ extern const char kPasswordsGroupingDescription[];
 // Title and description for the flag to enable open in download
 extern const char kEnableOpenInDownloadName[];
 extern const char kEnableOpenInDownloadDescription[];
+
+// Title and description for the flag to enable refining data source reload
+// reporting when having a very short attention log.
+extern const char kEnableRefineDataSourceReloadReportingName[];
+extern const char kEnableRefineDataSourceReloadReportingDescription[];
 
 // Title and description for the flag to enable omnibox suggestions scrolling on
 // iPad.

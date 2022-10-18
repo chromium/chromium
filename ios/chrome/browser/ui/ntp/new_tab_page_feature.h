@@ -27,6 +27,13 @@ BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
 // Feature flag to enable the sync promo on top of the discover feed.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedTopSyncPromo);
 
+// Feature flag to enable checking feed visibility on attention log start.
+BASE_DECLARE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart);
+
+// Feature flag to enable refining data source reload reporting when having a
+// very short attention log.
+BASE_DECLARE_FEATURE(kEnableRefineDataSourceReloadReporting);
+
 // A parameter to indicate whether Reconstructed Templates is enabled for static
 // resource serving.
 extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
@@ -73,5 +80,12 @@ bool IsDiscoverFeedGhostCardsEnabled();
 
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
+
+// YES if enabled checking feed visibility on attention log start.
+bool IsCheckVisibilityOnAttentionLogStartEnabled();
+
+// YES if enabled refining data source reload reporting when having a very short
+// attention log.
+bool IsRefineDataSourceReloadReportingEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

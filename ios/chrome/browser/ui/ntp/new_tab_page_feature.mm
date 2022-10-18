@@ -50,6 +50,14 @@ BASE_FEATURE(kEnableFeedAblation,
              "FeedAblationEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart,
+             "EnableCheckVisibilityOnAttentionLogStart",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableRefineDataSourceReloadReporting,
+             "EnableRefineDataSourceReloadReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
 }
@@ -79,4 +87,13 @@ bool IsFeedAblationEnabled() {
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {
   return pref_service->GetBoolean(
       prefs::kNTPContentSuggestionsForSupervisedUserEnabled);
+}
+
+bool IsCheckVisibilityOnAttentionLogStartEnabled() {
+  return base::FeatureList::IsEnabled(
+      kEnableCheckVisibilityOnAttentionLogStart);
+}
+
+bool IsRefineDataSourceReloadReportingEnabled() {
+  return base::FeatureList::IsEnabled(kEnableRefineDataSourceReloadReporting);
 }

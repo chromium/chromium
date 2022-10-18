@@ -1262,6 +1262,16 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"keyboard-shortcuts-menu", flag_descriptions::kKeyboardShortcutsMenuName,
      flag_descriptions::kKeyboardShortcutsMenuDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kKeyboardShortcutsMenu)},
+    {"enable-check-visibility-on-attention-log-start",
+     flag_descriptions::kEnableCheckVisibilityOnAttentionLogStartName,
+     flag_descriptions::kEnableCheckVisibilityOnAttentionLogStartDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableCheckVisibilityOnAttentionLogStart)},
+    {"enable-refine-data-source-reload-reporting",
+     flag_descriptions::kEnableRefineDataSourceReloadReportingName,
+     flag_descriptions::kEnableRefineDataSourceReloadReportingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableRefineDataSourceReloadReporting)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
