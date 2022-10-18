@@ -115,7 +115,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // input for which the request was made and the latter indicates the result
   // type being received in this callback.
   void OnURLLoadComplete(const AutocompleteInput& input,
-                         ResultType result_type,
+                         const ResultType result_type,
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
   // Called when the prefetch network request has completed.
@@ -123,7 +123,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // input for which the request was made and the latter indicates the result
   // type being received in this callback.
   void OnPrefetchURLLoadComplete(const AutocompleteInput& input,
-                                 ResultType result_type,
+                                 const ResultType result_type,
                                  const network::SimpleURLLoader* source,
                                  std::unique_ptr<std::string> response_body);
 
