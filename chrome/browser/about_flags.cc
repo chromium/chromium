@@ -105,6 +105,7 @@
 #include "components/flags_ui/flags_ui_switches.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/history/core/browser/features.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
@@ -5854,6 +5855,13 @@ const FeatureEntry kFeatureEntries[] = {
          history_clusters::features::kOnDeviceClusteringKeywordFiltering,
          kJourneysOnDeviceClusteringKeywordFilteringVariations,
          "HistoryJourneysKeywordFiltering")},
+
+    {"history-journeys-show-all-clusters",
+     flag_descriptions::kJourneysShowAllClustersName,
+     flag_descriptions::kJourneysShowAllClustersDescription,
+     kOsDesktop | kOsAndroid,
+     SINGLE_VALUE_TYPE(history_clusters::switches::
+                           kShouldShowAllClustersOnProminentUiSurfaces)},
 
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription,

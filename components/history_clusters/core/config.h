@@ -14,6 +14,12 @@ class PrefService;
 
 namespace history_clusters {
 
+namespace switches {
+
+extern const char kShouldShowAllClustersOnProminentUiSurfaces[];
+
+}  // namespace switches
+
 class HistoryClustersService;
 
 // The default configuration. Always use |GetConfig()| to get the current

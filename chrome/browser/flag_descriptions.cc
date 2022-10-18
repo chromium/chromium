@@ -1776,6 +1776,11 @@ const char kJourneysOnDeviceClusteringKeywordFilteringDescription[] =
     "Enables variations for the keywords output by the on-device clustering "
     "for Journeys";
 
+const char kJourneysShowAllClustersName[] =
+    "History Journeys Show All Clusters";
+const char kJourneysShowAllClustersDescription[] =
+    "Enables all Journeys clusters to be shown on prominent UI surfaces";
+
 const char kLargeFaviconFromGoogleName[] = "Large favicons from Google";
 const char kLargeFaviconFromGoogleDescription[] =
     "Request large favicons from Google's favicon service";

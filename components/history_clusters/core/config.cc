@@ -23,15 +23,19 @@ namespace history_clusters {
 
 namespace {
 
-const char kShouldShowAllClustersOnProminentUiSurfaces[] =
-    "history-clusters-should-show-all-clusters-on-prominent-ui-surfaces";
-
 Config& GetConfigInternal() {
   static base::NoDestructor<Config> s_config;
   return *s_config;
 }
 
 }  // namespace
+
+namespace switches {
+
+const char kShouldShowAllClustersOnProminentUiSurfaces[] =
+    "history-clusters-should-show-all-clusters-on-prominent-ui-surfaces";
+
+}  // namespace switches
 
 Config::Config() {
   // Override any parameters that may be provided by Finch.
@@ -383,7 +387,7 @@ Config::Config() {
 
     should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
-            kShouldShowAllClustersOnProminentUiSurfaces);
+            switches::kShouldShowAllClustersOnProminentUiSurfaces);
   }
 }
 

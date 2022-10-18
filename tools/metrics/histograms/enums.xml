@@ -59404,6 +59404,8 @@ from previous Chrome versions.
   <int value="-589096918" label="ash-enable-fullscreen-app-list"/>
   <int value="-588669613"
       label="OmniboxClobberIsZeroSuggestEntrypoint:enabled"/>
+  <int value="-588245348"
+      label="history-clusters-should-show-all-clusters-on-prominent-ui-surfaces"/>
   <int value="-588163454"
       label="AccessibilitySelectToSpeakHoverTextImprovements:enabled"/>
   <int value="-585508682" label="DownloadRange:enabled"/>
