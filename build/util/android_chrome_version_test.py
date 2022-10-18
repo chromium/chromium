@@ -136,21 +136,6 @@ class _VersionTest(unittest.TestCase):
 
     self.assertEqual(arch_chrome_version_code, '484400001')
 
-  def testGenerateVersionCodesAndroidArchMips(self):
-    """Assert it handles different architectures correctly.
-
-    Version codes for different builds need to be distinct and maintain a
-    certain ordering.
-    See docstring on android_chrome_version._ABIS_TO_BIT_MASK for
-    reasoning.
-    """
-    output = GenerateVersionCodes(EXAMPLE_VERSION_VALUES,
-                                  arch='mipsel',
-                                  is_next_build=False)
-    arch_chrome_version_code = output['CHROME_VERSION_CODE']
-
-    self.assertEqual(arch_chrome_version_code, '484400002')
-
   def testGenerateVersionCodesAndroidArchArm64(self):
     """Assert it handles different architectures correctly.
 

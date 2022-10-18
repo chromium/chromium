@@ -33,13 +33,6 @@ config("compiler") {
     "ANDROID_NDK_VERSION_ROLL=${android_ndk_version}_1",
   ]
 
-  if (current_cpu == "mips64el") {
-    cflags += [
-      # Have to force IAS for mips64.
-      "-fintegrated-as",
-    ]
-  }
-
   ldflags = [
     # Don't allow visible symbols from libraries that contain
     # assembly code with symbols that aren't hidden properly.
@@ -107,16 +100,6 @@ config("runtime_library") {
 
   if (current_cpu == "arm" && arm_version == 6) {
     libs += [ "atomic" ]
-  }
-
-  if (current_cpu == "mipsel") {
-    libs += [ "atomic" ]
-  }
-
-  # TODO(jdduke) Re-enable on mips after resolving linking
-  # issues with libc++ (crbug.com/456380).
-  if (current_cpu != "mipsel" && current_cpu != "mips64el") {
-    ldflags += [ "-Wl,--warn-shared-textrel" ]
   }
 }
 

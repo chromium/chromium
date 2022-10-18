@@ -123,7 +123,6 @@ _ARCH_TO_MFG_AND_BITNESS = {
     'arm64': ('arm', '64'),
     'x86': ('intel', '32'),
     'x64': ('intel', '64'),
-    'mipsel': ('mipsel', '32'),
 }
 
 # Expose the available choices to other scripts.
@@ -166,8 +165,6 @@ things here:
   version on a 64-bit device, otherwise it won't work properly. So, the 64-bit
   version needs to be a higher versionCode, as otherwise a 64-bit device would
   prefer the 32-bit version that does not include any 64-bit code, and fail.
-- The relative order of mips isn't important, but it needs to be a *distinct*
-  value to the other architectures because all builds need unique version codes.
 """
 _ABIS_TO_BIT_MASK = {
     'arm': {
@@ -182,9 +179,6 @@ _ABIS_TO_BIT_MASK = {
         '64_32': 7,
         '64': 8,
     },
-    'mipsel': {
-        '32': 2,
-    }
 }
 
 
