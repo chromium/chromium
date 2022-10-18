@@ -36,7 +36,11 @@ NSString* const kOpenDownloadsFolderActivityType =
 }
 
 - (UIImage*)activityImage {
-  return DefaultSymbolTemplateWithPointSize(kOpenInDownloadsSymbol,
+  if (@available(iOS 15, *)) {
+    return DefaultSymbolTemplateWithPointSize(kOpenInDownloadsSymbol,
+                                              kSymbolDownloadInfobarPointSize);
+  }
+  return DefaultSymbolTemplateWithPointSize(kOpenInDownloadsiOS14Symbol,
                                             kSymbolDownloadInfobarPointSize);
 }
 

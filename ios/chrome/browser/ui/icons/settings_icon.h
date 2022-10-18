@@ -20,6 +20,7 @@ extern NSString* const kGoogleIconSymbol;
 // Default symbol names.
 extern NSString* const kSyncEnabledSymbol;
 extern NSString* const kDefaultBrowserSymbol;
+extern NSString* const kDefaultBrowseriOS14Symbol;
 extern NSString* const kDiscoverSymbol;
 extern NSString* const kBellSymbol;
 extern NSString* const kCachedDataSymbol;

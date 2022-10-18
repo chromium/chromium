@@ -825,7 +825,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
   if (UseSymbols()) {
-    defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+    if (@available(iOS 15, *)) {
+      defaultBrowser.iconImage =
+          DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+    } else {
+      defaultBrowser.iconImage =
+          DefaultSettingsRootSymbol(kDefaultBrowseriOS14Symbol);
+    }
     defaultBrowser.iconBackgroundColor = [UIColor colorNamed:kPurple500Color];
     defaultBrowser.iconTintColor = UIColor.whiteColor;
     defaultBrowser.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
@@ -1260,12 +1266,17 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 - (TableViewSwitchItem*)viewSourceSwitchItem {
   TableViewSwitchItem* viewSourceItem = nil;
   if (UseSymbols()) {
-    viewSourceItem = [self
-             switchItemWithType:SettingsItemTypeViewSource
-                          title:@"View source menu"
-                         symbol:DefaultSettingsRootSymbol(@"keyboard.badge.eye")
-          symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
-        accessibilityIdentifier:nil];
+    UIImage* image;
+    if (@available(iOS 16, *)) {
+      image = DefaultSettingsRootSymbol(@"keyboard.badge.eye");
+    } else {
+      image = DefaultSettingsRootSymbol(@"keyboard");
+    }
+    viewSourceItem = [self switchItemWithType:SettingsItemTypeViewSource
+                                        title:@"View source menu"
+                                       symbol:image
+                        symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+                      accessibilityIdentifier:nil];
 
   } else {
     viewSourceItem = [self switchItemWithType:SettingsItemTypeViewSource

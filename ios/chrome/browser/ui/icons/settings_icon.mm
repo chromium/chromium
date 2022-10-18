@@ -23,6 +23,7 @@ NSString* const kGoogleIconSymbol = @"google_icon";
 // Default symbol names.
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
 NSString* const kDefaultBrowserSymbol = @"app.badge.checkmark";
+NSString* const kDefaultBrowseriOS14Symbol = @"app.badge";
 NSString* const kDiscoverSymbol = @"flame";
 NSString* const kBellSymbol = @"bell";
 NSString* const kCachedDataSymbol = @"photo.on.rectangle";

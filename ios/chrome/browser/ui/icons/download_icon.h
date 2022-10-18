@@ -13,7 +13,9 @@ extern const CGFloat kSymbolDownloadSmallInfobarPointSize;
 
 // Specific symbols used in the download toolbar.
 extern NSString* const kDownloadPromptFillSymbol;
+extern NSString* const kDownloadPromptFilliOS14Symbol;
 extern NSString* const kDownloadDocFillSymbol;
 extern NSString* const kOpenInDownloadsSymbol;
+extern NSString* const kOpenInDownloadsiOS14Symbol;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_DOWNLOAD_ICON_H_

@@ -12,5 +12,7 @@ const CGFloat kSymbolDownloadInfobarPointSize = 18.;
 const CGFloat kSymbolDownloadSmallInfobarPointSize = 13.;
 
 NSString* const kDownloadPromptFillSymbol = @"arrow.down.to.line.circle.fill";
+NSString* const kDownloadPromptFilliOS14Symbol = @"arrow.down.circle.fill";
 NSString* const kDownloadDocFillSymbol = @"doc.fill";
-NSString* const kOpenInDownloadsSymbol = @"arrow.down.to.line.alt";
+NSString* const kOpenInDownloadsSymbol = @"arrow.down.to.line.compact";
+NSString* const kOpenInDownloadsiOS14Symbol = @"arrow.down.to.line.alt";
