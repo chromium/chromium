@@ -879,6 +879,12 @@ export class TestFileSystemProvider {
       return;
     }
 
+    const error = this.testConfig['onRemoveWatcherRequestedError'];
+    if (error) {
+      onError(error);
+      return;
+    }
+
     if (!this.findEntryByPath(options.entryPath)) {
       onSuccess();
       return;
