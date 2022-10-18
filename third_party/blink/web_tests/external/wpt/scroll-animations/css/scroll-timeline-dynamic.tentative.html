@@ -3,6 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   main > div {
     overflow: hidden;
@@ -68,9 +69,10 @@
       }, description);
     };
 
-    // Verify that the computed style is as expected immediately after the
-    // rule change took place.
+    // Verify that the computed style is as expected after a full frame update
+    // following the rule change took place.
     instantiate(async (element, expected) => {
+      await waitForCSSScrollTimelineStyle();
       assert_equals(getComputedStyle(element).width, expected);
     }, description + ' [immediate]');
 

@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   #outer {
     height: 100px;
@@ -60,8 +61,9 @@
     assert_equals(getComputedStyle(element).backgroundColor, 'rgb(100, 100, 100)');
     // This causes the timeline to be created.
     outer.style.width = '250px';
-    // Check value with getComputedStyle immediately.
-    assert_equals(getComputedStyle(element).backgroundColor, 'rgb(150, 150, 150)');
+    // Check value with getComputedStyle immediately, which is the unanimated
+    // value since the scroll timeline is inactive before the next frame.
+    assert_equals(getComputedStyle(element).backgroundColor, 'rgb(0, 0, 0)');
     // Also check value after one frame.
     await waitForNextFrame();
     assert_equals(getComputedStyle(element).backgroundColor, 'rgb(150, 150, 150)');

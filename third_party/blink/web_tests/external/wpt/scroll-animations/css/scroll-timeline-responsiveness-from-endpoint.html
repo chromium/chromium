@@ -7,6 +7,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-animations/support/testcommon.js"></script>
 <script src="/scroll-animations/scroll-timelines/testcommon.js"></script>
+<script src="support/testcommon.js"></script>
 
 <style>
   @keyframes anim {
@@ -32,6 +33,8 @@ promise_test(async t => {
   await waitForNextFrame();
 
   div.style.animation = 'anim 100s linear scroll(root)';
+  await waitForCSSScrollTimelineStyle();
+
   const anim = div.getAnimations()[0];
   await anim.ready;
   assert_percents_equal(anim.timeline.currentTime, 0,

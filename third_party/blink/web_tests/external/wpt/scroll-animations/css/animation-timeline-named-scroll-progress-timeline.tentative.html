@@ -6,6 +6,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   @keyframes anim {
     from { translate: 50px; }
@@ -257,6 +258,7 @@ promise_test(async t => {
   // Ensure that #main (an ancestor of the scroller) needs style recalc.
   main.style.background = 'lightgray';
   sibling.style.scrollTimelineName = 'timeline';
+  await waitForCSSScrollTimelineStyle();
   assert_equals(getComputedStyle(target).translate, '100px');
 
   main.remove();
@@ -301,6 +303,7 @@ promise_test(async t => {
 
   scroller.style.scrollTimelineName = 'timeline';
   target.style.animation = 'anim 10s linear timeline';
+  await waitForCSSScrollTimelineStyle();
 
   assert_equals(getComputedStyle(target).translate, '100px');
 
@@ -351,6 +354,7 @@ promise_test(async t => {
 
   scroller.style.scrollTimelineName = 'timeline';
   target.style.animation = 'anim 10s linear timeline';
+  await waitForCSSScrollTimelineStyle();
 
   assert_equals(getComputedStyle(target).translate, '100px');
 
