@@ -48,7 +48,7 @@ class PLATFORM_EXPORT DisplayItemClient {
   // which will behave consistently when used in hashtables or comparing the
   // keys of possibly dead clients.
   uintptr_t GetKey() const {
-    if (recordreplay::IsRecordingOrReplaying()) {
+    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
       return recordreplay::PointerId(this);
     }
     return (uintptr_t)this;

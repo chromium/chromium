@@ -511,7 +511,7 @@ bool ParkableStringImpl::CanParkNow() const {
          // Never park strings when recording/replaying, as they can be unparked
          // at non-deterministic points (e.g. during script compilation) and
          // perform file accesses.
-         !recordreplay::IsRecordingOrReplaying();
+         !recordreplay::IsRecordingOrReplaying("no-park-strings");
 }
 
 void ParkableStringImpl::Unpark() {

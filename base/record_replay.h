@@ -19,7 +19,7 @@ namespace base {
 
 namespace recordreplay {
 
-bool IsRecordingOrReplaying();
+bool IsRecordingOrReplaying(const char* feature = nullptr);
 bool IsRecording();
 bool IsReplaying();
 char* GetRecordingId();
@@ -84,9 +84,9 @@ void* IdPointer(int id);
 struct CompareByPointerId {
   template <typename T>
   bool operator()(const T* a, const T* b) const {
-    if (recordreplay::IsRecordingOrReplaying()) {
-      int ida = recordreplay::PointerId(a);
-      int idb = recordreplay::PointerId(b);
+    if (IsRecordingOrReplaying("pointer-ids")) {
+      int ida = PointerId(a);
+      int idb = PointerId(b);
       CHECK(ida && idb);
       return ida < idb;
     }
@@ -98,7 +98,7 @@ struct CompareByPointerId {
 template <typename T>
 struct CompareRefptrByPointerId {
   bool operator()(const T& a, const T& b) const {
-    if (IsRecordingOrReplaying()) {
+    if (IsRecordingOrReplaying("pointer-ids")) {
       int ida = PointerId(a.get());
       int idb = PointerId(b.get());
       CHECK(ida && idb);
@@ -112,9 +112,9 @@ struct CompareRefptrByPointerId {
 template <typename T>
 struct CompareMemberByPointerId {
   bool operator()(const T& a, const T& b) const {
-    if (recordreplay::IsRecordingOrReplaying()) {
-      int ida = recordreplay::PointerId(a.Get());
-      int idb = recordreplay::PointerId(b.Get());
+    if (IsRecordingOrReplaying("pointer-ids")) {
+      int ida = PointerId(a.Get());
+      int idb = PointerId(b.Get());
       CHECK(ida && idb);
       return ida < idb;
     }

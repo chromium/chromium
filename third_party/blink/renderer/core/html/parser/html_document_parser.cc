@@ -427,7 +427,7 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
       scheduler_(sync_policy == kAllowDeferredParsing
                      ? Thread::Current()->Scheduler()
                      : nullptr) {
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("notify-html-parse")) {
     CHECK(sync_policy != kAllowAsynchronousParsing);
     V8RecordReplayHTMLParseStart(this, document.Url().GetString().Utf8().c_str());
   }
@@ -473,7 +473,7 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
 }
 
 HTMLDocumentParser::~HTMLDocumentParser() {
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("notify-html-parse")) {
     V8RecordReplayHTMLParseFinish(this);
   }
 }
@@ -1194,7 +1194,7 @@ bool HTMLDocumentParser::HasInsertionPoint() {
 void HTMLDocumentParser::insert(const String& sourceArg) {
   // Temporary fix to make sure that all parsed sources match up when replaying.
   String source = sourceArg;
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("values")) {
     size_t length = recordreplay::RecordReplayValue("HTMLDocumentParser::insert", source.length());
     UChar* chars = new UChar[length];
     if (recordreplay::IsRecording()) {
@@ -1308,7 +1308,7 @@ void HTMLDocumentParser::Append(const String& input_source) {
   if (IsStopped())
     return;
 
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("notify-html-parse")) {
     V8RecordReplayHTMLParseAddData(this, input_source.Utf8().c_str());
   }
 

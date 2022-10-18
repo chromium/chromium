@@ -147,7 +147,7 @@ class ThreadState::IncrementalMarkingScheduler {
 
   void ScheduleTask() {
     // Avoid posting non-deterministic runnables when recording/replaying.
-    if (recordreplay::IsRecordingOrReplaying()) {
+    if (recordreplay::IsRecordingOrReplaying("deterministic-tasks")) {
       return;
     }
 
@@ -1343,7 +1343,7 @@ void ThreadState::AtomicPauseSweepAndCompact(
 #endif  // ADDRESS_SANITIZER
   DCHECK(IsSweepingInProgress());
   if (sweeping_type == BlinkGC::kEagerSweeping ||
-      recordreplay::IsRecordingOrReplaying()) {
+      recordreplay::IsRecordingOrReplaying("deterministic-tasks")) {
     // Eager sweeping should happen only in testing, or when recording/replaying
     // to avoid posting runnables at non-deterministic points.
     CompleteSweep();

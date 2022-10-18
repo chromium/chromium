@@ -19,7 +19,7 @@ namespace recordreplay {
 #define OP2(RR, NORR) NORR
 #endif
 
-extern "C" bool V8IsRecordingOrReplaying();
+extern "C" bool V8IsRecordingOrReplaying(const char* feature);
 extern "C" bool V8IsRecording();
 extern "C" bool V8IsReplaying();
 extern "C" char* V8GetRecordingId();
@@ -52,8 +52,8 @@ extern "C" void* V8RecordReplayIdPointer(int id);
 extern "C" bool V8RecordReplayFeatureEnabled(const char* feature);
 extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload);
 
-bool IsRecordingOrReplaying() {
-  return OP2(V8IsRecordingOrReplaying(), false);
+bool IsRecordingOrReplaying(const char* feature) {
+  return OP2(V8IsRecordingOrReplaying(feature), false);
 }
 
 bool IsRecording() {

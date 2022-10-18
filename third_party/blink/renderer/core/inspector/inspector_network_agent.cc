@@ -182,7 +182,7 @@ static std::unique_ptr<protocol::Network::Headers> BuildObjectForHeaders(
 }
 
 static bool PermitRecordReplayBrowserEvents() {
-  return recordreplay::IsRecordingOrReplaying() && v8::IsMainThread();
+  return recordreplay::IsRecordingOrReplaying("notify-network") && v8::IsMainThread();
 }
 
 class InspectorFileReaderLoaderClient final : public FileReaderLoaderClient {

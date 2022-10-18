@@ -51,7 +51,7 @@ SkCanvas* SoftwareOutputDevice::BeginPaint(const gfx::Rect& damage_rect) {
 }
 
 void SoftwareOutputDevice::EndPaint() {
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     SkPixmap pixmap;
     if (surface_ && surface_->peekPixels(&pixmap)) {
       RecordReplayPaintFinished(pixmap);

@@ -118,7 +118,7 @@ static inline bool BlinkRuntimeCallStatsEnabled() {
   // Force-disable call stats when recording/replaying, as calls can occur at
   // non-deterministic points and will also bloat the recording.
   return UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled()
-               && !v8::recordreplay::IsRecordingOrReplaying());
+               && !v8::recordreplay::IsRecordingOrReplaying("no-call-stats"));
 }
 
 // Macros that take RuntimeCallStats as a parameter; used only in

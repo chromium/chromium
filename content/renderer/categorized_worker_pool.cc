@@ -196,7 +196,7 @@ void CategorizedWorkerPool::Start(int num_normal_threads,
 
   // Using multiple threads for raster tasks runs into ordering problems within
   // Skia when recording/replaying. For now we avoid this by only creating one thread.
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("no-render-workers")) {
     num_normal_threads = 1;
   }
 

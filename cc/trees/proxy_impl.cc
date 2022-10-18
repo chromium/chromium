@@ -266,7 +266,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     base::TimeTicks main_thread_start_time,
     const viz::BeginFrameArgs& commit_args,
     bool hold_commit_for_activation) {
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     viz::RecordReplayOnReadyToCommit();
   }
 

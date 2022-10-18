@@ -988,7 +988,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
         if (style.Preserves3D() && !state.rendering_context_id) {
           // When recording/replaying we need a consistent context ID, so use
           // the pointer ID of the object instead of its hash.
-          if (recordreplay::IsRecordingOrReplaying()) {
+          if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
             state.rendering_context_id = recordreplay::PointerId(&object_);
           } else {
             state.rendering_context_id =

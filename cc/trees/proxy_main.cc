@@ -362,7 +362,7 @@ void ProxyMain::BeginMainFrame(
 
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
 
-    if (recordreplay::IsRecordingOrReplaying()) {
+    if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
       viz::RecordReplayOnCommitPaint();
     }
 

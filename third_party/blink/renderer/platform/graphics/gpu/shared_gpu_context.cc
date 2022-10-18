@@ -83,7 +83,7 @@ static void CreateContextProviderOnMainThread(
 
 void SharedGpuContext::CreateContextProviderIfNeeded(
     bool only_if_gpu_compositing) {
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("no-gpu")) {
     is_gpu_compositing_disabled_ = true;
     return;
   }

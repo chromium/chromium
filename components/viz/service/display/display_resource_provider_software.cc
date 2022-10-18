@@ -140,7 +140,7 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     : resource_provider_(resource_provider), resource_id_(resource_id) {
   // When recording/replaying we don't have a resource provider, and need to get
   // the bitmap directly from the record/replay renderer.
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     SkBitmap sk_bitmap;
     if (RecordReplayPopulateSkBitmapWithResource(&sk_bitmap, resource_id)) {
       sk_bitmap.setImmutable();
@@ -182,7 +182,7 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::
     ~ScopedReadLockSkImage() {
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     return;
   }
   resource_provider_->UnlockForRead(resource_id_);

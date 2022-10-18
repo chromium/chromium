@@ -182,7 +182,7 @@ mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
 }  // namespace
 
 static bool PermitRecordReplayBrowserEvents() {
-  return recordreplay::IsRecordingOrReplaying() && v8::IsMainThread();
+  return recordreplay::IsRecordingOrReplaying("notify-network") && v8::IsMainThread();
 }
 
 struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {

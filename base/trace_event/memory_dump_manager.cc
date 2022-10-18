@@ -342,7 +342,7 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
 
   // Don't generate process dumps when recording/replaying, to avoid mismatched
   // behavior issues when accessing memory dump state.
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("gc-changes")) {
     FinishAsyncProcessDump(std::move(pmd_async_state));
     return;
   }

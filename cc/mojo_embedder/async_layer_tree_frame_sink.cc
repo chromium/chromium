@@ -204,7 +204,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                          TRACE_EVENT_FLAG_FLOW_OUT, "step",
                          "SubmitHitTestData");
 
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     RecordReplaySubmitCompositorFrame(local_surface_id_, frame);
   }
 

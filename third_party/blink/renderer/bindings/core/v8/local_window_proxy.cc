@@ -190,11 +190,10 @@ void LocalWindowProxy::Initialize() {
   // origin, we are ready to set up the state used to process driver commands
   // when recording/replaying, and to create checkpoints. Create the first
   // checkpoint at which execution can pause.
-  if (recordreplay::IsRecordingOrReplaying() &&
+  if (recordreplay::IsRecordingOrReplaying("checkpoints") &&
       origin &&
       !origin->Host().IsEmpty() &&
-      !gRecordReplayStateInitialized &&
-      recordreplay::FeatureEnabled("checkpoints")) {
+      !gRecordReplayStateInitialized) {
     gRecordReplayStateInitialized = true;
     SetupRecordReplayCommands(GetIsolate());
     V8RecordReplaySetDefaultContext(GetIsolate(), context);
@@ -615,7 +614,7 @@ LocalWindowProxy::LocalWindowProxy(v8::Isolate* isolate,
 }
 
 bool RecordReplayStateEnsureInitialized() {
-  if (recordreplay::IsRecordingOrReplaying() &&
+  if (recordreplay::IsRecordingOrReplaying("checkpoints") &&
       !gRecordReplayStateInitialized &&
       gLatestLocalWindowProxy) {
     gLatestLocalWindowProxy->InitializeIfNeeded();

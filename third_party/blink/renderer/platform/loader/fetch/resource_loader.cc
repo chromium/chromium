@@ -212,7 +212,7 @@ void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
 }  // namespace
 
 static bool PermitRecordReplayBrowserEvents() {
-  return recordreplay::IsRecordingOrReplaying() && v8::IsMainThread();
+  return recordreplay::IsRecordingOrReplaying("notify-network") && v8::IsMainThread();
 }
 
 // CodeCacheRequest handles the requests to fetch data from code cache.

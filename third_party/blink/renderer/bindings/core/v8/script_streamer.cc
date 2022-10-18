@@ -395,7 +395,7 @@ bool ScriptStreamer::IsStreamingSuppressed() const {
   DCHECK(IsMainThread());
   // V8 bytecode instrumentation requires that we parse scripts on the same
   // thread which they will run on.
-  return recordreplay::IsRecordingOrReplaying()
+  return recordreplay::IsRecordingOrReplaying("deterministic-tasks")
       || suppressed_reason_ != NotStreamingReason::kInvalid;
 }
 

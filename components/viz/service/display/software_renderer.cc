@@ -245,7 +245,7 @@ void SoftwareRenderer::PrepareSurfaceForPass(
 bool SoftwareRenderer::IsSoftwareResource(ResourceId resource_id) {
   // When rendering in a recording/replaying process there is no resource
   // provider, and all resources use software rendering.
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     return true;
   }
   return resource_provider()->IsResourceSoftwareBacked(resource_id);

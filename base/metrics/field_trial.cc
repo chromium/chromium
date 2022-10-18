@@ -696,7 +696,7 @@ void FieldTrialList::GetInitiallyActiveFieldTrials(
   // Field trials are disabled when recording/replaying. The set of trials are
   // read from shared memory and won't be consistent when replaying, and there
   // isn't much point getting them working.
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("no-field-trials")) {
     return;
   }
 
@@ -759,7 +759,7 @@ void FieldTrialList::CreateTrialsFromCommandLine(
   global_->create_trials_from_command_line_called_ = true;
 
   // Field trials are disabled when recording/replaying.
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying("no-field-trials")) {
     return;
   }
 
