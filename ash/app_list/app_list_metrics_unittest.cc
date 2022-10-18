@@ -213,22 +213,9 @@ TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromShelf) {
       1 /* Number of times launched from shelf */);
 }
 
-// Tests with feature ProductivityLauncher enabled.
-class AppListMetricsProductivityLauncherTest : public AppListMetricsTest {
- public:
-  AppListMetricsProductivityLauncherTest() {
-    scoped_feature_list_.InitWithFeatures({features::kProductivityLauncher},
-                                          {});
-  }
-  ~AppListMetricsProductivityLauncherTest() override = default;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test that the histogram records an app launch from a recent app suggestion
 // while the bubble launcher all apps is showing.
-TEST_F(AppListMetricsProductivityLauncherTest,
-       BubbleAllAppsLaunchFromRecentApps) {
+TEST_F(AppListMetricsTest, BubbleAllAppsLaunchFromRecentApps) {
   base::HistogramTester histogram_tester;
   auto* helper = GetAppListTestHelper();
 
@@ -255,8 +242,7 @@ TEST_F(AppListMetricsProductivityLauncherTest,
       1 /* Number of times launched from chip */);
 }
 
-TEST_F(AppListMetricsProductivityLauncherTest,
-       HideContinueSectionMetricInClamshellMode) {
+TEST_F(AppListMetricsTest, HideContinueSectionMetricInClamshellMode) {
   base::HistogramTester histograms;
 
   // Show the app list with a full continue section.
@@ -284,8 +270,7 @@ TEST_F(AppListMetricsProductivityLauncherTest,
   helper->Dismiss();
 }
 
-TEST_F(AppListMetricsProductivityLauncherTest,
-       HideContinueSectionMetricInTabletMode) {
+TEST_F(AppListMetricsTest, HideContinueSectionMetricInTabletMode) {
   base::HistogramTester histograms;
 
   // Show the tablet mode app list with a full continue section.
@@ -313,7 +298,7 @@ TEST_F(AppListMetricsProductivityLauncherTest,
 
 // Test that the histogram records an app launch from a recent app suggestion
 // while the homecher all apps is showing.
-TEST_F(AppListMetricsProductivityLauncherTest, HomecherLaunchFromRecentApps) {
+TEST_F(AppListMetricsTest, HomecherLaunchFromRecentApps) {
   base::HistogramTester histogram_tester;
   auto* helper = GetAppListTestHelper();
 
@@ -416,20 +401,9 @@ TEST_F(AppListShowSourceMetricTest, TabletModeWithNoWindowOpen) {
       1 /* Number of times app list shown after entering tablet mode */);
 }
 
-class AppListBubbleShowSourceMetricTest : public AppListShowSourceMetricTest {
- public:
-  AppListBubbleShowSourceMetricTest() {
-    scoped_feature_list_.InitWithFeatures({features::kProductivityLauncher},
-                                          {});
-  }
-  ~AppListBubbleShowSourceMetricTest() override = default;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that showing the bubble launcher in clamshell mode records the proper
 // metrics for Apps.AppListBubbleShowSource.
-TEST_F(AppListBubbleShowSourceMetricTest, ClamshellModeHomeButton) {
+TEST_F(AppListShowSourceMetricTest, ClamshellModeHomeButton) {
   base::HistogramTester histogram_tester;
   auto* app_list_bubble_presenter =
       Shell::Get()->app_list_controller()->bubble_presenter_for_test();
@@ -460,8 +434,7 @@ TEST_F(AppListBubbleShowSourceMetricTest, ClamshellModeHomeButton) {
 
 // Test that tablet mode launcher operations do not record AppListBubble
 // metrics.
-TEST_F(AppListBubbleShowSourceMetricTest,
-       TabletModeDoesNotRecordAppListBubbleShow) {
+TEST_F(AppListShowSourceMetricTest, TabletModeDoesNotRecordAppListBubbleShow) {
   base::HistogramTester histogram_tester;
   // Enable accessibility feature that forces home button to be shown in tablet
   // mode.
@@ -491,7 +464,7 @@ TEST_F(AppListBubbleShowSourceMetricTest,
 
 // Tests that toggling the bubble launcher does not record metrics when the
 // result of the toggle is that the launcher is hidden.
-TEST_F(AppListBubbleShowSourceMetricTest, ToggleDoesNotRecordOnHide) {
+TEST_F(AppListShowSourceMetricTest, ToggleDoesNotRecordOnHide) {
   base::HistogramTester histogram_tester;
   auto* app_list_controller = Shell::Get()->app_list_controller();
 

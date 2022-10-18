@@ -975,20 +975,7 @@ TEST_P(AppListAnimationTest, SearchBoxOpacityDuringShowAndClose) {
   EXPECT_EQ(1.0f, search_box->layer()->GetTargetOpacity());
 }
 
-// Tests with the bubble launcher enabled. This is a separate test suite
-// because the feature must be enabled before ash::Shell constructs the
-// AppListControllerImpl.
-class AppListControllerImplAppListBubbleTest : public AshTestBase {
- public:
-  AppListControllerImplAppListBubbleTest() {
-    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
-  ~AppListControllerImplAppListBubbleTest() override = default;
-
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-TEST_F(AppListControllerImplAppListBubbleTest, ShowAppListOpensBubble) {
+TEST_F(AppListControllerImplTest, ShowAppListOpensBubble) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList();
 
@@ -996,7 +983,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, ShowAppListOpensBubble) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplAppListBubbleTest, ToggleAppListOpensBubble) {
+TEST_F(AppListControllerImplTest, ToggleAppListOpensBubble) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ToggleAppList(GetPrimaryDisplay().id(),
                             AppListShowSource::kShelfButton,
@@ -1006,7 +993,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, ToggleAppListOpensBubble) {
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplAppListBubbleTest, DismissAppListClosesBubble) {
+TEST_F(AppListControllerImplTest, DismissAppListClosesBubble) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList();
 
@@ -1016,8 +1003,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, DismissAppListClosesBubble) {
   EXPECT_FALSE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplAppListBubbleTest,
-       ShowAppListDoesNotOpenBubbleInTabletMode) {
+TEST_F(AppListControllerImplTest, ShowAppListDoesNotOpenBubbleInTabletMode) {
   EnableTabletMode();
 
   auto* controller = Shell::Get()->app_list_controller();
@@ -1027,8 +1013,7 @@ TEST_F(AppListControllerImplAppListBubbleTest,
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplAppListBubbleTest,
-       ToggleAppListDoesNotOpenBubbleInTabletMode) {
+TEST_F(AppListControllerImplTest, ToggleAppListDoesNotOpenBubbleInTabletMode) {
   EnableTabletMode();
 
   auto* controller = Shell::Get()->app_list_controller();
@@ -1040,7 +1025,7 @@ TEST_F(AppListControllerImplAppListBubbleTest,
   EXPECT_TRUE(controller->IsVisible());
 }
 
-TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
+TEST_F(AppListControllerImplTest, EnteringTabletModeClosesBubble) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList();
 
@@ -1049,8 +1034,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
-TEST_F(AppListControllerImplAppListBubbleTest,
-       WallpaperColorChangeDoesNotCrash) {
+TEST_F(AppListControllerImplTest, WallpaperColorChangeDoesNotCrash) {
   auto* controller = Shell::Get()->app_list_controller();
   controller->ShowAppList();
   // Simulate synced wallpaper update while bubble is open.
@@ -1058,7 +1042,7 @@ TEST_F(AppListControllerImplAppListBubbleTest,
   // No crash.
 }
 
-TEST_F(AppListControllerImplAppListBubbleTest, HideContinueSectionUpdatesPref) {
+TEST_F(AppListControllerImplTest, HideContinueSectionUpdatesPref) {
   auto* controller = Shell::Get()->app_list_controller();
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -1079,14 +1063,13 @@ TEST_F(AppListControllerImplAppListBubbleTest, HideContinueSectionUpdatesPref) {
 }
 
 // AppListControllerImpl test that start in inactive session.
-class AppListControllerImplNotLoggedInTest
-    : public AppListControllerImplAppListBubbleTest {
+class AppListControllerImplNotLoggedInTest : public AppListControllerImplTest {
  public:
   AppListControllerImplNotLoggedInTest() = default;
   ~AppListControllerImplNotLoggedInTest() override = default;
 
   void SetUp() override {
-    AppListControllerImplAppListBubbleTest::SetUp();
+    AppListControllerImplTest::SetUp();
     SetSessionState(session_manager::SessionState::LOGIN_PRIMARY);
   }
 
@@ -1353,14 +1336,13 @@ TEST_F(AppListControllerImplNotLoggedInTest,
 }
 
 // Kiosk tests with the bubble launcher enabled.
-class AppListControllerImplKioskTest
-    : public AppListControllerImplAppListBubbleTest {
+class AppListControllerImplKioskTest : public AppListControllerImplTest {
  public:
   AppListControllerImplKioskTest() = default;
   ~AppListControllerImplKioskTest() override = default;
 
   void SetUp() override {
-    AppListControllerImplAppListBubbleTest::SetUp();
+    AppListControllerImplTest::SetUp();
     SessionInfo info;
     info.is_running_in_app_mode = true;
     info.state = session_manager::SessionState::ACTIVE;

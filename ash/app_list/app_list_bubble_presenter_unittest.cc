@@ -77,9 +77,7 @@ size_t NumberOfWidgetsInAppListContainer(int64_t display_id) {
 class AppListBubblePresenterTest : public AshTestBase {
  public:
   AppListBubblePresenterTest()
-      : assistant_test_api_(AssistantTestApi::Create()) {
-    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
+      : assistant_test_api_(AssistantTestApi::Create()) {}
   ~AppListBubblePresenterTest() override = default;
 
   // testing::Test:
@@ -108,7 +106,6 @@ class AppListBubblePresenterTest : public AshTestBase {
     }
   }
 
-  base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<AssistantTestApi> assistant_test_api_;
 };
 

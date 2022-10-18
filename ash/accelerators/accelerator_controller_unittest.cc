@@ -1396,12 +1396,12 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
   EXPECT_FALSE(tray->IsBubbleShown());
 }
 
-class GlobalAcceleratorsToggleProductivityLauncher
+class GlobalAcceleratorsToggleLauncher
     : public AcceleratorControllerTest,
       public testing::WithParamInterface<
           std::pair<ui::KeyboardCode, ui::Accelerator::KeyState>> {
  public:
-  GlobalAcceleratorsToggleProductivityLauncher() {
+  GlobalAcceleratorsToggleLauncher() {
     std::tie(key_, key_state_) = GetParam();
   }
 
@@ -1412,7 +1412,7 @@ class GlobalAcceleratorsToggleProductivityLauncher
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    GlobalAcceleratorsToggleProductivityLauncher,
+    GlobalAcceleratorsToggleLauncher,
     testing::Values(std::make_pair(ui::VKEY_LWIN,
                                    ui::Accelerator::KeyState::RELEASED),
                     std::make_pair(ui::VKEY_BROWSER_SEARCH,
@@ -1420,10 +1420,7 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_pair(ui::VKEY_ALL_APPLICATIONS,
                                    ui::Accelerator::KeyState::PRESSED)));
 
-TEST_P(GlobalAcceleratorsToggleProductivityLauncher, ToggleLauncher) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kProductivityLauncher);
-
+TEST_P(GlobalAcceleratorsToggleLauncher, ToggleLauncher) {
   EXPECT_TRUE(
       ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
   base::RunLoop().RunUntilIdle();
@@ -1435,11 +1432,7 @@ TEST_P(GlobalAcceleratorsToggleProductivityLauncher, ToggleLauncher) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
-TEST_P(GlobalAcceleratorsToggleProductivityLauncher,
-       PreventProcessingShortcuts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kProductivityLauncher);
-
+TEST_P(GlobalAcceleratorsToggleLauncher, PreventProcessingShortcuts) {
   // Set Controller to block all shortcuts and try to toggle the productivity
   // launcher
   controller_->SetPreventProcessingAccelerators(true);
