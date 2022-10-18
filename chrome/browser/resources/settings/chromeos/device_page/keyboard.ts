@@ -1,6 +1,11 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+/**
+ * @fileoverview
+ * 'settings-keyboard' is the settings subpage for keyboard settings.
+ */
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
@@ -10,54 +15,51 @@ import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
 
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
+import {FocusConfig} from '../../focus_config.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
+import {getTemplate} from './keyboard.html.js';
 
 /**
  * Modifier key IDs corresponding to the ModifierKey enumerators in
  * /ui/base/ime/ash/ime_keyboard.h.
- * @enum {number}
  */
-const ModifierKey = {
-  SEARCH_KEY: 0,
-  CONTROL_KEY: 1,
-  ALT_KEY: 2,
-  VOID_KEY: 3,  // Represents a disabled key.
-  CAPS_LOCK_KEY: 4,
-  ESCAPE_KEY: 5,
-  BACKSPACE_KEY: 6,
-  ASSISTANT_KEY: 7,
-};
+enum ModifierKey {
+  SEARCH_KEY = 0,
+  CONTROL_KEY = 1,
+  ALT_KEY = 2,
+  VOID_KEY = 3,  // Represents a disabled key.
+  CAPS_LOCK_KEY = 4,
+  ESCAPE_KEY = 5,
+  BACKSPACE_KEY = 6,
+  ASSISTANT_KEY = 7,
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsKeyboardElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, RouteObserverBehavior, WebUIListenerBehavior],
-    PolymerElement);
+const SettingsKeyboardElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior],
+        RouteObserverMixin(WebUiListenerMixin(PolymerElement))) as {
+      new (): PolymerElement & WebUiListenerMixinInterface &
+          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
+    };
 
-/** @polymer */
 class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   static get is() {
     return 'settings-keyboard';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -68,48 +70,43 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
         notify: true,
       },
 
-      /** @private {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
         observer: 'onFocusConfigChange_',
       },
 
-      /** @private Whether to show Caps Lock options. */
+      /** Whether to show Caps Lock options. */
       showCapsLock_: Boolean,
 
       /**
-       * @private
        * Whether this device has a ChromeOS launcher key. Applies only to
        * ChromeOS keyboards, internal or external.
        */
       hasLauncherKey_: Boolean,
 
-      /** @private Whether this device has an Assistant key on keyboard. */
+      /** Whether this device has an Assistant key on keyboard. */
       hasAssistantKey_: Boolean,
 
       /**
        * Whether to show a remapping option for external keyboard's Meta key
        * (Search/Windows keys). This is true only when there's an external
        * keyboard connected that is a non-Apple keyboard.
-       * @private
        */
       showExternalMetaKey_: Boolean,
 
       /**
        * Whether to show a remapping option for the Command key. This is true
        * when one of the connected keyboards is an Apple keyboard.
-       * @private
        */
       showAppleCommandKey_: Boolean,
 
-      /** @private {!DropdownMenuOptionList} Menu items for key mapping. */
+      /** Menu items for key mapping. */
       keyMapTargets_: Object,
 
       /**
        * Auto-repeat delays (in ms) for the corresponding slider values, from
        * long to short. The values were chosen to provide a large range while
        * giving several options near the defaults.
-       * @private {!Array<number>}
        */
       autoRepeatDelays_: {
         type: Array,
@@ -121,7 +118,6 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
        * Auto-repeat intervals (in ms) for the corresponding slider values, from
        * long to short. The slider itself is labeled "rate", the inverse of
        * interval, and goes from slow (long interval) to fast (short interval).
-       * @private {!Array<number>}
        */
       autoRepeatIntervals_: {
         type: Array,
@@ -131,7 +127,6 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -144,15 +139,22 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     };
   }
 
+  focusConfig: FocusConfig;
+  private browserProxy_: DevicePageBrowserProxy;
+  private hasAssistantKey_: boolean;
+  private hasLauncherKey_: boolean;
+  private keyMapTargets_: DropdownMenuOptionList;
+  private showAppleCommandKey_: boolean;
+  private showCapsLock_: boolean;
+  private showExternalMetaKey_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!DevicePageBrowserProxy} */
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
@@ -161,11 +163,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     this.setUpKeyMapTargets_();
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.KEYBOARD) {
       return;
@@ -176,9 +174,8 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
 
   /**
    * Initializes the dropdown menu options for remapping keys.
-   * @private
    */
-  setUpKeyMapTargets_() {
+  private setUpKeyMapTargets_() {
     // Ordering is according to UX, but values match ModifierKey.
     this.keyMapTargets_ = [
       {
@@ -216,22 +213,20 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     ];
   }
 
-  /** @private */
-  onFocusConfigChange_() {
+  private onFocusConfigChange_() {
     this.focusConfig.set(routes.OS_LANGUAGES_INPUT.path, () => {
       afterNextRender(this, () => {
-        focusWithoutInk(
-            assert(this.shadowRoot.querySelector('#showLanguagesInput')));
+        const showLanguagesInputEl =
+            castExists(this.shadowRoot!.getElementById('showLanguagesInput'));
+        focusWithoutInk(showLanguagesInputEl);
       });
     });
   }
 
   /**
    * Handler for updating which keys to show.
-   * @param {Object} keyboardParams
-   * @private
    */
-  onShowKeysChange_(keyboardParams) {
+  private onShowKeysChange_(keyboardParams: {[key: string]: boolean}) {
     this.hasLauncherKey_ = keyboardParams['hasLauncherKey'];
     this.hasAssistantKey_ = keyboardParams['hasAssistantKey'];
     this.showCapsLock_ = keyboardParams['showCapsLock'];
@@ -239,28 +234,30 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     this.showAppleCommandKey_ = keyboardParams['showAppleCommandKey'];
   }
 
-  /** @private */
-  onShowKeyboardShortcutViewerTap_() {
+  private onShowKeyboardShortcutViewerTap_() {
     this.browserProxy_.showKeyboardShortcutViewer();
   }
 
-  /** @private */
-  onShowInputSettingsTap_() {
+  private onShowInputSettingsTap_() {
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT,
-        /*dynamicParams=*/ null, /*removeSearch=*/ true);
+        /*dynamicParams=*/ undefined, /*removeSearch=*/ true);
   }
 
-  /** @private */
-  getExternalMetaKeyLabel_(hasLauncherKey) {
+  private getExternalMetaKeyLabel_(hasLauncherKey: boolean): string {
     return loadTimeData.getString(
         hasLauncherKey ? 'keyboardKeyExternalMeta' : 'keyboardKeyMeta');
   }
 
-  /** @private */
-  getExternalCommandKeyLabel_(hasLauncherKey) {
+  getExternalCommandKeyLabel_(hasLauncherKey: boolean): string {
     return loadTimeData.getString(
         hasLauncherKey ? 'keyboardKeyExternalCommand' : 'keyboardKeyCommand');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-keyboard': SettingsKeyboardElement;
   }
 }
 
