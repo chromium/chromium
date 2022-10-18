@@ -584,8 +584,6 @@ void OpenscreenSessionHost::OnError(const std::string& message) {
 }
 
 void OpenscreenSessionHost::RequestRefreshFrame() {
-  LogInfoMessage("Requesting a refresh frame from the video client");
-
   if (video_capture_client_)
     video_capture_client_->RequestRefreshFrame();
 }
@@ -843,14 +841,24 @@ void OpenscreenSessionHost::OnEncoderStatusChange(OperationalStatus status) {
 
 void OpenscreenSessionHost::SetTargetPlayoutDelay(
     base::TimeDelta playout_delay) {
-  if (audio_stream_)
+  bool playout_delay_was_updated = false;
+  if (audio_stream_ &&
+      audio_stream_->GetTargetPlayoutDelay() != playout_delay) {
     audio_stream_->SetTargetPlayoutDelay(playout_delay);
-  if (video_stream_)
-    video_stream_->SetTargetPlayoutDelay(playout_delay);
+    playout_delay_was_updated = true;
+  }
 
-  LogInfoMessage(base::StrCat(
-      {"Updated target playout delay to ",
-       base::NumberToString(playout_delay.InMilliseconds()), "ms"}));
+  if (video_stream_ &&
+      video_stream_->GetTargetPlayoutDelay() != playout_delay) {
+    video_stream_->SetTargetPlayoutDelay(playout_delay);
+    playout_delay_was_updated = true;
+  }
+
+  if (playout_delay_was_updated) {
+    LogInfoMessage(base::StrCat(
+        {"Updated target playout delay to ",
+         base::NumberToString(playout_delay.InMilliseconds()), "ms"}));
+  }
 }
 
 void OpenscreenSessionHost::ProcessFeedback(

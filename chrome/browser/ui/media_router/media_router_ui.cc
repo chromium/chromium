@@ -29,6 +29,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/browser/issue_manager.h"
 #include "components/media_router/browser/issues_observer.h"
+#include "components/media_router/browser/log_util.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/media_routes_observer.h"
@@ -297,12 +298,9 @@ void MediaRouterUI::RemoveIssue(const Issue::Id& issue_id) {
 void MediaRouterUI::LogMediaSinkStatus() {
   std::vector<std::string> sink_ids;
   for (const auto& sink : GetEnabledSinks()) {
-    if (sink.sink.id().length() <= 4) {
-      sink_ids.push_back(sink.sink.id());
-    } else {
-      sink_ids.push_back(sink.sink.id().substr(sink.sink.id().length() - 4));
-    }
+    sink_ids.push_back(std::string(log_util::TruncateId(sink.sink.id())));
   }
+
   logger_->LogInfo(
       mojom::LogCategory::kUi, kLoggerComponent,
       base::StrCat(

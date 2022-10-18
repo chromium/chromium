@@ -70,7 +70,7 @@ CreateCastMediaSinkResult CreateCastMediaSink(const DnsSdService& service,
     extra_data.capabilities = capacities;
 
   std::string processed_uuid = MediaSinkInternal::ProcessDeviceUUID(unique_id);
-  std::string sink_id = base::StringPrintf("cast:<%s>", processed_uuid.c_str());
+  std::string sink_id = base::StringPrintf("cast:%s", processed_uuid.c_str());
   MediaSink sink(sink_id, friendly_name,
                  GetCastSinkIconType(extra_data.capabilities),
                  mojom::MediaRouteProviderId::CAST);

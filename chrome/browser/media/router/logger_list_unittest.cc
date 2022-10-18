@@ -52,8 +52,8 @@ TEST_F(LoggerListTest, Log) {
   logger_list->AddLogger(&logger2);
 
   logger_list->Log(LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
-                   "MyComponent", "My message", "sink-12345", "cast:ABCDEFGH",
-                   "session-67890");
+                   "MyComponent", "My message", "cast:12345", "cast:ABCDEFGH",
+                   "cast:abcd67890");
 
   const std::string logs1 = logger1.GetLogsAsJson();
   const std::string logs2 = logger2.GetLogsAsJson();
@@ -68,9 +68,9 @@ TEST_F(LoggerListTest, Log) {
         "time": ")" +
       time_field + R"(",
         "message": "My message",
-        "sinkId": "2345",
+        "sinkId": "cast:1234",
         "mediaSource": "cast:ABCDEFGH",
-        "sessionId": "7890"
+        "sessionId": "cast:abcd"
       }
     ])";
 

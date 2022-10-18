@@ -16,9 +16,9 @@ namespace media_router {
 
 constexpr char kComponent[] = "MyComponent";
 constexpr char kMessage[] = "My message";
-constexpr char kSinkId[] = "sink-12345";
+constexpr char kSinkId[] = "cast:xyzzy";
 constexpr char kMediaSource[] = "cast:ABCDEFGH";
-constexpr char kSessionId[] = "session-67890";
+constexpr char kSessionId[] = "6789012345";
 
 class LoggerImplTest : public testing::Test {
  protected:
@@ -70,9 +70,9 @@ TEST_F(LoggerImplTest, RecordAndGetLogs) {
       R"(",
       "component": "MyComponent",
       "message": "My message",
-      "sinkId": "2345",
+      "sinkId": "cast:xyzz",
       "mediaSource": "cast:ABCDEFGH",
-      "sessionId": "7890"
+      "sessionId": "678901234"
     },
     {
       "severity": "Info",
@@ -82,17 +82,17 @@ TEST_F(LoggerImplTest, RecordAndGetLogs) {
       R"(",
       "component": "Component 2",
       "message": "Message 2",
-      "sinkId": "efgh",
+      "sinkId": "cast:abcd",
       "mediaSource": "cast:IJKLMNOP",
-      "sessionId": "wxyz"
+      "sessionId": "stuvwxyz0"
     }
   ])";
 
   logger_.Log(LoggerImpl::Severity::kError, mojom::LogCategory::kRoute, time1,
               kComponent, kMessage, kSinkId, kMediaSource, kSessionId);
   logger_.Log(LoggerImpl::Severity::kInfo, mojom::LogCategory::kUi, time2,
-              "Component 2", "Message 2", "sink-abcdefgh", "cast:IJKLMNOP",
-              "session-stuvwxyz");
+              "Component 2", "Message 2", "cast:abcdefgh", "cast:IJKLMNOP",
+              "stuvwxyz0123");
   const std::string logs = logger_.GetLogsAsJson();
   EXPECT_EQ(base::JSONReader::Read(logs),
             base::JSONReader::Read(expected_logs));
@@ -101,13 +101,13 @@ TEST_F(LoggerImplTest, RecordAndGetLogs) {
 TEST_F(LoggerImplTest, TruncateSinkId) {
   LogInfoWithSinkId(kSinkId);
   const std::string logs = logger_.GetLogsAsJson();
-  EXPECT_EQ(GetSinkId(logs), "2345");
+  EXPECT_EQ(GetSinkId(logs), "cast:xyzz");
 }
 
 TEST_F(LoggerImplTest, TruncateSessionId) {
   LogWarningWithSessionId(kSessionId);
   const std::string logs = logger_.GetLogsAsJson();
-  EXPECT_EQ(GetSessionId(logs), "7890");
+  EXPECT_EQ(GetSessionId(logs), "678901234");
 }
 
 TEST_F(LoggerImplTest, HandleMirroringMediaSource) {

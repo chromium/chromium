@@ -207,8 +207,7 @@ void DialMediaSinkServiceImpl::OnDeviceDescriptionAvailable(
 
   std::string processed_uuid =
       MediaSinkInternal::ProcessDeviceUUID(description_data.unique_id);
-  MediaSink::Id sink_id =
-      base::StringPrintf("dial:<%s>", processed_uuid.c_str());
+  MediaSink::Id sink_id = base::StringPrintf("dial:%s", processed_uuid.c_str());
   MediaSink sink(sink_id, description_data.friendly_name, SinkIconType::GENERIC,
                  mojom::MediaRouteProviderId::DIAL);
   DialSinkExtraData extra_data;

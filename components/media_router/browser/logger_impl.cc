@@ -8,6 +8,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "components/media_router/browser/log_util.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/logger.mojom-shared.h"
 #include "url/gurl.h"
@@ -52,13 +53,6 @@ base::StringPiece TruncateComponent(base::StringPiece component) {
 
 base::StringPiece TruncateMessage(base::StringPiece message) {
   return message.substr(0, kMessageMaxLength);
-}
-
-// Gets the last four characters of an ID string.
-base::StringPiece TruncateId(base::StringPiece id) {
-  if (id.size() <= 4)
-    return id;
-  return id.substr(id.size() - 4);
 }
 
 }  // namespace
@@ -118,9 +112,9 @@ void LoggerImpl::Log(Severity severity,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   entries_.emplace_back(
       severity, category, time, TruncateComponent(component),
-      TruncateMessage(message), TruncateId(sink_id),
+      TruncateMessage(message), log_util::TruncateId(sink_id),
       MediaSource(media_source).TruncateForLogging(kSourceMaxLength),
-      TruncateId(session_id));
+      log_util::TruncateId(session_id));
   if (entries_.size() > capacity_)
     entries_.pop_front();
 }

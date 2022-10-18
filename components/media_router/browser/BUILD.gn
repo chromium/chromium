@@ -82,6 +82,8 @@ source_set("browser") {
       "issue_manager.h",
       "issues_observer.cc",
       "issues_observer.h",
+      "log_util.cc",
+      "log_util.h",
       "logger_impl.cc",
       "logger_impl.h",
       "presentation/presentation_navigation_policy.cc",
