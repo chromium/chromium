@@ -7,19 +7,13 @@
 #include <crtdbg.h>
 #include <new.h>
 
-#include <ostream>
-#include <string>
-
 #include "base/base_switches.h"
-#include "base/check.h"
 #include "base/command_line.h"
-#include "base/strings/utf_string_conversions.h"
 
 namespace {
 
-// Handlers for invalid parameter and pure call. They generate an unoptimized
-// CHECK() unconditionally to always generate file+line error messages even in
-// official builds.
+// Handlers for invalid parameter and pure call. They generate a breakpoint to
+// tell breakpad that it needs to dump the process.
 // These functions should be written to be unique in order to avoid confusing
 // call stacks from /OPT:ICF function folding. Printing a unique message or
 // returning a unique value will do this. Note that for best results they need
@@ -29,20 +23,13 @@ void InvalidParameter(const wchar_t* expression,
                       const wchar_t* file,
                       unsigned int line,
                       uintptr_t reserved) {
-  logging::CheckError::Check(base::WideToUTF8(file).c_str(),
-                             static_cast<int>(line),
-                             base::WideToUTF8(expression).c_str())
-          .stream()
-      << base::WideToUTF8(function);
+  __debugbreak();
   // Use a different exit code from PureCall to avoid COMDAT folding.
   _exit(1);
 }
 
 void PureCall() {
-  // This inlines a CHECK(false) that won't be optimized to IMMEDIATE_CRASH() in
-  // an official build and hence will set a crash key for file:line for better
-  // error reporting.
-  logging::CheckError::Check(__FILE__, __LINE__, "false");
+  __debugbreak();
   // Use a different exit code from InvalidParameter to avoid COMDAT folding.
   _exit(2);
 }
