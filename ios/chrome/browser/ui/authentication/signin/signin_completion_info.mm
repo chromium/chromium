@@ -10,13 +10,13 @@
 
 @implementation SigninCompletionInfo
 
-+ (instancetype)signinCompletionInfoWithIdentity:(ChromeIdentity*)identity {
++ (instancetype)signinCompletionInfoWithIdentity:(id<SystemIdentity>)identity {
   return [[SigninCompletionInfo alloc]
             initWithIdentity:identity
       signinCompletionAction:SigninCompletionActionNone];
 }
 
-- (instancetype)initWithIdentity:(ChromeIdentity*)identity
+- (instancetype)initWithIdentity:(id<SystemIdentity>)identity
           signinCompletionAction:
               (SigninCompletionAction)signinCompletionAction {
   self = [super init];

@@ -457,7 +457,8 @@
   if (signinResult == SigninCoordinatorResultSuccess &&
       self.accountManagerService->IsValidIdentity(
           signinCompletionInfo.identity)) {
-    self.mediator.selectedIdentity = signinCompletionInfo.identity;
+    self.mediator.selectedIdentity = base::mac::ObjCCastStrict<ChromeIdentity>(
+        signinCompletionInfo.identity);
     self.mediator.addedAccount = YES;
   }
 }

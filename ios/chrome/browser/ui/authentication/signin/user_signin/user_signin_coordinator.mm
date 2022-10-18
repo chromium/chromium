@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_coordinator.h"
 
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -346,10 +345,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                       advancedSettingsShown:self.unifiedConsentCoordinator
                                                 .settingsLinkWasTapped];
 
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       (signinResult == SigninCoordinatorResultSuccess)
-          ? base::mac::ObjCCastStrict<ChromeIdentity>(
-                self.unifiedConsentCoordinator.selectedIdentity)
+          ? self.unifiedConsentCoordinator.selectedIdentity
           : nil;
   SigninCompletionAction completionAction = SigninCompletionActionNone;
   if (self.managedLearnMoreLinkWasTapped) {
@@ -494,9 +492,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
           [self.viewController supportedInterfaceOrientations];
       if (!((1 << orientation) & supportedOrientationsMask)) {
         SigninCompletionInfo* completionInfo = [SigninCompletionInfo
-            signinCompletionInfoWithIdentity:
-                base::mac::ObjCCastStrict<ChromeIdentity>(
-                    self.unifiedConsentCoordinator.selectedIdentity)];
+            signinCompletionInfoWithIdentity:self.unifiedConsentCoordinator
+                                                 .selectedIdentity];
         [self runCompletionCallbackWithSigninResult:
                   SigninCoordinatorResultInterrupted
                                      completionInfo:completionInfo];
