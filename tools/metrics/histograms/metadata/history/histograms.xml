@@ -640,7 +640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.ClusterContainsSearch"
-    enum="BooleanContained" expires_after="2023-02-12">
+    enum="BooleanContained" expires_after="2023-04-16">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>

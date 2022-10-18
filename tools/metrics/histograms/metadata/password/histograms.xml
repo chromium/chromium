@@ -1594,7 +1594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.IsPasswordReused" enum="Boolean"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -2751,7 +2751,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.SavedPasswordsCapabilitiesFetcher.AllOriginsResponseTime"
-    units="ms" expires_after="2023-02-14">
+    units="ms" expires_after="2023-04-16">
   <owner>vizcay@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2772,7 +2772,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.SavedPasswordsCapabilitiesFetcher.SingleOriginResponseTime"
-    units="ms" expires_after="2023-02-14">
+    units="ms" expires_after="2023-04-16">
   <owner>vizcay@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2884,7 +2884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.StoresUsedForFillingInLast28Days"
-    enum="PasswordManagerFillingSource" expires_after="2023-02-12">
+    enum="PasswordManagerFillingSource" expires_after="2023-04-16">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -3011,7 +3011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SyncPasswordHashChange"
-    enum="GaiaPasswordHashChange" expires_after="2023-02-12">
+    enum="GaiaPasswordHashChange" expires_after="2023-04-16">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
