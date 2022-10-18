@@ -1393,10 +1393,6 @@ bool Value::GetAsDictionary(const DictionaryValue** out_value) const {
   return is_dict();
 }
 
-std::unique_ptr<Value> Value::CreateDeepCopy() const {
-  return std::make_unique<Value>(Clone());
-}
-
 bool operator==(const Value& lhs, const Value& rhs) {
   return lhs.data_ == rhs.data_;
 }
@@ -1779,10 +1775,6 @@ bool DictionaryValue::GetList(StringPiece path, ListValue** out_value) {
 void DictionaryValue::Swap(DictionaryValue* other) {
   CHECK(other->is_dict());
   dict().swap(other->dict());
-}
-
-std::unique_ptr<DictionaryValue> DictionaryValue::CreateDeepCopy() const {
-  return std::make_unique<DictionaryValue>(dict());
 }
 
 ///////////////////// ListValue ////////////////////
