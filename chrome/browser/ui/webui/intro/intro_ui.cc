@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/intro_resources.h"
 #include "chrome/grit/intro_resources_map.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -56,6 +57,8 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       IDR_INTRO_INTRO_HTML);
 
   AddStrings(source);
+
+  source->AddResourcePath("product-logo.png", IDR_PRODUCT_LOGO_128);
 }
 
 IntroUI::~IntroUI() = default;

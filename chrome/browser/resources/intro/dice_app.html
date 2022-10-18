@@ -21,6 +21,7 @@
 
   h1 {
     font-size: 3em;
+    font-weight: 500;
     line-height: 44px;
     margin: 24px 0 16px;
   }
@@ -35,15 +36,16 @@
 
   h6 {
     font-size: 1.25em;
+    font-weight: 500;
     line-height: 32px;
     margin: 0 0 4px;
   }
 
   iron-icon {
-    --iron-icon-fill-color: var(--google-blue-600);
+    --iron-icon-fill-color: var(--icon-color);
     --iron-icon-height: 36px;
-    margin-bottom: 16px;
     --iron-icon-width: 36px;
+    margin-bottom: 16px;
   }
 
   #central-view-container {
@@ -58,13 +60,9 @@
     transform: translate(-50%, -50%);
   }
 
-  #chrome-logo-placeholder {
+  #product-logo {
     height: 90px;
     width: 90px;
-  }
-
-  .placeholder-color {
-    background-color: blue;
   }
 
   #benefit-cards-container {
@@ -75,7 +73,7 @@
 
   .benefit-card {
     align-items: center;
-    background: var(--google-grey-50);
+    background: var(--benefit-card-background-color);
     border-radius: 24px;
     display: flex;
     flex-direction: column;
@@ -87,7 +85,7 @@
   }
 
   #benefit-card-description {
-    color: var(--cr-secondary-text-color);
+    color: var(--benefit-card-description-color);
     font-size: 1.08em;
     font-weight: 400;
     line-height: 20px;
@@ -107,11 +105,44 @@
     min-width: 133px;
   }
 
-  #acceptSignInButton {
-    background-color: var(--cr-checked-color);
-    color: white;
+  #signInPromo {
+    --accept-sign-in-button-color: var(--google-blue-600);
+    --accept-sign-in-button-text-color: white;
+    --benefit-card-background-color: var(--google-grey-50);
+    --benefit-card-description-color: var(--cr-secondary-text-color);
+    --icon-color: var(--google-blue-600);
+    --left-background-image-url: url(images/left_background.svg);
+    --right-background-image-url: url(images/right_background.svg);
+    font-family: 'Google Sans', Roboto, sans-serif;
   }
 
+  .background-image {
+    position: fixed;
+    top: 0;
+    width: calc(100vw * 17/100);
+  }
+
+  #left-background-image {
+    content: var(--left-background-image-url);
+    left: 0;
+  }
+
+  #right-background-image {
+    content: var(--right-background-image-url);
+    right: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #signInPromo {
+      --accept-sign-in-button-color: var(--google-blue-300);
+      --accept-sign-in-button-text-color: var(--google-grey-900);
+      --benefit-card-background-color: var(--google-grey-800);
+      --benefit-card-description-color: white;
+      --icon-color: var(--google-blue-300);
+      --left-background-image-url: url(images/left_background_dark_mode.svg);
+      --right-background-image-url: url(images/right_background_dark_mode.svg);
+    }
+  }
 </style>
 
 <cr-view-manager id="viewManager">
@@ -124,9 +155,10 @@
 
   <!-- TODO(crbug.com/1347507): Implement this as an element?-->
   <div id="signInPromo" slot="view">
-
+    <img class="background-image" id="left-background-image">
+    <img class="background-image" id="right-background-image">
     <div id="central-view-container">
-      <div class="placeholder-color" id="chrome-logo-placeholder"></div>
+      <img id="product-logo" src="product-logo.png">
       <h1>$i18n{pageTitle}</h1>
       <h3>$i18n{pageSubtitle}</h3>
       <div id="benefit-cards-container">
@@ -142,7 +174,7 @@
 
     <div id="button-container">
       <cr-button id="declineSignInButton" on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
-      <cr-button id="acceptSignInButton" on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}
+      <cr-button class="action-button" id="acceptSignInButton" on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}
       </cr-button>
     </div>
   </div>
