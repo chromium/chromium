@@ -179,6 +179,7 @@ bool GetDateOnlyFromString(base::StringPiece raw_value,
   // Ensure that the time section (everything after the "yyyy-mm-dd" date) is
   // zeros.
   *parsed_time = time.UTCMidnight();
+
   return true;
 }
 

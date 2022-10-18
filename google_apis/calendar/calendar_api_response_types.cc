@@ -168,6 +168,11 @@ absl::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
   return CalendarEvent::ResponseStatus::kUnknown;
 }
 
+bool IsAllDayEvent(const base::Value* value, bool* result) {
+  *result = value->GetDict().Find("date") != nullptr;
+  return result;
+}
+
 }  // namespace
 
 DateTime::DateTime() = default;
@@ -219,6 +224,8 @@ void CalendarEvent::RegisterJSONConverter(
                                       &DateTime::CreateDateTimeFromValue);
   converter->RegisterCustomValueField(kEnd, &CalendarEvent::end_time_,
                                       &DateTime::CreateDateTimeFromValue);
+  converter->RegisterCustomValueField(kStart, &CalendarEvent::all_day_event_,
+                                      &IsAllDayEvent);
 }
 
 // static

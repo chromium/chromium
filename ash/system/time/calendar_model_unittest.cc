@@ -1084,6 +1084,55 @@ TEST_F(CalendarModelTest, MultiDayEvents) {
   TestMultiDayEvent(events, kMultiYearStartTime, kMultiYearEndTime);
 }
 
+TEST_F(CalendarModelTest, MultiAllDayEvents) {
+  // Set timezone and fake now. We set this to be GMT+n as we previously
+  // had a bug where all day events overflowed into the day after they were set
+  // to end for GMT+ timezones.
+  const char* kNow = "10 Nov 2022 13:00 GMT+5";
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT+5");
+  SetTodayFromStr(kNow);
+
+  // Generic event id and summary.
+  const char* kId = "id";
+  const char* kSummary = "summary";
+
+  // Create 2 day "all day" event.  "All day" events technically don't have
+  // start and end times but we set them to start and end at 00:00 local time in
+  // the API response.
+  const char* kMultiAllDayEventPreviousDayTime = "19 Nov 2022 00:00 GMT";
+  const char* kMultiAllDayEventDayOneStartTime = "20 Nov 2022 00:00 GMT";
+  const char* kMultiAllDayEventDayTwoStartTime = "21 Nov 2022 00:00 GMT";
+  const char* kMultiAllDayEventEndTime = "22 Nov 2022 00:00 GMT";
+  std::unique_ptr<google_apis::calendar::CalendarEvent> multi_all_day_event =
+      calendar_test_utils::CreateEvent(
+          kId, kSummary, kMultiAllDayEventDayOneStartTime,
+          kMultiAllDayEventEndTime,
+          google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
+          google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
+          true);
+
+  // Haven't injected anything yet, so no events on the start times.
+  SingleDayEventList events;
+  EXPECT_EQ(0, EventsNumberOfDay(kMultiAllDayEventDayOneStartTime, &events));
+
+  // Prepare mock events list.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->InjectItemForTesting(std::move(multi_all_day_event));
+
+  MockOnEventsFetched(calendar_utils::GetStartOfMonthUTC(
+                          calendar_test_utils::GetTimeFromString(kNow)),
+                      google_apis::ApiErrorCode::HTTP_SUCCESS,
+                      event_list.get());
+
+  // Assert that the correct number of all day events are stored. We should not
+  // have events on days surrounding the all day events.
+  EXPECT_EQ(0, EventsNumberOfDay(kMultiAllDayEventPreviousDayTime, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kMultiAllDayEventDayOneStartTime, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kMultiAllDayEventDayTwoStartTime, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kMultiAllDayEventEndTime, &events));
+}
+
 TEST_F(CalendarModelTest, FindFetchingStatus) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");

@@ -22,7 +22,8 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* end_time,
     const google_apis::calendar::CalendarEvent::EventStatus event_status,
     const google_apis::calendar::CalendarEvent::ResponseStatus
-        self_response_status) {
+        self_response_status,
+    const bool all_day_event) {
   auto event = std::make_unique<google_apis::calendar::CalendarEvent>();
   base::Time start_time_base, end_time_base;
   google_apis::calendar::DateTime start_time_date, end_time_date;
@@ -38,6 +39,7 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
   event->set_end_time(end_time_date);
   event->set_status(event_status);
   event->set_self_response_status(self_response_status);
+  event->set_all_day_event(all_day_event);
   return event;
 }
 
@@ -48,7 +50,8 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     base::Time end_time,
     const google_apis::calendar::CalendarEvent::EventStatus event_status,
     const google_apis::calendar::CalendarEvent::ResponseStatus
-        self_response_status) {
+        self_response_status,
+    const bool all_day_event) {
   auto event = std::make_unique<google_apis::calendar::CalendarEvent>();
   google_apis::calendar::DateTime start_time_date, end_time_date;
   event->set_id(id);
@@ -59,6 +62,7 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
   event->set_end_time(end_time_date);
   event->set_status(event_status);
   event->set_self_response_status(self_response_status);
+  event->set_all_day_event(all_day_event);
   return event;
 }
 

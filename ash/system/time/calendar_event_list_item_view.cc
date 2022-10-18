@@ -5,6 +5,7 @@
 #include "ash/system/time/calendar_event_list_item_view.h"
 
 #include <string>
+#include <tuple>
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -100,6 +101,63 @@ class CalendarEventListItemDot : public views::View {
   int color_;
 };
 
+// Gets the event start and end times accounting for timezone.
+const std::tuple<base::Time, base::Time> GetStartAndEndTime(
+    const google_apis::calendar::CalendarEvent* event,
+    CalendarViewController* calendar_view_controller) {
+  const base::Time selected_midnight =
+      calendar_view_controller->selected_date_midnight();
+  const base::Time selected_midnight_utc =
+      calendar_view_controller->selected_date_midnight_utc();
+  const base::Time selected_last_minute =
+      calendar_utils::GetNextDayMidnight(selected_midnight) - base::Minutes(1);
+  const base::TimeDelta time_difference = calendar_utils::GetTimeDifference(
+      calendar_view_controller->selected_date().value());
+  const base::Time selected_last_minute_utc =
+      selected_last_minute - time_difference;
+
+  // If it's an "all day" event, then we want to display 00:00 - 23:59 for the
+  // event. The formatter we use will apply timezone changes to the given
+  // `base::Time` which are set to UTC midnight in the response, so we need to
+  // negate the timezone, so when the formatter formats, it will make the dates
+  // midnight in the local timezone.
+  if (event->all_day_event())
+    return std::make_tuple(selected_midnight_utc, selected_last_minute_utc);
+
+  base::Time start_time = calendar_utils::GetMaxTime(
+      event->start_time().date_time(), selected_midnight_utc);
+  base::Time end_time = calendar_utils::GetMinTime(
+      event->end_time().date_time(), selected_last_minute_utc);
+
+  return std::make_tuple(start_time, end_time);
+}
+
+bool Is12HourClock() {
+  return Shell::Get()->system_tray_model()->clock()->hour_clock_type() ==
+         base::k12HourClock;
+}
+
+const std::tuple<std::u16string, std::u16string>
+GetStartAndEndTimeAccessibleNames(base::Time start_time, base::Time end_time) {
+  return Is12HourClock()
+             ? std::make_tuple(
+                   calendar_utils::GetTwelveHourClockTime(start_time),
+                   calendar_utils::GetTwelveHourClockTime(end_time))
+             : std::make_tuple(
+                   calendar_utils::GetTwentyFourHourClockTime(start_time),
+                   calendar_utils::GetTwentyFourHourClockTime(end_time));
+}
+
+// Returns a string containing the event start and end times "nn:nn - nn:nn".
+const std::u16string GetFormattedInterval(base::Time start_time,
+                                          base::Time end_time) {
+  return Is12HourClock()
+             ? calendar_utils::FormatTwelveHourClockTimeInterval(start_time,
+                                                                 end_time)
+             : calendar_utils::FormatTwentyFourHourClockTimeInterval(start_time,
+                                                                     end_time);
+}
+
 }  // namespace
 
 CalendarEventListItemView::CalendarEventListItemView(
@@ -113,41 +171,18 @@ CalendarEventListItemView::CalendarEventListItemView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   DCHECK(calendar_view_controller_->selected_date().has_value());
 
-  const base::Time event_start_time = event.start_time().date_time();
-  const base::Time event_end_time = event.end_time().date_time();
-
-  const base::TimeDelta time_difference = calendar_utils::GetTimeDifference(
-      calendar_view_controller_->selected_date().value());
-
-  const base::Time selected_midnight =
-      calendar_view_controller_->selected_date_midnight();
-  const base::Time selected_midnight_utc =
-      calendar_view_controller_->selected_date_midnight_utc();
-  const base::Time selected_last_minute =
-      calendar_utils::GetNextDayMidnight(selected_midnight) - base::Minutes(1);
-  const base::Time selected_last_minute_utc =
-      selected_last_minute - time_difference;
-
-  base::Time start_time =
-      calendar_utils::GetMaxTime(event_start_time, selected_midnight_utc);
-  base::Time end_time =
-      calendar_utils::GetMinTime(event_end_time, selected_last_minute_utc);
-
-  bool use_12_hour_clock =
-      Shell::Get()->system_tray_model()->clock()->hour_clock_type() ==
-      base::k12HourClock;
-  std::u16string start_time_string =
-      use_12_hour_clock
-          ? calendar_utils::GetTwelveHourClockTime(start_time)
-          : calendar_utils::GetTwentyFourHourClockTime(start_time);
-  std::u16string end_time_string =
-      use_12_hour_clock ? calendar_utils::GetTwelveHourClockTime(end_time)
-                        : calendar_utils::GetTwentyFourHourClockTime(end_time);
+  auto [start_time, end_time] =
+      GetStartAndEndTime(&event, calendar_view_controller);
+  auto [start_time_accessible_name, end_time_accessible_name] =
+      GetStartAndEndTimeAccessibleNames(start_time, end_time);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
   SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION, start_time_string,
-      end_time_string, calendar_utils::GetTimeZone(start_time),
+      IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION,
+      start_time_accessible_name, end_time_accessible_name,
+      calendar_utils::GetTimeZone(start_time),
       base::UTF8ToUTF16(event.summary())));
+  auto formatted_interval = GetFormattedInterval(start_time, end_time);
+  time_range_->SetText(formatted_interval);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetBorder(views::CreateEmptyBorder(kEventListItemInsets));
   summary_->SetText(event.summary().empty()
@@ -158,12 +193,6 @@ CalendarEventListItemView::CalendarEventListItemView(
   summary_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(0, kEntryHorizontalPadding)));
 
-  auto formatted_interval =
-      use_12_hour_clock ? calendar_utils::FormatTwelveHourClockTimeInterval(
-                              start_time, end_time)
-                        : calendar_utils::FormatTwentyFourHourClockTimeInterval(
-                              start_time, end_time);
-  time_range_->SetText(formatted_interval);
   SetUpLabel(time_range_, gfx::NO_ELIDE,
              gfx::HorizontalAlignment::ALIGN_CENTER);
 
