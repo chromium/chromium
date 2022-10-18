@@ -494,6 +494,14 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool overlay_overlaps_frame_ = true;
   absl::optional<bool> overlay_can_resize_;
 
+  // We independently store whether a widget should be activated on creation.
+  // The source of truth is on widget, but there are two problems:
+  //   (1) The widget has no activation state before it has shown.
+  //   (2) In the wayland protocol, asynchronous buffer-commit causes a surface
+  //   to be shown. Because this is asynchronous, it's possible for a surface to
+  //   be deactivated before shown.
+  bool initially_activated_ = true;
+
   // Pin members.
   chromeos::WindowPinType current_pinned_state_ =
       chromeos::WindowPinType::kNone;
