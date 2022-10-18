@@ -325,8 +325,8 @@ IN_PROC_BROWSER_TEST_F(
                    /*expected=*/false);
 }
 
-// crbug.com/1373885: This test seems to be unreliable on Lacros
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// crbug.com/1373885: This test seems to be unreliable on Lacros, Linux and Mac
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_LargestContentfulPaint_IsVideo \
   DISABLED_LargestContentfulPaint_IsVideo
 #else
