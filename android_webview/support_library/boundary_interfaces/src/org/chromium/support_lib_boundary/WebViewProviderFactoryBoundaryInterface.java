@@ -19,4 +19,5 @@ public interface WebViewProviderFactoryBoundaryInterface {
     /* SupportLibraryTracingController */ InvocationHandler getTracingController();
     /* SupportLibraryProxyController */ InvocationHandler getProxyController();
     void setSupportLibraryVersion(String version);
+    /* DropDataContentProviderBoundaryInterface*/ InvocationHandler getDropDataProvider();
 }

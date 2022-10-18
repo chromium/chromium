@@ -90,6 +90,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.GET_COOKIE_INFO,
                     Features.WEB_MESSAGE_GET_MESSAGE_PAYLOAD + Features.DEV_SUFFIX,
                     Features.REQUESTED_WITH_HEADER_ALLOW_LIST + Features.DEV_SUFFIX,
+                    Features.IMAGE_DRAG_DROP + Features.DEV_SUFFIX,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
                     // feature should have a trailing comma for cleaner diffs.
@@ -169,6 +170,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
             ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
             ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
+            ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION,
             // Add new constants above. The final constant should have a trailing comma for cleaner
             // diffs.
             ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -250,8 +252,9 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 69;
         int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 70;
         int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 71;
+        int GET_IMAGE_DRAG_DROP_IMPLEMENTATION = 72;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 72;
+        int COUNT = 73;
     }
     // clang-format on
 
@@ -265,6 +268,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
     private InvocationHandler mServiceWorkerController;
     private InvocationHandler mTracingController;
     private InvocationHandler mProxyController;
+    private InvocationHandler mDropDataProvider;
 
     public SupportLibWebViewChromiumFactory() {
         mCompatConverterAdapter = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -389,5 +393,17 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
     @Override
     public void setSupportLibraryVersion(String version) {
         AwDebug.setSupportLibraryWebkitVersionCrashKey(version);
+    }
+
+    @Override
+    public InvocationHandler getDropDataProvider() {
+        recordApiCall(ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION);
+        synchronized (mAwInit.getLock()) {
+            if (mDropDataProvider == null) {
+                mDropDataProvider = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                        new SupportLibDropDataContentProviderAdapter());
+            }
+        }
+        return mDropDataProvider;
     }
 }

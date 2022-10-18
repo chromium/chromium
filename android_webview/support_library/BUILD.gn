@@ -8,6 +8,7 @@ import("//build/config/android/rules.gni")
 android_library("support_lib_glue_java") {
   sources = [
     "java/src/org/chromium/support_lib_glue/IsomorphicAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibDropDataContentProviderAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProxyControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibReflectionUtil.java",
@@ -41,5 +42,6 @@ android_library("support_lib_glue_java") {
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

@@ -3013,6 +3013,9 @@ Unknown properties are collapsed to zero. -->
       label="SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
     ServiceWorkerWebSettingsCompat#getRequestedWithHeaderOriginAllowList()
   </int>
+  <int value="72" label="GET_IMAGE_DRAG_DROP_IMPLEMENTATION">
+    WebViewProviderFactory#getDropDataProviderImplementation()
+  </int>
 </enum>
 
 <enum name="AnnouncementNotificationEvent">

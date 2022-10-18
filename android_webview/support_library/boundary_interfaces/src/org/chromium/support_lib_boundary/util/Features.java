@@ -227,4 +227,15 @@ public class Features {
 
     // CookieManagerCompat.getCookieInfo
     public static final String GET_COOKIE_INFO = "GET_COOKIE_INFO";
+
+    // DropDataContentProvider.onCreate
+    // DropDataContentProvider.getStreamTypes
+    // DropDataContentProvider.openFile
+    // DropDataContentProvider.query
+    // DropDataContentProvider.getType
+    // DropDataContentProvider.cache
+    // DropDataContentProvider.setClearCachedDataIntervalMs
+    // DropDataContentProvider.onDragEnd
+    // DropDataContentProvider.call
+    public static final String IMAGE_DRAG_DROP = "IMAGE_DRAG_DROP";
 }
