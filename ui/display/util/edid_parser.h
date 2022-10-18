@@ -90,6 +90,14 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   // due to known EDIDs' completeness and correctness issues.
   int64_t GetEdidBasedDisplayId() const;
 
+  // Bitmask of audio formats supported by the display.
+  enum : uint32_t {
+    kAudioBitstreamPcmLinear = 1u << 0,  // PCM is 'raw' amplitude samples.
+    kAudioBitstreamDts = 1u << 1,        // Compressed DTS bitstream.
+    kAudioBitstreamDtsHd = 1u << 2,      // Compressed DTS-HD bitstream.
+  };
+  uint32_t audio_formats() const { return audio_formats_; }
+
   // Splits the |product_code| (as returned by GetDisplayId()) into its
   // constituents |manufacturer_id| and |product_id|.
   static void SplitProductCodeInManufacturerIdAndProductId(
@@ -132,6 +140,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
   absl::optional<uint16_t> min_vfreq_;
   absl::optional<uint16_t> max_vfreq_;
+
+  uint32_t audio_formats_;
 };
 
 }  // namespace display
