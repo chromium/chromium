@@ -4,8 +4,11 @@
 
 #include "fuchsia_web/webengine/renderer/web_engine_content_renderer_client.h"
 
+#include <tuple>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "build/chromecast_buildflags.h"
 #include "components/cast_streaming/renderer/public/resource_provider.h"
 #include "components/cast_streaming/renderer/public/resource_provider_factory.h"
 #include "components/cdm/renderer/widevine_key_system_info.h"
@@ -30,6 +33,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 namespace {
@@ -208,6 +212,7 @@ void WebEngineContentRendererClient::GetSupportedKeySystems(
   const media::SupportedCodecs supported_codecs =
       supported_video_codecs | supported_audio_codecs;
 
+#if BUILDFLAG(ENABLE_WIDEVINE)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableWidevine)) {
     const base::flat_set<media::EncryptionScheme> kSupportedEncryptionSchemes{
@@ -236,6 +241,7 @@ void WebEngineContentRendererClient::GetSupportedKeySystems(
         media::EmeFeatureSupport::ALWAYS_ENABLED));  // distinctive identifier
   }
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   std::string playready_key_system =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kPlayreadyKeySystem);
@@ -243,6 +249,10 @@ void WebEngineContentRendererClient::GetSupportedKeySystems(
     key_systems.push_back(
         std::make_unique<PlayreadyKeySystemInfo>(playready_key_system, supported_codecs));
   }
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
+#else
+  std::ignore = supported_codecs;
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
   std::move(cb).Run(std::move(key_systems));
 }

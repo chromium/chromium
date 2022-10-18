@@ -8,11 +8,11 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//media/media_options.gni")
 
 declare_args() {
-  # Enables Widevine key system support. Enabled by default in Google Chrome,
-  # on Android and Fuchsia platforms.
+  # Enables Widevine key system support. Enabled by default in Google Chrome and
+  # on Android. For Fuchsia, see crbug.com/1354347.
   # Can be optionally enabled in Chromium on non-Android platforms. Please see
   # //src/third_party/widevine/LICENSE file for details.
-  enable_widevine = is_chrome_branded || is_android || is_fuchsia
+  enable_widevine = (is_chrome_branded && !is_fuchsia) || is_android
 }
 
 # Disable Widevine when running linux-chromeos.
