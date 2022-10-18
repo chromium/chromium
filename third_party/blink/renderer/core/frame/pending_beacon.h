@@ -21,7 +21,7 @@ class ExceptionState;
 class ExecutionContext;
 
 // Implementation of the PendingBeacon API.
-// https://github.com/WICG/unload-beacon/blob/main/README.md
+// https://github.com/WICG/pending-beacon/blob/main/README.md
 // Note that the lifetime of a PendingBeacon instance is not the same as the JS
 // scope where the instance is created. Rather, it stays alive until
 //   - roughly when `sendNow()` or `deactivate()` is called (may still be alive

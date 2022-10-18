@@ -21,7 +21,7 @@ namespace {
 // triggered. A bundle has beacons fall within the same 100x milliseconds.
 // Spec says: The beacon is not guaranteed to be sent at exactly this many
 // milliseconds after hidden; bundling/batching of beacons is possible.
-// https://github.com/WICG/unload-beacon/blob/main/README.md#properties
+// https://github.com/WICG/pending-beacon/blob/main/README.md#properties
 constexpr base::TimeDelta kBeaconTimeoutInterval = base::Milliseconds(100);
 
 struct ReverseBeaconTimeoutSorter {
@@ -108,7 +108,7 @@ void PendingBeaconDispatcher::PageVisibilityChanged() {
   DCHECK(GetPage());
 
   // Handles a PendingBeacon's `backgroundTimeout` properties.
-  // https://github.com/WICG/unload-beacon/blob/main/README.md#properties
+  // https://github.com/WICG/pending-beacon/blob/main/README.md#properties
   if (GetPage()->IsPageVisible()) {
     // The timer should be reset if the page enters `visible` visibility state
     // before the `backgroundTimeout` expires.
@@ -304,7 +304,7 @@ void PendingBeaconDispatcher::OnDispatchPagehide() {
   // after users think they have left a page, beacons queued in that page
   // still exist and get sent through the new network, which leaks navigation
   // history to the new network.
-  // See https://github.com/WICG/unload-beacon/issues/30.
+  // See https://github.com/WICG/pending-beacon/issues/30.
   //
   // Note that the pagehide event might be dispatched a bit earlier than when
   // beacons get sents by browser in same-site navigation.

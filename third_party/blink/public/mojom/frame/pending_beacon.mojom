@@ -21,7 +21,7 @@ enum BeaconMethod {
 // All methods are called by renderer.
 //
 // API explainer here:
-// https://github.com/WICG/unload-beacon/blob/main/README.md
+// https://github.com/WICG/pending-beacon/blob/main/README.md
 interface PendingBeaconHost {
 
   // Creates a new pending beacon object in the browser side.

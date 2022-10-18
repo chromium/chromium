@@ -717,7 +717,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcExposeNonStandardStats);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInvalidationSetClassBloomFilter);
 
 // Whether the pending beacon API is enabled or not.
-// https://github.com/WICG/unload-beacon/blob/main/README.md
+// https://github.com/WICG/pending-beacon/blob/main/README.md
 // - kPendingBeaconAPI = {true: {"requires_origin_trial": false}} to enable the
 //   features globally.
 // - kPendingBeaconAPI = {true: {"requires_origin_trial": true}} to enable the
@@ -731,7 +731,7 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPendingBeaconAPIRequiresOriginTrial;
 // Allows control to decide whether to forced sending out beacons on navigating
 // away a page (transitioning to dispatch pagehide event).
-// Details in https://github.com/WICG/unload-beacon/issues/30
+// Details in https://github.com/WICG/pending-beacon/issues/30
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPendingBeaconAPIForcesSendingOnNavigation;
 

@@ -28,7 +28,7 @@ namespace {
 // min(Time evicted from back/forward cache,
 //     `kDefaultPendingBeaconMaxBackgroundTimeout`).
 // Note that this is currently longer than back/forward cache entry's TTL.
-// See https://github.com/WICG/unload-beacon/issues/3
+// See https://github.com/WICG/pending-beacon/issues/3
 constexpr base::TimeDelta kDefaultPendingBeaconMaxBackgroundTimeout =
     base::Minutes(30);  // 30 minutes
 
@@ -113,11 +113,11 @@ void PendingBeacon::setTimeout(int32_t timeout) {
 
   // TODO(crbug.com/3774273): Use the nullity of data & url to decide whether
   // beacon should be sent.
-  // https://github.com/WICG/unload-beacon/issues/17#issuecomment-1198871880
+  // https://github.com/WICG/pending-beacon/issues/17#issuecomment-1198871880
 
   // If timeout >= 0, the timer starts immediately after its value is set or
   // updated.
-  // https://github.com/WICG/unload-beacon/blob/main/README.md#properties
+  // https://github.com/WICG/pending-beacon/blob/main/README.md#properties
   timeout_timer_.StartOneShot(timeout_, FROM_HERE);
 }
 

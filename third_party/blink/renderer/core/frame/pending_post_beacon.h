@@ -16,7 +16,7 @@ class ExceptionState;
 class ExecutionContext;
 
 // Implementation of the PendingPostBeacon API.
-// https://github.com/WICG/unload-beacon/blob/main/README.md
+// https://github.com/WICG/pending-beacon/blob/main/README.md
 class CORE_EXPORT PendingPostBeacon : public PendingBeacon {
   DEFINE_WRAPPERTYPEINFO();
 

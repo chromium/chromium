@@ -78,7 +78,7 @@ PendingBeaconHost::~PendingBeaconHost() {
 
   // Checks if it has Background Sync granted before sending out the rest of
   // beacons.
-  // https://github.com/WICG/unload-beacon#privacy
+  // https://github.com/WICG/pending-beacon#privacy
   if (IsBackgroundSyncGranted(&render_frame_host())) {
     Send(beacons_);
   }
@@ -131,7 +131,7 @@ void PendingBeaconHost::SendAllOnNavigation() {
   // after users think they have left a page, beacons queued in that page
   // still exist and get sent through the new network, which leaks navigation
   // history to the new network.
-  // See https://github.com/WICG/unload-beacon/issues/30.
+  // See https://github.com/WICG/pending-beacon/issues/30.
 
   // Swaps out from private field first to make any potential subsequent send
   // requests from renderer no-ops.

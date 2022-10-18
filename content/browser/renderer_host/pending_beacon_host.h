@@ -98,7 +98,7 @@ class CONTENT_EXPORT PendingBeaconHost
   // "Unlike `SendBeacon()` which is triggered by the renderer, this method is
   // called only by the browser process itself.
   //
-  // https://github.com/WICG/unload-beacon/issues/30
+  // https://github.com/WICG/pending-beacon/issues/30
   void SendAllOnNavigation();
 
   // `RenderProcessHostObserver` implementation.
@@ -146,7 +146,7 @@ class Beacon : public blink::mojom::PendingBeacon {
   // Browser-side pending beacon constructor. Parameters correspond to the
   // renderer-side PendingBeacon class.
   // API explainer can be found at:
-  // https://github.com/WICG/unload-beacon/blob/main/README.md
+  // https://github.com/WICG/pending-beacon/blob/main/README.md
   Beacon(const GURL& url,
          blink::mojom::BeaconMethod method,
          PendingBeaconHost* beacon_host,
