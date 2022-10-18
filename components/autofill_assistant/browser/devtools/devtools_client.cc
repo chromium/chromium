@@ -73,7 +73,7 @@ page::ExperimentalDomain* DevtoolsClient::GetPage() {
 
 void DevtoolsClient::SendMessage(
     const char* method,
-    std::unique_ptr<base::Value> params,
+    base::Value params,
     const std::string& optional_node_frame_id,
     base::OnceCallback<void(const ReplyStatus&, const base::Value&)> callback) {
   std::string optional_session_id =
@@ -96,7 +96,7 @@ void DevtoolsClient::SendMessage(
 }
 
 void DevtoolsClient::SendMessage(const char* method,
-                                 std::unique_ptr<base::Value> params,
+                                 base::Value params,
                                  const std::string& optional_node_frame_id,
                                  base::OnceClosure callback) {
   std::string optional_session_id =
@@ -114,20 +114,20 @@ void DevtoolsClient::SendMessage(const char* method,
 template <typename CallbackType>
 void DevtoolsClient::SendMessageWithParams(
     const char* method,
-    std::unique_ptr<base::Value> params,
+    base::Value params,
     const std::string& optional_session_id,
     CallbackType callback) {
-  base::DictionaryValue message;
-  message.SetString("method", method);
+  base::Value::Dict message;
+  message.Set("method", method);
   message.Set("params", std::move(params));
 
   if (!optional_session_id.empty()) {
-    message.SetString("sessionId", optional_session_id);
+    message.Set("sessionId", optional_session_id);
   }
 
   int id = next_message_id_;
   next_message_id_ += 2;  // We only send even numbered messages.
-  message.SetInteger("id", id);
+  message.Set("id", id);
   pending_messages_[id] = Callback(std::move(callback));
 
   std::string json_message;

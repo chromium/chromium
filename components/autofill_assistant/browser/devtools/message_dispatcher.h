@@ -9,8 +9,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_DEVTOOLS_MESSAGE_DISPATCHER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_DEVTOOLS_MESSAGE_DISPATCHER_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
 
 namespace base {
@@ -37,12 +35,12 @@ class MessageDispatcher {
 
   virtual void SendMessage(
       const char* method,
-      std::unique_ptr<base::Value> params,
+      base::Value params,
       const std::string& optional_node_frame_id,
       base::OnceCallback<void(const ReplyStatus&, const base::Value&)>
           callback) = 0;
   virtual void SendMessage(const char* method,
-                           std::unique_ptr<base::Value> params,
+                           base::Value params,
                            const std::string& optional_node_frame_id,
                            base::OnceClosure callback) = 0;
 

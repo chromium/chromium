@@ -50,12 +50,12 @@ class DevtoolsClient : public MessageDispatcher,
   // MessageDispatcher implementation:
   void SendMessage(
       const char* method,
-      std::unique_ptr<base::Value> params,
+      base::Value params,
       const std::string& optional_node_frame_id,
       base::OnceCallback<void(const ReplyStatus&, const base::Value&)> callback)
       override;
   void SendMessage(const char* method,
-                   std::unique_ptr<base::Value> params,
+                   base::Value params,
                    const std::string& optional_node_frame_id,
                    base::OnceClosure callback) override;
   void RegisterEventHandler(
@@ -133,7 +133,7 @@ class DevtoolsClient : public MessageDispatcher,
 
   template <typename CallbackType>
   void SendMessageWithParams(const char* method,
-                             std::unique_ptr<base::Value> params,
+                             base::Value params,
                              const std::string& optional_session_id,
                              CallbackType callback);
   bool DispatchMessageReply(std::unique_ptr<base::Value> owning_message,
@@ -170,5 +170,6 @@ class DevtoolsClient : public MessageDispatcher,
   base::WeakPtrFactory<DevtoolsClient> weak_ptr_factory_{this};
 };
 
-}  // namespace autofill_assistant.
+}  // namespace autofill_assistant
+
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_DEVTOOLS_DEVTOOLS_CLIENT_H_

@@ -38,15 +38,15 @@ struct FromValue<{{namespace}}::{{type.id}}> {
 };
 
 template <typename T>
-std::unique_ptr<base::Value> ToValueImpl(const {{namespace}}::{{type.id}}& value, T*) {
+base::Value ToValueImpl(const {{namespace}}::{{type.id}}& value, T*) {
   switch (value) {
     {% for literal in type.enum %}
     case {{namespace}}::{{type.id}}::{{literal | sanitize_literal | dash_to_camelcase | camelcase_to_hacker_style | upper }}:
-      return std::make_unique<base::Value>("{{literal}}");
+      return base::Value("{{literal}}");
     {% endfor %}
   };
   NOTREACHED();
-  return nullptr;
+  return base::Value();
 }
     {% continue %}
   {% endif %}
@@ -60,7 +60,7 @@ struct FromValue<{{namespace}}::{{type.id}}> {
 };
 
 template <typename T>
-std::unique_ptr<base::Value> ToValueImpl(const {{namespace}}::{{type.id}}& value, T*) {
+base::Value ToValueImpl(const {{namespace}}::{{type.id}}& value, T*) {
   return value.Serialize();
 }
 

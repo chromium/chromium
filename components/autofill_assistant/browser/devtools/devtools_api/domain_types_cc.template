@@ -20,7 +20,7 @@ namespace autofill_assistant {
 namespace internal {
 
 template <typename T>
-std::unique_ptr<base::Value> ToValue(const T& value) {
+base::Value ToValue(const T& value) {
   return ToValueImpl(value, static_cast<T*>(nullptr));
 }
 
@@ -67,23 +67,23 @@ std::unique_ptr<{{type.id}}> {{type.id}}::Parse(const base::Value& value, ErrorR
   return result;
 }
 
-std::unique_ptr<base::Value> {{type.id}}::Serialize() const {
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
+base::Value {{type.id}}::Serialize() const {
+  base::Value::Dict result;
   {% for property in type.properties %}
     {% set type = resolve_type(property) %}
     {% if property.optional %}
   if ({{property.name | camelcase_to_hacker_style}}_)
-    result->Set("{{property.name}}", internal::ToValue({{type.to_raw_type % ("%s_.value()" % property.name | camelcase_to_hacker_style)}}));
+    result.Set("{{property.name}}", internal::ToValue({{type.to_raw_type % ("%s_.value()" % property.name | camelcase_to_hacker_style)}}));
     {% else %}
-  result->Set("{{property.name}}", internal::ToValue({{type.to_raw_type % ("%s_" % property.name | camelcase_to_hacker_style)}}));
+  result.Set("{{property.name}}", internal::ToValue({{type.to_raw_type % ("%s_" % property.name | camelcase_to_hacker_style)}}));
     {% endif %}
   {% endfor %}
-  return std::move(result);
+  return base::Value(std::move(result));
 }
 
 std::unique_ptr<{{type.id}}> {{type.id}}::Clone() const {
   ErrorReporter errors;
-  std::unique_ptr<{{type.id}}> result = Parse(*Serialize(), &errors);
+  std::unique_ptr<{{type.id}}> result = Parse(Serialize(), &errors);
   DCHECK(!errors.HasErrors());
   return result;
 }

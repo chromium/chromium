@@ -113,7 +113,10 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
     ClientStatus status =
         CheckJavaScriptResult(reply_status, result.get(), file, line);
     if (!status.ok()) {
-      RunCallback(status, (result != nullptr ? result->Serialize() : nullptr));
+      std::unique_ptr<base::Value> serialized_result;
+      if (result)
+        serialized_result = base::Value::ToUniquePtrValue(result->Serialize());
+      RunCallback(status, std::move(serialized_result));
       return false;
     }
     return true;

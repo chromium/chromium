@@ -47,7 +47,7 @@ class {{type.id}} {
     {% endif %}
   {% endfor %}
 
-  std::unique_ptr<base::Value> Serialize() const;
+  base::Value Serialize() const;
   {{resolve_type(type).pass_type}} Clone() const;
 
   template<int STATE>
