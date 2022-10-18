@@ -59,24 +59,26 @@ IN_PROC_BROWSER_TEST_P(CanMakePaymentEventFieldsTest, VerifyFields) {
   if (ClearFieldsInCanMakePaymentEvent()) {
     EXPECT_FALSE(GetValueOf("details.ifTopOrigin"));
     EXPECT_FALSE(GetValueOf("details.ifPaymentRequestOrigin"));
-
-    // Empty arrays `[]` are "truthy" in JavaScript. That is, `if ([])` will
-    // evaluate to "true".
-    // TODO(crbug.com/1290492): Make "canmakepayment" event fields undefined
-    // instead of empty.
-    EXPECT_TRUE(GetValueOf("details.ifMethodData"));
-    EXPECT_TRUE(GetValueOf("details.ifModifiers"));
+    EXPECT_FALSE(GetValueOf("details.ifMethodData"));
+    EXPECT_FALSE(GetValueOf("details.ifModifiers"));
 
     EXPECT_TRUE(GetValueOf("details.emptyTopOrigin"));
     EXPECT_TRUE(GetValueOf("details.emptyPaymentRequestOrigin"));
     EXPECT_TRUE(GetValueOf("details.emptyMethodData"));
     EXPECT_TRUE(GetValueOf("details.emptyModifiers"));
 
-    // TODO(crbug.com/1290492): Make "canmakepayment" event fields undefined.
-    EXPECT_TRUE(GetValueOf("details.definedTopOrigin"));
-    EXPECT_TRUE(GetValueOf("details.definedPaymentRequestOrigin"));
-    EXPECT_TRUE(GetValueOf("details.definedMethodData"));
-    EXPECT_TRUE(GetValueOf("details.definedModifiers"));
+    EXPECT_FALSE(GetValueOf("details.definedTopOrigin"));
+    EXPECT_FALSE(GetValueOf("details.definedPaymentRequestOrigin"));
+    EXPECT_FALSE(GetValueOf("details.definedMethodData"));
+    EXPECT_FALSE(GetValueOf("details.definedModifiers"));
+
+    // Checking `if ('topOrigin' in event)` returns true, because the field
+    // accessors are defined on the CanMakePaymentEvent, even though they return
+    // "undefined" when accessed.
+    EXPECT_TRUE(GetValueOf("details.inTopOrigin"));
+    EXPECT_TRUE(GetValueOf("details.inPaymentRequestOrigin"));
+    EXPECT_TRUE(GetValueOf("details.inMethodData"));
+    EXPECT_TRUE(GetValueOf("details.inModifiers"));
   } else {
     EXPECT_TRUE(GetValueOf("details.ifTopOrigin"));
     EXPECT_TRUE(GetValueOf("details.ifPaymentRequestOrigin"));
@@ -92,6 +94,11 @@ IN_PROC_BROWSER_TEST_P(CanMakePaymentEventFieldsTest, VerifyFields) {
     EXPECT_TRUE(GetValueOf("details.definedPaymentRequestOrigin"));
     EXPECT_TRUE(GetValueOf("details.definedMethodData"));
     EXPECT_TRUE(GetValueOf("details.definedModifiers"));
+
+    EXPECT_TRUE(GetValueOf("details.inTopOrigin"));
+    EXPECT_TRUE(GetValueOf("details.inPaymentRequestOrigin"));
+    EXPECT_TRUE(GetValueOf("details.inMethodData"));
+    EXPECT_TRUE(GetValueOf("details.inModifiers"));
   }
 }
 

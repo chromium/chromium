@@ -2297,7 +2297,7 @@ void ServiceWorkerGlobalScope::StartCanMakePaymentEvent(
           this, event_id, wait_until_observer);
 
   Event* event = CanMakePaymentEvent::Create(
-      ScriptController()->GetScriptState(), event_type_names::kCanmakepayment,
+      event_type_names::kCanmakepayment,
       PaymentEventDataConversion::ToCanMakePaymentEventInit(
           ScriptController()->GetScriptState(), std::move(event_data)),
       respond_with_observer, wait_until_observer);

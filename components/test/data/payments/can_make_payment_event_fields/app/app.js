@@ -15,8 +15,9 @@ self.addEventListener('canmakepayment', (event) => {
   details.ifModifiers = (!!event.modifiers);
 
   // Comparisons to empty values.
-  details.emptyTopOrigin = (event.topOrigin === '');
-  details.emptyPaymentRequestOrigin = (event.paymentRequestOrigin === '');
+  details.emptyTopOrigin = (!event.topOrigin || event.topOrigin === '');
+  details.emptyPaymentRequestOrigin =
+      (!event.paymentRequestOrigin || event.paymentRequestOrigin === '');
   details.emptyMethodData = (!event.methodData || event.methodData.length == 0);
   details.emptyModifiers = (!event.modifiers || event.modifiers.length == 0);
 
@@ -26,6 +27,12 @@ self.addEventListener('canmakepayment', (event) => {
       (event.paymentRequestOrigin !== undefined);
   details.definedMethodData = (event.methodData !== undefined);
   details.definedModifiers = (event.modifiers !== undefined);
+
+  // "in" condition checks.
+  details.inTopOrigin = ('topOrigin' in event);
+  details.inPaymentRequestOrigin = ('paymentRequestOrigin' in event);
+  details.inMethodData = ('methodData' in event);
+  details.inModifiers = ('modifiers' in event);
 
   event.respondWith(true);
 });

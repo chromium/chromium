@@ -26,17 +26,14 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CanMakePaymentEvent* Create(ScriptState*,
-                                     const AtomicString& type,
+  static CanMakePaymentEvent* Create(const AtomicString& type,
                                      const CanMakePaymentEventInit*);
-  static CanMakePaymentEvent* Create(ScriptState*,
-                                     const AtomicString& type,
+  static CanMakePaymentEvent* Create(const AtomicString& type,
                                      const CanMakePaymentEventInit*,
                                      CanMakePaymentRespondWithObserver*,
                                      WaitUntilObserver*);
 
-  CanMakePaymentEvent(ScriptState*,
-                      const AtomicString& type,
+  CanMakePaymentEvent(const AtomicString& type,
                       const CanMakePaymentEventInit*,
                       CanMakePaymentRespondWithObserver*,
                       WaitUntilObserver*);
@@ -48,10 +45,10 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
 
   const AtomicString& InterfaceName() const override;
 
-  const String& topOrigin() const;
-  const String& paymentRequestOrigin() const;
-  const HeapVector<Member<PaymentMethodData>>& methodData() const;
-  const HeapVector<Member<PaymentDetailsModifier>>& modifiers() const;
+  ScriptValue topOrigin(ScriptState*) const;
+  ScriptValue paymentRequestOrigin(ScriptState*) const;
+  ScriptValue methodData(ScriptState*) const;
+  ScriptValue modifiers(ScriptState*) const;
 
   void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
 
