@@ -74,9 +74,14 @@ class AndroidAutofillManager : public AutofillManager {
   bool has_server_prediction() const { return has_server_prediction_; }
 
   // Send the |form| to the renderer for the specified |action|.
+  //
+  // |triggered_origin| is the origin of the field from which the autofill is
+  // triggered; this affects the security policy for cross-frame fills. See
+  // AutofillDriver::FillOrPreviewForm() for further details.
   void FillOrPreviewForm(int query_id,
                          mojom::RendererFormDataAction action,
-                         const FormData& form);
+                         const FormData& form,
+                         const url::Origin& triggered_origin);
 
   void SetProfileFillViaAutofillAssistantIntent(
       const autofill_assistant::AutofillAssistantIntent intent) override;

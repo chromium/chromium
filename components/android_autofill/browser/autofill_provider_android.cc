@@ -154,11 +154,13 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
 
   form_ = std::make_unique<FormDataAndroid>(form);
   field_id_ = field.global_id();
+  triggered_origin_ = field.origin;
 
   size_t index;
   if (!form_->GetFieldIndex(field, &index)) {
     form_.reset();
     field_id_ = {};
+    triggered_origin_ = {};
     return;
   }
 
@@ -184,7 +186,7 @@ void AutofillProviderAndroid::OnAutofillAvailable(JNIEnv* env,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager_ && form_) {
     const FormData& form = form_->GetAutofillValues();
-    FillOrPreviewForm(manager_.get(), id_, form);
+    FillOrPreviewForm(manager_.get(), id_, form, triggered_origin_);
   }
 }
 
@@ -457,6 +459,7 @@ gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
 void AutofillProviderAndroid::Reset() {
   form_.reset(nullptr);
   field_id_ = {};
+  triggered_origin_ = {};
   id_ = kNoQueryId;
   check_submission_ = false;
 }

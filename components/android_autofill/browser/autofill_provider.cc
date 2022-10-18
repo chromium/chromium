@@ -33,9 +33,10 @@ AutofillProvider::~AutofillProvider() = default;
 
 void AutofillProvider::FillOrPreviewForm(AndroidAutofillManager* manager,
                                          int requestId,
-                                         const FormData& formData) {
+                                         const FormData& formData,
+                                         const url::Origin& triggered_origin) {
   manager->FillOrPreviewForm(requestId, mojom::RendererFormDataAction::kFill,
-                             formData);
+                             formData, triggered_origin);
 }
 
 void AutofillProvider::RendererShouldAcceptDataListSuggestion(

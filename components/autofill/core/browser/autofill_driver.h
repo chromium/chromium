@@ -96,7 +96,9 @@ class AutofillDriver {
   // |triggered_origin| is the origin of the field on which Autofill was
   // triggered, and |field_type_map| contains the type predictions of the fields
   // that may be previewed or filled; these two parameters can be taken into
-  // account to decide which fields to preview or fill across frames.
+  // account to decide which fields to preview or fill across frames. See
+  // FormForest::GetRendererFormsOfBrowserForm() for the details on Autofill's
+  // security policy.
   //
   // Returns the ids of those fields that are safe to fill according to the
   // security policy for cross-frame previewing and filling. This is a subset of

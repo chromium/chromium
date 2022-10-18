@@ -207,9 +207,9 @@ AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
 void AndroidAutofillManager::FillOrPreviewForm(
     int query_id,
     mojom::RendererFormDataAction action,
-    const FormData& form) {
-  driver()->FillOrPreviewForm(query_id, action, form, form.main_frame_origin,
-                              {});
+    const FormData& form,
+    const url::Origin& triggered_origin) {
+  driver()->FillOrPreviewForm(query_id, action, form, triggered_origin, {});
 }
 
 }  // namespace autofill

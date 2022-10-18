@@ -91,7 +91,8 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
 
   void FillOrPreviewForm(AndroidAutofillManager* manager,
                          int requestId,
-                         const FormData& formData);
+                         const FormData& formData,
+                         const url::Origin& triggered_origin);
 
   // Notifies the renderer should accept the datalist suggestion given by
   // |value| and fill the input field indified by |field_id|.
