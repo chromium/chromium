@@ -470,10 +470,18 @@ enum class IOSOverflowMenuActionType {
           sheetPresentationController
               .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
 
-          sheetPresentationController.detents = @[
+          NSArray<UISheetPresentationControllerDetent*>* regularDetents = @[
             [UISheetPresentationControllerDetent mediumDetent],
             [UISheetPresentationControllerDetent largeDetent]
           ];
+
+          NSArray<UISheetPresentationControllerDetent*>* largeTextDetents =
+              @[ [UISheetPresentationControllerDetent largeDetent] ];
+
+          BOOL hasLargeText = UIContentSizeCategoryIsAccessibilityCategory(
+              menu.traitCollection.preferredContentSizeCategory);
+          sheetPresentationController.detents =
+              hasLargeText ? largeTextDetents : regularDetents;
         }
 
         __weak __typeof(self) weakSelf = self;
