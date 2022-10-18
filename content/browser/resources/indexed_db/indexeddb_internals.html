@@ -1,52 +1,70 @@
 <!doctype html>
 <html dir="ltr" lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>IndexedDB</title>
-  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-  <link rel="stylesheet" href="indexeddb_internals.css">
+    <meta charset="utf-8">
+    <title>IndexedDB</title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="indexeddb_internals.css">
 </head>
 <body>
     <!-- templates -->
     <div style="display:none">
         <div id="indexeddb-list-template"
-             jsvalues="$partition_path:$this.partition_path">
+             jsvalues=
+                "$partitionPath:$this.partitionPath.path;
+                $convertMojoTimeToJS:$this.convertMojoTimeToJS;
+                $convertMojoString16ToJS:$this.convertMojoString16ToJS;
+                $toIdbTransactionStateName:$this.toIdbTransactionStateName;
+                $toIdbTransactionModeName:$this.toIdbTransactionModeName;
+                $scopeToString:$this.scopeToString;">
             <div class="indexeddb-summary">
-                <span jsdisplay="$this.partition_path">
+                <span jsdisplay="$partitionPath">
                     <span>Instances in: </span>
-                    <span jscontent="$this.partition_path"></span>
+                    <span jscontent="$partitionPath"></span>
                 </span>
-                <span jsdisplay="!$this.partition_path">
+                <span jsdisplay="!$partitionPath">
                     <span>Instances: Incognito </span>
                 </span>
-                <span jscontent="'(' + $this.idbs.length + ')'"></span>
+                <span jscontent="'(' + $this.storageKeys.length + ')'"></span>
             </div>
-            <div class="indexeddb-item" jsselect="$this.idbs">
-                <a class="indexeddb-url" jscontent="url" jsvalues="href:url"
-                   target="_blank"></a>
+            <div class="indexeddb-item" jsselect="$this.storageKeys">
+                <span jsselect="bucketLocator.storageKey.origin"
+                    jsvalues="$port_suf:(port===0?'':`:${port}`);
+                              $url:`${scheme}://${host}${$port_suf}`">
+                    <a class="indexeddb-url" jscontent="$url"
+                        jsvalues="href:$url" target="_blank"></a>
+                </span>
                 <div class="indexeddb-size">
                     <span>Size:</span>
                     <span jscontent="size"></span>
                 </div>
                 <div class="indexeddb-last-modified">
                     <span>Last modified:</span>
-                    <span jscontent="new Date(last_modified)"></span>
+                    <span jscontent="$convertMojoTimeToJS(lastModified)"></span>
                 </div>
                 <div>
                     <span>Open connections:</span>
                     <span class="connection-count"
-                          jsvalues=".idb_origin_url:url;.idb_partition_path:$partition_path"
-                          jscontent="connection_count">
+                          jsvalues=
+                            ".idbBucketId:bucketLocator.id;
+                             .idbPartitionPath:$partitionPath"
+                          jscontent="connectionCount">
                 </div>
                 <div class="indexeddb-paths">
                     <span>Paths:</span>
-                    <span class="indexeddb-path" jscontent="$this" jsselect="$this.paths"></span>
+                    <span class="indexeddb-path" jsselect="$this.paths">
+                        <span jscontent="path"></span>
+                    </span>
                 </div>
                 <div class="controls">
                     <a href="#" class="force-close"
-                       jsvalues=".idb_origin_url:url;.idb_partition_path:$partition_path;.idb_bucket_id:bucket_id">Force close</a>
+                       jsvalues=".idb_origin_url:storageKey;
+                                 .idbPartitionPath:$partitionPath;
+                                 .idbBucketId:bucketLocator.id">Force close</a>
                     <a href="#" class="download"
-                       jsvalues=".idb_origin_url:url;.idb_partition_path:$partition_path;.idb_bucket_id:bucket_id">Download</a>
+                       jsvalues=".idb_origin_url:storageKey;
+                                 .idbPartitionPath:$partitionPath;
+                                 .idbBucketId:bucketLocator.id">Download</a>
                     <a href="https://crbug.com/829141"
                        target="_blank">?</a>
                     <span class="download-status" style="display: none">Loading...</span>
@@ -54,15 +72,15 @@
                 <div class="indexeddb-database" jsselect="$this.databases">
 
                   <span>Open database:</span>
-                  <span jscontent="name"></span>
+                  <span jscontent="$convertMojoString16ToJS(name)"></span>
 
                   <div>
                     <span>Connections:</span>
 
                     <span class="indexeddb-connection-count"
-                          jsdisplay="connection_count">
+                          jsdisplay="connectionCount">
                       <span>open:</span>
-                      <span jscontent="connection_count"></span>
+                      <span jscontent="connectionCount"></span>
                     </span>
 
                     <span class="indexeddb-connection-count pending"
@@ -115,7 +133,10 @@
                         </tr>
                         <tr class="indexeddb-transaction"
                             jsselect="$this.transactions"
-                            jseval="this.classList.add($this.status)">
+                            jsvalues=
+                              "$status:$toIdbTransactionStateName($this.status);
+                               $status_lower:$status.toLowerCase()"
+                            jseval="this.classList.add($status_lower)">
 
                           <td class="indexeddb-transaction-pid"
                               jscontent="pid">
@@ -126,19 +147,19 @@
                           </td>
 
                           <td class="indexeddb-transaction-mode"
-                              jscontent="mode">
+                              jscontent="$toIdbTransactionModeName(mode)">
                           </td>
 
                           <td class="indexeddb-transaction-scope"
-                              jscontent="'[ ' + scope.join(', ') + ' ]'">
+                              jscontent="$scopeToString(scope)">
                           </td>
 
                           <td class="indexeddb-transaction-requests-complete"
-                              jscontent="tasks_completed">
+                              jscontent="tasksCompleted">
                           </td>
 
                           <td class="indexeddb-transaction-requests-pending"
-                              jscontent="tasks_scheduled - tasks_completed">
+                              jscontent="tasksScheduled - tasksCompleted">
                           </td>
 
                           <td class="indexeddb-transaction-age"
@@ -146,13 +167,15 @@
                           </td>
 
                           <td class="indexeddb-transaction-age">
-                            <span jsdisplay="status == 'started' || status == 'running' || status == 'committing'"
+                            <span jsdisplay="$status_lower == 'started' ||
+                                             $status_lower == 'running' ||
+                                             $status_lower == 'committing'"
                                   jscontent="Math.round(runtime)">
                             </span>
                           </td>
 
                           <td class="indexeddb-transaction-state"
-                              jscontent="status">
+                              jscontent="$status">
                           </td>
                         </tr>
                       </tbody>
@@ -164,7 +187,7 @@
     </div>
     <h1>IndexedDB</h1>
     <div class="content">
-        <div id="indexeddb-list">
+        <div id="indexeddb-list"></div>
     </div>
     <script type="module" src="indexeddb_internals.js"></script>
 </body>

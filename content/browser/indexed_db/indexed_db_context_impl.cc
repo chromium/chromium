@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/bind.h"
@@ -31,6 +32,7 @@
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
+#include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -406,28 +408,18 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
 
   std::sort(bucket_locators.begin(), bucket_locators.end());
 
-  base::Value::List list;
+  std::vector<storage::mojom::IdbBucketMetadataPtr> list;
   for (const auto& bucket_locator : bucket_locators) {
-    base::Value::Dict info;
-    // TODO(https://crbug.com/1199077): Serialize storage key directly
-    // once supported by OriginDetails.
-    // TODO(estade): replace this Value dict with mojom.
-    info.Set("url", bucket_locator.storage_key.origin().Serialize());
-    info.Set("bucket_id",
-             static_cast<double>(bucket_locator.id.GetUnsafeValue()));
-    info.Set("size", static_cast<double>(GetBucketDiskUsage(bucket_locator)));
-    info.Set("last_modified", GetBucketLastModified(bucket_locator).ToJsTime());
+    storage::mojom::IdbBucketMetadataPtr info =
+        storage::mojom::IdbBucketMetadata::New();
+    info->bucket_locator = bucket_locator;
+    info->size = static_cast<double>(GetBucketDiskUsage(bucket_locator));
+    info->last_modified = GetBucketLastModified(bucket_locator);
 
-    base::Value::List paths;
     if (!is_incognito()) {
-      for (const base::FilePath& path : GetStoragePaths(bucket_locator))
-        paths.Append(path.AsUTF8Unsafe());
-    } else {
-      paths.Append("N/A");
+      info->paths = GetStoragePaths(bucket_locator);
     }
-    info.Set("paths", std::move(paths));
-    info.Set("connection_count",
-             static_cast<double>(GetConnectionCountSync(bucket_locator.id)));
+    info->connection_count = GetConnectionCountSync(bucket_locator.id);
 
     // This ends up being O(NlogN), where N = number of open databases. We
     // iterate over all open databases to extract just those in the
@@ -435,92 +427,88 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
     // loop.
 
     if (!indexeddb_factory_.get()) {
-      list.Append(std::move(info));
+      list.push_back(std::move(info));
       continue;
     }
     std::vector<IndexedDBDatabase*> databases =
         indexeddb_factory_->GetOpenDatabasesForBucket(bucket_locator);
     // TODO(jsbell): Sort by name?
-    base::Value::List database_list;
+    std::vector<storage::mojom::IdbDatabaseMetadataPtr> database_list;
 
     for (IndexedDBDatabase* db : databases) {
-      base::Value::Dict db_info;
+      storage::mojom::IdbDatabaseMetadataPtr db_info =
+          storage::mojom::IdbDatabaseMetadata::New();
 
-      db_info.Set("name", db->name());
-      db_info.Set("connection_count",
-                  static_cast<double>(db->ConnectionCount()));
-      db_info.Set("active_open_delete",
-                  static_cast<double>(db->ActiveOpenDeleteCount()));
-      db_info.Set("pending_open_delete",
-                  static_cast<double>(db->PendingOpenDeleteCount()));
+      db_info->name = db->name();
+      db_info->connection_count = db->ConnectionCount();
+      db_info->active_open_delete = db->ActiveOpenDeleteCount();
+      db_info->pending_open_delete = db->PendingOpenDeleteCount();
 
-      base::Value::List transaction_list;
+      std::vector<storage::mojom::IdbTransactionMetadataPtr> transaction_list;
 
       for (IndexedDBConnection* connection : db->connections()) {
         for (const auto& transaction_id_pair : connection->transactions()) {
-          const auto* transaction = transaction_id_pair.second.get();
-          base::Value::Dict transaction_info;
+          const content::IndexedDBTransaction* transaction =
+              transaction_id_pair.second.get();
+          storage::mojom::IdbTransactionMetadataPtr transaction_info =
+              storage::mojom::IdbTransactionMetadata::New();
 
-          switch (transaction->mode()) {
-            case blink::mojom::IDBTransactionMode::ReadOnly:
-              transaction_info.Set("mode", "readonly");
-              break;
-            case blink::mojom::IDBTransactionMode::ReadWrite:
-              transaction_info.Set("mode", "readwrite");
-              break;
-            case blink::mojom::IDBTransactionMode::VersionChange:
-              transaction_info.Set("mode", "versionchange");
-              break;
-          }
+          transaction_info->mode =
+              static_cast<storage::mojom::IdbTransactionMode>(
+                  transaction->mode());
 
           switch (transaction->state()) {
             case IndexedDBTransaction::CREATED:
-              transaction_info.Set("status", "blocked");
+              transaction_info->status =
+                  storage::mojom::IdbTransactionState::kBlocked;
               break;
             case IndexedDBTransaction::STARTED:
-              if (transaction->diagnostics().tasks_scheduled > 0)
-                transaction_info.Set("status", "running");
-              else
-                transaction_info.Set("status", "started");
+              if (transaction->diagnostics().tasks_scheduled > 0) {
+                transaction_info->status =
+                    storage::mojom::IdbTransactionState::kRunning;
+              } else {
+                transaction_info->status =
+                    storage::mojom::IdbTransactionState::kStarted;
+              }
               break;
             case IndexedDBTransaction::COMMITTING:
-              transaction_info.Set("status", "committing");
+              transaction_info->status =
+                  storage::mojom::IdbTransactionState::kCommitting;
               break;
             case IndexedDBTransaction::FINISHED:
-              transaction_info.Set("status", "finished");
+              transaction_info->status =
+                  storage::mojom::IdbTransactionState::kFinished;
               break;
           }
 
-          transaction_info.Set("tid", static_cast<double>(transaction->id()));
-          transaction_info.Set("age", (base::Time::Now() -
-                                       transaction->diagnostics().creation_time)
-                                          .InMillisecondsF());
-          transaction_info.Set(
-              "runtime",
+          transaction_info->tid = transaction->id();
+          transaction_info->age =
+              (base::Time::Now() - transaction->diagnostics().creation_time)
+                  .InMillisecondsF();
+          transaction_info->runtime =
               (base::Time::Now() - transaction->diagnostics().start_time)
-                  .InMillisecondsF());
-          transaction_info.Set("tasks_scheduled",
-                               transaction->diagnostics().tasks_scheduled);
-          transaction_info.Set("tasks_completed",
-                               transaction->diagnostics().tasks_completed);
+                  .InMillisecondsF();
+          transaction_info->tasks_scheduled =
+              transaction->diagnostics().tasks_scheduled;
+          transaction_info->tasks_completed =
+              transaction->diagnostics().tasks_completed;
 
-          base::Value::List scope;
-          for (const auto& id : transaction->scope()) {
+          for (const int64_t& id : transaction->scope()) {
             auto stores_it = db->metadata().object_stores.find(id);
-            if (stores_it != db->metadata().object_stores.end())
-              scope.Append(stores_it->second.name);
+            if (stores_it != db->metadata().object_stores.end()) {
+              transaction_info->scope.emplace_back(stores_it->second.name);
+            }
           }
 
-          transaction_info.Set("scope", std::move(scope));
-          transaction_list.Append(std::move(transaction_info));
+          transaction_list.push_back(std::move(transaction_info));
         }
       }
-      db_info.Set("transactions", std::move(transaction_list));
+      db_info->transactions = std::move(transaction_list);
 
-      database_list.Append(std::move(db_info));
+      database_list.push_back(std::move(db_info));
     }
-    info.Set("databases", std::move(database_list));
-    list.Append(std::move(info));
+    info->databases = std::move(database_list);
+    list.push_back(std::move(info));
   }
 
   std::move(callback).Run(is_incognito(), std::move(list));

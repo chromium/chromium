@@ -5,6 +5,38 @@ import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+copy("copy_mojo") {
+  mojom_folder = "$root_gen_dir/mojom-webui"
+  indexeddb_internal_folder = "content/browser/indexed_db"
+  indexeddb_bucket_folder = "components/services/storage/privileged/mojom"
+  buckets_folder = "components/services/storage/public/mojom/buckets"
+  quota_folder = "third_party/blink/public/mojom/quota"
+  storage_key_folder = "third_party/blink/public/mojom/storage_key"
+  schemeful_site_folder = "services/network/public/mojom"
+
+  sources = [
+    "$mojom_folder/$buckets_folder/bucket_id.mojom-webui.js",
+    "$mojom_folder/$buckets_folder/bucket_locator.mojom-webui.js",
+    "$mojom_folder/$indexeddb_bucket_folder/indexed_db_bucket_types.mojom-webui.js",
+    "$mojom_folder/$indexeddb_internal_folder/indexed_db_internals.mojom-webui.js",
+    "$mojom_folder/$quota_folder/quota_types.mojom-webui.js",
+    "$mojom_folder/$schemeful_site_folder/schemeful_site.mojom-webui.js",
+    "$mojom_folder/$storage_key_folder/ancestor_chain_bit.mojom-webui.js",
+    "$mojom_folder/$storage_key_folder/storage_key.mojom-webui.js",
+  ]
+
+  deps = [
+    "//$buckets_folder:buckets_webui_js",
+    "//$indexeddb_bucket_folder:mojom_bucket_webui_js",
+    "//$indexeddb_internal_folder:mojo_bindings_webui_js",
+    "//$quota_folder:quota_webui_js",
+    "//$schemeful_site_folder:mojom_schemeful_site_webui_js",
+    "//$storage_key_folder:storage_key_webui_js",
+  ]
+
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
 grit("resources") {
   defines = chrome_grit_defines
 
@@ -22,6 +54,22 @@ grit("resources") {
   output_dir = "$root_gen_dir/content"
 }
 
+mojo_grdp_file = "$target_gen_dir/mojo_resources.grdp"
+
+generate_grd("mojo_grdp") {
+  grd_prefix = "indexed_db"
+  out_grd = mojo_grdp_file
+  input_files_base_dir = rebase_path("$target_gen_dir", "//")
+  input_files = []
+
+  # Add each mojo file to input_files without the directory name
+  foreach(file, get_target_outputs(":copy_mojo")) {
+    input_files += [ get_path_info(file, "file") ]
+  }
+
+  deps = [ ":copy_mojo" ]
+}
+
 generate_grd("build_grd") {
   grd_prefix = "indexed_db"
   out_grd = "$target_gen_dir/resources.grd"
@@ -31,4 +79,8 @@ generate_grd("build_grd") {
     "indexeddb_internals.html",
     "indexeddb_internals.js",
   ]
+
+  grdp_files = [ mojo_grdp_file ]
+
+  deps = [ ":mojo_grdp" ]
 }
