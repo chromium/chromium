@@ -351245,6 +351245,10 @@
      }
     },
     "resources": {
+     "post-cryptokey-to-opener.html": [
+      "91c70165f03ec63615ac286dc9ae3555706f49ad",
+      []
+     ],
      "transfer-arraybuffer-to-parent.html": [
       "97cff4dcb3f902eeaae0e937a6473d065d4298dd",
       []
@@ -517529,10 +517533,18 @@
     },
     "mime-types": {
      "charset-parameter.window.js": [
-      "5dc46562543bf8557c2e0f0a3f4c5396e6ea71d8",
+      "923c3a3df0c11783572eaedfad9c7297e4388b81",
       [
        "mimesniff/mime-types/charset-parameter.window.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
       ]
      ],
      "parsing.any.js": [
@@ -527091,6 +527103,15 @@
     ],
     "permissions-cg.https.html": [
      "9a3d025346a64360de238e52da7903c4617e4a58",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "permissions-garbage-collect.https.html": [
+     "cd650dc8f2d254f8f040022426dbafc3d0ecad70",
      [
       null,
       {
@@ -579244,6 +579265,13 @@
     },
     "postMessage_ArrayBuffer.sub.htm": [
      "457cf94fa56dcb60b92aaded544d3cd251b99f3a",
+     [
+      null,
+      {}
+     ]
+    ],
+    "postMessage_CryptoKey_insecure.sub.html": [
+     "8e5bdcb9c6fc82f84beeb561d4c70625dea0b7ee",
      [
       null,
       {}
