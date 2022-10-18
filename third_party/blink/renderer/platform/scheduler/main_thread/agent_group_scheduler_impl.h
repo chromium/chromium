@@ -48,7 +48,6 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
       override;
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
   void AddAgent(Agent* agent) override;
-  void RemoveAgent(Agent* agent) override;
 
   void PerformMicrotaskCheckpoint();
 

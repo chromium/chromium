@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 
@@ -122,13 +123,11 @@ void AgentGroupSchedulerImpl::AddAgent(Agent* agent) {
   agents_->insert(agent);
 }
 
-void AgentGroupSchedulerImpl::RemoveAgent(Agent* agent) {
-  DCHECK(agents_->find(agent) != agents_->end());
-  agents_->erase(agent);
-}
-
 void AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint() {
-  for (Agent* agent : *agents_) {
+  HeapHashSet<WeakMember<Agent>> agents(*agents_);
+  ClearCollectionScope<HeapHashSet<WeakMember<Agent>>> clear_scope(&agents);
+  for (Agent* agent : agents) {
+    DCHECK(agents_->Contains(agent));
     agent->PerformMicrotaskCheckpoint();
   }
 }

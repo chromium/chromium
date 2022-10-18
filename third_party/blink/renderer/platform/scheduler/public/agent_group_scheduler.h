@@ -33,7 +33,6 @@ class BLINK_PLATFORM_EXPORT AgentGroupScheduler
   virtual BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() = 0;
 
   virtual void AddAgent(Agent* agent) = 0;
-  virtual void RemoveAgent(Agent* agent) = 0;
 };
 
 }  // namespace blink
