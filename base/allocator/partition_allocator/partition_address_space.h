@@ -204,8 +204,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // ArrayBuffers be located inside of it.
   static constexpr size_t kRegularPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
-  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize) &&
-                base::bits::IsPowerOfTwo(kBRPPoolSize));
+  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize));
+  static_assert(base::bits::IsPowerOfTwo(kBRPPoolSize));
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   // We can't afford pool sizes as large as kPoolMaxSize on Windows <8.1 (see
   // crbug.com/1101421 and crbug.com/1217759).
@@ -213,14 +213,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr size_t kBRPPoolSizeForLegacyWindows = 4 * kGiB;
   static_assert(kRegularPoolSizeForLegacyWindows < kRegularPoolSize);
   static_assert(kBRPPoolSizeForLegacyWindows < kBRPPoolSize);
-  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSizeForLegacyWindows) &&
-                base::bits::IsPowerOfTwo(kBRPPoolSizeForLegacyWindows));
+  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSizeForLegacyWindows));
+  static_assert(base::bits::IsPowerOfTwo(kBRPPoolSizeForLegacyWindows));
 #endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
   static_assert(kConfigurablePoolMinSize <= kConfigurablePoolMaxSize);
-  static_assert(base::bits::IsPowerOfTwo(kConfigurablePoolMaxSize) &&
-                base::bits::IsPowerOfTwo(kConfigurablePoolMinSize));
+  static_assert(base::bits::IsPowerOfTwo(kConfigurablePoolMaxSize));
+  static_assert(base::bits::IsPowerOfTwo(kConfigurablePoolMinSize));
 
 #if BUILDFLAG(IS_IOS)
 
@@ -235,8 +235,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr size_t kBRPPoolSizeForIOSTestProcess = kGiB / 4;
   static_assert(kRegularPoolSizeForIOSTestProcess < kRegularPoolSize);
   static_assert(kBRPPoolSizeForIOSTestProcess < kBRPPoolSize);
-  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSizeForIOSTestProcess) &&
-                base::bits::IsPowerOfTwo(kBRPPoolSizeForIOSTestProcess));
+  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSizeForIOSTestProcess));
+  static_assert(base::bits::IsPowerOfTwo(kBRPPoolSizeForIOSTestProcess));
 #endif  // BUILDFLAG(IOS_IOS)
 
 #if !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
