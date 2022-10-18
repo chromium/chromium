@@ -230,17 +230,12 @@ Response InspectorDOMStorageAgent::FindStorageArea(
   String security_origin = storage_id->getSecurityOrigin("");
   String storage_key = storage_id->getStorageKey("");
   bool is_local_storage = storage_id->getIsLocalStorage();
-  LocalFrame* frame = nullptr;
-  // TODO(crbug.com/1296582) Prioritize storageKey once everything is ready
-  if (security_origin) {
-    frame = inspected_frames_->FrameWithSecurityOrigin(security_origin);
-  } else if (storage_key) {
-    frame = FrameWithStorageKey(storage_key, *inspected_frames_);
-  }
+  LocalFrame* const frame =
+      storage_key ? FrameWithStorageKey(storage_key, *inspected_frames_)
+                  : inspected_frames_->FrameWithSecurityOrigin(security_origin);
 
   if (!frame) {
-    return Response::ServerError(
-        "Frame not found for the given security origin");
+    return Response::ServerError("Frame not found for the given storage id");
   }
   if (is_local_storage) {
     if (!frame->DomWindow()->GetSecurityOrigin()->CanAccessLocalStorage()) {

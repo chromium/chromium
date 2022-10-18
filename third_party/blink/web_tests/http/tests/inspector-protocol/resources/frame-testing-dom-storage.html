@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<script>
+  const itemPreSet = window.localStorage.getItem('testKey');
+  window.parent.postMessage("item value: " + itemPreSet, '*');
+  window.localStorage.setItem('testKey', 'testItem');
+</script>
