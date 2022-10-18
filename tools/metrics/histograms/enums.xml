@@ -65553,6 +65553,8 @@ Called by update_use_counter_css.py.-->
   <int value="730" label="view-timeline-inset"/>
   <int value="731" label="view-timeline-name"/>
   <int value="732" label="toggle-visibility"/>
+  <int value="733" label="initial-letter"/>
+  <int value="734" label="hyphenate-limit-chars"/>
 </enum>
 
 <enum name="MappedEditingCommands">
