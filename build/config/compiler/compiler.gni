@@ -322,3 +322,10 @@ if (forbid_non_component_debug_builds) {
           is_component_build || !is_debug || is_ios || use_debug_fission,
       "Can't do non-component debug builds at symbol_level=2 without use_debug_fission=true")
 }
+
+# TODO(crbug.com/1341436) For Windows, to assemble lzma_sdk's assembly files,
+# ml64.exe needs to be utilized as llvm-ml cannot yet assemble it. Once llvm-ml
+# is able to assemble lzma_sdk assembly files, remove this.
+# LzmaDecOpt.asm only works on x64 and not x86.
+# https://sourceforge.net/p/sevenzip/discussion/45797/thread/768932e9dd/?limit=25#0d6c
+disable_llvm_ml = host_os == "win" && target_cpu == "x64" && !is_msan
