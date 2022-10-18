@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
@@ -91,6 +92,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetResultAndClose) {
   auto expected_result = std::make_unique<ParentAccessDialog::Result>();
   expected_result->status = ParentAccessDialog::Result::Status::kApproved;
   expected_result->parent_access_token = "TEST_TOKEN";
+  expected_result->parent_access_token_expire_timestamp =
+      base::Time::FromDoubleT(123456L);
 
   // Create the callback.
   ParentAccessDialog::Callback callback = base::BindOnce(
@@ -176,8 +179,5 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogRegularUserBrowserTest,
   EXPECT_EQ(error, ParentAccessDialogProvider::ShowError::kNotAChildUser);
   EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
 }
-
-// TODO(b/241166361) Add test to ensure PAT is communicated back to caller via
-// the the ParentAccessDialog::Callback.
 
 }  // namespace ash
