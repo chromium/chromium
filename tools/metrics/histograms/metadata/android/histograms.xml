@@ -891,7 +891,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.ChildProcessBinding.Percentage{ChildProcessConnectionMetricsBindingState}Connections_{TotalConnectionBucket}"
-    units="%" expires_after="2022-12-01">
+    units="%" expires_after="2023-02-12">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
