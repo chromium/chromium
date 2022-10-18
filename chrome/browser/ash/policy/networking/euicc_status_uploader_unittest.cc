@@ -241,7 +241,7 @@ class EuiccStatusUploaderTest : public testing::Test {
     EXPECT_TRUE(cloud_policy_client_.GetLastRequest());
     EXPECT_TRUE(
         RequestsAreEqual(*EuiccStatusUploader::ConstructRequestFromStatus(
-                             expected_status, clear_profile_list),
+                             expected_status.GetDict(), clear_profile_list),
                          *cloud_policy_client_.GetLastRequest()));
   }
 

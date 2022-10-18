@@ -118,21 +118,21 @@ void EuiccStatusUploader::RegisterLocalStatePrefs(
 
 // static
 std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>
-EuiccStatusUploader::ConstructRequestFromStatus(const base::Value& status,
+EuiccStatusUploader::ConstructRequestFromStatus(const base::Value::Dict& status,
                                                 bool clear_profile_list) {
   auto upload_request =
       std::make_unique<enterprise_management::UploadEuiccInfoRequest>();
   upload_request->set_euicc_count(
-      status.FindIntKey(kLastUploadedEuiccStatusEuiccCountKey).value());
+      status.FindInt(kLastUploadedEuiccStatusEuiccCountKey).value());
 
   auto* mutable_esim_profiles = upload_request->mutable_esim_profiles();
   for (const auto& esim_profile :
-       status.FindListPath(kLastUploadedEuiccStatusESimProfilesKey)
-           ->GetList()) {
+       *status.FindListByDottedPath(kLastUploadedEuiccStatusESimProfilesKey)) {
+    const base::Value::Dict& esim_profile_dict = esim_profile.GetDict();
     enterprise_management::ESimProfileInfo esim_profile_info;
-    esim_profile_info.set_iccid(*esim_profile.FindStringKey(
+    esim_profile_info.set_iccid(*esim_profile_dict.FindString(
         kLastUploadedEuiccStatusESimProfilesIccidKey));
-    esim_profile_info.set_smdp_address(*esim_profile.FindStringKey(
+    esim_profile_info.set_smdp_address(*esim_profile_dict.FindString(
         kLastUploadedEuiccStatusESimProfilesSmdpAddressKey));
     mutable_esim_profiles->Add(std::move(esim_profile_info));
   }
@@ -181,14 +181,14 @@ void EuiccStatusUploader::OnEuiccReset(const dbus::ObjectPath& euicc_path) {
   MaybeUploadStatus();
 }
 
-base::Value EuiccStatusUploader::GetCurrentEuiccStatus() const {
-  base::Value status(base::Value::Type::DICTIONARY);
+base::Value::Dict EuiccStatusUploader::GetCurrentEuiccStatus() const {
+  base::Value::Dict status;
 
-  status.SetIntKey(
-      kLastUploadedEuiccStatusEuiccCountKey,
-      ash::HermesManagerClient::Get()->GetAvailableEuiccs().size());
+  status.Set(kLastUploadedEuiccStatusEuiccCountKey,
+             static_cast<int>(
+                 ash::HermesManagerClient::Get()->GetAvailableEuiccs().size()));
 
-  base::Value esim_profiles(base::Value::Type::LIST);
+  base::Value::List esim_profiles;
 
   for (const auto& esim_profile : ash::NetworkHandler::Get()
                                       ->cellular_esim_profile_handler()
@@ -205,16 +205,16 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() const {
     if (!smdp_address)
       continue;
 
-    base::Value esim_profile_to_add(base::Value::Type::DICTIONARY);
-    esim_profile_to_add.SetStringKey(
-        kLastUploadedEuiccStatusESimProfilesIccidKey, esim_profile.iccid());
-    esim_profile_to_add.SetStringKey(
-        kLastUploadedEuiccStatusESimProfilesSmdpAddressKey, *smdp_address);
+    base::Value::Dict esim_profile_to_add;
+    esim_profile_to_add.Set(kLastUploadedEuiccStatusESimProfilesIccidKey,
+                            esim_profile.iccid());
+    esim_profile_to_add.Set(kLastUploadedEuiccStatusESimProfilesSmdpAddressKey,
+                            *smdp_address);
     esim_profiles.Append(std::move(esim_profile_to_add));
   }
 
-  status.SetPath(kLastUploadedEuiccStatusESimProfilesKey,
-                 std::move(esim_profiles));
+  status.SetByDottedPath(kLastUploadedEuiccStatusESimProfilesKey,
+                         std::move(esim_profiles));
   return status;
 }
 
@@ -244,8 +244,8 @@ void EuiccStatusUploader::MaybeUploadStatus() {
     return;
   }
 
-  const base::Value& last_uploaded_pref =
-      local_state_->GetValue(kLastUploadedEuiccStatusPref);
+  const base::Value::Dict& last_uploaded_pref =
+      local_state_->GetDict(kLastUploadedEuiccStatusPref);
   auto current_state = GetCurrentEuiccStatus();
 
   // Force send the status if reset request was received.
@@ -273,7 +273,7 @@ void EuiccStatusUploader::MaybeUploadStatus() {
   }
 }
 
-void EuiccStatusUploader::UploadStatus(base::Value status) {
+void EuiccStatusUploader::UploadStatus(base::Value::Dict status) {
   // Do not upload anything until the current upload finishes.
   if (currently_uploading_)
     return;
@@ -304,19 +304,19 @@ void EuiccStatusUploader::OnStatusUploaded(bool success) {
   VLOG(1) << "EUICC status successfully uploaded.";
 
   // Remember the last uploaded status to not upload it again.
-  local_state_->Set(kLastUploadedEuiccStatusPref,
-                    std::move(attempted_upload_status_));
+  local_state_->SetDict(kLastUploadedEuiccStatusPref,
+                        std::move(attempted_upload_status_));
   // Clean out the local state preference to not send |clear_profile_list| =
   // true multiple times.
   local_state_->ClearPref(kShouldSendClearProfilesRequestPref);
-  attempted_upload_status_.DictClear();
+  attempted_upload_status_.clear();
 
   MaybeUploadStatus();
   return;
 }
 
 void EuiccStatusUploader::RetryUpload() {
-  attempted_upload_status_.DictClear();
+  attempted_upload_status_.clear();
   MaybeUploadStatus();
 }
 

@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
@@ -69,7 +70,7 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
 
   // Constructs the proto for the EUICC status request.
   static std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>
-  ConstructRequestFromStatus(const base::Value& status,
+  ConstructRequestFromStatus(const base::Value::Dict& status,
                              bool clear_profile_list);
 
   // ash::NetworkPolicyObserver:
@@ -92,10 +93,10 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
   // ash::ManagedCellularPrefHandler:
   void OnManagedCellularPrefChanged() override;
 
-  base::Value GetCurrentEuiccStatus() const;
+  base::Value::Dict GetCurrentEuiccStatus() const;
   void MaybeUploadStatus();
   void MaybeUploadStatusWithDelay();
-  void UploadStatus(base::Value status);
+  void UploadStatus(base::Value::Dict status);
   void OnStatusUploaded(bool success);
   void RetryUpload();
 
@@ -107,7 +108,7 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
 
   bool currently_uploading_ = false;
   // The status that is being uploaded right now.
-  base::Value attempted_upload_status_{base::Value::Type::DICTIONARY};
+  base::Value::Dict attempted_upload_status_;
   bool is_policy_fetched_ = false;
   IsDeviceActiveCallback is_device_managed_callback_;
 
