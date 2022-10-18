@@ -256,6 +256,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onCreateFileRequested', true);
     this.setHandlerEnabled('onDeleteEntryRequested', true);
     this.setHandlerEnabled('onGetMetadataRequested', true);
+    this.setHandlerEnabled('onMountRequested', true);
     this.setHandlerEnabled('onMoveEntryRequested', true);
     this.setHandlerEnabled('onOpenFileRequested', true);
     this.setHandlerEnabled('onReadDirectoryRequested', true);
@@ -884,6 +885,19 @@ export class TestFileSystemProvider {
     }
 
     onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+  };
+
+  /**
+   * FSP: requests to mount this filesystem.
+   *
+   * @param {function()} onSuccess Success callback.
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *     callback.
+   */
+  onMountRequested(onSuccess, onError) {
+    // This handler does not take the options arguments.
+    this.recordEvent('onMountRequested', {});
+    onSuccess();
   };
 
   /**

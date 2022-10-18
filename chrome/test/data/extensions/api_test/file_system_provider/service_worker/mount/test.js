@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {catchError, getFsInfoById, getVolumeInfo, promisifyWithLastError} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, getFsInfoById, getVolumeInfo, promisifyWithLastError, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 
 /**
  * @param {{
@@ -196,6 +196,33 @@ async function main() {
       chrome.test.assertEq('TOO_MANY_OPENED', e.message);
       chrome.test.succeed();
     },
+
+    // Tests if fileManagerPrivate.addProvidedFileSystem() emits the
+    // onMountRequested() event.
+    async function requestMountSuccess() {
+      await remoteProvider.resetState();
+      let providers =
+          await promisifyWithLastError(chrome.fileManagerPrivate.getProviders);
+      // Filter out native providers.
+      providers = providers.filter(
+          provider =>
+              provider.providerId.length == 0 || provider.providerId[0] != '@');
+      chrome.test.assertEq(providers.length, 1);
+      chrome.test.assertEq(chrome.runtime.id, providers[0].providerId);
+      chrome.test.assertEq(
+          chrome.runtime.getManifest().name, providers[0].name);
+      chrome.test.assertFalse(providers[0].configurable);
+      chrome.test.assertFalse(providers[0].watchable);
+      chrome.test.assertFalse(providers[0].multipleMounts);
+      chrome.test.assertEq('network', providers[0].source);
+
+      await promisifyWithLastError(
+          chrome.fileManagerPrivate.addProvidedFileSystem, chrome.runtime.id);
+
+      chrome.test.assertEq(
+          1, await remoteProvider.getEventCount('onMountRequested'));
+      chrome.test.succeed();
+    }
   ]);
 }
 
