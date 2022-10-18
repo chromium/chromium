@@ -712,25 +712,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, PageLoadUkm) {
                                    1);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, GetTopicsForSiteForDisplay) {
-  GURL main_frame_url =
-      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-  std::vector<privacy_sandbox::CanonicalTopic> result =
-      browsing_topics_service()->GetTopicsForSiteForDisplay(
-          web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-
-  // Epoch switch time has not arrived. So expect one topic from each of the
-  // first two epochs.
-  EXPECT_EQ(result.size(), 2u);
-  EXPECT_EQ(result[0].topic_id(), Topic(1));
-  EXPECT_EQ(result[0].taxonomy_version(), 1);
-  EXPECT_EQ(result[1].topic_id(), Topic(10));
-  EXPECT_EQ(result[1].taxonomy_version(), 1);
-}
-
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, GetTopTopicsForDisplay) {
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
@@ -777,12 +758,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   auto topics = pscs->GetAccessedTopics();
   ASSERT_EQ(2u, topics.size());
 
-  // No ordering is enforced by the PSCS.
-  ASSERT_NE(topics[0].topic_id(), topics[1].topic_id());
-  ASSERT_TRUE(topics[0].topic_id() == kExpectedTopic1 ||
-              topics[0].topic_id() == kExpectedTopic2);
-  ASSERT_TRUE(topics[1].topic_id() == kExpectedTopic1 ||
-              topics[1].topic_id() == kExpectedTopic2);
+  // PSCS::GetAccessedTopics() will return sorted values.
+  EXPECT_EQ(topics[0].topic_id(), kExpectedTopic1);
+  EXPECT_EQ(topics[1].topic_id(), kExpectedTopic2);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,

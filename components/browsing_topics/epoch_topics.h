@@ -54,14 +54,6 @@ class EpochTopics {
                                      bool& output_is_true_topic,
                                      bool& candidate_topic_filtered) const;
 
-  // Similar to `TopicForSite`, but this does not apply the filtering based on a
-  // calling context, and only returns a topic if the candidate topic is a true
-  // top topic (as opposed to the random topic, or the randomly padded top
-  // topic). This method is used for displaying the candidate topics for a site
-  // for the UX.
-  absl::optional<Topic> TopicForSiteForDisplay(const std::string& top_domain,
-                                               ReadOnlyHmacKey hmac_key) const;
-
   // Whether `top_topics_and_observing_domains_` is empty.
   bool empty() const { return top_topics_and_observing_domains_.empty(); }
 

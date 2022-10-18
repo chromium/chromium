@@ -13,6 +13,7 @@
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/browsing_topics/util.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -294,6 +295,17 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
       continue;
     }
 
+    // `PageSpecificContentSettings` should only observe true top topics
+    // accessed on the page. It's okay to notify the same topic multiple
+    // times even though duplicate topics will be removed in the end.
+    if (output_is_true_topic) {
+      privacy_sandbox::CanonicalTopic canonical_topic(
+          browsing_topics::Topic(topic.value()), epoch->taxonomy_version());
+      content_settings::PageSpecificContentSettings::TopicAccessed(
+          main_frame, context_origin, /*blocked_by_policy=*/false,
+          canonical_topic);
+    }
+
     auto result_topic = blink::mojom::EpochTopic::New();
     result_topic->topic = topic.value().value();
     result_topic->config_version = base::StrCat(
@@ -389,39 +401,6 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(
   }
 
   std::move(callback).Run(GetBrowsingTopicsStateForWebUiHelper());
-}
-
-std::vector<privacy_sandbox::CanonicalTopic>
-BrowsingTopicsServiceImpl::GetTopicsForSiteForDisplay(
-    const url::Origin& top_origin) const {
-  if (!browsing_topics_state_loaded_)
-    return {};
-
-  std::string top_domain =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          top_origin.GetURL(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-
-  std::vector<privacy_sandbox::CanonicalTopic> result;
-
-  for (const EpochTopics* epoch :
-       browsing_topics_state_.EpochsForSite(top_domain)) {
-    absl::optional<Topic> topic = epoch->TopicForSiteForDisplay(
-        top_domain, browsing_topics_state_.hmac_key());
-
-    if (!topic)
-      continue;
-
-    // `epoch->TopicForSiteForDisplay()` shall only return a top topic, and a
-    // top topic can never be in the disallowed state (i.e. it will be cleared
-    // when it becomes diallowed).
-    DCHECK(privacy_sandbox_settings_->IsTopicAllowed(
-        privacy_sandbox::CanonicalTopic(*topic, epoch->taxonomy_version())));
-
-    result.emplace_back(*topic, epoch->taxonomy_version());
-  }
-
-  return result;
 }
 
 std::vector<privacy_sandbox::CanonicalTopic>

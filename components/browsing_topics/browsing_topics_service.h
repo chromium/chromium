@@ -37,13 +37,6 @@ class BrowsingTopicsService : public KeyedService {
       bool calculate_now,
       mojom::PageHandler::GetBrowsingTopicsStateCallback callback) = 0;
 
-  // Return the topics (i.e. one topic from each epoch) that can be potentially
-  // exposed to a given site. Up to `kBrowsingTopicsNumberOfEpochsToExpose`
-  // epochs' topics can be returned. Padded top topics or random topics won't be
-  // returned.
-  virtual std::vector<privacy_sandbox::CanonicalTopic>
-  GetTopicsForSiteForDisplay(const url::Origin& top_origin) const = 0;
-
   // Return the top topics from all the past epochs. Up to
   // `kBrowsingTopicsNumberOfEpochsToExpose + 1` epochs' topics are kept in
   // the browser. Padded top topics won't be returned.

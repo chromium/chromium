@@ -4,6 +4,7 @@ include_rules = [
   "+components/keyed_service",
   "+components/privacy_sandbox",
   "+content/public/browser",
+  "+components/content_settings/browser",
   "+content/public/test",
   "+content/test",
   "+crypto",

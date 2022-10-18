@@ -57,8 +57,15 @@ TEST_F(EpochTopicsTest, TopicForSite_InvalidIndividualTopics) {
 
   std::string top_site = "foo.com";
 
-  EXPECT_EQ(epoch_topics.TopicForSiteForDisplay(top_site, kTestKey),
-            absl::nullopt);
+  bool output_is_true_topic = false;
+  bool candidate_topic_filtered = false;
+
+  EXPECT_EQ(
+      epoch_topics.TopicForSite(top_site, HashedDomain(1), kTestKey,
+                                output_is_true_topic, candidate_topic_filtered),
+      absl::nullopt);
+  EXPECT_FALSE(output_is_true_topic);
+  EXPECT_FALSE(candidate_topic_filtered);
 }
 
 TEST_F(EpochTopicsTest, TopicForSite) {
@@ -118,9 +125,6 @@ TEST_F(EpochTopicsTest, TopicForSite) {
       EXPECT_FALSE(output_is_true_topic);
       EXPECT_TRUE(candidate_topic_filtered);
     }
-
-    EXPECT_EQ(epoch_topics.TopicForSiteForDisplay(top_site, kTestKey),
-              Topic(2));
   }
 
   {
@@ -172,10 +176,6 @@ TEST_F(EpochTopicsTest, TopicForSite) {
       EXPECT_FALSE(output_is_true_topic);
       EXPECT_FALSE(candidate_topic_filtered);
     }
-
-    // Topic(3) is a padded topic. Thus it's not returned.
-    EXPECT_EQ(epoch_topics.TopicForSiteForDisplay(top_site, kTestKey),
-              absl::nullopt);
   }
 
   {
@@ -215,9 +215,6 @@ TEST_F(EpochTopicsTest, TopicForSite) {
               Topic(186));
     EXPECT_FALSE(output_is_true_topic);
     EXPECT_FALSE(candidate_topic_filtered);
-
-    EXPECT_EQ(epoch_topics.TopicForSiteForDisplay(top_site, kTestKey),
-              absl::nullopt);
   }
 }
 

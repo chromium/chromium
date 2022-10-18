@@ -160,21 +160,51 @@ absl::optional<Topic> EpochTopics::TopicForSite(
     ReadOnlyHmacKey hmac_key,
     bool& output_is_true_topic,
     bool& candidate_topic_filtered) const {
-  return TopicForSiteHelper(top_domain, /*need_filtering=*/true,
-                            /*allow_random_or_padded_topic=*/true,
-                            hashed_context_domain, hmac_key,
-                            output_is_true_topic, candidate_topic_filtered);
-}
+  DCHECK(!output_is_true_topic);
+  DCHECK(!candidate_topic_filtered);
 
-absl::optional<Topic> EpochTopics::TopicForSiteForDisplay(
-    const std::string& top_domain,
-    ReadOnlyHmacKey hmac_key) const {
-  bool output_is_true_topic = false;
-  bool candidate_topic_filtered = false;
-  return TopicForSiteHelper(top_domain, /*need_filtering=*/false,
-                            /*allow_random_or_padded_topic=*/false,
-                            /*hashed_context_domain=*/{}, hmac_key,
-                            output_is_true_topic, candidate_topic_filtered);
+  // The topics calculation failed, or the topics has been cleared.
+  if (empty())
+    return absl::nullopt;
+
+  uint64_t random_or_top_topic_decision_hash =
+      HashTopDomainForRandomOrTopTopicDecision(hmac_key, calculation_time_,
+                                               top_domain);
+
+  if (ShouldUseRandomTopic(random_or_top_topic_decision_hash)) {
+    uint64_t random_topic_index_decision =
+        HashTopDomainForRandomTopicIndexDecision(hmac_key, calculation_time_,
+                                                 top_domain);
+
+    size_t random_topic_index = random_topic_index_decision % taxonomy_size_;
+
+    return Topic(base::checked_cast<int>(random_topic_index + 1));
+  }
+
+  uint64_t top_topic_index_decision_hash =
+      HashTopDomainForTopTopicIndexDecision(hmac_key, calculation_time_,
+                                            top_domain);
+
+  size_t top_topic_index =
+      top_topic_index_decision_hash % top_topics_and_observing_domains_.size();
+
+  const TopicAndDomains& topic_and_observing_domains =
+      top_topics_and_observing_domains_[top_topic_index];
+
+  if (!topic_and_observing_domains.IsValid())
+    return absl::nullopt;
+
+  // Only add the topic if the context has observed it before.
+  if (!topic_and_observing_domains.hashed_domains().count(
+          hashed_context_domain)) {
+    candidate_topic_filtered = true;
+    return absl::nullopt;
+  }
+
+  if (top_topic_index < padded_top_topics_start_index_)
+    output_is_true_topic = true;
+
+  return topic_and_observing_domains.topic();
 }
 
 void EpochTopics::ClearTopics() {
@@ -200,68 +230,6 @@ void EpochTopics::ClearContextDomain(
   for (TopicAndDomains& topic_and_domains : top_topics_and_observing_domains_) {
     topic_and_domains.ClearDomain(hashed_context_domain);
   }
-}
-
-absl::optional<Topic> EpochTopics::TopicForSiteHelper(
-    const std::string& top_domain,
-    bool need_filtering,
-    bool allow_random_or_padded_topic,
-    const HashedDomain& hashed_context_domain,
-    ReadOnlyHmacKey hmac_key,
-    bool& output_is_true_topic,
-    bool& candidate_topic_filtered) const {
-  DCHECK(!output_is_true_topic);
-  DCHECK(!candidate_topic_filtered);
-
-  // The topics calculation failed, or the topics has been cleared.
-  if (empty())
-    return absl::nullopt;
-
-  uint64_t random_or_top_topic_decision_hash =
-      HashTopDomainForRandomOrTopTopicDecision(hmac_key, calculation_time_,
-                                               top_domain);
-
-  if (ShouldUseRandomTopic(random_or_top_topic_decision_hash)) {
-    if (!allow_random_or_padded_topic)
-      return absl::nullopt;
-
-    uint64_t random_topic_index_decision =
-        HashTopDomainForRandomTopicIndexDecision(hmac_key, calculation_time_,
-                                                 top_domain);
-
-    size_t random_topic_index = random_topic_index_decision % taxonomy_size_;
-
-    return Topic(base::checked_cast<int>(random_topic_index + 1));
-  }
-
-  uint64_t top_topic_index_decision_hash =
-      HashTopDomainForTopTopicIndexDecision(hmac_key, calculation_time_,
-                                            top_domain);
-
-  size_t top_topic_index =
-      top_topic_index_decision_hash % top_topics_and_observing_domains_.size();
-
-  if (!allow_random_or_padded_topic &&
-      padded_top_topics_start_index_ <= top_topic_index)
-    return absl::nullopt;
-
-  const TopicAndDomains& topic_and_observing_domains =
-      top_topics_and_observing_domains_[top_topic_index];
-
-  if (!topic_and_observing_domains.IsValid())
-    return absl::nullopt;
-
-  // Only add the topic if the context has observed it before.
-  if (need_filtering && !topic_and_observing_domains.hashed_domains().count(
-                            hashed_context_domain)) {
-    candidate_topic_filtered = true;
-    return absl::nullopt;
-  }
-
-  if (top_topic_index < padded_top_topics_start_index_)
-    output_is_true_topic = true;
-
-  return topic_and_observing_domains.topic();
 }
 
 }  // namespace browsing_topics

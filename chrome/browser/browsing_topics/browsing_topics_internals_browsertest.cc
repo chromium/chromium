@@ -69,11 +69,6 @@ class FixedBrowsingTopicsService
     std::move(callback).Run(result_override_->Clone());
   }
 
-  std::vector<privacy_sandbox::CanonicalTopic> GetTopicsForSiteForDisplay(
-      const url::Origin& top_origin) const override {
-    return {};
-  }
-
   std::vector<privacy_sandbox::CanonicalTopic> GetTopTopicsForDisplay()
       const override {
     return {};

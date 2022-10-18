@@ -94,10 +94,6 @@ class MockBrowsingTopicsService : public BrowsingTopicsService {
               (bool, mojom::PageHandler::GetBrowsingTopicsStateCallback),
               (override));
   MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
-              GetTopicsForSiteForDisplay,
-              (const url::Origin&),
-              (const override));
-  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
               GetTopTopicsForDisplay,
               (),
               (const override));
