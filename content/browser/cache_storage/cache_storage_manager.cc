@@ -290,6 +290,7 @@ void GetStorageKeyAndLastModifiedGotBucket(
   storage::BucketLocator bucket_locator{};
   if (result.ok()) {
     bucket_locator = result->ToBucketLocator();
+    DCHECK_EQ(info->storage_key, result->storage_key);
   }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -384,17 +385,25 @@ void GetStorageKeysAndLastModifiedOnTaskRunner(
   for (const auto& usage_tuple : usage_tuples) {
     const storage::BucketLocator& bucket_locator = std::get<0>(usage_tuple);
     const storage::mojom::StorageUsageInfoPtr& info = std::get<1>(usage_tuple);
-    // TODO(https://crbug.com/1218097): To support named buckets, we'll need to
-    // store the bucket name in the index file and use that in the
-    // `QuotaManagerProxy::UpdateOrCreateBucket()` call below.
-    quota_manager_proxy->UpdateOrCreateBucket(
-        storage::BucketInitParams::ForDefaultBucket(bucket_locator.storage_key),
-        scheduler_task_runner,
-        base::BindOnce(
-            &GetStorageKeyAndLastModifiedGotBucket,
-            storage::mojom::StorageUsageInfo::New(
-                info->storage_key, info->total_size_bytes, info->last_modified),
-            barrier_callback));
+    if (bucket_locator.is_default) {
+      quota_manager_proxy->UpdateOrCreateBucket(
+          storage::BucketInitParams::ForDefaultBucket(
+              bucket_locator.storage_key),
+          scheduler_task_runner,
+          base::BindOnce(&GetStorageKeyAndLastModifiedGotBucket,
+                         storage::mojom::StorageUsageInfo::New(
+                             info->storage_key, info->total_size_bytes,
+                             info->last_modified),
+                         barrier_callback));
+    } else {
+      quota_manager_proxy->GetBucketById(
+          bucket_locator.id, scheduler_task_runner,
+          base::BindOnce(&GetStorageKeyAndLastModifiedGotBucket,
+                         storage::mojom::StorageUsageInfo::New(
+                             info->storage_key, info->total_size_bytes,
+                             info->last_modified),
+                         barrier_callback));
+    }
   }
 }
 

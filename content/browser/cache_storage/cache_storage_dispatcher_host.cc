@@ -1039,7 +1039,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
       base::OnceCallback<void(content::CacheStorage*)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(host_);
-    if (!bucket_.has_value()) {
+    if (!bucket_) {
       std::move(callback).Run(nullptr);
       return;
     }
@@ -1058,13 +1058,20 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
     // map to be created for the same storage key. For more details, see the
     // comments above the `CacheStorageManager::CacheStoragePathIsUnique()`
     // check in `CacheStorageManager::OpenCacheStorage()`.
-    if (host_->WasNotifiedOfBucketDataDeletion(bucket_.value())) {
-      host_->UpdateOrCreateBucket(
-          bucket_->storage_key,
-          base::BindOnce(&CacheStorageImpl::UpdateOrCreateBucketCallback,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
+    if (host_->WasNotifiedOfBucketDataDeletion(*bucket_)) {
+      if (bucket_->is_default) {
+        host_->UpdateOrCreateDefaultBucket(
+            bucket_->storage_key,
+            base::BindOnce(&CacheStorageImpl::UpdateOrCreateBucketCallback,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+      } else {
+        // Don't recreate non-default buckets. If the bucket and its cache data
+        // has been deleted, this cache essentially stops working.
+        std::move(callback).Run(nullptr);
+      }
       return;
     }
+
     if (!cache_storage_handle_.value()) {
       cache_storage_handle_ = host_->OpenCacheStorage(bucket_.value(), owner_);
     }
@@ -1148,7 +1155,7 @@ CacheStorageHandle CacheStorageDispatcherHost::OpenCacheStorage(
   return manager->OpenCacheStorage(bucket_locator, owner);
 }
 
-void CacheStorageDispatcherHost::UpdateOrCreateBucket(
+void CacheStorageDispatcherHost::UpdateOrCreateDefaultBucket(
     const blink::StorageKey& storage_key,
     base::OnceCallback<void(storage::QuotaErrorOr<storage::BucketInfo>)>
         callback) {

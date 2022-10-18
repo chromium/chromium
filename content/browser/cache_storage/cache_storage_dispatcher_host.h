@@ -81,7 +81,7 @@ class CacheStorageDispatcherHost {
   CacheStorageHandle OpenCacheStorage(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner);
-  void UpdateOrCreateBucket(
+  void UpdateOrCreateDefaultBucket(
       const blink::StorageKey& storage_key,
       base::OnceCallback<void(storage::QuotaErrorOr<storage::BucketInfo>)>
           callback);
