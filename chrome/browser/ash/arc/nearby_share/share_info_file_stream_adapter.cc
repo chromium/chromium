@@ -17,9 +17,6 @@
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/c/system/data_pipe.h"
-#include "mojo/public/cpp/system/handle_signals_state.h"
-#include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
 
 namespace arc {

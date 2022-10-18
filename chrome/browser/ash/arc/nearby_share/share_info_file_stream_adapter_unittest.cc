@@ -16,8 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "content/public/test/browser_task_environment.h"
-#include "mojo/public/cpp/system/data_pipe.h"
-#include "mojo/public/cpp/system/simple_watcher.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
