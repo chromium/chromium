@@ -54,7 +54,7 @@ constexpr base::TimeDelta kPerAttemptMinVerificationTimeLimit =
 
 DEFINE_CERT_ERROR_ID(kPathLacksEVPolicy, "Path does not have an EV policy");
 
-const void* kResultDebugDataKey = &kResultDebugDataKey;
+const void* const kResultDebugDataKey = &kResultDebugDataKey;
 
 base::Value NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
                              const CertErrors& errors) {
