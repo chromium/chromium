@@ -139,6 +139,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   static const size_t kMaxDomainPurgedKeys;
 
   // Partitioned cookie garbage collection thresholds.
+  static const size_t kPerPartitionDomainMaxCookieBytes;
   static const size_t kPerPartitionDomainMaxCookies;
   // TODO(crbug.com/1225444): Add global limit to number of partitioned cookies.
 

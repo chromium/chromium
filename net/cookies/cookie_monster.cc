@@ -162,11 +162,31 @@ bool IncludeUnpartitionedCookies(
   return false;
 }
 
-size_t NameValueSizeBytes(const std::string& name, const std::string& value) {
-  base::CheckedNumeric<size_t> name_value_pair_size = name.size();
-  name_value_pair_size += value.size();
+size_t NameValueSizeBytes(const net::CanonicalCookie& cc) {
+  base::CheckedNumeric<size_t> name_value_pair_size = cc.Name().size();
+  name_value_pair_size += cc.Value().size();
   DCHECK(name_value_pair_size.IsValid());
   return name_value_pair_size.ValueOrDie();
+}
+
+size_t NumBytesInCookieMapForKey(
+    const net::CookieMonster::CookieMap& cookie_map,
+    const std::string& key) {
+  size_t result = 0;
+  auto range = cookie_map.equal_range(key);
+  for (auto it = range.first; it != range.second; ++it) {
+    result += NameValueSizeBytes(*it->second);
+  }
+  return result;
+}
+
+size_t NumBytesInCookieItVector(
+    const net::CookieMonster::CookieItVector& cookie_its) {
+  size_t result = 0;
+  for (const auto& it : cookie_its) {
+    result += NameValueSizeBytes(*it->second);
+  }
+  return result;
 }
 
 }  // namespace
@@ -182,7 +202,8 @@ const size_t CookieMonster::kPurgeCookies = 300;
 
 const size_t CookieMonster::kMaxDomainPurgedKeys = 100;
 
-const size_t CookieMonster::kPerPartitionDomainMaxCookies = 10;
+const size_t CookieMonster::kPerPartitionDomainMaxCookieBytes = 10240;
+const size_t CookieMonster::kPerPartitionDomainMaxCookies = 180;
 
 const size_t CookieMonster::kDomainCookiesQuotaLow = 30;
 const size_t CookieMonster::kDomainCookiesQuotaMedium = 50;
@@ -1560,7 +1581,7 @@ void CookieMonster::SetCanonicalCookie(
 
     if (cc->IsEffectivelySameSiteNone()) {
       UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes",
-                                 NameValueSizeBytes(cc->Name(), cc->Value()));
+                                 NameValueSizeBytes(*cc));
     }
 
     bool is_partitioned_cookie = cc->IsPartitioned();
@@ -1981,7 +2002,9 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
   if (cookie_partition_it == partitioned_cookies_.end())
     return num_deleted;
 
-  if (cookie_partition_it->second->count(key) > kPerPartitionDomainMaxCookies) {
+  if (NumBytesInCookieMapForKey(*cookie_partition_it->second.get(), key) >
+          kPerPartitionDomainMaxCookieBytes ||
+      cookie_partition_it->second->count(key) > kPerPartitionDomainMaxCookies) {
     // TODO(crbug.com/1225444): Log garbage collection for partitioned cookies.
 
     CookieItVector non_expired_cookie_its;
@@ -1989,18 +2012,20 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
         current, cookie_partition_it,
         cookie_partition_it->second->equal_range(key), &non_expired_cookie_its);
 
-    if (non_expired_cookie_its.size() > kPerPartitionDomainMaxCookies) {
+    size_t bytes_used = NumBytesInCookieItVector(non_expired_cookie_its);
+
+    if (bytes_used > kPerPartitionDomainMaxCookieBytes ||
+        non_expired_cookie_its.size() > kPerPartitionDomainMaxCookies) {
       // TODO(crbug.com/1225444): Log deep garbage collection for partitioned
       // cookies.
-
-      // For now, just delete the least recently accessed partition cookies
-      // until we are under the per-partition domain limit. All partitioned
-      // cookies are Secure since they require the __Host- prefix.
       std::sort(non_expired_cookie_its.begin(), non_expired_cookie_its.end(),
                 LRACookieSorter);
+
       for (size_t i = 0;
-           i < (non_expired_cookie_its.size() - kPerPartitionDomainMaxCookies);
+           bytes_used > kPerPartitionDomainMaxCookieBytes ||
+           non_expired_cookie_its.size() - i > kPerPartitionDomainMaxCookies;
            ++i) {
+        bytes_used -= NameValueSizeBytes(*non_expired_cookie_its[i]->second);
         InternalDeletePartitionedCookie(
             cookie_partition_it, non_expired_cookie_its[i], true,
             DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
