@@ -392,13 +392,17 @@ class HidDetectionScreen extends HidDetectionScreenBase {
   }
 
   setContinueButtonEnabled(enabled) {
+    const oldContinueButtonEnabled = this.continueButtonEnabled;
     this.continueButtonEnabled = enabled;
     afterNextRender(this, () => this.$['hid-continue-button'].focus());
-    this.announceCancelButtonUpdates_();
+
+    if (oldContinueButtonEnabled != enabled) {
+      this.announceContinueButtonUpdates_();
+    }
   }
 
   /** @protected */
-  announceCancelButtonUpdates_() {
+  announceContinueButtonUpdates_() {
     this.dispatchEvent(new CustomEvent('iron-announce', {
       bubbles: true,
       composed: true,
