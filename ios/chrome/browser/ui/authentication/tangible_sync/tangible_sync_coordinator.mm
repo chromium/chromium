@@ -199,7 +199,7 @@
 - (void)startSyncOrAdvancedSettings:(BOOL)advancedSettings {
   _advancedSettingsRequested = advancedSettings;
 
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState())
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

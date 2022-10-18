@@ -191,7 +191,7 @@
   } else {
     // TODO(crbug.com/1254359): Dedupe duplicated code, here and in
     // user_signin_mediator.
-    ChromeIdentity* identity = _authenticationService->GetPrimaryIdentity(
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     DCHECK(identity);
 
@@ -207,8 +207,8 @@
     }
 
     CoreAccountId coreAccountId = _identityManager->PickAccountIdForAccount(
-        base::SysNSStringToUTF8([identity gaiaID]),
-        base::SysNSStringToUTF8([identity userEmail]));
+        base::SysNSStringToUTF8(identity.gaiaID),
+        base::SysNSStringToUTF8(identity.userEmail));
     _consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
     _authenticationService->GrantSyncConsent(identity);
 
