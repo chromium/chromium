@@ -1504,14 +1504,9 @@ class PrivateNetworkAccessAutoReloadBrowserTest
 // load due to a transient network error, it is auto-reloaded a short while
 // later and that fetch is not blocked as a private network request.
 //
-// TODO(crbug.com/1326341): Flaky on Linux MSan.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_AutoReloadWorks DISABLED_AutoReloadWorks
-#else
-#define MAYBE_AutoReloadWorks AutoReloadWorks
-#endif
+// TODO(crbug.com/1326341): Test is flaky.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessAutoReloadBrowserTest,
-                       MAYBE_AutoReloadWorks) {
+                       DISABLED_AutoReloadWorks) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("/defaultresponse");
 
