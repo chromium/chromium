@@ -180,6 +180,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
     // ctap2_invalid_signature causes a bogus signature to be returned if true.
     bool ctap2_invalid_signature = false;
+    // If true, UV bit is always set to 0 in the response.
+    bool unset_uv_bit = false;
+    // If true, UP bit is always set to 0 in the response.
+    bool unset_up_bit = false;
 
     // Number of PIN retries remaining.
     int pin_retries = kMaxPinRetries;
