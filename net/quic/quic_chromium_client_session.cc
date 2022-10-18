@@ -1135,10 +1135,6 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
 
 void QuicChromiumClientSession::Initialize() {
   set_max_inbound_header_list_size(kQuicMaxHeaderListSize);
-  if (config()->HasClientRequestedIndependentOption(
-          quic::kQLVE, quic::Perspective::IS_CLIENT)) {
-    connection()->EnableLegacyVersionEncapsulation(session_key_.host());
-  }
   quic::QuicSpdyClientSessionBase::Initialize();
 }
 

@@ -571,8 +571,6 @@ component("quiche") {
     "src/quiche/quic/core/quic_interval.h",
     "src/quiche/quic/core/quic_interval_deque.h",
     "src/quiche/quic/core/quic_interval_set.h",
-    "src/quiche/quic/core/quic_legacy_version_encapsulator.cc",
-    "src/quiche/quic/core/quic_legacy_version_encapsulator.h",
     "src/quiche/quic/core/quic_lru_cache.h",
     "src/quiche/quic/core/quic_mtu_discovery.cc",
     "src/quiche/quic/core/quic_mtu_discovery.h",
@@ -1280,6 +1278,12 @@ if (!is_ios) {
   }
   source_set("quic_server_core") {
     sources = [
+      "src/quiche/quic/tools/connect_server_backend.cc",
+      "src/quiche/quic/tools/connect_server_backend.h",
+      "src/quiche/quic/tools/connect_tunnel.cc",
+      "src/quiche/quic/tools/connect_tunnel.h",
+      "src/quiche/quic/tools/quic_name_lookup.cc",
+      "src/quiche/quic/tools/quic_name_lookup.h",
       "src/quiche/quic/tools/quic_toy_server.cc",
       "src/quiche/quic/tools/quic_toy_server.h",
     ]
@@ -1550,7 +1554,6 @@ source_set("quiche_tests") {
     "src/quiche/quic/core/quic_interval_deque_test.cc",
     "src/quiche/quic/core/quic_interval_set_test.cc",
     "src/quiche/quic/core/quic_interval_test.cc",
-    "src/quiche/quic/core/quic_legacy_version_encapsulator_test.cc",
     "src/quiche/quic/core/quic_lru_cache_test.cc",
     "src/quiche/quic/core/quic_network_blackhole_detector_test.cc",
     "src/quiche/quic/core/quic_one_block_arena_test.cc",
