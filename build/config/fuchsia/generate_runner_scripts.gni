@@ -248,24 +248,8 @@ template("fuchsia_test_runner") {
       ]
     }
 
-    if (defined(invoker.use_run_test_component) &&
-        invoker.use_run_test_component && !use_cfv2_script) {
-      executable_args += [ "--use-run-test-component" ]
-    }
-
     if (defined(invoker.use_test_server) && invoker.use_test_server) {
-      # TODO(crbug.com/1254563): Tests that needs the test server need access
-      # to the network and run-test-component doesn't support it. Provide the
-      # necessary access via capability routing once the tests are running via
-      # CFv2.
       executable_args += [ "--enable-test-server" ]
-      if (!use_cfv2_script) {
-        executable_args += [ "--use-run" ]
-      }
-    }
-
-    if ((!defined(invoker.use_cfv2) || invoker.use_cfv2) && !use_cfv2_script) {
-      executable_args += [ "--component-version=2" ]
     }
 
     if (default_fuchsia_device_node_name != "") {

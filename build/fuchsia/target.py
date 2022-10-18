@@ -185,50 +185,6 @@ class Target(object):
                                       for_realms)(isolated_directory)
       ])
 
-  def PutFile(self,
-              source,
-              dest,
-              recursive=False,
-              for_package=None,
-              for_realms=()):
-    """Copies a file from the local filesystem to the target filesystem.
-
-    source: The path of the file being copied.
-    dest: The path on the remote filesystem which will be copied to.
-    recursive: If true, performs a recursive copy.
-    for_package: If specified, isolated paths in the |dest| are mapped to their
-                 obsolute paths for the package, on the target. This currently
-                 affects the /data and /tmp directories.
-    for_realms: If specified, identifies the sub-realm of 'sys' under which
-                isolated paths (see |for_package|) are stored.
-    """
-    assert type(source) is str
-    self.PutFiles([source], dest, recursive, for_package, for_realms)
-
-  def PutFiles(self,
-               sources,
-               dest,
-               recursive=False,
-               for_package=None,
-               for_realms=()):
-    """Copies files from the local filesystem to the target filesystem.
-
-    sources: List of local file paths to copy from, or a single path.
-    dest: The path on the remote filesystem which will be copied to.
-    recursive: If true, performs a recursive copy.
-    for_package: If specified, /data in the |dest| is mapped to the package's
-                 isolated /data location.
-    for_realms: If specified, identifies the sub-realm of 'sys' under which
-                isolated paths (see |for_package|) are stored.
-    """
-    assert type(sources) is tuple or type(sources) is list
-    if for_package:
-      self.EnsureIsolatedPathsExist(for_package, for_realms)
-      dest = _MapIsolatedPathsForPackage(for_package, 0, for_realms)(dest)
-    logging.debug('copy local:%s => remote:%s', sources, dest)
-    self.GetCommandRunner().RunScp(sources, dest, remote_cmd.COPY_TO_TARGET,
-                                   recursive)
-
   def GetFile(self,
               source,
               dest,

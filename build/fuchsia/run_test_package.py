@@ -115,37 +115,9 @@ class MergedInputStream(object):
           del streams_by_fd[fileno]
 
 
-def _GetComponentUri(package_name, package_component_version):
-  suffix = 'cm' if package_component_version == '2' else 'cmx'
-  return 'fuchsia-pkg://fuchsia.com/%s#meta/%s.%s' % (package_name,
-                                                      package_name, suffix)
-
-
-class RunTestPackageArgs:
-  """RunTestPackage() configuration arguments structure.
-
-  code_coverage: If set, the test package will be run via 'runtests', and the
-                 output will be saved to /tmp folder on the device.
-  test_realm_label: Specifies the realm name that run-test-component should use.
-      This must be specified if a filter file is to be set, or a results summary
-      file fetched after the test suite has run.
-  use_run_test_component: If True then the test package will be run hermetically
-                          via 'run-test-component', rather than using 'run'.
-  output_directory: If set, the output directory for CFv2 tests that use
-                    custom artifacts; see fxbug.dev/75690.
-  """
-
-  def __init__(self):
-    self.code_coverage = False
-    self.test_realm_label = None
-    self.use_run_test_component = False
-    self.output_directory = None
-
-  @staticmethod
-  def FromCommonArgs(args):
-    run_test_package_args = RunTestPackageArgs()
-    run_test_package_args.code_coverage = args.code_coverage
-    return run_test_package_args
+def _GetComponentUri(package_name):
+  return 'fuchsia-pkg://fuchsia.com/%s#meta/%s.cm' % (package_name,
+                                                      package_name)
 
 
 def _DrainStreamToStdout(stream, quit_event):
@@ -169,22 +141,19 @@ def _SymbolizeStream(input_fd, ids_txt_files):
 
 
 def RunTestPackage(target, ffx_session, package_paths, package_name,
-                   package_component_version, package_args, args):
+                   package_args):
   """Installs the Fuchsia package at |package_path| on the target,
   executes it with |package_args|, and symbolizes its output.
 
   target: The deployment Target object that will run the package.
-  ffx_session: An FfxSession object if the test is to be run via ffx, or None.
+  ffx_session: An FfxSession object.
   package_paths: The paths to the .far packages to be installed.
   package_name: The name of the primary package to run.
-  package_component_version: The component version of the primary package to
-    run ("1" or "2").
   package_args: The arguments which will be passed to the Fuchsia process.
-  args: RunTestPackageArgs instance configuring how the package will be run.
 
   Returns the exit code of the remote package process."""
 
-  assert not args.code_coverage or ffx_session
+  assert ffx_session
   kernel_logger = _AttachKernelLogReader(target)
   try:
     # Spin up a thread to asynchronously dump the system log to stdout
@@ -207,27 +176,9 @@ def RunTestPackage(target, ffx_session, package_paths, package_name,
 
       logging.info('Running application.')
 
-      component_uri = _GetComponentUri(package_name, package_component_version)
-      process = None
-      if ffx_session:
-        process = ffx_session.test_run(target.GetFfxTarget(), component_uri,
-                                       package_args)
-      elif args.use_run_test_component:
-        command = ['run-test-component']
-        if args.test_realm_label:
-          command += ['--realm-label=%s' % args.test_realm_label]
-        command.append(component_uri)
-        command.append('--')
-        command.extend(package_args)
-      else:
-        command = ['run', component_uri]
-        command.extend(package_args)
-
-      if process is None:
-        process = target.RunCommandPiped(command,
-                                         stdin=open(os.devnull, 'r'),
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.STDOUT)
+      component_uri = _GetComponentUri(package_name)
+      process = ffx_session.test_run(target.GetFfxTarget(), component_uri,
+                                     package_args)
 
       # Symbolize klog and systemlog as separate streams. The symbolizer
       # protocol is stateful, so comingled raw stack dumps can yield

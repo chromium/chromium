@@ -548,7 +548,6 @@ template("test") {
                                "data",
                                "data_deps",
                                "package_deps",
-                               "use_cfv2",
                                "use_test_server",
                              ])
 
