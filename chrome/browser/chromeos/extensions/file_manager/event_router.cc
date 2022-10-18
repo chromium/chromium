@@ -113,7 +113,7 @@ bool IsRecoveryToolRunning(Profile* profile) {
       "jndclpdbaamdhonoechobihbbiimdgai"   // Recovery tool prod
   };
 
-  for (auto extension_id : kRecoveryToolIds) {
+  for (const auto& extension_id : kRecoveryToolIds) {
     if (extension_prefs->IsExtensionRunning(extension_id))
       return true;
   }
