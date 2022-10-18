@@ -26,7 +26,7 @@ namespace {
 TEST(TargetValueTest, VerifyLayerAnimationDelegateConstructor) {
   const gfx::Rect kBounds(1, 2, 3, 5);
   const auto kTransform =
-      gfx::Transform::AffineForTesting(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f);
+      gfx::Transform::Affine(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f);
   const float kOpacity = 1.235f;
   const bool kVisibility = false;
   const float kBrightness = 2.358f;

@@ -48,7 +48,7 @@ ResourceId NextId(ResourceId id) {
 
 TEST(DrawQuadTest, CopySharedQuadState) {
   gfx::Transform quad_transform =
-      gfx::Transform::AffineForTesting(1.0, 0.0, 0.5, 1.0, 0.5, 0.0);
+      gfx::Transform::Affine(1.0, 0.5, 0.0, 1.0, 0.5, 0.0);
   gfx::Rect layer_rect(26, 28);
   gfx::Rect visible_layer_rect(10, 12, 14, 16);
   gfx::Rect clip_rect(19, 21, 23, 25);
@@ -73,7 +73,7 @@ TEST(DrawQuadTest, CopySharedQuadState) {
 
 SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
   gfx::Transform quad_transform =
-      gfx::Transform::AffineForTesting(1.0, 0.0, 0.5, 1.0, 0.5, 0.0);
+      gfx::Transform::Affine(1.0, 0.5, 0.0, 1.0, 0.5, 0.0);
   gfx::Rect layer_rect(26, 28);
   gfx::Rect visible_layer_rect(10, 12, 14, 16);
   bool are_contents_opaque = true;

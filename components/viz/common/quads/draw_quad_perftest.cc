@@ -37,7 +37,7 @@ perf_test::PerfResultReporter SetUpDrawQuadReporter(const std::string& story) {
 
 SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
   gfx::Transform quad_transform =
-      gfx::Transform::AffineForTesting(1.0, 0.0, 0.5, 1.0, 0.5, 0.0);
+      gfx::Transform::Affine(1.0, 0.5, 0.0, 1.0, 0.5, 0.0);
   gfx::Rect content_rect(26, 28);
   gfx::Rect visible_layer_rect(10, 12, 14, 16);
   bool are_contents_opaque = false;

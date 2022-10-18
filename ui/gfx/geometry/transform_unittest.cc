@@ -204,7 +204,7 @@ TEST(XFormTest, Equality) {
 
 // This test is to make it easier to understand the order of operations.
 TEST(XFormTest, PrePostOperations) {
-  auto m1 = Transform::AffineForTesting(1, 2, 3, 4, 5, 6);
+  auto m1 = Transform::Affine(1, 2, 3, 4, 5, 6);
   auto m2 = m1;
   m1.Translate(10, 20);
   m2.PreConcat(Transform::MakeTranslation(10, 20));
@@ -1415,35 +1415,45 @@ TEST(XFormTest, verifyCopyConstructor) {
   EXPECT_ROW4_EQ(13.0f, 17.0f, 21.0f, 25.0f, B);
 }
 
-TEST(XFormTest, verifyConstructorFor16Elements) {
+TEST(XFormTest, RowMajor) {
   auto transform =
-      Transform::RowMajor(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
-                          11.0, 12.0, 13.0, 14.0, 15.0, 16.0);
+      Transform::RowMajor(2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0,
+                          12.0, 13.0, 14.0, 15.0, 16.0, 17.0);
 
-  EXPECT_ROW1_EQ(1.0f, 2.0f, 3.0f, 4.0f, transform);
-  EXPECT_ROW2_EQ(5.0f, 6.0f, 7.0f, 8.0f, transform);
-  EXPECT_ROW3_EQ(9.0f, 10.0f, 11.0f, 12.0f, transform);
-  EXPECT_ROW4_EQ(13.0f, 14.0f, 15.0f, 16.0f, transform);
+  EXPECT_ROW1_EQ(2.0f, 3.0f, 4.0f, 5.0f, transform);
+  EXPECT_ROW2_EQ(6.0f, 7.0f, 8.0f, 9.0f, transform);
+  EXPECT_ROW3_EQ(10.0f, 11.0f, 12.0f, 13.0f, transform);
+  EXPECT_ROW4_EQ(14.0f, 15.0f, 16.0f, 17.0f, transform);
 }
 
-TEST(XFormTest, verifyConstructorFor2dElements) {
-  Transform transform =
-      Transform::AffineForTesting(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+TEST(XFormTest, ColMajor) {
+  auto transform =
+      Transform::ColMajor(2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0,
+                          12.0, 13.0, 14.0, 15.0, 16.0, 17.0);
 
-  EXPECT_ROW1_EQ(1.0f, 2.0f, 0.0f, 5.0f, transform);
-  EXPECT_ROW2_EQ(3.0f, 4.0f, 0.0f, 6.0f, transform);
-  EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, 0.0f, transform);
-  EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, transform);
+  EXPECT_ROW1_EQ(2.0, 6.0, 10.0, 14.0, transform);
+  EXPECT_ROW2_EQ(3.0, 7.0, 11.0, 15.0, transform);
+  EXPECT_ROW3_EQ(4.0, 8.0, 12.0, 16.0, transform);
+  EXPECT_ROW4_EQ(5.0, 9.0, 13.0, 17.0, transform);
+}
+
+TEST(XFormTest, Affine) {
+  auto transform = Transform::Affine(2.0, 3.0, 4.0, 5.0, 6.0, 7.0);
+
+  EXPECT_ROW1_EQ(2.0, 4.0, 0.0, 6.0, transform);
+  EXPECT_ROW2_EQ(3.0, 5.0, 0.0, 7.0, transform);
+  EXPECT_ROW3_EQ(0.0, 0.0, 1.0, 0.0, transform);
+  EXPECT_ROW4_EQ(0.0, 0.0, 0.0, 1.0, transform);
 }
 
 TEST(XFormTest, ColMajorF) {
-  float data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+  float data[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
   auto transform = Transform::ColMajorF(data);
 
-  EXPECT_ROW1_EQ(1.0f, 5.0f, 9.0f, 13.0f, transform);
-  EXPECT_ROW2_EQ(2.0f, 6.0f, 10.0f, 14.0f, transform);
-  EXPECT_ROW3_EQ(3.0f, 7.0f, 11.0f, 15.0f, transform);
-  EXPECT_ROW4_EQ(4.0f, 8.0f, 12.0f, 16.0f, transform);
+  EXPECT_ROW1_EQ(2.0, 6.0, 10.0, 14.0, transform);
+  EXPECT_ROW2_EQ(3.0, 7.0, 11.0, 15.0, transform);
+  EXPECT_ROW3_EQ(4.0, 8.0, 12.0, 16.0, transform);
+  EXPECT_ROW4_EQ(5.0, 9.0, 13.0, 17.0, transform);
 
   float data1[16];
   transform.GetColMajorF(data1);

@@ -89,16 +89,15 @@ class GEOMETRY_SKIA_EXPORT Transform {
                      r0c3, r1c3, r2c3, r3c3);  // col 3
   }
 
-  // TODO(crbug.com/1359528): This is temporary for unit tests to create an
-  // arbitrary affine transform with values without specific meanings, before
-  // the order of parameters of Affine() is fixed.
-  static Transform AffineForTesting(double v0,
-                                    double v1,
-                                    double v2,
-                                    double v3,
-                                    double v4,
-                                    double v5) {
-    return Affine(v0, v1, v2, v3, v4, v5);
+  // Creates a transform from explicit 2d elements. All other matrix elements
+  // remain the same as the corresponding elements of an identity matrix.
+  static Transform Affine(double a,    // a.k.a. r0c0 or scale_x
+                          double b,    // a.k.a. r1c0 or tan(skew_y)
+                          double c,    // a.k.a. r0c1 or tan(skew_x) 
+                          double d,    // a.k.a  r1c1 or scale_y
+                          double e,    // a.k.a  r0c3 or translation_x
+                          double f) {  // a.k.a  r1c3 or translaiton_y
+    return ColMajor(a, b, 0, 0, c, d, 0, 0, 0, 0, 1, 0, e, f, 0, 1);
   }
 
   // Constructs a transform corresponding to the given quaternion.
@@ -114,9 +113,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
     return Transform(sx, sy, 0, 0);
   }
   // Accurately rotate by 90, 180 or 270 degrees about the z axis.
-  static Transform Make90degRotation() { return Affine(0, -1, 1, 0, 0, 0); }
+  static Transform Make90degRotation() { return Affine(0, 1, -1, 0, 0, 0); }
   static Transform Make180degRotation() { return MakeScale(-1); }
-  static Transform Make270degRotation() { return Affine(0, 1, -1, 0, 0, 0); }
+  static Transform Make270degRotation() { return Affine(0, -1, 1, 0, 0, 0); }
 
   // Returns a const reference to an identity transform. If you just need an
   // identity transform as a value, the default constructor is better.
@@ -446,24 +445,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
             double r2c3,
             double r3c3);
   Transform(float scale_x, float scale_y, float trans_x, float trans_y);
-
-  // TODO(crbug.com/1359528): This is temporarily private before the order of
-  // the parameters is fixed. The current order is weird, not conforming to the
-  // normal order of (a, b, c, d, e, f) which is
-  // (r0c0, r1c0, r0c1, r1c1, r0c3, r1c3).
-  // Creates a transform from explicit 2d elements. All other matrix elements
-  // remain the same as the corresponding elements of an identity matrix.
-  static Transform Affine(double r0c0,
-                          double r0c1,
-                          double r1c0,
-                          double r1c1,
-                          double x_translation,
-                          double y_translation) {
-    return ColMajor(r0c0, r1c0, 0, 0,                     // col 0
-                    r0c1, r1c1, 0, 0,                     // col 1
-                    0, 0, 1, 0,                           // col 2
-                    x_translation, y_translation, 0, 1);  // col 3
-  }
 
   Point3F MapPointInternal(const Matrix44& xform, const Point3F& point) const;
 
