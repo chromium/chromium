@@ -774,10 +774,8 @@ var CrSettingsReviewNotificationPermissionsTest =
   }
 };
 
-// Failing on buildbots. http://crbug.com/1374908
 TEST_F(
-    'CrSettingsReviewNotificationPermissionsTest',
-    'DISABLED_CrSettingsReviewNotificationPermissionsTest', function() {
+    'CrSettingsReviewNotificationPermissionsTest', 'All', function() {
       mocha.run();
     });
 
