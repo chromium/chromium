@@ -261,6 +261,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onReadDirectoryRequested', true);
     this.setHandlerEnabled('onReadFileRequested', true);
     this.setHandlerEnabled('onRemoveWatcherRequested', true);
+    this.setHandlerEnabled('onUnmountRequested', true);
     this.setHandlerEnabled('onWriteFileRequested', true);
   }
 
@@ -883,6 +884,24 @@ export class TestFileSystemProvider {
     }
 
     onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+  };
+
+  /**
+   * FSP: requests to unmount this filesystem.
+   *
+   * @param {!chrome.fileSystemProvider.UnmountRequestedOptions} options
+   * @param {function()} onSuccess Success callback.
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *     callback.
+   */
+  onUnmountRequested(options, onSuccess, onError) {
+    this.recordEvent('onUnmountRequested', options);
+    const error = this.testConfig['onUnmountRequestedError'];
+    if (error) {
+      onError(error);
+    } else {
+      onSuccess();
+    }
   };
 
   /**

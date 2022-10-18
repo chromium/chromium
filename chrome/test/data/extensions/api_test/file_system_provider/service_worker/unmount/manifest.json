@@ -1,0 +1,15 @@
+{
+  "key": "MIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQDOuXEIuoK1kAkBe0SKiJn/N9oNn3oUxGa4dwj40MnJqPn+w0aR2vuyocm0R4Drp67aYwtLjOVPF4CICRq6ICP6eU07gGwQxGdZ7HJASXV8hm0tab5I70oJmRLfFJyVAMCeWlFaOGq05v2i6EbifZM0qO5xALKNGQt+yjXi5INM5wIBIw==",
+  "name": "chrome.fileSystemProvider.unmount",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Test for chrome.fileSystemProvider.unmount() in service workers.",
+  "permissions": ["fileSystemProvider", "fileManagerPrivate"],
+  "file_system_provider_capabilities": {
+    "source": "device"
+  },
+  "background": {
+    "service_worker": "sw.js",
+    "type": "module"
+  }
+}
