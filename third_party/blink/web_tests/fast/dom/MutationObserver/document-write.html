@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<head>
-</head>
-<body>
-<div id="result">RESULT</div>
-<script>
 
+<div id="result">RESULT</div>
+
+<script>
 var resultDiv = document.getElementById('result');
 
 if (window.testRunner) {
@@ -13,7 +11,6 @@ if (window.testRunner) {
 }
 
 var count = 0;
-
 var observer = new MutationObserver(function(r) {
     count += r.length;
 });
@@ -31,23 +28,17 @@ function check() {
 }
 
 function finish() {
-    setTimeout(function() {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
         check();
-
         var result = counts[0] == 0 &&
                      counts[1] == 0 &&
                      counts[2] == 0 &&
                      counts[3] == 1 ? 'PASSED' : 'FAILED';
-
-        document.documentElement.appendChild(document.createElement('body'));
-        document.body.innerHTML = result;
-        if (window.testRunner) {
+        document.body.appendChild(document.createTextNode(result));
+        if (window.testRunner)
             testRunner.notifyDone();
-        }
-    }, 0);
+    }));
 }
-
-finish();
 </script>
+
 <iframe onload="mutate(); check(); document.write('<script>check();</script>'); document.close(); check(); finish();">
-</body>
