@@ -107,7 +107,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
 
   // Signs in and simulates cookies being added on the web.
   void SigninAndSimulateCookies(ConsistencyPromoSigninMediator* mediator,
-                                ChromeIdentity* identity) {
+                                id<SystemIdentity> identity) {
     GetAuthenticationService()->SignIn(identity);
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediatorSignInDone:mediator
@@ -127,7 +127,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
 
   // Signs in and simulates a cookie error.
   void SigninAndSimulateError(ConsistencyPromoSigninMediator* mediator,
-                              ChromeIdentity* identity) {
+                              id<SystemIdentity> identity) {
     GetAuthenticationService()->SignIn(identity);
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediator:mediator
@@ -148,7 +148,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   }
 
   void SigninWithMediator(ConsistencyPromoSigninMediator* mediator,
-                          ChromeIdentity* identity,
+                          id<SystemIdentity> identity,
                           BOOL signin_success) {
     OCMStub([authentication_flow_ identity]).andReturn(identity);
     __block signin_ui::CompletionCallback completion_block = nil;
