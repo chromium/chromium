@@ -262,7 +262,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DISABLED_NavigationsAreFullyCommitted) {
+                       NavigationsAreFullyCommitted) {
+  // Sometimes messages arrive from a renderer to browser for the page in
+  // back/forward cache (message on content.mojom.FrameHost), because the input
+  // task queue is currently not frozen. Do not fail for unexpected messages.
+  DoNotFailForUnexpectedMessagesWhileCached();
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // During a navigation, the document being navigated *away from* can either be
