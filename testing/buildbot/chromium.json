@@ -11,6 +11,11 @@
       "all"
     ]
   },
+  "android-arm64-archive-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "android-official": {
     "additional_compile_targets": [
       "all"

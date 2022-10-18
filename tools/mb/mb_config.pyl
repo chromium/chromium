@@ -56,6 +56,7 @@
     'chromium': {
       'android-archive-dbg': 'android_without_codecs_debug_bot_reclient',
       'android-archive-rel': 'android_without_codecs_release_bot_minimal_symbols_reclient',
+      'android-arm64-archive-rel': 'android_without_codecs_release_bot_minimal_symbols_reclient_arm64',
       'android-official': 'android_official_optimize_reclient',
       'fuchsia-official': 'fuchsia_official_optimize_goma',
       'lacros-arm-archive-rel': 'chromeos_arm-generic_lacros_rel_reclient',
@@ -1824,6 +1825,10 @@
 
     'android_without_codecs_release_bot_minimal_symbols_reclient': [
       'android_without_codecs', 'release_bot_reclient', 'minimal_symbols', 'strip_debug_info',
+    ],
+
+    'android_without_codecs_release_bot_minimal_symbols_reclient_arm64': [
+      'android_without_codecs', 'release_bot_reclient', 'minimal_symbols', 'strip_debug_info', 'arm64'
     ],
 
     'android_without_codecs_release_trybot': [

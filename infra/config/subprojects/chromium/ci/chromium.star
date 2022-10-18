@@ -123,6 +123,54 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-arm64-archive-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_platform = builder_config.target_platform.ANDROID,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder",
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "android|arm",
+        short_name = "arm64",
+    ),
+    cores = 32,
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "src",
+                "infra",
+                "archive_config",
+                "android-arm64-archive-rel.json",
+            ],
+        },
+    },
+    tree_closing = False,  # Set this to true when builder is finalized?
+    goma_backend = None,
+    sheriff_rotations = args.ignore_default(None),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+)
+
+ci.builder(
     name = "android-official",
     branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
