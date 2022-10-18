@@ -15,6 +15,9 @@ class FilesInternalsUIDelegate {
   virtual ~FilesInternalsUIDelegate() = default;
 
   virtual base::Value GetDebugJSON() const = 0;
+
+  virtual bool GetSmbfsEnableVerboseLogging() const = 0;
+  virtual void SetSmbfsEnableVerboseLogging(bool enabled) = 0;
 };
 
 }  // namespace ash

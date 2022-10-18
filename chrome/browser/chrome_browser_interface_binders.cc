@@ -227,6 +227,8 @@
 #include "ash/webui/face_ml_app_ui/mojom/face_ml_app_ui.mojom.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/file_manager/mojom/file_manager.mojom.h"
+#include "ash/webui/files_internals/files_internals.h"
+#include "ash/webui/files_internals/mojom/files_internals.mojom.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
@@ -1348,6 +1350,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
     registry.ForWebUI<ash::ColorInternalsUI>()
         .Add<color_change_listener::mojom::PageHandler>();
   }
+  registry.ForWebUI<ash::FilesInternalsUI>()
+      .Add<ash::mojom::files_internals::PageHandler>();
   registry.ForWebUI<ash::file_manager::FileManagerUI>()
       .Add<color_change_listener::mojom::PageHandler>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -578,7 +578,7 @@ template <>
 WebUIController* NewWebUI<ash::FilesInternalsUI>(WebUI* web_ui,
                                                  const GURL& url) {
   return new ash::FilesInternalsUI(
-      web_ui, std::make_unique<ChromeFilesInternalsUIDelegate>());
+      web_ui, std::make_unique<ChromeFilesInternalsUIDelegate>(web_ui));
 }
 
 template <>

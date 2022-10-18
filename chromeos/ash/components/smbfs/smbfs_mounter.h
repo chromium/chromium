@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SMBFS) SmbFsMounter {
     // Skip attempting to connect to the share.
     bool skip_connect = false;
 
+    // Run /usr/sbin/smbfs with a chattier log-level.
+    bool enable_verbose_logging = false;
+
     // Have smbfs save/restore the share's password.
     bool save_restore_password = false;
     std::string account_hash;

@@ -550,6 +550,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3020],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/files_internals/ash_files_internals_resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [3025],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/guest_os_installer/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [3030],

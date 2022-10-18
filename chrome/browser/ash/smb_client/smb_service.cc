@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
@@ -370,6 +371,8 @@ void SmbService::MountInternal(
   smbfs_options.password = password;
   smbfs_options.allow_ntlm = IsNTLMAuthenticationEnabled();
   smbfs_options.skip_connect = skip_connect;
+  smbfs_options.enable_verbose_logging = profile_->GetPrefs()->GetBoolean(
+      file_manager::prefs::kSmbfsEnableVerboseLogging);
   if (save_credentials && !info.password_salt().empty()) {
     smbfs_options.save_restore_password = true;
     smbfs_options.account_hash = user->username_hash();

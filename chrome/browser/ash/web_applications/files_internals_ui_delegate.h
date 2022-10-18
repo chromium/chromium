@@ -6,18 +6,29 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_FILES_INTERNALS_UI_DELEGATE_H_
 
 #include "ash/webui/files_internals/files_internals_ui_delegate.h"
+#include "base/memory/raw_ptr.h"
+
+namespace content {
+class WebUI;
+}  // namespace content
 
 // Chrome browser FilesInternalsUIDelegate implementation.
 class ChromeFilesInternalsUIDelegate : public ash::FilesInternalsUIDelegate {
  public:
-  ChromeFilesInternalsUIDelegate();
-
+  explicit ChromeFilesInternalsUIDelegate(content::WebUI* web_ui);
   ChromeFilesInternalsUIDelegate(const ChromeFilesInternalsUIDelegate&) =
       delete;
   ChromeFilesInternalsUIDelegate& operator=(
       const ChromeFilesInternalsUIDelegate&) = delete;
+  ~ChromeFilesInternalsUIDelegate() override;
 
   base::Value GetDebugJSON() const override;
+
+  bool GetSmbfsEnableVerboseLogging() const override;
+  void SetSmbfsEnableVerboseLogging(bool enabled) override;
+
+ private:
+  raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_FILES_INTERNALS_UI_DELEGATE_H_

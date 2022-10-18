@@ -5,9 +5,16 @@
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
 
 #include "base/values.h"
+#include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 
-ChromeFilesInternalsUIDelegate::ChromeFilesInternalsUIDelegate() = default;
+ChromeFilesInternalsUIDelegate::ChromeFilesInternalsUIDelegate(
+    content::WebUI* web_ui)
+    : web_ui_(web_ui) {}
+
+ChromeFilesInternalsUIDelegate::~ChromeFilesInternalsUIDelegate() = default;
 
 base::Value ChromeFilesInternalsUIDelegate::GetDebugJSON() const {
   base::Value::Dict dict;
@@ -19,4 +26,19 @@ base::Value ChromeFilesInternalsUIDelegate::GetDebugJSON() const {
   }
 
   return base::Value(std::move(dict));
+}
+
+bool ChromeFilesInternalsUIDelegate::GetSmbfsEnableVerboseLogging() const {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  return profile && profile->GetPrefs()->GetBoolean(
+                        file_manager::prefs::kSmbfsEnableVerboseLogging);
+}
+
+void ChromeFilesInternalsUIDelegate::SetSmbfsEnableVerboseLogging(
+    bool enabled) {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  if (profile) {
+    profile->GetPrefs()->SetBoolean(
+        file_manager::prefs::kSmbfsEnableVerboseLogging, enabled);
+  }
 }

@@ -96,9 +96,14 @@ void SmbFsMounter::Mount(SmbFsMounter::DoneCallback callback) {
   bootstrap_.set_disconnect_handler(
       base::BindOnce(&SmbFsMounter::OnMojoDisconnect, base::Unretained(this)));
 
+  std::vector<std::string> mount_options;
+  if (options_.enable_verbose_logging) {
+    mount_options.emplace_back("log-level=-1");
+  }
+
   ash::disks::MountPoint::Mount(
       disk_mount_manager_, mount_url_, "" /* source_format */, mount_dir_name_,
-      {} /* mount_options */, ash::MountType::kNetworkStorage,
+      mount_options, ash::MountType::kNetworkStorage,
       ash::MountAccessMode::kReadWrite,
       base::BindOnce(&SmbFsMounter::OnMountDone, weak_factory_.GetWeakPtr()));
   mount_timer_.Start(

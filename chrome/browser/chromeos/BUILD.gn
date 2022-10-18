@@ -137,6 +137,7 @@ source_set("chromeos") {
     "//ash/webui/resources:face_ml_app_bundle_resources_grit",
     "//ash/webui/resources:face_ml_app_resources_grit",
     "//ash/webui/resources:face_ml_app_untrusted_resources_grit",
+    "//ash/webui/resources:files_internals_resources_grit",
     "//ash/webui/resources:firmware_update_app_resources_grit",
     "//ash/webui/resources:help_app_resources_grit",
     "//ash/webui/resources:media_app_bundle_resources_grit",

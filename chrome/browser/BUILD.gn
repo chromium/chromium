@@ -5187,6 +5187,7 @@ static_library("browser") {
       "//ash/webui/file_manager:file_manager_ui",
       "//ash/webui/file_manager/mojom",
       "//ash/webui/files_internals",
+      "//ash/webui/files_internals/mojom",
       "//ash/webui/firmware_update_ui",
       "//ash/webui/firmware_update_ui/mojom",
       "//ash/webui/guest_os_installer",

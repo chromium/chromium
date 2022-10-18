@@ -989,6 +989,8 @@ source_set("ash") {
     "file_manager/file_manager_copy_or_move_hook_delegate.h",
     "file_manager/file_manager_copy_or_move_hook_file_check_delegate.cc",
     "file_manager/file_manager_copy_or_move_hook_file_check_delegate.h",
+    "file_manager/file_manager_pref_names.cc",
+    "file_manager/file_manager_pref_names.h",
     "file_manager/file_manager_string_util.cc",
     "file_manager/file_manager_string_util.h",
     "file_manager/file_tasks.cc",
