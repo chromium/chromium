@@ -196,20 +196,6 @@ bool IsViewVisibleOnScreen(views::View* view) {
       .Intersects(view->GetBoundsInScreen());
 }
 
-class TestStartPageSearchResult : public TestSearchResult {
- public:
-  TestStartPageSearchResult() {
-    set_display_type(ash::SearchResultDisplayType::kChip);
-    set_is_recommendation(true);
-  }
-
-  TestStartPageSearchResult(const TestStartPageSearchResult&) = delete;
-  TestStartPageSearchResult& operator=(const TestStartPageSearchResult&) =
-      delete;
-
-  ~TestStartPageSearchResult() override = default;
-};
-
 class AppListViewTest : public views::ViewsTestBase {
  public:
   AppListViewTest() = default;
@@ -590,17 +576,11 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     Show();
     test_api_ = std::make_unique<AppsGridViewTestApi>(apps_grid_view());
 
-    // Add suggestion apps, a folder with apps and other app list items.
-    const int kSuggestionAppNum = 3;
+    // Add a folder with apps and other app list items.
     const int kItemNumInFolder = 25;
     const int kAppListItemNum =
         SharedAppListConfig::instance().GetMaxNumOfItemsPerPage() + 1;
     AppListTestModel* model = delegate_->GetTestModel();
-    SearchModel* search_model = GetSearchModel();
-    for (size_t i = 0; i < kSuggestionAppNum; i++) {
-      search_model->results()->Add(
-          std::make_unique<TestStartPageSearchResult>());
-    }
     AppListFolderItem* folder_item =
         model->CreateAndPopulateFolderWithApps(kItemNumInFolder);
     model->PopulateApps(kAppListItemNum);
