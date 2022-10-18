@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_CONTEXT_H_
 
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom-blink.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_context_options.h"
@@ -37,7 +39,8 @@ class WebAudioLatencyHint;
 // This is an BaseAudioContext which actually plays sound, unlike an
 // OfflineAudioContext which renders sound into a buffer.
 class MODULES_EXPORT AudioContext : public BaseAudioContext,
-                                    public mojom::blink::PermissionObserver {
+                                    public mojom::blink::PermissionObserver,
+                                    public mojom::blink::MediaDevicesListener {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -109,12 +112,17 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
     return set_sink_id_resolvers_;
   }
 
+  // mojom::blink::MediaDevicesListener
+  void OnDevicesChanged(mojom::blink::MediaDeviceType,
+                        const Vector<WebMediaDeviceInfo>&) override;
+
  protected:
   void Uninitialize() final;
 
  private:
   friend class AudioContextAutoplayTest;
   friend class AudioContextTest;
+  FRIEND_TEST_ALL_PREFIXES(AudioContextTest, MediaDevicesService);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -192,6 +200,16 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
                                  mojom::blink::PermissionStatus);
   double GetOutputLatencyQuantizingFactor() const;
 
+  void InitializeMediaDeviceService();
+  void UninitializeMediaDeviceService();
+
+  // Callback from blink::mojom::MediaDevicesDispatcherHost::EnumerateDevices().
+  void DevicesEnumerated(const Vector<Vector<WebMediaDeviceInfo>>& enumeration,
+                         Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
+                             video_input_capabilities,
+                         Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
+                             audio_input_capabilities);
+
   unsigned context_id_;
   Member<ScriptPromiseResolver> close_resolver_;
 
@@ -249,6 +267,18 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // A queue for setSinkId() Promise resolvers. Requests are handled in the
   // order it was received and only one request is handled at a time.
   HeapDeque<Member<SetSinkIdResolver>> set_sink_id_resolvers_;
+
+  // MediaDeviceService for querying device information, and the associated
+  // receiver for getting notification.
+  HeapMojoRemote<mojom::blink::MediaDevicesDispatcherHost>
+      media_device_service_;
+  HeapMojoReceiver<mojom::blink::MediaDevicesListener, AudioContext>
+      media_device_service_receiver_;
+
+  bool is_media_device_service_initialized_ = false;
+
+  // Stores a list of identifiers for output device.
+  HashSet<String> output_device_ids_;
 };
 
 }  // namespace blink

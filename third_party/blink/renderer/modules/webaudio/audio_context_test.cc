@@ -201,4 +201,18 @@ TEST_F(AudioContextTest, ExecutionContextPaused) {
   EXPECT_FALSE(web_audio_device_paused_);
 }
 
+// Test initialization/uninitialization of MediaDeviceService.
+TEST_F(AudioContextTest, MediaDevicesService) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context =
+      AudioContext::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(audio_context->is_media_device_service_initialized_);
+  audio_context->InitializeMediaDeviceService();
+  EXPECT_TRUE(audio_context->is_media_device_service_initialized_);
+  audio_context->UninitializeMediaDeviceService();
+  EXPECT_FALSE(audio_context->media_device_service_.is_bound());
+  EXPECT_FALSE(audio_context->media_device_service_receiver_.is_bound());
+}
+
 }  // namespace blink
