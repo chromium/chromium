@@ -270,7 +270,6 @@ try_.gpu.optional_tests_builder(
         retry_failed_shards = False,
     ),
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    builderless = True,
     main_list_view = "try",
     os = os.WINDOWS_DEFAULT,
     tryjob = try_.job(
