@@ -9196,11 +9196,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFakeKeyboardHeuristicDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableFakeKeyboardHeuristic)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    {"initial-navigation-entry", flag_descriptions::kInitialNavigationEntryName,
-     flag_descriptions::kInitialNavigationEntryDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kInitialNavigationEntry)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-isolated-sandboxed-iframes",
      flag_descriptions::kIsolatedSandboxedIframesName,

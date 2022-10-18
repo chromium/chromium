@@ -4155,11 +4155,6 @@
     "expiry_milestone": 121
   },
   {
-    "name": "initial-navigation-entry",
-    "owners": [ "rakina", "chrome-security-architecture@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "install-isolated-web-app-from-file",
     "owners": [ "kuragin", "reillyg", "rmcelrath" ],
     "expiry_milestone": 140

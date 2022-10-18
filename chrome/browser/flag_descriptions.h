@@ -942,9 +942,6 @@ extern const char kIncognitoScreenshotDescription[];
 extern const char kInfobarScrollOptimizationName[];
 extern const char kInfobarScrollOptimizationDescription[];
 
-extern const char kInitialNavigationEntryName[];
-extern const char kInitialNavigationEntryDescription[];
-
 extern const char kInProductHelpDemoModeChoiceName[];
 extern const char kInProductHelpDemoModeChoiceDescription[];
 
