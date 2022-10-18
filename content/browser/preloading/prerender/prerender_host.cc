@@ -178,8 +178,6 @@ bool PrerenderHost::StartPrerendering() {
       ui::PageTransitionFromInt(attributes_.transition_type);
 
   // Just use the referrer from attributes, as NoStatePrefetch does.
-  // TODO(crbug.com/1176054): For cross-origin prerender, follow the spec steps
-  // for "sufficiently-strict speculative navigation referrer policies".
   load_url_params.referrer = attributes_.referrer;
 
   // TODO(https://crbug.com/1189034): Should we set `override_user_agent` here?

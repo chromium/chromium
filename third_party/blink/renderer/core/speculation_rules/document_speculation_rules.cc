@@ -23,12 +23,7 @@ namespace blink {
 namespace {
 
 // https://wicg.github.io/nav-speculation/prefetch.html#list-of-sufficiently-strict-speculative-navigation-referrer-policies
-bool AcceptableReferrerPolicy(mojom::blink::SpeculationAction action,
-                              const Referrer& referrer) {
-  // TODO(1355146): This restriction should also apply to prerenders.
-  if (action == mojom::blink::SpeculationAction::kPrerender)
-    return true;
-
+bool AcceptableReferrerPolicy(const Referrer& referrer) {
   switch (referrer.referrer_policy) {
     case network::mojom::ReferrerPolicy::kAlways:
     case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
@@ -48,9 +43,21 @@ bool AcceptableReferrerPolicy(mojom::blink::SpeculationAction action,
   }
 }
 
-String MakeReferrerWarning(const KURL& url, const Referrer& referrer) {
-  return "Ignored attempt to prefetch " + url.ElidedString() +
-         " due to unacceptable referrer policy (" +
+String SpeculationActionAsString(mojom::blink::SpeculationAction action) {
+  switch (action) {
+    case mojom::blink::SpeculationAction::kPrefetch:
+    case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
+      return "prefetch";
+    case mojom::blink::SpeculationAction::kPrerender:
+      return "prerender";
+  }
+}
+
+String MakeReferrerWarning(mojom::blink::SpeculationAction action,
+                           const KURL& url,
+                           const Referrer& referrer) {
+  return "Ignored attempt to " + SpeculationActionAsString(action) + " " +
+         url.ElidedString() + " due to unacceptable referrer policy (" +
          SecurityPolicy::ReferrerPolicyAsString(referrer.referrer_policy) +
          ").";
 }
@@ -157,11 +164,11 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
         Referrer referrer = SecurityPolicy::GenerateReferrer(
             referrer_policy, url, outgoing_referrer);
 
-        if (!AcceptableReferrerPolicy(action, referrer)) {
+        if (!AcceptableReferrerPolicy(referrer)) {
           execution_context->AddConsoleMessage(
               mojom::blink::ConsoleMessageSource::kOther,
               mojom::blink::ConsoleMessageLevel::kWarning,
-              MakeReferrerWarning(url, referrer));
+              MakeReferrerWarning(action, url, referrer));
           continue;
         }
 
