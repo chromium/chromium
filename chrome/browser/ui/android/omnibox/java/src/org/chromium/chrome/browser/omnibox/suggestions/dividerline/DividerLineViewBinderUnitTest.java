@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.dividerline;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.TestActivity;
@@ -66,6 +68,17 @@ public class DividerLineViewBinderUnitTest {
     @SmallTest
     public void colorBindTest() {
         mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.LIGHT_BRANDED_THEME);
-        verify(mDividerLine, times(1)).setBackground(any());
+        // We do not verify the color value exactly since the color is dynamic, since we cannot
+        // guarantee that the test device is using the default theme color.
+        verify(mDividerLine, times(1)).setBackgroundColor(anyInt());
+        verify(mDividerLine, never()).setBackgroundResource(anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void colorBindTest_Incognito() {
+        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
+        verify(mDividerLine, times(1)).setBackgroundResource(R.color.divider_line_bg_color_light);
+        verify(mDividerLine, never()).setBackgroundColor(anyInt());
     }
 }

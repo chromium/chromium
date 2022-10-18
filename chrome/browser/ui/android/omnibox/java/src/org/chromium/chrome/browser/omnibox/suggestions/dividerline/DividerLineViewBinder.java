@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.dividerline;
 
-import android.graphics.drawable.Drawable;
-
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -15,10 +15,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class DividerLineViewBinder {
     public static void bind(PropertyModel model, DividerLineView view, PropertyKey propertyKey) {
         if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
-            Drawable drawable = OmniboxResourceProvider.resolveAttributeToDrawable(
-                    view.getContext(), model.get(SuggestionCommonProperties.COLOR_SCHEME),
-                    android.R.attr.listDivider);
-            view.getDivider().setBackground(drawable);
+            if (model.get(SuggestionCommonProperties.COLOR_SCHEME)
+                    == BrandedColorScheme.INCOGNITO) {
+                view.getDivider().setBackgroundResource(R.color.divider_line_bg_color_light);
+            } else {
+                view.getDivider().setBackgroundColor(
+                        SemanticColorUtils.getDividerLineBgColor(view.getContext()));
+            }
         }
     }
 }
