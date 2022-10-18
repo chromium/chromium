@@ -159,8 +159,11 @@ scheme host and port.""")
     # TODO(bashi): Remove this when WebTransport over HTTP/3 server is enabled by default.
     test_selection_group.add_argument("--enable-webtransport-h3",
                                       action="store_true",
-                                      default=False,
+                                      dest="enable_webtransport_h3",
+                                      default=None,
                                       help="Enable tests that require WebTransport over HTTP/3 server (default: false)")
+    test_selection_group.add_argument("--no-enable-webtransport-h3", action="store_false", dest="enable_webtransport_h3",
+                                      help="Do not enable WebTransport tests on experimental channels")
     test_selection_group.add_argument("--tag", action="append", dest="tags",
                                       help="Labels applied to tests to include in the run. "
                                            "Labels starting dir: are equivalent to top-level directories.")
@@ -351,6 +354,11 @@ scheme host and port.""")
     chrome_group.add_argument("--enable-swiftshader", action="store_true", default=False,
                              help="Enable SwiftShader for CPU-based 3D graphics. This can be used "
                              "in environments with no hardware GPU available.")
+    chrome_group.add_argument("--enable-experimental", action="store_true", dest="enable_experimental",
+                              help="Enable --enable-experimental-web-platform-features flag", default=None)
+    chrome_group.add_argument("--no-enable-experimental", action="store_false", dest="enable_experimental",
+                              help="Do not enable --enable-experimental-web-platform-features flag "
+                              "on experimental channels")
 
     sauce_group = parser.add_argument_group("Sauce Labs-specific")
     sauce_group.add_argument("--sauce-browser", dest="sauce_browser",

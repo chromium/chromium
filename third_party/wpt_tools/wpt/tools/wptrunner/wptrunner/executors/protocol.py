@@ -310,6 +310,18 @@ class CookiesProtocolPart(ProtocolPart):
         """Delete all cookies."""
         pass
 
+    @abstractmethod
+    def get_all_cookies(self):
+        """Get all cookies."""
+        pass
+
+    @abstractmethod
+    def get_named_cookie(self, name):
+        """Get named cookie.
+
+        :param name: The name of the cookie to get."""
+        pass
+
 
 class SendKeysProtocolPart(ProtocolPart):
     """Protocol part for performing trusted clicks"""

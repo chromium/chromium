@@ -179,7 +179,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                        name='web-platform-test',
                        run_info=run_info,
                        extra={"run_by_dir": run_test_kwargs["run_by_dir"]})
-    for test_type in run_test_kwargs["test_types"]:
+    for test_type in sorted(run_test_kwargs["test_types"]):
         logger.info(f"Running {test_type} tests")
 
         browser_cls = product.get_browser_cls(test_type)

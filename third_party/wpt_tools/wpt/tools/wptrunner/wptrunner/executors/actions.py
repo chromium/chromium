@@ -26,6 +26,31 @@ class DeleteAllCookiesAction:
         self.protocol.cookies.delete_all_cookies()
 
 
+class GetAllCookiesAction:
+    name = "get_all_cookies"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Getting all cookies")
+        return self.protocol.cookies.get_all_cookies()
+
+
+class GetNamedCookieAction:
+    name = "get_named_cookie"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        name = payload["name"]
+        self.logger.debug("Getting cookie named %s" % name)
+        return self.protocol.cookies.get_named_cookie(name)
+
+
 class SendKeysAction:
     name = "send_keys"
 
@@ -227,6 +252,8 @@ class SetSPCTransactionModeAction:
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
+           GetAllCookiesAction,
+           GetNamedCookieAction,
            SendKeysAction,
            MinimizeWindowAction,
            SetWindowRectAction,

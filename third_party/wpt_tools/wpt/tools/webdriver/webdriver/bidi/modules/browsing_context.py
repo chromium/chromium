@@ -14,8 +14,12 @@ class BrowsingContext(BidiModule):
         return params
 
     @command
-    def create(self, type_hint: str) -> Mapping[str, Any]:
+    def create(self, type_hint: str, reference_context: Optional[str] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"type": type_hint}
+
+        if reference_context is not None:
+            params["referenceContext"] = reference_context
+
         return params
 
     @create.result

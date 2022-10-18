@@ -63,15 +63,18 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
             return 4
         else:
             return 2
-    elif run_info_data.get("ccov"):
-        return 4
     elif run_info_data["debug"] or run_info_data.get("asan") or run_info_data.get("tsan"):
-        return 3
+        if run_info_data.get("ccov"):
+            return 4
+        else:
+            return 3
     elif run_info_data["os"] == "android":
         return 4
     # https://bugzilla.mozilla.org/show_bug.cgi?id=1538725
     elif run_info_data["os"] == "win" and run_info_data["processor"] == "aarch64":
         return 4
+    elif run_info_data.get("ccov"):
+        return 2
     return 1
 
 

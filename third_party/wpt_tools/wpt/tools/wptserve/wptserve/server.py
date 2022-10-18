@@ -841,7 +841,8 @@ class WebTestHttpd:
         :param block: True to run the server on the current thread, blocking,
                       False to run on a separate thread."""
         http_type = "http2" if self.http2 else "https" if self.use_ssl else "http"
-        self.logger.info(f"Starting {http_type} server on {self.host}:{self.port}")
+        http_scheme = "https" if self.use_ssl else "http"
+        self.logger.info(f"Starting {http_type} server on {http_scheme}://{self.host}:{self.port}")
         self.started = True
         self.server_thread = threading.Thread(target=self.httpd.serve_forever)
         self.server_thread.setDaemon(True)  # don't hang on exit
