@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_PROCESS_MANAGER_DELEGATE_H_
 
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -46,12 +48,16 @@ class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // ProfileObserver:
   void OnOffTheRecordProfileCreated(Profile* off_the_record_profile) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
  private:
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
+
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
 };
