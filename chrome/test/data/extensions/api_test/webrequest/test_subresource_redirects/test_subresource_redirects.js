@@ -16,33 +16,31 @@ function getURLWebAccessible() {
 function assertRedirectSucceeds(url, redirectURL, callback) {
   // Load a page to be sure webRequest listeners are set up.
   navigateAndWait(getURL('simpleLoad/b.html'), function() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.onload = pass(function() {
+    passCallback = pass((response) => {
       if (callback) callback();
-      chrome.test.assertEq(xhr.responseURL, redirectURL);
+      chrome.test.assertEq(response.url, redirectURL);
     });
-    xhr.onerror = function() {
+    fetch(url).then((response) => {
+      passCallback(response);
+    }).catch((e) => {
       if (callback) callback();
       chrome.test.fail();
-    };
-    xhr.send();
+    });
   });
 }
 
 function assertRedirectFails(url, callback) {
   // Load a page to be sure webRequest listeners are set up.
   navigateAndWait(getURL('simpleLoad/b.html'), function() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.onload = function() {
-      if (callback) callback();
-      chrome.test.fail();
-    };
-    xhr.onerror = pass(function() {
+    passCallback = pass(() => {
       if (callback) callback();
     });
-    xhr.send();
+    fetch(url).then((response) => {
+      if (callback) callback();
+      chrome.test.fail();
+    }).catch((e) => {
+      passCallback();
+    });
   });
 }
 
@@ -58,7 +56,7 @@ loadScript.then(async function() {
       onHeadersReceivedExtraInfoSpec.push('extraHeaders');
   }
 
-    runTests([
+  runTests([
     function subresourceRedirectToDataUrlOnHeadersReceived() {
       var url = getServerURL('echo');
       var listener = function(details) {
