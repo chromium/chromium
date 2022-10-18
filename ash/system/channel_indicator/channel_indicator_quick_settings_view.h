@@ -23,6 +23,12 @@ class ASH_EXPORT ChannelIndicatorQuickSettingsView : public views::View {
       const ChannelIndicatorQuickSettingsView&) = delete;
   ~ChannelIndicatorQuickSettingsView() override = default;
 
+  // Sets a special "narrow" layout. If `narrow` is true, centers the version
+  // string in the left button. If `narrow` is false, centers the version
+  // string with respect to the combined width of the version and feedback
+  // buttons.
+  void SetNarrowLayout(bool narrow);
+
   views::View* version_button_for_test() { return version_button_; }
   views::View* feedback_button_for_test() { return feedback_button_; }
 

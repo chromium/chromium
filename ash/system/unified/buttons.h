@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_UNIFIED_BUTTONS_H_
 #define ASH_SYSTEM_UNIFIED_BUTTONS_H_
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/system/power/power_status.h"
@@ -110,7 +111,7 @@ class BatteryIconView : public BatteryInfoViewBase {
 };
 
 // A base class of the views showing device management state.
-class ManagedStateView : public views::Button {
+class ASH_EXPORT ManagedStateView : public views::Button {
  public:
   METADATA_HEADER(ManagedStateView);
 
@@ -126,6 +127,8 @@ class ManagedStateView : public views::Button {
   views::Label* label() { return label_; }
 
  private:
+  friend class QuickSettingsHeaderTest;
+
   // views::Button:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   void OnThemeChanged() override;
@@ -140,9 +143,9 @@ class ManagedStateView : public views::Button {
 
 // A view that shows whether the device is enterprise managed or not. It updates
 // by observing EnterpriseDomainModel.
-class EnterpriseManagedView : public ManagedStateView,
-                              public EnterpriseDomainObserver,
-                              public SessionObserver {
+class ASH_EXPORT EnterpriseManagedView : public ManagedStateView,
+                                         public EnterpriseDomainObserver,
+                                         public SessionObserver {
  public:
   METADATA_HEADER(EnterpriseManagedView);
 
@@ -150,6 +153,10 @@ class EnterpriseManagedView : public ManagedStateView,
   EnterpriseManagedView(const EnterpriseManagedView&) = delete;
   EnterpriseManagedView& operator=(const EnterpriseManagedView&) = delete;
   ~EnterpriseManagedView() override;
+
+  // Adjusts the layout for a narrower appearance, using a shorter label for
+  // the button.
+  void SetNarrowLayout(bool narrow);
 
  private:
   // EnterpriseDomainObserver:
@@ -161,10 +168,13 @@ class EnterpriseManagedView : public ManagedStateView,
 
   // Updates the view visibility and displayed string.
   void Update();
+
+  // See SetNarrowLayout().
+  bool narrow_layout_ = false;
 };
 
 // A view that shows whether the user is supervised or a child.
-class SupervisedUserView : public ManagedStateView {
+class ASH_EXPORT SupervisedUserView : public ManagedStateView {
  public:
   METADATA_HEADER(SupervisedUserView);
 

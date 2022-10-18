@@ -17,7 +17,8 @@ class UnifiedSystemTrayController;
 
 // The header view shown at the top of the `QuickSettingsView`. Contains an
 // optional "Managed by" button and an optional release channel indicator. Sets
-// itself invisible when its child views do not need to be shown.
+// itself invisible when its child views do not need to be shown. When both
+// buttons are shown uses a two-column side-by-side layout.
 class ASH_EXPORT QuickSettingsHeader : public views::View {
  public:
   METADATA_HEADER(QuickSettingsHeader);
@@ -36,8 +37,9 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
 
  private:
   // Updates visibility for this view. When it has no children it sets itself
-  // invisible so it does not consume any space.
-  void UpdateVisibility();
+  // invisible so it does not consume any space. Also updates the size of the
+  // child views based on whether one or two columns are visible.
+  void UpdateVisibilityAndLayout();
 
   // Owned by views hierarchy.
   EnterpriseManagedView* enterprise_managed_view_ = nullptr;

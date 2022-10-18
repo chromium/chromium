@@ -43,10 +43,10 @@ namespace ash {
 namespace {
 
 // Constants used with QsRevamp.
-constexpr int kManagedStateButtonHeight = 32;
 constexpr int kManagedStateHighlightRadius = 16;
 constexpr SkScalar kManagedStateCornerRadii[] = {16, 16, 16, 16,
                                                  16, 16, 16, 16};
+constexpr auto kManagedStateBorderInsets = gfx::Insets::TLBR(0, 12, 0, 12);
 
 // Helper function for getting ContentLayerColor.
 inline SkColor GetContentLayerColor(AshColorProvider::ContentLayerType type) {
@@ -237,7 +237,9 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
     // Image goes first.
     image_ = AddChildView(std::make_unique<views::ImageView>());
     label_ = AddChildView(std::make_unique<views::Label>());
-    layout_manager->set_minimum_cross_axis_size(kManagedStateButtonHeight);
+
+    // Inset the icon and label so they aren't too close to the rounded corners.
+    layout_manager->set_inside_border_insets(kManagedStateBorderInsets);
     layout_manager->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kCenter);
   } else {
@@ -325,6 +327,11 @@ EnterpriseManagedView::~EnterpriseManagedView() {
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
+void EnterpriseManagedView::SetNarrowLayout(bool narrow) {
+  narrow_layout_ = narrow;
+  Update();
+}
+
 void EnterpriseManagedView::OnDeviceEnterpriseInfoChanged() {
   Update();
 }
@@ -374,8 +381,12 @@ void EnterpriseManagedView::Update() {
     managed_string = l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
                                                 display_domain_manager);
     if (features::IsQsRevampEnabled()) {
-      // When the managed string is short it is used as the button label.
-      label()->SetText(managed_string);
+      // Narrow layout uses the string "Managed" and wide layout uses the full
+      // string "Managed by example.com".
+      label()->SetText(narrow_layout_
+                           ? l10n_util::GetStringUTF16(
+                                 IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT)
+                           : managed_string);
     }
   }
   SetTooltipText(managed_string);
