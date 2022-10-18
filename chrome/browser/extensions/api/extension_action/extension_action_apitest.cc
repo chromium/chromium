@@ -1076,8 +1076,9 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconInTabWithInvalidPath) {
   console_observer.Wait();
 }
 
-// Tests calling setIcon() in the service worker with an invalid icon path
-// specified. Regression test for https://crbug.com/1262029.
+// Tests calling setIcon() in the service worker with an invalid icon paths
+// specified. Regression test for https://crbug.com/1262029. Regression test for
+// https://crbug.com/1372518.
 IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, SetIconInWorkerWithInvalidPath) {
   constexpr char kManifestTemplate[] =
       R"({
@@ -1090,16 +1091,34 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, SetIconInWorkerWithInvalidPath) {
 
   constexpr char kBackgroundJs[] =
       R"(let expectedError = "%s";
+         const singlePath = 'does_not_exist.png';
+         const multiplePaths = {
+           16: 'does_not_exist.png',
+           32: 'also_does_not_exist.png'
+         };
+
          chrome.test.runTests([
-           function withCallback() {
-             chrome.action.setIcon({path: 'does_not_exist.png'}, () => {
+           function singleWithCallback() {
+             chrome.action.setIcon({path: singlePath}, () => {
                chrome.test.assertLastError(expectedError);
                chrome.test.succeed();
              });
            },
-           async function withPromise() {
+           async function singleWithPromise() {
              await chrome.test.assertPromiseRejects(
-                 chrome.action.setIcon({path: 'does_not_exist.png'}),
+                 chrome.action.setIcon({path: singlePath}),
+                 'Error: ' + expectedError);
+             chrome.test.succeed();
+           },
+           function multipleWithCallback() {
+             chrome.action.setIcon({path: multiplePaths}, () => {
+               chrome.test.assertLastError(expectedError);
+               chrome.test.succeed();
+             });
+           },
+           async function multipleWithPromise() {
+             await chrome.test.assertPromiseRejects(
+                 chrome.action.setIcon({path: multiplePaths}),
                  'Error: ' + expectedError);
              chrome.test.succeed();
            }

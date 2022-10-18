@@ -137,11 +137,21 @@ function setIcon(details, callback, failureCallback) {
       var detailKeyCount = 0;
       for (var iconSize in details.path) {
         ++detailKeyCount;
-        loadImagePath(details.path[iconSize], function(size, imageData) {
-          details.imageData[size] = imageData;
-          if (--detailKeyCount == 0)
-            callback(SetIconCommon(details));
-        }.bind(null, iconSize), failureCallback);
+        loadImagePath(
+            details.path[iconSize],
+            function(size, imageData) {
+              details.imageData[size] = imageData;
+              if (--detailKeyCount == 0) {
+                callback(SetIconCommon(details));
+              }
+            }.bind(null, iconSize),
+            function(errorMessage) {
+              if (failureCallback) {
+                failureCallback(errorMessage);
+                // Only report the first error.
+                failureCallback = null;
+              }
+            });
       }
       if (detailKeyCount == 0)
         throw new Error('The path property must not be empty.');
