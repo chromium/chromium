@@ -351,40 +351,40 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
   }
 
   if (!bidder_ad_beacon_map.empty()) {
+    bool has_bad_beacon_map = false;
     for (const auto& element : bidder_ad_beacon_map) {
       if (!IsEventLevelReportingUrlValid(element.second)) {
         mojo::ReportBadMessage(base::StrCat(
             {"Invalid bidder beacon URL for '", element.first, "'"}));
-        OnReportingComplete(
-            /*success=*/false);
-        return;
+        has_bad_beacon_map = true;
+        break;
+        // No need to skip rest of work on failure - all fields are validated
+        // and consumed independently, and it's not worth the complexity to make
+        // sure everything is dropped when a field is invalid.
       }
     }
-    ad_beacon_map_.metadata[blink::mojom::ReportingDestination::kBuyer] =
-        bidder_ad_beacon_map;
+    if (!has_bad_beacon_map) {
+      ad_beacon_map_.metadata[blink::mojom::ReportingDestination::kBuyer] =
+          bidder_ad_beacon_map;
+    }
   }
 
   if (bidder_report_url) {
     if (!IsEventLevelReportingUrlValid(*bidder_report_url)) {
       mojo::ReportBadMessage("Invalid bidder report URL");
-      OnReportingComplete(/*success=*/false);
-      return;
+      // No need to skip rest of work on failure - all fields are validated and
+      // consumed independently, and it's not worth the complexity to make sure
+      // everything is dropped when a field is invalid.
+    } else {
+      report_urls_.push_back(*bidder_report_url);
     }
-
-    report_urls_.push_back(*bidder_report_url);
   }
 
-  OnReportingComplete(/*success=*/true, errors);
+  OnReportingComplete(errors);
 }
 
 void InterestGroupAuctionReporter::OnReportingComplete(
-    bool success,
     const std::vector<std::string>& errors) {
-  if (!success) {
-    private_aggregation_requests_.clear();
-    ad_beacon_map_ = ReportingMetadata();
-    report_urls_.clear();
-  }
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   std::move(callback_).Run();
 }

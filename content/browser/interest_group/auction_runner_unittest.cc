@@ -7415,8 +7415,8 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
 
 // Test cases where a bad report URL is received over Mojo from the bidder
 // worklet. Bad report URLs should be rejected in the Mojo process, so this
-// results in reporting a bad Mojo message - the reporting is aborted, though
-// the auction is considered a success.
+// results in reporting a bad Mojo message, though the reporting phase is
+// allowed to complete.
 TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   StartStandardAuctionWithMockService();
 
@@ -7452,7 +7452,7 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
 
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback(
-      GURL("https://valid.url.that.is.thrown.out.test/"));
+      GURL("https://seller.report.test/"));
   mock_auction_process_manager_->WaitForWinningBidderReload();
   bidder1_worklet =
       mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
@@ -7466,7 +7466,8 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
-  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre(
+                                       GURL("https://seller.report.test/")));
   EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_TRUE(result_.private_aggregation_requests.empty());
   EXPECT_EQ(6, result_.bidder1_bid_count);
@@ -7480,8 +7481,8 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
 
 // Test cases where a bad URL is present in the beacon mapping received over
 // Mojo from the bidder worklet. Bad report URLs should be rejected in the Mojo
-// process, so this results in reporting a bad Mojo message - the reporting is
-// aborted, though the auction is considered a success.
+// process, so this results in reporting a bad Mojo message, though the
+// reporting phase is allowed to complete.
 TEST_F(AuctionRunnerTest, BadBidderBeaconUrl) {
   StartStandardAuctionWithMockService();
 
@@ -7517,13 +7518,13 @@ TEST_F(AuctionRunnerTest, BadBidderBeaconUrl) {
 
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback(
-      GURL("https://valid.url.that.is.thrown.out.test/"));
+      GURL("https://seller.report.test/"));
   mock_auction_process_manager_->WaitForWinningBidderReload();
   bidder1_worklet =
       mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
   bidder1_worklet->WaitForReportWin();
   bidder1_worklet->InvokeReportWinCallback(
-      /*report_url=*/absl::nullopt,
+      GURL("https://bidder.report.test/"),
       {{"click", GURL("http://not.https.test/")}});
   auction_run_loop_->Run();
 
@@ -7533,7 +7534,9 @@ TEST_F(AuctionRunnerTest, BadBidderBeaconUrl) {
   EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
-  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre(
+                                       GURL("https://seller.report.test/"),
+                                       GURL("https://bidder.report.test/")));
   EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
   EXPECT_TRUE(result_.private_aggregation_requests.empty());
   EXPECT_EQ(6, result_.bidder1_bid_count);

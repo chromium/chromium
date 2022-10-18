@@ -191,7 +191,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   // Invokes `callback_`.
   void OnReportingComplete(
-      bool success,
       const std::vector<std::string>& errors = std::vector<std::string>());
 
   // Retrieves the SellerWinningBidInfo of the auction the bidder was
