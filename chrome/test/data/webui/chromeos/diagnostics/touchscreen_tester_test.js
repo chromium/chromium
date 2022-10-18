@@ -84,7 +84,7 @@ export function touchscreenTesterTestSuite() {
         mockController.createFunctionMock(drawingProvider, 'drawTrail');
 
     const expectedTouches = new Map();
-    const touchStartEvents = [
+    const mockTouchEvents = [
       {
         id: 1,
         point: {x: 100, y: 150},
@@ -97,7 +97,7 @@ export function touchscreenTesterTestSuite() {
       },
     ];
 
-    for (const {id, point, pressure} of touchStartEvents) {
+    for (const {id, point, pressure} of mockTouchEvents) {
       // Add expected function call signature.
       mockDrawTrailMark.addExpectation(point.x, point.y);
       mockDrawTrail.addExpectation(
@@ -121,7 +121,7 @@ export function touchscreenTesterTestSuite() {
         mockController.createFunctionMock(drawingProvider, 'drawTrail');
 
     const expectedTouches = new Map();
-    const touchStartEvents = [
+    const mockTouchEvents = [
       {
         type: 'touchstart',
         id: 1,
@@ -136,7 +136,7 @@ export function touchscreenTesterTestSuite() {
       },
     ];
 
-    for (const {type, id, point, pressure} of touchStartEvents) {
+    for (const {type, id, point, pressure} of mockTouchEvents) {
       if (type === 'touchstart') {
         mockDrawTrail.addExpectation(
             point.x - 1, point.y, point.x, point.y, pressure);
@@ -149,6 +149,64 @@ export function touchscreenTesterTestSuite() {
       }
 
       expectedTouches.set(id, point);
+      assertDeepEquals(expectedTouches, touchscreenTesterElement.getTouches());
+      mockController.verifyMocks();
+    }
+  });
+
+  test('OnDrawEnd', async () => {
+    await initializeTouchscreenTester();
+    await openTester();
+
+    // Mock drawTrailMark and drawTrail function.
+    const drawingProvider = touchscreenTesterElement.getDrawingProvider();
+    const mockController = new MockController();
+    const mockDrawTrailMark =
+        mockController.createFunctionMock(drawingProvider, 'drawTrailMark');
+    const mockDrawTrail =
+        mockController.createFunctionMock(drawingProvider, 'drawTrail');
+
+    const expectedTouches = new Map();
+    const mockTouchEvents = [
+      {
+        type: 'touchstart',
+        id: 1,
+        point: {x: 100, y: 150},
+        pressure: 40,
+      },
+      {
+        type: 'touchmove',
+        id: 1,
+        point: {x: 110, y: 160},
+        pressure: 30,
+      },
+      {
+        type: 'touchend',
+        id: 1,
+        point: {x: 110, y: 160},
+        pressure: 30,
+      },
+    ];
+
+    for (const {type, id, point, pressure} of mockTouchEvents) {
+      if (type === 'touchstart') {
+        mockDrawTrailMark.addExpectation(point.x, point.y);
+        mockDrawTrail.addExpectation(
+            point.x - 1, point.y, point.x, point.y, pressure);
+        touchscreenTesterElement.onDrawStart(id, point, pressure);
+        expectedTouches.set(id, point);
+      } else if (type === 'touchmove') {
+        const previousPt = expectedTouches.get(id);
+        mockDrawTrail.addExpectation(
+            previousPt.x, previousPt.y, point.x, point.y, pressure);
+        touchscreenTesterElement.onDraw(id, point, pressure);
+        expectedTouches.set(id, point);
+      } else if (type === 'touchend') {
+        mockDrawTrailMark.addExpectation(point.x, point.y);
+        touchscreenTesterElement.onDrawEnd(id, point);
+        expectedTouches.delete(id);
+      }
+
       assertDeepEquals(expectedTouches, touchscreenTesterElement.getTouches());
       mockController.verifyMocks();
     }

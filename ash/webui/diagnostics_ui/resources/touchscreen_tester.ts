@@ -162,6 +162,18 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     // Update the coordinates of this touch.
     this.touches.set(touchId, touchPt);
   }
+
+  /**
+   * Handle when a 'touchend' event is fired from Touch API, or an existing
+   * touch ends from evdev.
+   * @param touchId The identifier of a touch.
+   * @param touchPt The coordinates of a touch point.
+   */
+  onDrawEnd(touchId: number, touchPt: Point): void {
+    this.drawingProvider.drawTrailMark(touchPt.x, touchPt.y);
+    // This touch has ended. Remove it from the touches object.
+    this.touches.delete(touchId);
+  }
 }
 
 declare global {
