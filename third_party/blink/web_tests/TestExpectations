@@ -4873,6 +4873,7 @@ crbug.com/1028684 http/tests/inspector-protocol/animation/animation-release.js [
 crbug.com/1019079 fast/canvas/OffscreenCanvas-placeholder-createImageBitmap.html [ Failure Pass ]
 crbug.com/1027434 external/wpt/html/browsers/origin/cross-origin-objects/cross-origin-objects.html [ Failure Pass Timeout ]
 crbug.com/1027434 [ Mac11 ] external/wpt/html/browsers/origin/cross-origin-objects/location-properties-smoke-test.html [ Timeout ]
+crbug.com/1350255 [ Mac12 ] external/wpt/html/browsers/origin/cross-origin-objects/location-properties-smoke-test.html [ Timeout ]
 
 # Sheriff 2019-12-02
 crbug.com/1029528 [ Linux ] http/tests/devtools/network/oopif-content.js [ Failure Pass ]
@@ -7251,6 +7252,7 @@ crbug.com/1371949 [ Mac12 ] virtual/low-priority-script-loading/http/tests/devto
 crbug.com/1371949 [ Mac11 ] virtual/low-priority-script-loading/http/tests/devtools/network/resource-priority.js [ Failure Pass ]
 crbug.com/1374204 [ Linux ] inspector-protocol/debugger/updateCallFrameScopes.js [ Failure Pass ]
 crbug.com/1374204 [ Mac ] inspector-protocol/debugger/updateCallFrameScopes.js [ Failure Pass ]
+crbug.com/1370857 [ Debug Linux ] fast/block/float/float-avoidance.html [ Crash Failure ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
