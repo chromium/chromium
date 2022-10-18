@@ -62,9 +62,10 @@ BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
 BASE_DECLARE_FEATURE(kZeroSuggestInMemoryCaching);
 // Related, kMaxZeroSuggestMatches.
 
-// On Device Head Suggest.
+// On Device Suggest.
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderIncognito);
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderNonIncognito);
+BASE_DECLARE_FEATURE(kOnDeviceTailModel);
 
 // Provider-specific - These features change the behavior of specific providers.
 BASE_DECLARE_FEATURE(kOmniboxExperimentalSuggestScoring);

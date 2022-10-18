@@ -359,10 +359,13 @@ extern const base::FeatureParam<bool> kFuzzyUrlSuggestionsTranspose;
 // assortment of keyword mode experiments.
 bool IsExperimentalKeywordModeEnabled();
 
-// On Device Head Suggestions feature and its helper functions.
+// On Device Suggestions feature and its helper functions.
+// TODO(crbug.com/1307005): clean up head suggest flags once crbug.com/1307005
+// no longer happens.
 bool IsOnDeviceHeadSuggestEnabledForIncognito();
 bool IsOnDeviceHeadSuggestEnabledForNonIncognito();
 bool IsOnDeviceHeadSuggestEnabledForAnyMode();
+bool IsOnDeviceTailSuggestEnabled();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
 

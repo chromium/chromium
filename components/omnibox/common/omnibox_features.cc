@@ -239,16 +239,19 @@ BASE_FEATURE(kZeroSuggestInMemoryCaching,
              "ZeroSuggestInMemoryCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Features to provide non personalized head search suggestion from a compact
-// on device model. More specifically, feature name with suffix Incognito /
-// NonIncognito will only controls behaviors under incognito / non-incognito
-// mode respectively.
+// Features to provide head and tail non personalized search suggestion from
+// compact on device models. More specifically, feature name with suffix
+// Incognito / NonIncognito  will only controls behaviors under incognito /
+// non-incognito mode respectively.
 BASE_FEATURE(kOnDeviceHeadProviderIncognito,
              "OmniboxOnDeviceHeadProviderIncognito",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOnDeviceHeadProviderNonIncognito,
              "OmniboxOnDeviceHeadProviderNonIncognito",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceTailModel,
+             "OmniboxOnDeviceTailModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, changes the way Google-provided search suggestions are scored by
 // the backend. Note that this Feature is only used for triggering a server-
