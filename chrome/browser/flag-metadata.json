@@ -6449,11 +6449,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "sync-settings-categorization",
-    "owners": [ "bsazonov", "rsorokin", "cros-oac@google.com" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "sync-standalone-invalidations",
     "owners": [ "treib", "rushans" ],
     "expiry_milestone": 110
