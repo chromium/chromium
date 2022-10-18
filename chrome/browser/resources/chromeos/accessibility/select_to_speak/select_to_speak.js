@@ -188,6 +188,13 @@ export class SelectToSpeak {
   init_() {
     chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;
+
+      // After the user selects a region of the screen, we do a hit test at
+      // the center of that box using the automation API. The result of the
+      // hit test is a MOUSE_RELEASED accessibility event.
+      desktop.addEventListener(
+          EventType.MOUSE_RELEASED, evt => this.onAutomationHitTest_(evt),
+          true);
     });
 
     this.prefsManager_.initPreferences();
@@ -253,14 +260,15 @@ export class SelectToSpeak {
    * Called in response to our hit test after the mouse is released,
    * when the user is in a mode where select-to-speak is capturing
    * mouse events (for example holding down Search).
-   * @param {!AutomationNode} root The node returned by the hit test.
+   * @param {!AutomationEvent} evt The automation event.
    * @private
    */
-  onAutomationHitTest_(root) {
+  onAutomationHitTest_(evt) {
     // Walk up to the nearest window, web area, toolbar, or dialog that the
     // hit node is contained inside. Only speak objects within that
     // container. In the future we might include other container-like
     // roles here.
+    var root = evt.target;
     // TODO: Use AutomationPredicate.root instead?
     while (root.parent && root.role !== RoleType.WINDOW &&
            root.role !== RoleType.ROOT_WEB_AREA &&
@@ -728,14 +736,15 @@ export class SelectToSpeak {
           // Fire a hit test event on click to warm up the cache, and cancel
           // if speaking.
           this.cancelIfSpeaking_(false /* don't clear the focus ring */);
-          this.desktop_.hitTestWithReply(x, y, unused => {});
+          this.desktop_.hitTest(x, y, EventType.MOUSE_PRESSED);
         } else {
           this.onStateChanged_(SelectToSpeakState.INACTIVE);
           // Do a hit test at the center of the area the user dragged over.
           // This will give us some context when searching the accessibility
-          // tree.
-          this.desktop_.hitTestWithReply(
-              x, y, node => this.onAutomationHitTest_(node));
+          // tree. The hit test will result in a EventType.MOUSE_RELEASED
+          // event being fired on the result of that hit test, which will
+          // trigger onAutomationHitTest_.
+          this.desktop_.hitTest(x, y, EventType.MOUSE_RELEASED);
         }
       },
       // onSelectionChanged: Mouse selection rect changed.
