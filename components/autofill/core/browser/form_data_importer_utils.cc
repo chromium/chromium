@@ -305,10 +305,10 @@ void MultiStepImportMerger::MergeImportMetadata(
     const ProfileImportMetadata& source,
     ProfileImportMetadata& target) const {
   // If an invalid phone number was observed in either of the partial profiles,
-  // importing was only possible due to its removal. So for the purpose of
-  // metrics, we want to merge towards invalid to measure the impact of the
-  // invalid phone number removal feature.
-  if (target.phone_import_status != PhoneImportStatus::kInvalid &&
+  // importing was only possible due to its removal. For the purpose of metrics,
+  // we care about the status of the validity of the phone number in the
+  // combined profile. Thus the logic merges towards kValid.
+  if (target.phone_import_status != PhoneImportStatus::kValid &&
       source.phone_import_status != PhoneImportStatus::kNone) {
     target.phone_import_status = source.phone_import_status;
   }

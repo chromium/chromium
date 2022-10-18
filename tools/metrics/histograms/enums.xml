@@ -5964,8 +5964,9 @@ others/histograms.xml -->
   <int value="15" label="Valid state: Violated"/>
   <int value="16" label="Valid ZIP: Fulfilled"/>
   <int value="17" label="Valid ZIP: Violated"/>
-  <int value="18" label="Valid phone: Fulfilled"/>
-  <int value="19" label="Valid phone: Violated"/>
+  <int value="18"
+      label="Valid phone: Fulfilled (Since 107 no longer required)"/>
+  <int value="19" label="Valid phone: Violated (Since 107 no longer required)"/>
   <int value="20" label="Overall: Fulfilled"/>
   <int value="21" label="Overall: Violated"/>
   <int value="22" label="Line1 requirement: Fulfilled"/>

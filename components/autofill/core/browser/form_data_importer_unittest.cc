@@ -885,37 +885,17 @@ TEST_P(FormDataImporterTest, InvalidCountry) {
   }
 }
 
+// Tests that invalid phone numbers are removed and importing continues.
 TEST_P(FormDataImporterTest, InvalidPhoneNumber) {
-  TypeValuePairs profile_with_invalid_phone_number =
-      GetDefaultProfileTypeValuePairs();
-  SetValueForType(profile_with_invalid_phone_number, PHONE_HOME_WHOLE_NUMBER,
-                  "invalid");
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER, "invalid");
   std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(
-          profile_with_invalid_phone_number);
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
 
-  // With |kAutofillRemoveInvalidPhoneNumberOnImport| disabled, profiles with
-  // invalid phone numbers are rejected.
-  {
-    base::test::ScopedFeatureList remove_invalid_phone_number_feature;
-    remove_invalid_phone_number_feature.InitAndDisableFeature(
-        features::kAutofillRemoveInvalidPhoneNumberOnImport);
-
-    ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
-  }
-
-  // With the feature enabled, the phone number is removed and the profile
-  // imported.
-  {
-    base::test::ScopedFeatureList remove_invalid_phone_number_feature;
-    remove_invalid_phone_number_feature.InitAndEnableFeature(
-        features::kAutofillRemoveInvalidPhoneNumberOnImport);
-
-    auto profile_without_number = ConstructDefaultProfile();
-    profile_without_number.ClearFields({PHONE_HOME_WHOLE_NUMBER});
-    ImportAddressProfilesAndVerifyExpectation(*form_structure,
-                                              {profile_without_number});
-  }
+  auto profile_without_number = ConstructDefaultProfile();
+  profile_without_number.ClearFields({PHONE_HOME_WHOLE_NUMBER});
+  ImportAddressProfilesAndVerifyExpectation(*form_structure,
+                                            {profile_without_number});
 }
 
 // ImportAddressProfiles tests.

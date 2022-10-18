@@ -361,70 +361,50 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesNotAggregatedWithInvalidEmail) {
   ASSERT_TRUE(personal_data_manager()->GetProfiles().empty());
 }
 
-// Test profile is saved if phone number is valid in selected country.
-// The data file contains two profiles with valid phone numbers and two
+// Tests that the profile is saved if the phone number is valid in the selected
+// country. The data file contains two profiles with valid phone numbers and two
 // profiles with invalid phone numbers from their respective country.
-// If AutofillRemoveInvalidPhoneNumberOnImport is enabled, profiles with invalid
-// phone numbers are imported, but with the number removed.
+// Profiles with an invalid number are imported, but their number is removed.
 IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
-  std::vector<FormMap> profiles;
+  std::vector<FormMap> profiles = {
+      {{"NAME_FIRST", "Bob"},
+       {"NAME_LAST", "Smith"},
+       {"ADDRESS_HOME_LINE1", "123 Cherry Ave"},
+       {"ADDRESS_HOME_CITY", "Mountain View"},
+       {"ADDRESS_HOME_STATE", "CA"},
+       {"ADDRESS_HOME_ZIP", "94043"},
+       {"ADDRESS_HOME_COUNTRY", "United States"},
+       {"PHONE_HOME_WHOLE_NUMBER", "408-871-4567"}},
 
-  FormMap data1;
-  data1["NAME_FIRST"] = "Bob";
-  data1["NAME_LAST"] = "Smith";
-  data1["ADDRESS_HOME_LINE1"] = "123 Cherry Ave";
-  data1["ADDRESS_HOME_CITY"] = "Mountain View";
-  data1["ADDRESS_HOME_STATE"] = "CA";
-  data1["ADDRESS_HOME_ZIP"] = "94043";
-  data1["ADDRESS_HOME_COUNTRY"] = "United States";
-  data1["PHONE_HOME_WHOLE_NUMBER"] = "408-871-4567";
-  profiles.push_back(data1);
+      {{"NAME_FIRST", "John"},
+       {"NAME_LAST", "Doe"},
+       {"ADDRESS_HOME_LINE1", "987 H St"},
+       {"ADDRESS_HOME_CITY", "San Jose"},
+       {"ADDRESS_HOME_STATE", "CA"},
+       {"ADDRESS_HOME_ZIP", "95510"},
+       {"ADDRESS_HOME_COUNTRY", "United States"},
+       {"PHONE_HOME_WHOLE_NUMBER", "408-123-456"}},
 
-  FormMap data2;
-  data2["NAME_FIRST"] = "John";
-  data2["NAME_LAST"] = "Doe";
-  data2["ADDRESS_HOME_LINE1"] = "987 H St";
-  data2["ADDRESS_HOME_CITY"] = "San Jose";
-  data2["ADDRESS_HOME_STATE"] = "CA";
-  data2["ADDRESS_HOME_ZIP"] = "95510";
-  data2["ADDRESS_HOME_COUNTRY"] = "United States";
-  data2["PHONE_HOME_WHOLE_NUMBER"] = "408-123-456";
-  profiles.push_back(data2);
+      {{"NAME_FIRST", "Jane"},
+       {"NAME_LAST", "Doe"},
+       {"ADDRESS_HOME_LINE1", "1523 Garcia St"},
+       {"ADDRESS_HOME_CITY", "Mountain View"},
+       {"ADDRESS_HOME_STATE", "CA"},
+       {"ADDRESS_HOME_ZIP", "94043"},
+       {"ADDRESS_HOME_COUNTRY", "Germany"},
+       {"PHONE_HOME_WHOLE_NUMBER", "+49 40-80-81-79-000"}},
 
-  FormMap data3;
-  data3["NAME_FIRST"] = "Jane";
-  data3["NAME_LAST"] = "Doe";
-  data3["ADDRESS_HOME_LINE1"] = "1523 Garcia St";
-  data3["ADDRESS_HOME_CITY"] = "Mountain View";
-  data3["ADDRESS_HOME_STATE"] = "CA";
-  data3["ADDRESS_HOME_ZIP"] = "94043";
-  data3["ADDRESS_HOME_COUNTRY"] = "Germany";
-  data3["PHONE_HOME_WHOLE_NUMBER"] = "+49 40-80-81-79-000";
-  profiles.push_back(data3);
-
-  FormMap data4;
-  data4["NAME_FIRST"] = "Bonnie";
-  data4["NAME_LAST"] = "Smith";
-  data4["ADDRESS_HOME_LINE1"] = "6723 Roadway Rd";
-  data4["ADDRESS_HOME_CITY"] = "San Jose";
-  data4["ADDRESS_HOME_STATE"] = "CA";
-  data4["ADDRESS_HOME_ZIP"] = "95510";
-  data4["ADDRESS_HOME_COUNTRY"] = "Germany";
-  data4["PHONE_HOME_WHOLE_NUMBER"] = "+21 08450 777 777";
-  profiles.push_back(data4);
+      {{"NAME_FIRST", "Bonnie"},
+       {"NAME_LAST", "Smith"},
+       {"ADDRESS_HOME_LINE1", "6723 Roadway Rd"},
+       {"ADDRESS_HOME_CITY", "San Jose"},
+       {"ADDRESS_HOME_STATE", "CA"},
+       {"ADDRESS_HOME_ZIP", "95510"},
+       {"ADDRESS_HOME_COUNTRY", "Germany"},
+       {"PHONE_HOME_WHOLE_NUMBER", "+21 08450 777 777"}}};
 
   for (const auto& profile : profiles)
     FillFormAndSubmit("autofill_test_form.html", profile);
-
-  // The two valid phone numbers are imported in any case.
-  std::vector<std::u16string> expected_phone_numbers{u"408-871-4567",
-                                                     u"+49 40-80-81-79-000"};
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillRemoveInvalidPhoneNumberOnImport)) {
-    // With the feature enabled, all four profiles are imported, but two without
-    // a phone number.
-    expected_phone_numbers.resize(4, u"");
-  }
 
   std::vector<std::u16string> actual_phone_numbers;
   for (const AutofillProfile* profile :
@@ -432,9 +412,10 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
     actual_phone_numbers.push_back(
         profile->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   }
-
+  // Two valid phone numbers are imported, two invalid ones are removed.
   EXPECT_THAT(actual_phone_numbers,
-              testing::UnorderedElementsAreArray(expected_phone_numbers));
+              testing::UnorderedElementsAreArray(
+                  {u"408-871-4567", u"+49 40-80-81-79-000", u"", u""}));
 }
 
 // Prepend country codes when formatting phone numbers if:

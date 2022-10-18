@@ -476,13 +476,6 @@ BASE_FEATURE(kAutofillRemoveInaccessibleProfileValuesOnStartup,
              "AutofillRemoveInaccessibleProfileValuesOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, invalid phone numbers are removed on profile import, rather than
-// invalidating the entire profile.
-// TODO(crbug.com/1298424): Cleanup when launched.
-BASE_FEATURE(kAutofillRemoveInvalidPhoneNumberOnImport,
-             "AutofillRemoveInvalidPhoneNumberOnImport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether or not overall prediction are retrieved from the cache.
 BASE_FEATURE(kAutofillRetrieveOverallPredictionsFromCache,
              "AutofillRetrieveOverallPredictionsFromCache",

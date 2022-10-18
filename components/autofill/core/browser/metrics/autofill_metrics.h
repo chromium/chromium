@@ -713,9 +713,7 @@ class AutofillMetrics {
     // If present, the ZIP must be valid (if verifiable).
     ZIP_VALID_REQUIREMENT_FULFILLED = 16,
     ZIP_VALID_REQUIREMENT_VIOLATED = 17,
-    // If present, the phone number must be valid (if verifiable).
-    PHONE_VALID_REQUIREMENT_FULFILLED = 18,
-    PHONE_VALID_REQUIREMENT_VIOLATED = 19,
+    // 18 and 19 are deprecated, as phone numbers are not a requirement anymore.
     // Indicates the overall status of the import requirements check.
     OVERALL_REQUIREMENT_FULFILLED = 20,
     OVERALL_REQUIREMENT_VIOLATED = 21,

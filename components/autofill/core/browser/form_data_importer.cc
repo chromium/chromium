@@ -437,9 +437,6 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // Tracks if the form section contains an invalid types.
   bool has_invalid_field_types = false;
 
-  // Tracks if the form section contains an invalid phone number.
-  bool has_invalid_phone_number = false;
-
   // Tracks if the form section contains an invalid country.
   bool has_invalid_country = false;
 
@@ -590,19 +587,11 @@ bool FormDataImporter::ImportAddressProfileForSection(
   }
 
   if (!SetPhoneNumber(candidate_profile, combined_phone)) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillRemoveInvalidPhoneNumberOnImport)) {
-      candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
-      import_metadata.phone_import_status = PhoneImportStatus::kInvalid;
-      LOG_AF(import_log_buffer)
-          << LogMessage::kImportAddressProfileFromFormRemoveInvalidValue
-          << "Phone number." << CTag{};
-    } else {
-      has_invalid_phone_number = true;
-      LOG_AF(import_log_buffer)
-          << LogMessage::kImportAddressProfileFromFormFailed
-          << "Invalid phone number." << CTag{};
-    }
+    candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
+    import_metadata.phone_import_status = PhoneImportStatus::kInvalid;
+    LOG_AF(import_log_buffer)
+        << LogMessage::kImportAddressProfileFromFormRemoveInvalidValue
+        << "Phone number." << CTag{};
   } else if (!combined_phone.IsEmpty()) {
     import_metadata.phone_import_status = PhoneImportStatus::kValid;
   }
@@ -617,8 +606,7 @@ bool FormDataImporter::ImportAddressProfileForSection(
   bool has_invalid_information =
       !IsValidLearnableProfile(candidate_profile, import_log_buffer) ||
       has_multiple_distinct_email_addresses || has_invalid_field_types ||
-      (has_invalid_country && !import_metadata.did_ignore_invalid_country) ||
-      has_invalid_phone_number;
+      (has_invalid_country && !import_metadata.did_ignore_invalid_country);
 
   // Profiles with valid information qualify for multi-step imports.
   // This requires the profile to be finalized to apply the merging logic.
@@ -667,11 +655,6 @@ bool FormDataImporter::ImportAddressProfileForSection(
                 NO_INVALID_FIELD_TYPES_REQUIREMENT_VIOLATED
           : AddressImportRequirement::
                 NO_INVALID_FIELD_TYPES_REQUIREMENT_FULFILLED);
-
-  AutofillMetrics::LogAddressFormImportRequirementMetric(
-      has_invalid_phone_number
-          ? AddressImportRequirement::PHONE_VALID_REQUIREMENT_VIOLATED
-          : AddressImportRequirement::PHONE_VALID_REQUIREMENT_FULFILLED);
 
   AutofillMetrics::LogAddressFormImportRequirementMetric(
       has_invalid_country
