@@ -419,7 +419,7 @@ void CustomScrollbar::PositionScrollbarParts() {
         PhysicalOffset(part_rect.origin()));
     // The part's frame_rect is relative to the scrollbar.
     part_rect.Offset(-Location().OffsetFromOrigin());
-    part.value->SetFrameRect(LayoutRect(part_rect));
+    part.value->SetOverriddenFrameRect(LayoutRect(part_rect));
   }
 }
 

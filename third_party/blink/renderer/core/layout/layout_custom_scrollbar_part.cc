@@ -163,6 +163,21 @@ int LayoutCustomScrollbarPart::ComputeLength() const {
   return ComputeHeight(visible_content_rect.height());
 }
 
+void LayoutCustomScrollbarPart::SetOverriddenFrameRect(const LayoutRect& rect) {
+  NOT_DESTROYED();
+  overridden_rect_ = rect;
+}
+
+LayoutPoint LayoutCustomScrollbarPart::Location() const {
+  NOT_DESTROYED();
+  return overridden_rect_.Location();
+}
+
+LayoutSize LayoutCustomScrollbarPart::Size() const {
+  NOT_DESTROYED();
+  return overridden_rect_.Size();
+}
+
 static LayoutUnit ComputeMargin(const Length& style_margin) {
   // TODO(crbug.com/1020913): Support subpixel layout of scrollbars and remove
   // Round() below.

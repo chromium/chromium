@@ -448,11 +448,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return LayoutRect(Location(), Size());
   }
-  void SetFrameRect(const LayoutRect& rect) {
-    NOT_DESTROYED();
-    SetLocation(rect.Location());
-    SetSize(rect.Size());
-  }
 
   // Note that those functions have their origin at this box's CSS border box.
   // As such their location doesn't account for 'top'/'left'. About its
