@@ -85,6 +85,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   void OnEventsFetched(const CalendarModel::FetchingStatus status,
                        const base::Time start_time,
                        const google_apis::calendar::EventList* events) override;
+  void OnTimeout(base::Time start_of_month) override;
 
   // CalendarViewController::Observer:
   void OnMonthChanged() override;

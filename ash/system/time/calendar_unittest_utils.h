@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/calendar/calendar_client.h"
+#include "ash/system/time/calendar_utils.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
@@ -281,9 +282,16 @@ class CalendarClientTestImpl : public CalendarClient {
   // `google_apis::HTTP_SUCCESS` by default.
   void SetError(google_apis::ApiErrorCode error) { error_ = error; }
 
+  // Force the task to take longer than the default timeout, causing an internal
+  // error to be propagated.
+  void ForceTimeout() {
+    task_delay_ = calendar_utils::kEventFetchTimeout + base::Seconds(1);
+  }
+
  private:
   google_apis::ApiErrorCode error_ = google_apis::HTTP_SUCCESS;
   std::unique_ptr<google_apis::calendar::EventList> events_ = nullptr;
+  base::TimeDelta task_delay_ = kAnimationSettleDownDuration + base::Seconds(2);
 };
 
 }  // namespace calendar_test_utils

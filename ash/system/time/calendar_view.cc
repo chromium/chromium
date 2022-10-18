@@ -985,6 +985,13 @@ void CalendarView::OnEventsFetched(
   MaybeUpdateLoadingBarVisibility();
 }
 
+void CalendarView::OnTimeout(const base::Time start_time) {
+  if (on_screen_month_.find(start_time) != on_screen_month_.end())
+    on_screen_month_[start_time] = CalendarModel::kNever;
+
+  MaybeUpdateLoadingBarVisibility();
+}
+
 void CalendarView::OpenEventList() {
   // Don't show the the `event_list_` view for unlogged in users.
   if (!calendar_utils::ShouldFetchEvents())

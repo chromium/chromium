@@ -90,7 +90,7 @@ base::OnceClosure CalendarClientTestImpl::GetEventList(
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), error_, std::move(events_)),
-      kAnimationSettleDownDuration + base::Seconds(2));
+      task_delay_);
 
   return base::DoNothing();
 }

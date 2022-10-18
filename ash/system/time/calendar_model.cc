@@ -233,9 +233,14 @@ void CalendarModel::OnEventsFetched(
   if (error != google_apis::HTTP_SUCCESS) {
     // Request is no longer outstanding, so it can be destroyed.
     pending_fetches_.erase(start_of_month);
+    // Notify observers that we had an error with the events fetched.
+    // Right now the `kError` status isn't handled in any way so we just emit
+    // `kNever` to stop the loading animation displaying.
     // TODO(https://crbug.com/1298187): Possibly respond further based on the
-    // specific error code, retry in some cases, etc. Or notify observers e.g.
-    // observer.OnEventsFetched(kError, start_of_month, events);
+    // specific error code, retry in some cases, etc.
+    for (auto& observer : observers_)
+      observer.OnEventsFetched(kNever, start_of_month, events);
+
     return;
   }
 
@@ -289,8 +294,13 @@ void CalendarModel::OnEventFetchFailedInternalError(
     CalendarEventFetchInternalErrorCode error) {
   // Request is no longer outstanding, so it can be destroyed.
   pending_fetches_.erase(start_of_month);
+  // Notify observers of timeout fetching events for given `start_of_month`.
+  // Right now timeouts aren't handled in any way so we just emit `onTimeout` to
+  // stop the loading animation displaying.
   // TODO(https://crbug.com/1298187): May need to respond further based on the
   // specific error code, retry in some cases, etc.
+  for (auto& observer : observers_)
+    observer.OnTimeout(start_of_month);
 }
 
 bool CalendarModel::ShouldInsertEvent(const CalendarEvent* event) const {

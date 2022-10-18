@@ -49,6 +49,8 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // `kRefetching` is used to represent the fetching status when there're cached
   // events for a month but another fetching request has been sent. In this
   // case, the event indicator dots and the tooltip will show the cached events.
+  // `kNever` is used as the default state when we experience an error or
+  // timeout or haven't fetched anything.
   enum FetchingStatus { kNever, kFetching, kRefetching, kSuccess, kError, kNa };
 
   CalendarModel();
@@ -75,6 +77,9 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
         const FetchingStatus status,
         const base::Time start_time,
         const google_apis::calendar::EventList* events) {}
+
+    // Invoked when an internal timeout has occurred.
+    virtual void OnTimeout(base::Time start_of_month) {}
   };
 
   void AddObserver(Observer* observer);
