@@ -444,6 +444,12 @@ void FakeGaia::RegisterSamlDomainRedirectUrl(const std::string& domain,
   saml_domain_url_map_[domain] = saml_redirect_url;
 }
 
+void FakeGaia::RegisterSamlSsoProfileRedirectUrl(
+    const std::string& sso_profile,
+    const GURL& saml_redirect_url) {
+  saml_sso_profile_url_map_[sso_profile] = saml_redirect_url;
+}
+
 // static
 bool FakeGaia::GetQueryParameter(const std::string& query,
                                  const std::string& key,
@@ -944,27 +950,24 @@ void FakeGaia::HandleOAuthUserInfo(const HttpRequest& request,
 void FakeGaia::HandleSAMLRedirect(const HttpRequest& request,
                                   BasicHttpResponse* http_response) {
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  std::string domain;
-  GetQueryParameter(request_url.query(), "domain", &domain);
 
-  // Get the redirect url.
-  auto itr = saml_domain_url_map_.find(domain);
-  if (itr == saml_domain_url_map_.end()) {
+  absl::optional<GURL> redirect_url = GetSamlRedirectUrl(request_url);
+  if (!redirect_url) {
     http_response->set_code(net::HTTP_BAD_REQUEST);
     return;
   }
 
-  GURL url = itr->second;
-  url = net::AppendQueryParameter(url, "SAMLRequest", "fake_request");
-  url = net::AppendQueryParameter(url, "RelayState",
-                                  GaiaUrls::GetInstance()
-                                      ->gaia_url()
-                                      .Resolve(kFakeSAMLContinuePath)
-                                      .spec());
-  std::string redirect_url = url.spec();
+  redirect_url =
+      net::AppendQueryParameter(*redirect_url, "SAMLRequest", "fake_request");
+  redirect_url = net::AppendQueryParameter(*redirect_url, "RelayState",
+                                           GaiaUrls::GetInstance()
+                                               ->gaia_url()
+                                               .Resolve(kFakeSAMLContinuePath)
+                                               .spec());
+  const std::string& final_url = redirect_url->spec();
   http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
   http_response->AddCustomHeader("Google-Accounts-SAML", "Start");
-  http_response->AddCustomHeader("Location", redirect_url);
+  http_response->AddCustomHeader("Location", final_url);
 }
 
 void FakeGaia::HandleGetCheckConnectionInfo(const HttpRequest& request,
@@ -1083,4 +1086,28 @@ std::string FakeGaia::GetEmbeddedSetupChromeosResponseContent() const {
   CHECK(pos_of_body_closing_tag != std::string::npos);
   response_with_iframe.insert(pos_of_body_closing_tag, iframe);
   return response_with_iframe;
+}
+
+absl::optional<GURL> FakeGaia::GetSamlRedirectUrl(
+    const GURL& request_url) const {
+  // When deciding on saml redirection, gaia is expected to prioritize sso
+  // profile over the domain.
+
+  // First check sso profile.
+  std::string sso_profile;
+  GetQueryParameter(request_url.query(), "sso_profile", &sso_profile);
+  auto itr_sso = saml_sso_profile_url_map_.find(sso_profile);
+  if (itr_sso != saml_sso_profile_url_map_.end()) {
+    return itr_sso->second;
+  }
+
+  // If we failed to find redirect url based on sso profile, try with domain.
+  std::string domain;
+  GetQueryParameter(request_url.query(), "domain", &domain);
+  auto itr_domain = saml_domain_url_map_.find(domain);
+  if (itr_domain != saml_domain_url_map_.end()) {
+    return itr_domain->second;
+  }
+
+  return absl::nullopt;
 }

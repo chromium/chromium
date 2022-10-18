@@ -53,6 +53,7 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
 
   std::string GetIdpHost() const;
   std::string GetIdpDomain() const;
+  std::string GetIdpSsoProfile() const;
   GURL GetSamlPageUrl() const;
   GURL GetHttpSamlPageUrl() const;
   GURL GetSamlWithDeviceAttestationUrl() const;

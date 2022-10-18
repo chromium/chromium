@@ -38,6 +38,7 @@ constexpr char kRelayState[] = "RelayState";
 
 constexpr char kIdpDomain[] = "example.com";
 constexpr char kIdPHost[] = "login.corp.example.com";
+constexpr char kIdpSsoProfile[] = "inboundSamlSsoProfiles/example";
 constexpr char kSamlLoginPath[] = "SAML";
 constexpr char kSamlLoginAuthPath[] = "SAMLAuth";
 constexpr char kSamlLoginWithDeviceAttestationPath[] =
@@ -134,6 +135,8 @@ void FakeSamlIdpMixin::SetUpCommandLine(base::CommandLine* command_line) {
 void FakeSamlIdpMixin::SetUpOnMainThread() {
   gaia_mixin_->fake_gaia()->RegisterSamlDomainRedirectUrl(GetIdpDomain(),
                                                           GetSamlPageUrl());
+  gaia_mixin_->fake_gaia()->RegisterSamlSsoProfileRedirectUrl(
+      GetIdpSsoProfile(), GetSamlPageUrl());
 }
 
 void FakeSamlIdpMixin::SetLoginHTMLTemplate(const std::string& template_file) {
@@ -194,6 +197,10 @@ std::string FakeSamlIdpMixin::GetIdpHost() const {
 
 std::string FakeSamlIdpMixin::GetIdpDomain() const {
   return kIdpDomain;
+}
+
+std::string FakeSamlIdpMixin::GetIdpSsoProfile() const {
+  return kIdpSsoProfile;
 }
 
 GURL FakeSamlIdpMixin::GetSamlPageUrl() const {

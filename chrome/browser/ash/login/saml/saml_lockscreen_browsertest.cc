@@ -827,8 +827,7 @@ class SAMLCookieTransferTest : public LockscreenWebUiTest {
         ->set_transfer_saml_cookies(true);
     // Make user affiliated - this is another condition required to transfer
     // saml cookies.
-    std::set<std::string> device_affiliation_ids;
-    device_affiliation_ids.insert(kAffiliationID);
+    const std::set<std::string> device_affiliation_ids = {kAffiliationID};
     auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
         FakeSessionManagerClient::Get());
     ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetDeviceAffiliationIDs(
@@ -910,6 +909,63 @@ IN_PROC_BROWSER_TEST_F(SAMLCookieTransferTest, CookieTransfer) {
   UnlockWithSAML();
 
   ExpectCookieInUserProfile(kSAMLIdPCookieName, kSAMLIdPCookieValue);
+}
+
+// Fixture which sets SAML SSO profile to device policy protobuff
+class SamlSsoProfileTest : public LockscreenWebUiTest {
+ public:
+  SamlSsoProfileTest() { device_state_.set_skip_initial_policy_setup(true); }
+
+  SamlSsoProfileTest(const SamlSsoProfileTest&) = delete;
+  SamlSsoProfileTest& operator=(const SamlSsoProfileTest&) = delete;
+
+  ~SamlSsoProfileTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SessionManagerClient::InitializeFakeInMemory();
+    LockscreenWebUiTest::SetUpInProcessBrowserTestFixture();
+
+    // Set sso profile to device policy protobuff. It will be fetched from there
+    // during online reauth.
+    policy::DevicePolicyCrosTestHelper device_policy_test_helper;
+    device_policy_test_helper.device_policy()->policy_data().set_sso_profile(
+        fake_saml_idp()->GetIdpSsoProfile());
+
+    // Set affiliation and user policies - this is needed for login in tests to
+    // work correctly
+    const std::set<std::string> device_affiliation_ids = {kAffiliationID};
+    auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
+        FakeSessionManagerClient::Get());
+    ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetDeviceAffiliationIDs(
+        &device_policy_test_helper, device_affiliation_ids)));
+    policy::UserPolicyBuilder user_policy_builder;
+    ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetUserAffiliationIDs(
+        &user_policy_builder, GetAccountId(), device_affiliation_ids)));
+  }
+
+ private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+// Test that during online reauth on the lock screen we can perform saml
+// redirection based on sso profile.
+IN_PROC_BROWSER_TEST_F(SamlSsoProfileTest, ReauthBasedOnSsoProfile) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  // Set wrong redirect url for domain-based saml redirection. This ensures that
+  // for test to finish successfully it should perform redirection based on sso
+  // profile.
+  const GURL wrong_redirect_url("https://wrong.com");
+  fake_gaia_mixin()->fake_gaia()->RegisterSamlDomainRedirectUrl(
+      fake_saml_idp()->GetIdpDomain(), wrong_redirect_url);
+
+  LoginWithoutUpdatingPolicies();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  UnlockWithSAML();
 }
 
 }  // namespace ash

@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -147,9 +148,15 @@ class FakeGaia {
   // to the associated redirect endpoint.
   void RegisterSamlUser(const std::string& account_id, const GURL& saml_idp);
 
-  // Associates an SAML |domain| with a SAML IdP redirect endpoint. When a
+  // Associates a SAML `sso_profile` with a SAML IdP redirect endpoint. When a
+  // /samlredirect request comes in for this SSO Profile, it will be redirected
+  // to this endpoint.
+  void RegisterSamlSsoProfileRedirectUrl(const std::string& sso_profile,
+                                         const GURL& saml_redirect_url);
+
+  // Associates a SAML `domain` with a SAML IdP redirect endpoint. When a
   // /samlredirect request comes in for this domain, it will be redirected to
-  // this endpoint.
+  // this endpoint, unless overridden by sso profile.
   void RegisterSamlDomainRedirectUrl(const std::string& domain,
                                      const GURL& saml_redirect_url);
 
@@ -222,6 +229,7 @@ class FakeGaia {
   using AccessTokenInfoMap = std::multimap<std::string, AccessTokenInfo>;
   using EmailToGaiaIdMap = std::map<std::string, std::string>;
   using SamlAccountIdpMap = std::map<std::string, GURL>;
+  using SamlSsoProfileRedirectUrlMap = std::map<std::string, GURL>;
   using SamlDomainRedirectUrlMap = std::map<std::string, GURL>;
   using EmailToSyncTrustedVaultKeysMap =
       std::map<std::string, SyncTrustedVaultKeys>;
@@ -338,6 +346,10 @@ class FakeGaia {
   // account |embedded_setup_chromeos_iframe_url_| if set.
   std::string GetEmbeddedSetupChromeosResponseContent() const;
 
+  // Returns saml redirect based on given `request_url`. Returns empty object if
+  // it fails to determine appropriate redirect url.
+  absl::optional<GURL> GetSamlRedirectUrl(const GURL& request_url) const;
+
   MergeSessionParams merge_session_params_;
   EmailToGaiaIdMap email_to_gaia_id_map_;
   AccessTokenInfoMap access_token_info_map_;
@@ -346,6 +358,7 @@ class FakeGaia {
   std::string embedded_setup_chromeos_response_;
   std::string fake_saml_continue_response_;
   SamlAccountIdpMap saml_account_idp_map_;
+  SamlSsoProfileRedirectUrlMap saml_sso_profile_url_map_;
   SamlDomainRedirectUrlMap saml_domain_url_map_;
   bool issue_oauth_code_cookie_;
   RefreshTokenToDeviceIdMap refresh_token_to_device_id_map_;

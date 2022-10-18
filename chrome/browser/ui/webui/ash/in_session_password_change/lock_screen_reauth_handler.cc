@@ -78,6 +78,12 @@ InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
   return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
 }
 
+std::string GetSSOProfile() {
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  return connector->GetSSOProfile();
+}
+
 const char kMainElement[] = "$(\'main-element\').";
 const char kIdpTestingDomain[] = "example.com";
 
@@ -198,6 +204,11 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
                                                  : hosted_domain);
     params.Set("doSamlRedirect", force_saml_redirect_for_testing_ ||
                                      ShouldDoSamlRedirect(context.email));
+  }
+
+  const std::string sso_profile(GetSSOProfile());
+  if (!sso_profile.empty()) {
+    params.Set("ssoProfile", sso_profile);
   }
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
