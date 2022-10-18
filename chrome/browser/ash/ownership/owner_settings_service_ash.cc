@@ -216,8 +216,8 @@ OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
       base::BindOnce(&OwnerSettingsServiceAsh::OnEasyUnlockKeyOpsFinished,
                      weak_factory_.GetWeakPtr()));
   // The ProfileManager may be null in unit tests.
-  if (g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->AddObserver(this);
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager())
+    profile_manager_observation_.Observe(profile_manager);
 
   auto ready_callback = base::BindOnce(
       &OwnerSettingsServiceAsh::OnTPMTokenReady, weak_factory_.GetWeakPtr());
@@ -232,11 +232,6 @@ OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
 
 OwnerSettingsServiceAsh::~OwnerSettingsServiceAsh() {
   DCHECK(thread_checker_.CalledOnValidThread());
-
-  // The ProfileManager may be null in unit tests.
-  if (g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->RemoveObserver(this);
-
   if (device_settings_service_)
     device_settings_service_->RemoveObserver(this);
 
@@ -368,8 +363,12 @@ void OwnerSettingsServiceAsh::OnProfileAdded(Profile* profile) {
   if (profile != profile_)
     return;
 
-  g_browser_process->profile_manager()->RemoveObserver(this);
+  profile_manager_observation_.Reset();
   ReloadKeypair();
+}
+
+void OwnerSettingsServiceAsh::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
 }
 
 void OwnerSettingsServiceAsh::OwnerKeySet(bool success) {

@@ -453,6 +453,10 @@ void NoteTakingHelper::OnProfileAdded(Profile* profile) {
   }
 }
 
+void NoteTakingHelper::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
+}
+
 NoteTakingHelper::NoteTakingHelper()
     : launch_chrome_app_callback_(
           base::BindRepeating(&apps::LaunchPlatformAppWithAction)),
@@ -472,7 +476,7 @@ NoteTakingHelper::NoteTakingHelper()
       kDefaultAllowedAppIds + std::size(kDefaultAllowedAppIds));
 
   // Track profiles so we can observe their app registries.
-  g_browser_process->profile_manager()->AddObserver(this);
+  profile_manager_observation_.Observe(g_browser_process->profile_manager());
   play_store_enabled_ = false;
   for (Profile* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
@@ -521,9 +525,6 @@ NoteTakingHelper::NoteTakingHelper()
 
 NoteTakingHelper::~NoteTakingHelper() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  g_browser_process->profile_manager()->RemoveObserver(this);
-
   // ArcSessionManagerTest shuts down ARC before NoteTakingHelper.
   if (arc::ArcSessionManager::Get())
     arc::ArcSessionManager::Get()->RemoveObserver(this);

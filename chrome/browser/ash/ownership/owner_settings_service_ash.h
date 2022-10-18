@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -86,6 +88,7 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // SessionManagerClient::Observer:
   void OwnerKeySet(bool success) override;
@@ -190,6 +193,9 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
   // A protobuf containing pending changes to device settings.
   std::unique_ptr<enterprise_management::ChromeDeviceSettingsProto>
       tentative_settings_;
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   base::WeakPtrFactory<OwnerSettingsServiceAsh> weak_factory_{this};
 
