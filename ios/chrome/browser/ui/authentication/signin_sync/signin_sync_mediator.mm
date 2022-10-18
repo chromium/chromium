@@ -105,7 +105,8 @@
 }
 
 - (void)cancelSyncAndRestoreSigninState:(IdentitySigninState)signinStateOnStart
-                  signinIdentityOnStart:(ChromeIdentity*)signinIdentityOnStart {
+                  signinIdentityOnStart:
+                      (id<SystemIdentity>)signinIdentityOnStart {
   [self.consumer setUIEnabled:NO];
   [self.authenticationFlow cancelAndDismissAnimated:NO];
 
@@ -133,17 +134,8 @@
         self.authenticationService->SignOut(
             signin_metrics::ABORT_SIGNIN,
             /*force_clear_browsing_data=*/false, ^() {
-              AuthenticationService* authenticationService =
-                  weakSelf.authenticationService;
-              ChromeIdentity* identity = signinIdentityOnStart;
-              ChromeAccountManagerService* accountManagerService =
-                  weakSelf.accountManagerService;
-              if (authenticationService && identity &&
-                  accountManagerService->IsValidIdentity(identity)) {
-                // Sign back in with a valid identity.
-                authenticationService->SignIn(identity);
-              }
-              [weakSelf onSigninStateRestorationCompleted];
+              [weakSelf
+                  signinWithIdentityOnStartAfterSignout:signinIdentityOnStart];
             });
       }
       break;
@@ -155,6 +147,22 @@
       break;
     }
   }
+}
+
+- (void)signinWithIdentityOnStartAfterSignout:(id<SystemIdentity>)identity {
+  // Make sure the identity is still valid (for example, the identity
+  // can be removed by another application).
+  ChromeAccountManagerService* accountManagerService =
+      self.accountManagerService;
+  if (accountManagerService &&
+      accountManagerService->IsValidIdentity(identity)) {
+    AuthenticationService* authenticationService = self.authenticationService;
+    if (authenticationService) {
+      authenticationService->SignIn(identity);
+    }
+  }
+
+  [self onSigninStateRestorationCompleted];
 }
 
 - (void)startSyncWithConfirmationID:(const int)confirmationID
@@ -194,8 +202,8 @@
 
 #pragma mark - Properties
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
-  if ([self.selectedIdentity isEqual:selectedIdentity])
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+  if ([_selectedIdentity isEqual:selectedIdentity])
     return;
   // nil is allowed only if there is no other identity.
   DCHECK(selectedIdentity || !self.accountManagerService->HasIdentities());
@@ -219,8 +227,7 @@
     return;
   }
 
-  if (!self.selectedIdentity ||
-      !self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+  if (!self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
     self.selectedIdentity = self.accountManagerService->GetDefaultIdentity();
   }
 }
@@ -235,16 +242,16 @@
 
 // Updates the identity displayed by the consumer.
 - (void)updateConsumerIdentity {
-  if (!self.selectedIdentity) {
+  id<SystemIdentity> selectedIdentity = self.selectedIdentity;
+  if (!selectedIdentity) {
     [self.consumer noIdentityAvailable];
   } else {
     UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
-        self.selectedIdentity, IdentityAvatarSize::Regular);
-    [self.consumer
-        setSelectedIdentityUserName:self.selectedIdentity.userFullName
-                              email:self.selectedIdentity.userEmail
-                          givenName:self.selectedIdentity.userGivenName
-                             avatar:avatar];
+        selectedIdentity, IdentityAvatarSize::Regular);
+    [self.consumer setSelectedIdentityUserName:selectedIdentity.userFullName
+                                         email:selectedIdentity.userEmail
+                                     givenName:selectedIdentity.userGivenName
+                                        avatar:avatar];
   }
 }
 
@@ -279,12 +286,13 @@
 
   // Set the account to enable sync for.
   DCHECK(self.selectedIdentity);
+  id<SystemIdentity> selectedIdentity = self.selectedIdentity;
   CoreAccountId coreAccountId = self.identityManager->PickAccountIdForAccount(
-      base::SysNSStringToUTF8([self.selectedIdentity gaiaID]),
-      base::SysNSStringToUTF8([self.selectedIdentity userEmail]));
+      base::SysNSStringToUTF8(selectedIdentity.gaiaID),
+      base::SysNSStringToUTF8(selectedIdentity.userEmail));
 
   self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
-  self.authenticationService->GrantSyncConsent(self.selectedIdentity);
+  self.authenticationService->GrantSyncConsent(selectedIdentity);
 
   self.unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 

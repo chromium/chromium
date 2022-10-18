@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_coordinator.h"
 
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -93,7 +92,7 @@
 @property(nonatomic, assign) IdentitySigninState signinStateOnStart;
 // Sign-in identity when the coordiantor starts. This is used as the identity to
 // revert to in case sync is canceled.
-@property(nonatomic, strong) ChromeIdentity* signinIdentityOnStart;
+@property(nonatomic, strong) id<SystemIdentity> signinIdentityOnStart;
 
 @end
 
@@ -338,8 +337,7 @@
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
                  didSelectIdentity:(id<SystemIdentity>)identity {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
-  self.mediator.selectedIdentity =
-      base::mac::ObjCCastStrict<ChromeIdentity>(identity);
+  self.mediator.selectedIdentity = identity;
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving
@@ -457,8 +455,7 @@
   if (signinResult == SigninCoordinatorResultSuccess &&
       self.accountManagerService->IsValidIdentity(
           signinCompletionInfo.identity)) {
-    self.mediator.selectedIdentity = base::mac::ObjCCastStrict<ChromeIdentity>(
-        signinCompletionInfo.identity);
+    self.mediator.selectedIdentity = signinCompletionInfo.identity;
     self.mediator.addedAccount = YES;
   }
 }

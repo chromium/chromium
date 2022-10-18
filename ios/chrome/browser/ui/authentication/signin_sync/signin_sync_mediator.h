@@ -29,10 +29,10 @@ class SyncService;
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
-@class ChromeIdentity;
 @protocol SigninSyncConsumer;
 @protocol SigninSyncMediatorDelegate;
 class SyncSetupService;
+@protocol SystemIdentity;
 
 @interface SigninSyncMediator : NSObject
 
@@ -56,7 +56,7 @@ class SyncSetupService;
 @property(nonatomic, weak) id<SigninSyncConsumer> consumer;
 
 // The identity currently selected.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
 // Whether an account has been added. Must be set externally.
 @property(nonatomic, assign) BOOL addedAccount;
@@ -71,7 +71,8 @@ class SyncSetupService;
 // @param signinStateOnStart: Browser sign-in state when the coordinator starts.
 // @param signinIdentityOnStart: Sign-in identity when the coordinator starts.
 - (void)cancelSyncAndRestoreSigninState:(IdentitySigninState)signinStateOnStart
-                  signinIdentityOnStart:(ChromeIdentity*)signinIdentityOnStart;
+                  signinIdentityOnStart:
+                      (id<SystemIdentity>)signinIdentityOnStart;
 
 // Starts the sync engine.
 // @param confirmationID: The confirmation string ID of sync.
