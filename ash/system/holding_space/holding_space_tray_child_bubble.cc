@@ -95,27 +95,52 @@ class TopAlignedBoxLayout : public views::BoxLayout {
     gfx::Rect contents_bounds(host->GetContentsBounds());
     contents_bounds.Inset(inside_border_insets());
 
-    // If we only have a single child view and that child view is okay with
-    // being sized arbitrarily small, short circuit layout logic and give that
-    // child all available layout space. This is the case for the
-    // `PinnedFileSection` which supports scrolling its content when necessary.
-    if (host->children().size() == 1u &&
-        host->children()[0]->GetMinimumSize().IsEmpty()) {
-      host->children()[0]->SetBoundsRect(contents_bounds);
-      return;
-    }
+    const int width = contents_bounds.width();
+    const int child_spacing = between_child_spacing();
 
-    int top = contents_bounds.y();
-    int left = contents_bounds.x();
-    int width = contents_bounds.width();
+    std::vector<std::pair<views::View*, int>> children_with_heights;
 
+    // Calculate preferred heights for children at `width`. Note that
+    // `available_height` is tracked to later determine if there will be
+    // vertical overflow of `contents_bounds`.
+    int available_height = contents_bounds.height();
     for (views::View* child : host->children()) {
       if (!child->GetVisible())
         continue;
 
-      gfx::Size size(width, child->GetHeightForWidth(width));
-      child->SetBounds(left, top, size.width(), size.height());
-      top += size.height() + between_child_spacing();
+      if (!children_with_heights.empty())
+        available_height -= child_spacing;
+
+      const int preferred_height = child->GetHeightForWidth(width);
+      children_with_heights.emplace_back(child, preferred_height);
+
+      available_height -= preferred_height;
+    }
+
+    int top = contents_bounds.y();
+    const int left = contents_bounds.x();
+
+    // Perform child layouts, ceding height where possible to fit within
+    // `contents_bounds`. Note: this does not guarantee that `contents_bounds`
+    // will not be exceeded. Overflow will be clipped by the `host` view.
+    for (auto& [child, height] : children_with_heights) {
+      // A `child` view is willing to cede height if it does not specify a
+      // minimum size. This is the case for the `PinnedFilesSection` which
+      // supports scrolling its content when necessary. In the future it may be
+      // worth implementing a more equitable ceding strategy, but for now height
+      // is greedily taken from children in order of appearance.
+      if (available_height < 0 && child->GetMinimumSize().IsEmpty()) {
+        const int ceded_height = std::min(height, -available_height);
+        height -= ceded_height;
+        available_height += ceded_height;
+      }
+
+      if (top > contents_bounds.y())
+        top += child_spacing;
+
+      child->SetBounds(left, top, width, height);
+
+      top += height;
     }
   }
 };
