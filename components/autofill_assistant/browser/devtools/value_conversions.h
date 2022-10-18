@@ -60,6 +60,11 @@ base::Value ToValueImpl(const base::Value& value, T*) {
 }
 
 template <typename T>
+base::Value ToValueImpl(const base::Value::Dict& value, T*) {
+  return base::Value(value.Clone());
+}
+
+template <typename T>
 base::Value ToValueImpl(const std::vector<T>& vector, const std::vector<T>*) {
   base::Value::List result;
   for (const auto& it : vector)
@@ -118,15 +123,14 @@ struct FromValue<std::string> {
 };
 
 template <>
-struct FromValue<base::DictionaryValue> {
-  static std::unique_ptr<base::DictionaryValue> Parse(const base::Value& value,
-                                                      ErrorReporter* errors) {
-    const base::DictionaryValue* result;
-    if (!value.GetAsDictionary(&result)) {
+struct FromValue<base::Value::Dict> {
+  static absl::optional<base::Value::Dict> Parse(const base::Value& value,
+                                                 ErrorReporter* errors) {
+    if (!value.is_dict()) {
       errors->AddError("dictionary value expected");
-      return nullptr;
+      return absl::nullopt;
     }
-    return result->CreateDeepCopy();
+    return value.GetDict().Clone();
   }
 };
 
