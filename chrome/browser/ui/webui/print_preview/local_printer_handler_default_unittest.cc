@@ -87,10 +87,10 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   TestPrintBackend* sandboxed_print_backend() {
-    return sandboxed_test_backend_.get();
+    return sandboxed_print_backend_.get();
   }
   TestPrintBackend* unsandboxed_print_backend() {
-    return unsandboxed_test_backend_.get();
+    return unsandboxed_print_backend_.get();
   }
 #endif
 
@@ -104,7 +104,7 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
 
   void CreateDefaultBackend() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-    sandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
+    sandboxed_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
 #else
     default_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
 #endif
@@ -144,17 +144,17 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
 
     if (UseService()) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-      sandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
+      sandboxed_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
       sandboxed_print_backend_service_ =
-          PrintBackendServiceTestImpl::LaunchForTesting(sandboxed_test_remote_,
-                                                        sandboxed_test_backend_,
-                                                        /*sandboxed=*/true);
+          PrintBackendServiceTestImpl::LaunchForTesting(
+              sandboxed_print_backend_remote_, sandboxed_print_backend_,
+              /*sandboxed=*/true);
       if (SupportFallback()) {
-        unsandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
+        unsandboxed_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
 
         unsandboxed_print_backend_service_ =
             PrintBackendServiceTestImpl::LaunchForTesting(
-                unsandboxed_test_remote_, unsandboxed_test_backend_,
+                unsandboxed_print_backend_remote_, unsandboxed_print_backend_,
                 /*sandboxed=*/false);
       }
 #else
@@ -236,10 +236,10 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Support for testing via a service instead of with a local task runner.
   base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
-  scoped_refptr<TestPrintBackend> unsandboxed_test_backend_;
-  mojo::Remote<mojom::PrintBackendService> sandboxed_test_remote_;
-  mojo::Remote<mojom::PrintBackendService> unsandboxed_test_remote_;
+  scoped_refptr<TestPrintBackend> sandboxed_print_backend_;
+  scoped_refptr<TestPrintBackend> unsandboxed_print_backend_;
+  mojo::Remote<mojom::PrintBackendService> sandboxed_print_backend_remote_;
+  mojo::Remote<mojom::PrintBackendService> unsandboxed_print_backend_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> sandboxed_print_backend_service_;
   std::unique_ptr<PrintBackendServiceTestImpl>
       unsandboxed_print_backend_service_;
