@@ -1236,6 +1236,10 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
   PictureLayerTiling* high_res =
       tilings_->FindTilingWithScaleKey(raster_contents_scale_);
 
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation Start %d",
+                       !!high_res);
+
   gfx::Vector2dF raster_translation;
   bool raster_translation_aligns_pixels =
       CalculateRasterTranslation(raster_translation);
@@ -1249,9 +1253,15 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
         (raster_translation_is_not_ideal || can_use_lcd_text_changed) &&
         CanRecreateHighResTilingForLCDTextAndRasterTranslation(*high_res);
     if (should_recreate_high_res) {
+      // https://linear.app/replay/issue/RUN-550
+      recordreplay::Assert("PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation #1");
+
       tilings_->Remove(high_res);
       high_res = nullptr;
     } else if (!has_adjusted_raster_scale) {
+      // https://linear.app/replay/issue/RUN-550
+      recordreplay::Assert("PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation #2");
+
       // Nothing changed, no need to update tilings.
       DCHECK_EQ(HIGH_RESOLUTION, high_res->resolution());
       SanityCheckTilingState();
@@ -1293,6 +1303,9 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
   }
 
   SanityCheckTilingState();
+
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation Done");
 }
 
 bool PictureLayerImpl::ShouldAdjustRasterScale() const {
