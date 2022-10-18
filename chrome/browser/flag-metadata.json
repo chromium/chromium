@@ -3739,7 +3739,7 @@
   {
     "name": "focus-follows-cursor",
     "owners": [ "dandersson", "tclaiborne" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "following-feed-sidepanel",
