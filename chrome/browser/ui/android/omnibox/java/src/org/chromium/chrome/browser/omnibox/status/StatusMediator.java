@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -72,7 +71,6 @@ public class StatusMediator implements PermissionDialogController.Observer,
     private boolean mIsSecurityViewShown;
     private boolean mIsTablet;
 
-    private final int mEndPaddingPixelSizeOnFocusDelta;
     private int mUrlMinWidth;
     private int mSeparatorMinWidth;
     private int mVerboseStatusTextMinWidth;
@@ -107,13 +105,6 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
     private float mUrlFocusPercent;
 
-    // Factors used to offset the animation of the status icon's alpha adjustment. The full formula
-    // used: alpha = (focusAnimationProgress - mTextOffsetThreshold) / (1 - mTextOffsetThreshold)
-    // mTextOffsetThreshold will be the % space that the icon takes up during the focus animation.
-    // When un/focused padding(s) change, this formula shouldn't need to change.
-    private final float mTextOffsetThreshold;
-    // The denominator for the above formula, which will adjust the scale for the alpha.
-    private final float mTextOffsetAdjustedScale;
     private int mPermissionIconDisplayTimeoutMs = PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS;
 
     /**
@@ -159,15 +150,6 @@ public class StatusMediator implements PermissionDialogController.Observer,
         mPageInfoIPHController = pageInfoIPHController;
         mWindowAndroid = windowAndroid;
         mMerchantTrustSignalsCoordinatorSupplier = merchantTrustSignalsCoordinatorSupplier;
-
-        // TODO(crbug.com/1369345): Figure out how to remove the usage of
-        // mEndPaddingPixelSizeOnFocusDelta.
-        mEndPaddingPixelSizeOnFocusDelta =
-                mResources.getDimensionPixelSize(R.dimen.location_bar_icon_end_padding_focused)
-                - mResources.getDimensionPixelSize(R.dimen.location_bar_icon_end_padding);
-        int iconWidth = resources.getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
-        mTextOffsetThreshold = (float) iconWidth / (iconWidth + mEndPaddingPixelSizeOnFocusDelta);
-        mTextOffsetAdjustedScale = mTextOffsetThreshold == 1 ? 1 : (1 - mTextOffsetThreshold);
 
         mIsTablet = isTablet;
         mShowStatusIconWhenUrlFocused = mIsTablet;
@@ -349,12 +331,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
         // Only fade the animation on the new tab page or start surface.
         if (mProfileSupplier.get() != null && isNTPOrStartSurfaceVisible()) {
-            float focusAnimationProgress = percent;
-            if (!mUrlHasFocus) {
-                focusAnimationProgress = MathUtils.clamp(
-                        (percent - mTextOffsetThreshold) / mTextOffsetAdjustedScale, 0f, 1f);
-            }
-            setStatusIconAlpha(focusAnimationProgress);
+            setStatusIconAlpha(percent);
         } else {
             setStatusIconAlpha(1f);
         }
