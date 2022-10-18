@@ -40,20 +40,16 @@ const char kRankingKey[] = "ranking";
 
 // The default destinations ranking, based on statistical usage of the old
 // overflow menu.
-std::vector<overflow_menu::Destination> DefaultDestinationsRanking() {
-  std::vector<overflow_menu::Destination> default_ranking = {
-      overflow_menu::Destination::Bookmarks,
-      overflow_menu::Destination::History,
-      overflow_menu::Destination::ReadingList,
-      overflow_menu::Destination::Passwords,
-      overflow_menu::Destination::Downloads,
-      overflow_menu::Destination::RecentTabs,
-      overflow_menu::Destination::SiteInfo,
-      overflow_menu::Destination::Settings,
-  };
-
-  return default_ranking;
-}
+const overflow_menu::Destination kDefaultRanking[] = {
+    overflow_menu::Destination::Bookmarks,
+    overflow_menu::Destination::History,
+    overflow_menu::Destination::ReadingList,
+    overflow_menu::Destination::Passwords,
+    overflow_menu::Destination::Downloads,
+    overflow_menu::Destination::RecentTabs,
+    overflow_menu::Destination::SiteInfo,
+    overflow_menu::Destination::Settings,
+};
 
 // The number of days since the Unix epoch; one day, in this context, runs from
 // UTC midnight to UTC midnight.
@@ -154,9 +150,10 @@ std::vector<overflow_menu::Destination> Vector(
   return vec;
 }
 
-// Converts std::vector<overflow_menu::Destination> ranking into
+// Converts iterable of overflow_menu::Destination `ranking` into
 // base::Value::List ranking.
-base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
+template <typename Range>
+base::Value::List List(Range&& ranking) {
   base::Value::List list;
 
   for (overflow_menu::Destination destination : ranking) {
@@ -283,10 +280,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   const base::Value::Dict& history =
       self.prefService->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
 
-  std::vector<overflow_menu::Destination> defaultRanking =
-      DefaultDestinationsRanking();
-
-  for (overflow_menu::Destination destination : defaultRanking) {
+  for (overflow_menu::Destination destination : kDefaultRanking) {
     const std::string path =
         today + "." + overflow_menu::StringNameForDestination(destination);
     update->SetByDottedPath(
@@ -339,10 +333,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
                                (const base::Value::List*)previousRanking
                       numAboveFoldDestinations:(int)numAboveFoldDestinations {
   if (!previousRanking) {
-    std::vector<overflow_menu::Destination> defaultRanking =
-        DefaultDestinationsRanking();
-
-    return List(defaultRanking);
+    return List(kDefaultRanking);
   }
 
   if (numAboveFoldDestinations >= static_cast<int>(previousRanking->size()))
