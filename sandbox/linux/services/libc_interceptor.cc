@@ -33,7 +33,7 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 
-#if BUILDFLAG(USING_SANITIZER)
+#if BUILDFLAG(USING_SANITIZER) && !defined(COMPONENT_BUILD)
 // Sanitizers may override certain libc functions with a weak symbol that points
 // the real symbol to an interceptor symbol. E.g. getaddrinfo ->
 // __interceptor_getaddrinfo. However our own libc overrides below prevent the
@@ -45,6 +45,12 @@
 // a libc symbol with its own __interceptor_* function. If it's been
 // intercepted, we can call the sanitizer's version instead of the normal
 // RTLD_NEXT version.
+//
+// Note that in component builds this isn't necessary because our override is in
+// a shared object, but the sanitizer interceptor is always in the main
+// executable so it is always first in the binding order. That means the
+// interceptor will call our override, and calling the interceptor again is
+// infinite recursion.
 //
 // INTERCEPTOR_DECL declares the weak symbol for the __interceptor_* version and
 // REAL(func) should return the address of the __interceptor_* version of |func|
