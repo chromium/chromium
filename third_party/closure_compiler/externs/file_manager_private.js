@@ -864,8 +864,8 @@ chrome.fileManagerPrivate.setDefaultTask = function(descriptor, entries, mimeTyp
  * Gets the list of tasks that can be performed over selected files. |entries|
  * Array of selected entries |callback|
  * @param {!Array<!Entry>} entries
- * @param {function((!Array<!chrome.fileManagerPrivate.FileTask>|undefined))}
- *     callback |tasks| The list of matched file entries for this task.
+ * @param {function((!chrome.fileManagerPrivate.ResultingTasks|undefined))}
+ *     callback The list of matched file tasks for the entries.
  */
 chrome.fileManagerPrivate.getFileTasks = function(entries, callback) {};
 
