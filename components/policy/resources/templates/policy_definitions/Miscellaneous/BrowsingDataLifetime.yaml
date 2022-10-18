@@ -6,7 +6,7 @@ desc: |-
 
         The browser will automatically remove data of selected types that is older than <ph name="TIME_TO_LIVE_IN_HOURS">'time_to_live_in_hours'</ph>. The minimum value that can be set is 1 hour.
 
-        The deletion of expired data will happen 15 seconds after the browser starts then every hour while the browser is running.
+        The deletion of expired data will happen 15 seconds after the browser starts then every hour while the browser is running. Open tabs are not subject to the deletion policy. If they are closed, the data will be cleared by policy in the next cycle.
 example_value:
 - data_types:
   - browsing_history
