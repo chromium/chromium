@@ -360,12 +360,9 @@ ui::Layer* MessageView::GetSlideOutLayer() {
   // slide behavior to the parent message view when the parent view is
   // collapsed.
   auto* nested_layer =
-      (parent_message_view_ && !parent_message_view_->IsExpanded())
-          ? parent_message_view_->layer()
-          : layer();
-  bool is_nested = (parent_message_view_ && !parent_message_view_->IsExpanded())
-                       ? parent_message_view_->is_nested()
-                       : is_nested_;
+      ShouldParentHandleSlide() ? parent_message_view_->layer() : layer();
+  bool is_nested = ShouldParentHandleSlide() ? parent_message_view_->is_nested()
+                                             : is_nested_;
   return is_nested ? nested_layer : GetWidget()->GetLayer();
 }
 
@@ -408,6 +405,9 @@ void MessageView::RemoveObserver(MessageView::Observer* observer) {
 }
 
 void MessageView::OnSlideOut() {
+  if (ShouldParentHandleSlide())
+    return parent_message_view_->OnSlideOut();
+
   // The notification will be deleted after slide out, so give observers a
   // chance to handle the notification before fulling sliding out.
   for (auto& observer : observers_)
@@ -527,6 +527,13 @@ bool MessageView::ShouldShowControlButtons() const {
 #else
   return true;
 #endif
+}
+
+bool MessageView::ShouldParentHandleSlide() const {
+  if (!parent_message_view_)
+    return false;
+
+  return !parent_message_view_->IsExpanded();
 }
 
 void MessageView::UpdateBackgroundPainter() {

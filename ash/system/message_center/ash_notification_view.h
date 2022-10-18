@@ -145,6 +145,7 @@ class ASH_EXPORT AshNotificationView
 
  private:
   friend class AshNotificationViewTest;
+  friend class NotificationGroupingControllerTest;
 
   // Customized title row for this notification view with added timestamp in
   // collapse mode.
