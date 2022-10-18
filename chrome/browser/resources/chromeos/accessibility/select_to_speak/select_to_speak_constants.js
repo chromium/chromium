@@ -16,6 +16,14 @@ SelectToSpeakConstants.CONTROL_KEY_CODE = KeyCode.CONTROL;
 SelectToSpeakConstants.READ_SELECTION_KEY_CODE = KeyCode.S;
 
 /**
+ * @typedef {{
+ *   language: (string|undefined),
+ *   useVoiceSwitching: boolean,
+ * }}
+ */
+SelectToSpeakConstants.VoiceSwitchingData;
+
+/**
  * How often (in ms) to check that the currently spoken node is
  * still valid and in the same position. Decreasing this will make
  * STS seem more reactive to page changes but decreasing it too much

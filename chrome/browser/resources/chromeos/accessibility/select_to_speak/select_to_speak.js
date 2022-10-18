@@ -947,7 +947,7 @@ export class SelectToSpeak {
     this.prepareForSpeech_(true /* clearFocusRing */);
     this.maybeShowEnhancedVoicesDialog_(() => {
       const options =
-          this.prefsManager_.getSpeechOptions(this.enhancedVoicesFlag_);
+          this.prefsManager_.getSpeechOptions(this.enhancedVoicesFlag_, null);
       const fallbackVoiceName = this.prefsManager_.getLocalVoice();
 
       // Without nodes to anchor on, navigate is not supported.
@@ -1130,12 +1130,18 @@ export class SelectToSpeak {
       return;
     }
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
-    // Copy options so we can add lang below
-    Object.assign(
-        options, this.prefsManager_.getSpeechOptions(this.enhancedVoicesFlag_));
+    let language;
+    let useVoiceSwitching = false;
     if (this.shouldUseVoiceSwitching_() && nodeGroup.detectedLanguage) {
-      options.lang = nodeGroup.detectedLanguage;
+      language = nodeGroup.detectedLanguage;
+      useVoiceSwitching = true;
     }
+
+    Object.assign(
+        options,
+        this.prefsManager_.getSpeechOptions(
+            this.enhancedVoicesFlag_, {language, useVoiceSwitching}));
+
     if (this.shouldShowNavigationControls_()) {
       options.rate = this.getSpeechRate_();
       // Log speech rate multiple applied by Select-to-speak.

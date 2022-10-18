@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SelectToSpeakConstants} from './select_to_speak_constants.js';
+
 /**
  * Manages getting and storing user preferences.
  */
@@ -403,19 +405,28 @@ export class PrefsManager {
    * Generates the basic speech options for Select-to-Speak based on user
    * preferences. Call for each chrome.tts.speak.
    * @param {boolean} enhancedVoicesFlag whether enhanced voices are enabled.
+   * @param {?SelectToSpeakConstants.VoiceSwitchingData} voiceSwitchingData
    * @return {!chrome.tts.TtsOptions} options The TTS options.
    */
-  getSpeechOptions(enhancedVoicesFlag) {
+  getSpeechOptions(enhancedVoicesFlag, voiceSwitchingData) {
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
+    const data = voiceSwitchingData || {};
     const useEnhancedVoices = enhancedVoicesFlag &&
         this.enhancedNetworkVoicesEnabled_ && navigator.onLine;
 
     if (useEnhancedVoices) {
       options['voiceName'] = this.enhancedVoiceName_;
     } else {
-      const localVoice = this.getLocalVoice();
+      const useVoiceSwitching = data.useVoiceSwitching;
+      const language = data.language;
+      // If `useVoiceSwitching` is true, then we should omit `voiceName` from
+      // options and let the TTS engine pick the right voice for the language.
+      const localVoice = useVoiceSwitching ? undefined : this.getLocalVoice();
       if (localVoice !== undefined) {
         options['voiceName'] = localVoice;
+      }
+      if (language !== undefined) {
+        options['lang'] = language;
       }
     }
     return options;

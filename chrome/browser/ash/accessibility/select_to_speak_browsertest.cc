@@ -36,6 +36,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/notification_types.h"
@@ -99,11 +100,13 @@ class SelectToSpeakTest : public InProcessBrowserTest {
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
     // TODO (leileilei@google.com): Provide a way to disable the pop up dialog.
     // Disable kEnhancedNetworkVoices To avoid its pop up dialog.
     scoped_feature_list_.InitAndDisableFeature(
         ::features::kEnhancedNetworkVoices);
+
+    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   test::SpeechMonitor sm_;
@@ -176,11 +179,10 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   }
 
   void RunJavaScriptInSelectToSpeakBackgroundPage(const std::string& script) {
-    extensions::ExtensionHost* host =
-        extensions::ProcessManager::Get(browser()->profile())
-            ->GetBackgroundHostForExtension(
-                extension_misc::kSelectToSpeakExtensionId);
-    CHECK(content::ExecuteScript(host->host_contents(), script));
+    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+        /*context=*/browser()->profile(),
+        /*extension_id=*/extension_misc::kSelectToSpeakExtensionId,
+        /*script=*/script);
   }
 
   content::WebContents* GetWebContents() {
@@ -199,14 +201,27 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   base::WeakPtrFactory<SelectToSpeakTest> weak_ptr_factory_{this};
 };
 
-/* Test fixture enabling experimental accessibility language detection switch */
-class SelectToSpeakTestWithLanguageDetection : public SelectToSpeakTest {
+class SelectToSpeakTestWithVoiceSwitching : public SelectToSpeakTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SelectToSpeakTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        ::switches::kEnableExperimentalAccessibilityLanguageDetection);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kExperimentalAccessibilitySelectToSpeakVoiceSwitching);
   }
+
+  void SetUpOnMainThread() override {
+    SelectToSpeakTest::SetUpOnMainThread();
+
+    // Enable voice switching using chrome.storage API.
+    std::string script = R"(
+      chrome.storage.sync.set({voiceSwitching: true});
+      window.domAutomationController.send("done");
+    )";
+    RunJavaScriptInSelectToSpeakBackgroundPage(script);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
@@ -488,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 
 // TODO(crbug.com/1107958): Re-enable this test after fixing flakes.
 // TODO(crbug.com/950391): Re-enable this test before launching voice switching.
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithLanguageDetection,
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithVoiceSwitching,
                        DISABLED_BreaksAtLanguageBounds) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div>"
