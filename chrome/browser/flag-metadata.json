@@ -3898,8 +3898,8 @@
   },
   {
     "name": "google-mobile-services-passwords",
-    "owners": [ "fhorschig@chromium.org", "vasilii" ],
-    "expiry_milestone": 108
+    "owners": [ "maxan@google.com", "vasilii" ],
+    "expiry_milestone": 112
   },
   {
     "name": "google-mobile-services-passwords-error-messages",
@@ -3907,7 +3907,7 @@
       "ioanap",
       "izuzic@google.com"
     ],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "google-mobile-services-passwords-reenrollment",
