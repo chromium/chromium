@@ -24008,7 +24008,7 @@
         },
         {
           'value': False,
-          'caption': 'Disable reporting of system information and page content to help improve Safe Browsing',
+          'caption': 'Disable reporting of system information and page content which are used to help improve Safe Browsing',
         },
         {
           'value': None,
