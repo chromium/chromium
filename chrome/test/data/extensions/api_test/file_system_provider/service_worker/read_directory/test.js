@@ -1,7 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -73,6 +73,7 @@ async function main() {
       const dirEntry = await fileSystem.getDirectoryEntry(
           TESTING_HELLO_DIR.name, {create: false});
       const entries = await readAllEntries(dirEntry);
+
       chrome.test.assertEq(2, entries.length);
       chrome.test.assertTrue(entries[0].isFile);
       chrome.test.assertEq('tiramisu.txt', entries[0].name);
@@ -82,16 +83,17 @@ async function main() {
       chrome.test.assertEq('/hello/candies', entries[1].fullPath);
       chrome.test.succeed();
     },
+
     // Read contents of a directory which does not exist, what should return an
     // error.
     async function readEntriesError() {
-      try {
-        await fileSystem.getDirectoryEntry('cranberries', {create: false});
-        chrome.test.fail('Succeeded getting a non-existent directory entry.');
-      } catch (e) {
-        chrome.test.assertEq('NotFoundError', e.name);
-        chrome.test.succeed();
-      }
+      const error = await catchError(
+          fileSystem.getDirectoryEntry('cranberries', {create: false}));
+
+      chrome.test.assertTrue(
+          !!error, 'Succeeded getting a non-existent directory entry.');
+      chrome.test.assertEq('NotFoundError', error.name);
+      chrome.test.succeed();
     }
   ]);
 }

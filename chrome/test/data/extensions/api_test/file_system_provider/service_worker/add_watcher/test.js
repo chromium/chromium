@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getAllFsInfos, mountTestFileSystem, promisifyWithLastError} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, getAllFsInfos, mountTestFileSystem, promisifyWithLastError} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
 /** @param {!Entry} entry */
@@ -22,17 +22,15 @@ async function main() {
       const fileEntry =
           await fileSystem.getFileEntry(fileName, {create: false});
       const watching = await addFileWatch(fileEntry);
+
       chrome.test.assertTrue(watching);
-
       const fsInfos = await getAllFsInfos();
-
       chrome.test.assertEq(1, fsInfos.length);
       chrome.test.assertEq(1, fsInfos[0].watchers.length);
       const watcher = fsInfos[0].watchers[0];
-      chrome.test.assertEq('/' + fileName, watcher.entryPath);
+      chrome.test.assertEq(`/${fileName}`, watcher.entryPath);
       chrome.test.assertFalse(watcher.recursive);
       chrome.test.assertEq(undefined, /**@type {!Object} */ (watcher).tag);
-
       chrome.test.succeed();
     },
 
@@ -45,37 +43,32 @@ async function main() {
 
       const fileEntry =
           await fileSystem.getFileEntry(fileName, {create: false});
-      try {
-        await addFileWatch(fileEntry);
-        chrome.test.fail('Adding file watcher should have failed.');
-      } catch (error) {
-        chrome.test.assertEq('Unknown error.', error.message);
+      const error = await catchError(addFileWatch(fileEntry));
 
-        // Shouldn't change the number of watchers.
-        fsInfos = await getAllFsInfos();
-        chrome.test.assertEq(1, fsInfos.length);
-        chrome.test.assertEq(1, fsInfos[0].watchers.length);
-
-        chrome.test.succeed();
-      }
+      chrome.test.assertTrue(
+          !!error, 'Adding file watcher should have failed.');
+      chrome.test.assertEq('Unknown error.', error.message);
+      // Shouldn't change the number of watchers.
+      fsInfos = await getAllFsInfos();
+      chrome.test.assertEq(1, fsInfos.length);
+      chrome.test.assertEq(1, fsInfos[0].watchers.length);
+      chrome.test.succeed();
     },
 
     // Add an entry watcher on a broken file, it should fail.
     async function addBrokenFileWatcher() {
       const fileEntry = await fileSystem.getFileEntry(
           TestFileSystemProvider.FILE_FAIL, {create: false});
-      try {
-        await addFileWatch(fileEntry);
-        chrome.test.fail('Adding file watcher should have failed.');
-      } catch (error) {
-        chrome.test.assertEq('Unknown error.', error.message);
-        // Shouldn't change the number of watchers.
-        const fsInfos = await getAllFsInfos();
-        chrome.test.assertEq(1, fsInfos.length);
-        chrome.test.assertEq(1, fsInfos[0].watchers.length);
+      const error = await catchError(addFileWatch(fileEntry));
 
-        chrome.test.succeed();
-      }
+      chrome.test.assertTrue(
+          !!error, 'Adding file watcher should have failed.');
+      chrome.test.assertEq('Unknown error.', error.message);
+      // Shouldn't change the number of watchers.
+      const fsInfos = await getAllFsInfos();
+      chrome.test.assertEq(1, fsInfos.length);
+      chrome.test.assertEq(1, fsInfos[0].watchers.length);
+      chrome.test.succeed();
     }
   ]);
 }

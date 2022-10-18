@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mountTestFileSystem, promisifyWithLastError, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, mountTestFileSystem, promisifyWithLastError, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -17,6 +17,7 @@ async function main() {
     async function configureConfigurable() {
       let providers =
           await promisifyWithLastError(chrome.fileManagerPrivate.getProviders);
+
       // Filter out native providers.
       providers = providers.filter(
           provider =>
@@ -30,9 +31,11 @@ async function main() {
       chrome.test.assertTrue(providers[0].configurable);
       chrome.test.assertFalse(providers[0].multipleMounts);
       chrome.test.assertEq('device', providers[0].source);
+
       await new Promise(
           resolve => chrome.fileManagerPrivate.configureVolume(
               fileSystem.volumeInfo.volumeId, resolve));
+
       chrome.test.succeed();
     },
 
@@ -42,6 +45,7 @@ async function main() {
       await promisifyWithLastError(
           chrome.fileManagerPrivate.configureVolume,
           fileSystem.volumeInfo.volumeId);
+
       await remoteProvider.waitForEvent('onConfigureRequested');
       chrome.test.succeed();
     },
@@ -53,15 +57,14 @@ async function main() {
           'onConfigureRequestedError',
           chrome.fileSystemProvider.ProviderError.FAILED,
       );
-      try {
-        await promisifyWithLastError(
-            chrome.fileManagerPrivate.configureVolume,
-            fileSystem.volumeInfo.volumeId);
-        chrome.test.fail('Configuration should have failed.');
-      } catch (e) {
-        chrome.test.assertEq('Failed to complete configuration.', e.message);
-        chrome.test.succeed();
-      }
+
+      const error = await catchError(promisifyWithLastError(
+          chrome.fileManagerPrivate.configureVolume,
+          fileSystem.volumeInfo.volumeId));
+
+      chrome.test.assertTrue(!!error, 'Configuration should have failed.');
+      chrome.test.assertEq('Failed to complete configuration.', error.message);
+      chrome.test.succeed();
     }
   ]);
 }

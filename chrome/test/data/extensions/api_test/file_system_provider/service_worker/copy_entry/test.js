@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mountTestFileSystem} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, mountTestFileSystem} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -21,9 +21,11 @@ async function main() {
       const sourceEntry =
           await fileSystem.getFileEntry(srcPath, {create: false});
       chrome.test.assertFalse(sourceEntry.isDirectory);
+
       const targetEntry = await new Promise(
           (resolve, reject) => sourceEntry.copyTo(
               fileSystem.fileSystem.root, dstPath, resolve, reject));
+
       chrome.test.assertEq(dstPath, targetEntry.name);
       chrome.test.assertFalse(targetEntry.isDirectory);
       chrome.test.succeed();
@@ -34,15 +36,14 @@ async function main() {
       const sourceEntry =
           await fileSystem.getFileEntry(srcPath, {create: false});
       chrome.test.assertFalse(sourceEntry.isDirectory);
-      try {
-        await new Promise(
-            (resolve, reject) => sourceEntry.copyTo(
-                fileSystem.fileSystem.root, dstPath, resolve, reject));
-        chrome.test.fail('Succeeded, but should fail.');
-      } catch (e) {
-        chrome.test.assertEq('InvalidModificationError', e.name);
-        chrome.test.succeed();
-      }
+
+      const error = await catchError(new Promise(
+          (resolve, reject) => sourceEntry.copyTo(
+              fileSystem.fileSystem.root, dstPath, resolve, reject)));
+
+      chrome.test.assertTrue(!!error, 'Succeeded, but should fail.');
+      chrome.test.assertEq('InvalidModificationError', error.name);
+      chrome.test.succeed();
     },
   ]);
 }

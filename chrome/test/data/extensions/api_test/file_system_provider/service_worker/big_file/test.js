@@ -22,6 +22,7 @@ async function main() {
       // Read 10 bytes past the max unsigned 32-bit integer offset.
       const offset = 2 ** 32 + 100;
       const text = await readTextFromBlob(file.slice(offset, offset + 10));
+
       // Check the provider got the read request at the correct offset.
       chrome.test.assertEq(
           offset,

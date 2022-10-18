@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -58,7 +58,7 @@ async function writeTextToFile(writer, text) {
 async function main() {
   await navigator.serviceWorker.ready;
   await remoteProvider.addFiles({
-    ['/' + TESTING_TIRAMISU_FILE_NAME]: {
+    [`/${TESTING_TIRAMISU_FILE_NAME}`]: {
       metadata: {
         isDirectory: false,
         name: TESTING_TIRAMISU_FILE_NAME,
@@ -75,12 +75,11 @@ async function main() {
     async function writeNewFileSuccess() {
       const fileEntry = await fileSystem.getFileEntry(
           TESTING_NEW_FILE_NAME, {create: true, exclusive: true});
-
       await writeTextToFile(
           await createWriter(fileEntry), TESTING_TEXT_TO_WRITE);
 
       const newContents =
-          await remoteProvider.getFileContents('/' + TESTING_NEW_FILE_NAME);
+          await remoteProvider.getFileContents(`/${TESTING_NEW_FILE_NAME}`);
       chrome.test.assertEq(TESTING_TEXT_TO_WRITE, newContents);
       chrome.test.succeed();
     },
@@ -89,12 +88,11 @@ async function main() {
     async function overwriteFileSuccess() {
       const fileEntry = await fileSystem.getFileEntry(
           TESTING_TIRAMISU_FILE_NAME, {create: true, exclusive: false});
-
       await writeTextToFile(
           await createWriter(fileEntry), TESTING_TEXT_TO_WRITE);
 
       const newContents = await remoteProvider.getFileContents(
-          '/' + TESTING_TIRAMISU_FILE_NAME);
+          `/${TESTING_TIRAMISU_FILE_NAME}`);
       chrome.test.assertEq(TESTING_TEXT_TO_WRITE, newContents);
       chrome.test.succeed();
     },
@@ -103,13 +101,12 @@ async function main() {
     async function appendFileSuccess() {
       const fileEntry = await fileSystem.getFileEntry(
           TESTING_TIRAMISU_FILE_NAME, {create: false, exclusive: false});
-
       const fileWriter = await createWriter(fileEntry);
       fileWriter.seek(TESTING_TEXT_TO_WRITE.length);
       await writeTextToFile(fileWriter, TESTING_TEXT_TO_WRITE);
 
       const newContents = await remoteProvider.getFileContents(
-          '/' + TESTING_TIRAMISU_FILE_NAME);
+          `/${TESTING_TIRAMISU_FILE_NAME}`);
       chrome.test.assertEq(
           TESTING_TEXT_TO_WRITE + TESTING_TEXT_TO_WRITE, newContents);
       chrome.test.succeed();
@@ -119,7 +116,6 @@ async function main() {
     async function replaceFileSuccess() {
       const fileEntry = await fileSystem.getFileEntry(
           TESTING_TIRAMISU_FILE_NAME, {create: false, exclusive: false});
-
       const fileWriter = await createWriter(fileEntry);
       fileWriter.seek(TESTING_TEXT_TO_WRITE.indexOf('creams'));
       await writeTextToFile(fileWriter, 'skates');
@@ -128,7 +124,7 @@ async function main() {
           TESTING_TEXT_TO_WRITE.replace('creams', 'skates') +
           TESTING_TEXT_TO_WRITE;
       const newContents = await remoteProvider.getFileContents(
-          '/' + TESTING_TIRAMISU_FILE_NAME);
+          `/${TESTING_TIRAMISU_FILE_NAME}`);
       chrome.test.assertEq(expectedContents, newContents);
       chrome.test.succeed();
     },
@@ -138,13 +134,13 @@ async function main() {
       const fileEntry = await fileSystem.getFileEntry(
           TestFileSystemProvider.FILE_FAIL, {create: false, exclusive: false});
       const fileWriter = await createWriter(fileEntry);
-      try {
-        await writeTextToFile(fileWriter, 'A lot of flowers.');
-        chrome.test.fail('Unexpectedly succeeded to write to a broken file.');
-      } catch (e) {
-        chrome.test.assertEq('InvalidStateError', e.name);
-        chrome.test.succeed();
-      }
+      const error =
+          await catchError(writeTextToFile(fileWriter, 'A lot of flowers.'));
+
+      chrome.test.assertTrue(
+          !!error, 'Unexpectedly succeeded to write to a broken file.');
+      chrome.test.assertEq('InvalidStateError', error.name);
+      chrome.test.succeed();
     },
 
     // Abort writing to a valid file with a registered abort handler. Should
@@ -157,7 +153,6 @@ async function main() {
           TestFileSystemProvider.FILE_BLOCKS_FOREVER,
           {create: false, exclusive: false});
       const fileWriter = await createWriter(fileEntry);
-
       // Start a write request, wait for it to reach the provider.
       writePromise = writeTextToFile(fileWriter, 'A lot of cherries.');
       await remoteProvider.waitForEvent('onWriteFileRequested');
@@ -165,14 +160,12 @@ async function main() {
       // Abort the operation after it's started.
       fileWriter.abort();
       await remoteProvider.waitForEvent('onAbortRequested');
+      const error = await catchError(writePromise);
 
-      try {
-        await writePromise;
-        chrome.test.fail('Unexpectedly finished writing, despite aborting.');
-      } catch (e) {
-        chrome.test.assertEq('AbortError', e.name);
-        chrome.test.succeed();
-      }
+      chrome.test.assertTrue(
+          !!error, 'Unexpectedly finished writing, despite aborting.');
+      chrome.test.assertEq('AbortError', error.name);
+      chrome.test.succeed();
     }
   ]);
 }

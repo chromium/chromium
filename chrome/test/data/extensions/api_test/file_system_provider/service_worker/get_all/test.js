@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getAllFsInfos, getFsInfoById, mountTestFileSystem, openFile, remoteProvider, startReadTextFromBlob, unmount} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, getAllFsInfos, getFsInfoById, mountTestFileSystem, openFile, remoteProvider, startReadTextFromBlob, unmount} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -20,6 +20,7 @@ async function main() {
       startReadTextFromBlob(file);
       await remoteProvider.waitForEvent('onOpenFileRequested');
 
+      // Check output of chrome.fileSystemProvider.getAll().
       const fsInfos = await getAllFsInfos();
       chrome.test.assertEq(1, fsInfos.length);
       chrome.test.assertEq(
@@ -35,6 +36,7 @@ async function main() {
           chrome.fileSystemProvider.OpenFileMode.READ,
           fsInfos[0].openedFiles[0].mode);
 
+      // Check output of chrome.fileSystemProvider.get().
       const fsInfo = await getFsInfoById(TestFileSystemProvider.FILESYSTEM_ID);
       chrome.test.assertEq(
           TestFileSystemProvider.FILESYSTEM_ID, fsInfo.fileSystemId);
@@ -57,33 +59,40 @@ async function main() {
     async function unmountSuccess() {
       await unmount(TestFileSystemProvider.FILESYSTEM_ID);
 
+      // Check output of chrome.fileSystemProvider.getAll().
       chrome.test.assertEq([], await getAllFsInfos());
-      try {
-        await getFsInfoById(TestFileSystemProvider.FILESYSTEM_ID);
-        chrome.test.fail('Found the filesystem that was unmounted.');
-      } catch (e) {
-        chrome.test.assertEq('NOT_FOUND', e.message);
-        chrome.test.succeed();
-      }
+
+      // Check output of chrome.fileSystemProvider.get().
+      const error =
+          await catchError(getFsInfoById(TestFileSystemProvider.FILESYSTEM_ID));
+      chrome.test.assertTrue(
+          !!error, 'Found the filesystem that was unmounted.');
+      chrome.test.assertEq('NOT_FOUND', error.message);
+
+      chrome.test.succeed();
     },
 
     // Verifies that if mounting fails, then the file system is not added to the
     // getAll() list.
     async function mountError() {
-      try {
-        await chrome.fileSystemProvider.mount(
-            {fileSystemId: '', displayName: ''});
-        chrome.test.fail('Mount operation should have failed.');
-      } catch (e) {
-        chrome.test.assertEq('INVALID_OPERATION', e.message);
-      }
+      const mountError = await catchError(
+          /** !Promise<?> */ chrome.fileSystemProvider.mount(
+              {fileSystemId: '', displayName: ''}));
+
+      chrome.test.assertTrue(
+          !!mountError, 'Mount operation should have failed.');
+      chrome.test.assertEq('INVALID_OPERATION', mountError.message);
+
+      // Check output of chrome.fileSystemProvider.getAll().
       chrome.test.assertEq([], await getAllFsInfos());
-      try {
-        await getFsInfoById(TestFileSystemProvider.FILESYSTEM_ID);
-        chrome.test.fail('Found the filesystem that was unmounted.');
-      } catch (e) {
-        chrome.test.assertEq('NOT_FOUND', e.message);
-      }
+
+      // Check output of chrome.fileSystemProvider.get().
+      const lookupError =
+          await catchError(getFsInfoById(TestFileSystemProvider.FILESYSTEM_ID));
+      chrome.test.assertTrue(
+          !!lookupError, 'Found the filesystem that was unmounted.');
+      chrome.test.assertEq('NOT_FOUND', lookupError.message);
+
       chrome.test.succeed();
     },
   ]);

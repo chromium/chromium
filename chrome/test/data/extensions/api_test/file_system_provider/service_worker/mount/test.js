@@ -37,6 +37,7 @@ async function main() {
     async function goodDisplayName() {
       await mount(
           {fileSystemId: 'file-system-id', displayName: 'file-system-name'});
+
       chrome.test.succeed();
     },
 
@@ -44,6 +45,7 @@ async function main() {
     async function emptyDisplayName() {
       const e = await catchError(
           mount({fileSystemId: 'file-system-id-2', displayName: ''}));
+
       chrome.test.assertTrue(!!e, 'Mount expected to fail.');
       chrome.test.assertEq('INVALID_OPERATION', e.message);
       chrome.test.succeed();
@@ -53,6 +55,7 @@ async function main() {
     async function emptyFileSystemId() {
       const e = await catchError(
           mount({fileSystemId: '', displayName: 'File System Name'}));
+
       chrome.test.assertTrue(!!e, 'Mount expected to fail.');
       chrome.test.assertEq('INVALID_OPERATION', e.message);
       chrome.test.succeed();
@@ -66,6 +69,7 @@ async function main() {
         displayName: 'File System Name',
         openedFilesLimit: 10
       });
+
       chrome.test.succeed();
     },
 
@@ -77,6 +81,7 @@ async function main() {
         displayName: 'File System Name',
         openedFilesLimit: 0
       });
+
       chrome.test.succeed();
     },
 
@@ -88,6 +93,7 @@ async function main() {
         displayName: 'File System Name',
         openedFilesLimit: -1
       }));
+
       chrome.test.assertTrue(!!e, 'Mount expected to fail.');
       chrome.test.assertEq('INVALID_OPERATION', e.message);
       chrome.test.succeed();
@@ -102,6 +108,7 @@ async function main() {
         fileSystemId,
         displayName: 'caramel-candy.zip',
       });
+
       const volumeInfo = await getVolumeInfo(fileSystemId);
       chrome.test.assertTrue(volumeInfo.isReadOnly);
       chrome.test.succeed();
@@ -116,6 +123,7 @@ async function main() {
         displayName: 'caramel-fudges.zip',
         writable: true,
       });
+
       const volumeInfo = await getVolumeInfo(fileSystemId);
       chrome.test.assertFalse(volumeInfo.isReadOnly);
       chrome.test.succeed();
@@ -129,6 +137,7 @@ async function main() {
         displayName: 'read-only.zip',
         writable: false,
       });
+
       const volumeInfo = await getVolumeInfo(fileSystemId);
       chrome.test.assertTrue(volumeInfo.isReadOnly);
       chrome.test.succeed();
@@ -136,22 +145,26 @@ async function main() {
 
     // Checks that providing supportsNotifyTag=false|true persists as requested.
     async function supportsNotifyTag() {
+      // Test with supportsNotifyTag=true
       const taggedFilesystemId = 'tagged-fs';
       await mount({
         fileSystemId: taggedFilesystemId,
         displayName: 'tagged-fs.zip',
         supportsNotifyTag: true,
       });
+
       const fsInfoTagged = await getFsInfoById(taggedFilesystemId);
       chrome.test.assertTrue(!!fsInfoTagged);
       chrome.test.assertEq(fsInfoTagged.supportsNotifyTag, true);
 
+      // Test with supportsNotifyTag=false
       const nonTaggedFilesystemId = 'non-tagged-fs';
       await mount({
         fileSystemId: nonTaggedFilesystemId,
         displayName: 'non-tagged-fs.zip',
         supportsNotifyTag: false,
       });
+
       const fsInfoNonTagged = await getFsInfoById(nonTaggedFilesystemId);
       chrome.test.assertTrue(!!fsInfoNonTagged);
       chrome.test.assertEq(fsInfoNonTagged.supportsNotifyTag, false);
@@ -163,6 +176,7 @@ async function main() {
     // mount requests should succeed, except the last one which should fail with
     // a security error.
     async function stressMountTest() {
+      // Mount file systems up to the limit.
       const alreadyMountedFileSystems = 8;  // By previous tests.
       const maxFileSystems = 16;
       for (let i = alreadyMountedFileSystems; i < maxFileSystems; i++) {
@@ -172,10 +186,12 @@ async function main() {
         });
       }
 
+      // One over the limit should fail.
       const e = await catchError(mount({
         fileSystemId: 'over-the-limit-fs-id',
         displayName: 'Over The Limit File System'
       }));
+
       chrome.test.assertTrue(!!e, 'Mount expected to fail.');
       chrome.test.assertEq('TOO_MANY_OPENED', e.message);
       chrome.test.succeed();

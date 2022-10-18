@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 
 /**
  * @type {Object}
@@ -71,14 +71,12 @@ async function main() {
 
     // Create a file which exists, exclusively. Should fail.
     async function createFileExistsError() {
-      try {
-        await getFileEntry(TESTING_FILE.name, {create: true, exclusive: true});
+      const error = await catchError(
+          getFileEntry(TESTING_FILE.name, {create: true, exclusive: true}));
 
-        chrome.test.fail('Created a file, but should fail.');
-      } catch (e) {
-        chrome.test.assertEq('InvalidModificationError', e.name);
-        chrome.test.succeed();
-      }
+      chrome.test.assertTrue(!!error, 'Created a file, but should fail.');
+      chrome.test.assertEq('InvalidModificationError', error.name);
+      chrome.test.succeed();
     }
   ]);
 }

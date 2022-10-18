@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -51,7 +51,9 @@ async function main() {
       });
       chrome.test.assertEq(TEST_FILE, entry.name);
       chrome.test.assertFalse(entry.isDirectory);
+
       await new Promise((resolve, reject) => entry.remove(resolve, reject));
+
       chrome.test.succeed();
     },
     // Delete a directory which has contents, non-recursively. Should fail.
@@ -60,13 +62,14 @@ async function main() {
           await fileSystem.getDirectoryEntry(TEST_DIR, {create: false});
       chrome.test.assertEq(TEST_DIR, entry.name);
       chrome.test.assertTrue(entry.isDirectory);
-      try {
-        await new Promise((resolve, reject) => entry.remove(resolve, reject));
-        chrome.test.fail('Unexpectedly succeded to remove a directory.');
-      } catch (e) {
-        chrome.test.assertEq('InvalidModificationError', e.name);
-        chrome.test.succeed();
-      }
+
+      const error = await catchError(
+          new Promise((resolve, reject) => entry.remove(resolve, reject)));
+
+      chrome.test.assertTrue(
+          !!error, 'Unexpectedly succeded to remove a directory.');
+      chrome.test.assertEq('InvalidModificationError', error.name);
+      chrome.test.succeed();
     },
 
     // Delete a directory which has contents, recursively. Should succeed.
@@ -75,8 +78,10 @@ async function main() {
           await fileSystem.getDirectoryEntry(TEST_DIR, {create: false});
       chrome.test.assertEq(TEST_DIR, entry.name);
       chrome.test.assertTrue(entry.isDirectory);
+
       await new Promise(
           (resolve, reject) => entry.removeRecursively(resolve, reject));
+
       chrome.test.succeed();
     },
   ]);

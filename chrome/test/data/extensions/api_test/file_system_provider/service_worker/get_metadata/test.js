@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -23,6 +23,7 @@ async function main() {
     // Read metadata of the root.
     async function getRootMetadataSuccess() {
       const meta = await getMetadata(fileSystem.fileSystem.root);
+
       chrome.test.assertEq(0, meta.size);
       chrome.test.assertEq(
           new Date(2014, 4, 28, 10, 39, 15).toString(),
@@ -33,11 +34,11 @@ async function main() {
     // Read metadata of an existing testing file.
     async function getFileMetadataSuccess() {
       await remoteProvider.resetState();
+
       const fileEntry = await fileSystem.getFileEntry(
-          TestFileSystemProvider.FILE_READ_SUCCESS,
-          {create: false},
-      );
+          TestFileSystemProvider.FILE_READ_SUCCESS, {create: false});
       const meta = await getMetadata(fileEntry);
+
       chrome.test.assertEq(
           TestFileSystemProvider.INITIAL_TEXT.length, meta.size);
       chrome.test.assertEq(
@@ -52,10 +53,10 @@ async function main() {
     // easy way to verify an incorrect modification time at early stage.
     async function getFileMetadataWrongTimeSuccess() {
       const fileEntry = await fileSystem.getFileEntry(
-          TestFileSystemProvider.FILE_INVALID_DATE,
-          {create: false},
-      );
+          TestFileSystemProvider.FILE_INVALID_DATE, {create: false});
+
       const meta = await getMetadata(fileEntry);
+
       chrome.test.assertTrue(Number.isNaN(meta.modificationTime.getTime()));
       chrome.test.succeed();
     },
@@ -65,15 +66,13 @@ async function main() {
     async function getFileMetadataNotFound() {
       const TEST_DIR = 'non-existent';
       await remoteProvider.resetState();
-      try {
-        await fileSystem.getDirectoryEntry(
-            TEST_DIR,
-            {create: false},
-        );
-        chrome.test.fail('Getting a directory should have failed.');
-      } catch (e) {
-        chrome.test.assertEq('NotFoundError', e.name);
-      }
+
+      const error = await catchError(
+          fileSystem.getDirectoryEntry(TEST_DIR, {create: false}));
+
+      chrome.test.assertTrue(
+          !!error, 'Getting a directory should have failed.');
+      chrome.test.assertEq('NotFoundError', error.name);
       const {entryPath} =
           await remoteProvider.waitForEvent('onGetMetadataRequested');
       chrome.test.assertEq(`/${TEST_DIR}`, entryPath);
@@ -85,15 +84,13 @@ async function main() {
     // fetching metadata.
     async function getFileMetadataWrongType() {
       await remoteProvider.resetState();
-      try {
-        await fileSystem.getDirectoryEntry(
-            TestFileSystemProvider.FILE_READ_SUCCESS,
-            {create: false},
-        );
-        chrome.test.fail('Getting a directory should have failed.');
-      } catch (e) {
-        chrome.test.assertEq('TypeMismatchError', e.name);
-      }
+
+      const error = await catchError(fileSystem.getDirectoryEntry(
+          TestFileSystemProvider.FILE_READ_SUCCESS, {create: false}));
+
+      chrome.test.assertTrue(
+          !!error, 'Getting a directory should have failed.');
+      chrome.test.assertEq('TypeMismatchError', error.name);
       const {entryPath} =
           await remoteProvider.waitForEvent('onGetMetadataRequested');
       chrome.test.assertEq(
@@ -104,10 +101,10 @@ async function main() {
     // Resolving a file should only request is_directory field.
     async function getMetadataForGetFile() {
       await remoteProvider.resetState();
+
       await fileSystem.getFileEntry(
-          `/${TestFileSystemProvider.FILE_ONLY_TYPE}`,
-          {create: false},
-      );
+          `/${TestFileSystemProvider.FILE_ONLY_TYPE}`, {create: false});
+
       const options =
           await remoteProvider.waitForEvent('onGetMetadataRequested');
       chrome.test.assertEq(options.isDirectory, true);
@@ -123,16 +120,15 @@ async function main() {
     // callback is invoked.
     async function getMetadataMissingFields() {
       await remoteProvider.resetState();
+
       const fileEntry = await fileSystem.getFileEntry(
           `/${TestFileSystemProvider.FILE_ONLY_TYPE_AND_SIZE}`,
-          {create: false},
-      );
-      try {
-        await getMetadata(fileEntry);
-        chrome.test.fail('Getting metadata should have failed.');
-      } catch (e) {
-        chrome.test.assertEq('InvalidStateError', e.name);
-      }
+          {create: false});
+
+      const error = await catchError(getMetadata(fileEntry));
+
+      chrome.test.assertTrue(!!error, 'Getting metadata should have failed.');
+      chrome.test.assertEq('InvalidStateError', error.name);
       const options =
           await remoteProvider.waitForEvent('onGetMetadataRequested');
       chrome.test.assertEq(options.isDirectory, true);
@@ -147,16 +143,16 @@ async function main() {
     // Fetch only requested fields.
     async function getEntryPropertiesFewFields() {
       await remoteProvider.resetState();
+
       const fileEntry = await fileSystem.getFileEntry(
           `/${TestFileSystemProvider.FILE_ONLY_TYPE_AND_SIZE}`,
-          {create: false},
-      );
+          {create: false});
       const fileProperties = await new Promise(
           resolve => chrome.fileManagerPrivate.getEntryProperties(
               [fileEntry], ['size'], resolve));
+
       chrome.test.assertEq(1, fileProperties.length);
       chrome.test.assertEq(1024 * 4, fileProperties[0].size);
-
       // The first call is from getFileEntry.
       await remoteProvider.waitForEvent('onGetMetadataRequested');
       // The second call is from getEntryProperties.

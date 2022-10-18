@@ -1,7 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {mountTestFileSystem, openFile, readTextFromBlob, remoteProvider, startReadTextFromBlob} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {catchError, mountTestFileSystem, openFile, readTextFromBlob, remoteProvider, startReadTextFromBlob} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -18,6 +18,7 @@ async function main() {
       );
       const file = await openFile(fileEntry);
       const text = await readTextFromBlob(file);
+
       chrome.test.assertEq(TestFileSystemProvider.INITIAL_TEXT, text);
       chrome.test.succeed();
     },
@@ -47,6 +48,7 @@ async function main() {
         chrome.test.assertTrue(await remoteProvider.getOpenedFiles() <= 2);
         await remoteProvider.continueRequest(requestId);
       }
+
       // All reads should complete successfully.
       for (const promise of reads) {
         chrome.test.assertEq(
@@ -65,19 +67,19 @@ async function main() {
           {create: false},
       );
       const file = await openFile(fileEntry);
-      try {
-        await readTextFromBlob(file);
-        chrome.test.fail('Unexpectedly succeeded to read a broken file.');
-      } catch (e) {
-        chrome.test.assertEq('NotReadableError', e.name);
-        chrome.test.succeed();
-      }
+      const error = await catchError(readTextFromBlob(file));
+
+      chrome.test.assertTrue(
+          !!error, 'Unexpectedly succeeded to read a broken file.');
+      chrome.test.assertEq('NotReadableError', error.name);
+      chrome.test.succeed();
     },
 
     // Abort reading a file with a registered abort handler. Should result in a
     // gracefully terminated reading operation.
     async function abortReadingSuccess() {
       await remoteProvider.resetState();
+
       const fileEntry = await fileSystem.getFileEntry(
           TestFileSystemProvider.FILE_BLOCKS_FOREVER,
           {create: false},
@@ -90,14 +92,13 @@ async function main() {
       reader.abort();
       await remoteProvider.waitForEvent('onAbortRequested');
       await remoteProvider.waitForEvent('onCloseFileRequested');
+      const error = await catchError(promise);
+
       chrome.test.assertEq(0, await remoteProvider.getOpenedFiles());
-      try {
-        await promise;
-        chrome.test.fail('Unexpectedly succeeded after read aborted.');
-      } catch (e) {
-        chrome.test.assertEq('AbortError', e.name);
-        chrome.test.succeed();
-      }
+      chrome.test.assertTrue(
+          !!error, 'Unexpectedly succeeded after read aborted.');
+      chrome.test.assertEq('AbortError', error.name);
+      chrome.test.succeed();
     },
 
     // Abort opening a file while trying to read it without an abort handler
@@ -105,6 +106,7 @@ async function main() {
     async function abortViaCloseSuccess() {
       await remoteProvider.resetState();
       await remoteProvider.setHandlerEnabled('onAbortRequested', false);
+
       const fileEntry = await fileSystem.getFileEntry(
           TestFileSystemProvider.FILE_BLOCKS_FOREVER,
           {create: false, exclusive: false},
@@ -116,14 +118,13 @@ async function main() {
       chrome.test.assertEq(1, await remoteProvider.getOpenedFiles());
       reader.abort();
       await remoteProvider.waitForEvent('onCloseFileRequested');
+      const error = await catchError(promise);
+
       chrome.test.assertEq(0, await remoteProvider.getOpenedFiles());
-      try {
-        await promise;
-        chrome.test.fail('Unexpectedly succeeded after read aborted.');
-      } catch (e) {
-        chrome.test.assertEq('AbortError', e.name);
-        chrome.test.succeed();
-      }
+      chrome.test.assertTrue(
+          !!error, 'Unexpectedly succeeded after read aborted.');
+      chrome.test.assertEq('AbortError', error.name);
+      chrome.test.succeed();
     },
 
     // Abort opening a file while trying to read it without an abort handler
@@ -133,6 +134,8 @@ async function main() {
       await remoteProvider.resetState();
       await fileSystem.remount(/*openedFilesLimit=*/ 1);
       await remoteProvider.setHandlerEnabled('onAbortRequested', false);
+
+      // Start reading two files, the first read should get stuck on open.
       const fileEntry1 = await fileSystem.getFileEntry(
           TestFileSystemProvider.FILE_STALL_OPEN,
           {create: false, exclusive: false},
@@ -141,13 +144,11 @@ async function main() {
           TestFileSystemProvider.FILE_READ_SUCCESS,
           {create: false, exclusive: false},
       );
-      // Start reading both files, the first should get stuck on open.
       const read1 = startReadTextFromBlob(await openFile(fileEntry1));
       const read2 = startReadTextFromBlob(await openFile(fileEntry2));
       const openRequest1 =
           await remoteProvider.waitForEvent('onOpenFileRequested');
-      // Wait until the request is blocked inside the open call and abort the
-      // read.
+      // Wait until the first open request is blocked.
       const {requestId} =
           await remoteProvider.waitForEvent('onOpenFileRequestedStalled');
       chrome.test.assertEq(1, await remoteProvider.getOpenedFiles());
@@ -155,20 +156,19 @@ async function main() {
       // immediately close.
       read1.reader.abort();
       await remoteProvider.continueRequest(requestId);
-      // Should be able to open and read the second file now.
+
+      // The second read request should continue successfully.
       const openRequest2 =
           await remoteProvider.waitForEvent('onOpenFileRequested');
       chrome.test.assertEq(
-          '/' + TestFileSystemProvider.FILE_READ_SUCCESS,
+          `/${TestFileSystemProvider.FILE_READ_SUCCESS}`,
           openRequest2.filePath);
       chrome.test.assertEq(
           openRequest2.requestId,
           (await remoteProvider.waitForEvent('onReadFileRequested'))
               .openRequestId);
       chrome.test.assertEq(
-          TestFileSystemProvider.INITIAL_TEXT,
-          await read2.promise,
-      )
+          TestFileSystemProvider.INITIAL_TEXT, await read2.promise)
       // The first file should have been closed.
       chrome.test.assertEq(
           openRequest1.requestId,
