@@ -31,14 +31,17 @@ FileEntryPicker::FileEntryPicker(
   CHECK(web_contents);
   gfx::NativeWindow owning_window =
       platform_util::GetTopLevel(web_contents->GetNativeView());
+  const GURL* caller =
+      &web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+
   select_file_dialog_->SelectFile(
       picker_type, std::u16string(), suggested_name, &file_type_info, 0,
-      base::FilePath::StringType(), owning_window, nullptr);
+      base::FilePath::StringType(), owning_window, /*params=*/nullptr, caller);
 }
 
-FileEntryPicker::~FileEntryPicker() {}
+FileEntryPicker::~FileEntryPicker() = default;
 
 void FileEntryPicker::FileSelected(const base::FilePath& path,
                                    int index,

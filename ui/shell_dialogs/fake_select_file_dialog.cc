@@ -68,6 +68,7 @@ void FakeSelectFileDialog::SelectFileImpl(
   if (file_types)
     file_types_ = *file_types;
   default_extension_ = base::FilePath(default_extension).MaybeAsASCII();
+  caller_ = caller;
   opened_.Run();
 }
 

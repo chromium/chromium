@@ -749,10 +749,14 @@ void FileSelectHelper::RunFileChooserOnUIThread(
   // 1-based index of default extension to show.
   int file_type_index =
       select_file_types_ && !select_file_types_->extensions.empty() ? 1 : 0;
+
+  const GURL* caller =
+      &render_frame_host_->GetMainFrame()->GetLastCommittedURL();
+
   select_file_dialog_->SelectFile(dialog_type_, params->title,
                                   default_file_path, select_file_types_.get(),
                                   file_type_index, base::FilePath::StringType(),
-                                  owning_window, accept_types_ptr);
+                                  owning_window, accept_types_ptr, caller);
 
   select_file_types_.reset();
 }

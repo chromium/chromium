@@ -138,6 +138,8 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   FRIEND_TEST_ALL_PREFIXES(SelectFileDialogExtensionTest,
                            FileSelectionCanceled);
   FRIEND_TEST_ALL_PREFIXES(SelectFileDialogExtensionTest, SelfDeleting);
+  FRIEND_TEST_ALL_PREFIXES(SelectFileDialogExtensionBrowserTest,
+                           DialogCallerSetWhenPassed);
 
   // For the benefit of SystemFilesAppDialogDelegate.
   void OnSystemDialogShown(content::WebContents* content,

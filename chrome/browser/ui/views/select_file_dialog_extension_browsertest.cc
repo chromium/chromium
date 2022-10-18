@@ -248,7 +248,8 @@ class BaseSelectFileDialogExtensionBrowserTest
   void OpenDialog(ui::SelectFileDialog::Type dialog_type,
                   const base::FilePath& file_path,
                   const gfx::NativeWindow& owning_window,
-                  const std::string& additional_message) {
+                  const std::string& additional_message,
+                  const GURL* caller = nullptr) {
     if (GetParam().tablet_mode) {
       ash::ShellTestApi().SetTabletModeEnabledForTest(true);
     }
@@ -271,7 +272,8 @@ class BaseSelectFileDialogExtensionBrowserTest
         UseFileTypeFilter() ? &file_types : nullptr;
 
     dialog_->SelectFile(dialog_type, title, file_path, file_types_ptr, 0,
-                        FILE_PATH_LITERAL(""), owning_window, /*params=*/this);
+                        FILE_PATH_LITERAL(""), owning_window, /*params=*/this,
+                        caller);
     LOG(INFO) << "Waiting for JavaScript ready message.";
     ASSERT_TRUE(init_listener.WaitUntilSatisfied());
 
@@ -605,6 +607,32 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, MultipleOpenFile) {
   // No use-after-free when Browser::OpenFile is called multiple times.
   browser()->OpenFile();
   browser()->OpenFile();
+}
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
+                       DialogCallerSetWhenPassed) {
+  gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
+  ASSERT_NE(nullptr, owning_window);
+
+  const std::string url = "https://example.com/";
+  const GURL caller = GURL(url);
+
+  // Open the file dialog on the default path.
+  ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                     base::FilePath(), owning_window, "",
+                                     &caller));
+
+  // Check that the caller field is set correctly.
+  ASSERT_TRUE(dialog_->owner_.dialog_caller.has_value());
+  ASSERT_EQ(dialog_->owner_.dialog_caller->url_or_path.value(), url);
+
+  // Click the "Cancel" button.
+  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+
+  // Listener should have been informed of the cancellation.
+  ASSERT_FALSE(listener_->file_selected());
+  ASSERT_TRUE(listener_->canceled());
+  ASSERT_EQ(this, listener_->params());
 }
 
 INSTANTIATE_TEST_SUITE_P(SystemWebApp,

@@ -176,6 +176,10 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerBrowserTest,
     run_loop.Run();
   }
 
+  const GURL* caller = select_file_dialog_factory->GetLastDialog()->caller();
+  ASSERT_TRUE(caller);
+  EXPECT_EQ(*caller, GURL(kExampleUrl));
+
   select_file_dialog_factory->GetLastDialog()->CallMultiFilesSelected(
       file_paths_);
   run_loop_listener.Run();

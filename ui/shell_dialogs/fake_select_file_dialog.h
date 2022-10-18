@@ -87,6 +87,8 @@ class FakeSelectFileDialog : public SelectFileDialog {
   const FileTypeInfo& file_types() const { return file_types_; }
   // Returns the default file extension provided to the dialog.
   const std::string& default_extension() const { return default_extension_; }
+  // Returns the caller URL provided to the dialog.
+  const GURL* caller() const { return caller_; }
 
   // Calls the |FileSelected()| method on listener(). |filter_text| selects
   // which file extension filter to report.
@@ -108,6 +110,7 @@ class FakeSelectFileDialog : public SelectFileDialog {
   FileTypeInfo file_types_;
   std::string default_extension_;
   raw_ptr<void> params_;
+  const GURL* caller_;
   base::WeakPtrFactory<FakeSelectFileDialog> weak_ptr_factory_{this};
 };
 
