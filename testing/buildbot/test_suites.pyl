@@ -4419,6 +4419,12 @@
 
     'perfetto_gtests': {
       'base_unittests': {},
+      'browser_tests': {
+        'args': [
+          '--gtest_filter=ChromeTracingDelegateBrowserTest.*',
+        ],
+      },
+      'content_browsertests': {},
       'perfetto_unittests': {},
       'services_unittests': {},
     },
