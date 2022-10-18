@@ -19,12 +19,13 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_local.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace android {
 namespace {
 
-JavaVM* g_jvm = NULL;
+JavaVM* g_jvm = nullptr;
 base::LazyInstance<ScopedJavaGlobalRef<jobject>>::Leaky g_class_loader =
     LAZY_INSTANCE_INITIALIZER;
 jmethodID g_class_loader_load_class_method_id = 0;
@@ -111,7 +112,11 @@ JNIEnv* AttachCurrentThread() {
       args.name = thread_name;
     }
 
+#if BUILDFLAG(IS_ANDROID)
     ret = g_jvm->AttachCurrentThread(&env, &args);
+#else
+    ret = g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), &args);
+#endif
     CHECK_EQ(JNI_OK, ret);
   }
   return env;
@@ -121,10 +126,14 @@ JNIEnv* AttachCurrentThreadWithName(const std::string& thread_name) {
   DCHECK(g_jvm);
   JavaVMAttachArgs args;
   args.version = JNI_VERSION_1_2;
-  args.name = thread_name.c_str();
-  args.group = NULL;
-  JNIEnv* env = NULL;
+  args.name = const_cast<char*>(thread_name.c_str());
+  args.group = nullptr;
+  JNIEnv* env = nullptr;
+#if BUILDFLAG(IS_ANDROID)
   jint ret = g_jvm->AttachCurrentThread(&env, &args);
+#else
+  jint ret = g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), &args);
+#endif
   CHECK_EQ(JNI_OK, ret);
   return env;
 }
@@ -142,7 +151,7 @@ void InitVM(JavaVM* vm) {
 }
 
 bool IsVMInitialized() {
-  return g_jvm != NULL;
+  return g_jvm != nullptr;
 }
 
 void InitReplacementClassLoader(JNIEnv* env,

@@ -952,6 +952,8 @@ if (current_toolchain == default_toolchain) {
     # From java_sources.gni.
     sources = chrome_junit_test_java_sources
 
+    shared_libraries = [ "//url:libgurl_robolectric($robolectric_toolchain)" ]
+
     # Should not have any deps native targets since junit tests are java-only.
     assert_no_deps = [
       "//content",

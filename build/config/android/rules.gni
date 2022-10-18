@@ -17,7 +17,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/zip.gni")
 import("//build/toolchain/toolchain.gni")
 
-assert(is_android)
+assert(is_android || is_robolectric)
 
 declare_args() {
   enable_jni_tracing = false
@@ -135,7 +135,9 @@ template("create_native_executable_dist") {
 }
 
 if (enable_java_templates) {
-  import("//build/config/android/internal_rules.gni")
+  if (is_android) {
+    import("//build/config/android/internal_rules.gni")
+  }
 
   # JNI target implementation. See generate_jni or generate_jar_jni for usage.
   template("generate_jni_impl") {
@@ -174,7 +176,6 @@ if (enable_java_templates) {
       }
       public_deps += _jni_generator_include_deps
 
-      public_configs = [ "//build/config/android:jni_include_dir" ]
       inputs = []
       args = [
         "--ptr_type=long",
@@ -190,16 +191,20 @@ if (enable_java_templates) {
       ]
 
       if (defined(invoker.classes)) {
-        if (defined(invoker.jar_file)) {
-          _jar_file = invoker.jar_file
+        if (is_robolectric) {
+          not_needed(invoker, [ "jar_file" ])
         } else {
-          _jar_file = android_sdk_jar
+          if (defined(invoker.jar_file)) {
+            _jar_file = invoker.jar_file
+          } else {
+            _jar_file = android_sdk_jar
+          }
+          inputs += [ _jar_file ]
+          args += [
+            "--jar_file",
+            rebase_path(_jar_file, root_build_dir),
+          ]
         }
-        inputs += [ _jar_file ]
-        args += [
-          "--jar_file",
-          rebase_path(_jar_file, root_build_dir),
-        ]
         _input_args = invoker.classes
         _input_names = invoker.classes
         if (defined(invoker.always_mangle) && invoker.always_mangle) {
@@ -214,10 +219,10 @@ if (enable_java_templates) {
         inputs += invoker.sources
         _input_args = rebase_path(invoker.sources, root_build_dir)
         _input_names = invoker.sources
-        if (use_hashed_jni_names) {
+        if (!is_robolectric && use_hashed_jni_names) {
           args += [ "--use_proxy_hash" ]
         }
-        if (enable_jni_multiplexing) {
+        if (!is_robolectric && enable_jni_multiplexing) {
           args += [ "--enable_jni_multiplexing" ]
         }
         if (defined(invoker.namespace)) {
@@ -271,9 +276,14 @@ if (enable_java_templates) {
         deps = []
         public_deps = []
         public_deps = [ ":$target_name($default_toolchain)" ]
-      } else if (defined(visibility)) {
-        # Allow dependency on ourselves from secondary toolchain.
-        visibility += [ ":$target_name" ]
+        public_configs =
+            [ "//build/config/android:jni_include_dir($default_toolchain)" ]
+      } else {
+        public_configs = [ "//build/config/android:jni_include_dir" ]
+        if (defined(visibility)) {
+          # Allow dependency on ourselves from secondary toolchain.
+          visibility += [ ":$target_name" ]
+        }
       }
     }
   }
@@ -340,7 +350,10 @@ if (enable_java_templates) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     }
   }
+}  # enable_java_templates
 
+# non-robolectric things
+if (enable_java_templates && is_android) {
   # Declare a jni registration target.
   #
   # This target generates a srcjar containing a copy of GEN_JNI.java, which has
@@ -1515,21 +1528,48 @@ if (enable_java_templates) {
       _outer_target_name = target_name
       generate_jni_registration(_jni_srcjar_target_name) {
         enable_native_mocks = true
-        require_native_mocks = true
+        require_native_mocks = !defined(invoker.shared_libraries)
         targets = [ ":$_outer_target_name" ]
       }
 
+      if (defined(invoker.shared_libraries)) {
+        foreach(_dep, invoker.shared_libraries) {
+          assert(
+              string_replace(_dep, robolectric_toolchain, "") != _dep,
+              "$target_name has shared_libraries with incorrect toolchain. " +
+                  "Should contain (\$robolectric_toolchain) suffix: $_dep")
+        }
+
+        # Write shared library output files of all dependencies to a file. Those
+        # will be the shared libraries packaged into the APK.
+        _shared_library_list_file = "$target_gen_dir/$target_name.native_libs"
+        generated_file("${target_name}__shared_library_list") {
+          deps = invoker.shared_libraries
+          outputs = [ _shared_library_list_file ]
+          data_keys = [ "shared_libraries" ]
+          walk_keys = [ "shared_libraries_barrier" ]
+          rebase = root_build_dir
+        }
+      }
       _native_libraries_target_name = "${target_name}__native_libraries"
       write_native_libraries_java(_native_libraries_target_name) {
         enable_chromium_linker = false
         load_library_from_apk = false
         use_modern_linker = false
         use_final_fields = true
+        if (defined(_shared_library_list_file)) {
+          native_libraries_list_file = _shared_library_list_file
+        }
       }
     }
 
     java_library_impl(_java_binary_target_name) {
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + [ "deps" ])
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "shared_libraries",
+                                 ])
       type = "robolectric_binary"
       main_target_name = invoker.target_name
 
@@ -1582,6 +1622,9 @@ if (enable_java_templates) {
         ":${_java_binary_target_name}__validate",
         "//third_party/robolectric:robolectric_runtime_jars",
       ]
+      if (defined(invoker.shared_libraries)) {
+        deps += invoker.shared_libraries
+      }
 
       # Add non-libary deps, since the __host target does not depend on them.
       deps += filter_exclude(_invoker_deps, java_library_patterns)

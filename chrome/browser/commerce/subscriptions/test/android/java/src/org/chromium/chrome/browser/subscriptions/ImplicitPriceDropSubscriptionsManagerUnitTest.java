@@ -28,7 +28,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
@@ -51,15 +50,14 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@SuppressWarnings("DoNotMock") // Mocks GURL
 public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
-    private static final String URL1 = "www.foo.com";
-    private static final String URL2 = "www.bar.com";
+    private static final String URL1 = "http://www.foo.com";
+    private static final String URL2 = "http://www.bar.com";
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
     private static final String OFFER1_ID = "offer_foo";
@@ -119,7 +117,6 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mTab1 = prepareTab(TAB1_ID, URL1, POSITION1, mCriticalPersistedTabData1);
         mTab2 = prepareTab(TAB2_ID, URL2, POSITION2, mCriticalPersistedTabData2);
@@ -242,8 +239,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
             CriticalPersistedTabData criticalPersistedTabData) {
         TabImpl tab = mock(TabImpl.class);
         doReturn(id).when(tab).getId();
-        GURL gurl = mock(GURL.class);
-        doReturn(urlString).when(gurl).getSpec();
+        GURL gurl = new GURL(urlString);
         doReturn(gurl).when(tab).getUrl();
         doReturn(gurl).when(tab).getOriginalUrl();
         doReturn(tab).when(mTabModel).getTabAt(position);

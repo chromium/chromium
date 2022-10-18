@@ -22,6 +22,10 @@ assert(is_android)
 default_android_sdk_dep = "//third_party/android_sdk:android_sdk_java"
 _jacoco_dep = "//third_party/jacoco:jacocoagent_java"
 _jacoco_host_jar = "$root_build_dir/lib.java/third_party/jacoco/jacocoagent.jar"
+_robolectric_libs_dir =
+    rebase_path(
+        get_label_info("//:foo($robolectric_toolchain)", "root_out_dir"),
+        root_build_dir)
 
 # The following _java_*_types variables capture all the existing target types.
 # If a new type is introduced, please add it to one of these categories,
@@ -897,6 +901,8 @@ template("test_runner_script") {
       executable_args += [
         "--test-suite",
         invoker.test_suite,
+        "--native-libs-dir",
+        "@WrappedPath($_robolectric_libs_dir)",
       ]
 
       # Test runner uses this generated wrapper script.

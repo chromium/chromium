@@ -738,6 +738,8 @@ def AddJUnitTestOptions(parser):
   parser.add_argument(
       '--robolectric-runtime-deps-dir',
       help='Path to runtime deps for Robolectric.')
+  parser.add_argument('--native-libs-dir',
+                      help='Path to search for native libraries.')
   parser.add_argument(
       '--resource-apk',
       required=True,

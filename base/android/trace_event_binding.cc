@@ -62,22 +62,31 @@ static void JNI_TraceEvent_RegisterEnabledObserver(JNIEnv* env) {
 static void JNI_TraceEvent_StartATrace(
     JNIEnv* env,
     const JavaParamRef<jstring>& category_filter) {
+  // ATrace not supported for robolectric.
+#if BUILDFLAG(IS_ANDROID)
   std::string category_filter_utf8 =
       ConvertJavaStringToUTF8(env, category_filter);
   base::trace_event::TraceLog::GetInstance()->StartATrace(category_filter_utf8);
+#endif
 }
 
 static void JNI_TraceEvent_StopATrace(JNIEnv* env) {
+  // ATrace not supported for robolectric.
+#if BUILDFLAG(IS_ANDROID)
   base::trace_event::TraceLog::GetInstance()->StopATrace();
+#endif
 }
 
 static void JNI_TraceEvent_SetupATraceStartupTrace(
     JNIEnv* env,
     const JavaParamRef<jstring>& category_filter) {
+  // ATrace not supported for robolectric.
+#if BUILDFLAG(IS_ANDROID)
   std::string category_filter_utf8 =
       ConvertJavaStringToUTF8(env, category_filter);
   base::trace_event::TraceLog::GetInstance()->SetupATraceStartupTrace(
       category_filter_utf8);
+#endif
 }
 
 static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {

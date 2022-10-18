@@ -99,6 +99,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         '-Drobolectric.offline=true',
         '-Drobolectric.resourcesMode=binary',
         '-Drobolectric.logging=stdout',
+        '-Djava.library.path=%s' % self._test_instance.native_libs_dir,
     ]
     if self._test_instance.debug_socket:
       jvm_args += [

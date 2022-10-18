@@ -150,6 +150,11 @@ declare_args() {
   # every toolchain can pass through the "global" value via toolchain_args().
   host_toolchain = ""
 
+  # Do not set this directly.
+  # It should be set only by //build/toolchains/android:robolectric_x64.
+  # True when compiling native code for use with robolectric_binary().
+  is_robolectric = false
+
   # DON'T ADD MORE FLAGS HERE. Read the comment above.
 }
 
@@ -228,8 +233,7 @@ if (host_toolchain == "") {
 _default_toolchain = ""
 
 if (target_os == "android") {
-  assert(host_os == "linux" || host_os == "mac",
-         "Android builds are only supported on Linux and Mac hosts.")
+  assert(host_os == "linux", "Android builds are only supported on Linux.")
   _default_toolchain = "//build/toolchain/android:android_clang_$target_cpu"
 } else if (target_os == "chromeos" || target_os == "linux") {
   # See comments in build/toolchain/cros/BUILD.gn about board compiles.
@@ -517,7 +521,7 @@ foreach(_target_type,
       # On Android, write shared library output file to metadata. We will use
       # this information to, for instance, collect all shared libraries that
       # should be packaged into an APK.
-      if (!defined(invoker.metadata) && is_android &&
+      if (!defined(invoker.metadata) && (is_android || is_robolectric) &&
           (_target_type == "shared_library" ||
            _target_type == "loadable_module")) {
         _output_name = _target_name

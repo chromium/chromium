@@ -91,7 +91,7 @@ dep_libevent = !is_fuchsia && !is_win && !is_mac && !is_nacl
 # Determines whether message_pump_libevent should be used.
 use_libevent = dep_libevent && !is_ios
 
-if (is_android) {
+if (is_android || is_robolectric) {
   import("//build/config/android/rules.gni")
 }
 
@@ -1669,17 +1669,12 @@ mixed_component("base") {
       "android/base_feature_list.cc",
       "android/base_features.cc",
       "android/base_features.h",
-      "android/base_jni_onload.cc",
-      "android/base_jni_onload.h",
       "android/build_info.cc",
       "android/build_info.h",
       "android/bundle_utils.cc",
       "android/bundle_utils.h",
-      "android/callback_android.cc",
-      "android/callback_android.h",
       "android/child_process_binding_types.h",
       "android/child_process_service.cc",
-      "android/command_line_android.cc",
       "android/content_uri_utils.cc",
       "android/content_uri_utils.h",
       "android/cpu_features.cc",
@@ -1695,32 +1690,14 @@ mixed_component("base") {
       "android/int_string_callback.h",
       "android/jank_metric_uma_recorder.cc",
       "android/jank_metric_uma_recorder.h",
-      "android/java_exception_reporter.cc",
-      "android/java_exception_reporter.h",
       "android/java_handler_thread.cc",
       "android/java_handler_thread.h",
       "android/java_heap_dump_generator.cc",
       "android/java_heap_dump_generator.h",
       "android/java_runtime.cc",
       "android/java_runtime.h",
-      "android/jni_android.cc",
-      "android/jni_android.h",
-      "android/jni_array.cc",
-      "android/jni_array.h",
-      "android/jni_generator/jni_generator_helper.h",
-      "android/jni_int_wrapper.h",
-      "android/jni_registrar.cc",
-      "android/jni_registrar.h",
-      "android/jni_string.cc",
-      "android/jni_string.h",
-      "android/jni_utils.cc",
-      "android/jni_utils.h",
-      "android/jni_weak_ref.cc",
-      "android/jni_weak_ref.h",
       "android/library_loader/anchor_functions.cc",
       "android/library_loader/anchor_functions.h",
-      "android/library_loader/library_loader_hooks.cc",
-      "android/library_loader/library_loader_hooks.h",
       "android/library_loader/library_prefetcher.cc",
       "android/library_loader/library_prefetcher.h",
       "android/library_loader/library_prefetcher_hooks.cc",
@@ -1728,7 +1705,6 @@ mixed_component("base") {
       "android/locale_utils.h",
       "android/memory_pressure_listener_android.cc",
       "android/memory_pressure_listener_android.h",
-      "android/native_uma_recorder.cc",
       "android/path_service_android.cc",
       "android/path_utils.cc",
       "android/path_utils.h",
@@ -1744,8 +1720,6 @@ mixed_component("base") {
       "android/scoped_hardware_buffer_fence_sync.h",
       "android/scoped_hardware_buffer_handle.cc",
       "android/scoped_hardware_buffer_handle.h",
-      "android/scoped_java_ref.cc",
-      "android/scoped_java_ref.h",
       "android/statistics_recorder_android.cc",
       "android/sys_utils.cc",
       "android/sys_utils.h",
@@ -1757,8 +1731,6 @@ mixed_component("base") {
       "android/thread_instruction_count.h",
       "android/timezone_utils.cc",
       "android/timezone_utils.h",
-      "android/trace_event_binding.cc",
-      "android/trace_event_binding.h",
       "android/unguessable_token_android.cc",
       "android/unguessable_token_android.h",
       "memory/platform_shared_memory_mapper_android.cc",
@@ -1781,7 +1753,6 @@ mixed_component("base") {
     ]
 
     deps += [
-      ":base_jni_headers",
       "//third_party/android_ndk:cpu_features",
       "//third_party/ashmem",
     ]
@@ -1816,7 +1787,45 @@ mixed_component("base") {
     # This is actually a linker script, but it can be added to the link in the
     # same way as a library.
     libs += [ "android/library_loader/anchor_functions.lds" ]
+  }  # is_android
+
+  if (is_robolectric) {
+    # Make jni.h available.
+    configs += [ "//third_party/jdk" ]
   }
+  if (is_android || is_robolectric) {
+    sources += [
+      "android/base_jni_onload.cc",
+      "android/base_jni_onload.h",
+      "android/callback_android.cc",
+      "android/callback_android.h",
+      "android/command_line_android.cc",
+      "android/java_exception_reporter.cc",
+      "android/java_exception_reporter.h",
+      "android/jni_android.cc",
+      "android/jni_android.h",
+      "android/jni_array.cc",
+      "android/jni_array.h",
+      "android/jni_generator/jni_generator_helper.h",
+      "android/jni_int_wrapper.h",
+      "android/jni_registrar.cc",
+      "android/jni_registrar.h",
+      "android/jni_string.cc",
+      "android/jni_string.h",
+      "android/jni_utils.cc",
+      "android/jni_utils.h",
+      "android/jni_weak_ref.cc",
+      "android/jni_weak_ref.h",
+      "android/library_loader/library_loader_hooks.cc",
+      "android/library_loader/library_loader_hooks.h",
+      "android/native_uma_recorder.cc",
+      "android/scoped_java_ref.cc",
+      "android/scoped_java_ref.h",
+      "android/trace_event_binding.cc",
+      "android/trace_event_binding.h",
+    ]
+    deps += [ ":base_jni_headers" ]
+  }  # is_android || is_robolectric
 
   # Chromeos.
   if (is_chromeos) {
@@ -4072,7 +4081,7 @@ if (enable_nocompile_tests) {
   }
 }
 
-if (is_android) {
+if (is_android || is_robolectric) {
   generate_jni("base_jni_headers") {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
@@ -4126,7 +4135,9 @@ if (is_android) {
       "java/lang/Runtime.class",
     ]
   }
+}  # is_android || is_robolectric
 
+if (is_android) {
   java_library("jni_java") {
     supports_android = true
     sources = [
@@ -4665,7 +4676,7 @@ if (is_android) {
       "test/android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java",
     ]
   }
-}
+}  # is_android
 
 # Keep the list of fuzzer_tests in alphabetical order.
 fuzzer_test("base64_decode_fuzzer") {
