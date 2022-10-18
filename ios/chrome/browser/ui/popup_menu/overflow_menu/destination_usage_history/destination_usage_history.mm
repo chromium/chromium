@@ -183,11 +183,23 @@ base::Value::List List(Range&& ranking) {
 // B's numClicks exceeds A's.
 @implementation DestinationUsageHistory
 
+#pragma mark - Initializers
+
 - (instancetype)initWithPrefService:(PrefService*)prefService {
   if (self = [super init])
     _prefService = prefService;
 
   return self;
+}
+
+- (void)dealloc {
+  DCHECK(!self.prefService) << "-disconnect needs to be called before -dealloc";
+}
+
+#pragma mark - Disconnect
+
+- (void)disconnect {
+  self.prefService = nullptr;
 }
 
 #pragma mark - Public
@@ -234,8 +246,8 @@ base::Value::List List(Range&& ranking) {
 // Track click for `destination` and associate it with TodaysDay().
 - (void)trackDestinationClick:(overflow_menu::Destination)destination
      numAboveFoldDestinations:(int)numAboveFoldDestinations {
-  DCHECK(self.prefService);
-  // Exit early if there's no pref service; this is not expected to happen.
+  // Exit early if there's no pref service. May happen during the application
+  // shutdown.
   if (!self.prefService)
     return;
 
@@ -269,6 +281,11 @@ base::Value::List List(Range&& ranking) {
 // Injects a default number of clicks for all destinations in the history
 // dictonary.
 - (void)injectDefaultNumClicksForAllDestinations {
+  // Exit early if there's no pref service. May happen during the application
+  // shutdown.
+  if (!self.prefService)
+    return;
+
   DCHECK_GT(kDampening, 1.0);
   DCHECK_GT(kInitialBufferNumClicks, 1);
 
@@ -292,6 +309,11 @@ base::Value::List List(Range&& ranking) {
 // saves back to prefs. Returns true if expired usage data was found/removed,
 // false otherwise.
 - (void)deleteExpiredData {
+  // Exit early if there's no pref service. May happen during the application
+  // shutdown.
+  if (!self.prefService)
+    return;
+
   const base::Value::Dict& history =
       self.prefService->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
 
@@ -312,6 +334,11 @@ base::Value::List List(Range&& ranking) {
 
 // Fetches the current ranking saved in prefs and returns it.
 - (const base::Value::List*)fetchCurrentRanking {
+  // Exit early if there's no pref service. May happen during the application
+  // shutdown.
+  if (!self.prefService)
+    return nullptr;
+
   const base::Value::Dict& history =
       self.prefService->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
 
@@ -352,10 +379,15 @@ base::Value::List List(Range&& ranking) {
 // (int). Only usage data within previous `window` days will be included in the
 // returned result.
 - (base::Value::Dict)flattenedHistoryWithinWindow:(int)window {
+  base::Value::Dict flatHistory;
+
+  // Exit early if there's no pref service. May happen during the application
+  // shutdown.
+  if (!self.prefService)
+    return flatHistory;
+
   const base::Value::Dict& history =
       self.prefService->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
-
-  base::Value::Dict flatHistory;
 
   for (auto&& [day, dayHistory] : history) {
     // Skip over entry corresponding to previous ranking.
