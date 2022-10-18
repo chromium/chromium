@@ -238,7 +238,6 @@ void PaintLayerScrollableArea::DisposeImpl() {
     sequencer->DidDisposeScrollableArea(*this);
 
   RunScrollCompleteCallbacks();
-  InvalidateScrollTimeline();
 
   layer_ = nullptr;
 }
@@ -479,7 +478,6 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   // The ScrollOffsetTranslation paint property depends on the scroll offset.
   // (see: PaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation).
   GetLayoutBox()->SetNeedsPaintPropertyUpdatePreservingCachedRects();
-  InvalidateScrollTimeline();
 
   if (scroll_type == mojom::blink::ScrollType::kUser ||
       scroll_type == mojom::blink::ScrollType::kCompositor) {
@@ -646,7 +644,6 @@ gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
 }
 
 void PaintLayerScrollableArea::VisibleSizeChanged() {
-  InvalidateScrollTimeline();
   ShowNonMacOverlayScrollbars();
 }
 
@@ -728,7 +725,6 @@ void PaintLayerScrollableArea::ContentsResized() {
   // Need to update the bounds of the scroll property.
   GetLayoutBox()->SetNeedsPaintPropertyUpdate();
   Layer()->SetNeedsCompositingInputsUpdate();
-  InvalidateScrollTimeline();
 }
 
 gfx::Point PaintLayerScrollableArea::LastKnownMousePosition() const {

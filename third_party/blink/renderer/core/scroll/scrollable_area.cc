@@ -596,13 +596,6 @@ void ScrollableArea::ContentsResized() {
     mac_scrollbar_animator_->ContentsResized();
 }
 
-void ScrollableArea::InvalidateScrollTimeline() {
-  if (auto* layout_box = GetLayoutBox()) {
-    if (auto* node = layout_box->GetNode())
-      ScrollTimeline::Invalidate(node);
-  }
-}
-
 bool ScrollableArea::HasOverlayScrollbars() const {
   Scrollbar* v_scrollbar = VerticalScrollbar();
   if (v_scrollbar && v_scrollbar->IsOverlayScrollbar())

@@ -109,9 +109,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   void GetCurrentAndMaxOffset(const LayoutBox*,
                               double& current_offset,
                               double& max_offset) const;
-  // Invalidates scroll timeline as a result of scroller properties change.
-  // This may lead the timeline to request a new animation frame.
-  virtual void Invalidate();
 
   // Mark every effect target of every Animation attached to this timeline
   // for style recalc.
@@ -134,12 +131,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   void AnimationDetached(Animation*) override;
 
   void Trace(Visitor*) const override;
-
-  // Invalidates scroll timelines with a given scroller node.
-  // Called when scroller properties, affecting scroll timeline state, change.
-  // These properties are scroller offset, content size, viewport size,
-  // overflow, adding and removal of scrollable area.
-  static void Invalidate(Node* node);
 
   // Duration is the maximum value a timeline may generate for current time.
   // Used to convert time values to proportional values.
@@ -197,10 +188,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   };
 
   TimelineState ComputeTimelineState();
-
-  // Use time_check true to request next service if time has changed.
-  // false - regardless of time change.
-  void ScheduleNextServiceInternal(bool time_check);
 
   ReferenceType reference_type_;
   Member<Element> reference_element_;

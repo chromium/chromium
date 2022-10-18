@@ -30,15 +30,6 @@ namespace blink {
 
 namespace {
 
-using ScrollTimelineSet =
-    HeapHashMap<WeakMember<Node>,
-                Member<HeapHashSet<WeakMember<ScrollTimeline>>>>;
-ScrollTimelineSet& GetScrollTimelineSet() {
-  DEFINE_STATIC_LOCAL(Persistent<ScrollTimelineSet>, set,
-                      (MakeGarbageCollected<ScrollTimelineSet>()));
-  return *set;
-}
-
 ScrollOrientation ToPhysicalScrollOrientation(
     ScrollTimeline::ScrollDirection direction,
     const LayoutBox& source_box) {
@@ -134,10 +125,6 @@ ScrollTimeline::ScrollTimeline(Document* document,
 
 bool ScrollTimeline::IsActive() const {
   return timeline_state_snapshotted_.phase != TimelinePhase::kInactive;
-}
-
-void ScrollTimeline::Invalidate() {
-  ScheduleNextServiceInternal(/* time_check = */ false);
 }
 
 bool ScrollTimeline::ComputeIsActive() const {
@@ -295,21 +282,16 @@ void ScrollTimeline::ServiceAnimations(TimingUpdateReason reason) {
   AnimationTimeline::ServiceAnimations(reason);
 }
 
-void ScrollTimeline::ScheduleNextServiceInternal(bool time_check) {
+void ScrollTimeline::ScheduleNextService() {
   if (AnimationsNeedingUpdateCount() == 0)
     return;
 
-  if (time_check) {
-    auto state = ComputeTimelineState();
-    PhaseAndTime current_phase_and_time{state.phase, state.current_time};
-    if (current_phase_and_time == last_current_phase_and_time_)
-      return;
-  }
-  ScheduleServiceOnNextFrame();
-}
+  auto state = ComputeTimelineState();
+  PhaseAndTime current_phase_and_time{state.phase, state.current_time};
+  if (current_phase_and_time == last_current_phase_and_time_)
+    return;
 
-void ScrollTimeline::ScheduleNextService() {
-  ScheduleNextServiceInternal(/* time_check = */ true);
+  ScheduleServiceOnNextFrame();
 }
 
 void ScrollTimeline::SnapshotState() {
@@ -431,29 +413,14 @@ void ScrollTimeline::UpdateResolvedSource() {
 
   Node* old_resolved_source = resolved_source_.Get();
   resolved_source_ = ResolveSource(SourceInternal());
-  if (old_resolved_source == resolved_source_.Get())
+  if (old_resolved_source == resolved_source_.Get() || !HasAnimations())
     return;
 
-  ScrollTimelineSet& set = GetScrollTimelineSet();
+  if (old_resolved_source)
+    old_resolved_source->UnregisterScrollTimeline(this);
 
-  if (old_resolved_source) {
-    if (HasAnimations())
-      old_resolved_source->UnregisterScrollTimeline(this);
-
-    auto it = set.find(old_resolved_source);
-    DCHECK(it != set.end());
-    it->value->erase(this);
-  }
-
-  if (resolved_source_) {
-    if (HasAnimations())
-      resolved_source_->RegisterScrollTimeline(this);
-
-    auto add_result = set.insert(
-        resolved_source_,
-        MakeGarbageCollected<HeapHashSet<WeakMember<ScrollTimeline>>>());
-    add_result.stored_value->value->insert(this);
-  }
+  if (resolved_source_)
+    resolved_source_->RegisterScrollTimeline(this);
 }
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
@@ -461,18 +428,6 @@ void ScrollTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(resolved_source_);
   visitor->Trace(attached_worklet_animations_);
   AnimationTimeline::Trace(visitor);
-}
-
-void ScrollTimeline::Invalidate(Node* node) {
-  ScrollTimelineSet& set = GetScrollTimelineSet();
-  auto it = set.find(node);
-
-  if (it == set.end())
-    return;
-
-  for (auto& timeline : *it->value) {
-    timeline->Invalidate();
-  }
 }
 
 void ScrollTimeline::InvalidateEffectTargetStyle() {

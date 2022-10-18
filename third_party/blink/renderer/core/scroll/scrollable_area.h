@@ -542,7 +542,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                 ScrollOffset delta,
                                 ui::ScrollGranularity granularity,
                                 WebInputEvent::Type gesture_type) const;
-  void InvalidateScrollTimeline();
   // If the layout box is a global root scroller then the root frame view's
   // ScrollableArea is returned. Otherwise, the layout box's
   // PaintLayerScrollableArea (which can be null) is returned.

@@ -443,6 +443,13 @@ TEST_F(ScrollTimelineTest, ScheduleFrameWhenScrollerLayoutChanges) {
   scroll_timeline->ResetNextServiceScheduled();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(scroll_timeline->NextServiceScheduled());
+
+  // Also test changing the scroller height, which also affect the max offset.
+  GetElementById("scroller")
+      ->setAttribute(html_names::kStyleAttr, "height: 200px");
+  scroll_timeline->ResetNextServiceScheduled();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(scroll_timeline->NextServiceScheduled());
 }
 
 TEST_F(ScrollTimelineTest,

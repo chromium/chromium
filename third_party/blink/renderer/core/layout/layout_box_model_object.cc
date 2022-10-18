@@ -376,8 +376,6 @@ void LayoutBoxModelObject::CreateLayerAfterStyleChange() {
   // Creating a layer may affect existence of the LocalBorderBoxProperties, so
   // we need to ensure that we update paint properties.
   SetNeedsPaintPropertyUpdate();
-  if (GetScrollableArea())
-    GetScrollableArea()->InvalidateScrollTimeline();
 }
 
 void LayoutBoxModelObject::DestroyLayer() {
