@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -504,6 +505,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     @VisibleForTesting
     void tryShowingPrompt() {
         if (mTab == null || mTab.getWebContents() == null) return;
+
+        // If a reader mode button will be shown on the toolbar then don't show a message.
+        if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled()) return;
 
         // Test if the user is requesting the desktop site. Ignore this if distiller is set to
         // ALWAYS_TRUE.

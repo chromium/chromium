@@ -160,12 +160,16 @@ public class AdaptiveToolbarFeatures {
     }
 
     public static boolean isPriceTrackingPageActionEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING)
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST);
     }
 
     public static boolean isReaderModePageActionEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE);
     }
 
     /**
