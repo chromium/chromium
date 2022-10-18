@@ -43,9 +43,11 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/image_util.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/origin.h"
 
 using content::WebContents;
 
@@ -499,10 +501,21 @@ ExtensionActionSetPopupFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
   std::string* popup_string = details_->FindString("popup");
   EXTENSION_FUNCTION_VALIDATE(popup_string);
-
   GURL popup_url;
-  if (!popup_string->empty())
+
+  // If an empty string is passed, remove the explicitly set popup. Setting it
+  // back to an empty string (URL) will cause it to fall back to the default set
+  // in the manifest.
+  if (!popup_string->empty()) {
     popup_url = extension()->GetResourceURL(*popup_string);
+    // Validate popup is same-origin (only for this extension). We do not
+    // validate the file exists (like we do in manifest validation) because an
+    // extension could potentially intercept the request with a service worker
+    // and dynamically provide content.
+    if (!extension()->origin().IsSameOriginWith(popup_url)) {
+      return RespondNow(Error(manifest_errors::kInvalidExtensionOriginPopup));
+    }
+  }
 
   extension_action_->SetPopupUrl(tab_id_, popup_url);
   NotifyChange();
