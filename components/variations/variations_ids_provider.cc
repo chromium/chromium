@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -19,6 +20,11 @@
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_features.h"
+
+// TODO: remove this feature flag after milestone 110.
+BASE_FEATURE(kSendLowEntropySourceVariationIDInAnyContext,
+             "SendLowEntropySourceVariationIDInAnyContext",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace variations {
 namespace {
@@ -522,8 +528,11 @@ VariationsIdsProvider::GetAllVariationIds() {
                        kLowEntropySourceVariationIdRangeMin;
     DCHECK_GE(source_value, kLowEntropySourceVariationIdRangeMin);
     DCHECK_LE(source_value, kLowEntropySourceVariationIdRangeMax);
-    all_variation_ids_set.insert(
-        VariationIDEntry(source_value, GOOGLE_WEB_PROPERTIES_FIRST_PARTY));
+    auto context = base::FeatureList::IsEnabled(
+                       kSendLowEntropySourceVariationIDInAnyContext)
+                       ? GOOGLE_WEB_PROPERTIES_ANY_CONTEXT
+                       : GOOGLE_WEB_PROPERTIES_FIRST_PARTY;
+    all_variation_ids_set.insert(VariationIDEntry(source_value, context));
   }
 
   return all_variation_ids_set;
