@@ -80,9 +80,8 @@ export class LensUploadDialogElement extends PolymerElement {
     };
   }
 
-  private outsideClickHandler_: (event: MouseEvent) => void;
   private dialogState_ = DialogState.HIDDEN;
-  private outsideClickHandlerAttached_ = false;
+  private outsideHandlerAttached_ = false;
   private uploadUrl_: string = '';
   private dragCount: number = 0;
 
@@ -106,23 +105,13 @@ export class LensUploadDialogElement extends PolymerElement {
     return dialogState === DialogState.OFFLINE;
   }
 
-  constructor() {
-    super();
-    this.outsideClickHandler_ = (event: MouseEvent) => {
-      const outsideDialog = !event.composedPath().includes(this.$.dialog);
-      if (outsideDialog) {
-        this.closeDialog();
-      }
-    };
-  }
-
   override connectedCallback() {
     super.connectedCallback();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.detachOutsideClickHandler_();
+    this.detachOutsideHandler_();
   }
 
   openDialog() {
@@ -131,12 +120,12 @@ export class LensUploadDialogElement extends PolymerElement {
     // otherwise the click of the icon which initially opened the dialog would
     // also be registered in the outside click handler, causing the dialog to
     // immediately close after opening.
-    afterNextRender(this, () => this.attachOutsideClickHandler_());
+    afterNextRender(this, () => this.attachOutsideHandler_());
   }
 
   closeDialog() {
     this.dialogState_ = DialogState.HIDDEN;
-    this.detachOutsideClickHandler_();
+    this.detachOutsideHandler_();
     this.dispatchEvent(new Event('close-lens-search'));
   }
 
@@ -149,17 +138,32 @@ export class LensUploadDialogElement extends PolymerElement {
                                                            DialogState.OFFLINE;
   }
 
-  private attachOutsideClickHandler_() {
-    if (!this.outsideClickHandlerAttached_) {
+  private outsideClickHandler_ = (event: MouseEvent) => {
+    const outsideDialog = !event.composedPath().includes(this.$.dialog);
+    if (outsideDialog) {
+      this.closeDialog();
+    }
+  };
+
+  private outsideKeyHandler_ = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      this.closeDialog();
+    }
+  };
+
+  private attachOutsideHandler_() {
+    if (!this.outsideHandlerAttached_) {
       document.addEventListener('click', this.outsideClickHandler_);
-      this.outsideClickHandlerAttached_ = true;
+      document.addEventListener('keydown', this.outsideKeyHandler_);
+      this.outsideHandlerAttached_ = true;
     }
   }
 
-  private detachOutsideClickHandler_() {
-    if (this.outsideClickHandlerAttached_) {
+  private detachOutsideHandler_() {
+    if (this.outsideHandlerAttached_) {
       document.removeEventListener('click', this.outsideClickHandler_);
-      this.outsideClickHandlerAttached_ = false;
+      document.removeEventListener('keydown', this.outsideKeyHandler_);
+      this.outsideHandlerAttached_ = false;
     }
   }
 

@@ -95,6 +95,18 @@ suite('LensUploadDialogTest', () => {
     assertTrue(uploadDialog.$.dialog.hidden);
   });
 
+  test('clicking esc key closes the dialog', async () => {
+    // Arrange.
+    uploadDialog.openDialog();
+    await waitAfterNextRender(uploadDialog);
+
+    // Act.
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+
+    // Assert.
+    assertTrue(uploadDialog.$.dialog.hidden);
+  });
+
   test('opening dialog while offline shows offline UI', async () => {
     // Arrange.
     windowProxy.setResultFor('onLine', false);
