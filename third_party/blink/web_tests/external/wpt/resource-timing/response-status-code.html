@@ -12,6 +12,7 @@
 <body>
 <script>
 const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
+const SAME_ORIGIN = location.origin;
 const status_codes = [
   200, 203,
   400, 401, 403, 404,
@@ -103,6 +104,30 @@ resource_loaders.forEach(loader => {
   status_codes.forEach(status => run_test_cross_origin(
     loader, status
   ));
+});
+
+// Response status for iframes is 0 when cross origin redirects are present
+// Same-Origin => Cross-Origin => Same-Origin => Same-Origin redirect chain
+var destUrl = `${SAME_ORIGIN}/resource-timing/resources/multi_redirect.py?`;
+destUrl += `page_origin=${SAME_ORIGIN}`;
+destUrl += `&cross_origin=${REMOTE_ORIGIN}`;
+destUrl += `&final_resource=/resource-timing/resources/status-code.py?status=200`;
+attribute_test(
+    load.iframe, new URL(destUrl),
+    entry => {
+        assert_equals(entry.responseStatus, 0,
+            `response status should be 0 for iframes having cross origin redirects`);
+});
+
+
+// Response status for iframes is exposed for same origin redirects
+var destUrl = `${SAME_ORIGIN}/resource-timing/resources/redirect-cors.py`;
+destUrl += `?location=${SAME_ORIGIN}/resource-timing/resources/status-code.py?status=203`;
+attribute_test(
+    load.iframe, new URL(destUrl),
+    entry => {
+        assert_equals(entry.responseStatus, 203,
+            `response status should be exposed for iframes having only same origin redirects`);
 });
 
 </script>

@@ -310,10 +310,15 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
                                      bool* response_tainting_not_basic,
                                      bool* tainted_origin_flag);
 
-  static bool ShouldReportResponseStatus(
+  static bool IsResponseSameOriginWithInitiator(
       const ResourceResponse& response,
+      const SecurityOrigin& initiator_security_origin);
+
+  static bool ShouldReportResponseStatus(
+      const ResourceResponse& final_response,
       const SecurityOrigin& initiator_security_origin,
-      const network::mojom::RequestMode request_mode);
+      const network::mojom::RequestMode request_mode,
+      const Vector<ResourceResponse>& redirect_chain);
 
   static bool AllowsTimingRedirect(const Vector<ResourceResponse>&,
                                    const ResourceResponse&,

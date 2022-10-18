@@ -440,18 +440,33 @@ void Performance::setBackForwardCacheRestorationBufferSizeForTest(
   back_forward_cache_restoration_buffer_size_limit_ = size;
 }
 
-bool Performance::ShouldReportResponseStatus(
+bool Performance::IsResponseSameOriginWithInitiator(
     const ResourceResponse& response,
-    const SecurityOrigin& initiator_security_origin,
-    const network::mojom::RequestMode request_mode) {
-  if (request_mode != network::mojom::RequestMode::kNavigate) {
-    return response.IsCorsSameOrigin();
-  }
+    const SecurityOrigin& initiator_security_origin) {
   scoped_refptr<const SecurityOrigin> response_origin =
       SecurityOrigin::Create(response.ResponseUrl());
   bool is_same_origin =
       response_origin->IsSameOriginWith(&initiator_security_origin);
   return is_same_origin;
+}
+
+bool Performance::ShouldReportResponseStatus(
+    const ResourceResponse& final_response,
+    const SecurityOrigin& initiator_security_origin,
+    const network::mojom::RequestMode request_mode,
+    const Vector<ResourceResponse>& redirect_chain) {
+  if (request_mode != network::mojom::RequestMode::kNavigate) {
+    return final_response.IsCorsSameOrigin();
+  }
+
+  for (const ResourceResponse& response : redirect_chain) {
+    if (!IsResponseSameOriginWithInitiator(response,
+                                           initiator_security_origin)) {
+      return false;
+    }
+  }
+  return IsResponseSameOriginWithInitiator(final_response,
+                                           initiator_security_origin);
 }
 
 void Performance::GenerateAndAddResourceTiming(
@@ -535,7 +550,7 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
 
   result->render_blocking_status = info.RenderBlockingStatus();
   if (ShouldReportResponseStatus(final_response, destination_origin,
-                                 info.RequestMode())) {
+                                 info.RequestMode(), redirect_chain)) {
     result->response_status = final_response.HttpStatusCode();
   }
 
