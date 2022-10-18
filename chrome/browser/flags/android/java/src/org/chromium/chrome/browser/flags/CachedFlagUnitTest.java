@@ -112,13 +112,13 @@ public class CachedFlagUnitTest {
         assertIsEnabledMatches(A_OFF_B_OFF, featureA, featureB);
 
         // Force a feature flag.
-        featureA.setForTesting(FEATURE_A, true);
+        featureA.setForTesting(true);
 
         // Verify that the forced value is returned.
         assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
 
         // Remove the forcing.
-        featureA.setForTesting(FEATURE_A, null);
+        featureA.setForTesting(null);
 
         // Verify that the forced value is not returned anymore.
         assertIsEnabledMatches(A_OFF_B_OFF, featureA, featureB);

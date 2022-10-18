@@ -26,8 +26,8 @@ public class CachedFlag extends Flag {
     }
 
     @VisibleForTesting
-    public void setForTesting(String name, @Nullable Boolean value) {
-        CachedFeatureFlags.setForTesting(name, value);
+    public void setForTesting(@Nullable Boolean value) {
+        CachedFeatureFlags.setForTesting(mFeatureName, value);
     }
 
     public void cacheFeature() {
