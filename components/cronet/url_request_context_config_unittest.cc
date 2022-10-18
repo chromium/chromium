@@ -225,7 +225,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_FALSE(
       quic_params->initial_delay_for_broken_alternative_service.has_value());
   EXPECT_FALSE(quic_params->exponential_backoff_on_initial_delay.has_value());
-  EXPECT_TRUE(quic_params->delay_main_job_with_available_spdy_session);
+  EXPECT_FALSE(quic_params->delay_main_job_with_available_spdy_session);
 
   // Check network_service_type for iOS.
   EXPECT_EQ(2, quic_params->ios_network_service_type);
@@ -1180,7 +1180,7 @@ TEST(URLRequestContextConfigTest, BrokenAlternativeServiceDelayParams2) {
   EXPECT_FALSE(quic_params->exponential_backoff_on_initial_delay.value());
 }
 
-TEST(URLRequestContextConfigTest, NotDelayMainJobWithAvailableSpdySession) {
+TEST(URLRequestContextConfigTest, DelayMainJobWithAvailableSpdySession) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);
   std::unique_ptr<URLRequestContextConfig> config =
@@ -1207,7 +1207,7 @@ TEST(URLRequestContextConfigTest, NotDelayMainJobWithAvailableSpdySession) {
           // User-Agent request header field.
           "fake agent",
           // JSON encoded experimental options.
-          "{\"QUIC\":{\"delay_main_job_with_available_spdy_session\":false}}",
+          "{\"QUIC\":{\"delay_main_job_with_available_spdy_session\":true}}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
@@ -1226,7 +1226,7 @@ TEST(URLRequestContextConfigTest, NotDelayMainJobWithAvailableSpdySession) {
   std::unique_ptr<net::URLRequestContext> context(builder.Build());
   const net::QuicParams* quic_params = context->quic_context()->params();
 
-  EXPECT_FALSE(quic_params->delay_main_job_with_available_spdy_session);
+  EXPECT_TRUE(quic_params->delay_main_job_with_available_spdy_session);
 }
 
 TEST(URLRequestContextConfigTest, SetDisableTlsZeroRtt) {

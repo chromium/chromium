@@ -445,12 +445,12 @@ int GetInitialDelayForBrokenAlternativeServiceSeconds(
   return 0;
 }
 
-bool NotDelayMainJobWithAvailableSpdySession(
+bool DelayMainJobWithAvailableSpdySession(
     const VariationParameters& quic_trial_params) {
   return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params,
                         "delay_main_job_with_available_spdy_session"),
-      "false");
+      "true");
 }
 
 void SetQuicFlags(const VariationParameters& quic_trial_params) {
@@ -678,8 +678,8 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
     }
     quic_params->exponential_backoff_on_initial_delay =
         GetExponentialBackOffOnInitialDelay(quic_trial_params);
-    if (NotDelayMainJobWithAvailableSpdySession(quic_trial_params)) {
-      quic_params->delay_main_job_with_available_spdy_session = false;
+    if (DelayMainJobWithAvailableSpdySession(quic_trial_params)) {
+      quic_params->delay_main_job_with_available_spdy_session = true;
     }
     SetQuicFlags(quic_trial_params);
   }

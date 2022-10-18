@@ -184,7 +184,7 @@ struct NET_EXPORT QuicParams {
   absl::optional<bool> exponential_backoff_on_initial_delay;
   // If true, delay main job even the request can be sent immediately on an
   // available SPDY session.
-  bool delay_main_job_with_available_spdy_session = true;
+  bool delay_main_job_with_available_spdy_session = false;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the
