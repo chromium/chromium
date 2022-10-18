@@ -529,7 +529,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10",
+              "os": "Windows-10-19042",
               "pool": "chromium.tests"
             }
           ],
@@ -554,7 +554,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10",
+              "os": "Windows-10-19042",
               "pool": "chromium.tests"
             }
           ],
@@ -583,7 +583,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10",
+              "os": "Windows-10-19042",
               "pool": "chromium.tests"
             }
           ],
@@ -608,7 +608,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10",
+              "os": "Windows-10-19042",
               "pool": "chromium.tests"
             }
           ],
@@ -690,7 +690,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10",
+              "os": "Windows-10-19042",
               "pool": "chromium.tests"
             }
           ],
@@ -715,7 +715,7 @@
             {
               "cpu": "x86-64",
               "integrity": "high",
-              "os": "Windows-10",
+              "os": "Windows-10-19042",
               "pool": "chromium.tests"
             }
           ],
