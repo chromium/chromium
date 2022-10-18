@@ -2291,12 +2291,12 @@
   },
   {"name": "enable-expkit-apple-calendar",
       "owners": ["erahmaoui@google.com", "djean@google.com", "bling-flags@google.com"],
-      "expiry_milestone":107
+      "expiry_milestone":111
   },
   {
     "name": "enable-expkit-calendar-text-classifier",
     "owners": [ "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 111
   },
   {
     "name": "enable-external-keyboards-in-diagnostics-app",
@@ -2636,7 +2636,7 @@
   {
     "name": "enable-long-press-surrounding-text",
     "owners": [ "erahmaoui@google.com", "djean@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 111
   },
   {
     "name": "enable-machine-learning-model-loader-web-platform-api",
@@ -3497,12 +3497,12 @@
   {
     "name": "experience-kit-calendar",
     "owners": [ "djean@google.com", "olivierrobin", "bling-flags@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 110
   },
   {
     "name": "experience-kit-maps",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 111
   },
   {
     "name": "explore-sites",
@@ -4264,7 +4264,7 @@
   {
     "name": "ios-webpage-intent-annotations",
     "owners": [ "djean", "bling-flags@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "isolate-origins",
