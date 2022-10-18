@@ -1,17 +1,17 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [9, 9, 277, 59]
+        [9, 9, 276, 58]
       ]
     },
     {
       "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
-      "position": [2, 2],
+      "position": [1, 1],
       "bounds": [268, 28],
       "drawsContent": false,
       "transform": 1
@@ -28,14 +28,14 @@
     },
     {
       "name": "HorizontalScrollbar",
-      "position": [1, 30],
+      "position": [1, 29],
       "bounds": [246, 22],
       "contentsOpaque": true,
       "transform": 1
     },
     {
       "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
-      "position": [2, 2],
+      "position": [1, 1],
       "bounds": [723, 28],
       "backgroundColor": "#FFFFFF",
       "invalidations": [
@@ -45,21 +45,21 @@
     },
     {
       "name": "Caret",
-      "position": [723, 5],
-      "bounds": [1, 22],
+      "position": [722, 4],
+      "bounds": [2, 22],
       "contentsOpaque": true,
       "invalidations": [
-        [0, 0, 1, 22]
+        [0, 0, 2, 22]
       ],
       "transform": 2
     },
     {
       "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [-3, -3],
-      "bounds": [277, 59],
+      "bounds": [276, 58],
       "contentsOpaqueForText": true,
       "invalidations": [
-        [0, 0, 277, 59]
+        [0, 0, 276, 58]
       ],
       "transform": 1
     }

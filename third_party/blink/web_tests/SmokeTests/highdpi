@@ -310,6 +310,7 @@ external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.h
 external/wpt/css/css-backgrounds/background-size/vector/tall--auto--percent-width-nonpercent-height-viewbox.html
 external/wpt/css/css-backgrounds/hidpi/simple-bg-color.html
 external/wpt/css/css-backgrounds/parsing/background-image-invalid.html
+external/wpt/css/css-borders/border-width-computed-value.tentative.html
 external/wpt/css/css-borders/subpixel-borders-with-child-border-box-sizing.html
 external/wpt/css/css-box/inheritance.html
 external/wpt/css/css-box/parsing/height-valid.html

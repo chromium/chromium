@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--
+  This test has to be internal because "testRunner.setPageZoomFactor()"
+  is not supported by all browsers.
+-->
+<html>
+<head>
+  <title>
+    CSS Border: width computed value is re-computed when zoom changes.
+  </title>
+
+  <link rel="author" title="Traian Captan" href="mailto:tcaptan@chromium.org">
+  <link rel="help" href="https://www.w3.org/TR/css-backgrounds-3/#border-width">
+
+  <meta name="assert" content="border-width value re-computed when zoom changes.">
+
+  <style>
+    #square {
+      height: 100px;
+      width: 100px;
+      border: 1.5px solid gray;
+    }
+  </style>
+
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+
+<body>
+  <h1>
+    Test passes if border width values are re-computed when zoom changes.
+  </h1>
+
+  <div id="square"></div>
+
+  <script>
+    test(function() {
+      let square = document.getElementById('square');
+
+      assert_equals(window.getComputedStyle(square).borderTopWidth, '1px');
+
+      testRunner.setPageZoomFactor(2);
+      // Expecting 1.5px because getComputedStyle will apply
+      // a zoom transform to the value before returning it.
+      assert_equals(window.getComputedStyle(square).borderTopWidth, '1.5px');
+    }, 'Border width responsive to zoom changes');
+  </script>
+</body>
+</html>

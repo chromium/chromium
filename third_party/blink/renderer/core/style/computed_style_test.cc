@@ -1020,6 +1020,169 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
   }
 }
 
+TEST_F(ComputedStyleTest, BorderWidthConversion) {
+  // Tests that Border, Outline and Column Rule Widths
+  // are converted as expected.
+
+  ScopedSnapBorderWidthsBeforeLayoutForTest
+      enableSnapBorderWidthsBeforeLayoutForTest(true);
+
+  const struct {
+    CSSValue* css_value;
+    double expected_px;
+    STACK_ALLOCATED();
+  } tests[] = {
+      {CSSIdentifierValue::Create(CSSValueID::kThin), 1.0},
+      {CSSIdentifierValue::Create(CSSValueID::kMedium), 3.0},
+      {CSSIdentifierValue::Create(CSSValueID::kThick), 5.0},
+      {CSSNumericLiteralValue::Create(0.0,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       0.0},
+      {CSSNumericLiteralValue::Create(0.1,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       1.0},
+      {CSSNumericLiteralValue::Create(0.5,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       1.0},
+      {CSSNumericLiteralValue::Create(0.9,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       1.0},
+      {CSSNumericLiteralValue::Create(1.0,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       1.0},
+      {CSSNumericLiteralValue::Create(3.0,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       3.0},
+      {CSSNumericLiteralValue::Create(3.3,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       3.0},
+      {CSSNumericLiteralValue::Create(3.5,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       3.0},
+      {CSSNumericLiteralValue::Create(3.9,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       3.0},
+      {CSSNumericLiteralValue::Create(3.999,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       3.0},
+  };
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
+
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  style->SetBorderTopStyle(EBorderStyle::kSolid);
+  style->SetOutlineStyle(EBorderStyle::kSolid);
+  style->SetColumnRuleStyle(EBorderStyle::kSolid);
+  state.SetStyle(style);
+
+  for (const auto& test : tests) {
+    for (const auto* property :
+         {&GetCSSPropertyBorderTopWidth(), &GetCSSPropertyOutlineWidth(),
+          &GetCSSPropertyColumnRuleWidth()}) {
+      const Longhand& longhand = To<Longhand>(*property);
+
+      AtomicString prop_name = longhand.GetCSSPropertyName().ToAtomicString();
+
+      longhand.ApplyValue(state, *test.css_value);
+
+      auto* computed_value = longhand.CSSValueFromComputedStyleInternal(
+          *style, nullptr /* layout_object */, false /* allow_visited_style */);
+
+      ASSERT_NE(computed_value, nullptr) << prop_name;
+
+      auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);
+      ASSERT_NE(numeric_value, nullptr) << prop_name;
+
+      EXPECT_TRUE(numeric_value->IsPx()) << prop_name;
+      EXPECT_DOUBLE_EQ(test.expected_px, numeric_value->DoubleValue())
+          << prop_name;
+    }
+  }
+}
+
+TEST_F(ComputedStyleTest, BorderWidthConversionWithZoom) {
+  // Tests that Border Widths
+  // are converted as expected when Zoom is applied.
+
+  ScopedSnapBorderWidthsBeforeLayoutForTest
+      enableSnapBorderWidthsBeforeLayoutForTest(true);
+
+  float zoom = 2.0f;
+
+  const struct {
+    CSSValue* css_value;
+    double expected_px;
+    STACK_ALLOCATED();
+  } tests[] = {
+      {CSSIdentifierValue::Create(CSSValueID::kThin), 2.0},
+      {CSSIdentifierValue::Create(CSSValueID::kMedium), 6.0},
+      {CSSIdentifierValue::Create(CSSValueID::kThick), 10.0},
+      {CSSNumericLiteralValue::Create(0.0,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       0.0},
+      {CSSNumericLiteralValue::Create(0.1,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       1.0},
+      {CSSNumericLiteralValue::Create(0.5,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       1.0},
+      {CSSNumericLiteralValue::Create(0.9,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       1.0},
+      {CSSNumericLiteralValue::Create(1.0,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       2.0},
+      {CSSNumericLiteralValue::Create(1.5,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       3.0},
+      {CSSNumericLiteralValue::Create(3.0,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       6.0},
+      {CSSNumericLiteralValue::Create(3.3,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       6.0},
+      {CSSNumericLiteralValue::Create(3.5,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       7.0},
+      {CSSNumericLiteralValue::Create(3.9,
+                                      CSSPrimitiveValue::UnitType::kPixels),
+       7.0},
+  };
+
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial.get()));
+
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  style->SetEffectiveZoom(zoom);
+  style->SetBorderTopStyle(EBorderStyle::kSolid);
+  state.SetStyle(style);
+
+  for (const auto& test : tests) {
+    const Longhand& longhand = To<Longhand>(GetCSSPropertyBorderTopWidth());
+
+    longhand.ApplyValue(state, *test.css_value);
+
+    auto width = style->BorderTopWidth();
+
+    EXPECT_DOUBLE_EQ(test.expected_px, width.ToDouble());
+  }
+}
+
 TEST_F(ComputedStyleTest,
        TextDecorationEqualDoesNotRequireRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;

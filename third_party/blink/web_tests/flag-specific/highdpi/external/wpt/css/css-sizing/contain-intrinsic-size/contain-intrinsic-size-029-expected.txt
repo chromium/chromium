@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS .test 1
+PASS .test 2
+PASS .test 3
+PASS .test 4
+FAIL .test 5 assert_equals: 
+<button class="test cis-none min-size" data-expected-client-width="20" data-expected-client-height="5"></button>
+clientWidth expected 20 but got 21
+FAIL .test 6 assert_equals: 
+<button class="test cis-height min-size" data-expected-client-width="20" data-expected-client-height="50"></button>
+clientWidth expected 20 but got 21
+FAIL .test 7 assert_equals: 
+<button class="test cis-width min-size" data-expected-client-width="100" data-expected-client-height="5"></button>
+clientHeight expected 5 but got 6
+PASS .test 8
+Harness: the test ran to completion.
+

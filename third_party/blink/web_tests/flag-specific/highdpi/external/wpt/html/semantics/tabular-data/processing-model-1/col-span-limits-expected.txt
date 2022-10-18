@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL col span of 1000 must work assert_equals: expected 53 but got 51
+FAIL col span of 1001 must be treated as 1000 assert_equals: table2 width expected 51 but got 49
+Harness: the test ran to completion.
+

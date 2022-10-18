@@ -1236,6 +1236,7 @@ StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(
 LayoutUnit StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
                                                      const CSSValue& value) {
   double result = 0;
+
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kThin:
@@ -1251,6 +1252,7 @@ LayoutUnit StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
         NOTREACHED();
         break;
     }
+
     result = state.CssToLengthConversionData().ZoomedComputedPixels(
         result, CSSPrimitiveValue::UnitType::kPixels);
   } else {
@@ -1258,9 +1260,25 @@ LayoutUnit StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
     result =
         primitive_value.ComputeLength<float>(state.CssToLengthConversionData());
   }
+
   if (result > 0.0 && result < 1.0)
     return LayoutUnit(1);
+
+  if (RuntimeEnabledFeatures::SnapBorderWidthsBeforeLayoutEnabled())
+    return LayoutUnit(floor(result));
+
   return LayoutUnit(result);
+}
+
+uint16_t StyleBuilderConverter::ConvertColumnRuleWidth(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (RuntimeEnabledFeatures::SnapBorderWidthsBeforeLayoutEnabled()) {
+    return ClampTo<uint16_t>(
+        StyleBuilderConverter::ConvertBorderWidth(state, value).ToDouble());
+  }
+
+  return StyleBuilderConverter::ConvertLineWidth<uint16_t>(state, value);
 }
 
 LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(StyleResolverState& state,

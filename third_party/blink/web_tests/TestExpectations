@@ -6147,7 +6147,6 @@ crbug.com/1249176 [ Mac12-arm64 ] media/controls/overflow-menu-focus.html [ Fail
 
 # Failures that surfaced on the mac12-arm64 waterfall
 crbug.com/1249176 [ Mac12-arm64 ] media/color-profile-video-seek.html [ Failure ]
-crbug.com/1249176 [ Mac12-arm64 ] media/video-zoom.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/color-profile-background-image-cover.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/color-profile-border-image.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/color-profile-image-canvas-svg.html [ Failure ]
@@ -6603,7 +6602,6 @@ crbug.com/1295317 [ Mac11-arm64 ] compositing/video/video-controls-squashing.htm
 crbug.com/1295317 [ Mac11-arm64 ] media/color-profile-video-seek.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] media/color-profile-video.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] media/controls/video-overlay-cast-light-rendering.html [ Failure ]
-crbug.com/1295317 [ Mac11-arm64 ] media/video-zoom.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/2-comp.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/color-jpeg-with-color-profile.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/color-profile-background-image-cover.html [ Failure ]

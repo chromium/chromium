@@ -16,20 +16,30 @@
         line-height: 80px;
       }
     </style>
+
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
   </head>
+
   <body>
+    <div class="test" style="border-width: 0px">0px</div>
     <div class="test" style="border-width: 0.25px">0.25px</div>
     <div class="test" style="border-width: 0.5px">0.5px</div>
     <div class="test" style="border-width: 0.75px">0.75px</div>
     <div class="test" style="border-width: 1px">1px</div>
     <div class="test" style="border-width: 1.25px">1.25px</div>
     <div class="test" style="border-width: 1.5px">1.5px</div>
+    <div class="test" style="border-width: 1.75px">1.75px</div>
+    <div class="test" style="border-width: 3px">3px</div>
+    <div class="test" style="border-width: 3.3px">3.3px</div>
+    <div class="test" style="border-width: 3.9px">3.9px</div>
+
     <p>
-      Border thickness should be rounded, not floored, with the exception of
-      values below 1px where it should always round up.
+      Border thickness should be rounded up
+      when it is grater than 0px but less than 1px,
+      and floored when it is greater than 1px.
     </p>
+
     <script>
       var testElements = {};
       var elements = document.getElementsByClassName('test');
@@ -44,59 +54,49 @@
       }
 
       test(function() {
-        var refSize = testElements['0.25px'].getBoundingClientRect();
-        var testSize = testElements['0.5px'].getBoundingClientRect();
-        assert_equals(testSize.width, refSize.width,
-            'Size of 0.5px box should be equal to 0.25px box.');
-        assert_equals(testSize.height, refSize.height,
-            'Size of 0.5px box should be equal to 0.25px box.');
+        function checkSize(actual, expected) {
+          var actualSize = testElements[actual].getBoundingClientRect();
+          var expectedSize = testElements[expected].getBoundingClientRect();
 
-        refSize = testSize;
-        testSize =  testElements['0.75px'].getBoundingClientRect();
-        assert_equals(testSize.width, refSize.width,
-            'Size of 0.75px box should be equal to 0.5px box.');
-        assert_equals(testSize.height, refSize.height,
-            'Size of 0.75px box should be equal to 0.5px box.');
+          assert_equals(actualSize.width, expectedSize.width,
+            `Width of ${actual} box should be equal to ${expected} box.`);
 
-        refSize = testSize;
-        testSize =  testElements['1px'].getBoundingClientRect();
-        assert_equals(testSize.width, refSize.width,
-            'Size of 1px box should be equal to 0.75px box.');
-        assert_equals(testSize.height, refSize.height,
-            'Size of 1px box should be equal to 0.75px box.');
+          assert_equals(actualSize.height, expectedSize.height,
+            `Height of ${actual} box should be equal to ${expected} box.`);
+        }
 
-        refSize = testSize;
-        testSize =  testElements['1.25px'].getBoundingClientRect();
-        assert_greater_than(testSize.width, refSize.width,
-            'Size of 1.25px box should be larger than 1px box.');
-        assert_greater_than(testSize.height, refSize.height,
-            'Size of 1.25px box should be larger than 1px box.');
+        checkSize('0.25px', '1px');
+        checkSize('0.5px', '1px');
+        checkSize('0.75px', '1px');
+        checkSize('1.25px', '1px');
+        checkSize('1.5px', '1px');
+        checkSize('1.75px', '1px');
+        checkSize('3.3px', '3px');
+        checkSize('3.9px', '3px');
 
-        refSize = testSize;
-        testSize =  testElements['1.5px'].getBoundingClientRect();
-        assert_greater_than(testSize.width, refSize.width,
-            'Size of 1.5px box should be larger than 1.25px box.');
-        assert_greater_than(testSize.height, refSize.height,
-            'Size of 1.5px box should be larger than 1.25px box.');
       }, 'Size of all elements are correct.');
 
       test(function() {
-        assert_equals(borderAsString(testElements['0.25px']),
-            '1px 1px 1px 1px',
-            'Border thickness of 0.25px box should be 1px.');
-        assert_equals(borderAsString(testElements['0.5px']),
-            '1px 1px 1px 1px',
-            'Border thickness of 0.5px box should be 1px.');
-        assert_equals(borderAsString(testElements['0.75px']),
-            '1px 1px 1px 1px',
-            'Border thickness of 0.75px box should be 1px.');
-        assert_equals(borderAsString(testElements['1.25px']),
-            '1.25px 1.25px 1.25px 1.25px',
-            'Border thickness of 1.25px box should retain decimals.');
-        assert_equals(borderAsString(testElements['1.5px']),
-            '1.5px 1.5px 1.5px 1.5px',
-            'Border thickness of 1.5px box should retain decimals.');
+        function checkThickness(actual, expected) {
+          assert_equals(borderAsString(testElements[actual]),
+            `${expected} ${expected} ${expected} ${expected}`,
+            `Border thickness of ${actual} box should be ${expected}.`);
+        }
+
+        checkThickness('0px', '0px');
+        checkThickness('0.25px', '1px');
+        checkThickness('0.5px', '1px');
+        checkThickness('0.75px', '1px');
+        checkThickness('1px', '1px');
+        checkThickness('1.25px', '1px');
+        checkThickness('1.5px', '1px');
+        checkThickness('1.75px', '1px');
+        checkThickness('3px', '3px');
+        checkThickness('3.3px', '3px');
+        checkThickness('3.9px', '3px');
+
       }, 'All elements should have correctly sized borders.');
+
     </script>
   </body>
 </html>

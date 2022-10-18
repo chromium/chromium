@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+  This test has to be internal because "testRunner.setPageZoomFactor()"
+  is not supported by all browsers.
+
+  Test passes if border width values are re-computed when zoom changes.
+-->
+<html>
+<head>
+  <title>
+    CSS Border: width computed value is re-computed when zoom changes.
+  </title>
+
+  <link rel="author" title="Traian Captan" href="mailto:tcaptan@chromium.org">
+  <link rel="help" href="https://www.w3.org/TR/css-backgrounds-3/#border-width">
+  <link rel="match" href="subpixel-border-width-when-zoom-changes-ref.html">
+
+  <meta name="assert" content="border-width value re-computed when zoom changes.">
+
+  <style>
+    #square {
+      height: 100px;
+      width: 100px;
+      border: 1.5px solid gray;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="square"></div>
+
+  <script>
+    testRunner.setPageZoomFactor(2);
+  </script>
+</body>
+</html>

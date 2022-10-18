@@ -18,26 +18,37 @@
       }
     </style>
   </head>
+
   <body>
-    <div class="test" style="width: 80px; height: 80px">&nbsp;</div>
-    <div class="test" style="width: 80px; height: 80px">&nbsp;</div>
-    <div class="test" style="width: 80px; height: 80px">&nbsp;</div>
-    <br>
     <div class="test">&nbsp;</div>
-    <div class="test" style="width: 80.5px; height: 80.5px">&nbsp;</div>
-    <div class="test" style="width: 81px; height: 81px">&nbsp;</div>
-    <div class="test" style="width: 81.5px; height: 81.5px">&nbsp;</div>
+    <div class="test">&nbsp;</div>
+    <div class="test">&nbsp;</div>
+
     <br>
+
+    <div class="test">&nbsp;</div>
+    <div class="test">&nbsp;</div>
+    <div class="test">&nbsp;</div>
+    <div class="test">&nbsp;</div>
+
+    <br>
+
     <div class="test" style="border-width: 2px">&nbsp;</div>
-    <div class="test" style="border-width: 2px; width: 80.5px; height: 80.5px">&nbsp;</div>
-    <div class="test" style="border-width: 2px; width: 81px; height: 81px">&nbsp;</div>
-    <div class="test" style="border-width: 2px; width: 81.5px; height: 81.5px">&nbsp;</div>
+    <div class="test" style="border-width: 2px">&nbsp;</div>
+    <div class="test" style="border-width: 2px">&nbsp;</div>
+    <div class="test" style="border-width: 2px">&nbsp;</div>
+
     <br>
+
     <div class="test" style="border-width: 3px">&nbsp;</div>
-    <div class="test" style="border-width: 3px; width: 80.5px; height: 80.5px">&nbsp;</div>
+    <div class="test" style="border-width: 3px">&nbsp;</div>
+    <div class="test" style="border-width: 3px">&nbsp;</div>
+    <div class="test" style="border-width: 3px">&nbsp;</div>
+
     <p>
-      Border thickness should be floored, not rounded, with the exception of
-      values below 1px where it should always round up.
+      Border thickness should be rounded up
+      when it is grater than 0px but less than 1px,
+      and floored when it is greater than 1px.
     </p>
   </body>
 </html>

@@ -3061,12 +3061,20 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       return {style.OutlineWidth().ToInt(), style.OutlineOffset().ToInt()};
     }
 
+    static float getUnzoomedWidth(const ComputedStyle& style) {
+      float unzoomedWidth = style.OutlineWidth() / style.EffectiveZoom();
+
+      if (unzoomedWidth > 0.0f && unzoomedWidth <= 1.0f)
+        return 1.0f;
+
+      return std::floor(unzoomedWidth);
+    }
+
     // Unzoomed values modifies the style values by effective zoom. This is
     // used when the outline rects are specified in a space that does not
     // include EffectiveZoom, such as SVG.
     static OutlineInfo GetUnzoomedFromStyle(const ComputedStyle& style) {
-      return {static_cast<int>(
-                  std::floor(style.OutlineWidth() / style.EffectiveZoom())),
+      return {static_cast<int>(getUnzoomedWidth(style)),
               static_cast<int>(
                   std::floor(style.OutlineOffset() / style.EffectiveZoom()))};
     }
