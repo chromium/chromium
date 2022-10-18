@@ -2,6 +2,13 @@
 
 [TOC]
 
+## This document is obsolete
+
+While class verification failures still exist, our Java optimizer, R8, has
+solved this problem for us. Developers should not have to worry about this
+problem unless there is a bug in R8. See [this bug](http://b/138781768) for where
+they implemented this solution for us.
+
 ## What's this all about?
 
 This document aims to explain class verification on Android, how this can affect
@@ -81,6 +88,9 @@ selectively to optimize space.
 ***
 
 ## Chromium's solution
+
+**Note:** This section is no longer relevant as R8 has fixed this for us. We intend
+to remove these ApiHelperFor classes - see [this bug](https://crbug.com/1302156).
 
 In Chromium, we try to avoid doing class verification at runtime by
 manually out-of-lining all Android API usage like so:
