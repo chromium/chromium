@@ -42,6 +42,12 @@
 #include "components/device_signals/test/test_constants.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/sys_string_conversions.h"
+#include "base/test/test_reg_util_win.h"
+#include "base/win/registry.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -557,7 +563,135 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetHotfixes_Success) {
   RunTest(base::StringPrintf(kTest, account_info.gaia.c_str()));
 }
 
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
+                       GetRegistrySettings_Success) {
+  constexpr char kTest[] = R"(
+      chrome.test.assertEq(
+        'function',
+        typeof chrome.enterprise.reportingPrivate.getSettings);
+      const userContext = {userId: '%s'};
+      const options = [];
+
+      %s
+
+      const request = {userContext, options};
+
+   chrome.enterprise.reportingPrivate.getSettings(
+    request,
+    (settingsItems) => {
+        %s
+    });
+  )";
+
+  std::string kOptions = "";
+
+  std::string registry_path = "SOFTWARE/Chromium/DeviceTrust/Test";
+  std::string valid_key = "test_key";
+
+  kOptions = base::StringPrintf(
+      R"(
+    const test_hive = 'HKEY_LOCAL_MACHINE';
+    const registry_path = '%s';
+    const invalid_path = 'SOFTWARE/Chromium/DeviceTrust/Invalid';
+    const valid_key = '%s';
+    const invalid_key = 'invalid_key';
+
+    options.push({
+      hive: test_hive,
+      path: registry_path,
+      key: valid_key,
+      getValue: false
+    });
+    options.push({
+      hive: test_hive,
+      path: registry_path,
+      key: valid_key,
+      getValue: true
+    });
+    options.push({
+      hive: test_hive,
+      path: registry_path,
+      key: invalid_key,
+      getValue: true
+    });
+    options.push({
+      hive: test_hive,
+      path: invalid_path,
+      key: valid_key,
+      getValue: true
+    });
+  )",
+      registry_path.c_str(), valid_key.c_str());
+
+  registry_util::RegistryOverrideManager registry_override_manager_;
+  registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE);
+
+  base::win::RegKey key(HKEY_LOCAL_MACHINE,
+                        base::SysUTF8ToWide(registry_path).c_str(),
+                        KEY_ALL_ACCESS);
+  ASSERT_TRUE(key.WriteValue(base::SysUTF8ToWide(valid_key).c_str(), 37) ==
+              ERROR_SUCCESS);
+
+  constexpr char kAssertions[] = R"(
+      chrome.test.assertNoLastError();
+      chrome.test.assertTrue(settingsItems instanceof Array);
+      chrome.test.assertEq(4, settingsItems.length);
+
+      const expectedItems = [];
+
+      expectedItems.push({
+        hive: test_hive,
+        path: registry_path,
+        key: valid_key,
+        presence: 'FOUND',
+      });
+      expectedItems.push({
+        hive: test_hive,
+        path: registry_path,
+        key: valid_key,
+        presence: 'FOUND',
+        value: '\"37\"',
+      });
+      expectedItems.push({
+        hive: test_hive,
+        path: registry_path,
+        key: invalid_key,
+        presence: 'NOT_FOUND',
+      });
+      expectedItems.push({
+        hive: test_hive,
+        path: invalid_path,
+        key: valid_key,
+        presence: 'NOT_FOUND',
+      });
+      for (let i = 0; i < settingsItems.length; ++i) {
+        chrome.test.assertEq(settingsItems[i], expectedItems[i]);
+      }
+      chrome.test.notifyPass();
+  )";
+
+  AccountInfo account_info = SignIn("some-email@example.com");
+  RunTest(base::StringPrintf(kTest, account_info.gaia.c_str(), kOptions.c_str(),
+                             kAssertions));
+}
+
 #endif  // BUILDFLAG(IS_WIN)
+
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
+                       GetRegistrySettings_UnsupportedPlatform) {
+  constexpr char kTest[] = R"(
+    chrome.test.assertFalse(
+      'function' == typeof chrome.enterprise.reportingPrivate.getSettings);
+
+    chrome.test.notifyPass();
+  )";
+
+  RunTest(base::StringPrintf("%s", kTest));
+}
+
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -744,7 +878,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetSettings) {
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
+                       GetPlistSettings_Success) {
   constexpr char kTest[] = R"(
       chrome.test.assertEq(
         'function',
@@ -755,7 +890,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetSettings) {
 
       %s
 
-      const request = { userContext, options};
+      const request = {userContext, options};
 
    chrome.enterprise.reportingPrivate.getSettings(
     request,

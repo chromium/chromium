@@ -3,9 +3,15 @@
 # found in the LICENSE file.
 
 static_library("win") {
-  public = [ "win_signals_collector.h" ]
+  public = [
+    "registry_settings_client.h",
+    "win_signals_collector.h",
+  ]
 
-  sources = [ "win_signals_collector.cc" ]
+  sources = [
+    "registry_settings_client.cc",
+    "win_signals_collector.cc",
+  ]
 
   public_deps = [
     "//base",
@@ -17,7 +23,10 @@ static_library("win") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "win_signals_collector_unittest.cc" ]
+  sources = [
+    "registry_settings_client_unittest.cc",
+    "win_signals_collector_unittest.cc",
+  ]
 
   deps = [
     ":win",
