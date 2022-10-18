@@ -49,7 +49,7 @@ Example Usage:
 
 ```bash
 # Android:
-autoninja -C out/Release apks/ChromePublic.apk
+autoninja -C out/Release chrome_public_apk
 tools/binary_size/supersize archive chrome.size -f out/Release/apks/ChromePublic.apk -v
 
 # Linux:
