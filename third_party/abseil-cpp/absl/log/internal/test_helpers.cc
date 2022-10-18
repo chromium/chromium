@@ -46,7 +46,7 @@ bool DiedOfFatal(int exit_status) {
   // Depending on NDEBUG and (configuration?) MSVC's abort either results
   // in error code 3 (SIGABRT) or error code 0x80000003 (breakpoint
   // triggered).
-  return ::testing::ExitedWithCode(3)(exit_status & ~0x80000000);
+  return ::testing::ExitedWithCode(3)(exit_status & 0x7fffffff);
 #elif defined(__Fuchsia__)
   // The Fuchsia death test implementation kill()'s the process when it detects
   // an exception, so it should exit with the corresponding code. See

@@ -130,7 +130,8 @@ TEST(TailCallsModifiesTest, WithTimestamp) {
 TEST(TailCallsModifiesTest, WithThreadID) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
-  EXPECT_CALL(test_sink, Send(AllOf(ThreadID(Eq(1234)))));
+  EXPECT_CALL(test_sink,
+              Send(AllOf(ThreadID(Eq(absl::LogEntry::tid_t{1234})))));
 
   test_sink.StartCapturingLogs();
   LOG(INFO).WithThreadID(1234) << "hello world";
@@ -152,7 +153,8 @@ TEST(TailCallsModifiesTest, WithMetadataFrom) {
       Send(AllOf(SourceFilename(Eq("fake/file")), SourceBasename(Eq("file")),
                  SourceLine(Eq(123)), Prefix(IsFalse()),
                  LogSeverity(Eq(absl::LogSeverity::kWarning)),
-                 Timestamp(Eq(absl::UnixEpoch())), ThreadID(Eq(456)),
+                 Timestamp(Eq(absl::UnixEpoch())),
+                 ThreadID(Eq(absl::LogEntry::tid_t{456})),
                  TextMessage(Eq("forwarded: hello world")), Verbosity(Eq(7)),
                  ENCODED_MESSAGE(
                      EqualsProto(R"pb(value { literal: "forwarded: " }

@@ -591,7 +591,7 @@ class InlineData {
   // See the documentation on 'as_chars()' for more information and examples.
   void set_inline_size(size_t size) {
     ABSL_ASSERT(size <= kMaxInline);
-    tag() = static_cast<char>(size << 1);
+    tag() = static_cast<int8_t>(size << 1);
   }
 
   // Compares 'this' inlined data  with rhs. The comparison is a straightforward
