@@ -182,30 +182,6 @@ class PreferenceAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<PreferenceEventRouter> preference_event_router_;
 };
 
-class PrefTransformerInterface {
- public:
-  virtual ~PrefTransformerInterface() = default;
-
-  // Converts the representation of a preference as seen by the extension
-  // into a representation that is used in the pref stores of the browser.
-  // Returns the pref store representation in case of success or sets
-  // |error| and returns NULL otherwise. |bad_message| is passed to simulate
-  // the behavior of EXTENSION_FUNCTION_VALIDATE. It is never NULL.
-  // The ownership of the returned value is passed to the caller.
-  virtual std::unique_ptr<base::Value> ExtensionToBrowserPref(
-      const base::Value* extension_pref,
-      std::string* error,
-      bool* bad_message) = 0;
-
-  // Converts the representation of the preference as stored in the browser
-  // into a representation that is used by the extension.
-  // Returns the extension representation in case of success or NULL otherwise.
-  // The ownership of the returned value is passed to the caller.
-  virtual std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref,
-      bool is_incognito_profile) = 0;
-};
-
 // A base class to provide functionality common to the other *PreferenceFunction
 // classes.
 class PreferenceFunction : public ExtensionFunction {
