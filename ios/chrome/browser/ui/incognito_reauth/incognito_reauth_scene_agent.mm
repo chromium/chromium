@@ -124,7 +124,7 @@
   [self.observers removeObserver:observer];
 }
 
-#pragma mark properties
+#pragma mark - properties
 
 - (void)setAuthenticatedSinceLastForeground:(BOOL)authenticated {
   _authenticatedSinceLastForeground = authenticated;
@@ -178,11 +178,14 @@
     self.authenticatedSinceLastForeground = NO;
   } else if (level >= SceneActivationLevelForegroundInactive) {
     [self updateWindowHasIncognitoContent:sceneState];
-    [self logEnabledHistogramOnce];
     // Close media presentations when the app is foregrounded rather than
     // backgrounded to avoid freezes.
     [self closeMediaPresentations];
   }
+}
+
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  [self logEnabledHistogramOnce];
 }
 
 #pragma mark - private
