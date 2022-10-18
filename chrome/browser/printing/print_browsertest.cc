@@ -2733,6 +2733,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
 
   void PrimeAsRepeatingErrorGenerator() { reset_errors_after_check_ = false; }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   void PrimeForSpoolingSharedMemoryErrors() {
     simulate_spooling_memory_errors_ = true;
   }
@@ -2784,6 +2785,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
   bool print_backend_service_use_detected() const {
     return print_backend_service_use_detected_;
   }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   mojom::ResultCode use_default_settings_result() const {
     return use_default_settings_result_;
@@ -2838,7 +2840,6 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
     return std::make_unique<TestPrintJobWorker>(
         rfh_id, &test_print_job_worker_callbacks_);
   }
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   void OnUseDefaultSettings() {
     did_use_default_settings_ = true;
@@ -2861,6 +2862,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
       print_backend_service_use_detected_ = true;
     }
   }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   void ErrorCheck(mojom::ResultCode result) {
     // Interested to reset any trigger for causing access-denied errors, so

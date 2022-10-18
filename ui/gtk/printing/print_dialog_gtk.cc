@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
@@ -419,11 +421,19 @@ void PrintDialogGtk::ShowDialog(
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
                                    const std::u16string& document_name) {
+#if DCHECK_IS_ON()
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  const bool kOopPrinting =
+      printing::features::kEnableOopPrintDriversJobPrint.Get();
+#else
+  const bool kOopPrinting = false;
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
   // For in-browser printing, this runs on the print worker thread, so it does
   // not block the UI thread.  For OOP it runs on the service document task
   // runner.
-  DCHECK_EQ(owning_task_runner()->RunsTasksInCurrentSequence(),
-            printing::features::kEnableOopPrintDriversJobPrint.Get());
+  DCHECK_EQ(owning_task_runner()->RunsTasksInCurrentSequence(), kOopPrinting);
+#endif  // DCHECK_IS_ON()
 
   // The document printing tasks can outlive the PrintingContext that created
   // this dialog.
