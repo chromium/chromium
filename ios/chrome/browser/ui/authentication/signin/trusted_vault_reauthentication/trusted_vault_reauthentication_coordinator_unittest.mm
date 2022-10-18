@@ -45,7 +45,7 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
             &AuthenticationServiceFake::CreateAuthenticationService));
     browser_state_ = builder.Build();
 
-    ChromeIdentity* identity =
+    id<SystemIdentity> identity =
         [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
                                        gaiaID:@"foo1ID"
                                          name:@"Fake Foo 1"];

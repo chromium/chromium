@@ -29,7 +29,7 @@ using l10n_util::GetNSStringF;
 @interface TrustedVaultReauthenticationCoordinator ()
 
 @property(nonatomic, strong) AlertCoordinator* errorAlertCoordinator;
-@property(nonatomic, strong) ChromeIdentity* identity;
+@property(nonatomic, strong) id<SystemIdentity> identity;
 @property(nonatomic, assign) SigninTrustedVaultDialogIntent intent;
 
 @end
