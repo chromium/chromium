@@ -702,6 +702,18 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     // when they are actually ordinary YUV. Only 4:2:0 formats are checked,
     // because GBR is reasonable for 4:4:4 content. See crbug.com/1067377.
     color_space = VideoColorSpace::REC709();
+  } else if (codec_context->codec_id == AV_CODEC_ID_HEVC &&
+             color_space.primaries == VideoColorSpace::PrimaryID::INVALID &&
+             color_space.transfer == VideoColorSpace::TransferID::BT709 &&
+             color_space.matrix == VideoColorSpace::MatrixID::UNSPECIFIED &&
+             color_space.range == gfx::ColorSpace::RangeID::LIMITED &&
+             AVPixelFormatToVideoPixelFormat(codec_context->pix_fmt) ==
+                 PIXEL_FORMAT_I420) {
+    // Some HEVC SDR content encoded by the Adobe Premiere HW HEVC encoder has
+    // invalid primaries but valid transfer and matrix, this will cause
+    // IsHevcProfileSupported return "false" and fail to playback.
+    // See crbug.com/1374270.
+    color_space = VideoColorSpace::REC709();
   }
 
   // AVCodecContext occasionally has invalid extra data. See
