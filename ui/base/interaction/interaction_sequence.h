@@ -89,8 +89,10 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     kElementNotVisibleAtStartOfStep,
     // An element should have remained visible during a step but did not.
     kElementHiddenDuringStep,
+    // The sequence was explicitly failed as part of a test.
+    kFailedForTesting,
     // Update this if values are added to the enumeration.
-    kMaxValue = kElementHiddenDuringStep
+    kMaxValue = kFailedForTesting
   };
 
   // Callback when a step in the sequence starts. If |element| is no longer
@@ -318,6 +320,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // This is a test-only method since production code applications should
   // always run asynchronously.
   void RunSynchronouslyForTesting();
+
+  // Explicitly fails the sequence.
+  void FailForTesting();
 
   // Assigns an element to a given name. The name is local to this interaction
   // sequence. It is valid for `element` to be null; in this case, we are

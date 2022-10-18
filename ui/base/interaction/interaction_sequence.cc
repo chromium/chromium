@@ -365,6 +365,10 @@ void InteractionSequence::RunSynchronouslyForTesting() {
   run_loop.Run();
 }
 
+void InteractionSequence::FailForTesting() {
+  Abort(AbortedReason::kFailedForTesting);
+}
+
 void InteractionSequence::NameElement(TrackedElement* element,
                                       const base::StringPiece& name) {
   DCHECK(!name.empty());
@@ -931,7 +935,8 @@ void PrintTo(InteractionSequence::AbortedReason reason, std::ostream* os) {
       "AbortedReason::kSequenceDestroyed",
       "AbortedReason::kElementHiddenBeforeSequenceStart",
       "AbortedReason::kElementNotVisibleAtStartOfStep",
-      "AbortedReason::kElementHiddenDuringStep"};
+      "AbortedReason::kElementHiddenDuringStep",
+      "AbortedReason::kFailedForTesting"};
   constexpr int kCount =
       sizeof(kAbortedReasonNames) / sizeof(kAbortedReasonNames[0]);
   static_assert(

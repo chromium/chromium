@@ -4313,4 +4313,65 @@ TEST(InteractionSequenceTest, StepStartEndConvenienceMethods) {
                           element.Activate());
 }
 
+// Fail for testing tests.
+
+TEST(InteractionSequenceTest, FailForTestingBetweenSteps) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  element.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element.context())
+          .AddStep(InteractionSequence::StepBuilder().SetElementID(
+              element.identifier()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .SetElementID(element.identifier()))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(1, &element, element.identifier(),
+          InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kFailedForTesting),
+      sequence->FailForTesting());
+}
+
+TEST(InteractionSequenceTest, FailForTestingOnLastStepCallback) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  element.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element.context())
+          .AddStep(InteractionSequence::StepBuilder().SetElementID(
+              element.identifier()))
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .SetType(InteractionSequence::StepType::kActivated)
+                  .SetElementID(element.identifier())
+                  .SetStartCallback(base::BindOnce(
+                      [](ui::InteractionSequence* seq, ui::TrackedElement* el) {
+                        seq->FailForTesting();
+                      })))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(2, &element, element.identifier(),
+          InteractionSequence::StepType::kActivated,
+          InteractionSequence::AbortedReason::kFailedForTesting),
+      element.Activate());
+}
+
 }  // namespace ui
