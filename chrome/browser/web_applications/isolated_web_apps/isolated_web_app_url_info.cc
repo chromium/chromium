@@ -15,10 +15,6 @@
 
 namespace web_app {
 
-namespace {
-const char kIsolatedAppPartitionPrefix[] = "iwa-";
-}
-
 // static
 base::expected<IsolatedWebAppUrlInfo, std::string>
 IsolatedWebAppUrlInfo::Create(const GURL& url) {
@@ -38,7 +34,7 @@ IsolatedWebAppUrlInfo::Create(const GURL& url) {
   DCHECK(!url.has_username() && !url.has_password() && !url.has_port() &&
          url.IsStandard());
 
-  return IsolatedWebAppUrlInfo(url);
+  return IsolatedWebAppUrlInfo(url::Origin::Create(url));
 }
 
 // static
@@ -51,9 +47,8 @@ IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
   return IsolatedWebAppUrlInfo::Create(url);
 }
 
-IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(const GURL& url)
-    : url_(url),
-      origin_(url::Origin::Create(url)),
+IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(const url::Origin& origin)
+    : origin_(origin),
       // The manifest id of Isolated Web Apps must resolve to the app's origin.
       // The manifest parser will resolve "id" relative the origin of the app's
       // start_url, and then sets Manifest::id to the path of this resolved URL,
@@ -71,6 +66,9 @@ const AppId& IsolatedWebAppUrlInfo::app_id() const {
 
 content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
     content::BrowserContext* browser_context) const {
+  DCHECK(browser_context != nullptr);
+
+  constexpr char kIsolatedAppPartitionPrefix[] = "iwa-";
   // We add a prefix to `partition_domain` to avoid potential name conflicts
   // with Chrome Apps, which use their id/hostname as `partition_domain`.
   return content::StoragePartitionConfig::Create(
@@ -84,10 +82,10 @@ base::expected<web_package::SignedWebBundleId, std::string>
 IsolatedWebAppUrlInfo::ParseSignedWebBundleId() const {
   auto web_bundle_id = web_package::SignedWebBundleId::Create(origin().host());
   if (!web_bundle_id.has_value()) {
-    return base::unexpected(
-        base::StringPrintf("The host of isolated-app:// URLs must be a valid "
-                           "Signed Web Bundle ID (got %s): %s",
-                           url_.host().c_str(), web_bundle_id.error().c_str()));
+    return base::unexpected(base::StringPrintf(
+        "The host of isolated-app:// URLs must be a valid "
+        "Signed Web Bundle ID (got %s): %s",
+        origin_.host().c_str(), web_bundle_id.error().c_str()));
   }
 
   return *web_bundle_id;

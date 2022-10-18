@@ -59,9 +59,8 @@ class IsolatedWebAppUrlInfo {
   ParseSignedWebBundleId() const;
 
  private:
-  explicit IsolatedWebAppUrlInfo(const GURL& url);
+  explicit IsolatedWebAppUrlInfo(const url::Origin& url);
 
-  GURL url_;
   url::Origin origin_;
   AppId app_id_;
 };
