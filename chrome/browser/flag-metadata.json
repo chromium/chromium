@@ -4834,7 +4834,7 @@
   {
     "name": "ntp-chrome-cart-module",
     "owners": [ "wychen", "tiborg", "yuezhanggg" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 112
   },
   {
     "name": "ntp-desktop-lens",
