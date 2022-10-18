@@ -272,7 +272,7 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
   input_handler_->NotifyInputEvent();
 
   int64_t trace_id = event->latency_info().trace_id();
-  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+  TRACE_EVENT("input,benchmark", "LatencyInfo.Flow",
               [trace_id](perfetto::EventContext ctx) {
                 ChromeLatencyInfo* info =
                     ctx.event()->set_chrome_latency_info();
