@@ -153,15 +153,15 @@ def CreateEnumTypeDefinition(domain_name, type):
 
 def CreateObjectTypeDefinition():
   return {
-      'return_type': 'std::unique_ptr<base::DictionaryValue>',
-      'pass_type': 'std::unique_ptr<base::DictionaryValue>',
+      'return_type': 'absl::optional<base::Value::Dict>',
+      'pass_type': 'absl::optional<base::Value::Dict>',
       'to_raw_type': '*%s',
-      'to_raw_return_type': '%s.get()',
+      'to_raw_return_type': '*%s',
       'to_pass_type': 'std::move(%s)',
-      'type': 'std::unique_ptr<base::DictionaryValue>',
-      'raw_type': 'base::DictionaryValue',
-      'raw_pass_type': 'base::DictionaryValue*',
-      'raw_return_type': 'const base::DictionaryValue*',
+      'type': 'absl::optional<base::Value::Dict>',
+      'raw_type': 'base::Value::Dict',
+      'raw_pass_type': 'base::Value::Dict*',
+      'raw_return_type': 'const base::Value::Dict&',
   }
 
 

@@ -379,10 +379,10 @@ class HeadlessDevToolsClientObserverTest
       const network::ResponseReceivedParams& params) override {
     EXPECT_EQ(200, params.GetResponse()->GetStatus());
     EXPECT_EQ("OK", params.GetResponse()->GetStatusText());
-    const base::Value* content_type_value =
-        params.GetResponse()->GetHeaders()->FindKey("Content-Type");
+    const std::string* content_type_value =
+        params.GetResponse()->GetHeaders().FindString("Content-Type");
     ASSERT_THAT(content_type_value, NotNull());
-    EXPECT_EQ("text/html", content_type_value->GetString());
+    EXPECT_EQ("text/html", *content_type_value);
 
     devtools_client_->GetNetwork()->Disable();
     devtools_client_->GetNetwork()->RemoveObserver(this);
