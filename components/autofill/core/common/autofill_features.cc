@@ -320,16 +320,6 @@ BASE_FEATURE(kAutofillEnableSupportForPhoneNumberTrunkTypes,
              "AutofillEnableSupportForPhoneNumberTrunkTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill monitors whether JavaScript modifies autofilled
-// credit card expiration dates and tries to fix a specific failure scenario.
-// After filling an expiration date "05/2023", some websites try to fix the
-// formatting and replace it with "05 / 20" instead of "05 / 23". When this
-// experiment is enabled, Chrome replaces the "05 / 20" with "05 / 23".
-// TODO(crbug.com/1314360): Remove once launched.
-BASE_FEATURE(kAutofillRefillModifiedCreditCardExpirationDates,
-             "AutofillRefillModifiedCreditCardExpirationDates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables autofill to function within a FencedFrame, and is disabled by
 // default.
 // TODO(crbug.com/1294378): Remove once launched.

@@ -10023,9 +10023,6 @@ class BrowserAutofillManagerRefillTest
 TEST_P(BrowserAutofillManagerRefillTest,
        RefillModifiedCreditCardExpirationDates) {
   RefillTestCase test_case = GetParam();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillRefillModifiedCreditCardExpirationDates);
 
   // Set up a CC form with name, cc number and expiration date.
   FormData form;

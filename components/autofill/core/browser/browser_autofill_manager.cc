@@ -1638,12 +1638,6 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
     const FormData& form,
     const FormFieldData& field,
     const std::u16string& old_value) {
-  // TODO(crbug.com/1314360): Remove these lines once launched.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillRefillModifiedCreditCardExpirationDates)) {
-    return;
-  }
-
   // We currently support a single case of refilling credit card expiration
   // dates: If we filled the expiration date in a format "05/2023" and the
   // website turned it into "05 / 20" (i.e. it broke the year by cutting the

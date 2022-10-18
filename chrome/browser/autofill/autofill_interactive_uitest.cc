@@ -849,8 +849,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     // "fr" instead of "en").
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kAutofillShadowDOM,
-         features::kAutofillRefillModifiedCreditCardExpirationDates},
+        {blink::features::kAutofillShadowDOM},
         /*disabled_features=*/{features::kAutofillPageLanguageDetection});
   }
   ~AutofillInteractiveTestBase() override = default;
