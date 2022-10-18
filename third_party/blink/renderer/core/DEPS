@@ -149,6 +149,9 @@ specific_include_rules = {
         "+gin",
         "+url/url_util.h"
     ],
+    ".*test.cc": [
+        "+base/test/gtest_util.h"
+    ],
     ".*_fuzzer.cc" : [
         "+testing/libfuzzer",
     ],
