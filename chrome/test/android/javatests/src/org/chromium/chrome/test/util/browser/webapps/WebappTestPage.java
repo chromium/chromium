@@ -52,6 +52,18 @@ public class WebappTestPage {
     }
 
     /**
+     * Returns the URL of a page with no service worker, an installable Web App Manifest, and the
+     * specified action query parameter.
+     */
+    public static String getNonServiceWorkerUrlWithAction(
+            EmbeddedTestServer testServer, String action) {
+        String url = testServer.getURL(NO_SERVICE_WORKER_PAGE_PATH);
+        Uri.Builder builder = Uri.parse(url).buildUpon();
+        builder.appendQueryParameter("action", action);
+        return builder.build().toString();
+    }
+
+    /**
      * Returns the URL of a page with no service worker and the specified Web App Manifest URL and
      * action query parameter.
      */

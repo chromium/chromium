@@ -1186,4 +1186,47 @@ public class AppBannerManagerTest {
 
         assertNoHelpBubble(withText(R.string.iph_pwa_install_available_text));
     }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    @Features.EnableFeatures({ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_INFOBAR,
+            ChromeFeatureList.SKIP_SERVICE_WORKER_FOR_INSTALL_PROMPT})
+    public void
+    testAmbientBadgeDoesNotAppearWhenNoServiceWorker() throws Exception {
+        String webBannerUrl = WebappTestPage.getNonServiceWorkerUrlWithAction(
+                mTestServer, "call_stashed_prompt_on_click");
+        resetEngagementForUrl(webBannerUrl, 10);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
+
+        // As the page doesn't have service worker, we do not expect to
+        // see an ambient badge.
+        InfoBarUtil.waitUntilNoInfoBarsExist(mTabbedActivityTestRule.getInfoBars());
+
+        // Even after waiting for three months, there should not be no ambient badge.
+        AppBannerManager.setTimeDeltaForTesting(91);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
+        InfoBarUtil.waitUntilNoInfoBarsExist(mTabbedActivityTestRule.getInfoBars());
+
+        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        tapAndWaitForModalBanner(tab);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    @Features.EnableFeatures({ChromeFeatureList.SKIP_SERVICE_WORKER_FOR_INSTALL_PROMPT})
+    public void testAmbientBadgeAppearWithServiceWorkerPage() throws Exception {
+        String webBannerUrl = WebappTestPage.getServiceWorkerUrlWithAction(
+                mTestServer, "call_stashed_prompt_on_click");
+        resetEngagementForUrl(webBannerUrl, 10);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
+
+        waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
+
+        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        tapAndWaitForModalBanner(tab);
+    }
 }
