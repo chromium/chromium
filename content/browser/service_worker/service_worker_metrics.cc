@@ -488,9 +488,8 @@ void ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
   }
 }
 
-void ServiceWorkerMetrics::
-    RecordFirstFindRegistrationForClientUrlTimeOnBrowserStartup(
-        base::TimeDelta time) {
+void ServiceWorkerMetrics::RecordFindRegistrationForClientUrlTime(
+    base::TimeDelta time) {
   static bool is_first_call = true;
   if (is_first_call) {
     is_first_call = false;
@@ -499,6 +498,11 @@ void ServiceWorkerMetrics::
           "ServiceWorker.OnBrowserStartup.FirstFindRegistrationForClientUrl."
           "Time",
           time);
+    }
+  } else {
+    if (GetContentClient()->browser()->IsBrowserStartupComplete()) {
+      base::UmaHistogramMediumTimes(
+          "ServiceWorker.FindRegistrationForClientUrl.Time", time);
     }
   }
 }

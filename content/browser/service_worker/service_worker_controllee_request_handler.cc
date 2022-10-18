@@ -230,9 +230,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
   if (!start_time.is_null()) {
-    ServiceWorkerMetrics::
-        RecordFirstFindRegistrationForClientUrlTimeOnBrowserStartup(
-            base::TimeTicks::Now() - start_time);
+    ServiceWorkerMetrics::RecordFindRegistrationForClientUrlTime(
+        base::TimeTicks::Now() - start_time);
   }
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
