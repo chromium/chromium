@@ -272,9 +272,5 @@ Value::List ParseJsonList(StringPiece json) {
   return result.has_value() ? std::move(*result).TakeList() : Value::List();
 }
 
-std::unique_ptr<Value> ParseJsonDeprecated(StringPiece json) {
-  return Value::ToUniquePtrValue(ParseJson(json));
-}
-
 }  // namespace test
 }  // namespace base

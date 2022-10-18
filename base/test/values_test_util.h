@@ -99,12 +99,6 @@ Value ParseJson(StringPiece json);
 Value::Dict ParseJsonDict(StringPiece json);
 Value::List ParseJsonList(StringPiece json);
 
-// DEPRECATED.
-// Parses |json| as JSON, allowing trailing commas, and returns the
-// resulting value.  If the json fails to parse, causes an EXPECT
-// failure and returns the Null Value (but never a NULL pointer).
-std::unique_ptr<Value> ParseJsonDeprecated(StringPiece json);
-
 }  // namespace test
 }  // namespace base
 
