@@ -1188,7 +1188,7 @@ deps = {
   },
 
   'src/third_party/cast_core/public/src':
-    Var('chromium_git') + '/cast_core/public' + '@' + '469e045e514c09701ab674d023cbaa6562866f83',
+    Var('chromium_git') + '/cast_core/public' + '@' + 'f4628fda1b370eb238ae69545024d256ca62d719',
 
   'src/third_party/catapult':
     Var('chromium_git') + '/catapult.git' + '@' + Var('catapult_revision'),

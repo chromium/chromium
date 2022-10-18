@@ -124,13 +124,16 @@ void RuntimeApplicationDispatcherPlatformGrpc::Stop() {
   if (metrics_recorder_service_) {
     metrics_recorder_service_->OnCloseSoon(base::DoNothing());
     metrics_recorder_service_.reset();
+    metrics_recorder_stub_.reset();
+    action_recorder_.reset();
   }
 
   if (grpc_server_) {
     grpc_server_->Stop();
     grpc_server_.reset();
-    LOG(INFO) << "Runtime service stopped";
   }
+
+  LOG(INFO) << "Runtime service stopped";
 }
 
 std::unique_ptr<CastEventBuilder>
@@ -263,16 +266,17 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleStartMetricsRecorder(
     cast::runtime::RuntimeServiceHandler::StartMetricsRecorder::Reactor*
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!action_recorder_);
+  DCHECK(!metrics_recorder_stub_);
+  DCHECK(!metrics_recorder_service_);
+
   if (request.metrics_recorder_service_info().grpc_endpoint().empty()) {
     reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                                 "MetricsRecord service endpoint is missing"));
     return;
   }
 
-  if (!action_recorder_) {
-    action_recorder_.emplace();
-  }
-
+  action_recorder_.emplace();
   metrics_recorder_stub_.emplace(
       request.metrics_recorder_service_info().grpc_endpoint());
   metrics_recorder_service_.emplace(
@@ -291,6 +295,14 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleStopMetricsRecorder(
     cast::runtime::RuntimeServiceHandler::StopMetricsRecorder::Reactor*
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!metrics_recorder_service_) {
+    LOG(ERROR) << "Droping metrics recorging stop request as service is not "
+                  "available anymore";
+    reactor->Write(grpc::Status(grpc::StatusCode::UNAVAILABLE,
+                                "Metrics recording service is not available"));
+    return;
+  }
+
   metrics_recorder_service_->OnCloseSoon(
       base::BindOnce(&RuntimeApplicationDispatcherPlatformGrpc::
                          OnMetricsRecorderServiceStopped,
@@ -406,6 +418,9 @@ void RuntimeApplicationDispatcherPlatformGrpc::OnMetricsRecorderServiceStopped(
         reactor) {
   DVLOG(2) << "MetricsRecorderService stopped";
   metrics_recorder_service_.reset();
+  metrics_recorder_stub_.reset();
+  action_recorder_.reset();
+
   reactor->Write(cast::runtime::StopMetricsRecorderResponse());
 }
 
