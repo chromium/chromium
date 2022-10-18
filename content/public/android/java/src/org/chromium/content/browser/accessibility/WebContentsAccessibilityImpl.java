@@ -2202,6 +2202,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     private void getExtraDataTextCharacterLocations(
             int virtualViewId, AccessibilityNodeInfoCompat info, Bundle arguments) {
+        // Arguments must be provided, but some debug tools may not so guard against this.
+        if (arguments == null) return;
+
         if (!areInlineTextBoxesLoaded(virtualViewId)) {
             loadInlineTextBoxes(virtualViewId);
         }

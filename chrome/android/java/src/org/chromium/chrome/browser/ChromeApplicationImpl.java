@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.accessibility.hierarchysnapshotter.HierarchySnapshotter;
 import org.chromium.chrome.browser.app.notifications.ContextualNotificationPermissionRequesterImpl;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
@@ -82,6 +84,11 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             PartitionResolverSupplier.setInstance(new ProfileResolver());
 
             AppHooks.get().getChimeDelegate().initialize();
+
+            // Initialize the AccessibilityHierarchySnapshotter. Do not include in release builds.
+            if (!BuildConfig.IS_CHROME_BRANDED) {
+                HierarchySnapshotter.initialize();
+            }
         }
     }
 

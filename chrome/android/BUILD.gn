@@ -337,6 +337,7 @@ if (current_toolchain == default_toolchain) {
   java_group("delegate_public_impl_java") {
     deps = [
       ":app_hooks_java",
+      "//chrome/browser/accessibility/hierarchysnapshotter/android:delegate_public_impl_java",
       "//chrome/browser/feed/android:hooks_public_impl_java",
       "//chrome/browser/lens:delegate_public_impl_java",
       "//chrome/browser/locale:delegate_public_impl_java",
@@ -391,6 +392,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android/webapk/libs/common:common_java",
       "//chrome/android/webapk/libs/common:splash_java",
       "//chrome/android/webapk/libs/runtime_library:webapk_service_aidl_java",
+      "//chrome/browser/accessibility/hierarchysnapshotter/android:java",
       "//chrome/browser/android/browserservices/constants:java",
       "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/browserservices/metrics:java",
