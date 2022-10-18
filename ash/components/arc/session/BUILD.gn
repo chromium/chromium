@@ -58,6 +58,7 @@ static_library("session") {
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/spaced:spaced",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/memory:memory",
     "//chromeos/components/sensors:buildflags",

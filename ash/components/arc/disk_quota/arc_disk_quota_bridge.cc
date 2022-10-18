@@ -149,8 +149,9 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
 
 void ArcDiskQuotaBridge::GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) {
   ash::SpacedClient::Get()->GetFreeDiskSpace(
-      "/home", base::BindOnce(&ArcDiskQuotaBridge::OnGetFreeDiskSpace,
-                              weak_factory_.GetWeakPtr(), std::move(callback)));
+      "/home/chronos/user",
+      base::BindOnce(&ArcDiskQuotaBridge::OnGetFreeDiskSpace,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ArcDiskQuotaBridge::OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
