@@ -386,6 +386,10 @@
       depends_on: ["BlinkExtensionChromeOS"],
     },
     {
+      name: "BlinkExtensionChromeOSTelemetry",
+      depends_on: ["BlinkExtensionChromeOS"],
+    },
+    {
       name: "BlinkExtensionChromeOSWindowManagement",
       depends_on: ["BlinkExtensionChromeOS"],
     },

@@ -6,6 +6,6 @@ importScripts('test_support.js');
 
 promise_test(async () => {
     // This is a "smoke" test that just checks whether the system extension was
-    // installed successfully.
-    assert_equals(42, 42);
+    // installed successfully and that the corresponding API is available.
+    assert_not_equals(undefined, chromeos.telemetry);
 });

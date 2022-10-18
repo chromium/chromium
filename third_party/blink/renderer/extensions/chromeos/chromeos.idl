@@ -7,6 +7,10 @@
 ] interface ChromeOS {
   [RuntimeEnabled=BlinkExtensionChromeOSWindowManagement,CallWith=ExecutionContext]
   readonly attribute CrosWindowManagement windowManagement;
+
   [RuntimeEnabled=BlinkExtensionChromeOSHID,CallWith=ExecutionContext]
   readonly attribute CrosHID hid;
+
+  [RuntimeEnabled=BlinkExtensionChromeOSTelemetry,CallWith=ExecutionContext]
+  readonly attribute CrosTelemetry telemetry;
 };

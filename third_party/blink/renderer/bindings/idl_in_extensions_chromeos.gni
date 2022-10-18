@@ -18,5 +18,6 @@ static_idl_files_in_extensions_chromeos = get_path_info(
           "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_event_init.idl",
           "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window.idl",
           "//third_party/blink/renderer/extensions/chromeos/system_extensions/hid/cros_hid.idl",
+          "//third_party/blink/renderer/extensions/chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.idl",
         ],
         "abspath")

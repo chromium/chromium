@@ -57,6 +57,11 @@ void SystemExtensionsProvider::
     out_forced_enabled_runtime_features.push_back(
         "BlinkExtensionChromeOSWindowManagement");
   }
+  if (system_extension->type ==
+      SystemExtensionType::kManagedDeviceHealthServices) {
+    out_forced_enabled_runtime_features.push_back(
+        "BlinkExtensionChromeOSTelemetry");
+  }
 }
 
 }  // namespace ash
