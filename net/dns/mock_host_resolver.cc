@@ -641,8 +641,9 @@ void MockHostResolverBase::RuleResolver::AddIPLiteralRuleWithDnsAliases(
   endpoints.emplace_back();
   CHECK_EQ(ParseAddressList(ip_literal, &endpoints[0].ip_endpoints), OK);
   AddRule(hostname_pattern,
-          RuleResult(std::move(endpoints),
-                     std::set(dns_aliases.begin(), dns_aliases.end())));
+          RuleResult(
+              std::move(endpoints),
+              std::set<std::string>(dns_aliases.begin(), dns_aliases.end())));
 }
 
 void MockHostResolverBase::RuleResolver::AddIPLiteralRuleWithDnsAliases(
@@ -674,9 +675,9 @@ void MockHostResolverBase::RuleResolver::AddRuleWithFlags(
   std::vector<HostResolverEndpointResult> endpoints;
   endpoints.emplace_back();
   CHECK_EQ(ParseAddressList(ip_literal, &endpoints[0].ip_endpoints), OK);
-  AddRule(host_pattern,
-          RuleResult(std::move(endpoints),
-                     std::set(dns_aliases.begin(), dns_aliases.end())));
+  AddRule(host_pattern, RuleResult(std::move(endpoints),
+                                   std::set<std::string>(dns_aliases.begin(),
+                                                         dns_aliases.end())));
 }
 
 MockHostResolverBase::State::State() = default;
