@@ -22,9 +22,6 @@ ci.defaults.set(
     tree_closing = True,
     tree_closing_notifiers = ci.gpu.TREE_CLOSING_NOTIFIERS,
     thin_tester_cores = 2,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.console_view(
