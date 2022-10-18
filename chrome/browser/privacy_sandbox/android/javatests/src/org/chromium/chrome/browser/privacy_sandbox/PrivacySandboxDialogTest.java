@@ -250,6 +250,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     public void testControllerShowsNotice() throws IOException, InterruptedException {
+        PrivacySandboxDialogController.setShowNewNoticeForTesting(false);
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.NOTICE);
         launchDialog();
         // Verify that the notice is shown and the action is recorded.

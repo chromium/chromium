@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
@@ -73,15 +72,10 @@ public class PrivacySandboxDialogController {
     }
 
     static boolean showNewNotice() {
-        if (sShowNew != null && sShowNew) return true;
-        // Must match privacy_sandbox::kPrivacySandboxSettings3NewNotice.
-        final String newNoticeParam = "new-notice";
-        // Must match the default value for this param.
-        final boolean newNoticeParamDefault = false;
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3, newNoticeParam,
-                newNoticeParamDefault);
+        // Unless overridden for testing, a new notice should always be shown.
+        // TODO(crbug.com/1375230) Remove this code path if the ability to
+        // differentiate notice types is no longer required.
+        return (sShowNew != null) ? sShowNew : true;
     }
 
     @VisibleForTesting
