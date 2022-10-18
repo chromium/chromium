@@ -26,7 +26,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 
 }  // namespace
 
-@interface WhatsNewCoordinator ()
+@interface WhatsNewCoordinator () <UINavigationControllerDelegate>
 
 // The mediator to display What's New data.
 @property(nonatomic, strong) WhatsNewMediator* mediator;
@@ -61,6 +61,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 
   self.navigationController = [[TableViewNavigationController alloc]
       initWithTable:self.tableViewController];
+  self.navigationController.delegate = self;
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
@@ -81,6 +82,24 @@ NSString* const kTableViewNavigationDismissButtonId =
   self.navigationController = nil;
 
   [super stop];
+}
+
+#pragma mark - UINavigationControllerDelegate
+
+- (void)navigationController:(UINavigationController*)navigationController
+      willShowViewController:(UIViewController*)viewController
+                    animated:(BOOL)animated {
+  // No-op if the previous view controller is not the detail view.
+  if (!self.whatsNewDetailCoordinator) {
+    return;
+  }
+
+  // Stop the detail coordinator if the next view is the table view given that
+  // the previous view was the detail view..
+  if (viewController == self.tableViewController) {
+    [self.whatsNewDetailCoordinator stop];
+    self.whatsNewDetailCoordinator = nil;
+  }
 }
 
 #pragma mark - WhatsNewTableViewDelegate
