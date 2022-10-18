@@ -5,40 +5,6 @@ found in the LICENSE file.
 -->
 
 <style include="oobe-dialog-host-styles cr-shared-style">
-  /* -- WebviewScrollShadowsHelper --
-    * Variables that are used for displaying scroll shadows.
-    **/
-  :host {
-    --scroll-shadow-common: {
-      content: '';
-      height: 100%;
-      opacity: 0.3;
-      pointer-events: none;
-      position: absolute;
-      width: 100%;
-    };
-
-    --scroll-shadow-bottom: {
-      @apply --scroll-shadow-common;
-      background: linear-gradient(0deg, var(--google-grey-400) 0,
-                                        transparent 8px);
-    };
-
-    --scroll-shadow-top-and-bottom: {
-      @apply --scroll-shadow-common;
-      background: linear-gradient(0deg,   var(--google-grey-400) 0,
-                                          transparent 8px),
-                  linear-gradient(180deg, var(--google-grey-400) 0,
-                                          transparent 8px);
-    };
-
-    --scroll-shadow-top: {
-      @apply --scroll-shadow-common;
-      background: linear-gradient(180deg, var(--google-grey-400) 0,
-                                        transparent 8px);
-    };
-  }
-
   #saml-back-button {
     --cr-icon-button-margin-end: 0;
     --cr-icon-button-margin-start: 0;
@@ -87,13 +53,32 @@ found in the LICENSE file.
 
   /* WebviewScrollShadowsHelper */
   #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom)::before {
-    @apply --scroll-shadow-bottom;
-  }
   #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll.is-scrolled:not(.scrolled-to-bottom)::before {
-    @apply --scroll-shadow-top-and-bottom;
-  }
   #signin-frame-container:not([hideshadows]) #signin-frame.is-scrolled.scrolled-to-bottom::before {
-    @apply --scroll-shadow-top;
+    content: '';
+    height: 100%;
+    opacity: 0.3;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+
+    /* Variables that are used for displaying scroll shadows. */
+    --scroll-shadow-bottom-bg:
+        linear-gradient(0deg, var(--google-grey-400) 0, transparent 8px);
+    --scroll-shadow-top-bg:
+        linear-gradient(180deg, var(--google-grey-400) 0, transparent 8px);
+  }
+
+  #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom)::before {
+    background: var(--scroll-shadow-bottom-bg);
+  }
+
+  #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll.is-scrolled:not(.scrolled-to-bottom)::before {
+    background: var(--scroll-shadow-bottom-bg), var(--scroll-shadow-top-bg);
+  }
+
+  #signin-frame-container:not([hideshadows]) #signin-frame.is-scrolled.scrolled-to-bottom::before {
+    background: var(--scroll-shadow-top-bg);
   }
 
   #sshWarning {
