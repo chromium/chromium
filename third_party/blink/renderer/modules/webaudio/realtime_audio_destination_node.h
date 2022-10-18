@@ -30,7 +30,9 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "media/base/output_device_info.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
+#include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_callback_metric_reporter.h"
@@ -42,17 +44,24 @@ namespace blink {
 class AudioContext;
 class ExceptionState;
 class WebAudioLatencyHint;
+class WebAudioSinkDescriptor;
 
 class RealtimeAudioDestinationNode final : public AudioDestinationNode {
  public:
   static RealtimeAudioDestinationNode* Create(
       AudioContext*,
+      const WebAudioSinkDescriptor&,
       const WebAudioLatencyHint&,
       absl::optional<float> sample_rate);
 
   explicit RealtimeAudioDestinationNode(AudioContext&,
+                                        const WebAudioSinkDescriptor&,
                                         const WebAudioLatencyHint&,
                                         absl::optional<float> sample_rate);
+
+  // See `RealtimeAudioDestinationHandler.SetSinkDescriptor` for details.
+  void SetSinkDescriptor(const WebAudioSinkDescriptor&,
+                         media::OutputDeviceStatusCB);
 };
 
 }  // namespace blink

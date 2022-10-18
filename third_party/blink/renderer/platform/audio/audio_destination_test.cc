@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
+#include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/renderer/platform/audio/audio_callback_metric_reporter.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -70,10 +71,13 @@ void CountWASamplesProcessedForRate(absl::optional<float> sample_rate) {
   const int channel_count = Platform::Current()->AudioHardwareOutputChannels();
   const size_t request_frames = Platform::Current()->AudioHardwareBufferSize();
 
+  // Assume the default audio device. (i.e. the empty string)
+  WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""));
+
   // TODO(https://crbug.com/988121) Replace 128 with the appropriate
   // AudioContextRenderSizeHintCategory.
   scoped_refptr<AudioDestination> destination = AudioDestination::Create(
-      callback, channel_count, latency_hint, sample_rate, 128);
+      callback, sink_descriptor, channel_count, latency_hint, sample_rate, 128);
   destination->Start();
 
   Vector<float> channels[channel_count];

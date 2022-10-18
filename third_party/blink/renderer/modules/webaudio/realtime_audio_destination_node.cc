@@ -45,19 +45,28 @@ namespace blink {
 
 RealtimeAudioDestinationNode::RealtimeAudioDestinationNode(
     AudioContext& context,
+    const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
     absl::optional<float> sample_rate)
     : AudioDestinationNode(context) {
-  SetHandler(RealtimeAudioDestinationHandler::Create(*this, latency_hint,
-                                                     sample_rate));
+  SetHandler(RealtimeAudioDestinationHandler::Create(
+      *this, sink_descriptor, latency_hint, sample_rate));
 }
 
 RealtimeAudioDestinationNode* RealtimeAudioDestinationNode::Create(
     AudioContext* context,
+    const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
     absl::optional<float> sample_rate) {
   return MakeGarbageCollected<RealtimeAudioDestinationNode>(
-      *context, latency_hint, sample_rate);
+      *context, sink_descriptor, latency_hint, sample_rate);
+}
+
+void RealtimeAudioDestinationNode::SetSinkDescriptor(
+    const WebAudioSinkDescriptor& sink_descriptor,
+    media::OutputDeviceStatusCB callback) {
+  static_cast<RealtimeAudioDestinationHandler&>(Handler())
+      .SetSinkDescriptor(sink_descriptor, std::move(callback));
 }
 
 }  // namespace blink

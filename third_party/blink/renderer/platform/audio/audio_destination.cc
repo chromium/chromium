@@ -74,20 +74,24 @@ const char* DeviceStateToString(AudioDestination::DeviceState state) {
 
 scoped_refptr<AudioDestination> AudioDestination::Create(
     AudioIOCallback& callback,
+    const WebAudioSinkDescriptor& sink_descriptor,
     unsigned number_of_output_channels,
     const WebAudioLatencyHint& latency_hint,
     absl::optional<float> context_sample_rate,
     unsigned render_quantum_frames) {
   return base::AdoptRef(
-      new AudioDestination(callback, number_of_output_channels, latency_hint,
-                           context_sample_rate, render_quantum_frames));
+      new AudioDestination(callback, sink_descriptor, number_of_output_channels,
+                           latency_hint, context_sample_rate,
+                           render_quantum_frames));
 }
 
-AudioDestination::AudioDestination(AudioIOCallback& callback,
-                                   unsigned number_of_output_channels,
-                                   const WebAudioLatencyHint& latency_hint,
-                                   absl::optional<float> context_sample_rate,
-                                   unsigned render_quantum_frames)
+AudioDestination::AudioDestination(
+    AudioIOCallback& callback,
+    const WebAudioSinkDescriptor& sink_descriptor,
+    unsigned number_of_output_channels,
+    const WebAudioLatencyHint& latency_hint,
+    absl::optional<float> context_sample_rate,
+    unsigned render_quantum_frames)
     : render_quantum_frames_(render_quantum_frames),
       number_of_output_channels_(number_of_output_channels),
       fifo_(std::make_unique<PushPullFIFO>(number_of_output_channels,
@@ -106,7 +110,6 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
   SendLogMessage(
       String::Format("%s => (FIFO size=%u bytes)", __func__, fifo_->length()));
 
-  WebAudioSinkDescriptor sink_descriptor(WebString::FromASCII(std::string()));
   web_audio_device_ = Platform::Current()->CreateAudioDevice(
       sink_descriptor, number_of_output_channels, latency_hint, this);
   DCHECK(web_audio_device_);

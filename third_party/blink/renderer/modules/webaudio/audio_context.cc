@@ -216,8 +216,10 @@ AudioContext::AudioContext(Document& document,
       media_device_service_(document.GetExecutionContext()),
       media_device_service_receiver_(this, document.GetExecutionContext()) {
   SendLogMessage(GetAudioContextLogString(latency_hint, sample_rate));
-  destination_node_ =
-      RealtimeAudioDestinationNode::Create(this, latency_hint, sample_rate);
+
+  const WebAudioSinkDescriptor default_sink_descriptor(sink_id_);
+  destination_node_ = RealtimeAudioDestinationNode::Create(
+      this, default_sink_descriptor, latency_hint, sample_rate);
 
   switch (GetAutoplayPolicy()) {
     case AutoplayPolicy::Type::kNoUserGestureRequired:

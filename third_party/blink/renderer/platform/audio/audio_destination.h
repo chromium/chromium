@@ -49,6 +49,7 @@ namespace blink {
 
 class PushPullFIFO;
 class WebAudioLatencyHint;
+class WebAudioSinkDescriptor;
 
 // The AudioDestination class is an audio sink interface between the media
 // renderer and the Blink's WebAudio module. It has a FIFO to adapt the
@@ -75,6 +76,7 @@ class PLATFORM_EXPORT AudioDestination
   };
 
   AudioDestination(AudioIOCallback&,
+                   const WebAudioSinkDescriptor& sink_descriptor,
                    unsigned number_of_output_channels,
                    const WebAudioLatencyHint&,
                    absl::optional<float> context_sample_rate,
@@ -85,6 +87,7 @@ class PLATFORM_EXPORT AudioDestination
 
   static scoped_refptr<AudioDestination> Create(
       AudioIOCallback&,
+      const WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint&,
       absl::optional<float> context_sample_rate,
