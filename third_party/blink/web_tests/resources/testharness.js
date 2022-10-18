@@ -3871,7 +3871,7 @@
      */
     function begin_shadow_realm_tests(postMessage) {
         if (!(test_environment instanceof ShadowRealmTestEnvironment)) {
-            throw new Error("beign_shadow_realm_tests called in non-Shadow Realm environment");
+            throw new Error("begin_shadow_realm_tests called in non-Shadow Realm environment");
         }
 
         test_environment.begin(function (msg) {
