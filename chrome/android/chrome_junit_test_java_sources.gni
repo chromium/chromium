@@ -119,6 +119,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/directactions/GoBackDirectActionHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutControllerTest.java",
   "junit/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManagerTest.java",
+  "junit/src/org/chromium/chrome/browser/dom_distiller/ReaderModeToolbarButtonControllerTest.java",
   "junit/src/org/chromium/chrome/browser/download/DownloadSharedPreferenceEntryTest.java",
   "junit/src/org/chromium/chrome/browser/download/OfflineContentAvailabilityStatusProviderTest.java",
   "junit/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiTest.java",

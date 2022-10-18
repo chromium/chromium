@@ -28,11 +28,21 @@ public class ButtonDataImpl implements ButtonData {
             @NonNull OnClickListener onClickListener, int contentDescriptionResId,
             boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
             boolean isEnabled, @AdaptiveToolbarButtonVariant int buttonVariant) {
+        this(canShow, drawable, onClickListener, contentDescriptionResId,
+                /*actionChipLabelResId= */ Resources.ID_NULL, supportsTinting, iphCommandBuilder,
+                isEnabled, buttonVariant);
+    }
+
+    public ButtonDataImpl(boolean canShow, @NonNull Drawable drawable,
+            @NonNull OnClickListener onClickListener, @StringRes int contentDescriptionResId,
+            @StringRes int actionChipLabelResId, boolean supportsTinting,
+            @Nullable IPHCommandBuilder iphCommandBuilder, boolean isEnabled,
+            @AdaptiveToolbarButtonVariant int buttonVariant) {
         mCanShow = canShow;
         mIsEnabled = isEnabled;
         mButtonSpec = new ButtonSpec(drawable, onClickListener, /*onLongClickListener=*/null,
                 contentDescriptionResId, supportsTinting, iphCommandBuilder, buttonVariant,
-                /* actionChipLabelResId= */ Resources.ID_NULL);
+                actionChipLabelResId);
     }
 
     @Override
