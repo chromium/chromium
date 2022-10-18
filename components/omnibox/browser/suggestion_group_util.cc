@@ -17,7 +17,7 @@ omnibox::GroupConfigMap BuildDefaultGroups() {
   groups[omnibox::GROUP_MOBILE_CLIPBOARD].set_section(
       omnibox::SECTION_MOBILE_CLIPBOARD);
   groups[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST].set_section(
-      omnibox::SECTION_LOCAL_HISTORY_ZPS);
+      omnibox::SECTION_PERSONALIZED_ZERO_SUGGEST);
   return groups;
 }
 

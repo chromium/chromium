@@ -240,8 +240,8 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
         /*input_text=*/base::ASCIIToUTF16(std::string()));
 
     // If the appropriate header text and section are not provided by the server
-    // the default omnibox::SECTION_LOCAL_HISTORY_ZPS will be used and the local
-    // history zero-prefix suggestions will be shown without a header.
+    // the default omnibox::SECTION_PERSONALIZED_ZERO_SUGGEST will be used and
+    // the local history zero-prefix suggestions will be shown without a header.
     suggestion.set_suggestion_group_id(
         omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST);
 

@@ -118,10 +118,9 @@ enum GroupSection {
   // - Organic Repeatable Queries
   SECTION_MOBILE_MOST_VISITED = 3;
 
-  // Local history zero-prefix suggestions. Will be overwritten by the
-  // dynamically assigned section for GROUP_PERSONALIZED_ZERO_SUGGEST if found
-  // in the server response.
-  SECTION_LOCAL_HISTORY_ZPS = 4;
+  // historical zero-prefix suggestions. May be overwritten by the dynamically
+  // assigned section for GROUP_PERSONALIZED_ZERO_SUGGEST if reported by server.
+  SECTION_PERSONALIZED_ZERO_SUGGEST = 4;
 
   // A contiguous range reserved for remote zero-prefix suggestions.
   // The sections are dynamically assigned to the groups found in the server
