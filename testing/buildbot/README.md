@@ -106,7 +106,8 @@ Additionally, if your change is expected to increase utilization in the testing
 pools by any more than 5 VMs or 50 CPU cores, it will need to be approved via
 a resource request. (Consult anyone in //infra/OWNERS if you need help
 calculating the resource usage of a test change.) See http://go/i-need-hw
-for the steps involved in getting the approval.
+for the steps involved in getting the approval. See [go/estimating-bot-capacity](https://goto.google.com/estimating-bot-capacity)
+for guidance on how many hosts to request.
 
 ## How to use the generate_buildbot_json tool
 ### Test suites
