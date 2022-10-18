@@ -202,15 +202,15 @@ source_set("webgpu_sources") {
     "//base",
   ]
 
-  if (use_dawn) {
-    deps += [ "//third_party/dawn/src/dawn/wire" ]
-  }
-
   public_deps = [
     ":common",
-    "//third_party/dawn/src/dawn/wire:headers",
     "//ui/gl:buildflags",
   ]
+
+  if (use_dawn) {
+    deps += [ "//third_party/dawn/src/dawn/wire" ]
+    public_deps += [ "//third_party/dawn/src/dawn/wire:headers" ]
+  }
 }
 
 component("gles2_utils") {
