@@ -65,7 +65,7 @@ class VideoRecorderPluginTest(unittest.TestCase):
         test_case_info=TEST_CASE_INFO)
     video_recorder_plugin.test_case_will_start(request)
     video_recorder_plugin.test_case_will_start(request)
-    mock_os_kill.assert_called_once_with(mock.ANY, signal.SIGINT)
+    mock_os_kill.assert_called_once_with(mock.ANY, signal.SIGTERM)
     file_name = video_recorder_plugin.get_video_file_name(TEST_CASE_NAME, 0)
     file_dir = os.path.join(OUT_DIR, file_name)
     mock_os_remove.assert_called_once_with(file_dir)
@@ -123,7 +123,7 @@ class VideoRecorderPluginTest(unittest.TestCase):
     request = test_plugin_service_pb2.TestCaseDidFinishRequest(
         test_case_info=TEST_CASE_INFO)
     video_recorder_plugin.test_case_did_finish(request)
-    mock_os_kill.assert_called_once_with(mock.ANY, signal.SIGINT)
+    mock_os_kill.assert_called_once_with(mock.ANY, signal.SIGTERM)
     file_name = video_recorder_plugin.get_video_file_name(TEST_CASE_NAME, 0)
     file_dir = os.path.join(OUT_DIR, file_name)
     mock_os_remove.assert_called_once_with(file_dir)
@@ -156,7 +156,7 @@ class VideoRecorderPluginTest(unittest.TestCase):
 
     # reset
     video_recorder_plugin.reset()
-    mock_os_kill.assert_called_once_with(mock.ANY, signal.SIGINT)
+    mock_os_kill.assert_called_once_with(mock.ANY, signal.SIGTERM)
     file_name = video_recorder_plugin.get_video_file_name(TEST_CASE_NAME, 0)
     file_dir = os.path.join(OUT_DIR, file_name)
     mock_os_remove.assert_called_once_with(file_dir)

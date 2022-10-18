@@ -173,19 +173,24 @@ class VideoRecorderPlugin(BasePlugin):
     """
     LOGGER.info('Terminating video recording process for test case %s',
                 self.recording_process.test_case_name)
-    os.kill(self.recording_process.process.pid, signal.SIGINT)
     if not should_save:
+      # SIGTERM will immediately terminate the process, and the video
+      # file will be left corrupted. We will still need to delete the
+      # corrupted video file.
+      os.kill(self.recording_process.process.pid, signal.SIGTERM)
       attempt_count = self.testcase_recorded_count.get(
           self.recording_process.test_case_name, 0)
       file_name = self.get_video_file_name(
           self.recording_process.test_case_name, attempt_count)
       file_dir = os.path.join(self.out_dir, file_name)
       LOGGER.info('shoudSave is false, deleting video file %s', file_dir)
-      # TODO(crbug.com/1358536): there seems to be an issue with nitro in g3
-      # that file is not saved right away after terminating the process, and
-      # we might have to wait until the file is available before deleting.
-      # We should run extensive test to verify the expected behavior.
       os.remove(file_dir)
+    else:
+      # SIGINT will send a signal to terminate the process, and the video
+      # will be written to the file asynchronously, while the process is
+      # being terminated gracefully
+      os.kill(self.recording_process.process.pid, signal.SIGINT)
+
     self.recording_process.reset()
 
   def reset(self):
