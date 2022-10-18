@@ -23,8 +23,8 @@ source_set("first_party_sets") {
     "first_party_sets_policy_service_factory.h",
     "first_party_sets_pref_names.cc",
     "first_party_sets_pref_names.h",
-    "mock_first_party_sets_handler.cc",
-    "mock_first_party_sets_handler.h",
+    "scoped_mock_first_party_sets_handler.cc",
+    "scoped_mock_first_party_sets_handler.h",
   ]
   deps = [
     "//base",

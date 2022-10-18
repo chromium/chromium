@@ -14,7 +14,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
-#include "chrome/browser/first_party_sets/mock_first_party_sets_handler.h"
+#include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -684,17 +684,12 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   void SetUp() override {
     CreateService();
-    content::FirstPartySetsHandler::SetInstanceForTesting(
-        &mock_first_party_sets_handler_);
-    mock_first_party_sets_handler().SetCacheFilter(
-        net::FirstPartySetsCacheFilter());
-    mock_first_party_sets_handler().SetContextConfig(
-        net::FirstPartySetsContextConfig());
-    SetGlobalFirstPartySetsAndWait();
-  }
 
-  void TearDown() override {
-    content::FirstPartySetsHandler::SetInstanceForTesting(nullptr);
+    base::RunLoop run_loop;
+    first_party_sets_policy_service_.WaitForFirstInitCompleteForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+    first_party_sets_policy_service_.ResetForTesting();
   }
 
   virtual std::unique_ptr<
@@ -763,7 +758,8 @@ class PrivacySandboxServiceTest : public testing::Test {
   browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
     return &mock_browsing_topics_service_;
   }
-  first_party_sets::MockFirstPartySetsHandler& mock_first_party_sets_handler() {
+  first_party_sets::ScopedMockFirstPartySetsHandler&
+  mock_first_party_sets_handler() {
     return mock_first_party_sets_handler_;
   }
   first_party_sets::FirstPartySetsPolicyService*
@@ -776,15 +772,6 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
 #endif
 
-  void SetGlobalFirstPartySetsAndWait() {
-    mock_first_party_sets_handler_.SetGlobalSets({});
-    base::RunLoop run_loop;
-    first_party_sets_policy_service_.WaitForFirstInitCompleteForTesting(
-        run_loop.QuitClosure());
-    run_loop.Run();
-    first_party_sets_policy_service_.ResetForTesting();
-  }
-
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
 
@@ -792,7 +779,8 @@ class PrivacySandboxServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
-  first_party_sets::MockFirstPartySetsHandler mock_first_party_sets_handler_;
+  first_party_sets::ScopedMockFirstPartySetsHandler
+      mock_first_party_sets_handler_;
   first_party_sets::FirstPartySetsPolicyService
       first_party_sets_policy_service_ =
           first_party_sets::FirstPartySetsPolicyService(
