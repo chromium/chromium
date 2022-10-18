@@ -370,6 +370,46 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetCanBeDestroyedFromNestedLoop) {
   run_loop.Run();
 }
 
+class DesktopNativeWidgetAuraWithNoDelegateTest
+    : public DesktopNativeWidgetAuraTest {
+ public:
+  DesktopNativeWidgetAuraWithNoDelegateTest()
+      : widget(std::make_unique<Widget>()) {}
+
+  DesktopNativeWidgetAuraWithNoDelegateTest(
+      const DesktopNativeWidgetAuraWithNoDelegateTest&) = delete;
+  DesktopNativeWidgetAuraWithNoDelegateTest& operator=(
+      const DesktopNativeWidgetAuraWithNoDelegateTest&) = delete;
+
+  ~DesktopNativeWidgetAuraWithNoDelegateTest() override = default;
+
+  // testing::Test overrides:
+  void SetUp() override {
+    DesktopNativeWidgetAuraTest::SetUp();
+    // This gets destroyed by Widget.
+    desktop_native_widget = new DesktopNativeWidgetAura(widget.get());
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.native_widget = desktop_native_widget;
+    widget->Init(std::move(params));
+    desktop_native_widget->set_delegate_for_testing(nullptr);
+  }
+
+  void TearDown() override {
+    desktop_native_widget->set_delegate_for_testing(widget.get());
+    widget.reset();
+    ViewsTestBase::TearDown();
+  }
+
+  std::unique_ptr<Widget> widget;
+  raw_ptr<DesktopNativeWidgetAura> desktop_native_widget = nullptr;
+};
+
+// Verifies having a null NativeWidgetDelegate doesn't crash.
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {
+  static_cast<aura::WindowDelegate*>(desktop_native_widget)->OnCaptureLost();
+}
+
 using DesktopAuraWidgetTest = DesktopWidgetTest;
 
 #if !BUILDFLAG(IS_FUCHSIA)

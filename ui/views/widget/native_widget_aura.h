@@ -231,6 +231,10 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // aura::TransientWindowObserver:
   void OnTransientParentChanged(aura::Window* new_parent) override;
 
+  void set_delegate_for_testing(internal::NativeWidgetDelegate* delegate) {
+    delegate_ = delegate;
+  }
+
  protected:
   ~NativeWidgetAura() override;
 
@@ -239,6 +243,8 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
  private:
   void SetInitialFocus(ui::WindowShowState show_state);
 
+  // TODO(crbug.com/1346381) Change delegate to a WeakPtr after
+  // removing ownership model.
   raw_ptr<internal::NativeWidgetDelegate> delegate_;
 
   // WARNING: set to NULL when destroyed. As the Widget is not necessarily

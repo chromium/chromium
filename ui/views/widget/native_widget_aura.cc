@@ -330,10 +330,12 @@ void NativeWidgetAura::FrameTypeChanged() {
 }
 
 Widget* NativeWidgetAura::GetWidget() {
+  DCHECK(delegate_);
   return delegate_->AsWidget();
 }
 
 const Widget* NativeWidgetAura::GetWidget() const {
+  DCHECK(delegate_);
   return delegate_->AsWidget();
 }
 
@@ -935,17 +937,20 @@ std::string NativeWidgetAura::GetName() const {
 // NativeWidgetAura, aura::WindowDelegate implementation:
 
 gfx::Size NativeWidgetAura::GetMinimumSize() const {
+  DCHECK(delegate_);
   return delegate_->GetMinimumSize();
 }
 
 gfx::Size NativeWidgetAura::GetMaximumSize() const {
   // Do no check maximizability as EXO clients can have maximum size and be
   // maximizable at the same time.
+  DCHECK(delegate_);
   return delegate_->GetMaximumSize();
 }
 
 void NativeWidgetAura::OnBoundsChanged(const gfx::Rect& old_bounds,
                                        const gfx::Rect& new_bounds) {
+  DCHECK(delegate_);
   // Assume that if the old bounds was completely empty a move happened. This
   // handles the case of a maximize animation acquiring the layer (acquiring a
   // layer results in clearing the bounds).
@@ -962,12 +967,14 @@ gfx::NativeCursor NativeWidgetAura::GetCursor(const gfx::Point& point) {
 }
 
 int NativeWidgetAura::GetNonClientComponent(const gfx::Point& point) const {
+  DCHECK(delegate_);
   return delegate_->GetNonClientComponent(point);
 }
 
 bool NativeWidgetAura::ShouldDescendIntoChildForEventHandling(
     aura::Window* child,
     const gfx::Point& location) {
+  DCHECK(delegate_);
   return delegate_->ShouldDescendIntoChildForEventHandling(
       window_->layer(), child, child->layer(), location);
 }
@@ -977,10 +984,12 @@ bool NativeWidgetAura::CanFocus() {
 }
 
 void NativeWidgetAura::OnCaptureLost() {
-  delegate_->OnMouseCaptureLost();
+  if (delegate_)
+    delegate_->OnMouseCaptureLost();
 }
 
 void NativeWidgetAura::OnPaint(const ui::PaintContext& context) {
+  DCHECK(delegate_);
   delegate_->OnNativeWidgetPaint(context);
 }
 
@@ -996,7 +1005,8 @@ void NativeWidgetAura::OnWindowDestroying(aura::Window* window) {
   if (wm::TransientWindowManager::GetIfExists(window_)) {
     wm::TransientWindowManager::GetOrCreate(window_)->RemoveObserver(this);
   }
-  delegate_->OnNativeWidgetDestroying();
+  if (delegate_)
+    delegate_->OnNativeWidgetDestroying();
 
   // If the aura::Window is destroyed, we can no longer show tooltips.
   tooltip_manager_.reset();
@@ -1010,25 +1020,29 @@ void NativeWidgetAura::OnWindowDestroyed(aura::Window* window) {
   // itself.
   bool should_delete_this =
       (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  delegate_->OnNativeWidgetDestroyed();
+  if (delegate_)
+    delegate_->OnNativeWidgetDestroyed();
   if (should_delete_this)
     delete this;
 }
 
 void NativeWidgetAura::OnWindowTargetVisibilityChanged(bool visible) {
+  DCHECK(delegate_);
   delegate_->OnNativeWidgetVisibilityChanged(visible);
 }
 
 bool NativeWidgetAura::HasHitTestMask() const {
+  DCHECK(delegate_);
   return delegate_->HasHitTestMask();
 }
 
 void NativeWidgetAura::GetHitTestMask(SkPath* mask) const {
-  DCHECK(mask);
+  DCHECK(mask && delegate_);
   delegate_->GetHitTestMask(mask);
 }
 
 void NativeWidgetAura::UpdateVisualState() {
+  DCHECK(delegate_);
   delegate_->LayoutRootViewIfNecessary();
 }
 
@@ -1038,6 +1052,7 @@ void NativeWidgetAura::UpdateVisualState() {
 void NativeWidgetAura::OnWindowPropertyChanged(aura::Window* window,
                                                const void* key,
                                                intptr_t old) {
+  DCHECK(delegate_);
   if (key == aura::client::kShowStateKey)
     delegate_->OnNativeWidgetWindowShowStateChanged();
 
@@ -1046,19 +1061,23 @@ void NativeWidgetAura::OnWindowPropertyChanged(aura::Window* window,
 }
 
 void NativeWidgetAura::OnResizeLoopStarted(aura::Window* window) {
+  DCHECK(delegate_);
   delegate_->OnNativeWidgetBeginUserBoundsChange();
 }
 
 void NativeWidgetAura::OnResizeLoopEnded(aura::Window* window) {
+  DCHECK(delegate_);
   delegate_->OnNativeWidgetEndUserBoundsChange();
 }
 
 void NativeWidgetAura::OnWindowAddedToRootWindow(aura::Window* window) {
+  DCHECK(delegate_);
   delegate_->OnNativeWidgetAddedToCompositor();
 }
 
 void NativeWidgetAura::OnWindowRemovingFromRootWindow(aura::Window* window,
                                                       aura::Window* new_root) {
+  DCHECK(delegate_);
   delegate_->OnNativeWidgetRemovingFromCompositor();
 }
 
@@ -1066,7 +1085,7 @@ void NativeWidgetAura::OnWindowRemovingFromRootWindow(aura::Window* window,
 // NativeWidgetAura, ui::EventHandler implementation:
 
 void NativeWidgetAura::OnKeyEvent(ui::KeyEvent* event) {
-  DCHECK(window_);
+  DCHECK(window_ && delegate_);
   // Renderer may send a key event back to us if the key event wasn't handled,
   // and the window may be invisible by that time.
   if (!window_->IsVisible())
@@ -1076,7 +1095,7 @@ void NativeWidgetAura::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void NativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
-  DCHECK(window_);
+  DCHECK(window_ && delegate_);
   DCHECK(window_->IsVisible());
   if (event->type() == ui::ET_MOUSEWHEEL) {
     delegate_->OnMouseEvent(event);
@@ -1090,11 +1109,12 @@ void NativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void NativeWidgetAura::OnScrollEvent(ui::ScrollEvent* event) {
+  DCHECK(delegate_);
   delegate_->OnScrollEvent(event);
 }
 
 void NativeWidgetAura::OnGestureEvent(ui::GestureEvent* event) {
-  DCHECK(window_);
+  DCHECK(window_ && delegate_);
   DCHECK(window_->IsVisible() || event->IsEndingEvent());
   delegate_->OnGestureEvent(event);
 }
@@ -1103,6 +1123,7 @@ void NativeWidgetAura::OnGestureEvent(ui::GestureEvent* event) {
 // NativeWidgetAura, wm::ActivationDelegate implementation:
 
 bool NativeWidgetAura::ShouldActivate() const {
+  DCHECK(delegate_);
   return delegate_->CanActivate();
 }
 
@@ -1113,6 +1134,7 @@ void NativeWidgetAura::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
+  DCHECK(delegate_);
   DCHECK(window_ == gained_active || window_ == lost_active);
   if (GetWidget()->GetFocusManager()) {
     if (window_ == gained_active)
@@ -1128,6 +1150,7 @@ void NativeWidgetAura::OnWindowActivated(
 
 void NativeWidgetAura::OnWindowFocused(aura::Window* gained_focus,
                                        aura::Window* lost_focus) {
+  DCHECK(delegate_);
   if (window_ == gained_focus)
     delegate_->OnNativeFocus();
   else if (window_ == lost_focus)
@@ -1169,6 +1192,7 @@ aura::client::DragDropDelegate::DropCallback NativeWidgetAura::GetDropCallback(
 // NativeWidgetAura, wm::TransientWindowObserver implementation:
 
 void NativeWidgetAura::OnTransientParentChanged(aura::Window* new_parent) {
+  DCHECK(delegate_);
   delegate_->OnNativeWidgetParentChanged(new_parent);
 }
 

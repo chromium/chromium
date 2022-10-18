@@ -875,5 +875,44 @@ TEST_F(NativeWidgetAuraTest, MinimizedWidgetRestoreBounds) {
   EXPECT_EQ(restore_bounds, window->bounds());
 }
 
+// Series of tests that verifies having a null NativeWidgetDelegate doesn't
+// crash.
+class NativeWidgetAuraWithNoDelegateTest : public NativeWidgetAuraTest {
+ public:
+  NativeWidgetAuraWithNoDelegateTest() : widget(std::make_unique<Widget>()) {}
+
+  NativeWidgetAuraWithNoDelegateTest(
+      const NativeWidgetAuraWithNoDelegateTest&) = delete;
+  NativeWidgetAuraWithNoDelegateTest& operator=(
+      const NativeWidgetAuraWithNoDelegateTest&) = delete;
+
+  ~NativeWidgetAuraWithNoDelegateTest() override = default;
+
+  // testing::Test overrides:
+  void SetUp() override {
+    NativeWidgetAuraTest::SetUp();
+    // This gets destroyed by Widget.
+    native_widget = new NativeWidgetAura(widget.get());
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.native_widget = native_widget;
+    widget->Init(std::move(params));
+    native_widget->set_delegate_for_testing(nullptr);
+  }
+
+  void TearDown() override {
+    native_widget->set_delegate_for_testing(widget.get());
+    widget.reset();
+    ViewsTestBase::TearDown();
+  }
+
+  std::unique_ptr<Widget> widget;
+  raw_ptr<NativeWidgetAura> native_widget = nullptr;
+};
+
+TEST_F(NativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {
+  native_widget->OnCaptureLost();
+}
+
 }  // namespace
 }  // namespace views
