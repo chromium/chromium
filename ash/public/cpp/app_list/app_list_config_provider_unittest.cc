@@ -121,18 +121,15 @@ class AppListConfigProviderTest : public testing::Test {
 
   void VerifyScaledConfig(const AppListConfig& base_config,
                           AppListConfig* config,
-                          float scale_x,
-                          float scale_y) {
+                          float scale_x) {
     ASSERT_TRUE(config);
     EXPECT_EQ(base_config.type(), config->type());
 
     EXPECT_EQ(scale_x, config->scale_x());
-    EXPECT_EQ(scale_y, config->scale_y());
 
     EXPECT_EQ(std::round(base_config.grid_tile_width() * scale_x),
               config->grid_tile_width());
-    EXPECT_EQ(std::round(base_config.grid_tile_height() * scale_y),
-              config->grid_tile_height());
+    EXPECT_EQ(base_config.grid_tile_height(), config->grid_tile_height());
 
     auto get_grid_title_height = [](const AppListConfig* config) {
       return config->grid_tile_height() - config->grid_title_top_padding() -
@@ -224,7 +221,6 @@ TEST_F(AppListConfigProviderTest, CreateConfigByDisplayWorkArea) {
     ASSERT_TRUE(config.get());
     EXPECT_EQ(test_case.config_type, config->type());
     EXPECT_EQ(1, config->scale_x());
-    EXPECT_EQ(1, config->scale_y());
     SanityCheckGridTileDimensions(config.get(), 0);
 
     // Verify that AppListConfigProvider now provides the created config type.
@@ -292,7 +288,6 @@ TEST_F(AppListConfigProviderTest,
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kRegular, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
-  ASSERT_EQ(1, base_config->scale_y());
 
   const int kMinGridWidth =
       base_config->grid_tile_width() * kPreferredGridColumnsForWorkArea;
@@ -306,7 +301,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 480.0f / kMinGridWidth, 1);
+    VerifyScaledConfig(*base_config, config.get(), 480.0f / kMinGridWidth);
   }
 
   {
@@ -320,7 +315,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 1, 1);
+    VerifyScaledConfig(*base_config, config.get(), 1);
   }
 
   {
@@ -333,7 +328,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 480.0f / kMinGridWidth, 1);
+    VerifyScaledConfig(*base_config, config.get(), 480.0f / kMinGridWidth);
   }
 }
 
@@ -349,7 +344,6 @@ TEST_F(AppListConfigProviderTest,
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kDense, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
-  ASSERT_EQ(1, base_config->scale_y());
 
   const int kMinGridWidth =
       base_config->grid_tile_width() * kPreferredGridColumnsForWorkArea;
@@ -363,7 +357,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 300.0f / kMinGridWidth, 1);
+    VerifyScaledConfig(*base_config, config.get(), 300.0f / kMinGridWidth);
   }
 
   {
@@ -377,7 +371,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 1, 1);
+    VerifyScaledConfig(*base_config, config.get(), 1);
   }
 
   {
@@ -390,7 +384,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 300.0f / kMinGridWidth, 1);
+    VerifyScaledConfig(*base_config, config.get(), 300.0f / kMinGridWidth);
   }
 }
 
@@ -407,7 +401,6 @@ TEST_F(AppListConfigProviderTest,
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kRegular, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
-  ASSERT_EQ(1, base_config->scale_y());
 
   const int kMinGridWidth =
       base_config->grid_tile_width() * kPreferredGridColumnsForWorkArea;
@@ -421,7 +414,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 440.0f / kMinGridWidth, 1);
+    VerifyScaledConfig(*base_config, config.get(), 440.0f / kMinGridWidth);
   }
 
   {
@@ -435,7 +428,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 1, 1);
+    VerifyScaledConfig(*base_config, config.get(), 1);
   }
 
   {
@@ -448,7 +441,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 440.0f / kMinGridWidth, 1);
+    VerifyScaledConfig(*base_config, config.get(), 440.0f / kMinGridWidth);
   }
 }
 
@@ -465,7 +458,6 @@ TEST_F(AppListConfigProviderTest,
   ASSERT_TRUE(base_config.get());
   ASSERT_EQ(AppListConfigType::kDense, base_config->type());
   ASSERT_EQ(1, base_config->scale_x());
-  ASSERT_EQ(1, base_config->scale_y());
 
   const int kMinGridWidth =
       base_config->grid_tile_width() * kPreferredGridColumnsForWorkArea;
@@ -479,7 +471,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 300.0f / kMinGridWidth, 1);
+    VerifyScaledConfig(*base_config, config.get(), 300.0f / kMinGridWidth);
   }
 
   {
@@ -493,7 +485,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 1, 1);
+    VerifyScaledConfig(*base_config, config.get(), 1);
   }
 
   {
@@ -506,7 +498,7 @@ TEST_F(AppListConfigProviderTest,
         AppListConfigProvider::Get().CreateForTabletAppList(
             work_area, kPreferredGridColumnsForWorkArea, available_size,
             nullptr);
-    VerifyScaledConfig(*base_config, config.get(), 300.0f / kMinGridWidth, 1);
+    VerifyScaledConfig(*base_config, config.get(), 300.0f / kMinGridWidth);
   }
 }
 

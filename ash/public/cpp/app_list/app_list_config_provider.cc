@@ -77,10 +77,7 @@ std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForTabletAppList(
   const AppListConfig& base_config =
       GetBaseConfigForDisplaySize(display_work_area_size);
 
-  // TODO(crbug.com/1374423): Clean up scale_y below.
   float scale_x = 1;
-  float scale_y = 1;
-  float inner_tile_scale_y = 1;
 
   const float min_config_scale =
       kMinimumTileHeightAfterConfigScale / base_config.grid_tile_height();
@@ -94,14 +91,11 @@ std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForTabletAppList(
   }
 
   if (current_config && current_config->type() == base_config.type() &&
-      current_config->scale_x() == scale_x &&
-      current_config->scale_y() == scale_y) {
+      current_config->scale_x() == scale_x) {
     return nullptr;
   }
 
-  return std::make_unique<AppListConfig>(base_config, scale_x, scale_y,
-                                         inner_tile_scale_y,
-                                         scale_y == min_config_scale);
+  return std::make_unique<AppListConfig>(base_config, scale_x);
 }
 
 std::set<AppListConfigType> AppListConfigProvider::GetAvailableConfigTypes() {

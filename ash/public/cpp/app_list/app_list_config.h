@@ -146,19 +146,9 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   explicit AppListConfig(AppListConfigType type);
 
   // Constructor for scaled app list configuration.
-  // |scale_x| - The scale at which apps grid tile should be scaled
+  // `scale_x` - The scale at which apps grid tile should be scaled
   // horizontally.
-  // |scale_y| - The scale at which apps grid tile should be scaled
-  // vertically.
-  // |inner_title_scale_y| - The scale to use to vertically scale dimensions
-  // |min_y_scale| - Whether |scale_y| is the minimum scale allowed.
-  // within the apps grid tile. Different from |scale_y| because tile title
-  // height is not vertically scaled.
-  AppListConfig(const AppListConfig& base_config,
-                float scale_x,
-                float scale_y,
-                float inner_tile_scale_y,
-                bool min_y_scale);
+  AppListConfig(const AppListConfig& base_config, float scale_x);
 
   AppListConfig(const AppListConfig&) = delete;
   AppListConfig& operator=(const AppListConfig&) = delete;
@@ -167,7 +157,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   AppListConfigType type() const { return type_; }
   float scale_x() const { return scale_x_; }
-  float scale_y() const { return scale_y_; }
   int grid_tile_width() const { return grid_tile_width_; }
   int grid_tile_height() const { return grid_tile_height_; }
   int grid_icon_dimension() const { return grid_icon_dimension_; }
@@ -233,10 +222,9 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   const AppListConfigType type_;
 
   // Current config scale values - should be different from 1 for
-  // AppListConfigType::kShared only.
-  // TODO(crbug.com/1374423): Revisit to see if scale_y_ is still needed.
+  // AppListConfigType::kShared only. Note that `scale_x_` should be always less
+  // or equal to 1.
   const float scale_x_;
-  const float scale_y_;
 
   // The tile view's width and height of the item in apps grid view.
   const int grid_tile_width_;
