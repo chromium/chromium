@@ -73,11 +73,7 @@ int ProviderTypes() {
   // duplication with search results from DriveFS.
   int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
                   ~AutocompleteProvider::TYPE_DOCUMENT;
-  if (ash::features::IsProductivityLauncherEnabled() &&
-      base::GetFieldTrialParamByFeatureAsBool(
-          ash::features::kProductivityLauncher, "enable_open_tab", true)) {
-    providers |= AutocompleteProvider::TYPE_OPEN_TAB;
-  }
+  providers |= AutocompleteProvider::TYPE_OPEN_TAB;
   return providers;
 }
 
@@ -93,13 +89,9 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
                      HistoryServiceFactory::GetForProfile(
                          profile,
                          ServiceAccessType::EXPLICIT_ACCESS)) {
-  bool is_launcher_with_tab_search_enabled =
-      (ash::features::IsProductivityLauncherEnabled() &&
-       base::GetFieldTrialParamByFeatureAsBool(
-           ash::features::kProductivityLauncher, "enable_open_tab", true));
   controller_ = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile),
-      ProviderTypes(), is_launcher_with_tab_search_enabled),
+      ProviderTypes(), /*is_cros_launcher=*/true),
   controller_->AddObserver(this);
 }
 

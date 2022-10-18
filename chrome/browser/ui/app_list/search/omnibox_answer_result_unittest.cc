@@ -25,18 +25,6 @@ namespace {
 
 using Tag = ash::SearchResultTag;
 
-class ClassicOmniboxAnswerResultTest : public testing::Test {
- public:
-  ClassicOmniboxAnswerResultTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kProductivityLauncher);
-  }
-  ~ClassicOmniboxAnswerResultTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class OmniboxAnswerResultTest : public testing::Test {
  public:
   OmniboxAnswerResultTest() {
@@ -56,62 +44,6 @@ MATCHER_P(TagEquals, tag, "") {
 }
 
 }  // namespace
-
-TEST_F(ClassicOmniboxAnswerResultTest, ClassicCalculatorResult) {
-  AutocompleteMatch match;
-  match.type = AutocompleteMatchType::CALCULATOR;
-  match.contents = u"2+2";
-  match.description = u"4";
-
-  OmniboxAnswerResult result(
-      /*profile=*/nullptr, /*list_controller=*/nullptr,
-      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"2+2",
-                                  AutocompleteInput()),
-      u"2+2");
-  EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kList);
-  EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
-  EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_CALCULATOR);
-
-  ASSERT_EQ(result.title_text_vector().size(), 1u);
-  const auto& title = result.title_text_vector()[0];
-  size_t length = title.GetText().length();
-  ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(title.GetText(), u"2+2");
-  EXPECT_THAT(
-      title.GetTextTags(),
-      testing::ElementsAre(TagEquals(Tag(Tag::Style::MATCH, 0, length))));
-
-  EXPECT_EQ(result.details(), u"4");
-}
-
-TEST_F(ClassicOmniboxAnswerResultTest, ClassicAnswerResult) {
-  SuggestionAnswer answer;
-  std::string json =
-      "{ \"l\": ["
-      "  { \"il\": { \"t\": [{ \"t\": \"text one\", \"tt\": 8 }], "
-      "              \"at\": { \"t\": \"additional one\", \"tt\": 42 } } }, "
-      "  { \"il\": { \"t\": [{ \"t\": \"text two\", \"tt\": 5 }], "
-      "              \"at\": { \"t\": \"additional two\", \"tt\": 6 } } } "
-      "] }";
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
-  ASSERT_TRUE(value && value->is_dict());
-  ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", &answer));
-
-  AutocompleteMatch match;
-  match.answer = answer;
-  match.contents = u"contents";
-
-  OmniboxAnswerResult result(
-      /*profile=*/nullptr, /*list_controller=*/nullptr,
-      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
-                                  AutocompleteInput()),
-      u"query");
-  EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kList);
-  EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
-  EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_ANSWER);
-  EXPECT_EQ(result.title(), u"contents additional one");
-  EXPECT_EQ(result.details(), u"text two additional two");
-}
 
 TEST_F(OmniboxAnswerResultTest, CalculatorResult) {
   AutocompleteMatch match;

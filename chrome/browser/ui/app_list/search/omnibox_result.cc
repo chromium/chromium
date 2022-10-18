@@ -111,10 +111,8 @@ OmniboxResult::OmniboxResult(Profile* profile,
   UpdateIcon();
   UpdateTitleAndDetails();
 
-  if (crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search) &&
-      ash::features::IsProductivityLauncherEnabled()) {
+  if (crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search))
     InitializeButtonActions({ash::SearchResultActionType::kRemove});
-  }
 
   if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
     dark_light_mode_controller->AddObserver(this);

@@ -44,10 +44,7 @@ class OmniboxAnswerResult : public ChromeSearchResult,
   void OnColorModeChanged(bool dark_mode_enabled) override;
 
   void UpdateIcon();
-  // Updates title and details for the productivity launcher.
   void UpdateTitleAndDetails();
-  // Updates title and details for the classic launcher.
-  void UpdateClassicTitleAndDetails();
 
   void FetchImage(const GURL& url);
 

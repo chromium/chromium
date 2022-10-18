@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/search/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
@@ -97,10 +96,7 @@ class MockAutoCompleteController : public AutocompleteController {
 
 class OmniboxProviderTest : public testing::Test {
  public:
-  OmniboxProviderTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kProductivityLauncher);
-  }
+  OmniboxProviderTest() = default;
   OmniboxProviderTest(const OmniboxProviderTest&) = delete;
   OmniboxProviderTest& operator=(const OmniboxProviderTest&) = delete;
   ~OmniboxProviderTest() override = default;
@@ -137,7 +133,6 @@ class OmniboxProviderTest : public testing::Test {
     provider_.reset();
     search_controller_.reset();
     list_controller_.reset();
-    scoped_feature_list_.Reset();
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
   }
@@ -157,7 +152,6 @@ class OmniboxProviderTest : public testing::Test {
   std::unique_ptr<TestSearchController> search_controller_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};

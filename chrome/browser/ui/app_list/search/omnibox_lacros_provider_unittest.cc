@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
@@ -139,10 +138,7 @@ class TestSearchResultProducer : public cam::SearchController {
 // read the output of the `OmniboxLacrosProvider`.
 class OmniboxLacrosProviderTest : public testing::Test {
  public:
-  OmniboxLacrosProviderTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kProductivityLauncher);
-  }
+  OmniboxLacrosProviderTest() = default;
   OmniboxLacrosProviderTest(const OmniboxLacrosProviderTest&) = delete;
   OmniboxLacrosProviderTest& operator=(const OmniboxLacrosProviderTest&) =
       delete;
@@ -216,7 +212,6 @@ class OmniboxLacrosProviderTest : public testing::Test {
   std::unique_ptr<TestSearchController> search_controller_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestAppListControllerDelegate list_controller_;
 

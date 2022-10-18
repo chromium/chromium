@@ -48,20 +48,9 @@ constexpr char kOmniboxAnswerSchema[] = "omnibox_answer://";
 ChromeSearchResult::IconInfo CreateAnswerIconInfo(
     const gfx::VectorIcon& vector_icon) {
   const int dimension = GetAnswerCardIconDimension();
-  // DarkLightModeController might be nullptr in tests.
-  const bool dark_mode =
-      ash::features::IsProductivityLauncherEnabled() ||
-      (ash::features::IsDarkLightModeEnabled() &&
-       ash::DarkLightModeController::Get() &&
-       ash::DarkLightModeController::Get()->IsDarkModeEnabled());
-
-  const auto icon =
-      dark_mode ? gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-                      dimension / 2, gfx::kGoogleBlue300,
-                      gfx::CreateVectorIcon(vector_icon, gfx::kGoogleGrey900))
-                : gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-                      dimension / 2, gfx::kGoogleBlue600,
-                      gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE));
+  const auto icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+      dimension / 2, gfx::kGoogleBlue300,
+      gfx::CreateVectorIcon(vector_icon, gfx::kGoogleGrey900));
   return ChromeSearchResult::IconInfo(icon, dimension);
 }
 
@@ -148,9 +137,7 @@ OmniboxAnswerResult::OmniboxAnswerResult(
       description_(search_result_->description.value_or(u"")),
       additional_description_(
           search_result_->additional_description.value_or(u"")) {
-  SetDisplayType(ash::features::IsProductivityLauncherEnabled()
-                     ? DisplayType::kAnswerCard
-                     : DisplayType::kList);
+  SetDisplayType(DisplayType::kAnswerCard);
   SetResultType(ResultType::kOmnibox);
   SetCategory(Category::kSearchAndAssistant);
 
@@ -169,12 +156,8 @@ OmniboxAnswerResult::OmniboxAnswerResult(
     SetIsOmniboxSearch(true);
 
   UpdateIcon();
+  UpdateTitleAndDetails();
 
-  if (ash::features::IsProductivityLauncherEnabled()) {
-    UpdateTitleAndDetails();
-  } else {
-    UpdateClassicTitleAndDetails();
-  }
   if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get())
     dark_light_mode_controller->AddObserver(this);
 }
@@ -260,34 +243,6 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
   const std::u16string accessible_name = ComputeAccessibleName(
       {big_title_text_vector(), title_text_vector(), details_text_vector()});
   SetAccessibleName(accessible_name);
-}
-
-void OmniboxAnswerResult::UpdateClassicTitleAndDetails() {
-  if (IsCalculatorResult()) {
-    // Match tags are the only possible tags for calculator results, so we can
-    // generate them here.
-
-    SetTitle(contents_);
-    SetTitleTags(CalculateTags(query_, contents_));
-
-    SetDetails(description_);
-    SetDetailsTags(CalculateTags(query_, description_));
-  } else {
-    // Non-calculator result.
-
-    const std::u16string title =
-        additional_contents_.empty()
-            ? contents_
-            : base::JoinString({contents_, additional_contents_}, u" ");
-    SetTitle(title);
-
-    std::vector<TextItem> details_vector;
-    AppendTextItem(description_, search_result_->description_type,
-                   details_vector);
-    AppendTextItem(additional_description_,
-                   search_result_->additional_description_type, details_vector);
-    SetDetails(StringFromTextVector(details_vector));
-  }
 }
 
 void OmniboxAnswerResult::FetchImage(const GURL& url) {
