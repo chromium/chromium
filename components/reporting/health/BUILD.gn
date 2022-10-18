@@ -18,6 +18,7 @@ static_library("health_module") {
 
   deps = [
     "//base",
+    "//components/reporting/proto:health_proto",
     "//components/reporting/proto:record_proto",
     "//components/reporting/util:file",
     "//components/reporting/util:status",

@@ -15,6 +15,40 @@
 
 namespace reporting {
 
+// Recorder implementation
+
+HealthModule::Recorder::Recorder(scoped_refptr<HealthModule> health_module)
+    : health_module_(health_module) {
+  if (health_module_) {
+    // Time in seconds since Epoch.
+    history_.set_timestamp_seconds(base::Time::Now().ToTimeT());
+  }
+}
+
+HealthModule::Recorder::Recorder(HealthModule::Recorder&& other) = default;
+
+HealthModule::Recorder& HealthModule::Recorder::operator=(
+    HealthModule::Recorder&& other) = default;
+
+HealthModule::Recorder::~Recorder() {
+  if (health_module_) {
+    health_module_->PostHealthRecord(std::move(history_));
+  }
+}
+
+HealthModule::Recorder::operator bool() const noexcept {
+  return health_module_.get() != nullptr;
+}
+
+HealthDataHistory& HealthModule::Recorder::operator*() noexcept {
+  return history_;
+}
+HealthDataHistory* HealthModule::Recorder::operator->() noexcept {
+  return &history_;
+}
+
+// HealthModule implementation
+
 // static
 scoped_refptr<HealthModule> HealthModule::Create(
     std::unique_ptr<HealthModuleDelegate> delegate) {

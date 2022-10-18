@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,7 +57,7 @@ class HealthModuleTest : public ::testing::Test {
     mock_delegate_ = nullptr;  // Prevent runaway pointer.
   }
 
-  void CreateMopdule() {
+  void CreateModule() {
     // Next line will asynchronously invoke delegate_->Init.
     module_ = HealthModule::Create(std::move(delegate_));
   }
@@ -74,7 +75,7 @@ TEST_F(HealthModuleTest, Init) {
       .WillOnce(
           DoAll(Invoke(&init_waiter, &test::TestCallbackAutoWaiter::Signal),
                 Return(Status::StatusOK())));
-  CreateMopdule();
+  CreateModule();
 }
 
 TEST_F(HealthModuleTest, InitFails) {
@@ -83,7 +84,7 @@ TEST_F(HealthModuleTest, InitFails) {
       .WillOnce(
           DoAll(Invoke(&init_waiter, &test::TestCallbackAutoWaiter::Signal),
                 Return(Status(error::UNKNOWN, "Test fails init"))));
-  CreateMopdule();
+  CreateModule();
 }
 
 TEST_F(HealthModuleTest, WriteAndReadData) {
@@ -93,7 +94,7 @@ TEST_F(HealthModuleTest, WriteAndReadData) {
         .WillOnce(
             DoAll(Invoke(&init_waiter, &test::TestCallbackAutoWaiter::Signal),
                   Return(Status::StatusOK())));
-    CreateMopdule();
+    CreateModule();
   }
 
   ERPHealthData ref_data;
@@ -113,6 +114,31 @@ TEST_F(HealthModuleTest, WriteAndReadData) {
           [&ref_data](HealthCallback cb) { std::move(cb).Run(ref_data); }));
   module_->GetHealthData(read_event.cb());
   EXPECT_THAT(read_event.ref_result(), EqualsProto(ref_data));
+}
+
+TEST_F(HealthModuleTest, UseRecorder) {
+  {
+    test::TestCallbackAutoWaiter init_waiter;
+    EXPECT_CALL(*mock_delegate_, DoInit())
+        .WillOnce(
+            DoAll(Invoke(&init_waiter, &test::TestCallbackAutoWaiter::Signal),
+                  Return(Status::StatusOK())));
+    CreateModule();
+  }
+
+  test::TestCallbackAutoWaiter post_waiter;
+  auto call = AddEnqueueRecordCall();
+  EXPECT_CALL(*mock_delegate_, DoPostHealthRecord(EqualsProto(call)))
+      .WillOnce(WithoutArgs(
+          Invoke(&post_waiter, &test::TestCallbackAutoWaiter::Signal)));
+  auto recorder = HealthModule::Recorder(module_);
+  // Hand recorder over for async processing.
+  // PostHealthRecord will be called by its destructor.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce([](HealthModule::Recorder recorder,
+                        HealthDataHistory call) { *recorder = call; },
+                     std::move(recorder), call));
 }
 }  // namespace
 }  // namespace reporting

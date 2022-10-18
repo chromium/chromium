@@ -10,7 +10,9 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/reporting/health/health_module_delegate.h"
+#include "components/reporting/proto/synced/health.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
 
@@ -22,6 +24,35 @@ namespace reporting {
 // are done with mutual exclusion
 class HealthModule : public base::RefCountedThreadSafe<HealthModule> {
  public:
+  // Instance of `Recorder` class provides an easy to use access for
+  // the caller to compose a single history record, which is posted when
+  // the instance is destructed.
+  // The class is non-copyable but moveable, so its instance may be handed
+  // over by std::move from one stage of the process to another, until it
+  // is destructed at the end of the processing (posting the accumulated
+  // health history).
+  class Recorder {
+   public:
+    // Recorder constructor is associated with health module;
+    // nullptr is used only when debugging not enabled.
+    explicit Recorder(scoped_refptr<HealthModule> health_module = nullptr);
+    Recorder(Recorder&& other);
+    Recorder& operator=(Recorder&& other);
+    ~Recorder();
+
+    // Returns true if debuggung is active (health_module is present).
+    // When the result is false, other actions are not doing anything.
+    explicit operator bool() const noexcept;
+
+    // Accessors that present history record to be set up.
+    HealthDataHistory& operator*() noexcept;
+    HealthDataHistory* operator->() noexcept;
+
+   private:
+    HealthDataHistory history_;
+    scoped_refptr<HealthModule> health_module_;
+  };
+
   // Static class factory method.
   static scoped_refptr<HealthModule> Create(
       std::unique_ptr<HealthModuleDelegate> delegate);
@@ -46,10 +77,10 @@ class HealthModule : public base::RefCountedThreadSafe<HealthModule> {
   virtual ~HealthModule();  // `virtual` is mandated by RefCounted.
 
  private:
-  // Task Runner which tasks are posted to.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   friend base::RefCountedThreadSafe<HealthModule>;
+
+  // Task Runner which tasks are posted to.
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 }  // namespace reporting
 
