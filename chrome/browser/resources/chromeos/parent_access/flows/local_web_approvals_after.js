@@ -28,11 +28,6 @@ export class LocalWebApprovalsAfterElement extends LocalWebApprovalsAfterBase {
     return html`{__html_template__}`;
   }
 
-  constructor() {
-    super();
-    this.attachShadow({mode: 'open', delegatesFocus: true});
-  }
-
   /** @override */
   ready() {
     super.ready();

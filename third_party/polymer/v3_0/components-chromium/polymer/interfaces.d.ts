@@ -26,7 +26,7 @@ export interface PolymerInit {
   extends?: string;
   properties?: PolymerElementProperties;
   observers?: string[];
-  _template?: HTMLTemplateElement;
+  _template?: HTMLTemplateElement|(() => HTMLTemplateElement);
   hostAttributes?: {[key: string]: any};
   listeners?: {[key: string]: string};
   behaviors?: BehaviorInit | BehaviorInit[];
@@ -116,8 +116,6 @@ export interface TemplateInfo {
   hasInsertionPoint?: boolean;
   hostProps: Object;
   propertyEffects: Object;
-  nextTemplateInfo?: TemplateInfo;
-  previousTemplateInfo?: TemplateInfo;
   childNodes: Node[];
   wasPreBound: boolean;
 }

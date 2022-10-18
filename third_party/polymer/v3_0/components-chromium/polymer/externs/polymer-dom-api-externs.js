@@ -103,6 +103,9 @@ PolymerDomApi.prototype.getDestinationInsertionPoints = function() {};
 /** @return {?Node} */
 PolymerDomApi.prototype.getOwnerRoot = function() {};
 
+/** @type {!Node} */
+PolymerDomApi.prototype.node;
+
 /**
  * @param {string} attribute
  * @param {string} value

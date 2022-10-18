@@ -19,44 +19,6 @@
    /**
     * Remove an icon from the given element by undoing the changes effected
     * by `applyIcon`.
-diff --git a/components-chromium/polymer/lib/legacy/legacy-element-mixin.js b/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
-index 21fa65c0208d..bd591b6dd341 100644
---- a/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
-+++ b/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
-@@ -10,7 +10,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
- import '../../../shadycss/entrypoints/apply-shim.js';
- import { ElementMixin } from '../mixins/element-mixin.js';
- import { GestureEventListeners } from '../mixins/gesture-event-listeners.js';
--import { DirMixin } from '../mixins/dir-mixin.js';
- import { dedupingMixin } from '../utils/mixin.js';
- import '../utils/render-status.js';
- import '../utils/unresolved.js';
-@@ -42,11 +41,10 @@ export const LegacyElementMixin = dedupingMixin((base) => {
-    * @constructor
-    * @implements {Polymer_ElementMixin}
-    * @implements {Polymer_GestureEventListeners}
--   * @implements {Polymer_DirMixin}
-    * @extends {HTMLElement}
-    * @private
-    */
--  const legacyElementBase = DirMixin(GestureEventListeners(ElementMixin(base)));
-+  const legacyElementBase = GestureEventListeners(ElementMixin(base));
- 
-   /**
-    * Map of simple names to touch action names
---- a/components-chromium/polymer/lib/mixins/template-stamp.js
-+++ b/components-chromium/polymer/lib/mixins/template-stamp.js
-@@ -204,9 +204,7 @@ export const TemplateStamp = dedupingMixin(
-       if (!template._templateInfo) {
-         let templateInfo = template._templateInfo = {};
-         templateInfo.nodeInfoList = [];
--        templateInfo.stripWhiteSpace =
--          (outerTemplateInfo && outerTemplateInfo.stripWhiteSpace) ||
--          template.hasAttribute('strip-whitespace');
-+        templateInfo.stripWhiteSpace = true;
-         this._parseTemplateContent(template, templateInfo, {parent: null});
-       }
-       return template._templateInfo;
 diff --git a/components-chromium/iron-overlay-behavior/iron-overlay-manager.js b/components-chromium/iron-overlay-behavior/iron-overlay-manager.js
 index 99768f419688..7dd55b8077b7 100644
 --- a/components-chromium/iron-overlay-behavior/iron-overlay-manager.js

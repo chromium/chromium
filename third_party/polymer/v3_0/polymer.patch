@@ -1,0 +1,53 @@
+diff --git a/components-chromium/polymer/lib/legacy/legacy-element-mixin.js b/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
+index de150da342ee9..609d1af1eb7b3 100644
+--- a/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
++++ b/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
+@@ -10,7 +10,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
+ import '../../../shadycss/entrypoints/apply-shim.js';
+ import { ElementMixin, builtCSS } from '../mixins/element-mixin.js';
+ import { GestureEventListeners } from '../mixins/gesture-event-listeners.js';
+-import { DirMixin } from '../mixins/dir-mixin.js';
+ import { dedupingMixin } from '../utils/mixin.js';
+ import '../utils/render-status.js';
+ import '../utils/unresolved.js';
+@@ -39,7 +38,6 @@ let styleInterface = window.ShadyCSS;
+  * @polymer
+  * @appliesMixin ElementMixin
+  * @appliesMixin GestureEventListeners
+- * @appliesMixin DirMixin
+  * @property isAttached {boolean} Set to `true` in this element's
+  *   `connectedCallback` and `false` in `disconnectedCallback`
+  * @summary Element class mixin that provides Polymer's "legacy" API
+@@ -52,7 +50,6 @@ export const LegacyElementMixin = dedupingMixin((base) => {
+    * @constructor
+    * @implements {Polymer_ElementMixin}
+    * @implements {Polymer_GestureEventListeners}
+-   * @implements {Polymer_DirMixin}
+    * @extends {HTMLElement}
+    * @private
+    */
+@@ -66,8 +63,7 @@ export const LegacyElementMixin = dedupingMixin((base) => {
+    * @extends {GesturesElement}
+    * @private
+    */
+-  const legacyElementBase = builtCSS ? GesturesElement :
+-    DirMixin(GesturesElement);
++  const legacyElementBase = GesturesElement;
+ 
+   const observedAttributesGetter = findObservedAttributesGetter(legacyElementBase);
+ 
+diff --git a/components-chromium/polymer/lib/mixins/template-stamp.js b/components-chromium/polymer/lib/mixins/template-stamp.js
+index 19938efe0b622..0537e0b3b9884 100644
+--- a/components-chromium/polymer/lib/mixins/template-stamp.js
++++ b/components-chromium/polymer/lib/mixins/template-stamp.js
+@@ -299,9 +299,7 @@ export const TemplateStamp = dedupingMixin(
+         let /** ? */ templateInfo = template._templateInfo = {};
+         templateInfo.nodeInfoList = [];
+         templateInfo.nestedTemplate = Boolean(outerTemplateInfo);
+-        templateInfo.stripWhiteSpace =
+-          (outerTemplateInfo && outerTemplateInfo.stripWhiteSpace) ||
+-          (template.hasAttribute && template.hasAttribute('strip-whitespace'));
++        templateInfo.stripWhiteSpace = true
+          // TODO(rictic): fix typing
+          this._parseTemplateContent(
+              template, templateInfo, /** @type {?} */ ({parent: null}));

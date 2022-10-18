@@ -26,6 +26,11 @@ content::WebUIDataSource* CreateConflictsUIHTMLSource() {
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
 
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types polymer-html-literal "
+      "polymer-template-event-attribute-policy;");
+
   source->AddResourcePath("conflicts.js", IDR_ABOUT_CONFLICTS_JS);
   source->AddResourcePath("warning.svg", IDR_ABOUT_CONFLICTS_WARNING_SVG);
   source->SetDefaultResource(IDR_ABOUT_CONFLICTS_HTML);

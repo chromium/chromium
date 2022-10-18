@@ -13,8 +13,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
  * When using Closure Compiler, JSCompiler_renameProperty(property, object) is replaced by the munged name for object[property]
  * We cannot alias this function, so we have to use a small shim that has the same behavior when not compiling.
  *
- * @param {string} prop Property name
- * @param {?Object} obj Reference object
+ * @param {?} prop Property name
+ * @param {*} obj Reference object
  * @return {string} Potentially renamed property name
  */
 window.JSCompiler_renameProperty = function(prop, obj) {
@@ -36,10 +36,12 @@ let microtaskCurrHandle = 0;
 let microtaskLastHandle = 0;
 let microtaskCallbacks = [];
 let microtaskNodeContent = 0;
+let microtaskScheduled = false;
 let microtaskNode = document.createTextNode('');
 new window.MutationObserver(microtaskFlush).observe(microtaskNode, {characterData: true});
 
 function microtaskFlush() {
+  microtaskScheduled = false;
   const len = microtaskCallbacks.length;
   for (let i = 0; i < len; i++) {
     let cb = microtaskCallbacks[i];
@@ -187,7 +189,10 @@ const microTask = {
    * @return {number} Handle used for canceling task
    */
   run(callback) {
-    microtaskNode.textContent = microtaskNodeContent++;
+    if (!microtaskScheduled) {
+      microtaskScheduled = true;
+      microtaskNode.textContent = microtaskNodeContent++;
+    }
     microtaskCallbacks.push(callback);
     return microtaskCurrHandle++;
   },
@@ -253,13 +258,13 @@ const dedupingMixin = function(mixin) {
     if (!extended) {
       extended = /** @type {!Function} */(mixin)(base);
       map.set(base, extended);
+      // copy inherited mixin set from the extended class, or the base class
+      // NOTE: we avoid use of Set here because some browser (IE11)
+      // cannot extend a base Set via the constructor.
+      let mixinSet = Object.create(/** @type {!MixinFunction} */(extended).__mixinSet || baseSet || null);
+      mixinSet[mixinDedupeId] = true;
+      /** @type {!MixinFunction} */(extended).__mixinSet = mixinSet;
     }
-    // copy inherited mixin set from the extended class, or the base class
-    // NOTE: we avoid use of Set here because some browser (IE11)
-    // cannot extend a base Set via the constructor.
-    let mixinSet = Object.create(/** @type {!MixinFunction} */(extended).__mixinSet || baseSet || null);
-    mixinSet[mixinDedupeId] = true;
-    /** @type {!MixinFunction} */(extended).__mixinSet = mixinSet;
     return extended;
   }
 
@@ -440,7 +445,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 let CSS_URL_RX = /(url\()([^)]*)(\))/g;
-let ABS_URL = /(^\/)|(^#)|(^[\w-\d]*:)/;
+let ABS_URL = /(^\/[^\/])|(^#)|(^[\w-\d]*:)/;
 let workingURL;
 let resolveDoc;
 /**
@@ -458,6 +463,9 @@ function resolveUrl(url, baseURI) {
   if (url && ABS_URL.test(url)) {
     return url;
   }
+  if (url === '//') {
+    return url;
+  }
   // Lazy feature detection.
   if (workingURL === undefined) {
     workingURL = false;
@@ -473,7 +481,12 @@ function resolveUrl(url, baseURI) {
     baseURI = document.baseURI || window.location.href;
   }
   if (workingURL) {
-    return (new URL(url, baseURI)).href;
+    try {
+      return (new URL(url, baseURI)).href;
+    } catch (e) {
+      // Bad url or baseURI structure. Do not attempt to resolve.
+      return url;
+    }
   }
   // Fallback to creating an anchor into a disconnected document.
   if (!resolveDoc) {
@@ -525,9 +538,24 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-const useShadow = !(window.ShadyDOM);
+const useShadow = !(window.ShadyDOM) || !(window.ShadyDOM.inUse);
 Boolean(!window.ShadyCSS || window.ShadyCSS.nativeCss);
-
+const supportsAdoptingStyleSheets = useShadow &&
+    ('adoptedStyleSheets' in Document.prototype) &&
+    ('replaceSync' in CSSStyleSheet.prototype) &&
+    // Since spec may change, feature detect exact API we need
+    (() => {
+      try {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync('');
+        const host = document.createElement('div');
+        host.attachShadow({mode: 'open'});
+        host.shadowRoot.adoptedStyleSheets = [sheet];
+        return (host.shadowRoot.adoptedStyleSheets[0] === sheet);
+      } catch(e) {
+        return false;
+      }
+    })();
 
 /**
  * Globally settable property that is automatically assigned to
@@ -537,7 +565,8 @@ Boolean(!window.ShadyCSS || window.ShadyCSS.nativeCss);
  * `rootPath` to provide a stable application mount path when
  * using client side routing.
  */
-let rootPath = pathFromUrl(document.baseURI || window.location.href);
+let rootPath = window.Polymer && window.Polymer.rootPath ||
+  pathFromUrl(document.baseURI || window.location.href);
 
 /**
  * A global callback used to sanitize any value before inserting it into the DOM.
@@ -552,9 +581,10 @@ let rootPath = pathFromUrl(document.baseURI || window.location.href);
  * `type` indicates where the value is being inserted: one of property, attribute, or text.
  * `node` is the node where the value is being inserted.
  *
- * @type {(function(*,string,string,Node):*)|undefined}
+ * @type {(function(*,string,string,?Node):*)|undefined}
  */
-let sanitizeDOMValue = window.Polymer && window.Polymer.sanitizeDOMValue || undefined;
+let sanitizeDOMValue =
+  window.Polymer && window.Polymer.sanitizeDOMValue || undefined;
 
 /**
  * Globally settable property to make Polymer Gestures use passive TouchEvent listeners when recognizing gestures.
@@ -562,7 +592,8 @@ let sanitizeDOMValue = window.Polymer && window.Polymer.sanitizeDOMValue || unde
  * scrolling performance.
  * Defaults to `false` for backwards compatibility.
  */
-let passiveTouchGestures = false;
+let passiveTouchGestures =
+  window.Polymer && window.Polymer.setPassiveTouchGestures || false;
 
 /**
  * Setting to ensure Polymer template evaluation only occurs based on tempates
@@ -570,7 +601,99 @@ let passiveTouchGestures = false;
  * disallowed, `<dom-bind>` is disabled, and `<dom-if>`/`<dom-repeat>`
  * templates will only evaluate in the context of a trusted element template.
  */
-let strictTemplatePolicy = false;
+let strictTemplatePolicy =
+  window.Polymer && window.Polymer.strictTemplatePolicy || false;
+
+/**
+ * Setting to enable dom-module lookup from Polymer.Element.  By default,
+ * templates must be defined in script using the `static get template()`
+ * getter and the `html` tag function.  To enable legacy loading of templates
+ * via dom-module, set this flag to true.
+ */
+let allowTemplateFromDomModule =
+  window.Polymer && window.Polymer.allowTemplateFromDomModule || false;
+
+/**
+ * Setting to skip processing style includes and re-writing urls in css styles.
+ * Normally "included" styles are pulled into the element and all urls in styles
+ * are re-written to be relative to the containing script url.
+ * If no includes or relative urls are used in styles, these steps can be
+ * skipped as an optimization.
+ */
+let legacyOptimizations =
+  window.Polymer && window.Polymer.legacyOptimizations || false;
+
+/**
+ * Setting to add warnings useful when migrating from Polymer 1.x to 2.x.
+ */
+let legacyWarnings =
+  window.Polymer && window.Polymer.legacyWarnings || false;
+
+/**
+ * Setting to perform initial rendering synchronously when running under ShadyDOM.
+ * This matches the behavior of Polymer 1.
+ */
+let syncInitialRender =
+  window.Polymer && window.Polymer.syncInitialRender || false;
+
+/**
+ * Setting to retain the legacy Polymer 1 behavior for multi-property
+ * observers around undefined values. Observers and computed property methods
+ * are not called until no argument is undefined.
+ */
+let legacyUndefined =
+  window.Polymer && window.Polymer.legacyUndefined || false;
+
+/**
+ * Setting to ensure computed properties are computed in order to ensure
+ * re-computation never occurs in a given turn.
+ */
+let orderedComputed =
+  window.Polymer && window.Polymer.orderedComputed || false;
+
+/**
+ * Setting to remove nested templates inside `dom-if` and `dom-repeat` as
+ * part of element template parsing.  This is a performance optimization that
+ * eliminates most of the tax of needing two elements due to the loss of
+ * type-extended templates as a result of the V1 specification changes.
+ */
+let removeNestedTemplates =
+  window.Polymer && window.Polymer.removeNestedTemplates || false;
+
+/**
+ * Setting to place `dom-if` elements in a performance-optimized mode that takes
+ * advantage of lighter-weight host runtime template stamping to eliminate the
+ * need for an intermediate Templatizer `TemplateInstance` to mange the nodes
+ * stamped by `dom-if`.  Under this setting, any Templatizer-provided API's
+ * such as `modelForElement` will not be available for nodes stamped by
+ * `dom-if`.
+ */
+let fastDomIf = window.Polymer && window.Polymer.fastDomIf || false;
+
+/**
+ * Setting to disable `dom-change` and `rendered-item-count` events from
+ * `dom-if` and `dom-repeat`. Users can opt back into `dom-change` events by
+ * setting the `notify-dom-change` attribute (`notifyDomChange: true` property)
+ * to `dom-if`/`don-repeat` instances.
+ */
+let suppressTemplateNotifications =
+  window.Polymer && window.Polymer.suppressTemplateNotifications || false;
+
+/**
+ * Setting to disable use of dynamic attributes. This is an optimization
+ * to avoid setting `observedAttributes`. Instead attributes are read
+ * once at create time and set/removeAttribute are patched.
+ */
+let legacyNoObservedAttributes =
+  window.Polymer && window.Polymer.legacyNoObservedAttributes || false;
+
+/**
+ * Setting to enable use of `adoptedStyleSheets` for sharing style sheets
+ * between component instances' shadow roots, if the app uses built Shady CSS
+ * styles.
+ */
+let useAdoptedStyleSheetsWithBuiltCSS =
+  window.Polymer && window.Polymer.useAdoptedStyleSheetsWithBuiltCSS || false;
 
 /**
 @license
@@ -593,7 +716,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
  * @type {function(Node):Node}
  */
 const wrap = (window['ShadyDOM'] && window['ShadyDOM']['noPatch'] && window['ShadyDOM']['wrap']) ?
-  window['ShadyDOM']['wrap'] : (n) => n;
+  window['ShadyDOM']['wrap'] :
+  (window['ShadyDOM'] ? (n) => ShadyDOM['patch'](n) : (n) => n);
 
 /**
 @license
@@ -639,10 +763,10 @@ function isMouseEvent(name) {
 
 /* eslint no-empty: ["error", { "allowEmptyCatch": true }] */
 // check for passive event listeners
-let SUPPORTS_PASSIVE = false;
+let supportsPassive = false;
 (function() {
   try {
-    let opts = Object.defineProperty({}, 'passive', {get() {SUPPORTS_PASSIVE = true;}});
+    let opts = Object.defineProperty({}, 'passive', {get() {supportsPassive = true;}});
     window.addEventListener('test', null, opts);
     window.removeEventListener('test', null, opts);
   } catch(e) {}
@@ -660,7 +784,7 @@ function PASSIVE_TOUCH(eventName) {
   if (isMouseEvent(eventName) || eventName === 'touchend') {
     return;
   }
-  if (HAS_NATIVE_TA && SUPPORTS_PASSIVE && passiveTouchGestures) {
+  if (HAS_NATIVE_TA && supportsPassive && passiveTouchGestures) {
     return {passive: true};
   } else {
     return;
@@ -720,13 +844,20 @@ function matchingLabels(el) {
   // as the mouseCancellor code will handle ancstor labels
   if (!labels.length) {
     labels = [];
-    let root = el.getRootNode();
-    // if there is an id on `el`, check for all labels with a matching `for` attribute
-    if (el.id) {
-      let matching = root.querySelectorAll(`label[for = ${el.id}]`);
-      for (let i = 0; i < matching.length; i++) {
-        labels.push(/** @type {!HTMLLabelElement} */(matching[i]));
+    try {
+      let root = el.getRootNode();
+      // if there is an id on `el`, check for all labels with a matching `for` attribute
+      if (el.id) {
+        let matching = root.querySelectorAll(`label[for = '${el.id}']`);
+        for (let i = 0; i < matching.length; i++) {
+          labels.push(/** @type {!HTMLLabelElement} */(matching[i]));
+        }
       }
+    } catch (e) {
+      // Either:
+      // 1. el.getRootNode() failed.
+      // 2. el.id cannot be used in `querySelectorAll`
+      // In both cases, do nothing.
     }
   }
   return labels;
@@ -905,9 +1036,11 @@ function untrackDocument(stateObj) {
   stateObj.upfn = null;
 }
 
-// use a document-wide touchend listener to start the ghost-click prevention mechanism
-// Use passive event listeners, if supported, to not affect scrolling performance
-document.addEventListener('touchend', ignoreMouse, SUPPORTS_PASSIVE ? {passive: true} : false);
+{
+  // use a document-wide touchend listener to start the ghost-click prevention mechanism
+  // Use passive event listeners, if supported, to not affect scrolling performance
+  document.addEventListener('touchend', ignoreMouse, supportsPassive ? {passive: true} : false);
+}
 
 /**
  * Returns the composedPath for the given event.
@@ -1737,6 +1870,7 @@ function styleOutsideTemplateCheck(inst) {
  */
 class DomModule extends HTMLElement {
 
+  /** @override */
   static get observedAttributes() { return ['id']; }
 
   /**
@@ -1792,7 +1926,7 @@ class DomModule extends HTMLElement {
     // Don't override existing assetpath.
     if (!this.__assetpath) {
       // note: assetpath set via an attribute must be relative to this
-      // element's location; accomodate polyfilled HTMLImports
+      // element's location; accommodate polyfilled HTMLImports
       const owner = window.HTMLImports && HTMLImports.importForElement ?
         HTMLImports.importForElement(this) || document : this.ownerDocument;
       const url = resolveUrl(
@@ -1812,6 +1946,12 @@ class DomModule extends HTMLElement {
   register(id) {
     id = id || this.id;
     if (id) {
+      // Under strictTemplatePolicy, reject and null out any re-registered
+      // dom-module since it is ambiguous whether first-in or last-in is trusted
+      if (strictTemplatePolicy && findModule(id) !== undefined) {
+        setModule(id, null);
+        throw new Error(`strictTemplatePolicy: dom-module ${id} re-registered`);
+      }
       this.id = id;
       setModule(id, this);
       styleOutsideTemplateCheck(this);
@@ -2383,6 +2523,9 @@ const microtask = microTask;
  * @polymer
  * @summary Element class mixin for reacting to property changes from
  *   generated property accessors.
+ * @template T
+ * @param {function(new:T)} superClass Class to apply mixin to.
+ * @return {function(new:T)} superClass with mixin applied.
  */
 const PropertiesChanged = dedupingMixin(
     /**
@@ -2405,6 +2548,7 @@ const PropertiesChanged = dedupingMixin(
      * @param {!Object} props Object whose keys are names of accessors.
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static createProperties(props) {
       const proto = this.prototype;
@@ -2424,6 +2568,7 @@ const PropertiesChanged = dedupingMixin(
      * @return {string} Attribute name corresponding to the given property.
      *
      * @protected
+     * @nocollapse
      */
     static attributeNameForProperty(property) {
       return property.toLowerCase();
@@ -2435,6 +2580,7 @@ const PropertiesChanged = dedupingMixin(
      * @param {string} name Name of property
      *
      * @protected
+     * @nocollapse
      */
     static typeForProperty(name) { } //eslint-disable-line no-unused-vars
 
@@ -2457,7 +2603,7 @@ const PropertiesChanged = dedupingMixin(
      */
     _createPropertyAccessor(property, readOnly) {
       this._addPropertyToAttributeMap(property);
-      if (!this.hasOwnProperty('__dataHasAccessor')) {
+      if (!this.hasOwnProperty(JSCompiler_renameProperty('__dataHasAccessor', this))) {
         this.__dataHasAccessor = Object.assign({}, this.__dataHasAccessor);
       }
       if (!this.__dataHasAccessor[property]) {
@@ -2475,13 +2621,21 @@ const PropertiesChanged = dedupingMixin(
      * @override
      */
     _addPropertyToAttributeMap(property) {
-      if (!this.hasOwnProperty('__dataAttributes')) {
+      if (!this.hasOwnProperty(JSCompiler_renameProperty('__dataAttributes', this))) {
         this.__dataAttributes = Object.assign({}, this.__dataAttributes);
       }
-      if (!this.__dataAttributes[property]) {
-        const attr = this.constructor.attributeNameForProperty(property);
+      // This check is technically not correct; it's an optimization that
+      // assumes that if a _property_ name is already in the map (note this is
+      // an attr->property map), the property mapped directly to the attribute
+      // and it has already been mapped.  This would fail if
+      // `attributeNameForProperty` were overridden such that this was not the
+      // case.
+      let attr = this.__dataAttributes[property];
+      if (!attr) {
+        attr = this.constructor.attributeNameForProperty(property);
         this.__dataAttributes[attr] = property;
       }
+      return attr;
     }
 
     /**
@@ -2496,11 +2650,15 @@ const PropertiesChanged = dedupingMixin(
         /* eslint-disable valid-jsdoc */
         /** @this {PropertiesChanged} */
         get() {
-          return this._getProperty(property);
+          // Inline for perf instead of using `_getProperty`
+          return this.__data[property];
         },
         /** @this {PropertiesChanged} */
         set: readOnly ? function () {} : function (value) {
-          this._setProperty(property, value);
+          // Inline for perf instead of using `_setProperty`
+          if (this._setPendingProperty(property, value, true)) {
+            this._invalidateProperties();
+          }
         }
         /* eslint-enable */
       });
@@ -2508,7 +2666,7 @@ const PropertiesChanged = dedupingMixin(
 
     constructor() {
       super();
-      /** @protected {boolean} */
+      /** @type {boolean} */
       this.__dataEnabled = false;
       this.__dataReady = false;
       this.__dataInvalid = false;
@@ -2516,6 +2674,9 @@ const PropertiesChanged = dedupingMixin(
       this.__dataPending = null;
       this.__dataOld = null;
       this.__dataInstanceProps = null;
+      /** @type {number} */
+      // NOTE: used to track re-entrant calls to `_flushProperties`
+      this.__dataCounter = 0;
       this.__serializing = false;
       this._initializeProperties();
     }
@@ -2642,6 +2803,14 @@ const PropertiesChanged = dedupingMixin(
     /* eslint-enable */
 
     /**
+     * @param {string} property Name of the property
+     * @return {boolean} Returns true if the property is pending.
+     */
+    _isPropertyPending(property) {
+      return !!(this.__dataPending && this.__dataPending.hasOwnProperty(property));
+    }
+
+    /**
      * Marks the properties as invalid, and enqueues an async
      * `_propertiesChanged` callback.
      *
@@ -2695,6 +2864,7 @@ const PropertiesChanged = dedupingMixin(
      * @override
      */
     _flushProperties() {
+      this.__dataCounter++;
       const props = this.__data;
       const changedProps = this.__dataPending;
       const old = this.__dataOld;
@@ -2703,6 +2873,7 @@ const PropertiesChanged = dedupingMixin(
         this.__dataOld = null;
         this._propertiesChanged(props, changedProps, old);
       }
+      this.__dataCounter--;
     }
 
     /**
@@ -2773,7 +2944,7 @@ const PropertiesChanged = dedupingMixin(
      * @param {string} name Name of attribute that changed
      * @param {?string} old Old attribute value
      * @param {?string} value New attribute value
-     * @param {?string=} namespace Attribute namespace.
+     * @param {?string} namespace Attribute namespace.
      * @return {void}
      * @suppress {missingProperties} Super may or may not implement the callback
      * @override
@@ -2844,12 +3015,12 @@ const PropertiesChanged = dedupingMixin(
      */
     _valueToNodeAttribute(node, value, attribute) {
       const str = this._serializeValue(value);
+      if (attribute === 'class' || attribute === 'name' || attribute === 'slot') {
+        node = /** @type {?Element} */(wrap(node));
+      }
       if (str === undefined) {
         node.removeAttribute(attribute);
       } else {
-        if (attribute === 'class' || attribute === 'name' || attribute === 'slot') {
-          node = /** @type {?Element} */(wrap(node));
-        }
         node.setAttribute(attribute, str);
       }
     }
@@ -2927,6 +3098,14 @@ while (proto) {
   proto = Object.getPrototypeOf(proto);
 }
 
+const isTrustedType = (() => {
+  if (!window.trustedTypes) {
+    return () => false;
+  }
+  return (val) => trustedTypes.isHTML(val) ||
+        trustedTypes.isScript(val) || trustedTypes.isScriptURL(val);
+})();
+
 /**
  * Used to save the value of a property that will be overridden with
  * an accessor. If the `model` is a prototype, the values will be saved
@@ -2992,6 +3171,9 @@ function saveAccessorValue(model, property) {
  * @appliesMixin PropertiesChanged
  * @summary Element class mixin for reacting to property changes from
  *   generated property accessors.
+ * @template T
+ * @param {function(new:T)} superClass Class to apply mixin to.
+ * @return {function(new:T)} superClass with mixin applied.
  */
 const PropertyAccessors = dedupingMixin(superClass => {
 
@@ -3020,9 +3202,10 @@ const PropertyAccessors = dedupingMixin(superClass => {
      * `camelCase` convention
      *
      * @return {void}
+     * @nocollapse
      */
     static createPropertiesForAttributes() {
-      let a$ = this.observedAttributes;
+      let a$ =  /** @type {?} */ (this).observedAttributes;
       for (let i=0; i < a$.length; i++) {
         this.prototype._createPropertyAccessor(dashToCamelCase(a$[i]));
       }
@@ -3035,6 +3218,7 @@ const PropertyAccessors = dedupingMixin(superClass => {
      * @return {string} Attribute name corresponding to the given property.
      *
      * @protected
+     * @nocollapse
      */
     static attributeNameForProperty(property) {
       return camelToDashCase(property);
@@ -3111,6 +3295,14 @@ const PropertyAccessors = dedupingMixin(superClass => {
           if (value instanceof Date) {
             return value.toString();
           } else if (value) {
+            if (isTrustedType(value)) {
+              /**
+               * Here `value` isn't actually a string, but it should be
+               * passed into APIs that normally expect a string, like
+               * elem.setAttribute.
+               */
+              return /** @type {?} */ (value);
+            }
             try {
               return JSON.stringify(value);
             } catch(x) {
@@ -3233,9 +3425,6 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-const walker = document.createTreeWalker(document, NodeFilter.SHOW_ALL,
-    null, false);
-
 // 1.x backwards-compatible auto-wrapper for template type extensions
 // This is a clear layering violation and gives favored-nation status to
 // dom-if and dom-repeat templates.  This is a conceit we're choosing to keep
@@ -3247,6 +3436,99 @@ const templateExtensions = {
   'dom-if': true,
   'dom-repeat': true
 };
+
+let placeholderBugDetect = false;
+let placeholderBug = false;
+
+function hasPlaceholderBug() {
+  if (!placeholderBugDetect) {
+    placeholderBugDetect = true;
+    const t = document.createElement('textarea');
+    t.placeholder = 'a';
+    placeholderBug = t.placeholder === t.textContent;
+  }
+  return placeholderBug;
+}
+
+/**
+ * Some browsers have a bug with textarea, where placeholder text is copied as
+ * a textnode child of the textarea.
+ *
+ * If the placeholder is a binding, this can break template stamping in two
+ * ways.
+ *
+ * One issue is that when the `placeholder` attribute is removed when the
+ * binding is processed, the textnode child of the textarea is deleted, and the
+ * template info tries to bind into that node.
+ *
+ * With `legacyOptimizations` in use, when the template is stamped and the
+ * `textarea.textContent` binding is processed, no corresponding node is found
+ * because it was removed during parsing. An exception is generated when this
+ * binding is updated.
+ *
+ * With `legacyOptimizations` not in use, the template is cloned before
+ * processing and this changes the above behavior. The cloned template also has
+ * a value property set to the placeholder and textContent. This prevents the
+ * removal of the textContent when the placeholder attribute is removed.
+ * Therefore the exception does not occur. However, there is an extra
+ * unnecessary binding.
+ *
+ * @param {!Node} node Check node for placeholder bug
+ * @return {void}
+ */
+function fixPlaceholder(node) {
+  if (hasPlaceholderBug() && node.localName === 'textarea' && node.placeholder
+        && node.placeholder === node.textContent) {
+    node.textContent = null;
+  }
+}
+
+/**
+ * Copies an attribute from one element to another, converting the value to a
+ * `TrustedScript` if it is named like a Polymer template event listener.
+ *
+ * @param {!Element} dest The element to set the attribute on
+ * @param {!Element} src The element to read the attribute from
+ * @param {string} name The name of the attribute
+ */
+const copyAttributeWithTemplateEventPolicy = (() => {
+  /**
+   * This `TrustedTypePolicy` is used to work around a Chrome bug in the Trusted
+   * Types API where any attribute that starts with `on` may only be set to a
+   * `TrustedScript` value, even if that attribute would not cause an event
+   * listener to be created. (See https://crbug.com/993268 for details.)
+   *
+   * Polymer's template system allows `<dom-if>` and `<dom-repeat>` to be
+   * written using the `<template is="...">` syntax, even if there is no UA
+   * support for custom element extensions of built-in elements. In doing so, it
+   * copies attributes from the original `<template>` to a newly created
+   * `<dom-if>` or `<dom-repeat>`, which can trigger the bug mentioned above if
+   * any of those attributes uses Polymer's `on-` syntax for event listeners.
+   * (Note, the value of these `on-` listeners is not evaluated as script: it is
+   * the name of a member function of a component that will be used as the event
+   * listener.)
+   *
+   * @type {!TrustedTypePolicy|undefined}
+   */
+  const polymerTemplateEventAttributePolicy = window.trustedTypes &&
+      window.trustedTypes.createPolicy(
+          'polymer-template-event-attribute-policy', {
+            createScript: x => x,
+          });
+
+  return (dest, src, name) => {
+    const value = src.getAttribute(name);
+
+    if (polymerTemplateEventAttributePolicy && name.startsWith('on-')) {
+      dest.setAttribute(
+          name, polymerTemplateEventAttributePolicy.createScript(value, name));
+      return;
+    }
+
+    dest.setAttribute(name, value);
+  };
+})();
+
 function wrapTemplateExtension(node) {
   let is = node.getAttribute('is');
   if (is && templateExtensions[is]) {
@@ -3256,8 +3538,9 @@ function wrapTemplateExtension(node) {
     t.parentNode.replaceChild(node, t);
     node.appendChild(t);
     while(t.attributes.length) {
-      node.setAttribute(t.attributes[0].name, t.attributes[0].value);
-      t.removeAttribute(t.attributes[0].name);
+      const {name} = t.attributes[0];
+      copyAttributeWithTemplateEventPolicy(node, t, name);
+      t.removeAttribute(name);
     }
   }
   return node;
@@ -3270,8 +3553,7 @@ function findTemplateNode(root, nodeInfo) {
   if (parent) {
     // note: marginally faster than indexing via childNodes
     // (http://jsperf.com/childnodes-lookup)
-    walker.currentNode = parent;
-    for (let n=walker.firstChild(), i=0; n; n=walker.nextSibling()) {
+    for (let n=parent.firstChild, i=0; n; n=n.nextSibling) {
       if (nodeInfo.parentIndex === i++) {
         return n;
       }
@@ -3298,9 +3580,11 @@ function applyEventListener(inst, node, nodeInfo) {
 }
 
 // push configuration references at configure time
-function applyTemplateContent(inst, node, nodeInfo) {
+function applyTemplateInfo(inst, node, nodeInfo, parentTemplateInfo) {
   if (nodeInfo.templateInfo) {
+    // Give the node an instance of this templateInfo and set its parent
     node._templateInfo = nodeInfo.templateInfo;
+    node._parentTemplateInfo = parentTemplateInfo;
   }
 }
 
@@ -3420,18 +3704,32 @@ const TemplateStamp = dedupingMixin(
      * @param {TemplateInfo=} outerTemplateInfo Template metadata from the outer
      *   template, for parsing nested templates
      * @return {!TemplateInfo} Parsed template metadata
+     * @nocollapse
      */
     static _parseTemplate(template, outerTemplateInfo) {
       // since a template may be re-used, memo-ize metadata
       if (!template._templateInfo) {
-        let templateInfo = template._templateInfo = {};
+        // TODO(rictic): fix typing
+        let /** ? */ templateInfo = template._templateInfo = {};
         templateInfo.nodeInfoList = [];
+        templateInfo.nestedTemplate = Boolean(outerTemplateInfo);
         templateInfo.stripWhiteSpace = true;
-        this._parseTemplateContent(template, templateInfo, {parent: null});
+         // TODO(rictic): fix typing
+         this._parseTemplateContent(
+             template, templateInfo, /** @type {?} */ ({parent: null}));
       }
       return template._templateInfo;
     }
 
+    /**
+     * See docs for _parseTemplateNode.
+     *
+     * @param {!HTMLTemplateElement} template .
+     * @param {!TemplateInfo} templateInfo .
+     * @param {!NodeInfo} nodeInfo .
+     * @return {boolean} .
+     * @nocollapse
+     */
     static _parseTemplateContent(template, templateInfo, nodeInfo) {
       return this._parseTemplateNode(template.content, templateInfo, nodeInfo);
     }
@@ -3448,24 +3746,29 @@ const TemplateStamp = dedupingMixin(
      * @param {!NodeInfo} nodeInfo Node metadata for current template.
      * @return {boolean} `true` if the visited node added node-specific
      *   metadata to `nodeInfo`
+     * @nocollapse
      */
     static _parseTemplateNode(node, templateInfo, nodeInfo) {
-      let noted;
-      let element = /** @type {Element} */(node);
+      let noted = false;
+      let element = /** @type {!HTMLTemplateElement} */ (node);
       if (element.localName == 'template' && !element.hasAttribute('preserve-content')) {
         noted = this._parseTemplateNestedTemplate(element, templateInfo, nodeInfo) || noted;
       } else if (element.localName === 'slot') {
         // For ShadyDom optimization, indicating there is an insertion point
         templateInfo.hasInsertionPoint = true;
       }
-      walker.currentNode = element;
-      if (walker.firstChild()) {
-        noted = this._parseTemplateChildNodes(element, templateInfo, nodeInfo) || noted;
+      fixPlaceholder(element);
+      if (element.firstChild) {
+        this._parseTemplateChildNodes(element, templateInfo, nodeInfo);
       }
       if (element.hasAttributes && element.hasAttributes()) {
         noted = this._parseTemplateNodeAttributes(element, templateInfo, nodeInfo) || noted;
       }
-      return noted;
+      // Checking `nodeInfo.noted` allows a child node of this node (who gets
+      // access to `parentInfo`) to cause the parent to be noted, which
+      // otherwise has no return path via `_parseTemplateChildNodes` (used by
+      // some optimizations)
+      return noted || nodeInfo.noted;
     }
 
     /**
@@ -3485,8 +3788,7 @@ const TemplateStamp = dedupingMixin(
       if (root.localName === 'script' || root.localName === 'style') {
         return;
       }
-      walker.currentNode = root;
-      for (let node=walker.firstChild(), parentIndex=0, next; node; node=next) {
+      for (let node=root.firstChild, parentIndex=0, next; node; node=next) {
         // Wrap templates
         if (node.localName == 'template') {
           node = wrapTemplateExtension(node);
@@ -3495,13 +3797,12 @@ const TemplateStamp = dedupingMixin(
         // text nodes to be inexplicably split =(
         // note that root.normalize() should work but does not so we do this
         // manually.
-        walker.currentNode = node;
-        next = walker.nextSibling();
+        next = node.nextSibling;
         if (node.nodeType === Node.TEXT_NODE) {
           let /** Node */ n = next;
           while (n && (n.nodeType === Node.TEXT_NODE)) {
             node.textContent += n.textContent;
-            next = walker.nextSibling();
+            next = n.nextSibling;
             root.removeChild(n);
             n = next;
           }
@@ -3511,13 +3812,13 @@ const TemplateStamp = dedupingMixin(
             continue;
           }
         }
-        let childInfo = { parentIndex, parentInfo: nodeInfo };
+        let childInfo =
+            /** @type {!NodeInfo} */ ({parentIndex, parentInfo: nodeInfo});
         if (this._parseTemplateNode(node, templateInfo, childInfo)) {
-          childInfo.infoIndex = templateInfo.nodeInfoList.push(/** @type {!NodeInfo} */(childInfo)) - 1;
+          childInfo.infoIndex = templateInfo.nodeInfoList.push(childInfo) - 1;
         }
         // Increment if not removed
-        walker.currentNode = node;
-        if (walker.parentNode()) {
+        if (node.parentNode) {
           parentIndex++;
         }
       }
@@ -3539,12 +3840,15 @@ const TemplateStamp = dedupingMixin(
      * @param {!NodeInfo} nodeInfo Node metadata for current template.
      * @return {boolean} `true` if the visited node added node-specific
      *   metadata to `nodeInfo`
+     * @nocollapse
      */
     static _parseTemplateNestedTemplate(node, outerTemplateInfo, nodeInfo) {
-      let templateInfo = this._parseTemplate(node, outerTemplateInfo);
+      // TODO(rictic): the type of node should be non-null
+      let element = /** @type {!HTMLTemplateElement} */ (node);
+      let templateInfo = this._parseTemplate(element, outerTemplateInfo);
       let content = templateInfo.content =
-        node.content.ownerDocument.createDocumentFragment();
-      content.appendChild(node.content);
+          element.content.ownerDocument.createDocumentFragment();
+      content.appendChild(element.content);
       nodeInfo.templateInfo = templateInfo;
       return true;
     }
@@ -3554,10 +3858,12 @@ const TemplateStamp = dedupingMixin(
      * for nodes of interest.
      *
      * @param {Element} node Node to parse
-     * @param {TemplateInfo} templateInfo Template metadata for current template
-     * @param {NodeInfo} nodeInfo Node metadata for current template.
+     * @param {!TemplateInfo} templateInfo Template metadata for current
+     *     template
+     * @param {!NodeInfo} nodeInfo Node metadata for current template.
      * @return {boolean} `true` if the visited node added node-specific
      *   metadata to `nodeInfo`
+     * @nocollapse
      */
     static _parseTemplateNodeAttributes(node, templateInfo, nodeInfo) {
       // Make copy of original attribute list, since the order may change
@@ -3584,6 +3890,7 @@ const TemplateStamp = dedupingMixin(
      * @param {string} value Attribute value
      * @return {boolean} `true` if the visited node added node-specific
      *   metadata to `nodeInfo`
+     * @nocollapse
      */
     static _parseTemplateNodeAttribute(node, templateInfo, nodeInfo, name, value) {
       // events (on-*)
@@ -3613,6 +3920,7 @@ const TemplateStamp = dedupingMixin(
      *
      * @param {HTMLTemplateElement} template Template to retrieve `content` for
      * @return {DocumentFragment} Content fragment
+     * @nocollapse
      */
     static _contentForTemplate(template) {
       let templateInfo = /** @type {HTMLTemplateElementWithInfo} */ (template)._templateInfo;
@@ -3639,16 +3947,22 @@ const TemplateStamp = dedupingMixin(
      * is removed and stored in notes as well.
      *
      * @param {!HTMLTemplateElement} template Template to stamp
+     * @param {TemplateInfo=} templateInfo Optional template info associated
+     *   with the template to be stamped; if omitted the template will be
+     *   automatically parsed.
      * @return {!StampedTemplate} Cloned template content
      * @override
      */
-    _stampTemplate(template) {
+    _stampTemplate(template, templateInfo) {
       // Polyfill support: bootstrap the template if it has not already been
       if (template && !template.content &&
           window.HTMLTemplateElement && HTMLTemplateElement.decorate) {
         HTMLTemplateElement.decorate(template);
       }
-      let templateInfo = this.constructor._parseTemplate(template);
+      // Accepting the `templateInfo` via an argument allows for creating
+      // instances of the `templateInfo` by the caller, useful for adding
+      // instance-time information to the prototypical data
+      templateInfo = templateInfo || this.constructor._parseTemplate(template);
       let nodeInfo = templateInfo.nodeInfoList;
       let content = templateInfo.content || template.content;
       let dom = /** @type {DocumentFragment} */ (document.importNode(content, true));
@@ -3659,7 +3973,7 @@ const TemplateStamp = dedupingMixin(
       for (let i=0, l=nodeInfo.length, info; (i<l) && (info=nodeInfo[i]); i++) {
         let node = nodes[i] = findTemplateNode(dom, info);
         applyIdToMap(this, dom.$, node, info);
-        applyTemplateContent(this, node, info);
+        applyTemplateInfo(this, node, info, templateInfo);
         applyEventListener(this, node, info);
       }
       dom = /** @type {!StampedTemplate} */(dom); // eslint-disable-line no-self-assign
@@ -3735,6 +4049,8 @@ const TemplateStamp = dedupingMixin(
 // from multiple properties in the same turn
 let dedupeId = 0;
 
+const NOOP = [];
+
 /**
  * Property effect types; effects are stored on the prototype using these keys
  * @enum {string}
@@ -3747,6 +4063,8 @@ const TYPES = {
   OBSERVE: '__observeEffects',
   READ_ONLY: '__readOnly'
 };
+
+const COMPUTE_INFO = '__computeInfo';
 
 /** @const {!RegExp} */
 const capitalAttributeRegex = /[A-Z]/;
@@ -3770,20 +4088,25 @@ const capitalAttributeRegex = /[A-Z]/;
  *
  * @param {Object} model Prototype or instance
  * @param {string} type Property effect type
+ * @param {boolean=} cloneArrays Clone any arrays assigned to the map when
+ *   extending a superclass map onto this subclass
  * @return {Object} The own-property map of effects for the given type
  * @private
  */
-function ensureOwnEffectMap(model, type) {
+function ensureOwnEffectMap(model, type, cloneArrays) {
   let effects = model[type];
   if (!effects) {
     effects = model[type] = {};
   } else if (!model.hasOwnProperty(type)) {
     effects = model[type] = Object.create(model[type]);
-    for (let p in effects) {
-      let protoFx = effects[p];
-      let instFx = effects[p] = Array(protoFx.length);
-      for (let i=0; i<protoFx.length; i++) {
-        instFx[i] = protoFx[i];
+    if (cloneArrays) {
+      for (let p in effects) {
+        let protoFx = effects[p];
+        // Perf optimization over Array.slice
+        let instFx = effects[p] = Array(protoFx.length);
+        for (let i=0; i<protoFx.length; i++) {
+          instFx[i] = protoFx[i];
+        }
       }
     }
   }
@@ -3808,12 +4131,22 @@ function ensureOwnEffectMap(model, type) {
 function runEffects(inst, effects, props, oldProps, hasPaths, extraArgs) {
   if (effects) {
     let ran = false;
-    let id = dedupeId++;
+    const id = dedupeId++;
     for (let prop in props) {
-      if (runEffectsForProperty(
-              inst, /** @type {!Object} */ (effects), id, prop, props, oldProps,
-              hasPaths, extraArgs)) {
-        ran = true;
+      // Inline `runEffectsForProperty` for perf.
+      let rootProperty = hasPaths ? root(prop) : prop;
+      let fxs = effects[rootProperty];
+      if (fxs) {
+        for (let i=0, l=fxs.length, fx; (i<l) && (fx=fxs[i]); i++) {
+          if ((!fx.info || fx.info.lastRun !== id) &&
+              (!hasPaths || pathMatchesTrigger(prop, fx.trigger))) {
+            if (fx.info) {
+              fx.info.lastRun = id;
+            }
+            fx.fn(inst, prop, props, oldProps, fx.info, hasPaths, extraArgs);
+            ran = true;
+          }
+        }
       }
     }
     return ran;
@@ -3993,6 +4326,11 @@ function dispatchNotifyEvent(inst, eventName, value, path) {
   if (path) {
     detail.path = path;
   }
+  // As a performance optimization, we could elide the wrap here since notifying
+  // events are non-bubbling and shouldn't need retargeting. However, a very
+  // small number of internal tests failed in obscure ways, which may indicate
+  // user code relied on timing differences resulting from ShadyDOM flushing
+  // as a result of the wrapped `dispatchEvent`.
   wrap(/** @type {!HTMLElement} */(inst)).dispatchEvent(new CustomEvent(eventName, { detail }));
 }
 
@@ -4099,14 +4437,189 @@ function runReflectEffect(inst, property, props, oldProps, info) {
 function runComputedEffects(inst, changedProps, oldProps, hasPaths) {
   let computeEffects = inst[TYPES.COMPUTE];
   if (computeEffects) {
-    let inputProps = changedProps;
-    while (runEffects(inst, computeEffects, inputProps, oldProps, hasPaths)) {
+    if (orderedComputed) {
+      // Runs computed effects in efficient order by keeping a topologically-
+      // sorted queue of compute effects to run, and inserting subsequently
+      // invalidated effects as they are run
+      dedupeId++;
+      const order = getComputedOrder(inst);
+      const queue = [];
+      for (let p in changedProps) {
+        enqueueEffectsFor(p, computeEffects, queue, order, hasPaths);
+      }
+      let info;
+      while ((info = queue.shift())) {
+        if (runComputedEffect(inst, '', changedProps, oldProps, info)) {
+          enqueueEffectsFor(info.methodInfo, computeEffects, queue, order, hasPaths);
+        }
+      }
       Object.assign(/** @type {!Object} */ (oldProps), inst.__dataOld);
       Object.assign(/** @type {!Object} */ (changedProps), inst.__dataPending);
-      inputProps = inst.__dataPending;
       inst.__dataPending = null;
+    } else {
+      // Original Polymer 2.x computed effects order, which continues running
+      // effects until no further computed properties have been invalidated
+      let inputProps = changedProps;
+      while (runEffects(inst, computeEffects, inputProps, oldProps, hasPaths)) {
+        Object.assign(/** @type {!Object} */ (oldProps), inst.__dataOld);
+        Object.assign(/** @type {!Object} */ (changedProps), inst.__dataPending);
+        inputProps = inst.__dataPending;
+        inst.__dataPending = null;
+      }
     }
   }
+}
+
+/**
+ * Inserts a computed effect into a queue, given the specified order. Performs
+ * the insert using a binary search.
+ *
+ * Used by `orderedComputed: true` computed property algorithm.
+ *
+ * @param {Object} info Property effects metadata
+ * @param {Array<Object>} queue Ordered queue of effects
+ * @param {Map<string,number>} order Map of computed property name->topological
+ *   sort order
+ */
+const insertEffect = (info, queue, order) => {
+  let start = 0;
+  let end = queue.length - 1;
+  let idx = -1;
+  while (start <= end) {
+    const mid = (start + end) >> 1;
+    // Note `methodInfo` is where the computed property name is stored in
+    // the effect metadata
+    const cmp = order.get(queue[mid].methodInfo) - order.get(info.methodInfo);
+    if (cmp < 0) {
+      start = mid + 1;
+    } else if (cmp > 0) {
+      end = mid - 1;
+    } else {
+      idx = mid;
+      break;
+    }
+  }
+  if (idx < 0) {
+    idx = end + 1;
+  }
+  queue.splice(idx, 0, info);
+};
+
+/**
+ * Inserts all downstream computed effects invalidated by the specified property
+ * into the topologically-sorted queue of effects to be run.
+ *
+ * Used by `orderedComputed: true` computed property algorithm.
+ *
+ * @param {string} prop Property name
+ * @param {Object} computeEffects Computed effects for this element
+ * @param {Array<Object>} queue Topologically-sorted queue of computed effects
+ *   to be run
+ * @param {Map<string,number>} order Map of computed property name->topological
+ *   sort order
+ * @param {boolean} hasPaths True with `changedProps` contains one or more paths
+ */
+const enqueueEffectsFor = (prop, computeEffects, queue, order, hasPaths) => {
+  const rootProperty = hasPaths ? root(prop) : prop;
+  const fxs = computeEffects[rootProperty];
+  if (fxs) {
+    for (let i=0; i<fxs.length; i++) {
+      const fx = fxs[i];
+      if ((fx.info.lastRun !== dedupeId) &&
+          (!hasPaths || pathMatchesTrigger(prop, fx.trigger))) {
+        fx.info.lastRun = dedupeId;
+        insertEffect(fx.info, queue, order);
+      }
+    }
+  }
+};
+
+/**
+ * Generates and retrieves a memoized map of computed property name to its
+ * topologically-sorted order.
+ *
+ * The map is generated by first assigning a "dependency count" to each property
+ * (defined as number properties it depends on, including its method for
+ * "dynamic functions"). Any properties that have no dependencies are added to
+ * the `ready` queue, which are properties whose order can be added to the final
+ * order map. Properties are popped off the `ready` queue one by one and a.) added as
+ * the next property in the order map, and b.) each property that it is a
+ * dependency for has its dep count decremented (and if that property's dep
+ * count goes to zero, it is added to the `ready` queue), until all properties
+ * have been visited and ordered.
+ *
+ * Used by `orderedComputed: true` computed property algorithm.
+ *
+ * @param {!Polymer_PropertyEffects} inst The instance to retrieve the computed
+ *   effect order for.
+ * @return {Map<string,number>} Map of computed property name->topological sort
+ *   order
+ */
+function getComputedOrder(inst) {
+  let ordered = inst.constructor.__orderedComputedDeps;
+  if (!ordered) {
+    ordered = new Map();
+    const effects = inst[TYPES.COMPUTE];
+    let {counts, ready, total} = dependencyCounts(inst);
+    let curr;
+    while ((curr = ready.shift())) {
+      ordered.set(curr, ordered.size);
+      const computedByCurr = effects[curr];
+      if (computedByCurr) {
+        computedByCurr.forEach(fx => {
+          // Note `methodInfo` is where the computed property name is stored
+          const computedProp = fx.info.methodInfo;
+          --total;
+          if (--counts[computedProp] === 0) {
+            ready.push(computedProp);
+          }
+        });
+      }
+    }
+    if (total !== 0) {
+      const el = /** @type {HTMLElement} */ (inst);
+      console.warn(`Computed graph for ${el.localName} incomplete; circular?`);
+    }
+    inst.constructor.__orderedComputedDeps = ordered;
+  }
+  return ordered;
+}
+
+/**
+ * Generates a map of property-to-dependency count (`counts`, where "dependency
+ * count" is the number of dependencies a given property has assuming it is a
+ * computed property, otherwise 0).  It also returns a pre-populated list of
+ * `ready` properties that have no dependencies and a `total` count, which is
+ * used for error-checking the graph.
+ *
+ * Used by `orderedComputed: true` computed property algorithm.
+ *
+ * @param {!Polymer_PropertyEffects} inst The instance to generate dependency
+ *   counts for.
+ * @return {!Object} Object containing `counts` map (property-to-dependency
+ *   count) and pre-populated `ready` array of properties that had zero
+ *   dependencies.
+ */
+function dependencyCounts(inst) {
+  const infoForComputed = inst[COMPUTE_INFO];
+  const counts = {};
+  const computedDeps = inst[TYPES.COMPUTE];
+  const ready = [];
+  let total = 0;
+  // Count dependencies for each computed property
+  for (let p in infoForComputed) {
+    const info = infoForComputed[p];
+    // Be sure to add the method name itself in case of "dynamic functions"
+    total += counts[p] =
+      info.args.filter(a => !a.literal).length + (info.dynamicFn ? 1 : 0);
+  }
+  // Build list of ready properties (that aren't themselves computed)
+  for (let p in computedDeps) {
+    if (!infoForComputed[p]) {
+      ready.push(p);
+    }
+  }
+  return {counts, ready, total};
 }
 
 /**
@@ -4116,19 +4629,25 @@ function runComputedEffects(inst, changedProps, oldProps, hasPaths) {
  *
  * @param {!Polymer_PropertyEffects} inst The instance the effect will be run on
  * @param {string} property Name of property
- * @param {?Object} props Bag of current property changes
+ * @param {?Object} changedProps Bag of current property changes
  * @param {?Object} oldProps Bag of previous values for changed properties
  * @param {?} info Effect metadata
- * @return {void}
+ * @return {boolean} True when the property being computed changed
  * @private
  */
-function runComputedEffect(inst, property, props, oldProps, info) {
-  let result = runMethodEffect(inst, property, props, oldProps, info);
+function runComputedEffect(inst, property, changedProps, oldProps, info) {
+  // Dirty check dependencies and run if any invalid
+  let result = runMethodEffect(inst, property, changedProps, oldProps, info);
+  // Abort if method returns a no-op result
+  if (result === NOOP) {
+    return false;
+  }
   let computedProp = info.methodInfo;
   if (inst.__dataHasAccessor && inst.__dataHasAccessor[computedProp]) {
-    inst._setPendingProperty(computedProp, result, true);
+    return inst._setPendingProperty(computedProp, result, true);
   } else {
     inst[computedProp] = result;
+    return false;
   }
 }
 
@@ -4271,7 +4790,10 @@ function runBindingEffect(inst, path, props, oldProps, info, hasPaths, nodeList)
   } else {
     let value = info.evaluator._evaluateBinding(inst, part, path, props, oldProps, hasPaths);
     // Propagate value to child
-    applyBindingValue(inst, node, binding, part, value);
+    // Abort if value is a no-op result
+    if (value !== NOOP) {
+      applyBindingValue(inst, node, binding, part, value);
+    }
   }
 }
 
@@ -4305,7 +4827,9 @@ function applyBindingValue(inst, node, binding, part, value) {
           inst._enqueueClient(node);
         }
       }
-    } else  {
+    } else {
+      // In legacy no-batching mode, bindings applied before dataReady are
+      // equivalent to the "apply config" phase, which only set managed props
       inst._setUnmanagedPropertyToNode(node, prop, value);
     }
   }
@@ -4385,6 +4909,8 @@ function setupBindings(inst, templateInfo) {
           addNotifyListener(node, inst, binding);
         }
       }
+      // This ensures all bound elements have a host set, regardless
+      // of whether they upgrade synchronous to creation
       node.__dataHost = inst;
     }
   }
@@ -4419,6 +4945,12 @@ function setupCompoundStorage(node, binding) {
     storage[target] = literals;
     // Configure properties with their literal parts
     if (binding.literal && binding.kind == 'property') {
+      // Note, className needs style scoping so this needs wrapping.
+      // We may also want to consider doing this for `textContent` and
+      // `innerHTML`.
+      if (target === 'className') {
+        node = wrap(node);
+      }
       node[target] = binding.literal;
     }
   }
@@ -4459,7 +4991,7 @@ function addNotifyListener(node, inst, binding) {
  * @param {boolean|Object=} dynamicFn Boolean or object map indicating whether
  *   method names should be included as a dependency to the effect. Note,
  *   defaults to true if the signature is static (sig.static is true).
- * @return {void}
+ * @return {!Object} Effect metadata for this method effect
  * @private
  */
 function createMethodEffect(model, sig, type, effectFn, methodInfo, dynamicFn) {
@@ -4483,6 +5015,7 @@ function createMethodEffect(model, sig, type, effectFn, methodInfo, dynamicFn) {
       fn: effectFn, info: info
     });
   }
+  return info;
 }
 
 /**
@@ -4508,7 +5041,7 @@ function runMethodEffect(inst, property, props, oldProps, info) {
   let fn = context[info.methodName];
   if (fn) {
     let args = inst._marshalArgs(info.args, property, props);
-    return fn.apply(context, args);
+    return args === NOOP ? NOOP : fn.apply(context, args);
   } else if (!info.dynamicFn) {
     console.warn('method `' + info.methodName + '` not defined');
   }
@@ -4621,7 +5154,7 @@ function parseArg(rawArg) {
     // repair extra escape sequences; note only commas strictly need
     // escaping, but we allow any other char to be escaped since its
     // likely users will do this
-    .replace(/\\(.)/g, '\$1')
+    .replace(/\\(.)/g, '$1')
     ;
   // basic argument descriptor
   let a = {
@@ -4691,8 +5224,18 @@ function getArgValue(data, props, path) {
  * @private
  */
 function notifySplices(inst, array, path, splices) {
-  inst.notifyPath(path + '.splices', { indexSplices: splices });
+  const splicesData = { indexSplices: splices };
+  // Legacy behavior stored splices in `__data__` so it was *not* ephemeral.
+  // To match this behavior, we store splices directly on the array.
+  if (legacyUndefined && !inst._overrideLegacyUndefined) {
+    array.splices = splicesData;
+  }
+  inst.notifyPath(path + '.splices', splicesData);
   inst.notifyPath(path + '.length', array.length);
+  // Clear splice data only when it's stored on the array.
+  if (legacyUndefined && !inst._overrideLegacyUndefined) {
+    splicesData.indexSplices = [];
+  }
 }
 
 /**
@@ -4791,11 +5334,6 @@ const PropertyEffects = dedupingMixin(superClass => {
       /** @type {boolean} */
       // Used to identify users of this mixin, ala instanceof
       this.__isPropertyEffectsClient = true;
-      /** @type {number} */
-      // NOTE: used to track re-entrant calls to `_flushProperties`
-      // path changes dirty check against `__dataTemp` only during one "turn"
-      // and are cleared when `__dataCounter` returns to 0.
-      this.__dataCounter = 0;
       /** @type {boolean} */
       this.__dataClientsReady;
       /** @type {Array} */
@@ -4823,6 +5361,8 @@ const PropertyEffects = dedupingMixin(superClass => {
       /** @type {Object} */
       this.__computeEffects;
       /** @type {Object} */
+      this.__computeInfo;
+      /** @type {Object} */
       this.__reflectEffects;
       /** @type {Object} */
       this.__notifyEffects;
@@ -4834,6 +5374,8 @@ const PropertyEffects = dedupingMixin(superClass => {
       this.__readOnly;
       /** @type {!TemplateInfo} */
       this.__templateInfo;
+      /** @type {boolean} */
+      this._overrideLegacyUndefined;
     }
 
     get PROPERTY_EFFECT_TYPES() {
@@ -4846,7 +5388,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      */
     _initializeProperties() {
       super._initializeProperties();
-      hostStack.registerHost(this);
+      this._registerHost();
       this.__dataClientsReady = false;
       this.__dataPendingClients = null;
       this.__dataToNotify = null;
@@ -4857,6 +5399,16 @@ const PropertyEffects = dedupingMixin(superClass => {
       this.__dataHost = this.__dataHost || null;
       this.__dataTemp = {};
       this.__dataClientsInitialized = false;
+    }
+
+    _registerHost() {
+      if (hostStack.length) {
+        let host = hostStack[hostStack.length-1];
+        host._enqueueClient(this);
+        // This ensures even non-bound elements have a host set, as
+        // long as they upgrade synchronously
+        this.__dataHost = host;
+      }
     }
 
     /**
@@ -4910,7 +5462,7 @@ const PropertyEffects = dedupingMixin(superClass => {
     _addPropertyEffect(property, type, effect) {
       this._createPropertyAccessor(property, type == TYPES.READ_ONLY);
       // effects are accumulated into arrays per property based on type
-      let effects = ensureOwnEffectMap(this, type)[property];
+      let effects = ensureOwnEffectMap(this, type, true)[property];
       if (!effects) {
         effects = this[type][property] = [];
       }
@@ -4927,7 +5479,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @return {void}
      */
     _removePropertyEffect(property, type, effect) {
-      let effects = ensureOwnEffectMap(this, type)[property];
+      let effects = ensureOwnEffectMap(this, type, true)[property];
       let idx = effects.indexOf(effect);
       if (idx >= 0) {
         effects.splice(idx, 1);
@@ -5099,6 +5651,10 @@ const PropertyEffects = dedupingMixin(superClass => {
       // implement a whitelist of tag & property values that should never
       // be reset (e.g. <input>.value && <select>.value)
       if (value !== node[prop] || typeof value == 'object') {
+        // Note, className needs style scoping so this needs wrapping.
+        if (prop === 'className') {
+          node = /** @type {!Node} */(wrap(node));
+        }
         node[prop] = value;
       }
     }
@@ -5214,19 +5770,6 @@ const PropertyEffects = dedupingMixin(superClass => {
       if (client !== this) {
         this.__dataPendingClients.push(client);
       }
-    }
-
-    /**
-     * Overrides superclass implementation.
-     *
-     * @override
-     * @return {void}
-     * @protected
-     */
-    _flushProperties() {
-      this.__dataCounter++;
-      super._flushProperties();
-      this.__dataCounter--;
     }
 
     /**
@@ -5368,11 +5911,12 @@ const PropertyEffects = dedupingMixin(superClass => {
       // ----------------------------
       let hasPaths = this.__dataHasPaths;
       this.__dataHasPaths = false;
+      let notifyProps;
       // Compute properties
       runComputedEffects(this, changedProps, oldProps, hasPaths);
       // Clear notify properties prior to possible reentry (propagate, observe),
       // but after computing effects have a chance to add to them
-      let notifyProps = this.__dataToNotify;
+      notifyProps = this.__dataToNotify;
       this.__dataToNotify = null;
       // Propagate properties to clients
       this._propagatePropertyChanges(changedProps, oldProps, hasPaths);
@@ -5410,11 +5954,23 @@ const PropertyEffects = dedupingMixin(superClass => {
       if (this[TYPES.PROPAGATE]) {
         runEffects(this, this[TYPES.PROPAGATE], changedProps, oldProps, hasPaths);
       }
-      let templateInfo = this.__templateInfo;
-      while (templateInfo) {
+      if (this.__templateInfo) {
+        this._runEffectsForTemplate(this.__templateInfo, changedProps, oldProps, hasPaths);
+      }
+    }
+
+    _runEffectsForTemplate(templateInfo, changedProps, oldProps, hasPaths) {
+      const baseRunEffects = (changedProps, hasPaths) => {
         runEffects(this, templateInfo.propertyEffects, changedProps, oldProps,
           hasPaths, templateInfo.nodeList);
-        templateInfo = templateInfo.nextTemplateInfo;
+        for (let info=templateInfo.firstChild; info; info=info.nextSibling) {
+          this._runEffectsForTemplate(info, changedProps, oldProps, hasPaths);
+        }
+      };
+      if (templateInfo.runEffects) {
+        templateInfo.runEffects(baseRunEffects, changedProps, hasPaths);
+      } else {
+        baseRunEffects(changedProps, hasPaths);
       }
     }
 
@@ -5617,7 +6173,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @param {number} start Index from which to start removing/inserting.
      * @param {number=} deleteCount Number of items to remove.
      * @param {...*} items Items to insert into array.
-     * @return {Array} Array of removed items.
+     * @return {!Array} Array of removed items.
      * @public
      */
     splice(path, start, deleteCount, ...items) {
@@ -5873,7 +6429,10 @@ const PropertyEffects = dedupingMixin(superClass => {
       if (!sig) {
         throw new Error("Malformed computed expression '" + expression + "'");
       }
-      createMethodEffect(this, sig, TYPES.COMPUTE, runComputedEffect, property, dynamicFn);
+      const info = createMethodEffect(this, sig, TYPES.COMPUTE, runComputedEffect, property, dynamicFn);
+      // Effects are normally stored as map of dependency->effect, but for
+      // ordered computation, we also need tree of computedProp->dependencies
+      ensureOwnEffectMap(this, COMPUTE_INFO)[property] = info;
     }
 
     /**
@@ -5886,7 +6445,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @param {!Array<!MethodArg>} args Array of argument metadata
      * @param {string} path Property/path name that triggered the method effect
      * @param {Object} props Bag of current property changes
-     * @return {Array<*>} Array of argument values
+     * @return {!Array<*>} Array of argument values
      * @private
      */
     _marshalArgs(args, path, props) {
@@ -5906,6 +6465,11 @@ const PropertyEffects = dedupingMixin(superClass => {
           } else {
             value = structured ? getArgValue(data, props, name) : data[name];
           }
+        }
+        // When the `legacyUndefined` flag is enabled, pass a no-op value
+        // so that the observer, computed property, or compound binding is aborted.
+        if (legacyUndefined && !this._overrideLegacyUndefined && value === undefined && args.length > 1) {
+          return NOOP;
         }
         values[i] = value;
       }
@@ -5949,6 +6513,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @param {Object=} effect Effect metadata object
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static addPropertyEffect(property, type, effect) {
       this.prototype._addPropertyEffect(property, type, effect);
@@ -5963,6 +6528,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      *   a dependency to the effect.
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static createPropertyObserver(property, method, dynamicFn) {
       this.prototype._createPropertyObserver(property, method, dynamicFn);
@@ -5980,6 +6546,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @return {void}
      *   whether method names should be included as a dependency to the effect.
      * @protected
+     * @nocollapse
      */
     static createMethodObserver(expression, dynamicFn) {
       this.prototype._createMethodObserver(expression, dynamicFn);
@@ -5992,6 +6559,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @param {string} property Property name
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static createNotifyingProperty(property) {
       this.prototype._createNotifyingProperty(property);
@@ -6012,6 +6580,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      *   when `true`.
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static createReadOnlyProperty(property, protectedSetter) {
       this.prototype._createReadOnlyProperty(property, protectedSetter);
@@ -6024,6 +6593,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @param {string} property Property name
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static createReflectedProperty(property) {
       this.prototype._createReflectedProperty(property);
@@ -6042,6 +6612,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      *   method names should be included as a dependency to the effect.
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static createComputedProperty(property, expression, dynamicFn) {
       this.prototype._createComputedProperty(property, expression, dynamicFn);
@@ -6058,6 +6629,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      *   bindings
      * @return {!TemplateInfo} Template metadata object
      * @protected
+     * @nocollapse
      */
     static bindTemplate(template) {
       return this.prototype._bindTemplate(template);
@@ -6065,10 +6637,43 @@ const PropertyEffects = dedupingMixin(superClass => {
 
     // -- binding ----------------------------------------------
 
+    /*
+     * Overview of binding flow:
+     *
+     * During finalization (`instanceBinding==false`, `wasPreBound==false`):
+     *  `_bindTemplate(t, false)` called directly during finalization - parses
+     *  the template (for the first time), and then assigns that _prototypical_
+     *  template info to `__preboundTemplateInfo` _on the prototype_; note in
+     *  this case `wasPreBound` is false; this is the first time we're binding
+     *  it, thus we create accessors.
+     *
+     * During first stamping (`instanceBinding==true`, `wasPreBound==true`):
+     *   `_stampTemplate` calls `_bindTemplate(t, true)`: the `templateInfo`
+     *   returned matches the prebound one, and so this is `wasPreBound == true`
+     *   state; thus we _skip_ creating accessors, but _do_ create an instance
+     *   of the template info to serve as the start of our linked list (needs to
+     *   be an instance, not the prototypical one, so that we can add `nodeList`
+     *   to it to contain the `nodeInfo`-ordered list of instance nodes for
+     *   bindings, and so we can chain runtime-stamped template infos off of
+     *   it). At this point, the call to `_stampTemplate` calls
+     *   `applyTemplateInfo` for each nested `<template>` found during parsing
+     *   to hand prototypical `_templateInfo` to them; we also pass the _parent_
+     *   `templateInfo` to the `<template>` so that we have the instance-time
+     *   parent to link the `templateInfo` under in the case it was
+     *   runtime-stamped.
+     *
+     * During subsequent runtime stamping (`instanceBinding==true`,
+     *   `wasPreBound==false`): `_stampTemplate` calls `_bindTemplate(t, true)`
+     *   - here `templateInfo` is guaranteed to _not_ match the prebound one,
+     *   because it was either a different template altogether, or even if it
+     *   was the same template, the step above created a instance of the info;
+     *   in this case `wasPreBound == false`, so we _do_ create accessors, _and_
+     *   link a instance into the linked list.
+     */
+
     /**
-     * Equivalent to static `bindTemplate` API but can be called on
-     * an instance to add effects at runtime.  See that method for
-     * full API docs.
+     * Equivalent to static `bindTemplate` API but can be called on an instance
+     * to add effects at runtime.  See that method for full API docs.
      *
      * This method may be called on the prototype (for prototypical template
      * binding, to avoid creating accessors every instance) once per prototype,
@@ -6078,20 +6683,20 @@ const PropertyEffects = dedupingMixin(superClass => {
      *
      * @override
      * @param {!HTMLTemplateElement} template Template containing binding
-     *   bindings
+     * bindings
      * @param {boolean=} instanceBinding When false (default), performs
-     *   "prototypical" binding of the template and overwrites any previously
-     *   bound template for the class. When true (as passed from
-     *   `_stampTemplate`), the template info is instanced and linked into
-     *   the list of bound templates.
+     * "prototypical" binding of the template and overwrites any previously
+     * bound template for the class. When true (as passed from
+     * `_stampTemplate`), the template info is instanced and linked into the
+     * list of bound templates.
      * @return {!TemplateInfo} Template metadata object; for `runtimeBinding`,
-     *   this is an instance of the prototypical template info
+     * this is an instance of the prototypical template info
      * @protected
      * @suppress {missingProperties} go/missingfnprops
      */
     _bindTemplate(template, instanceBinding) {
       let templateInfo = this.constructor._parseTemplate(template);
-      let wasPreBound = this.__templateInfo == templateInfo;
+      let wasPreBound = this.__preBoundTemplateInfo == templateInfo;
       // Optimization: since this is called twice for proto-bound templates,
       // don't attempt to recreate accessors if this template was pre-bound
       if (!wasPreBound) {
@@ -6101,17 +6706,40 @@ const PropertyEffects = dedupingMixin(superClass => {
       }
       if (instanceBinding) {
         // For instance-time binding, create instance of template metadata
-        // and link into list of templates if necessary
+        // and link into tree of templates if necessary
         templateInfo = /** @type {!TemplateInfo} */(Object.create(templateInfo));
         templateInfo.wasPreBound = wasPreBound;
-        if (!wasPreBound && this.__templateInfo) {
-          let last = this.__templateInfoLast || this.__templateInfo;
-          this.__templateInfoLast = last.nextTemplateInfo = templateInfo;
-          templateInfo.previousTemplateInfo = last;
-          return templateInfo;
+        if (!this.__templateInfo) {
+          // Set the info to the root of the tree
+          this.__templateInfo = templateInfo;
+        } else {
+          // Append this template info onto the end of its parent template's
+          // list, which will determine the tree structure via which property
+          // effects are run; if this template was not nested in another
+          // template, use the root template (the first stamped one) as the
+          // parent. Note, `parent` is the `templateInfo` instance for this
+          // template's parent (containing) template, which was set up in
+          // `applyTemplateInfo`.  While a given template's `parent` is set
+          // apriori, it is only added to the parent's child list at the point
+          // that it is being bound, since a template may or may not ever be
+          // stamped, and may be stamped more than once (in which case instances
+          // of the template info will be in the tree under its parent more than
+          // once).
+          const parent = template._parentTemplateInfo || this.__templateInfo;
+          const previous = parent.lastChild;
+          templateInfo.parent = parent;
+          parent.lastChild = templateInfo;
+          templateInfo.previousSibling = previous;
+          if (previous) {
+            previous.nextSibling = templateInfo;
+          } else {
+            parent.firstChild = templateInfo;
+          }
         }
+      } else {
+        this.__preBoundTemplateInfo = templateInfo;
       }
-      return this.__templateInfo = templateInfo;
+      return templateInfo;
     }
 
     /**
@@ -6126,6 +6754,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @param {Object=} effect Effect metadata object
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static _addTemplatePropertyEffect(templateInfo, prop, effect) {
       let hostProps = templateInfo.hostProps = templateInfo.hostProps || {};
@@ -6151,17 +6780,20 @@ const PropertyEffects = dedupingMixin(superClass => {
      * in the main element template.
      *
      * @param {!HTMLTemplateElement} template Template to stamp
+     * @param {TemplateInfo=} templateInfo Optional bound template info associated
+     *   with the template to be stamped; if omitted the template will be
+     *   automatically bound.
      * @return {!StampedTemplate} Cloned template content
      * @override
      * @protected
      */
-    _stampTemplate(template) {
+    _stampTemplate(template, templateInfo) {
+      templateInfo =  templateInfo || /** @type {!TemplateInfo} */(this._bindTemplate(template, true));
       // Ensures that created dom is `_enqueueClient`'d to this element so
       // that it can be flushed on next call to `_flushProperties`
-      hostStack.beginHosting(this);
-      let dom = super._stampTemplate(template);
-      hostStack.endHosting(this);
-      let templateInfo = /** @type {!TemplateInfo} */(this._bindTemplate(template, true));
+      hostStack.push(this);
+      let dom = super._stampTemplate(template, templateInfo);
+      hostStack.pop();
       // Add template-instance-specific data to instanced templateInfo
       templateInfo.nodeList = dom.nodeList;
       // Capture child nodes to allow unstamping of non-prototypical templates
@@ -6174,10 +6806,18 @@ const PropertyEffects = dedupingMixin(superClass => {
       dom.templateInfo = templateInfo;
       // Setup compound storage, 2-way listeners, and dataHost for bindings
       setupBindings(this, templateInfo);
-      // Flush properties into template nodes if already booted
-      if (this.__dataReady) {
-        runEffects(this, templateInfo.propertyEffects, this.__data, null,
-          false, templateInfo.nodeList);
+      // Flush properties into template nodes; the check on `__dataClientsReady`
+      // ensures we don't needlessly run effects for an element's initial
+      // prototypical template stamping since they will happen as a part of the
+      // first call to `_propertiesChanged`. This flag is set to true
+      // after running the initial propagate effects, and immediately before
+      // flushing clients. Since downstream clients could cause stamping on
+      // this host (e.g. a fastDomIf `dom-if` being forced to render
+      // synchronously), this flag ensures effects for runtime-stamped templates
+      // are run at this point during the initial element boot-up.
+      if (this.__dataClientsReady) {
+        this._runEffectsForTemplate(templateInfo, this.__data, null, false);
+        this._flushClients();
       }
       return dom;
     }
@@ -6193,25 +6833,28 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @protected
      */
     _removeBoundDom(dom) {
-      // Unlink template info
-      let templateInfo = dom.templateInfo;
-      if (templateInfo.previousTemplateInfo) {
-        templateInfo.previousTemplateInfo.nextTemplateInfo =
-          templateInfo.nextTemplateInfo;
+      // Unlink template info; Note that while the child is unlinked from its
+      // parent list, a template's `parent` reference is never removed, since
+      // this is is determined by the tree structure and applied at
+      // `applyTemplateInfo` time.
+      const templateInfo = dom.templateInfo;
+      const {previousSibling, nextSibling, parent} = templateInfo;
+      if (previousSibling) {
+        previousSibling.nextSibling = nextSibling;
+      } else if (parent) {
+        parent.firstChild = nextSibling;
       }
-      if (templateInfo.nextTemplateInfo) {
-        templateInfo.nextTemplateInfo.previousTemplateInfo =
-          templateInfo.previousTemplateInfo;
+      if (nextSibling) {
+        nextSibling.previousSibling = previousSibling;
+      } else if (parent) {
+        parent.lastChild = previousSibling;
       }
-      if (this.__templateInfoLast == templateInfo) {
-        this.__templateInfoLast = templateInfo.previousTemplateInfo;
-      }
-      templateInfo.previousTemplateInfo = templateInfo.nextTemplateInfo = null;
+      templateInfo.nextSibling = templateInfo.previousSibling = null;
       // Remove stamped nodes
       let nodes = templateInfo.childNodes;
       for (let i=0; i<nodes.length; i++) {
         let node = nodes[i];
-        node.parentNode.removeChild(node);
+        wrap(wrap(node).parentNode).removeChild(node);
       }
     }
 
@@ -6230,9 +6873,13 @@ const PropertyEffects = dedupingMixin(superClass => {
      *   metadata to `nodeInfo`
      * @protected
      * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     * @nocollapse
      */
     static _parseTemplateNode(node, templateInfo, nodeInfo) {
-      let noted = super._parseTemplateNode(node, templateInfo, nodeInfo);
+      // TODO(https://github.com/google/closure-compiler/issues/3240):
+      //     Change back to just super.methodCall()
+      let noted = propertyEffectsBase._parseTemplateNode.call(
+        this, node, templateInfo, nodeInfo);
       if (node.nodeType === Node.TEXT_NODE) {
         let parts = this._parseBindings(node.textContent, templateInfo);
         if (parts) {
@@ -6264,6 +6911,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      *   metadata to `nodeInfo`
      * @protected
      * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     * @nocollapse
      */
     static _parseTemplateNodeAttribute(node, templateInfo, nodeInfo, name, value) {
       let parts = this._parseBindings(value, templateInfo);
@@ -6290,6 +6938,10 @@ const PropertyEffects = dedupingMixin(superClass => {
           }
           node.setAttribute(name, literal);
         }
+        // support disable-upgrade
+        if (kind == 'attribute' && origName == 'disable-upgrade$') {
+          node.setAttribute(name, '');
+        }
         // Clear attribute before removing, since IE won't allow removing
         // `value` attribute if it previously had a value (can't
         // unconditionally set '' before removing since attributes with `$`
@@ -6309,7 +6961,10 @@ const PropertyEffects = dedupingMixin(superClass => {
         addBinding(this, templateInfo, nodeInfo, kind, name, parts, literal);
         return true;
       } else {
-        return super._parseTemplateNodeAttribute(node, templateInfo, nodeInfo, name, value);
+        // TODO(https://github.com/google/closure-compiler/issues/3240):
+        //     Change back to just super.methodCall()
+        return propertyEffectsBase._parseTemplateNodeAttribute.call(
+          this, node, templateInfo, nodeInfo, name, value);
       }
     }
 
@@ -6325,15 +6980,56 @@ const PropertyEffects = dedupingMixin(superClass => {
      *   metadata to `nodeInfo`
      * @protected
      * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     * @nocollapse
      */
     static _parseTemplateNestedTemplate(node, templateInfo, nodeInfo) {
-      let noted = super._parseTemplateNestedTemplate(node, templateInfo, nodeInfo);
+      // TODO(https://github.com/google/closure-compiler/issues/3240):
+      //     Change back to just super.methodCall()
+      let noted = propertyEffectsBase._parseTemplateNestedTemplate.call(
+        this, node, templateInfo, nodeInfo);
+      const parent = node.parentNode;
+      const nestedTemplateInfo = nodeInfo.templateInfo;
+      const isDomIf = parent.localName === 'dom-if';
+      const isDomRepeat = parent.localName === 'dom-repeat';
+      // Remove nested template and redirect its host bindings & templateInfo
+      // onto the parent (dom-if/repeat element)'s nodeInfo
+      if (removeNestedTemplates && (isDomIf || isDomRepeat)) {
+        parent.removeChild(node);
+        // Use the parent's nodeInfo (for the dom-if/repeat) to record the
+        // templateInfo, and use that for any host property bindings below
+        nodeInfo = nodeInfo.parentInfo;
+        nodeInfo.templateInfo = nestedTemplateInfo;
+        // Ensure the parent dom-if/repeat is noted since it now may have host
+        // bindings; it may not have been if it did not have its own bindings
+        nodeInfo.noted = true;
+        noted = false;
+      }
       // Merge host props into outer template and add bindings
-      let hostProps = nodeInfo.templateInfo.hostProps;
-      let mode = '{';
-      for (let source in hostProps) {
-        let parts = [{ mode, source, dependencies: [source] }];
-        addBinding(this, templateInfo, nodeInfo, 'property', '_host_' + source, parts);
+      let hostProps = nestedTemplateInfo.hostProps;
+      if (fastDomIf && isDomIf) {
+        // `fastDomIf` mode uses runtime-template stamping to add accessors/
+        // effects to properties used in its template; as such we don't need to
+        // tax the host element with `_host_` bindings for the `dom-if`.
+        // However, in the event it is nested in a `dom-repeat`, it is still
+        // important that its host properties are added to the
+        // TemplateInstance's `hostProps` so that they are forwarded to the
+        // TemplateInstance.
+        if (hostProps) {
+          templateInfo.hostProps =
+            Object.assign(templateInfo.hostProps || {}, hostProps);
+          // Ensure the dom-if is noted so that it has a __dataHost, since
+          // `fastDomIf` uses the host for runtime template stamping; note this
+          // was already ensured above in the `removeNestedTemplates` case
+          if (!removeNestedTemplates) {
+            nodeInfo.parentInfo.noted = true;
+          }
+        }
+      } else {
+        let mode = '{';
+        for (let source in hostProps) {
+          let parts = [{ mode, source, dependencies: [source], hostProp: true }];
+          addBinding(this, templateInfo, nodeInfo, 'property', '_host_' + source, parts);
+        }
       }
       return noted;
     }
@@ -6381,6 +7077,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @param {Object} templateInfo Current template metadata
      * @return {Array<!BindingPart>} Array of binding part metadata
      * @protected
+     * @nocollapse
      */
     static _parseBindings(text, templateInfo) {
       let parts = [];
@@ -6462,6 +7159,7 @@ const PropertyEffects = dedupingMixin(superClass => {
      * @param {boolean} hasPaths True with `props` contains one or more paths
      * @return {*} Value the binding part evaluated to
      * @protected
+     * @nocollapse
      */
     static _evaluateBinding(inst, part, path, props, oldProps, hasPaths) {
       let value;
@@ -6488,7 +7186,7 @@ const PropertyEffects = dedupingMixin(superClass => {
 });
 
 /**
- * Helper api for enqueuing client dom created by a host element.
+ * Stack for enqueuing client dom created by a host element.
  *
  * By default elements are flushed via `_flushProperties` when
  * `connectedCallback` is called. Elements attach their client dom to
@@ -6510,42 +7208,7 @@ const PropertyEffects = dedupingMixin(superClass => {
  *
  * @private
  */
-class HostStack {
-  constructor() {
-    this.stack = [];
-  }
-
-  /**
-   * @param {*} inst Instance to add to hostStack
-   * @return {void}
-   */
-  registerHost(inst) {
-    if (this.stack.length) {
-      let host = this.stack[this.stack.length-1];
-      host._enqueueClient(inst);
-    }
-  }
-
-  /**
-   * @param {*} inst Instance to begin hosting
-   * @return {void}
-   */
-  beginHosting(inst) {
-    this.stack.push(inst);
-  }
-
-  /**
-   * @param {*} inst Instance to end hosting
-   * @return {void}
-   */
-  endHosting(inst) {
-    let stackLen = this.stack.length;
-    if (stackLen && this.stack[stackLen-1] == inst) {
-      this.stack.pop();
-    }
-  }
-}
-const hostStack = new HostStack();
+const hostStack = [];
 
 /**
 @license
@@ -6579,8 +7242,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
  * Creates a copy of `props` with each property normalized such that
  * upgraded it is an object with at least a type property { type: Type}.
  *
- * @param {Object} props Properties to normalize
- * @return {Object} Copy of input `props` with normalized properties that
+ * @param {!Object} props Properties to normalize
+ * @return {!Object} Copy of input `props` with normalized properties that
  * are in the form {type: Type}
  * @private
  */
@@ -6609,6 +7272,9 @@ function normalizeProperties(props) {
  * @appliesMixin PropertiesChanged
  * @summary Mixin that provides a minimal starting point for using
  * the PropertiesChanged mixin by providing a declarative `properties` object.
+ * @template T
+ * @param {function(new:T)} superClass Class to apply mixin to.
+ * @return {function(new:T)} superClass with mixin applied.
  */
 const PropertiesMixin = dedupingMixin(superClass => {
 
@@ -6675,12 +7341,13 @@ const PropertiesMixin = dedupingMixin(superClass => {
     * Implements standard custom elements getter to observes the attributes
     * listed in `properties`.
     * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+    * @nocollapse
     */
    static get observedAttributes() {
-     if (!this.hasOwnProperty('__observedAttributes')) {
+     if (!this.hasOwnProperty(JSCompiler_renameProperty('__observedAttributes', this))) {
        register(this.prototype);
        const props = this._properties;
-       this.__observedAttributes = props ? Object.keys(props).map(p => this.attributeNameForProperty(p)) : [];
+       this.__observedAttributes = props ? Object.keys(props).map(p => this.prototype._addPropertyToAttributeMap(p)) : [];
      }
      return this.__observedAttributes;
    }
@@ -6691,6 +7358,7 @@ const PropertiesMixin = dedupingMixin(superClass => {
     * accessors exist on the element prototype. This method calls
     * `_finalizeClass` to finalize each constructor in the prototype chain.
     * @return {void}
+    * @nocollapse
     */
    static finalize() {
      if (!this.hasOwnProperty(JSCompiler_renameProperty('__finalized', this))) {
@@ -6709,11 +7377,12 @@ const PropertiesMixin = dedupingMixin(superClass => {
     * `finalize` and finalizes the class constructor.
     *
     * @protected
+    * @nocollapse
     */
    static _finalizeClass() {
      const props = ownProperties(/** @type {!PropertiesMixinConstructor} */(this));
      if (props) {
-       this.createProperties(props);
+       /** @type {?} */ (this).createProperties(props);
      }
    }
 
@@ -6724,6 +7393,7 @@ const PropertiesMixin = dedupingMixin(superClass => {
     *
     * @return {Object} Object containing properties for this class
     * @protected
+    * @nocollapse
     */
    static get _properties() {
      if (!this.hasOwnProperty(
@@ -6743,6 +7413,7 @@ const PropertiesMixin = dedupingMixin(superClass => {
     * @return {*} Type to which to deserialize attribute
     *
     * @protected
+    * @nocollapse
     */
    static typeForProperty(name) {
      const info = this._properties[name];
@@ -6809,7 +7480,7 @@ const PropertiesMixin = dedupingMixin(superClass => {
  * Current Polymer version in Semver notation.
  * @type {string} Semver notation of the current version of Polymer.
  */
-const version = '3.2.0';
+const version = '3.5.0';
 
 const builtCSS = window.ShadyCSS && window.ShadyCSS['cssBuild'];
 
@@ -6880,6 +7551,9 @@ const builtCSS = window.ShadyCSS && window.ShadyCSS['cssBuild'];
  *   import strategies.
  * @summary Element class mixin that provides the core API for Polymer's
  * meta-programming features.
+ * @template T
+ * @param {function(new:T)} superClass Class to apply mixin to.
+ * @return {function(new:T)} superClass with mixin applied.
  */
 const ElementMixin = dedupingMixin(base => {
   /**
@@ -7076,6 +7750,30 @@ const ElementMixin = dedupingMixin(base => {
     if (window.ShadyCSS) {
       window.ShadyCSS.prepareTemplate(template, is);
     }
+    // Support for `adoptedStylesheets` relies on using native Shadow DOM
+    // and built CSS. Built CSS is required because runtime transformation of
+    // `@apply` is not supported. This is because ShadyCSS relies on being able
+    // to update a `style` element in the element template and this is
+    // removed when using `adoptedStyleSheets`.
+    // Note, it would be more efficient to allow style includes to become
+    // separate stylesheets; however, because of `@apply` these are
+    // potentially not shareable and sharing the ones that could be shared
+    // would require some coordination. To keep it simple, all the includes
+    // and styles are collapsed into a single shareable stylesheet.
+    if (useAdoptedStyleSheetsWithBuiltCSS && builtCSS &&
+        supportsAdoptingStyleSheets) {
+      // Remove styles in template and make a shareable stylesheet
+      const styles = template.content.querySelectorAll('style');
+      if (styles) {
+        let css = '';
+        Array.from(styles).forEach(s => {
+          css += s.textContent;
+          s.parentNode.removeChild(s);
+        });
+        klass._styleSheet = new CSSStyleSheet();
+        klass._styleSheet.replaceSync(css);
+      }
+    }
   }
 
   /**
@@ -7090,9 +7788,14 @@ const ElementMixin = dedupingMixin(base => {
     let template = null;
     // Under strictTemplatePolicy in 3.x+, dom-module lookup is only allowed
     // when opted-in via allowTemplateFromDomModule
-    if (is && (!strictTemplatePolicy )) {
+    if (is && (!strictTemplatePolicy || allowTemplateFromDomModule)) {
       template = /** @type {?HTMLTemplateElement} */ (
           DomModule.import(is, 'template'));
+      // Under strictTemplatePolicy, require any element with an `is`
+      // specified to have a dom-module
+      if (strictTemplatePolicy && !template) {
+        throw new Error(`strictTemplatePolicy: expecting dom-module or null template for ${is}`);
+      }
     }
     return template;
   }
@@ -7109,6 +7812,7 @@ const ElementMixin = dedupingMixin(base => {
     /**
      * Current Polymer version in Semver notation.
      * @type {string} Semver notation of the current version of Polymer.
+     * @nocollapse
      */
     static get polymerElementVersion() {
       return version;
@@ -7120,9 +7824,12 @@ const ElementMixin = dedupingMixin(base => {
      * @return {void}
      * @protected
      * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     * @nocollapse
      */
     static _finalizeClass() {
-      super._finalizeClass();
+      // TODO(https://github.com/google/closure-compiler/issues/3240):
+      //     Change back to just super.methodCall()
+      polymerElementBase._finalizeClass.call(this);
       const observers = ownObservers(this);
       if (observers) {
         this.createObservers(observers, this._properties);
@@ -7130,6 +7837,7 @@ const ElementMixin = dedupingMixin(base => {
       this._prepareTemplate();
     }
 
+    /** @nocollapse */
     static _prepareTemplate() {
       // note: create "working" template that is finalized at instance time
       let template = /** @type {PolymerElementConstructor} */ (this).template;
@@ -7137,11 +7845,12 @@ const ElementMixin = dedupingMixin(base => {
         if (typeof template === 'string') {
           console.error('template getter must return HTMLTemplateElement');
           template = null;
-        } else {
+        } else if (!legacyOptimizations) {
           template = template.cloneNode(true);
         }
       }
 
+      /** @override */
       this.prototype._template = template;
     }
 
@@ -7151,10 +7860,12 @@ const ElementMixin = dedupingMixin(base => {
      * @param {!Object} props .
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static createProperties(props) {
       for (let p in props) {
-        createPropertyFromConfig(this.prototype, p, props[p], props);
+        createPropertyFromConfig(
+            /** @type {?} */ (this.prototype), p, props[p], props);
       }
     }
 
@@ -7168,6 +7879,7 @@ const ElementMixin = dedupingMixin(base => {
      *   reference is changed
      * @return {void}
      * @protected
+     * @nocollapse
      */
     static createObservers(observers, dynamicFns) {
       const proto = this.prototype;
@@ -7179,9 +7891,13 @@ const ElementMixin = dedupingMixin(base => {
     /**
      * Returns the template that will be stamped into this element's shadow root.
      *
-     * If a `static get is()` getter is defined, the default implementation
-     * will return the first `<template>` in a `dom-module` whose `id`
-     * matches this element's `is`.
+     * If a `static get is()` getter is defined, the default implementation will
+     * return the first `<template>` in a `dom-module` whose `id` matches this
+     * element's `is` (note that a `_template` property on the class prototype
+     * takes precedence over the `dom-module` template, to maintain legacy
+     * element semantics; a subclass will subsequently fall back to its super
+     * class template if neither a `prototype._template` or a `dom-module` for
+     * the class's `is` was found).
      *
      * Users may override this getter to return an arbitrary template
      * (in which case the `is` getter is unnecessary). The template returned
@@ -7211,6 +7927,7 @@ const ElementMixin = dedupingMixin(base => {
      *   }
      *
      * @return {!HTMLTemplateElement|string} Template to be stamped
+     * @nocollapse
      */
     static get template() {
       // Explanation of template-related properties:
@@ -7227,13 +7944,25 @@ const ElementMixin = dedupingMixin(base => {
       //     or set in registered(); once the static getter runs, a clone of it
       //     will overwrite it on the prototype as the working template.
       if (!this.hasOwnProperty(JSCompiler_renameProperty('_template', this))) {
+        let protoTemplate = this.prototype.hasOwnProperty(
+          JSCompiler_renameProperty('_template', this.prototype)) ?
+          this.prototype._template : undefined;
+        // Accept a function for the legacy Polymer({_template:...}) field for
+        // lazy parsing
+        if (typeof protoTemplate === 'function') {
+          protoTemplate = protoTemplate();
+        }
         this._template =
           // If user has put template on prototype (e.g. in legacy via registered
-          // callback or info object), prefer that first
-          this.prototype.hasOwnProperty(JSCompiler_renameProperty('_template', this.prototype)) ?
-          this.prototype._template :
+          // callback or info object), prefer that first. Note that `null` is
+          // used as a sentinel to indicate "no template" and can be used to
+          // override a super template, whereas `undefined` is used as a
+          // sentinel to mean "fall-back to default template lookup" via
+          // dom-module and/or super.template.
+          protoTemplate !== undefined ? protoTemplate :
           // Look in dom-module associated with this element's is
-          (getTemplateFromDomModule(/** @type {PolymerElementConstructor}*/ (this).is) ||
+          ((this.hasOwnProperty(JSCompiler_renameProperty('is', this)) &&
+          (getTemplateFromDomModule(/** @type {PolymerElementConstructor}*/ (this).is))) ||
           // Next look for superclass template (call the super impl this
           // way so that `this` points to the superclass)
           Object.getPrototypeOf(/** @type {PolymerElementConstructor}*/ (this).prototype).constructor.template);
@@ -7245,6 +7974,7 @@ const ElementMixin = dedupingMixin(base => {
      * Set the template.
      *
      * @param {!HTMLTemplateElement|string} value Template to set.
+     * @nocollapse
      */
     static set template(value) {
       this._template = value;
@@ -7268,6 +7998,7 @@ const ElementMixin = dedupingMixin(base => {
      *
      * @return {string} The import path for this element class
      * @suppress {missingProperties}
+     * @nocollapse
      */
     static get importPath() {
       if (!this.hasOwnProperty(JSCompiler_renameProperty('_importPath', this))) {
@@ -7327,10 +8058,7 @@ const ElementMixin = dedupingMixin(base => {
       }
       for (let p in p$) {
         let info = p$[p];
-        // Don't set default value if there is already an own property, which
-        // happens when a `properties` property with default but no effects had
-        // a property set (e.g. bound) by its host before upgrade
-        if (!this.hasOwnProperty(p)) {
+        if (this._canApplyPropertyDefault(p)) {
           let value = typeof info.value == 'function' ?
             info.value.call(this) :
             info.value;
@@ -7346,12 +8074,25 @@ const ElementMixin = dedupingMixin(base => {
     }
 
     /**
+     * Determines if a property dfeault can be applied. For example, this
+     * prevents a default from being applied when a property that has no
+     * accessor is overridden by its host before upgrade (e.g. via a binding).
+     * @override
+     * @param {string} property Name of the property
+     * @return {boolean} Returns true if the property default can be applied.
+     */
+    _canApplyPropertyDefault(property) {
+      return !this.hasOwnProperty(property);
+    }
+
+    /**
      * Gather style text for a style element in the template.
      *
      * @param {string} cssText Text containing styling to process
      * @param {string} baseURI Base URI to rebase CSS paths against
      * @return {string} The processed CSS text
      * @protected
+     * @nocollapse
      */
     static _processStyleText(cssText, baseURI) {
       return resolveCss(cssText, baseURI);
@@ -7365,6 +8106,7 @@ const ElementMixin = dedupingMixin(base => {
     * @param {string} is Tag name (or type extension name) for this element
     * @return {void}
     * @protected
+    * @nocollapse
     */
     static _finalizeTemplate(is) {
       /** @const {HTMLTemplateElement} */
@@ -7452,9 +8194,17 @@ const ElementMixin = dedupingMixin(base => {
       if (n.attachShadow) {
         if (dom) {
           if (!n.shadowRoot) {
-            n.attachShadow({mode: 'open'});
+            n.attachShadow({mode: 'open', shadyUpgradeFragment: dom});
+            n.shadowRoot.appendChild(dom);
+            // When `adoptedStyleSheets` is supported a stylesheet is made
+            // available on the element constructor.
+            if (this.constructor._styleSheet) {
+              n.shadowRoot.adoptedStyleSheets = [this.constructor._styleSheet];
+            }
           }
-          n.shadowRoot.appendChild(dom);
+          if (syncInitialRender && window.ShadyDOM) {
+            window.ShadyDOM.flushInitial(n.shadowRoot);
+          }
           return n.shadowRoot;
         }
         return null;
@@ -7528,10 +8278,14 @@ const ElementMixin = dedupingMixin(base => {
      * @param {!NodeInfo} nodeInfo Node metadata for current template.
      * @return {boolean} .
      * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     * @nocollapse
      */
     static _parseTemplateContent(template, templateInfo, nodeInfo) {
       templateInfo.dynamicFns = templateInfo.dynamicFns || this._properties;
-      return super._parseTemplateContent(template, templateInfo, nodeInfo);
+      // TODO(https://github.com/google/closure-compiler/issues/3240):
+      //     Change back to just super.methodCall()
+      return polymerElementBase._parseTemplateContent.call(
+        this, template, templateInfo, nodeInfo);
     }
 
     /**
@@ -7544,9 +8298,33 @@ const ElementMixin = dedupingMixin(base => {
      * @return {void}
      * @protected
      * @suppress {missingProperties} Interfaces in closure do not inherit statics, but classes do
+     * @nocollapse
      */
     static _addTemplatePropertyEffect(templateInfo, prop, effect) {
-      return super._addTemplatePropertyEffect(templateInfo, prop, effect);
+      // Warn if properties are used in template without being declared.
+      // Properties must be listed in `properties` to be included in
+      // `observedAttributes` since CE V1 reads that at registration time, and
+      // since we want to keep template parsing lazy, we can't automatically
+      // add undeclared properties used in templates to `observedAttributes`.
+      // The warning is only enabled in `legacyOptimizations` mode, since
+      // we don't want to spam existing users who might have adopted the
+      // shorthand when attribute deserialization is not important.
+      if (legacyWarnings && !(prop in this._properties) &&
+          // Methods used in templates with no dependencies (or only literal
+          // dependencies) become accessors with template effects; ignore these
+          !(effect.info.part.signature && effect.info.part.signature.static) &&
+          // Warnings for bindings added to nested templates are handled by
+          // templatizer so ignore both the host-to-template bindings
+          // (`hostProp`) and TemplateInstance-to-child bindings
+          // (`nestedTemplate`)
+          !effect.info.part.hostProp && !templateInfo.nestedTemplate) {
+        console.warn(`Property '${prop}' used in template but not declared in 'properties'; ` +
+          `attribute will not be observed.`);
+      }
+      // TODO(https://github.com/google/closure-compiler/issues/3240):
+      //     Change back to just super.methodCall()
+      return polymerElementBase._addTemplatePropertyEffect.call(
+        this, templateInfo, prop, effect);
     }
 
   }
@@ -7565,12 +8343,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 /**
+ * Our TrustedTypePolicy for HTML which is declared using the Polymer html
+ * template tag function.
+ *
+ * That HTML is a developer-authored constant, and is parsed with innerHTML
+ * before any untrusted expressions have been mixed in. Therefor it is
+ * considered safe by construction.
+ *
+ * @type {!TrustedTypePolicy|undefined}
+ */
+const policy = window.trustedTypes &&
+    trustedTypes.createPolicy('polymer-html-literal', {createHTML: (s) => s});
+
+/**
  * Class representing a static string value which can be used to filter
  * strings by asseting that they have been created via this class. The
  * `value` property returns the string passed to the constructor.
  */
 class LiteralString {
-  constructor(string) {
+  /**
+   * @param {!ITemplateArray} strings Constant parts of tagged template literal
+   * @param {!Array<*>} values Variable parts of tagged template literal
+   */
+  constructor(strings, values) {
+    assertValidTemplateStringParameters(strings, values);
+    const string = values.reduce(
+        (acc, v, idx) => acc + literalValue(v) + strings[idx + 1], strings[0]);
     /** @type {string} */
     this.value = string.toString();
   }
@@ -7603,6 +8401,12 @@ function literalValue(value) {
  */
 function htmlValue(value) {
   if (value instanceof HTMLTemplateElement) {
+    // This might be an mXSS risk – mainly in the case where this template
+    // contains untrusted content that was believed to be sanitized.
+    // However we can't just use the XMLSerializer here because it misencodes
+    // `>` characters inside style tags.
+    // For an example of an actual case that hit this encoding issue,
+    // see b/198592167
     return /** @type {!HTMLTemplateElement } */(value).innerHTML;
   } else if (value instanceof LiteralString) {
     return literalValue(value);
@@ -7647,10 +8451,33 @@ function htmlValue(value) {
  * @return {!HTMLTemplateElement} Constructed HTMLTemplateElement
  */
 const html = function html(strings, ...values) {
-  const template = /** @type {!HTMLTemplateElement} */(document.createElement('template'));
-  template.innerHTML = values.reduce((acc, v, idx) =>
-      acc + htmlValue(v) + strings[idx + 1], strings[0]);
+  assertValidTemplateStringParameters(strings, values);
+  const template =
+      /** @type {!HTMLTemplateElement} */ (document.createElement('template'));
+  let value = values.reduce(
+      (acc, v, idx) => acc + htmlValue(v) + strings[idx + 1], strings[0]);
+  if (policy) {
+    value = policy.createHTML(value);
+  }
+  template.innerHTML = value;
   return template;
+};
+
+/**
+ * @param {!ITemplateArray} strings Constant parts of tagged template literal
+ * @param {!Array<*>} values Array of values from quasis
+ */
+const assertValidTemplateStringParameters = (strings, values) => {
+  // Note: if/when https://github.com/tc39/proposal-array-is-template-object
+  // is standardized, use that instead when available, as it can perform an
+  // unforgable check (though of course, the function itself can be forged).
+  if (!Array.isArray(strings) || !Array.isArray(strings.raw) ||
+      (values.length !== strings.length - 1)) {
+    // This is either caused by a browser bug, a compiler bug, or someone
+    // calling the html template tag function as a regular function.
+    //
+    throw new TypeError('Invalid call to the html template tag');
+  }
 };
 
 /**
@@ -7679,6 +8506,62 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
  *   attribute deserialization, and property change observation
  */
 const PolymerElement = ElementMixin(HTMLElement);
+
+/**
+@license
+Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+
+/**
+ * Forces several classes of asynchronously queued tasks to flush:
+ * - Debouncers added via `enqueueDebouncer`
+ * - ShadyDOM distribution
+ *
+ * @return {void}
+ */
+const flush = function() {
+  let shadyDOM, debouncers;
+  do {
+    shadyDOM = window.ShadyDOM && ShadyDOM.flush();
+    if (window.ShadyCSS && window.ShadyCSS.ScopingShim) {
+      window.ShadyCSS.ScopingShim.flush();
+    }
+    debouncers = flushDebouncers();
+  } while (shadyDOM || debouncers);
+};
+
+/**
+@license
+Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+
+let elementsHidden = false;
+
+/**
+ * @return {boolean} True if elements will be hidden globally
+ */
+function hideElementsGlobally() {
+  if (legacyOptimizations && !useShadow) {
+    if (!elementsHidden) {
+      elementsHidden = true;
+      const style = document.createElement('style');
+      style.textContent = 'dom-bind,dom-if,dom-repeat{display:none;}';
+      document.head.appendChild(style);
+    }
+    return true;
+  }
+  return false;
+}
 
 /**
 @license
@@ -7748,6 +8631,9 @@ function mutablePropertyChange$1(inst, property, value, old, mutableData) {
  * @polymer
  * @summary Element class mixin to skip strict dirty-checking for objects
  *   and arrays
+ * @template T
+ * @param {function(new:T)} superClass Class to apply mixin to.
+ * @return {function(new:T)} superClass with mixin applied.
  */
 const MutableData = dedupingMixin(superClass => {
 
@@ -7833,6 +8719,7 @@ const OptionalMutableData = dedupingMixin(superClass => {
    */
   class OptionalMutableData extends superClass {
 
+    /** @nocollapse */
     static get properties() {
       return {
         /**
@@ -7930,10 +8817,53 @@ function upgradeTemplate(template, constructor) {
 /**
  * Base class for TemplateInstance.
  * @constructor
+ * @extends {HTMLElement}
  * @implements {Polymer_PropertyEffects}
  * @private
  */
 const templateInstanceBase = PropertyEffects(class {});
+
+function showHideChildren(hide, children) {
+  for (let i=0; i<children.length; i++) {
+    let n = children[i];
+    // Ignore non-changes
+    if (Boolean(hide) != Boolean(n.__hideTemplateChildren__)) {
+      // clear and restore text
+      if (n.nodeType === Node.TEXT_NODE) {
+        if (hide) {
+          n.__polymerTextContent__ = n.textContent;
+          n.textContent = '';
+        } else {
+          n.textContent = n.__polymerTextContent__;
+        }
+      // remove and replace slot
+      } else if (n.localName === 'slot') {
+        if (hide) {
+          n.__polymerReplaced__ = document.createComment('hidden-slot');
+          wrap(wrap(n).parentNode).replaceChild(n.__polymerReplaced__, n);
+        } else {
+          const replace = n.__polymerReplaced__;
+          if (replace) {
+            wrap(wrap(replace).parentNode).replaceChild(n, replace);
+          }
+        }
+      }
+      // hide and show nodes
+      else if (n.style) {
+        if (hide) {
+          n.__polymerDisplay__ = n.style.display;
+          n.style.display = 'none';
+        } else {
+          n.style.display = n.__polymerDisplay__;
+        }
+      }
+    }
+    n.__hideTemplateChildren__ = hide;
+    if (n._showHideChildren) {
+      n._showHideChildren(hide);
+    }
+  }
+}
 
 /**
  * @polymer
@@ -7948,7 +8878,9 @@ class TemplateInstanceBase extends templateInstanceBase {
     /** @type {!StampedTemplate} */
     this.root = this._stampTemplate(this.__dataHost);
     // Save list of stamped children
-    let children = this.children = [];
+    let children = [];
+    /** @suppress {invalidCasts} */
+    this.children = /** @type {!NodeList} */ (children);
     // Polymer 1.x did not use `Polymer.dom` here so not bothering.
     for (let n = this.root.firstChild; n; n=n.nextSibling) {
       children.push(n);
@@ -8038,45 +8970,7 @@ class TemplateInstanceBase extends templateInstanceBase {
    * @protected
    */
   _showHideChildren(hide) {
-    let c = this.children;
-    for (let i=0; i<c.length; i++) {
-      let n = c[i];
-      // Ignore non-changes
-      if (Boolean(hide) != Boolean(n.__hideTemplateChildren__)) {
-        if (n.nodeType === Node.TEXT_NODE) {
-          if (hide) {
-            n.__polymerTextContent__ = n.textContent;
-            n.textContent = '';
-          } else {
-            n.textContent = n.__polymerTextContent__;
-          }
-        // remove and replace slot
-        } else if (n.localName === 'slot') {
-          if (hide) {
-            n.__polymerReplaced__ = document.createComment('hidden-slot');
-            wrap(wrap(n).parentNode).replaceChild(n.__polymerReplaced__, n);
-          } else {
-            const replace = n.__polymerReplaced__;
-            if (replace) {
-              wrap(wrap(replace).parentNode).replaceChild(n, replace);
-            }
-          }
-        }
-
-        else if (n.style) {
-          if (hide) {
-            n.__polymerDisplay__ = n.style.display;
-            n.style.display = 'none';
-          } else {
-            n.style.display = n.__polymerDisplay__;
-          }
-        }
-      }
-      n.__hideTemplateChildren__ = hide;
-      if (n._showHideChildren) {
-        n._showHideChildren(hide);
-      }
-    }
+    showHideChildren(hide, this.children);
   }
   /**
    * Overrides default property-effects implementation to intercept
@@ -8126,6 +9020,7 @@ class TemplateInstanceBase extends templateInstanceBase {
    *
    * @param {Event} event Event to dispatch
    * @return {boolean} Always true.
+   * @override
    */
    dispatchEvent(event) { // eslint-disable-line no-unused-vars
      return true;
@@ -8149,7 +9044,10 @@ TemplateInstanceBase.prototype.__hostProps;
  * @implements {Polymer_MutableData}
  * @private
  */
-const MutableTemplateInstanceBase = MutableData(TemplateInstanceBase);
+const MutableTemplateInstanceBase = MutableData(
+    // This cast shouldn't be neccessary, but Closure doesn't understand that
+    // TemplateInstanceBase is a constructor function.
+    /** @type {function(new:TemplateInstanceBase)} */ (TemplateInstanceBase));
 
 function findMethodHost(template) {
   // Technically this should be the owner of the outermost template.
@@ -8192,22 +9090,53 @@ function createTemplatizerClass(template, templateInfo, options) {
 }
 
 /**
+ * Adds propagate effects from the template to the template instance for
+ * properties that the host binds to the template using the `_host_` prefix.
+ *
  * @suppress {missingProperties} class.prototype is not defined for some reason
  */
-function addPropagateEffects(template, templateInfo, options) {
+function addPropagateEffects(target, templateInfo, options, methodHost) {
   let userForwardHostProp = options.forwardHostProp;
-  if (userForwardHostProp) {
+  if (userForwardHostProp && templateInfo.hasHostProps) {
+    // Under the `removeNestedTemplates` optimization, a custom element like
+    // `dom-if` or `dom-repeat` can itself be treated as the "template"; this
+    // flag is used to switch between upgrading a `<template>` to be a property
+    // effects client vs. adding the effects directly to the custom element
+    const isTemplate = target.localName == 'template';
     // Provide data API and property effects on memoized template class
     let klass = templateInfo.templatizeTemplateClass;
     if (!klass) {
-      /**
-       * @constructor
-       * @extends {DataTemplate}
-       */
-      let templatizedBase = options.mutableData ? MutableDataTemplate : DataTemplate;
-      /** @private */
-      klass = templateInfo.templatizeTemplateClass =
-        class TemplatizedTemplate extends templatizedBase {};
+      if (isTemplate) {
+        /**
+         * @constructor
+         * @extends {DataTemplate}
+         */
+        let templatizedBase =
+            options.mutableData ? MutableDataTemplate : DataTemplate;
+
+        // NOTE: due to https://github.com/google/closure-compiler/issues/2928,
+        // combining the next two lines into one assignment causes a spurious
+        // type error.
+        /** @private */
+        class TemplatizedTemplate extends templatizedBase {}
+        klass = templateInfo.templatizeTemplateClass = TemplatizedTemplate;
+      } else {
+        /**
+         * @constructor
+         * @extends {PolymerElement}
+         */
+        const templatizedBase = target.constructor;
+
+        // Create a cached subclass of the base custom element class onto which
+        // to put the template-specific propagate effects
+        // NOTE: due to https://github.com/google/closure-compiler/issues/2928,
+        // combining the next two lines into one assignment causes a spurious
+        // type error.
+        /** @private */
+        class TemplatizedTemplateExtension extends templatizedBase {}
+        klass = templateInfo.templatizeTemplateClass =
+            TemplatizedTemplateExtension;
+      }
       // Add template - >instances effects
       // and host <- template effects
       let hostProps = templateInfo.hostProps;
@@ -8217,20 +9146,40 @@ function addPropagateEffects(template, templateInfo, options) {
           {fn: createForwardHostPropEffect(prop, userForwardHostProp)});
         klass.prototype._createNotifyingProperty('_host_' + prop);
       }
+      if (legacyWarnings && methodHost) {
+        warnOnUndeclaredProperties(templateInfo, options, methodHost);
+      }
     }
-    upgradeTemplate(template, klass);
     // Mix any pre-bound data into __data; no need to flush this to
     // instances since they pull from the template at instance-time
-    if (template.__dataProto) {
+    if (target.__dataProto) {
       // Note, generally `__dataProto` could be chained, but it's guaranteed
       // to not be since this is a vanilla template we just added effects to
-      Object.assign(template.__data, template.__dataProto);
+      Object.assign(target.__data, target.__dataProto);
     }
-    // Clear any pending data for performance
-    template.__dataTemp = {};
-    template.__dataPending = null;
-    template.__dataOld = null;
-    template._enableProperties();
+    if (isTemplate) {
+      upgradeTemplate(target, klass);
+      // Clear any pending data for performance
+      target.__dataTemp = {};
+      target.__dataPending = null;
+      target.__dataOld = null;
+      target._enableProperties();
+    } else {
+      // Swizzle the cached subclass prototype onto the custom element
+      Object.setPrototypeOf(target, klass.prototype);
+      // Check for any pre-bound instance host properties, and do the
+      // instance property delete/assign dance for those (directly into data;
+      // not need to go through accessor since they are pulled at instance time)
+      const hostProps = templateInfo.hostProps;
+      for (let prop in hostProps) {
+        prop = '_host_' + prop;
+        if (prop in target) {
+          const val = target[prop];
+          delete target[prop];
+          target.__data[prop] = val;
+        }
+      }
+    }
   }
 }
 /* eslint-enable valid-jsdoc */
@@ -8255,6 +9204,11 @@ function addNotifyEffects(klass, template, templateInfo, options) {
   }
   if (options.forwardHostProp && template.__dataHost) {
     for (let hprop in hostProps) {
+      // As we're iterating hostProps in this function, note whether
+      // there were any, for an optimization in addPropagateEffects
+      if (!templateInfo.hasHostProps) {
+        templateInfo.hasHostProps = true;
+      }
       klass.prototype._addPropertyEffect(hprop,
         klass.prototype.PROPERTY_EFFECT_TYPES.NOTIFY,
         {fn: createNotifyHostPropEffect()});
@@ -8350,11 +9304,17 @@ function createNotifyHostPropEffect() {
  * @param {Polymer_PropertyEffects=} owner Owner of the template instances;
  *   any optional callbacks will be bound to this owner.
  * @param {Object=} options Options dictionary (see summary for details)
- * @return {function(new:TemplateInstanceBase)} Generated class bound to the template
- *   provided
+ * @return {function(new:TemplateInstanceBase, Object=)} Generated class bound
+ *   to the template provided
  * @suppress {invalidCasts}
  */
 function templatize(template, owner, options) {
+  // Under strictTemplatePolicy, the templatized element must be owned
+  // by a (trusted) Polymer element, indicated by existence of _methodHost;
+  // e.g. for dom-if & dom-repeat in main document, _methodHost is null
+  if (strictTemplatePolicy && !findMethodHost(template)) {
+    throw new Error('strictTemplatePolicy: template owner not trusted');
+  }
   options = /** @type {!TemplatizeOptions} */(options || {});
   if (template.__templatizeOwner) {
     throw new Error('A <template> can only be templatized once');
@@ -8373,13 +9333,14 @@ function templatize(template, owner, options) {
     baseClass = createTemplatizerClass(template, templateInfo, options);
     templateInfo.templatizeInstanceClass = baseClass;
   }
+  const methodHost = findMethodHost(template);
   // Host property forwarding must be installed onto template instance
-  addPropagateEffects(template, templateInfo, options);
+  addPropagateEffects(template, templateInfo, options, methodHost);
   // Subclass base class and add reference for this specific template
   /** @private */
   let klass = class TemplateInstance extends baseClass {};
   /** @override */
-  klass.prototype._methodHost = findMethodHost(template);
+  klass.prototype._methodHost = methodHost;
   /** @override */
   klass.prototype.__dataHost = /** @type {!DataTemplate} */ (template);
   /** @override */
@@ -8388,6 +9349,27 @@ function templatize(template, owner, options) {
   klass.prototype.__hostProps = templateInfo.hostProps;
   klass = /** @type {function(new:TemplateInstanceBase)} */(klass); //eslint-disable-line no-self-assign
   return klass;
+}
+
+function warnOnUndeclaredProperties(templateInfo, options, methodHost) {
+  const declaredProps = methodHost.constructor._properties;
+  const {propertyEffects} = templateInfo;
+  const {instanceProps} = options;
+  for (let prop in propertyEffects) {
+    // Ensure properties with template effects are declared on the outermost
+    // host (`methodHost`), unless they are instance props or static functions
+    if (!declaredProps[prop] && !(instanceProps && instanceProps[prop])) {
+      const effects = propertyEffects[prop];
+      for (let i=0; i<effects.length; i++) {
+        const {part} = effects[i].info;
+        if (!(part.signature && part.signature.static)) {
+          console.warn(`Property '${prop}' used in template but not ` +
+            `declared in 'properties'; attribute will not be observed.`);
+          break;
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -8404,8 +9386,10 @@ function templatize(template, owner, options) {
  *     model.set('item.checked', true);
  *   }
  *
- * @param {HTMLTemplateElement} template The model will be returned for
- *   elements stamped from this template
+ * @param {HTMLElement} template The model will be returned for
+ *   elements stamped from this template (accepts either an HTMLTemplateElement)
+ *   or a `<dom-if>`/`<dom-repeat>` element when using `removeNestedTemplates`
+ *   optimization.
  * @param {Node=} node Node for which to return a template model.
  * @return {TemplateInstanceBase} Template instance representing the
  *   binding scope for the element
@@ -8416,7 +9400,7 @@ function modelForElement(template, node) {
     // An element with a __templatizeInstance marks the top boundary
     // of a scope; walk up until we find one, and then ensure that
     // its __dataHost matches `this`, meaning this dom-repeat stamped it
-    if ((model = node.__templatizeInstance)) {
+    if ((model = node.__dataHost ? node : node.__templatizeInstance)) {
       // Found an element stamped by another template; keep walking up
       // from its __dataHost
       if (model.__dataHost != template) {
@@ -8444,55 +9428,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 /**
- * Forces several classes of asynchronously queued tasks to flush:
- * - Debouncers added via `enqueueDebouncer`
- * - ShadyDOM distribution
- *
- * @return {void}
- */
-const flush = function() {
-  let shadyDOM, debouncers;
-  do {
-    shadyDOM = window.ShadyDOM && ShadyDOM.flush();
-    if (window.ShadyCSS && window.ShadyCSS.ScopingShim) {
-      window.ShadyCSS.ScopingShim.flush();
-    }
-    debouncers = flushDebouncers();
-  } while (shadyDOM || debouncers);
-};
-
-/**
-@license
-Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
-/**
- * The `<dom-if>` element will stamp a light-dom `<template>` child when
- * the `if` property becomes truthy, and the template can use Polymer
- * data-binding and declarative event features when used in the context of
- * a Polymer element's template.
- *
- * When `if` becomes falsy, the stamped content is hidden but not
- * removed from dom. When `if` subsequently becomes truthy again, the content
- * is simply re-shown. This approach is used due to its favorable performance
- * characteristics: the expense of creating template content is paid only
- * once and lazily.
- *
- * Set the `restamp` property to true to force the stamped content to be
- * created / destroyed when the `if` condition changes.
- *
  * @customElement
  * @polymer
  * @extends PolymerElement
- * @summary Custom element that conditionally stamps and hides or removes
- *   template content based on a boolean flag.
+ * @summary Base class for dom-if element; subclassed into concrete
+ *   implementation.
  */
-class DomIf extends PolymerElement {
+class DomIfBase extends PolymerElement {
 
   // Not needed to find template; can be removed once the analyzer
   // can find the tag name from customElements.define call
@@ -8530,8 +9472,16 @@ class DomIf extends PolymerElement {
       restamp: {
         type: Boolean,
         observer: '__debounceRender'
-      }
+      },
 
+      /**
+       * When the global `suppressTemplateNotifications` setting is used, setting
+       * `notifyDomChange: true` will enable firing `dom-change` events on this
+       * element.
+       */
+      notifyDomChange: {
+        type: Boolean
+      }
     };
 
   }
@@ -8539,11 +9489,12 @@ class DomIf extends PolymerElement {
   constructor() {
     super();
     this.__renderDebouncer = null;
-    this.__invalidProps = null;
-    this.__instance = null;
     this._lastIf = false;
-    this.__ctor = null;
     this.__hideTemplateChildren__ = false;
+    /** @type {!HTMLTemplateElement|undefined} */
+    this.__template;
+    /** @type {!TemplateInfo|undefined} */
+    this._templateInfo;
   }
 
   __debounceRender() {
@@ -8589,10 +9540,93 @@ class DomIf extends PolymerElement {
    */
   connectedCallback() {
     super.connectedCallback();
-    this.style.display = 'none';
+    if (!hideElementsGlobally()) {
+      this.style.display = 'none';
+    }
     if (this.if) {
       this.__debounceRender();
     }
+  }
+
+  /**
+   * Ensures a template has been assigned to `this.__template`.  If it has not
+   * yet been, it querySelectors for it in its children and if it does not yet
+   * exist (e.g. in parser-generated case), opens a mutation observer and
+   * waits for it to appear (returns false if it has not yet been found,
+   * otherwise true).  In the `removeNestedTemplates` case, the "template" will
+   * be the `dom-if` element itself.
+   *
+   * @return {boolean} True when a template has been found, false otherwise
+   */
+  __ensureTemplate() {
+    if (!this.__template) {
+      // When `removeNestedTemplates` is true, the "template" is the element
+      // itself, which has been given a `_templateInfo` property
+      const thisAsTemplate = /** @type {!HTMLTemplateElement} */ (
+          /** @type {!HTMLElement} */ (this));
+      let template = thisAsTemplate._templateInfo ?
+          thisAsTemplate :
+          /** @type {!HTMLTemplateElement} */
+          (wrap(thisAsTemplate).querySelector('template'));
+      if (!template) {
+        // Wait until childList changes and template should be there by then
+        let observer = new MutationObserver(() => {
+          if (wrap(this).querySelector('template')) {
+            observer.disconnect();
+            this.__render();
+          } else {
+            throw new Error('dom-if requires a <template> child');
+          }
+        });
+        observer.observe(this, {childList: true});
+        return false;
+      }
+      this.__template = template;
+    }
+    return true;
+  }
+
+  /**
+   * Ensures a an instance of the template has been created and inserted. This
+   * method may return false if the template has not yet been found or if
+   * there is no `parentNode` to insert the template into (in either case,
+   * connection or the template-finding mutation observer firing will queue
+   * another render, causing this method to be called again at a more
+   * appropriate time).
+   *
+   * Subclasses should implement the following methods called here:
+   * - `__hasInstance`
+   * - `__createAndInsertInstance`
+   * - `__getInstanceNodes`
+   *
+   * @return {boolean} True if the instance was created, false otherwise.
+   */
+  __ensureInstance() {
+    let parentNode = wrap(this).parentNode;
+    if (!this.__hasInstance()) {
+      // Guard against element being detached while render was queued
+      if (!parentNode) {
+        return false;
+      }
+      // Find the template (when false, there was no template yet)
+      if (!this.__ensureTemplate()) {
+        return false;
+      }
+      this.__createAndInsertInstance(parentNode);
+    } else {
+      // Move instance children if necessary
+      let children = this.__getInstanceNodes();
+      if (children && children.length) {
+        // Detect case where dom-if was re-attached in new position
+        let lastChild = wrap(this).previousSibling;
+        if (lastChild !== children[children.length-1]) {
+          for (let i=0, n; (i<children.length) && (n=children[i]); i++) {
+            wrap(parentNode).insertBefore(n, this);
+          }
+        }
+      }
+    }
+    return true;
   }
 
   /**
@@ -8601,26 +9635,34 @@ class DomIf extends PolymerElement {
    * that multiple changes trigger only a single render. The render method
    * should be called if, for example, template rendering is required to
    * validate application state.
+   *
    * @return {void}
    */
   render() {
     flush();
   }
 
+  /**
+   * Performs the key rendering steps:
+   * 1. Ensure a template instance has been stamped (when true)
+   * 2. Remove the template instance (when false and restamp:true)
+   * 3. Sync the hidden state of the instance nodes with the if/restamp state
+   * 4. Fires the `dom-change` event when necessary
+   *
+   * @return {void}
+   */
   __render() {
     if (this.if) {
       if (!this.__ensureInstance()) {
         // No template found yet
         return;
       }
-      this._showHideChildren();
     } else if (this.restamp) {
       this.__teardownInstance();
     }
-    if (!this.restamp && this.__instance) {
-      this._showHideChildren();
-    }
-    if (this.if != this._lastIf) {
+    this._showHideChildren();
+    if ((!suppressTemplateNotifications || this.notifyDomChange)
+        && this.if != this._lastIf) {
       this.dispatchEvent(new CustomEvent('dom-change', {
         bubbles: true,
         composed: true
@@ -8629,81 +9671,323 @@ class DomIf extends PolymerElement {
     }
   }
 
-  __ensureInstance() {
-    let parentNode = wrap(this).parentNode;
-    // Guard against element being detached while render was queued
-    if (parentNode) {
-      if (!this.__ctor) {
-        let template = /** @type {HTMLTemplateElement} */(wrap(this).querySelector('template'));
-        if (!template) {
-          // Wait until childList changes and template should be there by then
-          let observer = new MutationObserver(() => {
-            if (wrap(this).querySelector('template')) {
-              observer.disconnect();
-              this.__render();
-            } else {
-              throw new Error('dom-if requires a <template> child');
-            }
-          });
-          observer.observe(this, {childList: true});
-          return false;
+  // Ideally these would be annotated as abstract methods in an abstract class,
+  // but closure compiler is finnicky
+  /* eslint-disable valid-jsdoc */
+  /**
+   * Abstract API to be implemented by subclass: Returns true if a template
+   * instance has been created and inserted.
+   *
+   * @protected
+   * @return {boolean} True when an instance has been created.
+   */
+  __hasInstance() { }
+
+  /**
+   * Abstract API to be implemented by subclass: Returns the child nodes stamped
+   * from a template instance.
+   *
+   * @protected
+   * @return {Array<Node>} Array of child nodes stamped from the template
+   * instance.
+   */
+  __getInstanceNodes() { }
+
+  /**
+   * Abstract API to be implemented by subclass: Creates an instance of the
+   * template and inserts it into the given parent node.
+   *
+   * @protected
+   * @param {Node} parentNode The parent node to insert the instance into
+   * @return {void}
+   */
+  __createAndInsertInstance(parentNode) { } // eslint-disable-line no-unused-vars
+
+  /**
+   * Abstract API to be implemented by subclass: Removes nodes created by an
+   * instance of a template and any associated cleanup.
+   *
+   * @protected
+   * @return {void}
+   */
+  __teardownInstance() { }
+
+  /**
+   * Abstract API to be implemented by subclass: Shows or hides any template
+   * instance childNodes based on the `if` state of the element and its
+   * `__hideTemplateChildren__` property.
+   *
+   * @protected
+   * @return {void}
+   */
+  _showHideChildren() { }
+  /* eslint-enable valid-jsdoc */
+}
+
+/**
+ * The version of DomIf used when `fastDomIf` setting is in use, which is
+ * optimized for first-render (but adds a tax to all subsequent property updates
+ * on the host, whether they were used in a given `dom-if` or not).
+ *
+ * This implementation avoids use of `Templatizer`, which introduces a new scope
+ * (a non-element PropertyEffects instance), which is not strictly necessary
+ * since `dom-if` never introduces new properties to its scope (unlike
+ * `dom-repeat`). Taking advantage of this fact, the `dom-if` reaches up to its
+ * `__dataHost` and stamps the template directly from the host using the host's
+ * runtime `_stampTemplate` API, which binds the property effects of the
+ * template directly to the host. This both avoids the intermediary
+ * `Templatizer` instance, but also avoids the need to bind host properties to
+ * the `<template>` element and forward those into the template instance.
+ *
+ * In this version of `dom-if`, the `this.__instance` method is the
+ * `DocumentFragment` returned from `_stampTemplate`, which also serves as the
+ * handle for later removing it using the `_removeBoundDom` method.
+ */
+class DomIfFast extends DomIfBase {
+
+  constructor() {
+    super();
+    this.__instance = null;
+    this.__syncInfo = null;
+  }
+
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * @override
+   * @return {boolean} True when an instance has been created.
+   */
+  __hasInstance() {
+    return Boolean(this.__instance);
+  }
+
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * @override
+   * @return {Array<Node>} Array of child nodes stamped from the template
+   * instance.
+   */
+  __getInstanceNodes() {
+    return this.__instance.templateInfo.childNodes;
+  }
+
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * Stamps the template by calling `_stampTemplate` on the `__dataHost` of this
+   * element and then inserts the resulting nodes into the given `parentNode`.
+   *
+   * @override
+   * @param {Node} parentNode The parent node to insert the instance into
+   * @return {void}
+   */
+  __createAndInsertInstance(parentNode) {
+    const host = this.__dataHost || this;
+    if (strictTemplatePolicy) {
+      if (!this.__dataHost) {
+        throw new Error('strictTemplatePolicy: template owner not trusted');
+      }
+    }
+    // Pre-bind and link the template into the effects system
+    const templateInfo = host._bindTemplate(
+        /** @type {!HTMLTemplateElement} */ (this.__template), true);
+    // Install runEffects hook that prevents running property effects
+    // (and any nested template effects) when the `if` is false
+    templateInfo.runEffects = (runEffects, changedProps, hasPaths) => {
+      let syncInfo = this.__syncInfo;
+      if (this.if) {
+        // Mix any props that changed while the `if` was false into `changedProps`
+        if (syncInfo) {
+          // If there were properties received while the `if` was false, it is
+          // important to sync the hidden state with the element _first_, so that
+          // new bindings to e.g. `textContent` do not get stomped on by
+          // pre-hidden values if `_showHideChildren` were to be called later at
+          // the next render. Clearing `__invalidProps` here ensures
+          // `_showHideChildren`'s call to `__syncHostProperties` no-ops, so
+          // that we don't call `runEffects` more often than necessary.
+          this.__syncInfo = null;
+          this._showHideChildren();
+          changedProps = Object.assign(syncInfo.changedProps, changedProps);
         }
-        this.__ctor = templatize(template, this, {
-          // dom-if templatizer instances require `mutable: true`, as
-          // `__syncHostProperties` relies on that behavior to sync objects
-          mutableData: true,
-          /**
-           * @param {string} prop Property to forward
-           * @param {*} value Value of property
-           * @this {DomIf}
-           */
-          forwardHostProp: function(prop, value) {
-            if (this.__instance) {
-              if (this.if) {
-                this.__instance.forwardHostProp(prop, value);
-              } else {
-                // If we have an instance but are squelching host property
-                // forwarding due to if being false, note the invalidated
-                // properties so `__syncHostProperties` can sync them the next
-                // time `if` becomes true
-                this.__invalidProps = this.__invalidProps || Object.create(null);
-                this.__invalidProps[root(prop)] = true;
+        runEffects(changedProps, hasPaths);
+      } else {
+        // Accumulate any values changed while `if` was false, along with the
+        // runEffects method to sync them, so that we can replay them once `if`
+        // becomes true
+        if (this.__instance) {
+          if (!syncInfo) {
+            syncInfo = this.__syncInfo = { runEffects, changedProps: {} };
+          }
+          if (hasPaths) {
+            // Store root object of any paths; this will ensure direct bindings
+            // like [[obj.foo]] bindings run after a `set('obj.foo', v)`, but
+            // note that path notifications like `set('obj.foo.bar', v)` will
+            // not propagate. Since batched path notifications are not
+            // supported, we cannot simply accumulate path notifications. This
+            // is equivalent to the non-fastDomIf case, which stores root(p) in
+            // __invalidProps.
+            for (const p in changedProps) {
+              const rootProp = root(p);
+              syncInfo.changedProps[rootProp] = this.__dataHost[rootProp];
+            }
+          } else {
+            Object.assign(syncInfo.changedProps, changedProps);
+          }
+        }
+      }
+    };
+    // Stamp the template, and set its DocumentFragment to the "instance"
+    this.__instance = host._stampTemplate(
+        /** @type {!HTMLTemplateElement} */ (this.__template), templateInfo);
+    wrap(parentNode).insertBefore(this.__instance, this);
+  }
+
+  /**
+   * Run effects for any properties that changed while the `if` was false.
+   *
+   * @return {void}
+   */
+  __syncHostProperties() {
+    const syncInfo = this.__syncInfo;
+    if (syncInfo) {
+      this.__syncInfo = null;
+      syncInfo.runEffects(syncInfo.changedProps, false);
+    }
+  }
+
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * Remove the instance and any nodes it created.  Uses the `__dataHost`'s
+   * runtime `_removeBoundDom` method.
+   *
+   * @override
+   * @return {void}
+   */
+  __teardownInstance() {
+    const host = this.__dataHost || this;
+    if (this.__instance) {
+      host._removeBoundDom(this.__instance);
+      this.__instance = null;
+      this.__syncInfo = null;
+    }
+  }
+
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * Shows or hides the template instance top level child nodes. For
+   * text nodes, `textContent` is removed while "hidden" and replaced when
+   * "shown."
+   *
+   * @override
+   * @return {void}
+   * @protected
+   * @suppress {visibility}
+   */
+  _showHideChildren() {
+    const hidden = this.__hideTemplateChildren__ || !this.if;
+    if (this.__instance && Boolean(this.__instance.__hidden) !== hidden) {
+      this.__instance.__hidden = hidden;
+      showHideChildren(hidden, this.__instance.templateInfo.childNodes);
+    }
+    if (!hidden) {
+      this.__syncHostProperties();
+    }
+  }
+}
+
+/**
+ * The "legacy" implementation of `dom-if`, implemented using `Templatizer`.
+ *
+ * In this version, `this.__instance` is the `TemplateInstance` returned
+ * from the templatized constructor.
+ */
+class DomIfLegacy extends DomIfBase {
+
+  constructor() {
+    super();
+    this.__ctor = null;
+    this.__instance = null;
+    this.__invalidProps = null;
+  }
+
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * @override
+   * @return {boolean} True when an instance has been created.
+   */
+  __hasInstance() {
+    return Boolean(this.__instance);
+  }
+
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * @override
+   * @return {Array<Node>} Array of child nodes stamped from the template
+   * instance.
+   */
+  __getInstanceNodes() {
+    return this.__instance.children;
+  }
+
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * Stamps the template by creating a new instance of the templatized
+   * constructor (which is created lazily if it does not yet exist), and then
+   * inserts its resulting `root` doc fragment into the given `parentNode`.
+   *
+   * @override
+   * @param {Node} parentNode The parent node to insert the instance into
+   * @return {void}
+   */
+  __createAndInsertInstance(parentNode) {
+    // Ensure we have an instance constructor
+    if (!this.__ctor) {
+      this.__ctor = templatize(
+          /** @type {!HTMLTemplateElement} */ (this.__template), this, {
+            // dom-if templatizer instances require `mutable: true`, as
+            // `__syncHostProperties` relies on that behavior to sync objects
+            mutableData: true,
+            /**
+             * @param {string} prop Property to forward
+             * @param {*} value Value of property
+             * @this {DomIfLegacy}
+             */
+            forwardHostProp: function(prop, value) {
+              if (this.__instance) {
+                if (this.if) {
+                  this.__instance.forwardHostProp(prop, value);
+                } else {
+                  // If we have an instance but are squelching host property
+                  // forwarding due to if being false, note the invalidated
+                  // properties so `__syncHostProperties` can sync them the next
+                  // time `if` becomes true
+                  this.__invalidProps =
+                      this.__invalidProps || Object.create(null);
+                  this.__invalidProps[root(prop)] = true;
+                }
               }
             }
-          }
-        });
-      }
-      if (!this.__instance) {
-        this.__instance = new this.__ctor();
-        wrap(parentNode).insertBefore(this.__instance.root, this);
-      } else {
-        this.__syncHostProperties();
-        let c$ = this.__instance.children;
-        if (c$ && c$.length) {
-          // Detect case where dom-if was re-attached in new position
-          let lastChild = wrap(this).previousSibling;
-          if (lastChild !== c$[c$.length-1]) {
-            for (let i=0, n; (i<c$.length) && (n=c$[i]); i++) {
-              wrap(parentNode).insertBefore(n, this);
-            }
-          }
-        }
-      }
+          });
     }
-    return true;
+    // Create and insert the instance
+    this.__instance = new this.__ctor();
+    wrap(parentNode).insertBefore(this.__instance.root, this);
   }
 
-  __syncHostProperties() {
-    let props = this.__invalidProps;
-    if (props) {
-      for (let prop in props) {
-        this.__instance._setPendingProperty(prop, this.__dataHost[prop]);
-      }
-      this.__invalidProps = null;
-      this.__instance._flushProperties();
-    }
-  }
-
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * Removes the instance and any nodes it created.
+   *
+   * @override
+   * @return {void}
+   */
   __teardownInstance() {
     if (this.__instance) {
       let c$ = this.__instance.children;
@@ -8719,27 +10003,75 @@ class DomIf extends PolymerElement {
           }
         }
       }
-      this.__instance = null;
       this.__invalidProps = null;
+      this.__instance = null;
     }
   }
 
   /**
-   * Shows or hides the template instance top level child elements. For
-   * text nodes, `textContent` is removed while "hidden" and replaced when
-   * "shown."
+   * Forwards any properties that changed while the `if` was false into the
+   * template instance and flushes it.
+   *
    * @return {void}
-   * @protected
-   * @suppress {visibility}
    */
-  _showHideChildren() {
-    let hidden = this.__hideTemplateChildren__ || !this.if;
-    if (this.__instance) {
-      this.__instance._showHideChildren(hidden);
+  __syncHostProperties() {
+    let props = this.__invalidProps;
+    if (props) {
+      this.__invalidProps = null;
+      for (let prop in props) {
+        this.__instance._setPendingProperty(prop, this.__dataHost[prop]);
+      }
+      this.__instance._flushProperties();
     }
   }
 
+  /**
+   * Implementation of abstract API needed by DomIfBase.
+   *
+   * Shows or hides the template instance top level child elements. For
+   * text nodes, `textContent` is removed while "hidden" and replaced when
+   * "shown."
+   *
+   * @override
+   * @protected
+   * @return {void}
+   * @suppress {visibility}
+   */
+  _showHideChildren() {
+    const hidden = this.__hideTemplateChildren__ || !this.if;
+    if (this.__instance && Boolean(this.__instance.__hidden) !== hidden) {
+      this.__instance.__hidden = hidden;
+      this.__instance._showHideChildren(hidden);
+    }
+    if (!hidden) {
+      this.__syncHostProperties();
+    }
+  }
 }
+
+/**
+ * The `<dom-if>` element will stamp a light-dom `<template>` child when
+ * the `if` property becomes truthy, and the template can use Polymer
+ * data-binding and declarative event features when used in the context of
+ * a Polymer element's template.
+ *
+ * When `if` becomes falsy, the stamped content is hidden but not
+ * removed from dom. When `if` subsequently becomes truthy again, the content
+ * is simply re-shown. This approach is used due to its favorable performance
+ * characteristics: the expense of creating template content is paid only
+ * once and lazily.
+ *
+ * Set the `restamp` property to true to force the stamped content to be
+ * created / destroyed when the `if` condition changes.
+ *
+ * @customElement
+ * @polymer
+ * @extends DomIfBase
+ * @constructor
+ * @summary Custom element that conditionally stamps and hides or removes
+ *   template content based on a boolean flag.
+ */
+const DomIf = fastDomIf ? DomIfFast : DomIfLegacy;
 
 customElements.define(DomIf.is, DomIf);
 
@@ -8974,20 +10306,20 @@ class DomRepeat extends domRepeatBase {
        */
       renderedItemCount: {
         type: Number,
-        notify: true,
+        notify: !suppressTemplateNotifications,
         readOnly: true
       },
 
       /**
-       * Defines an initial count of template instances to render after setting
-       * the `items` array, before the next paint, and puts the `dom-repeat`
-       * into "chunking mode".  The remaining items will be created and rendered
-       * incrementally at each animation frame therof until all instances have
-       * been rendered.
+       * When greater than zero, defines an initial count of template instances
+       * to render after setting the `items` array, before the next paint, and
+       * puts the `dom-repeat` into "chunking mode".  The remaining items (and
+       * any future items as a result of pushing onto the array) will be created
+       * and rendered incrementally at each animation frame thereof until all
+       * instances have been rendered.
        */
       initialCount: {
-        type: Number,
-        observer: '__initializeChunking'
+        type: Number
       },
 
       /**
@@ -9010,6 +10342,34 @@ class DomRepeat extends domRepeatBase {
       _targetFrameTime: {
         type: Number,
         computed: '__computeFrameTime(targetFramerate)'
+      },
+
+      /**
+       * When the global `suppressTemplateNotifications` setting is used, setting
+       * `notifyDomChange: true` will enable firing `dom-change` events on this
+       * element.
+       */
+      notifyDomChange: {
+        type: Boolean
+      },
+
+      /**
+       * When chunking is enabled via `initialCount` and the `items` array is
+       * set to a new array, this flag controls whether the previously rendered
+       * instances are reused or not.
+       *
+       * When `true`, any previously rendered template instances are updated in
+       * place to their new item values synchronously in one shot, and then any
+       * further items (if any) are chunked out.  When `false`, the list is
+       * returned back to its `initialCount` (any instances over the initial
+       * count are discarded) and the remainder of the list is chunked back in.
+       * Set this to `true` to avoid re-creating the list and losing scroll
+       * position, although note that when changing the list to completely
+       * different data the render thread will be blocked until all existing
+       * instances are updated to their new data.
+       */
+      reuseChunkedInstances: {
+        type: Boolean
       }
 
     };
@@ -9023,19 +10383,23 @@ class DomRepeat extends domRepeatBase {
   constructor() {
     super();
     this.__instances = [];
-    this.__limit = Infinity;
-    this.__pool = [];
     this.__renderDebouncer = null;
     this.__itemsIdxToInstIdx = {};
     this.__chunkCount = null;
-    this.__lastChunkTime = null;
+    this.__renderStartTime = null;
+    this.__itemsArrayChanged = false;
+    this.__shouldMeasureChunk = false;
+    this.__shouldContinueChunking = false;
+    this.__chunkingId = 0;
     this.__sortFn = null;
     this.__filterFn = null;
     this.__observePaths = null;
-    /** @type {?function(new:Polymer.TemplateInstanceBase, *)} */
+    /** @type {?function(new:TemplateInstanceBase, Object=)} */
     this.__ctor = null;
     this.__isDetached = true;
     this.template = null;
+    /** @type {TemplateInfo} */
+    this._templateInfo;
   }
 
   /**
@@ -9048,6 +10412,10 @@ class DomRepeat extends domRepeatBase {
     for (let i=0; i<this.__instances.length; i++) {
       this.__detachInstance(i);
     }
+    // Stop chunking if one was in progress
+    if (this.__chunkingId) {
+      cancelAnimationFrame(this.__chunkingId);
+    }
   }
 
   /**
@@ -9056,13 +10424,19 @@ class DomRepeat extends domRepeatBase {
    */
   connectedCallback() {
     super.connectedCallback();
-    this.style.display = 'none';
+    if (!hideElementsGlobally()) {
+      this.style.display = 'none';
+    }
     // only perform attachment if the element was previously detached.
     if (this.__isDetached) {
       this.__isDetached = false;
       let wrappedParent = wrap(wrap(this).parentNode);
       for (let i=0; i<this.__instances.length; i++) {
         this.__attachInstance(i, wrappedParent);
+      }
+      // Restart chunking if one was in progress when disconnected
+      if (this.__chunkingId) {
+        this.__render();
       }
     }
   }
@@ -9072,9 +10446,15 @@ class DomRepeat extends domRepeatBase {
     // until ready, since won't have its template content handed back to
     // it until then
     if (!this.__ctor) {
-      let template = this.template = /** @type {HTMLTemplateElement} */(this.querySelector('template'));
+      // When `removeNestedTemplates` is true, the "template" is the element
+      // itself, which has been given a `_templateInfo` property
+      const thisAsTemplate = /** @type {!HTMLTemplateElement} */ (
+          /** @type {!HTMLElement} */ (this));
+      let template = this.template = thisAsTemplate._templateInfo ?
+          thisAsTemplate :
+          /** @type {!HTMLTemplateElement} */ (this.querySelector('template'));
       if (!template) {
-        // // Wait until childList changes and template should be there by then
+        // Wait until childList changes and template should be there by then
         let observer = new MutationObserver(() => {
           if (this.querySelector('template')) {
             observer.disconnect();
@@ -9160,55 +10540,9 @@ class DomRepeat extends domRepeatBase {
     return Math.ceil(1000/rate);
   }
 
-  __initializeChunking() {
-    if (this.initialCount) {
-      this.__limit = this.initialCount;
-      this.__chunkCount = this.initialCount;
-      this.__lastChunkTime = performance.now();
-    }
-  }
-
-  __tryRenderChunk() {
-    // Debounced so that multiple calls through `_render` between animation
-    // frames only queue one new rAF (e.g. array mutation & chunked render)
-    if (this.items && this.__limit < this.items.length) {
-      this.__debounceRender(this.__requestRenderChunk);
-    }
-  }
-
-  __requestRenderChunk() {
-    requestAnimationFrame(()=>this.__renderChunk());
-  }
-
-  __renderChunk() {
-    // Simple auto chunkSize throttling algorithm based on feedback loop:
-    // measure actual time between frames and scale chunk count by ratio
-    // of target/actual frame time
-    let currChunkTime = performance.now();
-    let ratio = this._targetFrameTime / (currChunkTime - this.__lastChunkTime);
-    this.__chunkCount = Math.round(this.__chunkCount * ratio) || 1;
-    this.__limit += this.__chunkCount;
-    this.__lastChunkTime = currChunkTime;
-    this.__debounceRender(this.__render);
-  }
-
   __observeChanged() {
     this.__observePaths = this.observe &&
       this.observe.replace('.*', '.').split(' ');
-  }
-
-  __itemsChanged(change) {
-    if (this.items && !Array.isArray(this.items)) {
-      console.warn('dom-repeat expected array for `items`, found', this.items);
-    }
-    // If path was to an item (e.g. 'items.3' or 'items.3.foo'), forward the
-    // path to that instance synchronously (returns false for non-item paths)
-    if (!this.__handleItemPath(change.path, change.value)) {
-      // Otherwise, the array was reset ('items') or spliced ('items.splices'),
-      // so queue a full refresh
-      this.__initializeChunking();
-      this.__debounceRender(this.__render);
-    }
   }
 
   __handleObservedPaths(path) {
@@ -9226,6 +10560,23 @@ class DomRepeat extends domRepeatBase {
           }
         }
       }
+    }
+  }
+
+  __itemsChanged(change) {
+    if (this.items && !Array.isArray(this.items)) {
+      console.warn('dom-repeat expected array for `items`, found', this.items);
+    }
+    // If path was to an item (e.g. 'items.3' or 'items.3.foo'), forward the
+    // path to that instance synchronously (returns false for non-item paths)
+    if (!this.__handleItemPath(change.path, change.value)) {
+      // Otherwise, the array was reset ('items') or spliced ('items.splices'),
+      // so queue a render.  Restart chunking when the items changed (for
+      // backward compatibility), unless `reuseChunkedInstances` option is set
+      if (change.path === 'items') {
+        this.__itemsArrayChanged = true;
+      }
+      this.__debounceRender(this.__render);
     }
   }
 
@@ -9260,26 +10611,39 @@ class DomRepeat extends domRepeatBase {
       // No template found yet
       return;
     }
-    this.__applyFullRefresh();
-    // Reset the pool
-    // TODO(kschaaf): Reuse pool across turns and nested templates
-    // Now that objects/arrays are re-evaluated when set, we can safely
-    // reuse pooled instances across turns, however we still need to decide
-    // semantics regarding how long to hold, how many to hold, etc.
-    this.__pool.length = 0;
+    let items = this.items || [];
+    // Sort and filter the items into a mapping array from instance->item
+    const isntIdxToItemsIdx = this.__sortAndFilterItems(items);
+    // If we're chunking, increase the limit if there are new instances to
+    // create and schedule the next chunk
+    const limit = this.__calculateLimit(isntIdxToItemsIdx.length);
+    // Create, update, and/or remove instances
+    this.__updateInstances(items, limit, isntIdxToItemsIdx);
+    // If we're chunking, schedule a rAF task to measure/continue chunking.     
+    // Do this before any notifying events (renderedItemCount & dom-change)
+    // since those could modify items and enqueue a new full render which will
+    // pre-empt this measurement.
+    if (this.initialCount &&
+       (this.__shouldMeasureChunk || this.__shouldContinueChunking)) {
+      cancelAnimationFrame(this.__chunkingId);
+      this.__chunkingId = requestAnimationFrame(() => {
+        this.__chunkingId = null;
+        this.__continueChunking();
+      });
+    }
     // Set rendered item count
     this._setRenderedItemCount(this.__instances.length);
     // Notify users
-    this.dispatchEvent(new CustomEvent('dom-change', {
-      bubbles: true,
-      composed: true
-    }));
-    // Check to see if we need to render more items
-    this.__tryRenderChunk();
+    if (!suppressTemplateNotifications || this.notifyDomChange) {
+      this.dispatchEvent(new CustomEvent('dom-change', {
+        bubbles: true,
+        composed: true
+      }));
+    }
   }
 
-  __applyFullRefresh() {
-    let items = this.items || [];
+  __sortAndFilterItems(items) {
+    // Generate array maping the instance index to the items array index
     let isntIdxToItemsIdx = new Array(items.length);
     for (let i=0; i<items.length; i++) {
       isntIdxToItemsIdx[i] = i;
@@ -9293,12 +10657,69 @@ class DomRepeat extends domRepeatBase {
     if (this.__sortFn) {
       isntIdxToItemsIdx.sort((a, b) => this.__sortFn(items[a], items[b]));
     }
+    return isntIdxToItemsIdx;
+  }
+
+  __calculateLimit(filteredItemCount) {
+    let limit = filteredItemCount;
+    const currentCount = this.__instances.length;
+    // When chunking, we increase the limit from the currently rendered count
+    // by the chunk count that is re-calculated after each rAF (with special
+    // cases for resetting the limit to initialCount after changing items)
+    if (this.initialCount) {
+      let newCount;
+      if (!this.__chunkCount ||
+        (this.__itemsArrayChanged && !this.reuseChunkedInstances)) {
+        // Limit next render to the initial count
+        limit = Math.min(filteredItemCount, this.initialCount);
+        // Subtract off any existing instances to determine the number of
+        // instances that will be created
+        newCount = Math.max(limit - currentCount, 0);
+        // Initialize the chunk size with how many items we're creating
+        this.__chunkCount = newCount || 1;
+      } else {
+        // The number of new instances that will be created is based on the
+        // existing instances, the new list size, and the chunk size
+        newCount = Math.min(
+          Math.max(filteredItemCount - currentCount, 0), 
+          this.__chunkCount);
+        // Update the limit based on how many new items we're making, limited
+        // buy the total size of the list
+        limit = Math.min(currentCount + newCount, filteredItemCount);
+      }
+      // Record some state about chunking for use in `__continueChunking`
+      this.__shouldMeasureChunk = newCount === this.__chunkCount;
+      this.__shouldContinueChunking = limit < filteredItemCount;
+      this.__renderStartTime = performance.now();
+    }
+    this.__itemsArrayChanged = false;
+    return limit;
+  }
+
+  __continueChunking() {
+    // Simple auto chunkSize throttling algorithm based on feedback loop:
+    // measure actual time between frames and scale chunk count by ratio of
+    // target/actual frame time.  Only modify chunk size if our measurement
+    // reflects the cost of a creating a full chunk's worth of instances; this
+    // avoids scaling up the chunk size if we e.g. quickly re-rendered instances
+    // in place
+    if (this.__shouldMeasureChunk) {
+      const renderTime = performance.now() - this.__renderStartTime;
+      const ratio = this._targetFrameTime / renderTime;
+      this.__chunkCount = Math.round(this.__chunkCount * ratio) || 1;
+    }
+    // Enqueue a new render if we haven't reached the full size of the list
+    if (this.__shouldContinueChunking) {
+      this.__debounceRender(this.__render);
+    }
+  }
+  
+  __updateInstances(items, limit, isntIdxToItemsIdx) {
     // items->inst map kept for item path forwarding
     const itemsIdxToInstIdx = this.__itemsIdxToInstIdx = {};
-    let instIdx = 0;
+    let instIdx;
     // Generate instances and assign items
-    const limit = Math.min(isntIdxToItemsIdx.length, this.__limit);
-    for (; instIdx<limit; instIdx++) {
+    for (instIdx=0; instIdx<limit; instIdx++) {
       let inst = this.__instances[instIdx];
       let itemIdx = isntIdxToItemsIdx[instIdx];
       let item = items[itemIdx];
@@ -9335,10 +10756,7 @@ class DomRepeat extends domRepeatBase {
   }
 
   __detachAndRemoveInstance(idx) {
-    let inst = this.__detachInstance(idx);
-    if (inst) {
-      this.__pool.push(inst);
-    }
+    this.__detachInstance(idx);
     this.__instances.splice(idx, 1);
   }
 
@@ -9351,17 +10769,7 @@ class DomRepeat extends domRepeatBase {
   }
 
   __insertInstance(item, instIdx, itemIdx) {
-    let inst = this.__pool.pop();
-    if (inst) {
-      // TODO(kschaaf): If the pool is shared across turns, hostProps
-      // need to be re-set to reused instances in addition to item
-      inst._setPendingProperty(this.as, item);
-      inst._setPendingProperty(this.indexAs, instIdx);
-      inst._setPendingProperty(this.itemsIndexAs, itemIdx);
-      inst._flushProperties();
-    } else {
-      inst = this.__stampInstance(item, instIdx, itemIdx);
-    }
+    const inst = this.__stampInstance(item, instIdx, itemIdx);
     let beforeRow = this.__instances[instIdx + 1];
     let beforeNode = beforeRow ? beforeRow.children[0] : this;
     wrap(wrap(this).parentNode).insertBefore(inst.root, beforeNode);
@@ -11124,55 +12532,51 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
  * @mixinFunction
  * @polymer
  * @summary Element class mixin that provides API for adding Polymer's
- *   cross-platform
- * gesture events to nodes
+ *   cross-platform gesture events to nodes
+ * @template T
+ * @param {function(new:T)} superClass Class to apply mixin to.
+ * @return {function(new:T)} superClass with mixin applied.
  */
-const GestureEventListeners = dedupingMixin(
+const GestureEventListeners = dedupingMixin((superClass) => {
+  /**
+   * @polymer
+   * @mixinClass
+   * @implements {Polymer_GestureEventListeners}
+   */
+  class GestureEventListeners extends superClass {
     /**
-     * @template T
-     * @param {function(new:T)} superClass Class to apply mixin to.
-     * @return {function(new:T)} superClass with mixin applied.
+     * Add the event listener to the node if it is a gestures event.
+     *
+     * @param {!EventTarget} node Node to add event listener to
+     * @param {string} eventName Name of event
+     * @param {function(!Event):void} handler Listener function to add
+     * @return {void}
+     * @override
      */
-    (superClass) => {
-      /**
-       * @polymer
-       * @mixinClass
-       * @implements {Polymer_GestureEventListeners}
-       */
-      class GestureEventListeners extends superClass {
-        /**
-         * Add the event listener to the node if it is a gestures event.
-         *
-         * @param {!EventTarget} node Node to add event listener to
-         * @param {string} eventName Name of event
-         * @param {function(!Event):void} handler Listener function to add
-         * @return {void}
-         * @override
-         */
-        _addEventListenerToNode(node, eventName, handler) {
-          if (!addListener(node, eventName, handler)) {
-            super._addEventListenerToNode(node, eventName, handler);
-          }
-        }
-
-        /**
-         * Remove the event listener to the node if it is a gestures event.
-         *
-         * @param {!EventTarget} node Node to remove event listener from
-         * @param {string} eventName Name of event
-         * @param {function(!Event):void} handler Listener function to remove
-         * @return {void}
-         * @override
-         */
-        _removeEventListenerFromNode(node, eventName, handler) {
-          if (!removeListener(node, eventName, handler)) {
-            super._removeEventListenerFromNode(node, eventName, handler);
-          }
-        }
+    _addEventListenerToNode(node, eventName, handler) {
+      if (!addListener(node, eventName, handler)) {
+        super._addEventListenerToNode(node, eventName, handler);
       }
+    }
 
-      return GestureEventListeners;
-    });
+    /**
+     * Remove the event listener to the node if it is a gestures event.
+     *
+     * @param {!EventTarget} node Node to remove event listener from
+     * @param {string} eventName Name of event
+     * @param {function(!Event):void} handler Listener function to remove
+     * @return {void}
+     * @override
+     */
+    _removeEventListenerFromNode(node, eventName, handler) {
+      if (!removeListener(node, eventName, handler)) {
+        super._removeEventListenerFromNode(node, eventName, handler);
+      }
+    }
+  }
+
+  return GestureEventListeners;
+});
 
 /**
 @license
@@ -11738,7 +13142,7 @@ let FlattenedNodesObserver = class {
           /** @type {!NodeList<!Node>} */ (wrap(this._target).children));
       if (window.ShadyDOM) {
         this._shadyChildrenObserver =
-          ShadyDOM.observeChildren(this._target, (mutations) => {
+          window.ShadyDOM.observeChildren(this._target, (mutations) => {
             this._processMutations(mutations);
           });
       } else {
@@ -11768,7 +13172,7 @@ let FlattenedNodesObserver = class {
       this._unlistenSlots(
           /** @type {!NodeList<!Node>} */ (wrap(this._target).children));
       if (window.ShadyDOM && this._shadyChildrenObserver) {
-        ShadyDOM.unobserveChildren(this._shadyChildrenObserver);
+        window.ShadyDOM.unobserveChildren(this._shadyChildrenObserver);
         this._shadyChildrenObserver = null;
       } else if (this._nativeChildrenObserver) {
         this._nativeChildrenObserver.disconnect();
@@ -11939,9 +13343,12 @@ const matchesSelector = function(node, selector) {
 class DomApiNative {
 
   /**
-   * @param {Node} node Node for which to create a Polymer.dom helper object.
+   * @param {!Node} node Node for which to create a Polymer.dom helper object.
    */
   constructor(node) {
+    if (window['ShadyDOM'] && window['ShadyDOM']['inUse']) {
+      window['ShadyDOM']['patch'](node);
+    }
     this.node = node;
   }
 
@@ -12004,7 +13411,7 @@ class DomApiNative {
   /**
    * Returns the root node of this node.  Equivalent to `getRootNode()`.
    *
-   * @return {Node} Top most element in the dom tree in which the node
+   * @return {!Node} Top most element in the dom tree in which the node
    * exists. If the node is connected to a document this is either a
    * shadowRoot or the document; otherwise, it may be the node
    * itself or a node or document fragment containing it.
@@ -12299,9 +13706,20 @@ if (window['ShadyDOM'] && window['ShadyDOM']['inUse'] && window['ShadyDOM']['noP
 
   Object.defineProperties(EventApi.prototype, {
 
+    // Returns the "lowest" node in the same root as the event's currentTarget.
+    // When in `noPatch` mode, this must be calculated by walking the event's
+    // path.
     localTarget: {
       get() {
-        return this.event.currentTarget;
+        const current = this.event.currentTarget;
+        const currentRoot = current && dom(current).getOwnerRoot();
+        const p$ = this.path;
+        for (let i = 0; i < p$.length; i++) {
+          const e = p$[i];
+          if (dom(e).getOwnerRoot() === currentRoot) {
+            return e;
+          }
+        }
       },
       configurable: true
     },
@@ -12321,7 +13739,7 @@ if (window['ShadyDOM'] && window['ShadyDOM']['inUse'] && window['ShadyDOM']['noP
   forwardMethods(DomApiNative.prototype, [
     'cloneNode', 'appendChild', 'insertBefore', 'removeChild',
     'replaceChild', 'setAttribute', 'removeAttribute',
-    'querySelector', 'querySelectorAll'
+    'querySelector', 'querySelectorAll', 'attachShadow'
   ]);
 
   // Properties that should return the logical, not composed tree. Note, `classList`
@@ -12331,11 +13749,11 @@ if (window['ShadyDOM'] && window['ShadyDOM']['inUse'] && window['ShadyDOM']['noP
     'parentNode', 'firstChild', 'lastChild',
     'nextSibling', 'previousSibling', 'firstElementChild',
     'lastElementChild', 'nextElementSibling', 'previousElementSibling',
-    'childNodes', 'children', 'classList'
+    'childNodes', 'children', 'classList', 'shadowRoot'
   ]);
 
   forwardProperties(DomApiNative.prototype, [
-    'textContent', 'innerHTML'
+    'textContent', 'innerHTML', 'className'
   ]);
 }
 
@@ -12375,6 +13793,265 @@ const dom = function(obj) {
 
 /**
 @license
+Copyright (c) 2019 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+
+const ShadyDOM$1 = window.ShadyDOM;
+const ShadyCSS = window.ShadyCSS;
+
+/**
+ * Return true if node scope is correct.
+ *
+ * @param {!Element} node Node to check scope
+ * @param {!Node} scope Scope reference
+ * @return {boolean} True if node is in scope
+ */
+function sameScope(node, scope) {
+  return wrap(node).getRootNode() === scope;
+}
+
+/**
+ * Ensure that elements in a ShadowDOM container are scoped correctly.
+ * This function is only needed when ShadyDOM is used and unpatched DOM APIs are used in third party code.
+ * This can happen in noPatch mode or when specialized APIs like ranges or tables are used to mutate DOM.
+ *
+ * @param  {!Element} container Container element to scope
+ * @param  {boolean=} shouldObserve if true, start a mutation observer for added nodes to the container
+ * @return {?MutationObserver} Returns a new MutationObserver on `container` if `shouldObserve` is true.
+ */
+function scopeSubtree(container, shouldObserve = false) {
+  // If using native ShadowDOM, abort
+  if (!ShadyDOM$1 || !ShadyCSS) {
+    return null;
+  }
+  // ShadyCSS handles DOM mutations when ShadyDOM does not handle scoping itself
+  if (!ShadyDOM$1['handlesDynamicScoping']) {
+    return null;
+  }
+  const ScopingShim = ShadyCSS['ScopingShim'];
+  // if ScopingShim is not available, abort
+  if (!ScopingShim) {
+    return null;
+  }
+  // capture correct scope for container
+  const containerScope = ScopingShim['scopeForNode'](container);
+  const root = wrap(container).getRootNode();
+
+  const scopify = (node) => {
+    if (!sameScope(node, root)) {
+      return;
+    }
+    // NOTE: native qSA does not honor scoped DOM, but it is faster, and the same behavior as Polymer v1
+    const elements = Array.from(ShadyDOM$1['nativeMethods']['querySelectorAll'].call(node, '*'));
+    elements.push(node);
+    for (let i = 0; i < elements.length; i++) {
+      const el = elements[i];
+      if (!sameScope(el, root)) {
+        continue;
+      }
+      const currentScope = ScopingShim['currentScopeForNode'](el);
+      if (currentScope !== containerScope) {
+        if (currentScope !== '') {
+          ScopingShim['unscopeNode'](el, currentScope);
+        }
+        ScopingShim['scopeNode'](el, containerScope);
+      }
+    }
+  };
+
+  // scope everything in container
+  scopify(container);
+
+  if (shouldObserve) {
+    const mo = new MutationObserver((mxns) => {
+      for (let i = 0; i < mxns.length; i++) {
+        const mxn = mxns[i];
+        for (let j = 0; j < mxn.addedNodes.length; j++) {
+          const addedNode = mxn.addedNodes[j];
+          if (addedNode.nodeType === Node.ELEMENT_NODE) {
+            scopify(addedNode);
+          }
+        }
+      }
+    });
+    mo.observe(container, {childList: true, subtree: true});
+    return mo;
+  } else {
+    return null;
+  }
+}
+
+/**
+ * @fileoverview
+ * @suppress {checkPrototypalTypes}
+ * @license Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
+ * This code may only be used under the BSD style license found at
+ * http://polymer.github.io/LICENSE.txt The complete set of authors may be found
+ * at http://polymer.github.io/AUTHORS.txt The complete set of contributors may
+ * be found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by
+ * Google as part of the polymer project is also subject to an additional IP
+ * rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+
+const DISABLED_ATTR$1 = 'disable-upgrade';
+
+const findObservedAttributesGetter = (ctor) => {
+  while (ctor) {
+    const desc = Object.getOwnPropertyDescriptor(ctor, 'observedAttributes');
+    if (desc) {
+      return desc.get;
+    }
+    ctor = Object.getPrototypeOf(ctor.prototype).constructor;
+  }
+  return () => [];
+};
+
+/**
+ * Element class mixin that allows the element to boot up in a non-enabled
+ * state when the `disable-upgrade` attribute is present. This mixin is
+ * designed to be used with element classes like PolymerElement that perform
+ * initial startup work when they are first connected. When the
+ * `disable-upgrade` attribute is removed, if the element is connected, it
+ * boots up and "enables" as it otherwise would; if it is not connected, the
+ * element boots up when it is next connected.
+ *
+ * Using `disable-upgrade` with PolymerElement prevents any data propagation
+ * to the element, any element DOM from stamping, or any work done in
+ * connected/disconnctedCallback from occuring, but it does not prevent work
+ * done in the element constructor.
+ *
+ * Note, this mixin must be applied on top of any element class that
+ * itself implements a `connectedCallback` so that it can control the work
+ * done in `connectedCallback`. For example,
+ *
+ *     MyClass = DisableUpgradeMixin(class extends BaseClass {...});
+ *
+ * @mixinFunction
+ * @polymer
+ * @appliesMixin ElementMixin
+ * @template T
+ * @param {function(new:T)} superClass Class to apply mixin to.
+ * @return {function(new:T)} superClass with mixin applied.
+ */
+dedupingMixin((base) => {
+  /**
+   * @constructor
+   * @implements {Polymer_ElementMixin}
+   * @extends {HTMLElement}
+   * @private
+   */
+  const superClass = ElementMixin(base);
+
+  // Work around for closure bug #126934458. Using `super` in a property
+  // getter does not work so instead we search the Base prototype for an
+  // implementation of observedAttributes so that we can override and call
+  // the `super` getter. Note, this is done one time ever because we assume
+  // that `Base` is always comes from `Polymer.LegacyElementMixn`.
+  let observedAttributesGetter = findObservedAttributesGetter(superClass);
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @implements {Polymer_DisableUpgradeMixin}
+   */
+  class DisableUpgradeClass extends superClass {
+
+    constructor() {
+      super();
+      /** @type {boolean|undefined} */
+      this.__isUpgradeDisabled;
+    }
+
+    static get observedAttributes() {
+      return observedAttributesGetter.call(this).concat(DISABLED_ATTR$1);
+    }
+
+    // Prevent element from initializing properties when it's upgrade disabled.
+    /** @override */
+    _initializeProperties() {
+      if (this.hasAttribute(DISABLED_ATTR$1)) {
+        this.__isUpgradeDisabled = true;
+      } else {
+        super._initializeProperties();
+      }
+    }
+
+    // Prevent element from enabling properties when it's upgrade disabled.
+    // Normally overriding connectedCallback would be enough, but dom-* elements
+    /** @override */
+    _enableProperties() {
+      if (!this.__isUpgradeDisabled) {
+        super._enableProperties();
+      }
+    }
+
+    // If the element starts upgrade-disabled and a property is set for
+    // which an accessor exists, the default should not be applied.
+    // This additional check is needed because defaults are applied via
+    // `_initializeProperties` which is called after initial properties
+    // have been set when the element starts upgrade-disabled.
+    /** @override */
+    _canApplyPropertyDefault(property) {
+      return super._canApplyPropertyDefault(property) &&
+        !(this.__isUpgradeDisabled && this._isPropertyPending(property));
+    }
+
+    /**
+     * @override
+     * @param {string} name Attribute name.
+     * @param {?string} old The previous value for the attribute.
+     * @param {?string} value The new value for the attribute.
+     * @param {?string} namespace The XML namespace for the attribute.
+     * @return {void}
+     */
+    attributeChangedCallback(name, old, value, namespace) {
+      if (name == DISABLED_ATTR$1) {
+        // When disable-upgrade is removed, initialize properties and
+        // provoke connectedCallback if the element is already connected.
+        if (this.__isUpgradeDisabled && value == null) {
+          super._initializeProperties();
+          this.__isUpgradeDisabled = false;
+          if (wrap(this).isConnected) {
+            super.connectedCallback();
+          }
+        }
+      } else {
+        super.attributeChangedCallback(
+            name, old, value, /** @type {null|string} */ (namespace));
+      }
+    }
+
+    // Prevent element from connecting when it's upgrade disabled.
+    // This prevents user code in `attached` from being called.
+    /** @override */
+    connectedCallback() {
+      if (!this.__isUpgradeDisabled) {
+        super.connectedCallback();
+      }
+    }
+
+    // Prevent element from disconnecting when it's upgrade disabled.
+    // This avoids allowing user code `detached` from being called without a
+    // paired call to `attached`.
+    /** @override */
+    disconnectedCallback() {
+      if (!this.__isUpgradeDisabled) {
+        super.disconnectedCallback();
+      }
+    }
+
+  }
+
+  return DisableUpgradeClass;
+});
+
+/**
+@license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -12382,6 +14059,8 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
+
+const DISABLED_ATTR = 'disable-upgrade';
 
 let styleInterface = window.ShadyCSS;
 
@@ -12400,6 +14079,9 @@ let styleInterface = window.ShadyCSS;
  * @summary Element class mixin that provides Polymer's "legacy" API
  */
 const LegacyElementMixin = dedupingMixin((base) => {
+
+  // TODO(kschaaf): Note, the `@implements {Polymer_DirMixin}` is required here
+  // (rather than on legacyElementBase) for unknown reasons.
   /**
    * @constructor
    * @implements {Polymer_ElementMixin}
@@ -12407,7 +14089,19 @@ const LegacyElementMixin = dedupingMixin((base) => {
    * @extends {HTMLElement}
    * @private
    */
-  const legacyElementBase = GestureEventListeners(ElementMixin(base));
+  const GesturesElement = GestureEventListeners(ElementMixin(base));
+
+  // Note, the DirMixin does nothing if css is built so avoid including it
+  // in that case.
+
+  /**
+   * @constructor
+   * @extends {GesturesElement}
+   * @private
+   */
+  const legacyElementBase = GesturesElement;
+
+  const observedAttributesGetter = findObservedAttributesGetter(legacyElementBase);
 
   /**
    * Map of simple names to touch action names
@@ -12437,6 +14131,13 @@ const LegacyElementMixin = dedupingMixin((base) => {
       this.__boundListeners;
       /** @type {?Object<string, ?Function>} */
       this._debouncers;
+      // NOTE: Inlined for perf from version of DisableUpgradeMixin.
+      /** @type {boolean|undefined} */
+      this.__isUpgradeDisabled;
+      /** @type {boolean|undefined} */
+      this.__needsAttributesAtConnected;
+      /** @type {boolean|undefined} */
+      this._legacyForceObservedAttributes;
     }
 
     /**
@@ -12446,6 +14147,7 @@ const LegacyElementMixin = dedupingMixin((base) => {
      * @return {!Object} The `import.meta` object set on the prototype
      * @suppress {missingProperties} `this` is always in the instance in
      *  closure for some reason even in a static method, rather than the class
+     * @nocollapse
      */
     static get importMeta() {
       return this.prototype.importMeta;
@@ -12460,15 +14162,100 @@ const LegacyElementMixin = dedupingMixin((base) => {
     created() {}
 
     /**
+     * Processes an attribute reaction when the `legacyNoObservedAttributes`
+     * setting is in use.
+     * @param {string} name Name of attribute that changed
+     * @param {?string} old Old attribute value
+     * @param {?string} value New attribute value
+     * @return {void}
+     */
+    __attributeReaction(name, old, value) {
+      if ((this.__dataAttributes && this.__dataAttributes[name]) || name === DISABLED_ATTR) {
+        this.attributeChangedCallback(name, old, value, null);
+      }
+    }
+
+    /**
+     * Sets the value of an attribute.
+     * @override
+     */
+    setAttribute(name, value) {
+      if (legacyNoObservedAttributes && !this._legacyForceObservedAttributes) {
+        const oldValue = this.getAttribute(name);
+        super.setAttribute(name, value);
+        // value coerced to String for closure's benefit
+        this.__attributeReaction(name, oldValue, String(value));
+      } else {
+        super.setAttribute(name, value);
+      }
+    }
+
+    /**
+     * Removes an attribute.
+     * @override
+     */
+    removeAttribute(name) {
+      if (legacyNoObservedAttributes && !this._legacyForceObservedAttributes) {
+        const oldValue = this.getAttribute(name);
+        super.removeAttribute(name);
+        this.__attributeReaction(name, oldValue, null);
+      } else {
+        super.removeAttribute(name);
+      }
+    }
+
+    // NOTE: Inlined for perf from version of DisableUpgradeMixin.
+    static get observedAttributes() {
+      if (legacyNoObservedAttributes && !this.prototype._legacyForceObservedAttributes) {
+        // Ensure this element is property registered with the telemetry system.
+        if (!this.hasOwnProperty(JSCompiler_renameProperty('__observedAttributes', this))) {
+          this.__observedAttributes = [];
+          register(this.prototype);
+        }
+        return this.__observedAttributes;
+      } else {
+        return observedAttributesGetter.call(this).concat(DISABLED_ATTR);
+      }
+    }
+
+    // NOTE: Inlined for perf from version of DisableUpgradeMixin.
+    // Prevent element from enabling properties when it's upgrade disabled.
+    // Normally overriding connectedCallback would be enough, but dom-* elements
+    /** @override */
+    _enableProperties() {
+      if (!this.__isUpgradeDisabled) {
+        super._enableProperties();
+      }
+    }
+
+    // NOTE: Inlined for perf from version of DisableUpgradeMixin.
+    // If the element starts upgrade-disabled and a property is set for
+    // which an accessor exists, the default should not be applied.
+    // This additional check is needed because defaults are applied via
+    // `_initializeProperties` which is called after initial properties
+    // have been set when the element starts upgrade-disabled.
+    /** @override */
+    _canApplyPropertyDefault(property) {
+      return super._canApplyPropertyDefault(property) &&
+        !(this.__isUpgradeDisabled && this._isPropertyPending(property));
+    }
+
+    /**
      * Provides an implementation of `connectedCallback`
      * which adds Polymer legacy API's `attached` method.
      * @return {void}
      * @override
      */
     connectedCallback() {
-      super.connectedCallback();
-      this.isAttached = true;
-      this.attached();
+      if (this.__needsAttributesAtConnected) {
+        this._takeAttributes();
+      }
+      // NOTE: Inlined for perf from version of DisableUpgradeMixin.
+      if (!this.__isUpgradeDisabled) {
+        super.connectedCallback();
+        this.isAttached = true;
+        this.attached();
+      }
     }
 
     /**
@@ -12486,9 +14273,12 @@ const LegacyElementMixin = dedupingMixin((base) => {
      * @override
      */
     disconnectedCallback() {
-      super.disconnectedCallback();
-      this.isAttached = false;
-      this.detached();
+      // NOTE: Inlined for perf from version of DisableUpgradeMixin.
+      if (!this.__isUpgradeDisabled) {
+        super.disconnectedCallback();
+        this.isAttached = false;
+        this.detached();
+      }
     }
 
     /**
@@ -12511,8 +14301,21 @@ const LegacyElementMixin = dedupingMixin((base) => {
      */
     attributeChangedCallback(name, old, value, namespace) {
       if (old !== value) {
-        super.attributeChangedCallback(name, old, value, namespace);
-        this.attributeChanged(name, old, value);
+        // NOTE: Inlined for perf from version of DisableUpgradeMixin.
+        if (name == DISABLED_ATTR) {
+          // When disable-upgrade is removed, intialize properties and
+          // provoke connectedCallback if the element is already connected.
+          if (this.__isUpgradeDisabled && value == null) {
+            this._initializeProperties();
+            this.__isUpgradeDisabled = false;
+            if (wrap(this).isConnected) {
+              this.connectedCallback();
+            }
+          }
+        } else {
+          super.attributeChangedCallback(name, old, value, namespace);
+          this.attributeChanged(name, old, value);
+        }
       }
     }
 
@@ -12537,20 +14340,43 @@ const LegacyElementMixin = dedupingMixin((base) => {
      * @suppress {invalidCasts}
      */
     _initializeProperties() {
-      let proto = Object.getPrototypeOf(this);
-      if (!proto.hasOwnProperty('__hasRegisterFinished')) {
-        this._registered();
-        // backstop in case the `_registered` implementation does not set this
-        proto.__hasRegisterFinished = true;
+      // NOTE: Inlined for perf from version of DisableUpgradeMixin.
+      // Only auto-use disable-upgrade if legacyOptimizations is set.
+      if (legacyOptimizations && this.hasAttribute(DISABLED_ATTR)) {
+        this.__isUpgradeDisabled = true;
+      } else {
+        let proto = Object.getPrototypeOf(this);
+        if (!proto.hasOwnProperty(JSCompiler_renameProperty('__hasRegisterFinished', proto))) {
+          this._registered();
+          // backstop in case the `_registered` implementation does not set this
+          proto.__hasRegisterFinished = true;
+        }
+        super._initializeProperties();
+        this.root = /** @type {HTMLElement} */(this);
+        this.created();
+        // Pull all attribute values 1x if `legacyNoObservedAttributes` is set.
+        if (legacyNoObservedAttributes && !this._legacyForceObservedAttributes) {
+          if (this.hasAttributes()) {
+            this._takeAttributes();
+          // Element created from scratch or parser generated
+          } else if (!this.parentNode) {
+            this.__needsAttributesAtConnected = true;
+          }
+        }
+        // Ensure listeners are applied immediately so that they are
+        // added before declarative event listeners. This allows an element to
+        // decorate itself via an event prior to any declarative listeners
+        // seeing the event. Note, this ensures compatibility with 1.x ordering.
+        this._applyListeners();
       }
-      super._initializeProperties();
-      this.root = /** @type {HTMLElement} */(this);
-      this.created();
-      // Ensure listeners are applied immediately so that they are
-      // added before declarative event listeners. This allows an element to
-      // decorate itself via an event prior to any declarative listeners
-      // seeing the event. Note, this ensures compatibility with 1.x ordering.
-      this._applyListeners();
+    }
+
+    _takeAttributes() {
+      const a = this.attributes;
+      for (let i=0, l=a.length; i < l; i++) {
+        const attr = a[i];
+        this.__attributeReaction(attr.name, null, attr.value);
+      }
     }
 
     /**
@@ -12876,6 +14702,9 @@ const LegacyElementMixin = dedupingMixin((base) => {
      * is contained. This is a shorthand for
      * `this.getRootNode().host`.
      * @this {Element}
+     * @return {?Node} The element whose local dom within which this element is
+     * contained.
+     * @override
      */
     get domHost() {
       let root = wrap(this).getRootNode();
@@ -13061,12 +14890,13 @@ const LegacyElementMixin = dedupingMixin((base) => {
     /**
      * No-op for backwards compatibility. This should now be handled by
      * ShadyCss library.
-     * @param  {*} container Unused
-     * @param  {*} shouldObserve Unused
-     * @return {void}
+     * @param  {!Element} container Container element to scope
+     * @param  {boolean=} shouldObserve if true, start a mutation observer for added nodes to the container
+     * @return {?MutationObserver} Returns a new MutationObserver on `container` if `shouldObserve` is true.
      * @override
      */
-    scopeSubtree(container, shouldObserve) { // eslint-disable-line no-unused-vars
+    scopeSubtree(container, shouldObserve = false) {
+      return scopeSubtree(container, shouldObserve);
     }
 
     /**
@@ -13298,9 +15128,9 @@ const LegacyElementMixin = dedupingMixin((base) => {
      * Cross-platform helper for setting an element's CSS `translate3d`
      * property.
      *
-     * @param {number} x X offset.
-     * @param {number} y Y offset.
-     * @param {number} z Z offset.
+     * @param {number|string} x X offset.
+     * @param {number|string} y Y offset.
+     * @param {number|string} z Z offset.
      * @param {Element=} node Element to apply the transform to.
      * Defaults to `this`.
      * @return {void}
@@ -13406,7 +15236,7 @@ const LegacyElementMixin = dedupingMixin((base) => {
      *
      * @param {string} methodName Method name to associate with message
      * @param {...*} args Array of strings or objects to log
-     * @return {Array} Array with formatting information for `console`
+     * @return {!Array} Array with formatting information for `console`
      *   logging.
      * @override
      */
@@ -13579,7 +15409,7 @@ function flattenBehaviors(behaviors, list, exclude) {
  * Copies property descriptors from source to target, overwriting all fields
  * of any previous descriptor for a property *except* for `value`, which is
  * merged in from the target if it does not exist on the source.
- * 
+ *
  * @param {*} target Target properties object
  * @param {*} source Source properties object
  */
@@ -13594,6 +15424,8 @@ function mergeProperties(target, source) {
     }
   }
 }
+
+const LegacyElement = LegacyElementMixin(HTMLElement);
 
 /* Note about construction and extension of legacy classes.
   [Changed in Q4 2018 to optimize performance.]
@@ -13635,10 +15467,13 @@ function GenerateClassFromInfo(info, Base, behaviors) {
   class PolymerGenerated extends Base {
 
     // explicitly not calling super._finalizeClass
+    /** @nocollapse */
     static _finalizeClass() {
       // if calling via a subclass that hasn't been generated, pass through to super
       if (!this.hasOwnProperty(JSCompiler_renameProperty('generatedFrom', this))) {
-        super._finalizeClass();
+        // TODO(https://github.com/google/closure-compiler/issues/3240):
+        //     Change back to just super.methodCall()
+        Base._finalizeClass.call(this);
       } else {
         // interleave properties and observers per behavior and `info`
         if (behaviorList) {
@@ -13663,6 +15498,7 @@ function GenerateClassFromInfo(info, Base, behaviors) {
       }
     }
 
+    /** @nocollapse */
     static get properties() {
       const properties = {};
       if (behaviorList) {
@@ -13674,6 +15510,7 @@ function GenerateClassFromInfo(info, Base, behaviors) {
       return properties;
     }
 
+    /** @nocollapse */
     static get observers() {
       let observers = [];
       if (behaviorList) {
@@ -13716,10 +15553,14 @@ function GenerateClassFromInfo(info, Base, behaviors) {
       */
       // only proceed if the generated class' prototype has not been registered.
       const generatedProto = PolymerGenerated.prototype;
-      if (!generatedProto.hasOwnProperty('__hasRegisterFinished')) {
+      if (!generatedProto.hasOwnProperty(JSCompiler_renameProperty('__hasRegisterFinished', generatedProto))) {
         generatedProto.__hasRegisterFinished = true;
         // ensure superclass is registered first.
         super._registered();
+        // copy properties onto the generated class lazily if we're optimizing,
+        if (legacyOptimizations) {
+          copyPropertiesToProto(generatedProto);
+        }
         // make sure legacy lifecycle is called on the *element*'s prototype
         // and not the generated class prototype; if the element has been
         // extended, these are *not* the same.
@@ -13858,7 +15699,7 @@ function GenerateClassFromInfo(info, Base, behaviors) {
   };
 
   // copy properties if we're not optimizing
-  {
+  if (!legacyOptimizations) {
     copyPropertiesToProto(PolymerGenerated.prototype);
   }
 
@@ -13941,8 +15782,8 @@ const Class = function(info, mixin) {
   if (!info) {
     console.warn('Polymer.Class requires `info` argument');
   }
-  let klass = mixin ? mixin(LegacyElementMixin(HTMLElement)) :
-      LegacyElementMixin(HTMLElement);
+  let klass = mixin ? mixin(LegacyElement) :
+      LegacyElement;
   klass = GenerateClassFromInfo(info, klass, info.behaviors);
   // decorate klass with registration info
   klass.is = klass.prototype.is = info.is;
@@ -14030,8 +15871,8 @@ const OptionalMutableDataBehavior = {
    * @param {*} value New property value
    * @param {*} old Previous property value
    * @return {boolean} Whether the property should be considered a change
-   * @this {this}
    * @protected
+   * @override
    */
   _shouldPropertyChange(property, value, old) {
     return mutablePropertyChange(this, property, value, old, this.mutableData);
@@ -14075,6 +15916,10 @@ const Polymer = function(info) {
     klass = info;
   } else {
     klass = Polymer.Class(info);
+  }
+  // Copy opt out for `legacyNoObservedAttributes` from info object to class.
+  if (info._legacyForceObservedAttributes) {
+    klass.prototype._legacyForceObservedAttributes = info._legacyForceObservedAttributes;
   }
   customElements.define(klass.is, /** @type {!HTMLElement} */(klass));
   return klass;
@@ -14170,13 +16015,14 @@ const Templatizer = {
    */
   templatize(template, mutableData) {
     this._templatizerTemplate = template;
-    this.ctor = templatize(template, this, {
-      mutableData: Boolean(mutableData),
-      parentModel: this._parentModel,
-      instanceProps: this._instanceProps,
-      forwardHostProp: this._forwardHostPropV2,
-      notifyInstanceProp: this._notifyInstancePropV2
-    });
+    this.ctor =
+        templatize(template, /** @type {!Polymer_PropertyEffects} */ (this), {
+          mutableData: Boolean(mutableData),
+          parentModel: this._parentModel,
+          instanceProps: this._instanceProps,
+          forwardHostProp: this._forwardHostPropV2,
+          notifyInstanceProp: this._notifyInstancePropV2
+        });
   },
 
   /**
@@ -14260,16 +16106,24 @@ class DomBind extends domBindBase {
 
   constructor() {
     super();
+    if (strictTemplatePolicy) {
+      throw new Error(`strictTemplatePolicy: dom-bind not allowed`);
+    }
     this.root = null;
     this.$ = null;
     this.__children = null;
   }
 
+  /* eslint-disable no-unused-vars */
   /**
    * @override
+   * @param {string} name Name of attribute that changed
+   * @param {?string} old Old attribute value
+   * @param {?string} value New attribute value
+   * @param {?string} namespace Attribute namespace.
    * @return {void}
    */
-  attributeChangedCallback() {
+  attributeChangedCallback(name, old, value, namespace) {
     // assumes only one observed attribute
     this.mutableData = true;
   }
@@ -14279,7 +16133,9 @@ class DomBind extends domBindBase {
    * @return {void}
    */
   connectedCallback() {
-    this.style.display = 'none';
+    if (!hideElementsGlobally()) {
+      this.style.display = 'none';
+    }
     this.render();
   }
 
@@ -14311,7 +16167,7 @@ class DomBind extends domBindBase {
   render() {
     let template;
     if (!this.__children) {
-      template = /** @type {HTMLTemplateElement} */(template || this.querySelector('template'));
+      template = /** @type {?HTMLTemplateElement} */(template || this.querySelector('template'));
       if (!template) {
         // Wait until childList changes and template should be there by then
         let observer = new MutationObserver(() => {
@@ -14933,6 +16789,7 @@ class CustomStyle extends HTMLElement {
     const include = style.getAttribute(attr);
     if (include) {
       style.removeAttribute(attr);
+      /** @suppress {deprecated} */
       style.textContent = cssFromModules(include) + style.textContent;
     }
     /*

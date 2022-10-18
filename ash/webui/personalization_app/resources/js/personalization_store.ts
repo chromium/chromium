@@ -106,15 +106,15 @@ const PersonalizationStoreClientImpl: PersonalizationStoreClient&
       },
     };
 
-export const WithPersonalizationStore: {
-  new (): PolymerElement&I18nMixinInterface&IronResizableBehavior&
-  ListPropertyUpdateMixinInterface&PersonalizationStoreClient&
-  StoreClientInterface<PersonalizationState>,
-} =
+export const WithPersonalizationStore =
     mixinBehaviors(
         [
           StoreClient,
           PersonalizationStoreClientImpl,
           IronResizableBehavior,
         ],
-        I18nMixin(ListPropertyUpdateMixin(PolymerElement)));
+        I18nMixin(ListPropertyUpdateMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface & IronResizableBehavior &
+          ListPropertyUpdateMixinInterface & PersonalizationStoreClient &
+          StoreClientInterface<PersonalizationState>,
+    };
