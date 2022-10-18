@@ -316,10 +316,8 @@ void ChromeSessionManager::Initialize(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          ash::features::kLacrosProfileBackwardMigration) &&
-      parsed_command_line.HasSwitch(
-          switches::kForceBrowserDataBackwardMigration)) {
+  if (parsed_command_line.HasSwitch(
+          switches::kBrowserDataBackwardMigrationForUser)) {
     LOG(WARNING) << "Ash is running to do browser data backward migration.";
     // Show UI for browser data backward migration. The backward migration
     // itself will be started in `LacrosDataBackwardMigrationScreen::ShowImpl`.

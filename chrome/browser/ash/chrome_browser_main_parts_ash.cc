@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -1028,6 +1029,13 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
             account_id, user_id_hash,
             crosapi::browser_util::PolicyInitState::kBeforeInit)) {
       LOG(WARNING) << "Restarting chrome to run profile migration.";
+      return;
+    }
+
+    if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
+            account_id, user_id_hash,
+            crosapi::browser_util::PolicyInitState::kBeforeInit)) {
+      LOG(WARNING) << "Restarting chrome to run backward profile migration.";
       return;
     }
 

@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/common/channel_info.h"
@@ -131,7 +132,12 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
   // partially-removed directory could be used. Fix this.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kSafeMode)) {
-    base::DeletePathRecursively(browser_util::GetUserDataDir());
+    // If backward migration is enabled, don't remove the lacros folder as it
+    // will used by the migration and will be removed after it completes.
+    if (!ash::BrowserDataBackMigrator::IsBackMigrationEnabled(
+            crosapi::browser_util::PolicyInitState::kBeforeInit)) {
+      base::DeletePathRecursively(browser_util::GetUserDataDir());
+    }
   }
   return true;
 }

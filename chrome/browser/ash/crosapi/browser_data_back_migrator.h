@@ -10,6 +10,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -36,6 +38,24 @@ class BrowserDataBackMigrator {
   ~BrowserDataBackMigrator();
 
   void Migrate(BackMigrationFinishedCallback finished_callback);
+
+  // IsBackMigrationEnabled determines if the feature is enabled.
+  // It checks the following in order:
+  // 1. The kForceBrowserDataBackwardMigration debug flag.
+  // 2. The LacrosDataBackwardMigrationMode policy.
+  // 3. The kLacrosProfileBackwardMigration feature flag.
+  static bool IsBackMigrationEnabled(
+      crosapi::browser_util::PolicyInitState policy_init_state);
+
+  // MaybeRestartToMigrateBack checks if backward migration should be
+  // triggered. Migration is started by adding extra flags to Chrome using
+  // session_manager and then restarting.
+  // Returns true if Chrome needs to restart to trigger backward migration.
+  // May block to check if the lacros folder is present.
+  static bool MaybeRestartToMigrateBack(
+      const AccountId& account_id,
+      const std::string& user_id_hash,
+      crosapi::browser_util::PolicyInitState policy_init_state);
 
  private:
   // A list of all the possible results of migration, including success and all
@@ -111,6 +131,22 @@ class BrowserDataBackMigrator {
 
   // Transforms `TaskResult` to `Result`, which is then returned to the caller.
   static Result ToResult(TaskResult result);
+
+  // IsBackMigrationForceEnabled checks if backward migration has been force
+  // enabled using the kLacrosProfileBackwardMigration flag.
+  static bool IsBackMigrationForceEnabled();
+
+  // ShouldMigrateBack determines if backward migration should run.
+  // Called by MaybeRestartToMigrateBack.
+  // May block to check if the lacros folder is present.
+  static bool ShouldMigrateBack(
+      const AccountId& account_id,
+      const std::string& user_id_hash,
+      crosapi::browser_util::PolicyInitState policy_init_state);
+
+  // RestartToMigrateBack triggers a Chrome restart to start backward migration.
+  // Called by MaybeRestartToMigrateBack.
+  static bool RestartToMigrateBack(const AccountId& account_id);
 
   // Path to the ash profile directory.
   const base::FilePath ash_profile_dir_;

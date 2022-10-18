@@ -46,6 +46,7 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
+#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
@@ -2275,6 +2276,13 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
           user->GetAccountId(), user->username_hash(),
           crosapi::browser_util::PolicyInitState::kAfterInit)) {
     LOG(WARNING) << "Restarting chrome to run profile migration.";
+    return;
+  }
+
+  if (ash::BrowserDataBackMigrator::MaybeRestartToMigrateBack(
+          user->GetAccountId(), user->username_hash(),
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+    LOG(WARNING) << "Restarting chrome to run backward profile migration.";
     return;
   }
 

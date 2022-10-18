@@ -124,6 +124,7 @@ class VizCompositorThreadRunnerWebView;
 }  // namespace android_webview
 namespace ash {
 class MojoUtils;
+class BrowserDataBackMigrator;
 bool CameraAppUIShouldEnableLocalOverride(const std::string&);
 }  // namespace ash
 namespace audio {
@@ -453,6 +454,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ::StartupTabProviderImpl;
   friend class android_webview::ScopedAllowInitGLBindings;
   friend class ash::MojoUtils;  // http://crbug.com/1055467
+  friend class ash::BrowserDataBackMigrator;
   friend class base::AdjustOOMScoreHelper;
   friend class base::StackSamplingProfiler;
   friend class blink::DiskDataAllocator;

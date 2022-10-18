@@ -9,17 +9,35 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
+
+namespace {
+
+// Flag values for `switches::kForceBrowserDataBackwardMigrationForTesting`.
+const char kBrowserDataBackwardMigrationForceSkip[] = "force-skip";
+const char kBrowserDataBackwardMigrationForceMigration[] = "force-migration";
+
+}  // namespace
 
 BrowserDataBackMigrator::BrowserDataBackMigrator(
     const base::FilePath& ash_profile_dir)
@@ -31,8 +49,8 @@ void BrowserDataBackMigrator::Migrate(
     BackMigrationFinishedCallback finished_callback) {
   LOG(WARNING) << "BrowserDataBackMigrator::Migrate() is called.";
 
-  DCHECK(base::FeatureList::IsEnabled(
-      ash::features::kLacrosProfileBackwardMigration));
+  DCHECK(IsBackMigrationEnabled(
+      crosapi::browser_util::PolicyInitState::kBeforeInit));
 
   const base::FilePath lacros_profile_dir =
       ash_profile_dir_.Append(browser_data_migrator_util::kLacrosDir);
@@ -281,6 +299,136 @@ BrowserDataBackMigrator::Result BrowserDataBackMigrator::ToResult(
     case TaskStatus::kDeleteTmpDirDeleteFailed:
       return Result::kFailed;
   }
+}
+
+// static
+bool BrowserDataBackMigrator::IsBackMigrationForceEnabled() {
+  const std::string force_migration_switch =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kForceBrowserDataBackwardMigration);
+
+  return force_migration_switch == kBrowserDataBackwardMigrationForceMigration;
+}
+
+// static
+bool BrowserDataBackMigrator::IsBackMigrationEnabled(
+    crosapi::browser_util::PolicyInitState policy_init_state) {
+  if (IsBackMigrationForceEnabled()) {
+    return true;
+  }
+
+  // Check if migration should be force skipped.
+  const std::string force_migration_switch =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kForceBrowserDataBackwardMigration);
+
+  if (force_migration_switch == kBrowserDataBackwardMigrationForceSkip) {
+    return false;
+  }
+
+  if (policy_init_state ==
+      crosapi::browser_util::PolicyInitState::kBeforeInit) {
+    // TODO(b/244572632): Read cached flag.
+  } else {
+    DCHECK_EQ(policy_init_state,
+              crosapi::browser_util::PolicyInitState::kAfterInit);
+    // TODO(b/244572632): Read policy value.
+  }
+
+  return base::FeatureList::IsEnabled(
+      ash::features::kLacrosProfileBackwardMigration);
+}
+
+// static
+bool BrowserDataBackMigrator::ShouldMigrateBack(
+    const AccountId& account_id,
+    const std::string& user_id_hash,
+    crosapi::browser_util::PolicyInitState policy_init_state) {
+  if (IsBackMigrationForceEnabled()) {
+    LOG(WARNING) << "Lacros backward migration has been force enabled";
+    // Skipping other checks, except for lacros folder presence.
+  } else {
+    // Check if the backward migration is enabled.
+    if (!IsBackMigrationEnabled(policy_init_state)) {
+      VLOG(1) << "Lacros backward migration is disabled, not triggering";
+      return false;
+    }
+
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->FindUser(account_id);
+
+    if (!user) {
+      VLOG(1) << "Failed to find user, not triggering backward migration";
+      return false;
+    }
+
+    if (crosapi::browser_util::IsLacrosEnabledForMigration(user,
+                                                           policy_init_state)) {
+      VLOG(1) << "Lacros is enabled, not triggering backward migration";
+      return false;
+    }
+  }
+
+  // Forced migration still needs the lacros dir to be present. Otherwise
+  // we will continuously migrate until the flag is removed.
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    LOG(ERROR) << "Could not get the original user data dir path. Not "
+                  "triggering backward migration";
+    return false;
+  }
+
+  const base::FilePath ash_data_dir =
+      user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
+
+  const base::FilePath lacros_profile_dir =
+      ash_data_dir.Append(browser_data_migrator_util::kLacrosDir);
+
+  {
+    // Temporarily allow blocking since we need to check if we need to migrate
+    // the data from lacros to ash before the user has a chance to use it.
+    base::ScopedAllowBlocking allow_blocking;
+
+    // Synchronously check if the lacros folder is present.
+    if (!DirectoryExists(lacros_profile_dir)) {
+      VLOG(1) << "Lacros folder not found at '" << lacros_profile_dir.value()
+              << "', not triggering backward migration";
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// static
+bool BrowserDataBackMigrator::RestartToMigrateBack(
+    const AccountId& account_id) {
+  LOG(WARNING) << "Requesting backward migration from session_manager";
+  bool success =
+      SessionManagerClient::Get()->BlockingRequestBrowserDataBackwardMigration(
+          cryptohome::CreateAccountIdentifierFromAccountId(account_id));
+
+  if (!success) {
+    LOG(ERROR) << "SessionManagerClient::"
+                  "BlockingRequestBrowserDataBackwardMigration() failed.";
+    return false;
+  }
+
+  // TODO(b/253621578): Add g_attempt_restart helper for testing
+  chrome::AttemptRestart();
+  return true;
+}
+
+// static
+bool BrowserDataBackMigrator::MaybeRestartToMigrateBack(
+    const AccountId& account_id,
+    const std::string& user_id_hash,
+    crosapi::browser_util::PolicyInitState policy_init_state) {
+  if (!ShouldMigrateBack(account_id, user_id_hash, policy_init_state)) {
+    return false;
+  }
+
+  return RestartToMigrateBack(account_id);
 }
 
 }  // namespace ash
