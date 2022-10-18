@@ -2274,20 +2274,8 @@ CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
       if (fileManager.directoryModel.isReadOnly()) {
         dirEntry = fileManager.directoryModel.getMyFiles();
       }
-      this.startExtractTask(fileManager, selectionEntries, dirEntry);
-    }
-  }
-
-  async startExtractTask(fileManager, selectionEntries, dirEntry) {
-    let taskId;
-    try {
-      taskId = await startIOTask(
-          chrome.fileManagerPrivate.IOTaskType.EXTRACT, selectionEntries,
-          {destinationFolder: /** @type {!DirectoryEntry} */ (dirEntry)});
-      fileManager.taskController.storeExtractTaskDetails(
-          taskId, selectionEntries, {destinationFolder: dirEntry});
-    } catch (e) {
-      console.warn('Error getting extract taskID', e);
+      fileManager.taskController.startExtractIOTask(
+          selectionEntries, /** @type {!DirectoryEntry} */ (dirEntry));
     }
   }
 

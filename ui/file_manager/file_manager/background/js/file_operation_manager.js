@@ -18,12 +18,6 @@ import {Trash} from './trash.js';
 export class FileOperationManagerImpl {
   constructor() {
     /**
-     * TODO(crbug.com/953256) Add closure annotation.
-     * @private
-     */
-    this.fileManager_ = null;
-
-    /**
      * @private {VolumeManager}
      */
     this.volumeManager_ = null;
@@ -38,14 +32,6 @@ export class FileOperationManagerImpl {
      * @const
      */
     this.trash_ = new Trash();
-  }
-
-  /**
-   * Store a reference to our owning File Manager.
-   * @param {Object} fileManager reference to the 'foreground' app.
-   */
-  setFileManager(fileManager) {
-    this.fileManager_ = fileManager;
   }
 
   /**
@@ -99,37 +85,6 @@ export class FileOperationManagerImpl {
   willUseTrash(volumeManager, entries) {
     return entries.every(
         entry => this.trash_.shouldMoveToTrash(volumeManager, entry));
-  }
-
-  /**
-   * Notifies File Manager that an extraction operation has finished.
-   *
-   * @param {number} taskId The unique task id for the IO operation.
-   * @suppress {missingProperties}
-   */
-  notifyExtractDone(taskId) {
-    // TODO(crbug.com/953256) Add closure annotation.
-    // taskController is set asynchronously, this can be called on startup
-    // if another SWA window is finishing an extract (crbug.com/1348432).
-    if (this.fileManager_.taskController) {
-      this.fileManager_.taskController.deleteExtractTaskDetails(taskId);
-    }
-  }
-
-  /**
-   * Called when an IOTask finished with a NEED_PASSWORD status.
-   * Delegate it to the task controller to deal with it.
-   *
-   * @param {number} taskId The unique task id for the IO operation.
-   * @suppress {missingProperties}
-   */
-  handleMissingPassword(taskId) {
-    // TODO(crbug.com/953256) Add closure annotation.
-    // null check is unlikely to be needed, but there's no guarantee
-    // that taskController has been initialized on a password event.
-    if (this.fileManager_.taskController) {
-      this.fileManager_.taskController.handleMissingPassword(taskId);
-    }
   }
 
   /**

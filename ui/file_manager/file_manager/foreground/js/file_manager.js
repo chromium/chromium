@@ -949,7 +949,6 @@ export class FileManager extends EventTarget {
     }
     this.fileOperationManager_ =
         this.fileBrowserBackground_.fileOperationManager;
-    this.fileOperationManager_.setFileManager(this);
     this.crostini_ = this.fileBrowserBackground_.crostini;
 
     metrics.recordInterval('Load.InitBackgroundPage');

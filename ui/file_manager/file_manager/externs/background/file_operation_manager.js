@@ -11,12 +11,6 @@ import {VolumeManager} from '../volume_manager.js';
  */
 export class FileOperationManager {
   /**
-   * Store a reference to our owning File Manager.
-   * @param {Object} fileManager reference to the 'foreground' app.
-   */
-  setFileManager(fileManager) {}
-
-  /**
    * Filters the entry in the same directory
    *
    * @param {Array<Entry>} sourceEntries Entries of the source files.
@@ -37,21 +31,6 @@ export class FileOperationManager {
    * @return {boolean}
    */
   willUseTrash(volumeManager, entries) {}
-
-  /**
-   * Notifies File Manager that an extraction operation has finished.
-   *
-   * @param {number} taskId The unique task id for the IO operation.
-   */
-  notifyExtractDone(taskId) {}
-
-  /**
-   * Called when an IOTask finished with a NEED_PASSWORD status.
-   * Delegate it to the task controller to deal with it.
-   *
-   * @param {number} taskId The unique task id for the IO operation.
-   */
-  handleMissingPassword(taskId) {}
 
   /**
    * Writes file to destination dir.

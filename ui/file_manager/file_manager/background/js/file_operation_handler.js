@@ -117,16 +117,10 @@ export class FileOperationHandler {
         } else {
           item.state = ProgressItemState.ERROR;
         }
-        // Extract IOTask details are only stored while an operation is active.
-        if (item.type == ProgressItemType.EXTRACT) {
-          this.fileOperationManager_.notifyExtractDone(event.taskId);
-        }
         break;
       case chrome.fileManagerPrivate.IOTaskState.NEED_PASSWORD:
         // Set state to canceled so notification doesn't display.
         item.state = ProgressItemState.CANCELED;
-        assert(item.type == ProgressItemType.EXTRACT);
-        this.fileOperationManager_.handleMissingPassword(event.taskId);
         break;
       default:
         console.error(`Invalid IOTaskState: ${event.state}`);

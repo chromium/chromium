@@ -140,6 +140,9 @@ function setupFileManagerPrivate() {
       NO_SERVICE: 'NO_SERVICE',
     },
     getFileTaskCalledCount_: 0,
+    onIOTaskProgressStatus: {
+      addListener: function(callback) {},
+    },
     getFileTasks: function(entries, callback) {
       mockChrome.fileManagerPrivate.getFileTaskCalledCount_++;
       const fileTasks = ([
