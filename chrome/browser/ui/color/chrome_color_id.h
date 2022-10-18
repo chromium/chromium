@@ -246,7 +246,6 @@
   E_CPONLY(kColorPwaToolbarBackground) \
   E_CPONLY(kColorPwaToolbarButtonIcon) \
   E_CPONLY(kColorPwaToolbarButtonIconDisabled) \
-  E_CPONLY(kColorPwaScrollButtonBackground) \
   /* QR code colors. */ \
   E_CPONLY(kColorQrCodeBackground) \
   E_CPONLY(kColorQrCodeBorder) \
