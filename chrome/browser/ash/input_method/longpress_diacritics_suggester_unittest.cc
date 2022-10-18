@@ -196,6 +196,28 @@ TEST_P(LongpressDiacriticsSuggesterTest, HighlightIncrementsOnNextKeyEvent) {
                 GetParam().candidates[expected_candidate_index]));
 }
 
+TEST_P(LongpressDiacriticsSuggesterTest, HighlightIncrementsOnTabKeyEvent) {
+  size_t expected_candidate_index = 2 % GetParam().candidates.size();
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::TAB));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::TAB));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::TAB));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(
+                expected_candidate_index,
+                GetParam().candidates[expected_candidate_index]));
+}
+
 TEST_P(LongpressDiacriticsSuggesterTest,
        HighlightDecrementsOnPreviousKeyEvent) {
   FakeSuggestionHandler suggestion_handler;

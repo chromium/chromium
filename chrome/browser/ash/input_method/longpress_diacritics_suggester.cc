@@ -134,7 +134,7 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
   }
 
   size_t new_index = 0;
-
+  bool move_next = false;
   switch (code) {
     case kDismissDomCode:
       DismissSuggestion();
@@ -147,15 +147,16 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
       }
       return SuggestionStatus::kNotHandled;
     case kNextDomCode:
+    case kTabDomCode:
     case kPreviousDomCode:
+      move_next = (code == kNextDomCode || code == kTabDomCode);
       if (highlighted_index_ == absl::nullopt) {
         // We want the cursor to start at the end if you press back, and at the
         // beginning if you press next.
-        new_index =
-            (code == kNextDomCode) ? 0 : GetCurrentShownDiacritics().size() - 1;
+        new_index = move_next ? 0 : GetCurrentShownDiacritics().size() - 1;
       } else {
         SetButtonHighlighted(*highlighted_index_, false);
-        if (code == kNextDomCode) {
+        if (move_next) {
           new_index =
               (*highlighted_index_ + 1) % GetCurrentShownDiacritics().size();
         } else {

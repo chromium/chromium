@@ -26,6 +26,7 @@ constexpr ui::DomCode kNextDomCode = ui::DomCode::ARROW_RIGHT;
 constexpr ui::DomCode kPreviousDomCode = ui::DomCode::ARROW_LEFT;
 constexpr ui::DomCode kAcceptDomCode = ui::DomCode::ENTER;
 constexpr ui::DomCode kDismissDomCode = ui::DomCode::ESCAPE;
+constexpr ui::DomCode kTabDomCode = ui::DomCode::TAB;
 
 // TODO(b/217560706): Replace diacritics with final set after research is
 // done (on a per input method engine basis).
