@@ -24,6 +24,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     private static final List<String> UNSUPPORTED_SCHEMES =
             new ArrayList<>(Arrays.asList(UrlConstants.CHROME_SCHEME,
                     UrlConstants.CHROME_NATIVE_SCHEME, ContentUrlConstants.ABOUT_SCHEME));
+    private Context mContext;
     private Supplier<ShareDelegate> mShareDelegateSupplier;
     private boolean mSkipUrlCheckForTesting;
 
@@ -69,16 +71,17 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         Drawable drawable =
                 AppCompatResources.getDrawable(context, R.drawable.tab_selection_editor_share_icon);
         return new TabSelectionEditorShareAction(
-                showMode, buttonType, iconPosition, shareDelegateSupplier, drawable);
+                context, showMode, buttonType, iconPosition, shareDelegateSupplier, drawable);
     }
 
-    private TabSelectionEditorShareAction(@ShowMode int showMode, @ButtonType int buttonType,
-            @IconPosition int iconPosition, Supplier<ShareDelegate> shareDelegateSupplier,
-            Drawable drawable) {
+    private TabSelectionEditorShareAction(Context context, @ShowMode int showMode,
+            @ButtonType int buttonType, @IconPosition int iconPosition,
+            Supplier<ShareDelegate> shareDelegateSupplier, Drawable drawable) {
         super(R.id.tab_selection_editor_share_menu_item, showMode, buttonType, iconPosition,
                 R.plurals.tab_selection_editor_share_tabs_action_button,
                 R.plurals.accessibility_tab_selection_editor_share_tabs_action_button, drawable);
         mShareDelegateSupplier = shareDelegateSupplier;
+        mContext = context;
     }
 
     @Override
@@ -98,6 +101,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         List<Integer> sortedTabIndexList = filterTabs(tabs, tabList);
 
         if (sortedTabIndexList.size() == 0) {
+            showToastOnShareFail();
             logShareActionState(TabSelectionEditorShareActionState.ALL_TABS_FILTERED);
             return false;
         }
@@ -180,6 +184,16 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     private static void logShareActionState(@TabSelectionEditorShareActionState int action) {
         RecordHistogram.recordEnumeratedHistogram("Android.TabMultiSelectV2.SharingState", action,
                 TabSelectionEditorShareActionState.NUM_ENTRIES);
+    }
+
+    private void showToastOnShareFail() {
+        // TODO(crbug.com/1373579): Consider changing from the more generic current string to a
+        // descriptive situational string indicating what went wrong.
+        String toastText = mContext.getResources().getString(
+                R.string.browser_sharing_error_dialog_text_internal_error);
+        Toast toast =
+                Toast.makeText(mContext.getApplicationContext(), toastText, Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     @VisibleForTesting

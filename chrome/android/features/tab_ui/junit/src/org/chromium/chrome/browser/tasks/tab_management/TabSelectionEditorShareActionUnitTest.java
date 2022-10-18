@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -150,6 +151,8 @@ public class TabSelectionEditorShareActionUnitTest {
                 false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
                 0, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+
+        verifyIfToastShown(false);
     }
 
     @Test
@@ -231,6 +234,8 @@ public class TabSelectionEditorShareActionUnitTest {
         Assert.assertEquals(
                 chromeShareExtras.saveLastUsed(), chromeShareExtrasCaptorValue.saveLastUsed());
         Assert.assertEquals(1, helper.getCallCount());
+
+        verifyIfToastShown(false);
         mAction.setSkipUrlCheckForTesting(false);
     }
 
@@ -310,6 +315,8 @@ public class TabSelectionEditorShareActionUnitTest {
         Assert.assertEquals(
                 chromeShareExtras.saveLastUsed(), chromeShareExtrasCaptorValue.saveLastUsed());
         Assert.assertEquals(1, helper.getCallCount());
+
+        verifyIfToastShown(false);
         mAction.setSkipUrlCheckForTesting(false);
     }
 
@@ -336,5 +343,16 @@ public class TabSelectionEditorShareActionUnitTest {
         verify(mShareDelegate, never())
                 .share(any(ShareParams.class), any(ChromeShareExtras.class),
                         eq(ShareOrigin.TAB_GROUP));
+        verifyIfToastShown(true);
+    }
+
+    private void verifyIfToastShown(boolean wasShown) {
+        String message = mContext.getResources().getString(
+                R.string.browser_sharing_error_dialog_text_internal_error);
+        if (wasShown) {
+            Assert.assertTrue(ShadowToast.showedCustomToast(message, R.id.toast_text));
+        } else {
+            Assert.assertFalse(ShadowToast.showedCustomToast(message, R.id.toast_text));
+        }
     }
 }
