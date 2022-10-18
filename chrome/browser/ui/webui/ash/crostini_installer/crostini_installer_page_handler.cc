@@ -11,13 +11,13 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -28,8 +28,13 @@ namespace {
 void OnAmountOfFreeDiskSpace(
     crostini_installer::mojom::PageHandler::RequestAmountOfFreeDiskSpaceCallback
         callback,
-    int64_t free_bytes) {
-  int64_t max_bytes = free_bytes - crostini::disk::kDiskHeadroomBytes;
+    absl::optional<int64_t> free_bytes) {
+  if (!free_bytes.has_value()) {
+    std::move(callback).Run({}, 0, false);
+    return;
+  }
+
+  int64_t max_bytes = free_bytes.value() - crostini::disk::kDiskHeadroomBytes;
 
   if (max_bytes < crostini::disk::kMinimumDiskSizeBytes) {
     std::move(callback).Run({}, 0, false);
@@ -114,10 +119,8 @@ void CrostiniInstallerPageHandler::OnCanceled() {
 
 void CrostiniInstallerPageHandler::RequestAmountOfFreeDiskSpace(
     RequestAmountOfFreeDiskSpaceCallback callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                     base::FilePath(crostini::kHomeDirectory)),
+  ash::SpacedClient::Get()->GetFreeDiskSpace(
+      crostini::kHomeDirectory,
       base::BindOnce(OnAmountOfFreeDiskSpace, std::move(callback)));
 }
 
