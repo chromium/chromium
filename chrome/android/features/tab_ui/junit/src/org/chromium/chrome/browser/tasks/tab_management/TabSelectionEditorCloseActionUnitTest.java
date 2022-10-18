@@ -188,7 +188,7 @@ public class TabSelectionEditorCloseActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {1}, true));
         TabListHolder holder = TabSelectionEditorActionUnitTestHelper.configureTabs(
-                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups);
+                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, true);
 
         Assert.assertEquals(3, holder.getSelectedTabs().size());
         Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
@@ -224,7 +224,7 @@ public class TabSelectionEditorCloseActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {1}, true));
         TabListHolder holder = TabSelectionEditorActionUnitTestHelper.configureTabs(
-                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups);
+                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, true);
 
         Assert.assertEquals(3, holder.getSelectedTabs().size());
         Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());

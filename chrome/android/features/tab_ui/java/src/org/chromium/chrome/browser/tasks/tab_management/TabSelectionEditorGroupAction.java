@@ -16,6 +16,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -62,9 +64,27 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
                                                           .getTabModelFilterProvider()
                                                           .getCurrentTabModelFilter();
 
+        // Remove the related tabs to prevent "re-grouping".
+        HashSet<Tab> selectedTabs = new HashSet<>(tabs);
         Tab destinationTab = getDestinationTab(tabs, getTabModelSelector().getCurrentModel(),
                 tabGroupModelFilter, editorSupportsActionOnRelatedTabs());
-        tabGroupModelFilter.mergeListOfTabsToGroup(tabs, destinationTab, false, true);
+        List<Tab> relatedTabs = tabGroupModelFilter.getRelatedTabList(destinationTab.getId());
+        for (Tab tab : relatedTabs) {
+            selectedTabs.remove(tab);
+        }
+
+        // Sort tabs by index prevent visual bugs when undoing.
+        // TODO(crbug/1374935): See if this can be removed.
+        List<Tab> sortedTabs = new ArrayList<>(tabs.size() + 1);
+        TabModel model = getTabModelSelector().getCurrentModel();
+        for (int i = 0; i < model.getCount(); i++) {
+            Tab tab = model.getTabAt(i);
+            if (!selectedTabs.contains(tab)) continue;
+
+            sortedTabs.add(tab);
+        }
+
+        tabGroupModelFilter.mergeListOfTabsToGroup(sortedTabs, destinationTab, false, true);
 
         RecordUserAction.record("TabMultiSelectV2.GroupTabs");
         RecordUserAction.record("TabGroup.Created.TabMultiSelect");

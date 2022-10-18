@@ -513,6 +513,45 @@ public class TabSelectionEditorTest {
         assertEquals(3, getTabsInCurrentTabModel().size());
     }
 
+    // Regression test for https://crbug.com/1374935
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    public void testToolbarMenuItem_GroupActionView_WithGroups() {
+        prepareBlankTab(2, false); // Index: 0, 1
+        prepareBlankTabGroup(3, false); // Index: 2
+        prepareBlankTabGroup(1, false); // Index: 3
+        prepareBlankTabGroup(2, false); // Index: 4
+        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<TabSelectionEditorAction> actions = new ArrayList<>();
+            actions.add(TabSelectionEditorGroupAction.createAction(sActivityTestRule.getActivity(),
+                    ShowMode.IF_ROOM, ButtonType.TEXT, IconPosition.START));
+
+            mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
+            mTabSelectionEditorController.show(tabs);
+        });
+
+        final int groupId = R.id.tab_selection_editor_group_menu_item;
+        mRobot.resultRobot.verifyToolbarActionViewDisabled(groupId);
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(4)
+                .clickItemAtAdapterPosition(3)
+                .clickItemAtAdapterPosition(1)
+                .clickItemAtAdapterPosition(0);
+
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(groupId).verifyToolbarSelectionText(
+                "5 tabs");
+
+        View close = mTabSelectionEditorLayout.getToolbar().findViewById(groupId);
+        assertEquals("Group 5 selected tabs", close.getContentDescription());
+
+        mRobot.actionRobot.clickToolbarActionView(groupId);
+
+        assertEquals(2, getTabsInCurrentTabModelFilter().size());
+    }
+
     @Test
     @MediumTest
     @Feature({"RenderTest"})

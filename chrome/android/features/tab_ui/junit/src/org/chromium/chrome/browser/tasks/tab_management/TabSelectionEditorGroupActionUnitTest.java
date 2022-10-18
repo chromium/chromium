@@ -168,7 +168,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {8, 7}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {10, 11, 12}, false));
         TabListHolder holder = TabSelectionEditorActionUnitTestHelper.configureTabs(
-                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups);
+                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, false);
 
         Assert.assertEquals(3, holder.getSelectedTabs().size());
         Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
@@ -186,9 +186,12 @@ public class TabSelectionEditorGroupActionUnitTest {
         Assert.assertEquals(8, holder.getSelectedAndRelatedTabs().get(2).getId());
         Assert.assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
         Assert.assertTrue(mAction.perform());
+        List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
+        // Remove existing group.
+        expectedTabs.remove(3);
+        expectedTabs.remove(2);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(holder.getSelectedAndRelatedTabs(),
-                        holder.getSelectedTabs().get(2), false, true);
+                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(2), false, true);
         verify(mDelegate).hide();
     }
 
@@ -204,7 +207,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {10, 11, 12}, false));
         TabListHolder holder = TabSelectionEditorActionUnitTestHelper.configureTabs(
-                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups);
+                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, false);
 
         Assert.assertEquals(2, holder.getSelectedTabs().size());
         Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
@@ -222,9 +225,11 @@ public class TabSelectionEditorGroupActionUnitTest {
         Assert.assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
         Assert.assertEquals(6, holder.getSelectedAndRelatedTabs().get(4).getId());
         Assert.assertTrue(mAction.perform());
+        List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
+        expectedTabs.remove(1);
+        expectedTabs.remove(0);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(holder.getSelectedAndRelatedTabs(),
-                        holder.getSelectedTabs().get(0), false, true);
+                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), false, true);
         verify(mDelegate).hide();
     }
 
@@ -241,7 +246,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {10, 11, 12}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {1}, true));
         TabListHolder holder = TabSelectionEditorActionUnitTestHelper.configureTabs(
-                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups);
+                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, false);
 
         Assert.assertEquals(4, holder.getSelectedTabs().size());
         Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
@@ -265,9 +270,11 @@ public class TabSelectionEditorGroupActionUnitTest {
         Assert.assertEquals(12, holder.getSelectedAndRelatedTabs().get(7).getId());
         Assert.assertEquals(1, holder.getSelectedAndRelatedTabs().get(8).getId());
         Assert.assertTrue(mAction.perform());
+        List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
+        expectedTabs.remove(1);
+        expectedTabs.remove(0);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(holder.getSelectedAndRelatedTabs(),
-                        holder.getSelectedTabs().get(0), false, true);
+                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), false, true);
         verify(mDelegate).hide();
     }
 }

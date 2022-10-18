@@ -873,6 +873,15 @@ class TabListMediator {
                     boolean isUngroupingLastTabInGroup = groupTab.getId() == movedTab.getId();
                     if (mActionsOnAllRelatedTabs) {
                         if (isUngroupingLastTabInGroup) {
+                            // TODO(crbug/1374935): Find out why this is required and remove if
+                            // possible.
+                            if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
+                                boolean isSelected = mTabModelSelector.getCurrentTabId()
+                                        == filter.getTabAt(prevFilterIndex).getId();
+                                updateTab(mModel.indexOfNthTabCard(prevFilterIndex),
+                                        PseudoTab.fromTab(filter.getTabAt(prevFilterIndex)),
+                                        isSelected, false, false);
+                            }
                             return;
                         }
                         Tab currentSelectedTab = mTabModelSelector.getCurrentTab();
