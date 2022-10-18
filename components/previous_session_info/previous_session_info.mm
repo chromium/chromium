@@ -154,6 +154,7 @@ NSString* const kPreviousSessionInfoOTRTabCount =
 @property(nonatomic, assign) BOOL applicationWillTerminateWasReceived;
 @property(nonatomic, assign) NSInteger tabCount;
 @property(nonatomic, assign) NSInteger OTRTabCount;
+@property(atomic, strong) NSMutableDictionary* params;
 
 @end
 
@@ -588,17 +589,11 @@ static PreviousSessionInfo* gSharedInstance = nil;
 }
 
 - (void)setReportParameterValue:(NSString*)value forKey:(NSString*)key {
-  NSMutableDictionary* params = [[NSUserDefaults.standardUserDefaults
-      dictionaryForKey:previous_session_info_constants::
-                           kPreviousSessionInfoParams] mutableCopy];
-  if (!params) {
-    params = [NSMutableDictionary dictionaryWithCapacity:1];
+  if (!self.params) {
+    self.params = [NSMutableDictionary dictionaryWithCapacity:1];
   }
-  params[key] = value;
-  [NSUserDefaults.standardUserDefaults
-      setObject:params
-         forKey:previous_session_info_constants::kPreviousSessionInfoParams];
-  [NSUserDefaults.standardUserDefaults synchronize];
+  self.params[key] = value;
+  [self syncReportParams];
 }
 
 - (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key {
@@ -610,18 +605,26 @@ static PreviousSessionInfo* gSharedInstance = nil;
 }
 
 - (void)removeReportParameterForKey:(NSString*)key {
-  NSMutableDictionary* URLs = [[NSUserDefaults.standardUserDefaults
-      dictionaryForKey:previous_session_info_constants::
-                           kPreviousSessionInfoParams] mutableCopy];
-  if (URLs) {
-    URLs[key] = nil;
-    if (URLs.count == 0) {
-      URLs = nil;
+  if (self.params) {
+    self.params[key] = nil;
+    if (self.params.count == 0) {
+      self.params = nil;
     }
+    [self syncReportParams];
+  }
+}
+
+- (void)syncReportParams {
+  auto sync_block = ^{
     [NSUserDefaults.standardUserDefaults
-        setObject:URLs
+        setObject:self.params
            forKey:previous_session_info_constants::kPreviousSessionInfoParams];
     [NSUserDefaults.standardUserDefaults synchronize];
+  };
+  if ([NSThread isMainThread]) {
+    sync_block();
+  } else {
+    dispatch_async(dispatch_get_main_queue(), sync_block);
   }
 }
 
