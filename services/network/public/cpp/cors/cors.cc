@@ -291,29 +291,28 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
   if (value.size() > 128)
     return false;
 
-  // https://fetch.spec.whatwg.org/#cors-safelisted-request-header
-  // "A CORS-safelisted header is a header whose name is either one of `Accept`,
-  // `Accept-Language`, and `Content-Language`, or whose name is
-  // `Content-Type` and value, once parsed, is one of
-  //     `application/x-www-form-urlencoded`, `multipart/form-data`, and
-  //     `text/plain`
-  // or whose name is a byte-case-insensitive match for one of
-  //      `DPR`, `Save-Data`, `device-memory`, `Viewport-Width`, and `Width`,
-  // and whose value, once extracted, is not failure."
-  //
-  // Treat inspector headers as a CORS-safelisted headers, since they are added
-  // by blink when the inspector is open.
-  //
-  // Treat 'Intervention' as a CORS-safelisted header, since it is added by
-  // Chrome when an intervention is (or may be) applied.
+  // CORS-Safelisted headers are the only headers permitted in a CORS request.
   static constexpr auto safe_names = base::MakeFixedFlatSet<base::StringPiece>({
+
+      // [Block 1 - Specification]
+      // Headers in this section are included in the order listed by:
+      // https://fetch.spec.whatwg.org/#cors-safelisted-request-header
       "accept",
       "accept-language",
       "content-language",
-      "intervention",
       "content-type",
-      "save-data",
+      // Simple range values are safelisted.
+      // https://fetch.spec.whatwg.org/#simple-range-header-value
+      "range",
 
+      // [Block 2 - Intervention]
+      // Treat 'Intervention' as a CORS-safelisted header, since it is added by
+      // Chrome when an intervention is (or may be) applied.
+      "intervention",
+
+      // [Block 3 - Client Hints]
+      // Headers in this section are included in the order listed by:
+      // services/network/public/mojom/web_client_hints_types.mojom
       // These four were deprecated and replaced by variants with a `sec-ch-`
       // prefix to conform with the proposal:
       // https://wicg.github.io/client-hints-infrastructure/
@@ -321,111 +320,86 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       "dpr",
       "width",
       "viewport-width",
-
-      // The Sec-CH-Viewport-height header field gives a server information
-      // about the user-agent's current viewport height.
-      //
-      // https://wicg.github.io/responsive-image-client-hints/#sec-ch-viewport-height
-      "sec-ch-viewport-height",
-
+      // TODO(crbug.com/1375854) Look into adding these three headers.
+      // "rtt",
+      // "downlink",
+      // "ect",
+      // "lang", Removed in M96
       // The `Sec-CH-UA-*` header fields are proposed replacements for
       // `User-Agent`, using the Client Hints infrastructure.
-      //
       // https://tools.ietf.org/html/draft-west-ua-client-hints
       "sec-ch-ua",
-      "sec-ch-ua-platform",
       "sec-ch-ua-arch",
+      "sec-ch-ua-platform",
       "sec-ch-ua-model",
       "sec-ch-ua-mobile",
       "sec-ch-ua-full-version",
       "sec-ch-ua-platform-version",
+      // The `Sec-CH-Prefers-Color-Scheme` header field is modeled after the
+      // prefers-color-scheme user preference media feature. It reflects the
+      // user’s desire that the page use a light or dark color theme. This is
+      // currently pulled from operating system preferences, although there may
+      // be internal UI in the future.
+      // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
+      "sec-ch-prefers-color-scheme",
       "sec-ch-ua-bitness",
       // The `Sec-CH-UA-Reduced` header field is a temporary client hint, which
       // will only be sent in the presence of a valid Origin Trial token.  It
       // was introduced to enable safely experimenting with sending a reduced
       // user agent string in the `User-Agent` header.
       "sec-ch-ua-reduced",
-
-      // The `Sec-CH-Prefers-Color-Scheme` header field is modeled after the
-      // prefers-color-scheme user preference media feature. It reflects the
-      // user’s desire that the page use a light or dark color theme. This is
-      // currently pulled from operating system preferences, although there may
-      // be internal UI in the future.
-      //
-      // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
-      "sec-ch-prefers-color-scheme",
-
-      // The `Sec-CH-Prefers-Reduced-Motion` header field is modeled after the
-      // prefers-reduced-motion user preference media feature. It reflects the
-      // user’s desire that the page minimizes the amount of animation or motion
-      // it uses. This is currently pulled from operating system preferences,
-      // although there may be internal UI in the future.
-      //
-      // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-reduced-motion
-      "sec-ch-prefers-reduced-motion",
-
+      // The Sec-CH-Viewport-height header field gives a server information
+      // about the user-agent's current viewport height.
+      // https://wicg.github.io/responsive-image-client-hints/#sec-ch-viewport-height
+      "sec-ch-viewport-height",
       // The Device Memory header field is a number that indicates the client’s
       // device memory i.e. approximate amount of ram in GiB. The header value
       // must satisfy ABNF  1*DIGIT [ "." 1*DIGIT ]
-      // See
+      // For more details see:
       // https://w3c.github.io/device-memory/#sec-device-memory-client-hint-header
-      // for more details.
       "sec-ch-device-memory",
       "sec-ch-dpr",
       "sec-ch-width",
       "sec-ch-viewport-width",
-
-      // Simple range values are safelisted.
-      // https://fetch.spec.whatwg.org/#simple-range-header-value
-      "range",
-
       // The `Sec-CH-UA-Full-Version-List` provide server information about the
       // full version for each brand in its brands list.
       // https://wicg.github.io/ua-client-hints/#sec-ch-ua-full-version-list
       "sec-ch-ua-full-version-list",
-
       // The `Sec-CH-UA-Full` header field is a temporary client hint, which
       // will only be sent in the presence of a valid Origin Trial token.  It
       // was introduced to enable sites to register for the deprecation UA
       // reduction origin trial and continue to receive the full UA string for
       // some period, once UA reduction rolls out.
       "sec-ch-ua-full",
-
       "sec-ch-ua-wow64",
+      "save-data",
+      // The `Sec-CH-Prefers-Reduced-Motion` header field is modeled after the
+      // prefers-reduced-motion user preference media feature. It reflects the
+      // user’s desire that the page minimizes the amount of animation or motion
+      // it uses. This is currently pulled from operating system preferences,
+      // although there may be internal UI in the future.
+      // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-reduced-motion
+      "sec-ch-prefers-reduced-motion",
   });
 
+  // Check if the name of the header to send is safe.
   if (!base::Contains(safe_names, lower_name))
     return false;
 
-  // Client hints are device specific, and not origin specific. As such all
-  // client hint headers are considered as safe.
-  // See
-  // third_party/blink/public/mojom/web_client_hints/web_client_hints_types.mojom.
-  // Client hint headers can be added by Chrome automatically or via JavaScript.
-  if (lower_name == "device-memory" || lower_name == "dpr")
-    return IsSimilarToDoubleABNF(value);
-  if (lower_name == "width" || lower_name == "viewport-width")
-    return IsSimilarToIntABNF(value);
+  // Verify the values of all non-secure headers (except `intervention`).
   const std::string lower_value = base::ToLowerASCII(value);
-  if (lower_name == "save-data")
-    return lower_value == "on";
-
   if (lower_name == "accept") {
     return !base::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte);
-  }
-
-  if (lower_name == "accept-language" || lower_name == "content-language") {
+  } else if (lower_name == "accept-language" ||
+             lower_name == "content-language") {
     return base::ranges::all_of(value, [](char c) {
       return (0x30 <= c && c <= 0x39) || (0x41 <= c && c <= 0x5a) ||
              (0x61 <= c && c <= 0x7a) || c == 0x20 || c == 0x2a || c == 0x2c ||
              c == 0x2d || c == 0x2e || c == 0x3b || c == 0x3d;
     });
-  }
-
-  if (lower_name == "content-type")
+  } else if (lower_name == "content-type") {
     return IsCorsSafelistedLowerCaseContentType(lower_value);
-
-  if (lower_name == "range") {
+  } else if (lower_name == "range") {
     // A 'simple' range value is of the following form: 'bytes=\d+-(\d+)?'.
     // We can use the regular range header parser with the following caveats:
     // - No space characters or trailing commas
@@ -437,15 +411,19 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
         })) {
       return false;
     }
-
     std::vector<net::HttpByteRange> ranges;
     if (!net::HttpUtil::ParseRangeHeader(lower_value, &ranges))
       return false;
     if (ranges.size() != 1 || ranges[0].IsSuffixByteRange())
       return false;
     return true;
+  } else if (lower_name == "device-memory" || lower_name == "dpr") {
+    return IsSimilarToDoubleABNF(value);
+  } else if (lower_name == "width" || lower_name == "viewport-width") {
+    return IsSimilarToIntABNF(value);
+  } else if (lower_name == "save-data") {
+    return lower_value == "on";
   }
-
   return true;
 }
 
