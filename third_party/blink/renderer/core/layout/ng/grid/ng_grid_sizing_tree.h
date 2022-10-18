@@ -51,6 +51,8 @@ struct NGGridSizingData : public GarbageCollected<NGGridSizingData> {
       : parent_sizing_data(parent_sizing_data),
         subgrid_data_in_parent(subgrid_data_in_parent) {}
 
+  bool MustBuildLayoutData(GridTrackSizingDirection track_direction) const;
+
   void Trace(Visitor* visitor) const {
     visitor->Trace(grid_items);
     visitor->Trace(parent_sizing_data);
@@ -61,15 +63,12 @@ struct NGGridSizingData : public GarbageCollected<NGGridSizingData> {
   NGGridProperties grid_properties;
   NGGridLayoutData layout_data;
 
-  std::unique_ptr<NGGridBlockTrackCollection> column_builder_collection;
-  std::unique_ptr<NGGridBlockTrackCollection> row_builder_collection;
-
   Member<const NGGridSizingData> parent_sizing_data;
   Member<const GridItemData> subgrid_data_in_parent;
   wtf_size_t subtree_size{1};
 };
 
-class NGGridSizingTree {
+class CORE_EXPORT NGGridSizingTree {
   STACK_ALLOCATED();
 
  public:

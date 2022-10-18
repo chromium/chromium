@@ -51,6 +51,14 @@ bool NGGridProperties::IsSpanningOnlyDefiniteTracks(
                    TrackSpanProperties::kHasNonDefiniteTrack);
 }
 
+bool NGGridSizingData::MustBuildLayoutData(
+    GridTrackSizingDirection track_direction) const {
+  return !subgrid_data_in_parent ||
+         ((track_direction == kForColumns)
+              ? !subgrid_data_in_parent->has_subgridded_columns
+              : !subgrid_data_in_parent->has_subgridded_rows);
+}
+
 NGGridSizingData& NGGridSizingTree::CreateSizingData(
     const NGGridNode& grid,
     const NGGridSizingData* parent_sizing_data,

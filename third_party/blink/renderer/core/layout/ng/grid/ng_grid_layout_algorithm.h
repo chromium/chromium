@@ -61,8 +61,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
  private:
   friend class NGGridLayoutAlgorithmTest;
 
-  // Aggregate all direct OOF children from the current grid to `oof_children`,
-  // unless `oof_children` is nullptr.
+  // Aggregate all direct out of flow children from the current grid container
+  // to |oof_children|, unless |oof_children| is not provided.
   wtf_size_t BuildGridSizingSubtree(
       NGGridSizingTree* sizing_tree,
       HeapVector<Member<LayoutBox>>* oof_children = nullptr,
@@ -79,9 +79,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                       const GridItemData& grid_item,
                       const GridTrackSizingDirection track_direction) const;
 
-  void ComputeGridGeometry(const NGGridPlacementData& placement_data,
-                           GridItems* grid_items,
-                           NGGridLayoutData* layout_data,
+  void ComputeGridGeometry(NGGridSizingTree* grid_sizing_tree,
                            LayoutUnit* intrinsic_block_size);
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
@@ -111,9 +109,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   wtf_size_t ComputeAutomaticRepetitions(
       const GridTrackSizingDirection track_direction) const;
 
-  void BuildBlockTrackCollection(
-      GridItems* grid_items,
-      NGGridBlockTrackCollection* track_collection) const;
+  void BuildBlockTrackCollection(GridTrackSizingDirection track_direction,
+                                 GridItems* grid_items,
+                                 NGGridRangeBuilder* track_collection) const;
 
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |track_collection|.
@@ -125,9 +123,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       bool* needs_additional_pass = nullptr) const;
 
   // Initializes the given track collection, and returns the base set geometry.
-  void InitializeTrackSizes(
-      const NGGridProperties& grid_properties,
-      NGGridLayoutTrackCollection* track_collection) const;
+  void InitializeTrackSizes(NGGridLayoutTrackCollection* track_collection,
+                            NGGridProperties* grid_properties) const;
 
   // Calculates from the min and max track sizing functions the used track size.
   void ComputeUsedTrackSizes(const NGGridLayoutData& layout_data,

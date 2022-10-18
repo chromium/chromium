@@ -86,6 +86,8 @@ struct CORE_EXPORT NGGridLayoutData {
 
  public:
   NGGridLayoutData() = default;
+  NGGridLayoutData(NGGridLayoutData&&) = default;
+  NGGridLayoutData& operator=(NGGridLayoutData&&) = default;
 
   NGGridLayoutData(std::unique_ptr<NGGridLayoutTrackCollection> columns,
                    std::unique_ptr<NGGridLayoutTrackCollection> rows)

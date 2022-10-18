@@ -39,18 +39,13 @@ class NGGridLayoutAlgorithmTest
   void SetUp() override { NGBaseLayoutAlgorithmTest::SetUp(); }
 
   void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
-    const auto& node = algorithm.Node();
-
-    bool has_nested_subgrid;
-    auto grid_items = node.ConstructGridItems(algorithm.PlacementData(),
-                                              /* oof_children */ nullptr,
-                                              &has_nested_subgrid);
-
     LayoutUnit unused_intrinsic_block_size;
-    algorithm.ComputeGridGeometry(node.CachedPlacementData(), &grid_items,
-                                  &layout_data_, &unused_intrinsic_block_size);
+    auto grid_sizing_tree = algorithm.BuildGridSizingTree();
+    algorithm.ComputeGridGeometry(&grid_sizing_tree,
+                                  &unused_intrinsic_block_size);
 
-    *cached_grid_items_ = grid_items.item_data;
+    *cached_grid_items_ = std::move(grid_sizing_tree[0].grid_items.item_data);
+    layout_data_ = std::move(grid_sizing_tree[0].layout_data);
   }
 
   const GridItemData& GridItem(wtf_size_t index) {

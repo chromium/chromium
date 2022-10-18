@@ -62,26 +62,33 @@ class NGGridTrackCollectionBaseTest : public NGGridTrackCollectionBase {
 
 class NGGridTrackCollectionTest : public NGLayoutTest {
  protected:
-  NGGridBlockTrackCollection CreateBlockTrackCollection(
-      const NGGridTrackList& explicit_tracks,
-      const NGGridTrackList& implicit_tracks,
-      wtf_size_t auto_repetitions) {
-    return NGGridBlockTrackCollection(explicit_tracks, implicit_tracks,
-                                      auto_repetitions);
+  NGGridRangeBuilder CreateRangeBuilder(const NGGridTrackList& explicit_tracks,
+                                        const NGGridTrackList& implicit_tracks,
+                                        wtf_size_t auto_repetitions) {
+    return NGGridRangeBuilder(explicit_tracks, implicit_tracks,
+                              auto_repetitions);
   }
 
   Vector<GridTrackSize, 1> CreateTrackSizes(wtf_size_t track_count) {
     return {track_count, GridTrackSize(Length::Auto())};
   }
 
+  void InitializeSetsForSizingCollection(
+      const NGGridTrackList& explicit_tracks,
+      const NGGridTrackList& implicit_tracks,
+      NGGridSizingTrackCollection* sizing_collection) {
+    sizing_collection->InitializeSets(explicit_tracks, implicit_tracks);
+  }
+
   NGGridSizingTrackCollection::SetIterator IteratorForRange(
       NGGridSizingTrackCollection& track_collection,
       wtf_size_t range_index) {
-    wtf_size_t starting_set_index =
+    const wtf_size_t begin_set_index =
         track_collection.RangeBeginSetIndex(range_index);
+
     return track_collection.GetSetIterator(
-        starting_set_index,
-        starting_set_index + track_collection.RangeSetCount(range_index));
+        begin_set_index,
+        begin_set_index + track_collection.RangeSetCount(range_index));
   }
 };
 
@@ -168,7 +175,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridTrackList) {
   ASSERT_EQ(3u, track_list.RepeaterCount());
 }
 
-TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollection) {
+TEST_F(NGGridTrackCollectionTest, TestNGGridRangeBuilder) {
   NGGridTrackList explicit_tracks, implicit_tracks;
   ASSERT_TRUE(explicit_tracks.AddRepeater(
       CreateTrackSizes(2), NGGridTrackRepeater::RepeatType::kInteger, 4));
@@ -176,18 +183,16 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollection) {
       CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kAutoFill));
   ASSERT_EQ(2u, explicit_tracks.RepeaterCount());
 
-  NGGridBlockTrackCollection block_collection =
-      CreateBlockTrackCollection(explicit_tracks, implicit_tracks,
-                                 /* auto_repetitions */ 3);
-  block_collection.FinalizeRanges();
-  const auto& ranges = block_collection.Ranges();
+  auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
+                                          /* auto_repetitions */ 3);
+  const auto& ranges = range_builder.FinalizeRanges();
 
   EXPECT_EQ(2u, ranges.size());
   EXPECT_RANGE(0u, 8u, ranges[0]);
   EXPECT_RANGE(8u, 9u, ranges[1]);
 }
 
-TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionCollapsed) {
+TEST_F(NGGridTrackCollectionTest, TestNGGridRangeBuilderCollapsed) {
   NGGridTrackList explicit_tracks, implicit_tracks;
   ASSERT_TRUE(explicit_tracks.AddRepeater(
       CreateTrackSizes(2), NGGridTrackRepeater::RepeatType::kInteger, 4));
@@ -197,11 +202,9 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionCollapsed) {
       CreateTrackSizes(3), NGGridTrackRepeater::RepeatType::kInteger, 7));
   ASSERT_EQ(3u, explicit_tracks.RepeaterCount());
 
-  NGGridBlockTrackCollection block_collection =
-      CreateBlockTrackCollection(explicit_tracks, implicit_tracks,
-                                 /* auto_repetitions */ 3);
-  block_collection.FinalizeRanges();
-  const auto& ranges = block_collection.Ranges();
+  auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
+                                          /* auto_repetitions */ 3);
+  const auto& ranges = range_builder.FinalizeRanges();
 
   EXPECT_EQ(3u, ranges.size());
   EXPECT_RANGE(0u, 8u, ranges[0]);
@@ -209,7 +212,7 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionCollapsed) {
   EXPECT_RANGE(17u, 21u, ranges[2]);
 }
 
-TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionImplicit) {
+TEST_F(NGGridTrackCollectionTest, TestNGGridRangeBuilderImplicit) {
   NGGridTrackList explicit_tracks;
   ASSERT_TRUE(explicit_tracks.AddRepeater(
       CreateTrackSizes(2), NGGridTrackRepeater::RepeatType::kInteger, 4));
@@ -223,21 +226,18 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionImplicit) {
   ASSERT_TRUE(implicit_tracks.AddRepeater(
       CreateTrackSizes(8), NGGridTrackRepeater::RepeatType::kInteger, 2));
 
-  NGGridBlockTrackCollection block_collection =
-      CreateBlockTrackCollection(explicit_tracks, implicit_tracks,
-                                 /* auto_repetitions */ 3);
+  auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
+                                          /* auto_repetitions */ 3);
 
   wtf_size_t range1_start, range1_end, range2_start, range2_end;
-  block_collection.EnsureTrackCoverage(3, 40, &range1_start, &range1_end);
-  block_collection.EnsureTrackCoverage(3, 40, &range2_start, &range2_end);
-  block_collection.FinalizeRanges();
+  range_builder.EnsureTrackCoverage(3, 40, &range1_start, &range1_end);
+  range_builder.EnsureTrackCoverage(3, 40, &range2_start, &range2_end);
+  const auto& ranges = range_builder.FinalizeRanges();
 
   EXPECT_EQ(1u, range1_start);
   EXPECT_EQ(4u, range1_end);
   EXPECT_EQ(1u, range2_start);
   EXPECT_EQ(4u, range2_end);
-
-  const auto& ranges = block_collection.Ranges();
 
   EXPECT_EQ(5u, ranges.size());
   EXPECT_RANGE(0u, 3u, ranges[0]);
@@ -317,13 +317,12 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridSizingTrackCollectionSetIterator) {
   }
   ASSERT_EQ(set_counts.size(), explicit_tracks.RepeaterCount());
 
-  NGGridBlockTrackCollection block_collection =
-      CreateBlockTrackCollection(explicit_tracks, implicit_tracks,
-                                 /* auto_repetitions */ 0);
-  block_collection.FinalizeRanges();
+  auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
+                                          /* auto_repetitions */ 0);
 
-  NGGridSizingTrackCollection track_collection(
-      block_collection, /* is_content_box_size_defined */ false);
+  NGGridSizingTrackCollection track_collection(range_builder.FinalizeRanges());
+  InitializeSetsForSizingCollection(explicit_tracks, implicit_tracks,
+                                    &track_collection);
   const auto& ranges = track_collection.Ranges();
 
   // Test the set iterator for the entire collection.
@@ -372,24 +371,20 @@ TEST_F(NGGridTrackCollectionTest,
       track_sizes, NGGridTrackRepeater::RepeatType::kAutoFit));
   ASSERT_EQ(2u, explicit_tracks.RepeaterCount());
 
-  NGGridBlockTrackCollection block_collection =
-      CreateBlockTrackCollection(explicit_tracks, implicit_tracks,
-                                 /* auto_repetitions */ 5);
+  auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
+                                          /* auto_repetitions */ 5);
 
-  wtf_size_t range1_start;
-  wtf_size_t range1_end;
-  wtf_size_t range2_start;
-  wtf_size_t range2_end;
-  wtf_size_t range3_start;
-  wtf_size_t range3_end;
-  wtf_size_t range4_start;
-  wtf_size_t range4_end;
+  wtf_size_t range1_start, range1_end, range2_start, range2_end, range3_start,
+      range3_end, range4_start, range4_end;
+  range_builder.EnsureTrackCoverage(2, 4, &range1_start, &range1_end);
+  range_builder.EnsureTrackCoverage(12, 4, &range2_start, &range2_end);
+  range_builder.EnsureTrackCoverage(17, 3, &range3_start, &range3_end);
+  range_builder.EnsureTrackCoverage(22, 5, &range4_start, &range4_end);
 
-  block_collection.EnsureTrackCoverage(2, 4, &range1_start, &range1_end);
-  block_collection.EnsureTrackCoverage(12, 4, &range2_start, &range2_end);
-  block_collection.EnsureTrackCoverage(17, 3, &range3_start, &range3_end);
-  block_collection.EnsureTrackCoverage(22, 5, &range4_start, &range4_end);
-  block_collection.FinalizeRanges();
+  NGGridSizingTrackCollection track_collection(range_builder.FinalizeRanges());
+  InitializeSetsForSizingCollection(explicit_tracks, implicit_tracks,
+                                    &track_collection);
+  const auto& ranges = track_collection.Ranges();
 
   EXPECT_EQ(1u, range1_start);
   EXPECT_EQ(1u, range1_end);
@@ -399,10 +394,6 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_EQ(7u, range3_end);
   EXPECT_EQ(9u, range4_start);
   EXPECT_EQ(9u, range4_end);
-
-  NGGridSizingTrackCollection track_collection(
-      block_collection, /* is_content_box_size_defined */ false);
-  const auto& ranges = track_collection.Ranges();
 
   EXPECT_EQ(10u, ranges.size());
   EXPECT_RANGE(0u, 2u, ranges[0]);
@@ -489,27 +480,22 @@ TEST_F(NGGridTrackCollectionTest,
       track_sizes, NGGridTrackRepeater::RepeatType::kNoRepeat, 1));
   ASSERT_EQ(1u, implicit_tracks.RepeaterCount());
 
-  NGGridBlockTrackCollection block_collection =
-      CreateBlockTrackCollection(explicit_tracks, implicit_tracks,
-                                 /* auto_repetitions */ 0);
+  auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
+                                          /* auto_repetitions */ 0);
 
-  wtf_size_t range1_start;
-  wtf_size_t range1_end;
-  wtf_size_t range2_start;
-  wtf_size_t range2_end;
+  wtf_size_t range1_start, range1_end, range2_start, range2_end;
+  range_builder.EnsureTrackCoverage(2, 13, &range1_start, &range1_end);
+  range_builder.EnsureTrackCoverage(23, 2, &range2_start, &range2_end);
 
-  block_collection.EnsureTrackCoverage(2, 13, &range1_start, &range1_end);
-  block_collection.EnsureTrackCoverage(23, 2, &range2_start, &range2_end);
-  block_collection.FinalizeRanges();
+  NGGridSizingTrackCollection track_collection(range_builder.FinalizeRanges());
+  InitializeSetsForSizingCollection(explicit_tracks, implicit_tracks,
+                                    &track_collection);
+  const auto& ranges = track_collection.Ranges();
 
   EXPECT_EQ(1u, range1_start);
   EXPECT_EQ(2u, range1_end);
   EXPECT_EQ(4u, range2_start);
   EXPECT_EQ(4u, range2_end);
-
-  NGGridSizingTrackCollection track_collection(
-      block_collection, /* is_content_box_size_defined */ false);
-  const auto& ranges = track_collection.Ranges();
 
   EXPECT_EQ(5u, ranges.size());
   EXPECT_RANGE(0u, 2u, ranges[0]);
@@ -566,27 +552,22 @@ TEST_F(NGGridTrackCollectionTest,
       track_sizes, NGGridTrackRepeater::RepeatType::kInteger, 2));
   ASSERT_EQ(1u, explicit_tracks.RepeaterCount());
 
-  NGGridBlockTrackCollection block_collection =
-      CreateBlockTrackCollection(explicit_tracks, implicit_tracks,
-                                 /* auto_repetitions */ 0);
+  auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
+                                          /* auto_repetitions */ 0);
 
-  wtf_size_t range1_start;
-  wtf_size_t range1_end;
-  wtf_size_t range2_start;
-  wtf_size_t range2_end;
+  wtf_size_t range1_start, range1_end, range2_start, range2_end;
+  range_builder.EnsureTrackCoverage(1, 2, &range1_start, &range1_end);
+  range_builder.EnsureTrackCoverage(7, 4, &range2_start, &range2_end);
 
-  block_collection.EnsureTrackCoverage(1, 2, &range1_start, &range1_end);
-  block_collection.EnsureTrackCoverage(7, 4, &range2_start, &range2_end);
-  block_collection.FinalizeRanges();
+  NGGridSizingTrackCollection track_collection(range_builder.FinalizeRanges());
+  InitializeSetsForSizingCollection(explicit_tracks, implicit_tracks,
+                                    &track_collection);
+  const auto& ranges = track_collection.Ranges();
 
   EXPECT_EQ(1u, range1_start);
   EXPECT_EQ(1u, range1_end);
   EXPECT_EQ(3u, range2_start);
   EXPECT_EQ(4u, range2_end);
-
-  NGGridSizingTrackCollection track_collection(
-      block_collection, /* is_content_box_size_defined */ false);
-  const auto& ranges = track_collection.Ranges();
 
   EXPECT_EQ(5u, ranges.size());
   EXPECT_RANGE(0u, 1u, ranges[0]);

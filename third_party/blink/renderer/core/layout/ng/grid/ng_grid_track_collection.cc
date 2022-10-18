@@ -10,13 +10,12 @@
 
 namespace blink {
 
-struct SameSizeAsNGGridLayoutTrackCollectionRange {
-  wtf_size_t members[4];
+struct SameSizeAsNGGridRange {
+  wtf_size_t members[6];
   wtf_size_t bitfields;
 };
 
-ASSERT_SIZE(NGGridLayoutTrackCollection::Range,
-            SameSizeAsNGGridLayoutTrackCollectionRange);
+ASSERT_SIZE(NGGridRange, SameSizeAsNGGridRange);
 
 wtf_size_t NGGridTrackCollectionBase::RangeEndLine(
     wtf_size_t range_index) const {
@@ -48,34 +47,33 @@ wtf_size_t NGGridTrackCollectionBase::RangeIndexFromGridLine(
   return lower;
 }
 
-bool NGGridBlockTrackCollection::Range::IsCollapsed() const {
+bool NGGridRange::IsCollapsed() const {
   return properties.HasProperty(TrackSpanProperties::kIsCollapsed);
 }
 
-bool NGGridBlockTrackCollection::Range::IsImplicit() const {
+bool NGGridRange::IsImplicit() const {
   return properties.HasProperty(TrackSpanProperties::kIsImplicit);
 }
 
-void NGGridBlockTrackCollection::Range::SetIsCollapsed() {
+void NGGridRange::SetIsCollapsed() {
   properties.SetProperty(TrackSpanProperties::kIsCollapsed);
 }
 
-void NGGridBlockTrackCollection::Range::SetIsImplicit() {
+void NGGridRange::SetIsImplicit() {
   properties.SetProperty(TrackSpanProperties::kIsImplicit);
 }
 
-NGGridBlockTrackCollection::NGGridBlockTrackCollection(
+NGGridRangeBuilder::NGGridRangeBuilder(
     const ComputedStyle& grid_style,
     const NGGridPlacementData& placement_data,
     GridTrackSizingDirection track_direction)
-    : NGGridTrackCollectionBase(track_direction),
-      auto_repetitions_((track_direction == kForColumns)
+    : auto_repetitions_((track_direction == kForColumns)
                             ? placement_data.column_auto_repetitions
                             : placement_data.row_auto_repetitions),
       start_offset_((track_direction == kForColumns)
                         ? placement_data.column_start_offset
                         : placement_data.row_start_offset),
-      track_indices_need_sort_(false),
+      must_sort_grid_lines(false),
       explicit_tracks_((track_direction == kForColumns)
                            ? grid_style.GridTemplateColumns().TrackList()
                            : grid_style.GridTemplateRows().TrackList()),
@@ -84,13 +82,13 @@ NGGridBlockTrackCollection::NGGridBlockTrackCollection(
                            : grid_style.GridAutoRows().NGTrackList()) {
   // The implicit track list should have only one repeater, if any.
   DCHECK_LE(implicit_tracks_.RepeaterCount(), 1u);
-  DCHECK_NE(kNotFound, auto_repetitions_);
+  DCHECK_NE(auto_repetitions_, kNotFound);
 
   const wtf_size_t repeater_count = explicit_tracks_.RepeaterCount();
 
   // Add extra capacity for the extra lines needed for named grids.
-  start_lines_.reserve(repeater_count + 1);
-  end_lines_.reserve(repeater_count + 1);
+  start_lines_.ReserveInitialCapacity(repeater_count + 1);
+  end_lines_.ReserveInitialCapacity(repeater_count + 1);
 
   wtf_size_t current_repeater_start_line = start_offset_;
   for (wtf_size_t i = 0; i < repeater_count; ++i) {
@@ -123,39 +121,45 @@ NGGridBlockTrackCollection::NGGridBlockTrackCollection(
   }
 }
 
-void NGGridBlockTrackCollection::EnsureTrackCoverage(
+void NGGridRangeBuilder::EnsureTrackCoverage(
     wtf_size_t start_line,
     wtf_size_t span_length,
     wtf_size_t* grid_item_start_range_index,
     wtf_size_t* grid_item_end_range_index) {
-  DCHECK_NE(kNotFound, start_line);
-  DCHECK_NE(kNotFound, span_length);
+  DCHECK_NE(start_line, kNotFound);
+  DCHECK_NE(span_length, kNotFound);
   DCHECK(grid_item_start_range_index && grid_item_end_range_index);
 
-  track_indices_need_sort_ = true;
+  must_sort_grid_lines = true;
   start_lines_.emplace_back(start_line, grid_item_start_range_index);
   end_lines_.emplace_back(start_line + span_length, grid_item_end_range_index);
 }
 
-void NGGridBlockTrackCollection::FinalizeRanges() {
-  DCHECK(ranges_.empty());
+NGGridRangeVector NGGridRangeBuilder::FinalizeRanges() {
+  DCHECK_LE(start_lines_.size(), end_lines_.size());
 
   // Sort start and ending tracks from low to high.
-  if (track_indices_need_sort_) {
+  if (must_sort_grid_lines) {
     auto CompareTrackBoundaries = [](const TrackBoundaryToRangePair& a,
                                      const TrackBoundaryToRangePair& b) {
       return a.grid_line < b.grid_line;
     };
     std::sort(start_lines_.begin(), start_lines_.end(), CompareTrackBoundaries);
     std::sort(end_lines_.begin(), end_lines_.end(), CompareTrackBoundaries);
+    must_sort_grid_lines = false;
   }
 
+  const wtf_size_t explicit_repeater_count = explicit_tracks_.RepeaterCount();
+  const wtf_size_t grid_line_count = start_lines_.size();
+
+  NGGridRangeVector ranges;
   bool is_in_auto_fit_range = false;
-  wtf_size_t current_range_start_line = 0u;
-  wtf_size_t open_items_or_repeaters = 0u;
+
   wtf_size_t current_explicit_grid_line = start_offset_;
   wtf_size_t current_explicit_repeater_index = kNotFound;
-  wtf_size_t explicit_repeater_count = explicit_tracks_.RepeaterCount();
+  wtf_size_t current_range_start_line = 0;
+  wtf_size_t current_set_index = 0;
+  wtf_size_t open_items_or_repeaters = 0;
 
   // If the explicit grid is not empty, |start_offset_| is the translated index
   // of the first track in |explicit_tracks_|; otherwise, the next repeater
@@ -164,12 +168,12 @@ void NGGridBlockTrackCollection::FinalizeRanges() {
       explicit_repeater_count ? start_offset_ : kNotFound;
 
   // Index of the start/end line we are currently processing.
-  wtf_size_t start_line_index = 0u;
-  wtf_size_t end_line_index = 0u;
+  wtf_size_t start_line_index = 0;
+  wtf_size_t end_line_index = 0;
 
   while (true) {
     // Identify starting tracks index.
-    while (start_line_index < start_lines_.size() &&
+    while (start_line_index < grid_line_count &&
            current_range_start_line >=
                start_lines_[start_line_index].grid_line) {
       ++start_line_index;
@@ -177,32 +181,23 @@ void NGGridBlockTrackCollection::FinalizeRanges() {
     }
 
     // Identify ending tracks index.
-    while (end_line_index < end_lines_.size() &&
+    while (end_line_index < grid_line_count &&
            current_range_start_line >= end_lines_[end_line_index].grid_line) {
       ++end_line_index;
       --open_items_or_repeaters;
       DCHECK_GE(open_items_or_repeaters, 0u);
     }
 
-    // Identify ending tracks index.
-    if (end_line_index >= end_lines_.size()) {
-#if DCHECK_IS_ON()
-      DCHECK_EQ(open_items_or_repeaters, 0u);
-      // If we exhausted the end indices, then we must have already exhausted
-      // the repeaters, or are located at the end of the last repeater.
-      if (current_explicit_repeater_index != kNotFound) {
-        DCHECK_EQ(current_explicit_repeater_index, explicit_repeater_count - 1);
-        DCHECK_EQ(current_range_start_line, next_explicit_repeater_start);
-      }
-#endif
+    if (end_line_index >= grid_line_count)
       break;
-    }
 
     // Determine the next starting and ending track index.
-    wtf_size_t next_start_line = (start_line_index < start_lines_.size())
-                                     ? start_lines_[start_line_index].grid_line
-                                     : kNotFound;
-    wtf_size_t next_end_line = end_lines_[end_line_index].grid_line;
+    const wtf_size_t next_start_line =
+        (start_line_index < grid_line_count)
+            ? start_lines_[start_line_index].grid_line
+            : kNotFound;
+    const wtf_size_t next_end_line = end_lines_[end_line_index].grid_line;
+    DCHECK(next_start_line != kNotFound || next_end_line < next_start_line);
 
     // Move to the start of the next explicit repeater.
     while (current_range_start_line == next_explicit_repeater_start) {
@@ -224,30 +219,36 @@ void NGGridBlockTrackCollection::FinalizeRanges() {
                                        auto_repetitions_);
     }
 
-    // Determine track number and count of the range.
-    Range range;
+    // Compute this range's begin set index, start line, and track count.
+    NGGridRange range;
+    wtf_size_t current_repeater_size = 1;
     range.start_line = current_range_start_line;
-    DCHECK(next_start_line != kNotFound || next_end_line < next_start_line);
     range.track_count =
         std::min(next_start_line, next_end_line) - current_range_start_line;
     DCHECK_GT(range.track_count, 0u);
 
-    // Compute repeater index and offset.
+    // Compute current repeater's index, size, and offset.
+    range.begin_set_index = current_set_index;
     if (current_explicit_repeater_index != kNotFound) {
+      current_repeater_size =
+          explicit_tracks_.RepeatSize(current_explicit_repeater_index);
+
       // This range is contained within a repeater of the explicit grid; at this
       // point, |current_explicit_grid_line| should be set to the start line of
       // such repeater.
       range.repeater_index = current_explicit_repeater_index;
       range.repeater_offset =
           (current_range_start_line - current_explicit_grid_line) %
-          explicit_tracks_.RepeatSize(current_explicit_repeater_index);
+          current_repeater_size;
     } else {
       range.SetIsImplicit();
-      if (implicit_tracks_.RepeaterCount() == 0u) {
+      if (!implicit_tracks_.RepeaterCount()) {
         // No specified implicit grid tracks, use 'auto'.
         range.repeater_index = kNotFound;
         range.repeater_offset = 0u;
       } else {
+        current_repeater_size = implicit_tracks_.RepeatSize(0);
+
         // Otherwise, use the only repeater for implicit grid tracks.
         // There are 2 scenarios we want to cover here:
         //   1. At this point, we should not have reached any explicit repeater,
@@ -266,15 +267,14 @@ void NGGridBlockTrackCollection::FinalizeRanges() {
         //
         // Note that for both scenarios we can use the following formula:
         //   (current_range_start_line - current_explicit_grid_line) %
-        //   implicit_repeater_size
+        //   current_repeater_size
         // The expression below is equivalent, but uses some modular arithmetic
         // properties to avoid |wtf_size_t| underflow in scenario 1.
-        range.repeater_index = 0u;
-        wtf_size_t implicit_repeater_size = implicit_tracks_.RepeatSize(0u);
+        range.repeater_index = 0;
         range.repeater_offset =
-            (current_range_start_line + implicit_repeater_size -
-             current_explicit_grid_line % implicit_repeater_size) %
-            implicit_repeater_size;
+            (current_range_start_line + current_repeater_size -
+             current_explicit_grid_line % current_repeater_size) %
+            current_repeater_size;
       }
     }
 
@@ -284,13 +284,13 @@ void NGGridBlockTrackCollection::FinalizeRanges() {
     // Walk back to cache all duplicates until we are at the start of the vector
     // or we have gone over all duplicate entries.
     if (start_line_index != 0) {
-      DCHECK_LE(start_line_index, start_lines_.size());
+      DCHECK_LE(start_line_index, grid_line_count);
       for (wtf_size_t line_index = start_line_index - 1;
            start_lines_[line_index].grid_line == range.start_line;
            --line_index) {
         if (start_lines_[line_index].grid_item_range_index_to_cache) {
           *start_lines_[line_index].grid_item_range_index_to_cache =
-              ranges_.size();
+              ranges.size();
         }
         // This is needed here to avoid underflow.
         if (!line_index)
@@ -304,32 +304,51 @@ void NGGridBlockTrackCollection::FinalizeRanges() {
     // of the vector or we have gone over all duplicate entries.
     const wtf_size_t end_line = range.start_line + range.track_count;
     for (wtf_size_t line_index = end_line_index;
-         line_index < end_lines_.size() &&
+         line_index < grid_line_count &&
          end_lines_[line_index].grid_line == end_line;
          ++line_index) {
       if (end_lines_[line_index].grid_item_range_index_to_cache)
-        *end_lines_[line_index].grid_item_range_index_to_cache = ranges_.size();
+        *end_lines_[line_index].grid_item_range_index_to_cache = ranges.size();
     }
 
-    if (is_in_auto_fit_range && open_items_or_repeaters == 1u)
+    if (is_in_auto_fit_range && open_items_or_repeaters == 1) {
       range.SetIsCollapsed();
+      range.set_count = 0;
+    } else {
+      // If this is a non-collapsed range, the number of sets in this range is
+      // the number of track definitions in the current repeater clamped by the
+      // track count if it's less than the repeater's size.
+      range.set_count = std::min(current_repeater_size, range.track_count);
+      DCHECK_GT(range.set_count, 0u);
+    }
+
     current_range_start_line += range.track_count;
-    ranges_.emplace_back(std::move(range));
+    current_set_index += range.set_count;
+    ranges.emplace_back(std::move(range));
   }
 
+#if DCHECK_IS_ON()
   // We must have exhausted all start and end indices.
-  DCHECK_EQ(start_line_index, start_lines_.size());
-  DCHECK_EQ(end_line_index, end_lines_.size());
+  DCHECK_EQ(start_line_index, grid_line_count);
+  DCHECK_EQ(end_line_index, grid_line_count);
+  DCHECK_EQ(open_items_or_repeaters, 0u);
+
+  // If we exhausted the end indices, then we must have already exhausted the
+  // repeaters, or are located at the end of the last repeater.
+  if (current_explicit_repeater_index != kNotFound) {
+    DCHECK_EQ(current_explicit_repeater_index, explicit_repeater_count - 1);
+    DCHECK_EQ(current_range_start_line, next_explicit_repeater_start);
+  }
+#endif
+  return ranges;
 }
 
-NGGridBlockTrackCollection::NGGridBlockTrackCollection(
-    const NGGridTrackList& explicit_tracks,
-    const NGGridTrackList& implicit_tracks,
-    wtf_size_t auto_repetitions)
-    : NGGridTrackCollectionBase(kForColumns),
-      auto_repetitions_(auto_repetitions),
+NGGridRangeBuilder::NGGridRangeBuilder(const NGGridTrackList& explicit_tracks,
+                                       const NGGridTrackList& implicit_tracks,
+                                       wtf_size_t auto_repetitions)
+    : auto_repetitions_(auto_repetitions),
       start_offset_(0),
-      track_indices_need_sort_(false),
+      must_sort_grid_lines(false),
       explicit_tracks_(explicit_tracks),
       implicit_tracks_(implicit_tracks) {
   const wtf_size_t repeater_count = explicit_tracks_.RepeaterCount();
@@ -345,18 +364,6 @@ NGGridBlockTrackCollection::NGGridBlockTrackCollection(
     current_repeater_start_line += repeater_track_count;
     end_lines_.emplace_back(current_repeater_start_line);
   }
-}
-
-wtf_size_t NGGridBlockTrackCollection::RangeStartLine(
-    wtf_size_t range_index) const {
-  DCHECK_LT(range_index, ranges_.size());
-  return ranges_[range_index].start_line;
-}
-
-wtf_size_t NGGridBlockTrackCollection::RangeTrackCount(
-    wtf_size_t range_index) const {
-  DCHECK_LT(range_index, ranges_.size());
-  return ranges_[range_index].track_count;
 }
 
 NGGridSet::NGGridSet(wtf_size_t track_count)
@@ -456,16 +463,12 @@ bool NGGridSet::IsGrowthLimitLessThanBaseSize() const {
   return growth_limit != kIndefiniteSize && growth_limit < base_size;
 }
 
-bool NGGridLayoutTrackCollection::Range::IsCollapsed() const {
-  return properties.HasProperty(TrackSpanProperties::kIsCollapsed);
-}
-
 NGGridLayoutTrackCollection::NGGridLayoutTrackCollection(
     const NGGridLayoutTrackCollection& other,
     const NGBoxStrut& subgrid_border_scrollbar_padding,
     const NGBoxStrut& subgrid_margins)
     : NGGridLayoutTrackCollection(other) {
-  const bool is_for_columns = Direction() == kForColumns;
+  const bool is_for_columns = track_direction_ == kForColumns;
 
   sets_geometry_start_offset_ += is_for_columns ? subgrid_margins.inline_start
                                                 : subgrid_margins.block_start;
@@ -517,11 +520,10 @@ wtf_size_t NGGridLayoutTrackCollection::RangeBeginSetIndex(
   return ranges_[range_index].begin_set_index;
 }
 
-bool NGGridLayoutTrackCollection::RangeHasTrackSpanProperty(
-    wtf_size_t range_index,
-    TrackSpanProperties::PropertyId property_id) const {
+TrackSpanProperties NGGridLayoutTrackCollection::RangeProperties(
+    wtf_size_t range_index) const {
   DCHECK_LT(range_index, ranges_.size());
-  return ranges_[range_index].properties.HasProperty(property_id);
+  return ranges_[range_index].properties;
 }
 
 wtf_size_t NGGridLayoutTrackCollection::EndLineOfImplicitGrid() const {
@@ -565,6 +567,11 @@ wtf_size_t NGGridLayoutTrackCollection::GetSetTrackCount(
     wtf_size_t set_index) const {
   DCHECK_LT(set_index + 1, sets_geometry_.size());
   return sets_geometry_[set_index + 1].track_count;
+}
+
+bool NGGridLayoutTrackCollection::HasBaselines() const {
+  DCHECK_EQ(major_baselines_.size(), minor_baselines_.size());
+  return !major_baselines_.empty();
 }
 
 LayoutUnit NGGridLayoutTrackCollection::MajorBaseline(
@@ -626,7 +633,7 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
   const wtf_size_t begin_set_index = ranges_[begin_range_index].begin_set_index;
 
   for (wtf_size_t i = begin_range_index; i <= end_range_index; ++i) {
-    Range translated_range = ranges_[i];
+    NGGridRange translated_range = ranges_[i];
     translated_range.start_line -= start_line_offset;
     translated_range.begin_set_index -= begin_set_index;
     subgrid_collection.ranges_.emplace_back(std::move(translated_range));
@@ -673,21 +680,23 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
 }
 
 NGGridSizingTrackCollection::NGGridSizingTrackCollection(
-    const NGGridBlockTrackCollection& block_track_collection,
-    bool is_available_size_indefinite)
-    : NGGridLayoutTrackCollection(block_track_collection.Direction()),
+    NGGridRangeVector&& ranges,
+    GridTrackSizingDirection track_direction)
+    : NGGridLayoutTrackCollection(track_direction),
       non_collapsed_track_count_(0) {
-  for (const auto& block_track_range : block_track_collection.Ranges()) {
-    AppendTrackRange(block_track_range,
-                     block_track_range.IsImplicit()
-                         ? block_track_collection.ImplicitTracks()
-                         : block_track_collection.ExplicitTracks(),
-                     is_available_size_indefinite);
+  ranges_ = std::move(ranges);
+
+  wtf_size_t set_count = 0;
+  for (const auto& range : ranges_) {
+    if (!range.IsCollapsed()) {
+      non_collapsed_track_count_ += range.track_count;
+      set_count += range.set_count;
+    }
   }
 
-  const wtf_size_t set_count = sets_.size() + 1;
-  last_indefinite_indices_.ReserveInitialCapacity(set_count);
-  sets_geometry_.ReserveInitialCapacity(set_count);
+  last_indefinite_indices_.ReserveInitialCapacity(set_count + 1);
+  sets_geometry_.ReserveInitialCapacity(set_count + 1);
+  sets_.ReserveInitialCapacity(set_count);
 }
 
 NGGridSet& NGGridSizingTrackCollection::GetSetAt(wtf_size_t set_index) {
@@ -788,8 +797,8 @@ void NGGridSizingTrackCollection::SetIndefiniteGrowthLimitsToBaseSize() {
 
 void NGGridSizingTrackCollection::ResetBaselines() {
   const wtf_size_t set_count = sets_.size();
-  major_baselines_ = Vector<LayoutUnit>(set_count, LayoutUnit::Min());
-  minor_baselines_ = Vector<LayoutUnit>(set_count, LayoutUnit::Min());
+  major_baselines_ = Vector<LayoutUnit, 16>(set_count, LayoutUnit::Min());
+  minor_baselines_ = Vector<LayoutUnit, 16>(set_count, LayoutUnit::Min());
 }
 
 void NGGridSizingTrackCollection::SetMajorBaseline(
@@ -808,42 +817,142 @@ void NGGridSizingTrackCollection::SetMinorBaseline(
     minor_baselines_[set_index] = candidate_baseline;
 }
 
-void NGGridSizingTrackCollection::AppendTrackRange(
-    const NGGridBlockTrackCollection::Range& block_track_range,
+TrackSpanProperties NGGridSizingTrackCollection::InitializeSets(
+    const ComputedStyle& grid_style,
+    LayoutUnit grid_available_size) {
+  const bool is_for_columns = track_direction_ == kForColumns;
+
+  return InitializeSets(
+      is_for_columns ? grid_style.GridTemplateColumns().TrackList()
+                     : grid_style.GridTemplateRows().TrackList(),
+      is_for_columns ? grid_style.GridAutoColumns().NGTrackList()
+                     : grid_style.GridAutoRows().NGTrackList(),
+      grid_available_size);
+}
+
+TrackSpanProperties NGGridSizingTrackCollection::InitializeSets(
+    const NGGridTrackList& explicit_track_list,
+    const NGGridTrackList& implicit_track_list,
+    LayoutUnit grid_available_size) {
+  TrackSpanProperties collection_properties;
+
+  sets_.Shrink(0);
+  {
+    const bool is_available_size_indefinite =
+        grid_available_size == kIndefiniteSize;
+
+    for (auto& range : ranges_) {
+      AppendSetsForRange(
+          range.IsImplicit() ? implicit_track_list : explicit_track_list,
+          is_available_size_indefinite, &range);
+      collection_properties |= range.properties;
+    }
+  }
+
+  for (auto& set : sets_) {
+    const auto& track_size = set.track_size;
+    DCHECK_NE(track_size.GetType(), kLengthTrackSizing);
+
+    if (track_size.IsFitContent()) {
+      // Indefinite lengths cannot occur, as they must be normalized to 'auto'.
+      DCHECK(!track_size.FitContentTrackBreadth().HasPercentage() ||
+             grid_available_size != kIndefiniteSize);
+
+      LayoutUnit fit_content_argument = MinimumValueForLength(
+          track_size.FitContentTrackBreadth().length(), grid_available_size);
+      set.fit_content_limit = fit_content_argument * set.track_count;
+    }
+
+    if (track_size.HasFixedMaxTrackBreadth()) {
+      DCHECK(!track_size.MaxTrackBreadth().HasPercentage() ||
+             grid_available_size != kIndefiniteSize);
+
+      // A fixed sizing function: Resolve to an absolute length and use that
+      // size as the track’s initial growth limit; if the growth limit is less
+      // than the base size, increase the growth limit to match the base size.
+      LayoutUnit fixed_max_breadth = MinimumValueForLength(
+          track_size.MaxTrackBreadth().length(), grid_available_size);
+      set.growth_limit = fixed_max_breadth * set.track_count;
+    } else {
+      // An intrinsic or flexible sizing function: Use an initial growth limit
+      // of infinity.
+      set.growth_limit = kIndefiniteSize;
+    }
+
+    if (track_size.HasFixedMinTrackBreadth()) {
+      DCHECK(!track_size.MinTrackBreadth().HasPercentage() ||
+             grid_available_size != kIndefiniteSize);
+
+      // A fixed sizing function: Resolve to an absolute length and use that
+      // size as the track’s initial base size.
+      LayoutUnit fixed_min_breadth = MinimumValueForLength(
+          track_size.MinTrackBreadth().length(), grid_available_size);
+      set.InitBaseSize(fixed_min_breadth * set.track_count);
+    } else {
+      // An intrinsic sizing function: Use an initial base size of zero.
+      DCHECK(track_size.HasIntrinsicMinTrackBreadth());
+      set.InitBaseSize(LayoutUnit());
+    }
+  }
+  return collection_properties;
+}
+
+void NGGridSizingTrackCollection::AppendSetsForRange(
     const NGGridTrackList& specified_track_list,
-    bool is_available_size_indefinite) {
-  Range new_range;
+    bool is_available_size_indefinite,
+    NGGridRange* range) {
+  // Notice that |NGGridRange::Reset| does not reset the |kIsCollapsed| or
+  // |kIsImplicit| flags as they're not affected by the set definitions.
+  range->properties.Reset();
 
-  new_range.begin_set_index = sets_.size();
-  new_range.properties = block_track_range.properties;
-  new_range.start_line = block_track_range.start_line;
-  new_range.track_count = block_track_range.track_count;
+  auto CacheLastAppendedSetProperties = [&]() {
+    DCHECK(!sets_.empty());
+    const auto& set_track_size = sets_.back().track_size;
 
-  if (block_track_range.repeater_index == kNotFound) {
+    // From https://drafts.csswg.org/css-grid-2/#algo-terms, a <flex> minimum
+    // sizing function shouldn't happen as it would be normalized to 'auto'.
+    DCHECK(!set_track_size.HasFlexMinTrackBreadth());
+
+    if (set_track_size.HasAutoMinTrackBreadth())
+      range->properties.SetProperty(TrackSpanProperties::kHasAutoMinimumTrack);
+
+    if (set_track_size.HasFixedMinTrackBreadth())
+      range->properties.SetProperty(TrackSpanProperties::kHasFixedMinimumTrack);
+
+    if (set_track_size.HasFixedMaxTrackBreadth())
+      range->properties.SetProperty(TrackSpanProperties::kHasFixedMaximumTrack);
+
+    if (set_track_size.HasFlexMaxTrackBreadth()) {
+      range->properties.SetProperty(TrackSpanProperties::kHasFlexibleTrack);
+      range->properties.SetProperty(
+          TrackSpanProperties::kIsDependentOnAvailableSize);
+    }
+
+    if (set_track_size.HasIntrinsicMinTrackBreadth() ||
+        set_track_size.HasIntrinsicMaxTrackBreadth()) {
+      range->properties.SetProperty(TrackSpanProperties::kHasIntrinsicTrack);
+    }
+
+    if (!set_track_size.HasFixedMinTrackBreadth() ||
+        !set_track_size.HasFixedMaxTrackBreadth() ||
+        (set_track_size.MinTrackBreadth().length() !=
+         set_track_size.MaxTrackBreadth().length())) {
+      range->properties.SetProperty(TrackSpanProperties::kHasNonDefiniteTrack);
+    }
+  };
+
+  if (range->repeater_index == kNotFound) {
     // The only case where a range doesn't have a repeater index is when the
     // range is in the implicit grid and there are no auto track definitions;
     // fill the entire range with a single set of 'auto' tracks.
-    DCHECK(block_track_range.IsImplicit());
+    DCHECK(range->IsImplicit());
 
-    non_collapsed_track_count_ += new_range.track_count;
-    new_range.set_count = 1;
-    sets_.emplace_back(new_range.track_count);
-  } else if (block_track_range.IsCollapsed()) {
-    // Append a range that contains the collapsed tracks, but do not append new
-    // sets so that its tracks do not participate in the track sizing algorithm.
-    new_range.set_count = 0;
-  } else {
-    non_collapsed_track_count_ += new_range.track_count;
-    wtf_size_t current_repeater_size =
-        specified_track_list.RepeatSize(block_track_range.repeater_index);
-    DCHECK_LT(block_track_range.repeater_offset, current_repeater_size);
-
-    // The number of different set elements in this range is the number of track
-    // definitions from |NGGridBlockTrackCollection| range's repeater clamped by
-    // the range's total track count if it's less than the repeater's size.
-    new_range.set_count =
-        std::min(current_repeater_size, new_range.track_count);
-    DCHECK_GT(new_range.set_count, 0u);
+    sets_.emplace_back(range->track_count);
+    CacheLastAppendedSetProperties();
+  } else if (!range->IsCollapsed()) {
+    const wtf_size_t current_repeater_size =
+        specified_track_list.RepeatSize(range->repeater_index);
+    DCHECK_LT(range->repeater_offset, current_repeater_size);
 
     // The following two variables help compute how many tracks a set element
     // compresses; suppose we want to print this range, we would circle through
@@ -853,74 +962,36 @@ void NGGridSizingTrackCollection::AppendTrackRange(
     // 1. |floor_set_track_count| is the number of times we would return to the
     // range's repeater offset, meaning that every definition in the repeater's
     // track list appears at least that many times within the range.
-    wtf_size_t floor_set_track_count =
-        new_range.track_count / current_repeater_size;
+    const wtf_size_t floor_set_track_count =
+        range->track_count / current_repeater_size;
+
     // 2. The remaining track count would not complete another iteration over
     // the entire repeater; this means that the first |remaining_track_count|
     // definitions appear one more time in the range.
-    wtf_size_t remaining_track_count =
-        new_range.track_count % current_repeater_size;
+    const wtf_size_t remaining_track_count =
+        range->track_count % current_repeater_size;
 
-    for (wtf_size_t i = 0; i < new_range.set_count; ++i) {
-      wtf_size_t set_track_count =
+    for (wtf_size_t i = 0; i < range->set_count; ++i) {
+      const wtf_size_t set_track_count =
           floor_set_track_count + ((i < remaining_track_count) ? 1 : 0);
-      wtf_size_t set_repeater_offset =
-          (block_track_range.repeater_offset + i) % current_repeater_size;
-      const GridTrackSize& set_track_size =
-          specified_track_list.RepeatTrackSize(block_track_range.repeater_index,
-                                               set_repeater_offset);
-      sets_.emplace_back(set_track_count, set_track_size,
-                         is_available_size_indefinite);
+      const wtf_size_t set_repeater_offset =
+          (range->repeater_offset + i) % current_repeater_size;
+      const auto& set_track_size = specified_track_list.RepeatTrackSize(
+          range->repeater_index, set_repeater_offset);
 
-      // Record if any of the tracks depend on the available-size. We need to
-      // record any percentage tracks *before* normalization as they will
-      // change once the available-size becomes definite.
+      // Record if any of the track sizes depend on the available size; we need
+      // to record any percentage tracks *before* normalization as they will
+      // change to 'auto' if the available size is indefinite.
       if (set_track_size.HasPercentage()) {
-        new_range.properties.SetProperty(
+        range->properties.SetProperty(
             TrackSpanProperties::kIsDependentOnAvailableSize);
       }
+
+      sets_.emplace_back(set_track_count, set_track_size,
+                         is_available_size_indefinite);
+      CacheLastAppendedSetProperties();
     }
   }
-
-  // Cache this range's track span properties.
-  for (wtf_size_t i = 0; i < new_range.set_count; ++i) {
-    const auto& set_track_size =
-        sets_[new_range.begin_set_index + i].track_size;
-
-    // From https://drafts.csswg.org/css-grid-2/#algo-terms, a <flex> minimum
-    // sizing function shouldn't happen as it would be normalized to 'auto'.
-    DCHECK(!set_track_size.HasFlexMinTrackBreadth());
-
-    if (set_track_size.HasAutoMinTrackBreadth()) {
-      new_range.properties.SetProperty(
-          TrackSpanProperties::kHasAutoMinimumTrack);
-    }
-    if (set_track_size.HasFixedMinTrackBreadth()) {
-      new_range.properties.SetProperty(
-          TrackSpanProperties::kHasFixedMinimumTrack);
-    }
-    if (set_track_size.HasFixedMaxTrackBreadth()) {
-      new_range.properties.SetProperty(
-          TrackSpanProperties::kHasFixedMaximumTrack);
-    }
-    if (set_track_size.HasFlexMaxTrackBreadth()) {
-      new_range.properties.SetProperty(TrackSpanProperties::kHasFlexibleTrack);
-      new_range.properties.SetProperty(
-          TrackSpanProperties::kIsDependentOnAvailableSize);
-    }
-    if (set_track_size.HasIntrinsicMinTrackBreadth() ||
-        set_track_size.HasIntrinsicMaxTrackBreadth()) {
-      new_range.properties.SetProperty(TrackSpanProperties::kHasIntrinsicTrack);
-    }
-    if (!set_track_size.HasFixedMinTrackBreadth() ||
-        !set_track_size.HasFixedMaxTrackBreadth() ||
-        (set_track_size.MinTrackBreadth().length() !=
-         set_track_size.MaxTrackBreadth().length())) {
-      new_range.properties.SetProperty(
-          TrackSpanProperties::kHasNonDefiniteTrack);
-    }
-  }
-  ranges_.push_back(new_range);
 }
 
 }  // namespace blink
