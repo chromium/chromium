@@ -4720,12 +4720,12 @@
   {
     "name": "nearby-sharing-self-share-auto-accept",
     "owners": [ "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 115
   },
   {
     "name": "nearby-sharing-self-share-ui",
     "owners": [ "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 115
   },
   {
     "name": "nearby-sharing-wifilan",
