@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_EYEDROPPER_EYE_DROPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_EYEDROPPER_EYE_DROPPER_H_
 
+#include <memory>
+
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -16,6 +18,7 @@ class AbortSignal;
 class ColorSelectionOptions;
 enum class DOMExceptionCode;
 class ExceptionState;
+class ScopedAbortState;
 class ScriptPromise;
 class ScriptPromiseResolver;
 
@@ -47,8 +50,11 @@ class EyeDropper final : public ScriptWrappable {
   class OpenAbortAlgorithm;
 
   void AbortCallback(AbortSignal* signal);
-  void EyeDropperResponseHandler(ScriptPromiseResolver*, bool, uint32_t);
-  void EndChooser();
+  void EyeDropperResponseHandler(std::unique_ptr<ScopedAbortState>,
+                                 ScriptPromiseResolver*,
+                                 bool,
+                                 uint32_t);
+  void EndChooser(std::unique_ptr<ScopedAbortState>);
   void RejectPromiseHelper(DOMExceptionCode, const WTF::String&);
 
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;

@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -17,6 +19,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -63,10 +68,100 @@ class FollowAlgorithm final : public AbortSignal::Algorithm {
   Member<AbortSignal> following_;
 };
 
+// Variant of `AbortAlgorithmCollection` that implements removal. This holds
+// weak references to algorithm handles, leaving the lifetime up to algorithm
+// creators. Used only when features::kAbortSignalHandleBasedRemoval is true.
+class RemovableAbortAlgorithmCollection final
+    : public AbortSignal::AbortAlgorithmCollection {
+ public:
+  RemovableAbortAlgorithmCollection() = default;
+  ~RemovableAbortAlgorithmCollection() = default;
+
+  RemovableAbortAlgorithmCollection(const RemovableAbortAlgorithmCollection&) =
+      delete;
+  RemovableAbortAlgorithmCollection& operator=(
+      const RemovableAbortAlgorithmCollection&) = delete;
+
+  void AddAlgorithm(AbortSignal::AlgorithmHandle* handle) override {
+    DCHECK(!abort_algorithms_.Contains(handle));
+    // This always appends since `handle` is not already in the collection.
+    abort_algorithms_.insert(handle);
+  }
+
+  void RemoveAlgorithm(AbortSignal::AlgorithmHandle* handle) override {
+    abort_algorithms_.erase(handle);
+  }
+
+  void Clear() override { abort_algorithms_.clear(); }
+
+  void Run() override {
+    for (AbortSignal::AlgorithmHandle* handle : abort_algorithms_) {
+      handle->GetAlgorithm()->Run();
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(abort_algorithms_);
+    AbortAlgorithmCollection::Trace(visitor);
+  }
+
+ private:
+  // TODO(crbug.com/1296280): Change this to WeakMember after all callsites have
+  // been converted.
+  HeapLinkedHashSet<Member<AbortSignal::AlgorithmHandle>> abort_algorithms_;
+};
+
+// Variant of `AbortAlgorithmCollection` that does not implement removal. This
+// holds strong references to algorithms, leaving algorithms around for as long
+// as the signal is alive. Enabled when features::kAbortSignalHandleBasedRemoval
+// is false.
+class UnremovableAbortAlgorithmCollection final
+    : public AbortSignal::AbortAlgorithmCollection {
+ public:
+  UnremovableAbortAlgorithmCollection() = default;
+  ~UnremovableAbortAlgorithmCollection() = default;
+
+  UnremovableAbortAlgorithmCollection(
+      const UnremovableAbortAlgorithmCollection&) = delete;
+  UnremovableAbortAlgorithmCollection& operator=(
+      const UnremovableAbortAlgorithmCollection&) = delete;
+
+  void AddAlgorithm(AbortSignal::AlgorithmHandle* handle) override {
+    abort_algorithms_.push_back(handle->GetAlgorithm());
+  }
+
+  void RemoveAlgorithm(AbortSignal::AlgorithmHandle* handle) override {}
+
+  void Clear() override { abort_algorithms_.clear(); }
+
+  void Run() override {
+    for (AbortSignal::Algorithm* algorithm : abort_algorithms_) {
+      algorithm->Run();
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(abort_algorithms_);
+    AbortAlgorithmCollection::Trace(visitor);
+  }
+
+ private:
+  HeapVector<Member<AbortSignal::Algorithm>> abort_algorithms_;
+};
+
 }  // namespace
 
 AbortSignal::AbortSignal(ExecutionContext* execution_context)
-    : execution_context_(execution_context) {}
+    : execution_context_(execution_context) {
+  if (base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
+    abort_algorithms_ =
+        MakeGarbageCollected<RemovableAbortAlgorithmCollection>();
+  } else {
+    abort_algorithms_ =
+        MakeGarbageCollected<UnremovableAbortAlgorithmCollection>();
+  }
+}
+
 AbortSignal::~AbortSignal() = default;
 
 // static
@@ -147,18 +242,30 @@ ExecutionContext* AbortSignal::GetExecutionContext() const {
   return execution_context_.Get();
 }
 
-void AbortSignal::AddAlgorithm(Algorithm* algorithm) {
+AbortSignal::AlgorithmHandle* AbortSignal::AddAlgorithm(Algorithm* algorithm) {
   if (aborted())
-    return;
+    return nullptr;
 
-  abort_algorithms_.push_back(algorithm);
+  auto* handle = MakeGarbageCollected<AlgorithmHandle>(algorithm);
+  abort_algorithms_->AddAlgorithm(handle);
+  return handle;
 }
 
-void AbortSignal::AddAlgorithm(base::OnceClosure algorithm) {
+void AbortSignal::RemoveAlgorithm(AlgorithmHandle* handle) {
   if (aborted())
     return;
-  abort_algorithms_.push_back(
-      MakeGarbageCollected<OnceCallbackAlgorithm>(std::move(algorithm)));
+  abort_algorithms_->RemoveAlgorithm(handle);
+}
+
+AbortSignal::AlgorithmHandle* AbortSignal::AddAlgorithm(
+    base::OnceClosure algorithm) {
+  if (aborted())
+    return nullptr;
+  auto* callback_algorithm =
+      MakeGarbageCollected<OnceCallbackAlgorithm>(std::move(algorithm));
+  auto* handle = MakeGarbageCollected<AlgorithmHandle>(callback_algorithm);
+  abort_algorithms_->AddAlgorithm(handle);
+  return handle;
 }
 
 void AbortSignal::SignalAbort(ScriptState* script_state) {
@@ -183,10 +290,9 @@ void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
   } else {
     abort_reason_ = reason;
   }
-  for (Algorithm* algorithm : abort_algorithms_) {
-    algorithm->Run();
-  }
-  abort_algorithms_.clear();
+  abort_algorithms_->Run();
+  abort_algorithms_->Clear();
+  dependent_signal_algorithms_.clear();
   DispatchEvent(*Event::Create(event_type_names::kAbort));
 }
 
@@ -198,15 +304,26 @@ void AbortSignal::Follow(ScriptState* script_state, AbortSignal* parent) {
     return;
   }
 
-  parent->AddAlgorithm(
+  auto* handle = parent->AddAlgorithm(
       MakeGarbageCollected<FollowAlgorithm>(script_state, parent, this));
+  parent->dependent_signal_algorithms_.push_back(handle);
 }
 
 void AbortSignal::Trace(Visitor* visitor) const {
   visitor->Trace(abort_reason_);
   visitor->Trace(execution_context_);
   visitor->Trace(abort_algorithms_);
+  visitor->Trace(dependent_signal_algorithms_);
   EventTargetWithInlineData::Trace(visitor);
+}
+
+AbortSignal::AlgorithmHandle::AlgorithmHandle(AbortSignal::Algorithm* algorithm)
+    : algorithm_(algorithm) {}
+
+AbortSignal::AlgorithmHandle::~AlgorithmHandle() = default;
+
+void AbortSignal::AlgorithmHandle::Trace(Visitor* visitor) const {
+  visitor->Trace(algorithm_);
 }
 
 }  // namespace blink

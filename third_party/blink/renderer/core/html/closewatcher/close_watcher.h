@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/close_watcher/close_listener.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -105,6 +106,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
   bool dispatching_cancel_ = false;
   bool grouped_with_previous_ = false;
   bool created_with_user_activation_ = false;
+  Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 
 }  // namespace blink

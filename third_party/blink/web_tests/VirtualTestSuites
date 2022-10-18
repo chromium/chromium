@@ -1332,5 +1332,13 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/scoped-registry"],
     "args": ["--disable-blink-features=ScopedCustomElementRegistry"]
+  },
+  {
+    "prefix": "abort-signal-remove",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/eyedropper"
+    ],
+    "args": ["--disable-features=AbortSignalHandleBasedRemoval"]
   }
 ]

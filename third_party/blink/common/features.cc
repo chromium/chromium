@@ -1666,5 +1666,9 @@ BASE_FEATURE(kSSVTrailerEnforceExposureAssertion,
              "SSVTrailerEnforceExposureAssertion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAbortSignalHandleBasedRemoval,
+             "AbortSignalHandleBasedRemoval",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

@@ -69,7 +69,7 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
   DCHECK(callback_);
 
   if (signal_) {
-    signal_->AddAlgorithm(
+    abort_handle_ = signal_->AddAlgorithm(
         WTF::BindOnce(&DOMTask::OnAbort, WrapWeakPersistent(this)));
   }
 
@@ -88,6 +88,7 @@ void DOMTask::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
   visitor->Trace(resolver_);
   visitor->Trace(signal_);
+  visitor->Trace(abort_handle_);
   visitor->Trace(task_queue_);
 }
 

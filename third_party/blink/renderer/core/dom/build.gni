@@ -29,6 +29,8 @@ blink_core_sources_dom = [
   "abort_controller.h",
   "abort_signal.cc",
   "abort_signal.h",
+  "abort_signal_registry.cc",
+  "abort_signal_registry.h",
   "abstract_range.cc",
   "abstract_range.h",
   "attr.cc",
@@ -230,6 +232,7 @@ blink_core_sources_dom = [
   "range.h",
   "range_boundary_point.h",
   "raw_data_document_parser.h",
+  "scoped_abort_state.h",
   "scoped_window_focus_allowed_indicator.h",
   "scriptable_document_parser.cc",
   "scriptable_document_parser.h",
@@ -286,6 +289,7 @@ blink_core_sources_dom = [
 ]
 
 blink_core_tests_dom = [
+  "abort_signal_test.cc",
   "attr_test.cc",
   "document_statistics_collector_test.cc",
   "document_test.cc",

@@ -140,7 +140,7 @@ CloseWatcher* CloseWatcher::CreateInternal(LocalDOMWindow* window,
       watcher->state_ = State::kClosed;
       return watcher;
     }
-    signal->AddAlgorithm(
+    watcher->abort_handle_ = signal->AddAlgorithm(
         MakeGarbageCollected<DestroyOnAbortAlgorithm>(watcher));
   }
 
@@ -174,6 +174,7 @@ void CloseWatcher::close() {
   if (DomWindow())
     DomWindow()->closewatcher_stack()->Remove(this);
 
+  abort_handle_.Clear();
   state_ = State::kClosed;
   DispatchEvent(*Event::Create(event_type_names::kClose));
 }
@@ -183,6 +184,7 @@ void CloseWatcher::destroy() {
   if (DomWindow())
     DomWindow()->closewatcher_stack()->Remove(this);
   state_ = State::kClosed;
+  abort_handle_.Clear();
 }
 
 const AtomicString& CloseWatcher::InterfaceName() const {
@@ -190,6 +192,7 @@ const AtomicString& CloseWatcher::InterfaceName() const {
 }
 
 void CloseWatcher::Trace(Visitor* visitor) const {
+  visitor->Trace(abort_handle_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }

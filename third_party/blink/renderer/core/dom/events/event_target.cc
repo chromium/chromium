@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_eventlisteneroptions.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/abort_signal_registry.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -482,13 +483,17 @@ bool EventTarget::AddEventListenerInternal(
       // pass the |options->capture()| boolean, which is the only thing
       // removeEventListener actually uses to find and remove the event
       // listener.
-      options->signal()->AddAlgorithm(WTF::BindOnce(
-          [](EventTarget* event_target, const AtomicString& event_type,
-             const EventListener* listener, bool capture) {
-            event_target->removeEventListener(event_type, listener, capture);
-          },
-          WrapWeakPersistent(this), event_type, WrapWeakPersistent(listener),
-          options->capture()));
+      AbortSignal::AlgorithmHandle* handle =
+          options->signal()->AddAlgorithm(WTF::BindOnce(
+              [](EventTarget* event_target, const AtomicString& event_type,
+                 const EventListener* listener, bool capture) {
+                event_target->removeEventListener(event_type, listener,
+                                                  capture);
+              },
+              WrapWeakPersistent(this), event_type,
+              WrapWeakPersistent(listener), options->capture()));
+      AbortSignalRegistry::From(*execution_context)
+          ->RegisterAbortAlgorithm(listener, handle);
       if (const LocalDOMWindow* executing_window = ExecutingWindow()) {
         if (const Document* document = executing_window->document()) {
           document->CountUse(WebFeature::kAddEventListenerWithAbortSignal);
