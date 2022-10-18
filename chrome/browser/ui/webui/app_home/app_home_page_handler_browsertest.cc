@@ -9,16 +9,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/mock_app_home_page.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
+#include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 using web_app::AppId;
 using GetAppsCallback =
@@ -108,7 +109,7 @@ GetAppsCallback WrapGetAppsCallback(
 
 }  // namespace
 
-class AppHomePageHandlerTest : public WebAppTest {
+class AppHomePageHandlerTest : public InProcessBrowserTest {
  public:
   AppHomePageHandlerTest() = default;
 
@@ -117,23 +118,19 @@ class AppHomePageHandlerTest : public WebAppTest {
 
   ~AppHomePageHandlerTest() override = default;
 
-  void SetUp() override {
-    WebAppTest::SetUp();
+ protected:
+  std::unique_ptr<TestAppHomePageHandler> GetAppHomePageHandler() {
+    AddBlankTabAndShow(browser());
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetWebContentsAt(0);
+    test_web_ui_.set_web_contents(contents);
 
-    web_app::FakeWebAppProvider* provider =
-        web_app::FakeWebAppProvider::Get(profile());
-    provider->SetDefaultFakeSubsystems();
-
-    extension_service_ = CreateTestExtensionService();
-
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+    return std::make_unique<TestAppHomePageHandler>(&test_web_ui_, profile(),
+                                                    page_.BindAndGetRemote());
   }
 
- protected:
-  std::unique_ptr<TestAppHomePageHandler> GetAppHomePageHandler(
-      content::TestWebUI* test_web_ui) {
-    return std::make_unique<TestAppHomePageHandler>(test_web_ui, profile(),
-                                                    page_.BindAndGetRemote());
+  extensions::ExtensionService* extension_service() {
+    return extensions::ExtensionSystem::Get(profile())->extension_service();
   }
 
   AppId InstallTestWebApp() {
@@ -143,6 +140,8 @@ class AppHomePageHandlerTest : public WebAppTest {
     return installed_app_id;
   }
 
+  Profile* profile() { return browser()->profile(); }
+
   void UninstallTestWebApp(const web_app::AppId& app_id) {
     web_app::test::UninstallWebApp(profile(), app_id);
   }
@@ -150,7 +149,7 @@ class AppHomePageHandlerTest : public WebAppTest {
   scoped_refptr<const extensions::Extension> InstallTestExtensionApp() {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(kTestAppName).Build();
-    extension_service_->AddExtension(extension.get());
+    extension_service()->AddExtension(extension.get());
     return extension;
   }
 
@@ -168,7 +167,7 @@ class AppHomePageHandlerTest : public WebAppTest {
     // locking semantics on WinOS platfom. To workaround this case, make sure
     // the task of uninstalling extension complete before the `AppHome` test
     // tear down.
-    extension_service_->UninstallExtension(
+    extension_service()->UninstallExtension(
         extension->id(),
         extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error,
         base::BindOnce(
@@ -177,12 +176,6 @@ class AppHomePageHandlerTest : public WebAppTest {
             },
             run_loop.QuitClosure()));
     run_loop.Run();
-  }
-
-  std::unique_ptr<content::TestWebUI> CreateTestWebUI() {
-    auto test_web_ui = std::make_unique<content::TestWebUI>();
-    test_web_ui->set_web_contents(web_contents());
-    return test_web_ui;
   }
 
   extensions::ExtensionService* CreateTestExtensionService() {
@@ -195,8 +188,8 @@ class AppHomePageHandlerTest : public WebAppTest {
     return ext_service;
   }
 
+  content::TestWebUI test_web_ui_;
   testing::StrictMock<MockAppHomePage> page_;
-  raw_ptr<extensions::ExtensionService> extension_service_;
 };
 
 MATCHER_P(MatchAppName, expected_app_name, "") {
@@ -213,12 +206,11 @@ MATCHER_P(MatchAppId, expected_app_id, "") {
   return false;
 }
 
-TEST_F(AppHomePageHandlerTest, GetApps) {
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, GetApps) {
   AppId installed_app_id = InstallTestWebApp();
 
-  std::unique_ptr<content::TestWebUI> test_web_ui = CreateTestWebUI();
   std::unique_ptr<TestAppHomePageHandler> page_handler =
-      GetAppHomePageHandler(test_web_ui.get());
+      GetAppHomePageHandler();
 
   std::vector<app_home::mojom::AppInfoPtr> app_infos;
   base::RunLoop run_loop;
@@ -226,26 +218,21 @@ TEST_F(AppHomePageHandlerTest, GetApps) {
       WrapGetAppsCallback(&app_infos, run_loop.QuitClosure()));
   run_loop.Run();
 
-  ASSERT_EQ(1u, app_infos.size());
   EXPECT_EQ(kTestAppUrl, app_infos[0]->start_url);
   EXPECT_EQ(kTestAppName, app_infos[0]->name);
 }
 
-TEST_F(AppHomePageHandlerTest, OnWebAppInstalled) {
-  std::unique_ptr<content::TestWebUI> test_web_ui = CreateTestWebUI();
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnWebAppInstalled) {
   std::unique_ptr<TestAppHomePageHandler> page_handler =
-      GetAppHomePageHandler(test_web_ui.get());
-
+      GetAppHomePageHandler();
   EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
   AppId installed_app_id = InstallTestWebApp();
   page_handler->Wait();
 }
 
-TEST_F(AppHomePageHandlerTest, OnExtensionLoaded) {
-  std::unique_ptr<content::TestWebUI> test_web_ui = CreateTestWebUI();
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnExtensionLoaded) {
   std::unique_ptr<TestAppHomePageHandler> page_handler =
-      GetAppHomePageHandler(test_web_ui.get());
-
+      GetAppHomePageHandler();
   EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();
@@ -253,10 +240,9 @@ TEST_F(AppHomePageHandlerTest, OnExtensionLoaded) {
   page_handler->Wait();
 }
 
-TEST_F(AppHomePageHandlerTest, OnWebAppUninstall) {
-  std::unique_ptr<content::TestWebUI> test_web_ui = CreateTestWebUI();
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnWebAppUninstall) {
   std::unique_ptr<TestAppHomePageHandler> page_handler =
-      GetAppHomePageHandler(test_web_ui.get());
+      GetAppHomePageHandler();
 
   // First, install a web app for test.
   EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
@@ -270,10 +256,9 @@ TEST_F(AppHomePageHandlerTest, OnWebAppUninstall) {
   page_handler->Wait();
 }
 
-TEST_F(AppHomePageHandlerTest, OnExtensionUninstall) {
-  std::unique_ptr<content::TestWebUI> test_web_ui = CreateTestWebUI();
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnExtensionUninstall) {
   std::unique_ptr<TestAppHomePageHandler> page_handler =
-      GetAppHomePageHandler(test_web_ui.get());
+      GetAppHomePageHandler();
 
   // First, install a test extension app for test.
   EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));

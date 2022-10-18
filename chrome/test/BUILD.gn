@@ -3141,6 +3141,9 @@ if (!is_android) {
           "../browser/extensions/api/system_indicator/system_indicator_apitest.cc",
           "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
+          "../browser/ui/webui/app_home/app_home_page_handler_browsertest.cc",
+          "../browser/ui/webui/app_home/mock_app_home_page.cc",
+          "../browser/ui/webui/app_home/mock_app_home_page.h",
         ]
       }
 
@@ -3161,6 +3164,7 @@ if (!is_android) {
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
           "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+          "//chrome/browser/ui/webui/app_home:mojo_bindings",
         ]
       }
 
@@ -8544,9 +8548,6 @@ test("unit_tests") {
       "../browser/enterprise/remote_commands/rotate_attestation_credential_job_unittest.cc",
       "../browser/enterprise/signals/user_delegate_impl_unittest.cc",
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
-      "../browser/ui/webui/app_home/app_home_page_handler_unittest.cc",
-      "../browser/ui/webui/app_home/mock_app_home_page.cc",
-      "../browser/ui/webui/app_home/mock_app_home_page.h",
       "../browser/ui/webui/ntp/app_launcher_handler_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_util_unittest.cc",
     ]
@@ -8564,7 +8565,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/key_management/core/persistence:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/installer:unit_tests",
       "../browser/enterprise/connectors/device_trust/signals/decorators/browser:unit_tests",
-      "//chrome/browser/ui/webui/app_home:mojo_bindings",
       "//components/device_signals/core/browser",
       "//components/device_signals/core/browser:test_support",
       "//components/device_signals/core/common:features",
