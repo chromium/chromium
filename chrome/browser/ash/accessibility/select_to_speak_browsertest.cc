@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/magnifier_animation_waiter.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -198,35 +199,6 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   std::unique_ptr<base::RunLoop> highlights_runner_;
   std::unique_ptr<base::RunLoop> tray_loop_runner_;
   base::WeakPtrFactory<SelectToSpeakTest> weak_ptr_factory_{this};
-};
-
-// TODO(crbug.com/1375293): Extract MagnifierAnimationWaiter to helper.
-class MagnifierAnimationWaiter {
- public:
-  explicit MagnifierAnimationWaiter(FullscreenMagnifierController* controller)
-      : controller_(controller) {}
-
-  MagnifierAnimationWaiter(const MagnifierAnimationWaiter&) = delete;
-  MagnifierAnimationWaiter& operator=(const MagnifierAnimationWaiter&) = delete;
-
-  void Wait() {
-    base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
-                      &MagnifierAnimationWaiter::OnTimer);
-    runner_ = new content::MessageLoopRunner;
-    runner_->Run();
-  }
-
- private:
-  void OnTimer() {
-    DCHECK(runner_.get());
-    if (!controller_->IsOnAnimationForTesting()) {
-      runner_->Quit();
-    }
-  }
-
-  FullscreenMagnifierController* controller_;  // not owned
-  scoped_refptr<content::MessageLoopRunner> runner_;
 };
 
 class SelectToSpeakTestWithVoiceSwitching : public SelectToSpeakTest {

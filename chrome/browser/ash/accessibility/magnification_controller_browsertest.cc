@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/accessibility/magnifier_animation_waiter.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -59,34 +60,6 @@ void MoveMagnifierWindow(int x, int y) {
 gfx::Rect GetViewPort() {
   return GetFullscreenMagnifierController()->GetViewportRect();
 }
-
-class MagnifierAnimationWaiter {
- public:
-  explicit MagnifierAnimationWaiter(FullscreenMagnifierController* controller)
-      : controller_(controller) {}
-
-  MagnifierAnimationWaiter(const MagnifierAnimationWaiter&) = delete;
-  MagnifierAnimationWaiter& operator=(const MagnifierAnimationWaiter&) = delete;
-
-  void Wait() {
-    base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
-                      &MagnifierAnimationWaiter::OnTimer);
-    runner_ = new content::MessageLoopRunner;
-    runner_->Run();
-  }
-
- private:
-  void OnTimer() {
-    DCHECK(runner_.get());
-    if (!controller_->IsOnAnimationForTesting()) {
-      runner_->Quit();
-    }
-  }
-
-  FullscreenMagnifierController* controller_;  // not owned
-  scoped_refptr<content::MessageLoopRunner> runner_;
-};
 
 }  // namespace
 
