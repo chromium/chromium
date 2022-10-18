@@ -4,6 +4,7 @@
 
 #include "base/process/process_metrics.h"
 
+#include <AvailabilityMacros.h>
 #include <libproc.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
@@ -296,8 +297,10 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   }
   DCHECK_EQ(HOST_VM_INFO64_COUNT, count);
 
-#if defined(ARCH_CPU_ARM64)
-  // PAGE_SIZE is vm_page_size on arm, which isn't constexpr.
+#if defined(ARCH_CPU_ARM64) || \
+    MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_16
+  // PAGE_SIZE is vm_page_size on arm or for deployment targets >= 10.16,
+  // and vm_page_size isn't constexpr.
   DCHECK_EQ(PAGE_SIZE % 1024, 0u) << "Invalid page size";
 #else
   static_assert(PAGE_SIZE % 1024 == 0, "Invalid page size");
