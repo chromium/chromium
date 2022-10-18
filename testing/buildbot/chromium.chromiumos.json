@@ -1644,8 +1644,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ash_crosapi_tests",
-        "test_id_prefix": "ninja://chrome/test:ash_crosapi_tests/"
+        "test": "ash_crosapi_browsertests",
+        "test_id_prefix": "ninja://chrome/test:ash_crosapi_browsertests/"
       },
       {
         "merge": {
@@ -3237,8 +3237,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ash_crosapi_tests",
-        "test_id_prefix": "ninja://chrome/test:ash_crosapi_tests/"
+        "test": "ash_crosapi_browsertests",
+        "test_id_prefix": "ninja://chrome/test:ash_crosapi_browsertests/"
       },
       {
         "args": [

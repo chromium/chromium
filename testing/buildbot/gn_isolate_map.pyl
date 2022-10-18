@@ -180,8 +180,8 @@
     "label": "//ash/components:ash_components_unittests",
     "type": "windowed_test_launcher",
   },
-  "ash_crosapi_tests": {
-    "label": "//chrome/test:ash_crosapi_tests",
+  "ash_crosapi_browsertests": {
+    "label": "//chrome/test:ash_crosapi_browsertests",
     "type": "windowed_test_launcher",
   },
   "ash_webui_unittests": {
