@@ -181,6 +181,9 @@ export class SelectToSpeak {
     /** @private {!UiManager} */
     this.uiManager_ = new UiManager(this.prefsManager_, this /* listener */);
 
+    /** @private {?function()} */
+    this.onLoadDesktopCallbackForTest_ = null;
+
     this.init_();
   }
 
@@ -195,6 +198,11 @@ export class SelectToSpeak {
       desktop.addEventListener(
           EventType.MOUSE_RELEASED, evt => this.onAutomationHitTest_(evt),
           true);
+
+      if (this.onLoadDesktopCallbackForTest_) {
+        this.onLoadDesktopCallbackForTest_();
+        this.onLoadDesktopCallbackForTest_ = null;
+      }
     });
 
     this.prefsManager_.initPreferences();
@@ -1749,5 +1757,19 @@ export class SelectToSpeak {
   shouldUseVoiceSwitching_() {
     return this.isVoiceSwitchingEnabled_ &&
         this.prefsManager_.voiceSwitchingEnabled();
+  }
+
+  /**
+   * Used by C++ tests to ensure STS load is competed.
+   * @param {!function()} callback Callback for when desktop is loaded from
+   * automation.
+   */
+  setOnLoadDesktopCallbackForTest(callback) {
+    if (!this.desktop_) {
+      this.onLoadDesktopCallbackForTest_ = callback;
+      return;
+    }
+    // Desktop already loaded.
+    callback();
   }
 }
