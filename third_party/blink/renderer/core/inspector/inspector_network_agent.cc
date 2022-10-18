@@ -181,10 +181,6 @@ static std::unique_ptr<protocol::Network::Headers> BuildObjectForHeaders(
   return protocol::Network::Headers::fromValue(headers_object.get(), &errors);
 }
 
-static bool PermitRecordReplayBrowserEvents() {
-  return recordreplay::IsRecordingOrReplaying("notify-network") && v8::IsMainThread();
-}
-
 class InspectorFileReaderLoaderClient final : public FileReaderLoaderClient {
  public:
   InspectorFileReaderLoaderClient(
@@ -1045,14 +1041,6 @@ void InspectorNetworkAgent::DidBlockRequest(
       InspectorPageAgent::ResourceTypeJson(
           resources_data_->GetResourceType(request_id)),
       String(), false, protocol_reason);
-  if (PermitRecordReplayBrowserEvents()) {
-    uint64_t bookmark = request.GetRecordReplayBookmark().value_or(0);
-    base::DictionaryValue dict;
-    dict.SetDouble("bookmark", (double) bookmark);
-    dict.SetString("request_id", request_id.Utf8());
-    recordreplay::BrowserEvent("Network.DidBlockRequest", dict);
-  }
-
 }
 
 void InspectorNetworkAgent::DidChangeResourcePriority(
@@ -1139,14 +1127,6 @@ void InspectorNetworkAgent::WillSendRequestInternal(
 
   double wallTime = base::Time::Now().ToDoubleT();
 
-  if (PermitRecordReplayBrowserEvents()) {
-    uint64_t bookmark = request.GetRecordReplayBookmark().value_or(0);
-    base::DictionaryValue dict;
-    dict.SetDouble("bookmark", (double) bookmark);
-    dict.SetString("request_id", request_id.Utf8());
-    recordreplay::BrowserEvent("Network.WillSendRequestInternal", dict);
-  }
-
   GetFrontend()->requestWillBeSent(
       request_id, loader_id, documentURL, std::move(request_info),
       base::TimeTicks::Now().since_origin().InSecondsF(),
@@ -1183,12 +1163,6 @@ void InspectorNetworkAgent::WillSendNavigationRequest(
   resources_data_->ResourceCreated(request_id, loader_id, url, post_data);
   resources_data_->SetResourceType(request_id,
                                    InspectorPageAgent::kDocumentResource);
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetString("request_id", request_id.Utf8());
-    dict.SetDouble("identifier", (double) identifier);
-    recordreplay::BrowserEvent("Network.WillSendNavigationRequest", dict);
-  }
 }
 
 // This method was pulled out of PrepareRequest(), because we want to be able
@@ -1306,12 +1280,6 @@ void InspectorNetworkAgent::MarkResourceAsCached(DocumentLoader* loader,
                                                  uint64_t identifier) {
   String request_id = IdentifiersFactory::RequestId(loader, identifier);
   GetFrontend()->requestServedFromCache(request_id);
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetString("request_id", request_id.Utf8());
-    dict.SetDouble("identifier", (double) identifier);
-    recordreplay::BrowserEvent("Network.MarkResourceAsCached", dict);
-  }
 }
 
 void InspectorNetworkAgent::DidReceiveResourceResponse(
@@ -1361,12 +1329,6 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
   if (response_security_details.has_value()) {
     resources_data_->SetCertificate(request_id,
                                     response_security_details->certificate);
-  }
-
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetString("request_id", request_id.Utf8());
-    recordreplay::BrowserEvent("Network.DidReceiveResourceResponse", dict);
   }
 
   if (IsNavigation(loader, identifier))
@@ -1432,12 +1394,6 @@ void InspectorNetworkAgent::DidReceiveEncodedDataLength(
     uint64_t identifier,
     size_t encoded_data_length) {
 
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    dict.SetDouble("encoded_data_length", (double) encoded_data_length);
-    recordreplay::BrowserEvent("Network.DidReceiveEncodedDataLength", dict);
-  }
   String request_id = IdentifiersFactory::RequestId(loader, identifier);
   resources_data_->AddPendingEncodedDataLength(request_id, encoded_data_length);
 }
@@ -1474,14 +1430,6 @@ void InspectorNetworkAgent::DidFinishLoading(
   resources_data_->MaybeDecodeDataToContent(request_id);
   if (monotonic_finish_time.is_null())
     monotonic_finish_time = base::TimeTicks::Now();
-
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    dict.SetDouble("encoded_data_length", (double) encoded_data_length);
-    dict.SetDouble("decoded_body_length", (double) decoded_body_length);
-    recordreplay::BrowserEvent("Network.DidFinishLoading", dict);
-  }
 
   is_handling_sync_xhr_ = false;
   // TODO(npm): Use base::TimeTicks in Network.h.
@@ -1530,12 +1478,6 @@ void InspectorNetworkAgent::DidFailLoading(
     protocol_cors_error_status = BuildCorsErrorStatus(*cors_error_status);
   }
   is_handling_sync_xhr_ = false;
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetString("request_id", request_id.Utf8());
-    dict.SetDouble("identifier", (double) identifier);
-    recordreplay::BrowserEvent("Network.DidFailLoading", dict);
-  }
   GetFrontend()->loadingFailed(
       request_id, base::TimeTicks::Now().since_origin().InSecondsF(),
       InspectorPageAgent::ResourceTypeJson(
@@ -1546,21 +1488,11 @@ void InspectorNetworkAgent::DidFailLoading(
 
 void InspectorNetworkAgent::ScriptImported(uint64_t identifier,
                                            const String& source_string) {
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    recordreplay::BrowserEvent("Network.ScriptImported", dict);
-  }
   resources_data_->SetResourceContent(
       IdentifiersFactory::SubresourceRequestId(identifier), source_string);
 }
 
 void InspectorNetworkAgent::DidReceiveScriptResponse(uint64_t identifier) {
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    recordreplay::BrowserEvent("Network.DidReceiveScriptResponse", dict);
-  }
   resources_data_->SetResourceType(
       IdentifiersFactory::SubresourceRequestId(identifier),
       InspectorPageAgent::kScriptResource);
@@ -1587,18 +1519,10 @@ void InspectorNetworkAgent::WillLoadXHR(ExecutionContext* execution_context,
   DCHECK(!is_handling_sync_xhr_);
   if (!async)
     is_handling_sync_xhr_ = true;
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    recordreplay::BrowserEvent("Network.WillLoadXHR", dict);
-  }
 }
 
 void InspectorNetworkAgent::DidFinishXHR(XMLHttpRequest* xhr) {
   replay_xhrs_.erase(xhr);
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    recordreplay::BrowserEvent("Network.DidFinishXHR", dict);
-  }
 }
 
 void InspectorNetworkAgent::WillSendEventSourceRequest() {
@@ -1710,11 +1634,6 @@ void InspectorNetworkAgent::DidCreateWebSocket(
         UrlWithoutFragment(request_url).GetString());
     return;
   }
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    recordreplay::BrowserEvent("Network.DidCreateWebSocket", dict);
-  }
 
   std::unique_ptr<protocol::Network::Initiator> initiator_object =
       protocol::Network::Initiator::create()
@@ -1738,11 +1657,6 @@ void InspectorNetworkAgent::WillSendWebSocketHandshakeRequest(
       protocol::Network::WebSocketRequest::create()
           .setHeaders(BuildObjectForHeaders(headers))
           .build();
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    recordreplay::BrowserEvent("Network.WillSendWebSocketHandshakeRequest", dict);
-  }
   GetFrontend()->webSocketWillSendHandshakeRequest(
       IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(),
@@ -1787,12 +1701,6 @@ void InspectorNetworkAgent::DidReceiveWebSocketHandshakeResponse(
       response_object->setRequestHeadersText(request->headers_text);
   }
 
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    recordreplay::BrowserEvent("Network.DidReceiveWebSocketHandshakeResponse", dict);
-  }
-
   GetFrontend()->webSocketHandshakeResponseReceived(
       IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(),
@@ -1801,11 +1709,6 @@ void InspectorNetworkAgent::DidReceiveWebSocketHandshakeResponse(
 
 void InspectorNetworkAgent::DidCloseWebSocket(ExecutionContext*,
                                               uint64_t identifier) {
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    recordreplay::BrowserEvent("Network.DidCloseWebSocket", dict);
-  }
   GetFrontend()->webSocketClosed(
       IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF());
@@ -1825,14 +1728,6 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessage(
   for (const auto& span : data) {
     flatten.Append(span.data(), SafeCast<wtf_size_t>(span.size()));
   }
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    dict.SetDouble("op_code", (double) op_code);
-    dict.SetBoolean("masked", (double) masked);
-    // TODO: Connvert and pass data?
-    recordreplay::BrowserEvent("Network.DidReceiveWebSocketMessage", dict);
-  }
   GetFrontend()->webSocketFrameReceived(
       IdentifiersFactory::SubresourceRequestId(identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(),
@@ -1845,14 +1740,6 @@ void InspectorNetworkAgent::DidSendWebSocketMessage(uint64_t identifier,
                                                     bool masked,
                                                     const char* payload,
                                                     size_t payload_length) {
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    dict.SetDouble("op_code", (double) op_code);
-    dict.SetBoolean("masked", (double) masked);
-    dict.SetString("payload", base::StringPiece(payload, payload_length));
-    recordreplay::BrowserEvent("Network.DidSendWebSocketMessage", dict);
-  }
   GetFrontend()->webSocketFrameSent(
       IdentifiersFactory::RequestId(nullptr, identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(),
@@ -1862,12 +1749,6 @@ void InspectorNetworkAgent::DidSendWebSocketMessage(uint64_t identifier,
 void InspectorNetworkAgent::DidReceiveWebSocketMessageError(
     uint64_t identifier,
     const String& error_message) {
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetDouble("identifier", (double) identifier);
-    dict.SetString("error_message", error_message.Utf8());
-    recordreplay::BrowserEvent("Network.DidReceiveWebSocketMessageError", dict);
-  }
   GetFrontend()->webSocketFrameError(
       IdentifiersFactory::RequestId(nullptr, identifier),
       base::TimeTicks::Now().since_origin().InSecondsF(), error_message);
