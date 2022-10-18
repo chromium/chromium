@@ -31,6 +31,42 @@ class SupervisedUserFaviconRequestHandler;
 // search.
 class SupervisedUserInterstitial {
  public:
+  // The names of histograms emitted by this class.
+  static constexpr char kInterstitialCommandHistogramName[] =
+      "ManagedMode.BlockingInterstitialCommand";
+  static constexpr char kInterstitialPermissionSourceHistogramName[] =
+      "ManagedUsers.RequestPermissionSource";
+
+  // For use in the kInterstitialCommandHistogramName histogram.
+  //
+  // The enum values should remain synchronized with the enum
+  // ManagedModeBlockingCommand in tools/metrics/histograms/enums.xml.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Commands {
+    // PREVIEW = 0,
+    BACK = 1,
+    // NTP = 2,
+    REMOTE_ACCESS_REQUEST = 3,
+    LOCAL_ACCESS_REQUEST = 4,
+    HISTOGRAM_BOUNDING_VALUE = 5
+  };
+
+  // For use in the kInterstitialPermissionSourceHistogramName histogram.
+  //
+  // The enum values should remain synchronized with the
+  // enum ManagedUserURLRequestPermissionSource in
+  // tools/metrics/histograms/enums.xml.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class RequestPermissionSource {
+    MAIN_FRAME = 0,
+    SUB_FRAME,
+    HISTOGRAM_BOUNDING_VALUE
+  };
+
   SupervisedUserInterstitial(const SupervisedUserInterstitial&) = delete;
   SupervisedUserInterstitial& operator=(const SupervisedUserInterstitial&) =
       delete;

@@ -63,31 +63,6 @@ using content::WebContents;
 
 namespace {
 
-// For use in histograms.
-//
-// The enum values should remain synchronized with the enum
-// ManagedModeBlockingCommand in tools/metrics/histograms/enums.xml.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class Commands {
-  // PREVIEW = 0,
-  BACK = 1,
-  // NTP = 2,
-  REMOTE_ACCESS_REQUEST = 3,
-  LOCAL_ACCESS_REQUEST = 4,
-  HISTOGRAM_BOUNDING_VALUE = 5
-};
-
-// For use in histograms.The enum values should remain synchronized with the
-// enum ManagedUserURLRequestPermissionSource in
-// tools/metrics/histograms/enums.xml.
-enum class RequestPermissionSource {
-  MAIN_FRAME = 0,
-  SUB_FRAME,
-  HISTOGRAM_BOUNDING_VALUE
-};
-
 class TabCloser : public content::WebContentsUserData<TabCloser> {
  public:
   TabCloser(const TabCloser&) = delete;
@@ -263,15 +238,15 @@ void SupervisedUserInterstitial::GoBack() {
   DCHECK_EQ(web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
             frame_id());
 
-  UMA_HISTOGRAM_ENUMERATION("ManagedMode.BlockingInterstitialCommand",
-                            Commands::BACK, Commands::HISTOGRAM_BOUNDING_VALUE);
+  UMA_HISTOGRAM_ENUMERATION(kInterstitialCommandHistogramName, Commands::BACK,
+                            Commands::HISTOGRAM_BOUNDING_VALUE);
   AttemptMoveAwayFromCurrentFrameURL();
   OnInterstitialDone();
 }
 
 void SupervisedUserInterstitial::RequestUrlAccessRemote(
     base::OnceCallback<void(bool)> callback) {
-  UMA_HISTOGRAM_ENUMERATION("ManagedMode.BlockingInterstitialCommand",
+  UMA_HISTOGRAM_ENUMERATION(kInterstitialCommandHistogramName,
                             Commands::REMOTE_ACCESS_REQUEST,
                             Commands::HISTOGRAM_BOUNDING_VALUE);
   OutputRequestPermissionSourceMetric();
@@ -284,7 +259,7 @@ void SupervisedUserInterstitial::RequestUrlAccessRemote(
 
 void SupervisedUserInterstitial::RequestUrlAccessLocal(
     base::OnceCallback<void(bool)> callback) {
-  UMA_HISTOGRAM_ENUMERATION("ManagedMode.BlockingInterstitialCommand",
+  UMA_HISTOGRAM_ENUMERATION(kInterstitialCommandHistogramName,
                             Commands::LOCAL_ACCESS_REQUEST,
                             Commands::HISTOGRAM_BOUNDING_VALUE);
   OutputRequestPermissionSourceMetric();
@@ -355,6 +330,6 @@ void SupervisedUserInterstitial::OutputRequestPermissionSourceMetric() {
   else
     source = RequestPermissionSource::SUB_FRAME;
 
-  UMA_HISTOGRAM_ENUMERATION("ManagedUsers.RequestPermissionSource", source,
+  UMA_HISTOGRAM_ENUMERATION(kInterstitialPermissionSourceHistogramName, source,
                             RequestPermissionSource::HISTOGRAM_BOUNDING_VALUE);
 }
