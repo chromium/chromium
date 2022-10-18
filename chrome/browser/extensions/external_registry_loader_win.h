@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTERNAL_REGISTRY_LOADER_WIN_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTERNAL_REGISTRY_LOADER_WIN_H_
 
+#include "base/values.h"
 #include "base/win/registry.h"
 #include "chrome/browser/extensions/external_loader.h"
 
@@ -23,14 +24,13 @@ class ExternalRegistryLoader : public ExternalLoader {
   void StartLoading() override;
 
   // Overridden to mock registry reading in unit tests.
-  virtual std::unique_ptr<base::DictionaryValue> LoadPrefsOnBlockingThread();
+  virtual base::Value::Dict LoadPrefsOnBlockingThread();
 
  private:
   friend class base::RefCountedThreadSafe<ExternalLoader>;
 
   void LoadOnBlockingThread();
-  void CompleteLoadAndStartWatchingRegistry(
-      std::unique_ptr<base::DictionaryValue> prefs);
+  void CompleteLoadAndStartWatchingRegistry(base::Value::Dict prefs);
   void UpatePrefsOnBlockingThread();
   void OnRegistryKeyChanged(base::win::RegKey* key);
 

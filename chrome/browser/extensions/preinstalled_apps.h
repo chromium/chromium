@@ -7,15 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
 class Profile;
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -55,7 +52,7 @@ class Provider : public extensions::ExternalProviderImpl {
 
   // ExternalProviderImpl overrides:
   void VisitRegisteredExtension() override;
-  void SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) override;
+  void SetPrefs(base::Value::Dict prefs) override;
 
   static bool DidPerformNewInstallationForProfile(Profile* profile);
 

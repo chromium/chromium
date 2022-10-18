@@ -160,8 +160,7 @@ void ExternalProviderImpl::VisitRegisteredExtension() {
   loader_->StartLoading();
 }
 
-void ExternalProviderImpl::SetPrefs(
-    std::unique_ptr<base::DictionaryValue> prefs) {
+void ExternalProviderImpl::SetPrefs(base::Value::Dict prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Check if the service is still alive. It is possible that it went
@@ -171,13 +170,13 @@ void ExternalProviderImpl::SetPrefs(
 
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);
-  for (auto it : prefs->DictItems()) {
+  for (auto it : prefs) {
     install_stage_tracker->ReportInstallCreationStage(
         it.first,
         InstallStageTracker::InstallCreationStage::SEEN_BY_EXTERNAL_PROVIDER);
   }
 
-  prefs_ = std::make_unique<base::Value::Dict>(std::move(*prefs).TakeDict());
+  prefs_ = std::move(prefs);
   ready_ = true;  // Queries for extensions are allowed from this point.
 
   NotifyServiceOnExternalExtensionsFound();
@@ -211,8 +210,7 @@ void ExternalProviderImpl::NotifyServiceOnExternalExtensionsFound() {
   service_->OnExternalProviderReady(this);
 }
 
-void ExternalProviderImpl::UpdatePrefs(
-    std::unique_ptr<base::DictionaryValue> prefs) {
+void ExternalProviderImpl::UpdatePrefs(base::Value::Dict prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(allow_updates_);
 
@@ -228,11 +226,11 @@ void ExternalProviderImpl::UpdatePrefs(
     // Don't bother about invalid ids.
     if (!crx_file::id_util::IdIsValid(extension_id))
       continue;
-    if (!prefs->FindKey(extension_id))
+    if (!prefs.Find(extension_id))
       removed_extensions.insert(extension_id);
   }
 
-  prefs_ = std::make_unique<base::Value::Dict>(std::move(*prefs).TakeDict());
+  *prefs_ = std::move(prefs);
 
   std::vector<ExternalInstallInfoUpdateUrl> external_update_url_extensions;
   std::vector<ExternalInstallInfoFile> external_file_extensions;
@@ -541,7 +539,7 @@ bool ExternalProviderImpl::IsReady() const {
 bool ExternalProviderImpl::HasExtension(
     const std::string& id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(prefs_.get());
+  CHECK(prefs_);
   CHECK(ready_);
   return prefs_->contains(id);
 }
@@ -551,9 +549,9 @@ bool ExternalProviderImpl::GetExtensionDetails(
     ManifestLocation* location,
     std::unique_ptr<base::Version>* version) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(prefs_.get());
+  CHECK(prefs_);
   CHECK(ready_);
-  base::Value::Dict* dict = prefs_->FindDict(id);
+  const base::Value::Dict* dict = prefs_->FindDict(id);
   if (!dict)
     return false;
 

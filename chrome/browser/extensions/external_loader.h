@@ -5,16 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTERNAL_LOADER_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTERNAL_LOADER_H_
 
-#include <memory>
-
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace extensions {
 class ExternalProviderImpl;
@@ -56,13 +50,9 @@ class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
  protected:
   virtual ~ExternalLoader();
 
-  // Notifies the provider that the list of extensions has been loaded.
-  virtual void LoadFinished(std::unique_ptr<base::DictionaryValue> prefs);
   // Helper function until the migration (https://crbug.com/1366865) is done.
-  void LoadFinishedWithDict(base::Value::Dict prefs);
+  virtual void LoadFinishedWithDict(base::Value::Dict prefs);
 
-  // Notifies the provider that the list of extensions has been updated.
-  void OnUpdated(std::unique_ptr<base::DictionaryValue> updated_prefs);
   // Helper function until the migration (https://crbug.com/1366865) is done.
   void OnUpdatedWithDict(base::Value::Dict updated_prefs);
 

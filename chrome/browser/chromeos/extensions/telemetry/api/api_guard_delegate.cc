@@ -105,7 +105,7 @@ class ApiGuardDelegateImpl : public ApiGuardDelegate {
     const auto force_install_list =
         extensions::ExtensionManagementFactory::GetForBrowserContext(context)
             ->GetForceInstallList();
-    return force_install_list->FindKey(extension_id) != nullptr;
+    return force_install_list.Find(extension_id) != nullptr;
   }
 
   bool IsUserAffiliated() {

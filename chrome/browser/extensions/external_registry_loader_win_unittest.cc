@@ -39,19 +39,18 @@ class TestExternalRegistryLoader : public ExternalRegistryLoader {
  private:
   ~TestExternalRegistryLoader() override {}
 
-  std::unique_ptr<base::DictionaryValue> LoadPrefsOnBlockingThread() override {
-    return DictionaryBuilder().Set(kDummyRegistryKey, id_++).Build();
+  base::Value::Dict LoadPrefsOnBlockingThread() override {
+    return DictionaryBuilder().Set(kDummyRegistryKey, id_++).BuildDict();
   }
-  void LoadFinished(std::unique_ptr<base::DictionaryValue> prefs) override {
+  void LoadFinishedWithDict(base::Value::Dict prefs) override {
     ++load_finished_count_;
     ASSERT_LE(load_finished_count_, 2);
 
-    ASSERT_TRUE(prefs);
-    int prefs_test_id = -1;
-    EXPECT_TRUE(prefs->GetInteger(kDummyRegistryKey, &prefs_test_id));
-    prefs_test_ids_.push_back(prefs_test_id);
+    auto prefs_test_id = prefs.FindInt(kDummyRegistryKey);
+    ASSERT_TRUE(prefs_test_id.has_value());
+    prefs_test_ids_.push_back(*prefs_test_id);
 
-    ExternalRegistryLoader::LoadFinished(std::move(prefs));
+    ExternalRegistryLoader::LoadFinishedWithDict(std::move(prefs));
 
     if (load_finished_count_ == 2)
       run_loop_.Quit();

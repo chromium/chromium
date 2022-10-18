@@ -165,6 +165,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -389,12 +390,12 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
     EXPECT_EQ(expected_creation_flags_, info.creation_flags);
 
     ++ids_found_;
-    base::DictionaryValue* pref;
+    base::Value::Dict* pref = prefs_->FindDict(info.extension_id);
     // This tests is to make sure that the provider only notifies us of the
     // values we gave it. So if the id we doesn't exist in our internal
     // dictionary then something is wrong.
-    EXPECT_TRUE(prefs_->GetDictionary(info.extension_id, &pref))
-        << "Got back ID (" << info.extension_id << ") we weren't expecting";
+    EXPECT_TRUE(pref) << "Got back ID (" << info.extension_id
+                      << ") we weren't expecting";
 
     EXPECT_TRUE(info.path.IsAbsolute());
     if (!fake_base_path_.empty())
@@ -420,7 +421,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       EXPECT_EQ(crx_location_, location);
 
       // Remove it so we won't count it ever again.
-      prefs_->RemoveKey(info.extension_id);
+      prefs_->Remove(info.extension_id);
     }
     return true;
   }
@@ -429,12 +430,12 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       const ExternalInstallInfoUpdateUrl& info,
       bool force_update) override {
     ++ids_found_;
-    base::DictionaryValue* pref;
+    base::Value::Dict* pref = prefs_->FindDict(info.extension_id);
     // This tests is to make sure that the provider only notifies us of the
     // values we gave it. So if the id we doesn't exist in our internal
     // dictionary then something is wrong.
-    EXPECT_TRUE(prefs_->GetDictionary(info.extension_id, &pref))
-        << "Got back ID (" << info.extension_id << ") we weren't expecting";
+    EXPECT_TRUE(pref) << "Got back ID (" << info.extension_id
+                      << ") we weren't expecting";
     EXPECT_EQ(ManifestLocation::kExternalPrefDownload, info.download_location);
 
     if (pref) {
@@ -449,12 +450,12 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       EXPECT_EQ(ManifestLocation::kExternalPrefDownload, location1);
 
       const std::string* parsed_install_parameter =
-          pref->GetDict().FindString("install_parameter");
+          pref->FindString("install_parameter");
       EXPECT_TRUE(parsed_install_parameter);
       EXPECT_EQ(*parsed_install_parameter, info.install_parameter);
 
       // Remove it so we won't count it again.
-      prefs_->RemoveKey(info.extension_id);
+      prefs_->Remove(info.extension_id);
     }
     return true;
   }
@@ -492,19 +493,18 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       provider_->set_allow_updates(true);
   }
 
-  std::unique_ptr<base::DictionaryValue> GetDictionaryFromJSON(
+  absl::optional<base::Value::Dict> GetDictionaryFromJSON(
       const std::string& json_data) {
     // We also parse the file into a dictionary to compare what we get back
     // from the provider.
     JSONStringValueDeserializer deserializer(json_data);
-    std::unique_ptr<base::Value> json_value =
-        deserializer.Deserialize(nullptr, nullptr);
+    auto json_value = deserializer.Deserialize(nullptr, nullptr);
 
     if (!json_value || !json_value->is_dict()) {
       ADD_FAILURE() << "Unable to deserialize json data";
-      return nullptr;
+      return absl::nullopt;
     }
-    return base::DictionaryValue::From(std::move(json_value));
+    return std::move(*json_value).TakeDict();
   }
 
  private:
@@ -512,7 +512,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
   base::FilePath fake_base_path_;
   int expected_creation_flags_;
   ManifestLocation crx_location_;
-  std::unique_ptr<base::DictionaryValue> prefs_;
+  absl::optional<base::Value::Dict> prefs_;
   std::unique_ptr<TestingProfile> profile_;
 };
 
@@ -535,11 +535,10 @@ class MockUpdateProviderVisitor : public MockProviderVisitor {
     file_extension_ids_.clear();
     removed_extension_ids_.clear();
 
-    std::unique_ptr<base::DictionaryValue> new_prefs =
-        GetDictionaryFromJSON(json_data);
+    auto new_prefs = GetDictionaryFromJSON(json_data);
     if (!new_prefs)
       return;
-    provider_->UpdatePrefs(std::move(new_prefs));
+    provider_->UpdatePrefs(std::move(*new_prefs));
   }
 
   void OnExternalProviderUpdateComplete(

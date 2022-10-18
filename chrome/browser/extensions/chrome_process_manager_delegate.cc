@@ -80,13 +80,13 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
     }
 
     // Get login screen apps installed by policy.
-    std::unique_ptr<base::DictionaryValue> login_screen_apps_list =
+    base::Value::Dict login_screen_apps_list =
         ExtensionManagementFactory::GetForBrowserContext(context)
             ->GetForceInstallList();
 
     // For the ChromeOS login profile, only allow apps installed by device
     // policy or that are explicitly allowlisted.
-    return login_screen_apps_list->FindKey(extension.id()) ||
+    return login_screen_apps_list.Find(extension.id()) ||
            IsComponentExtensionAllowlistedForSignInProfile(extension.id());
   }
 

@@ -149,14 +149,14 @@ void Provider::VisitRegisteredExtension() {
     // If pre-installed apps aren't enabled for the profile, we short-circuit
     // the flow to load them from the file (which happens as a result of
     // VisitRegisteredExtension()), and immediately set empty prefs.
-    ExternalProviderImpl::SetPrefs(std::make_unique<base::DictionaryValue>());
+    ExternalProviderImpl::SetPrefs(base::Value::Dict());
     return;
   }
 
   extensions::ExternalProviderImpl::VisitRegisteredExtension();
 }
 
-void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
+void Provider::SetPrefs(base::Value::Dict prefs) {
   DCHECK(preinstalled_apps_enabled_);
 
   // First, check if this is for a migration from around 2013. Likely not.
@@ -166,12 +166,12 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
     // Filter out the new pre-installed apps for migrating users, so that we
     // don't randomly install them out of the blue. Two-pass to keep iterators
     // nice and happy.
-    for (auto entry : prefs->DictItems()) {
+    for (auto entry : prefs) {
       if (!IsOldPreinstalledApp(entry.first))
         keys_to_erase.insert(entry.first);
     }
     for (const auto& key : keys_to_erase)
-      prefs->RemoveKey(key);
+      prefs.Remove(key);
   }
 
   // Next, the more fun case. It's possible that these apps were uninstalled
@@ -204,7 +204,7 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
     };
 
     std::set<std::string> keys_to_erase;
-    for (auto entry : prefs->DictItems()) {
+    for (auto entry : prefs) {
       bool should_re_add = should_re_add_app(entry.first, entry.second);
       if (should_re_add) {
         // Since it will be re-added, mark it as no-longer-migrated.
@@ -215,7 +215,7 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
     }
 
     for (const auto& key : keys_to_erase) {
-      prefs->RemoveKey(key);
+      prefs.Remove(key);
     }
   }
 

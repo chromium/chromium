@@ -43,7 +43,7 @@ void ExternalPolicyLoader::StartLoading() {
     case FORCED: {
       InstallStageTracker* install_stage_tracker =
           InstallStageTracker::Get(profile_);
-      prefs = std::move(*(settings_->GetForceInstallList())).TakeDict();
+      prefs = settings_->GetForceInstallList();
       for (auto it : prefs) {
         install_stage_tracker->ReportInstallCreationStage(
             it.first,
@@ -52,7 +52,7 @@ void ExternalPolicyLoader::StartLoading() {
       break;
     }
     case RECOMMENDED:
-      prefs = std::move(*(settings_->GetRecommendedInstallList())).TakeDict();
+      prefs = settings_->GetRecommendedInstallList();
       break;
   }
   LoadFinishedWithDict(std::move(prefs));

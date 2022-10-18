@@ -121,10 +121,10 @@ class ExtensionManagement : public KeyedService {
 
   // Returns the force install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
-  std::unique_ptr<base::DictionaryValue> GetForceInstallList() const;
+  base::Value::Dict GetForceInstallList() const;
 
   // Like GetForceInstallList(), but returns recommended install list instead.
-  std::unique_ptr<base::DictionaryValue> GetRecommendedInstallList() const;
+  base::Value::Dict GetRecommendedInstallList() const;
 
   // Returns |true| if there is at least one extension with
   // |INSTALLATION_ALLOWED| as installation mode. This excludes force installed
@@ -278,7 +278,7 @@ class ExtensionManagement : public KeyedService {
 
   // Helper to return an extension install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
-  std::unique_ptr<base::DictionaryValue> GetInstallListByMode(
+  base::Value::Dict GetInstallListByMode(
       InstallationMode installation_mode) const;
 
   // Helper to update |extension_dict| for forced installs.

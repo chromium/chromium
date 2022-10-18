@@ -152,13 +152,11 @@ ExtensionManagement::InstallationMode ExtensionManagement::GetInstallationMode(
   return default_settings_->installation_mode;
 }
 
-std::unique_ptr<base::DictionaryValue>
-ExtensionManagement::GetForceInstallList() const {
+base::Value::Dict ExtensionManagement::GetForceInstallList() const {
   return GetInstallListByMode(INSTALLATION_FORCED);
 }
 
-std::unique_ptr<base::DictionaryValue>
-ExtensionManagement::GetRecommendedInstallList() const {
+base::Value::Dict ExtensionManagement::GetRecommendedInstallList() const {
   return GetInstallListByMode(INSTALLATION_RECOMMENDED);
 }
 
@@ -728,18 +726,17 @@ void ExtensionManagement::ReportExtensionManagementInstallCreationStage(
   }
 }
 
-std::unique_ptr<base::DictionaryValue>
-ExtensionManagement::GetInstallListByMode(
+base::Value::Dict ExtensionManagement::GetInstallListByMode(
     InstallationMode installation_mode) const {
   // This is only meaningful if we 've loaded the extensions for the given
   // installation mode.
   DCHECK(installation_mode == INSTALLATION_FORCED ||
          installation_mode == INSTALLATION_RECOMMENDED);
 
-  auto extension_dict = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict extension_dict;
   for (const auto& [id, settings] : settings_by_id_) {
     if (settings->installation_mode == installation_mode) {
-      ExternalPolicyLoader::AddExtension(extension_dict->GetDict(), id,
+      ExternalPolicyLoader::AddExtension(extension_dict, id,
                                          settings->update_url);
     }
   }

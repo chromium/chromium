@@ -35,28 +35,16 @@ void ExternalLoader::OwnerShutdown() {
 
 ExternalLoader::~ExternalLoader() = default;
 
-void ExternalLoader::LoadFinished(
-    std::unique_ptr<base::DictionaryValue> prefs) {
+void ExternalLoader::LoadFinishedWithDict(base::Value::Dict prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (owner_)
     owner_->SetPrefs(std::move(prefs));
 }
 
-void ExternalLoader::LoadFinishedWithDict(base::Value::Dict prefs) {
-  LoadFinished(base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(base::Value(std::move(prefs)))));
-}
-
-void ExternalLoader::OnUpdated(
-    std::unique_ptr<base::DictionaryValue> updated_prefs) {
+void ExternalLoader::OnUpdatedWithDict(base::Value::Dict updated_prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (owner_)
     owner_->UpdatePrefs(std::move(updated_prefs));
-}
-
-void ExternalLoader::OnUpdatedWithDict(base::Value::Dict updated_prefs) {
-  OnUpdated(base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(base::Value(std::move(updated_prefs)))));
 }
 
 }  // namespace extensions

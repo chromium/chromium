@@ -9,11 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/external_loader.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace extensions {
 
@@ -37,7 +34,7 @@ class ExternalTestingLoader : public ExternalLoader {
   ~ExternalTestingLoader() override;
 
   base::FilePath fake_base_path_;
-  std::unique_ptr<base::DictionaryValue> testing_prefs_;
+  base::Value::Dict testing_prefs_;
 };
 
 }  // namespace extensions

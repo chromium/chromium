@@ -20,23 +20,22 @@ ExtensionMigrator::ExtensionMigrator(Profile* profile,
                                      const std::string& new_id)
     : profile_(profile), old_id_(old_id), new_id_(new_id) {}
 
-ExtensionMigrator::~ExtensionMigrator() {
-}
+ExtensionMigrator::~ExtensionMigrator() = default;
 
 void ExtensionMigrator::StartLoading() {
-  auto prefs = std::make_unique<base::DictionaryValue>();
+  auto prefs = base::Value::Dict();
 
   const bool should_have_extension =
       IsAppPresent(old_id_) || IsAppPresent(new_id_);
   if (should_have_extension) {
-    std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
-    entry->SetKey(ExternalProviderImpl::kExternalUpdateUrl,
-                  base::Value(extension_urls::GetWebstoreUpdateUrl().spec()));
+    base::Value::Dict entry;
+    entry.Set(ExternalProviderImpl::kExternalUpdateUrl,
+              extension_urls::GetWebstoreUpdateUrl().spec());
 
-    prefs->SetKey(new_id_, base::Value::FromUniquePtrValue(std::move(entry)));
+    prefs.Set(new_id_, std::move(entry));
   }
 
-  LoadFinished(std::move(prefs));
+  LoadFinishedWithDict(std::move(prefs));
 }
 
 bool ExtensionMigrator::IsAppPresent(const std::string& app_id) {

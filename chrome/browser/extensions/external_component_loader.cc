@@ -29,9 +29,9 @@ ExternalComponentLoader::ExternalComponentLoader(Profile* profile)
 ExternalComponentLoader::~ExternalComponentLoader() {}
 
 void ExternalComponentLoader::StartLoading() {
-  auto prefs = std::make_unique<base::DictionaryValue>();
+  auto prefs = base::Value::Dict();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  AddExternalExtension(extension_misc::kInAppPaymentsSupportAppId, prefs.get());
+  AddExternalExtension(extension_misc::kInAppPaymentsSupportAppId, prefs);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -39,22 +39,22 @@ void ExternalComponentLoader::StartLoading() {
     // Only load the Assessment Assistant if the current session is managed.
     if (profile_->GetProfilePolicyConnector()->IsManaged()) {
       AddExternalExtension(extension_misc::kAssessmentAssistantExtensionId,
-                           prefs.get());
+                           prefs);
     }
   }
 #endif
 
-  LoadFinished(std::move(prefs));
+  LoadFinishedWithDict(std::move(prefs));
 }
 
 void ExternalComponentLoader::AddExternalExtension(
     const std::string& extension_id,
-    base::DictionaryValue* prefs) {
+    base::Value::Dict& prefs) {
   if (!IsComponentExtensionAllowlisted(extension_id))
     return;
 
-  prefs->SetStringPath(extension_id + ".external_update_url",
-                       extension_urls::GetWebstoreUpdateUrl().spec());
+  prefs.SetByDottedPath(extension_id + ".external_update_url",
+                        extension_urls::GetWebstoreUpdateUrl().spec());
 }
 
 }  // namespace extensions

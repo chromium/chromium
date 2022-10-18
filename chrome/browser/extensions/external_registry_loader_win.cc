@@ -77,9 +77,8 @@ void ExternalRegistryLoader::StartLoading() {
       base::BindOnce(&ExternalRegistryLoader::LoadOnBlockingThread, this));
 }
 
-std::unique_ptr<base::DictionaryValue>
-ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
-  auto prefs = std::make_unique<base::DictionaryValue>();
+base::Value::Dict ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
+  base::Value::Dict prefs;
 
   // A map of IDs, to weed out duplicates between HKCU and HKLM.
   std::set<std::wstring> keys;
@@ -122,8 +121,8 @@ ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
     std::wstring extension_dist_id;
     if (key.ReadValue(kRegistryExtensionInstallParam, &extension_dist_id) ==
         ERROR_SUCCESS) {
-      prefs->SetString(MakePrefName(id, ExternalProviderImpl::kInstallParam),
-                       base::WideToASCII(extension_dist_id));
+      prefs.Set(MakePrefName(id, ExternalProviderImpl::kInstallParam),
+                base::WideToASCII(extension_dist_id));
     }
 
     // If there is an update URL present, copy it to prefs and ignore
@@ -131,9 +130,8 @@ ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
     std::wstring extension_update_url;
     if (key.ReadValue(kRegistryExtensionUpdateUrl, &extension_update_url)
         == ERROR_SUCCESS) {
-      prefs->SetString(
-          MakePrefName(id, ExternalProviderImpl::kExternalUpdateUrl),
-          base::WideToASCII(extension_update_url));
+      prefs.Set(MakePrefName(id, ExternalProviderImpl::kExternalUpdateUrl),
+                base::WideToASCII(extension_update_url));
       continue;
     }
 
@@ -185,13 +183,11 @@ ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
       continue;
     }
 
-    prefs->SetString(MakePrefName(id, ExternalProviderImpl::kExternalVersion),
-                     base::WideToASCII(extension_version));
-    prefs->SetString(MakePrefName(id, ExternalProviderImpl::kExternalCrx),
-                     base::AsString16(extension_path_str));
-    prefs->SetBoolean(
-        MakePrefName(id, ExternalProviderImpl::kMayBeUntrusted),
-        true);
+    prefs.Set(MakePrefName(id, ExternalProviderImpl::kExternalVersion),
+              base::WideToASCII(extension_version));
+    prefs.Set(MakePrefName(id, ExternalProviderImpl::kExternalCrx),
+              base::AsString16(extension_path_str));
+    prefs.Set(MakePrefName(id, ExternalProviderImpl::kMayBeUntrusted), true);
   }
 
   return prefs;
@@ -201,7 +197,7 @@ void ExternalRegistryLoader::LoadOnBlockingThread() {
   DCHECK(task_runner_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   base::TimeTicks start_time = base::TimeTicks::Now();
-  std::unique_ptr<base::DictionaryValue> prefs = LoadPrefsOnBlockingThread();
+  base::Value::Dict prefs = LoadPrefsOnBlockingThread();
   LOCAL_HISTOGRAM_TIMES("Extensions.ExternalRegistryLoaderWin",
                         base::TimeTicks::Now() - start_time);
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -212,10 +208,9 @@ void ExternalRegistryLoader::LoadOnBlockingThread() {
 }
 
 void ExternalRegistryLoader::CompleteLoadAndStartWatchingRegistry(
-    std::unique_ptr<base::DictionaryValue> prefs) {
+    base::Value::Dict prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(prefs);
-  LoadFinished(std::move(prefs));
+  LoadFinishedWithDict(std::move(prefs));
 
   // Attempt to watch registry if we haven't already.
   if (attempted_watching_registry_)
@@ -277,12 +272,12 @@ void ExternalRegistryLoader::UpatePrefsOnBlockingThread() {
   DCHECK(task_runner_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   base::TimeTicks start_time = base::TimeTicks::Now();
-  std::unique_ptr<base::DictionaryValue> prefs = LoadPrefsOnBlockingThread();
+  base::Value::Dict prefs = LoadPrefsOnBlockingThread();
   LOCAL_HISTOGRAM_TIMES("Extensions.ExternalRegistryLoaderWinUpdate",
                         base::TimeTicks::Now() - start_time);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ExternalRegistryLoader::OnUpdated, this,
-                                std::move(prefs)));
+      FROM_HERE, base::BindOnce(&ExternalRegistryLoader::OnUpdatedWithDict,
+                                this, std::move(prefs)));
 }
 
 }  // namespace extensions
