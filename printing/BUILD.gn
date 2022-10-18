@@ -201,15 +201,12 @@ component("printing") {
     ]
   }
 
-  # TODO(crbug.com/1272828): Determine need for Fuchsia-specific implementation.
-  if (is_linux || is_fuchsia) {
+  if (is_linux) {
     sources += [
       "printing_context_linux.cc",
       "printing_context_linux.h",
     ]
-  }
 
-  if (is_linux) {
     deps += [ "//ui/linux:linux_ui" ]
   }
 
