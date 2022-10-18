@@ -253,21 +253,6 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
       std::move(callback), mode);
 }
 
-std::unique_ptr<AccessTokenFetcher>
-IdentityManager::CreateAccessTokenFetcherForClient(
-    const CoreAccountId& account_id,
-    const std::string& client_id,
-    const std::string& client_secret,
-    const std::string& oauth_consumer_name,
-    const ScopeSet& scopes,
-    AccessTokenFetcher::TokenCallback callback,
-    AccessTokenFetcher::Mode mode) {
-  return std::make_unique<AccessTokenFetcher>(
-      account_id, client_id, client_secret, oauth_consumer_name,
-      token_service_.get(), primary_account_manager_.get(), scopes,
-      std::move(callback), mode);
-}
-
 void IdentityManager::RemoveAccessTokenFromCache(
     const CoreAccountId& account_id,
     const ScopeSet& scopes,

@@ -197,18 +197,6 @@ class IdentityManager : public KeyedService,
       AccessTokenFetcher::TokenCallback callback,
       AccessTokenFetcher::Mode mode);
 
-  // Creates an AccessTokenFetcher given the passed-in information, allowing to
-  // specify custom |client_id| and |client_secret| to identify the OAuth client
-  // app.
-  [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
-  CreateAccessTokenFetcherForClient(const CoreAccountId& account_id,
-                                    const std::string& client_id,
-                                    const std::string& client_secret,
-                                    const std::string& oauth_consumer_name,
-                                    const ScopeSet& scopes,
-                                    AccessTokenFetcher::TokenCallback callback,
-                                    AccessTokenFetcher::Mode mode);
-
   // If an entry exists in the cache of access tokens corresponding to the
   // given information, removes that entry; in this case, the next access token
   // request for |account_id| and |scopes| will fetch a new token from the

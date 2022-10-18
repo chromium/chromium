@@ -187,37 +187,12 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
       TokenCallback callback,
       Mode mode);
 
-  // Instantiates a fetcher and immediately starts the process of obtaining an
-  // OAuth2 access token for |account_id| and |scopes| using both the
-  // |client_id| and |client_secret| to identify the OAuth client app.
-  AccessTokenFetcher(const CoreAccountId& account_id,
-                     const std::string client_id,
-                     const std::string client_secret,
-                     const std::string& oauth_consumer_name,
-                     ProfileOAuth2TokenService* token_service,
-                     PrimaryAccountManager* primary_account_manager,
-                     const ScopeSet& scopes,
-                     TokenCallback callback,
-                     Mode mode);
-
   AccessTokenFetcher(const AccessTokenFetcher&) = delete;
   AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
 
   ~AccessTokenFetcher() override;
 
  private:
-  AccessTokenFetcher(
-      const CoreAccountId& account_id,
-      const std::string client_id,
-      const std::string client_secret,
-      const std::string& oauth_consumer_name,
-      ProfileOAuth2TokenService* token_service,
-      PrimaryAccountManager* primary_account_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const ScopeSet& scopes,
-      TokenCallback callback,
-      Mode mode);
-
   // Returns true iff a refresh token is available for |account_id_|. Should
   // only be called in mode |kWaitUntilAvailable|.
   bool IsRefreshTokenAvailable() const;
@@ -246,8 +221,6 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
                               AccessTokenInfo access_token_info);
 
   const CoreAccountId account_id_;
-  const std::string client_id_;
-  const std::string client_secret_;
   raw_ptr<ProfileOAuth2TokenService> token_service_;
   // Suppress unused typedef warnings in some compiler builds when DCHECK is
   // disabled.

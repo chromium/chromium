@@ -43,62 +43,14 @@ AccessTokenFetcher::AccessTokenFetcher(
     const ScopeSet& scopes,
     TokenCallback callback,
     Mode mode)
-    : AccessTokenFetcher(account_id,
-                         /*client_id=*/std::string(),
-                         /*client_secret=*/std::string(),
-                         oauth_consumer_name,
-                         token_service,
-                         primary_account_manager,
-                         std::move(url_loader_factory),
-                         scopes,
-                         std::move(callback),
-                         mode) {}
-
-AccessTokenFetcher::AccessTokenFetcher(
-    const CoreAccountId& account_id,
-    const std::string client_id,
-    const std::string client_secret,
-    const std::string& oauth_consumer_name,
-    ProfileOAuth2TokenService* token_service,
-    PrimaryAccountManager* primary_account_manager,
-    const ScopeSet& scopes,
-    TokenCallback callback,
-    Mode mode)
-    : AccessTokenFetcher(account_id,
-                         client_id,
-                         client_secret,
-                         oauth_consumer_name,
-                         token_service,
-                         primary_account_manager,
-                         /*url_loader_factory=*/nullptr,
-                         scopes,
-                         std::move(callback),
-                         mode) {}
-
-AccessTokenFetcher::AccessTokenFetcher(
-    const CoreAccountId& account_id,
-    const std::string client_id,
-    const std::string client_secret,
-    const std::string& oauth_consumer_name,
-    ProfileOAuth2TokenService* token_service,
-    PrimaryAccountManager* primary_account_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const ScopeSet& scopes,
-    TokenCallback callback,
-    Mode mode)
     : OAuth2AccessTokenManager::Consumer(oauth_consumer_name),
       account_id_(account_id),
-      client_id_(client_id),
-      client_secret_(client_secret),
       token_service_(token_service),
       primary_account_manager_(primary_account_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       scopes_(scopes),
       mode_(mode),
       callback_(std::move(callback)) {
-  DCHECK(client_id_.empty() == client_secret_.empty());
-  DCHECK(client_id_.empty() || !url_loader_factory_);
-
   if (mode_ == Mode::kImmediate || IsRefreshTokenAvailable()) {
     StartAccessTokenRequest();
     return;
@@ -174,17 +126,6 @@ void AccessTokenFetcher::StartAccessTokenRequest() {
   // Ensure that the client has the appropriate user consent for accessing the
   // OAuth API scopes in this request.
   VerifyScopeAccess();
-
-  // TODO(843510): Consider making the request to ProfileOAuth2TokenService
-  // asynchronously once there are no direct clients of PO2TS (i.e., PO2TS is
-  // used only by this class and IdentityManager).
-  if (!client_id_.empty()) {
-    // Setting both the client ID/secret and the URL loader factory is not
-    // currently supported.
-    access_token_request_ = token_service_->StartRequestForClient(
-        account_id_, client_id_, client_secret_, scopes_, this);
-    return;
-  }
 
   if (url_loader_factory_) {
     access_token_request_ = token_service_->StartRequestWithContext(
