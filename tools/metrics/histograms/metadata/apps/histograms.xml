@@ -2151,7 +2151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Duration" units="ms"
-    expires_after="2022-12-01">
+    expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2164,7 +2164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Success"
-    enum="BooleanSuccess" expires_after="2022-12-01">
+    enum="BooleanSuccess" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2176,7 +2176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.ClearTextItemSize"
-    units="bytes" expires_after="2022-12-01">
+    units="bytes" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2187,7 +2187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.EncryptedItemSize"
-    units="bytes" expires_after="2022-12-01">
+    units="bytes" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2198,7 +2198,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.LockScreen.DataItemStorage.FailedOperationDuration{LockScreenAppDataItemOperation}"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2212,7 +2212,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.LockScreen.DataItemStorage.OperationDuration{LockScreenAppDataItemOperation}"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2227,7 +2227,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.LockScreen.DataItemStorage.OperationResult{LockScreenAppDataItemOperation}"
-    enum="LockScreenDataItemOperationResult" expires_after="2022-12-01">
+    enum="LockScreenDataItemOperationResult" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2239,7 +2239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.RegisteredItemsCount"
-    units="units" expires_after="2022-12-01">
+    units="units" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2250,7 +2250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.AppStatusOnNoteLaunch"
-    enum="LockScreenNoteAppStatusOnLaunch" expires_after="2022-12-01">
+    enum="LockScreenNoteAppStatusOnLaunch" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2263,7 +2263,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.LockScreen.NoteTakingApp.AppWindowLifeTime{LockScreenNoteTakingAppWindowState}"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2284,7 +2284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.AvailabilityOnScreenLock"
-    enum="LockScreenActionAvailability" expires_after="2023-02-26">
+    enum="LockScreenActionAvailability" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2294,7 +2294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.FinalAppSessionState"
-    enum="LockScreenAppSessionState" expires_after="2022-12-01">
+    enum="LockScreenAppSessionState" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2304,7 +2304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchDurationAtLaunchCancel"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2315,7 +2315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchRequestOrdinalNumber"
-    units="units" expires_after="2022-12-01">
+    units="units" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2327,7 +2327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchRequestReason"
-    enum="NewLockScreenNoteRequestType" expires_after="2022-12-01">
+    enum="NewLockScreenNoteRequestType" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2336,7 +2336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LockScreenAppUnloaded"
-    enum="LockScreenAppUnloadStatus" expires_after="2022-12-01">
+    enum="LockScreenAppUnloadStatus" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2350,7 +2350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LockScreenInstallationDuration"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2360,7 +2360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.NoteTakingExitReason"
-    enum="LockScreenNoteTakingExitReason" expires_after="2022-12-01">
+    enum="LockScreenNoteTakingExitReason" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2370,7 +2370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.ReloadCountOnAppTermination"
-    units="units" expires_after="2022-12-01">
+    units="units" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2382,7 +2382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.TimeToLoadAppWindowContents"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -2393,7 +2393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.TimeToShowWindow" units="ms"
-    expires_after="2022-12-01">
+    expires_after="2023-06-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
