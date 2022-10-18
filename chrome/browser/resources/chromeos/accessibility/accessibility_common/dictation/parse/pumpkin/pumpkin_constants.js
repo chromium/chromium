@@ -95,6 +95,7 @@ export const PumpkinLocale = {
  * @const {!Object<string, PumpkinLocale>}
  */
 export const SUPPORTED_LOCALES = {
+  // English.
   'en-US': PumpkinLocale.EN_US,
   'en-AU': PumpkinLocale.EN_US,
   'en-CA': PumpkinLocale.EN_US,
@@ -110,7 +111,39 @@ export const SUPPORTED_LOCALES = {
   'en-SG': PumpkinLocale.EN_US,
   'en-TZ': PumpkinLocale.EN_US,
   'en-ZA': PumpkinLocale.EN_US,
+  // French.
+  'fr-BE': PumpkinLocale.FR_FR,
+  'fr-CA': PumpkinLocale.FR_FR,
+  'fr-CH': PumpkinLocale.FR_FR,
   'fr-FR': PumpkinLocale.FR_FR,
+  // Italian.
+  'it-CH': PumpkinLocale.IT_IT,
+  'it-IT': PumpkinLocale.IT_IT,
+  // German.
+  'de-AT': PumpkinLocale.DE_DE,
+  'de-CH': PumpkinLocale.DE_DE,
+  'de-DE': PumpkinLocale.DE_DE,
+  // Spanish.
+  'es-AR': PumpkinLocale.ES_ES,
+  'es-BO': PumpkinLocale.ES_ES,
+  'es-CL': PumpkinLocale.ES_ES,
+  'es-CO': PumpkinLocale.ES_ES,
+  'es-CR': PumpkinLocale.ES_ES,
+  'es-DO': PumpkinLocale.ES_ES,
+  'es-EC': PumpkinLocale.ES_ES,
+  'es-ES': PumpkinLocale.ES_ES,
+  'es-GT': PumpkinLocale.ES_ES,
+  'es-HN': PumpkinLocale.ES_ES,
+  'es-MX': PumpkinLocale.ES_ES,
+  'es-NI': PumpkinLocale.ES_ES,
+  'es-PA': PumpkinLocale.ES_ES,
+  'es-PE': PumpkinLocale.ES_ES,
+  'es-PR': PumpkinLocale.ES_ES,
+  'es-PY': PumpkinLocale.ES_ES,
+  'es-SV': PumpkinLocale.ES_ES,
+  'es-US': PumpkinLocale.ES_ES,
+  'es-UY': PumpkinLocale.ES_ES,
+  'es-VE': PumpkinLocale.ES_ES,
 };
 
 /**

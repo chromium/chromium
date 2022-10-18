@@ -294,6 +294,12 @@ action("pumpkin_test_files") {
     "$pumpkin_output_dir/en_us/pumpkin_config.binarypb",
     "$pumpkin_output_dir/fr_fr/action_config.binarypb",
     "$pumpkin_output_dir/fr_fr/pumpkin_config.binarypb",
+    "$pumpkin_output_dir/it_it/action_config.binarypb",
+    "$pumpkin_output_dir/it_it/pumpkin_config.binarypb",
+    "$pumpkin_output_dir/de_de/action_config.binarypb",
+    "$pumpkin_output_dir/de_de/pumpkin_config.binarypb",
+    "$pumpkin_output_dir/es_es/action_config.binarypb",
+    "$pumpkin_output_dir/es_es/pumpkin_config.binarypb",
   ]
   args = [
     "--dest-dir=resources/chromeos/accessibility/accessibility_common/dictation/parse/pumpkin",

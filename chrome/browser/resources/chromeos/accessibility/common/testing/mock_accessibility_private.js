@@ -21,6 +21,12 @@ let SelectToSpeakPanelState;
  *  en_us_pumpkin_config_binarypb: !ArrayBuffer,
  *  fr_fr_action_config_binarypb: !ArrayBuffer,
  *  fr_fr_pumpkin_config_binarypb: !ArrayBuffer,
+ *  it_it_action_config_binarypb: !ArrayBuffer,
+ *  it_it_pumpkin_config_binarypb: !ArrayBuffer,
+ *  de_de_action_config_binarypb: !ArrayBuffer,
+ *  de_de_pumpkin_config_binarypb: !ArrayBuffer,
+ *  es_es_action_config_binarypb: !ArrayBuffer,
+ *  es_es_pumpkin_config_binarypb: !ArrayBuffer,
  * }}
  */
 let MockPumpkinData;
@@ -439,6 +445,18 @@ class MockAccessibilityPrivate {
         await getFileBytes(`${pumpkinDir}/fr_fr/action_config.binarypb`);
     data.fr_fr_pumpkin_config_binarypb =
         await getFileBytes(`${pumpkinDir}/fr_fr/pumpkin_config.binarypb`);
+    data.it_it_action_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/it_it/action_config.binarypb`);
+    data.it_it_pumpkin_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/it_it/pumpkin_config.binarypb`);
+    data.de_de_action_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/de_de/action_config.binarypb`);
+    data.de_de_pumpkin_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/de_de/pumpkin_config.binarypb`);
+    data.es_es_action_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/es_es/action_config.binarypb`);
+    data.es_es_pumpkin_config_binarypb =
+        await getFileBytes(`${pumpkinDir}/es_es/pumpkin_config.binarypb`);
     MockAccessibilityPrivate.pumpkinData_ = data;
   }
 }

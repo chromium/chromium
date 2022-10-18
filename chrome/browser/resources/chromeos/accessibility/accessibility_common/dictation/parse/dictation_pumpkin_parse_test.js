@@ -144,17 +144,29 @@ AX_TEST_F(
 AX_TEST_F('DictationPumpkinParseTest', 'ChangeLocale', async function() {
   await this.waitForPumpkinParseStrategy_();
   this.alwaysEnableCommands();
-  // Pumpkin should work in English.
-  await this.runParseTestCase(
-      new ParseTestCase('copy selected text', 'COPY_SELECTED_TEXT'));
-  // Change the locale.
-  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'fr-FR');
-  await this.waitForPumpkinParseStrategy_();
-  // Pumpkin should work in new locale.
-  await this.runParseTestCase(
-      new ParseTestCase('copier', 'COPY_SELECTED_TEXT'));
-  await this.runParseTestCase(new ParseTestCase(
-      'supprimer deux caractères précédent', 'DELETE_PREV_CHAR', 2));
+  const testCases = [
+    {
+      locale: 'fr-FR',
+      testCase: new ParseTestCase('copier', 'COPY_SELECTED_TEXT'),
+    },
+    {
+      locale: 'fr-FR',
+      testCase: new ParseTestCase(
+          'supprimer deux caractères précédent', 'DELETE_PREV_CHAR', 2),
+    },
+    {locale: 'it-IT', testCase: new ParseTestCase('annulla', 'UNDO_TEXT_EDIT')},
+    {locale: 'de-DE', testCase: new ParseTestCase('hilf mir', 'LIST_COMMANDS')},
+    {locale: 'es-ES', testCase: new ParseTestCase('ayuda', 'LIST_COMMANDS')},
+    {
+      locale: 'en-GB',
+      testCase: new ParseTestCase('copy selected text', 'COPY_SELECTED_TEXT'),
+    },
+  ];
+  for (const {locale, testCase} of testCases) {
+    await this.setPref(Dictation.DICTATION_LOCALE_PREF, locale);
+    await this.waitForPumpkinParseStrategy_();
+    await this.runParseTestCase(testCase);
+  }
 });
 
 AX_TEST_F('DictationPumpkinParseTest', 'UnsupportedLocale', async function() {
@@ -170,6 +182,3 @@ AX_TEST_F('DictationPumpkinParseTest', 'UnsupportedLocale', async function() {
   await this.runParseTestCase(
       new ParseTestCase('copy selected text', 'COPY_SELECTED_TEXT'));
 });
-
-// TODO(https://crbug.com/1258190): Add test cases for when Dictation is in
-// another en-* locale (e.g. en-GB).
