@@ -20,7 +20,7 @@ namespace {
 constexpr CGFloat kStepNumberLabelSize = 20;
 constexpr CGFloat kLeadingMargin = 15;
 constexpr CGFloat kSpacing = 14;
-constexpr CGFloat kVerticalMargin = 12;
+constexpr CGFloat kVerticalMargin = 9;
 constexpr CGFloat kTrailingMargin = 16;
 constexpr CGFloat kCornerRadius = 12;
 constexpr CGFloat kSeparatorLeadingMargin = 60;
