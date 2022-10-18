@@ -7957,7 +7957,7 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_double_key",
+                    "name": "enabled_double_key_v2",
                     "enable_features": [
                         "EnableDoubleKeyNetworkAnonymizationKey",
                         "ForceIsolationInfoFrameOriginToTopLevelFrame",
@@ -7968,10 +7968,13 @@
                         "PartitionNelAndReportingByNetworkIsolationKey",
                         "PartitionSSLSessionsByNetworkIsolationKey",
                         "SplitHostCacheByNetworkIsolationKey"
+                    ],
+                    "disable_features": [
+                        "EnableCrossSiteFlagNetworkAnonymizationKey"
                     ]
                 },
                 {
-                    "name": "enabled_triple_key",
+                    "name": "enabled_triple_key_v2",
                     "enable_features": [
                         "PartitionConnectionsByNetworkIsolationKey",
                         "PartitionDomainReliabilityByNetworkIsolationKey",
@@ -7980,10 +7983,15 @@
                         "PartitionNelAndReportingByNetworkIsolationKey",
                         "PartitionSSLSessionsByNetworkIsolationKey",
                         "SplitHostCacheByNetworkIsolationKey"
+                    ],
+                    "disable_features": [
+                        "EnableCrossSiteFlagNetworkAnonymizationKey",
+                        "EnableDoubleKeyNetworkAnonymizationKey",
+                        "ForceIsolationInfoFrameOriginToTopLevelFrame"
                     ]
                 },
                 {
-                    "name": "enabled_triple_nik_double_nak",
+                    "name": "enabled_triple_nik_double_nak_v2",
                     "enable_features": [
                         "EnableDoubleKeyNetworkAnonymizationKey",
                         "PartitionConnectionsByNetworkIsolationKey",
@@ -7993,19 +8001,44 @@
                         "PartitionNelAndReportingByNetworkIsolationKey",
                         "PartitionSSLSessionsByNetworkIsolationKey",
                         "SplitHostCacheByNetworkIsolationKey"
+                    ],
+                    "disable_features": [
+                        "EnableCrossSiteFlagNetworkAnonymizationKey",
+                        "ForceIsolationInfoFrameOriginToTopLevelFrame"
                     ]
                 },
                 {
-                    "name": "enabled_triple_nik_cross_site_flag_nak",
+                    "name": "enabled_triple_nik_cross_site_flag_nak_v2",
                     "enable_features": [
+                        "EnableCrossSiteFlagNetworkAnonymizationKey",
                         "PartitionConnectionsByNetworkIsolationKey",
                         "PartitionDomainReliabilityByNetworkIsolationKey",
                         "PartitionExpectCTStateByNetworkIsolationKey",
                         "PartitionHttpServerPropertiesByNetworkIsolationKey",
                         "PartitionNelAndReportingByNetworkIsolationKey",
                         "PartitionSSLSessionsByNetworkIsolationKey",
-                        "SplitHostCacheByNetworkIsolationKey",
-                        "kEnableCrossSiteFlagNetworkAnonymizationKey"
+                        "SplitHostCacheByNetworkIsolationKey"
+                    ],
+                    "disable_features": [
+                        "EnableDoubleKeyNetworkAnonymizationKey",
+                        "ForceIsolationInfoFrameOriginToTopLevelFrame"
+                    ]
+                },
+                {
+                    "name": "enabled_triple_nik_cross_site_flag_nak_v",
+                    "enable_features": [
+                        "EnableCrossSiteFlagNetworkAnonymizationKey",
+                        "PartitionConnectionsByNetworkIsolationKey",
+                        "PartitionDomainReliabilityByNetworkIsolationKey",
+                        "PartitionExpectCTStateByNetworkIsolationKey",
+                        "PartitionHttpServerPropertiesByNetworkIsolationKey",
+                        "PartitionNelAndReportingByNetworkIsolationKey",
+                        "PartitionSSLSessionsByNetworkIsolationKey",
+                        "SplitHostCacheByNetworkIsolationKey"
+                    ],
+                    "disable_features": [
+                        "EnableDoubleKeyNetworkAnonymizationKey",
+                        "ForceIsolationInfoFrameOriginToTopLevelFrame"
                     ]
                 }
             ]
