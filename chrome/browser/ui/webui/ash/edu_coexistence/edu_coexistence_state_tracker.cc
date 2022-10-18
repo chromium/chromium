@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
+#include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
 
 #include <utility>
 
@@ -12,7 +12,7 @@
 #include "base/no_destructor.h"
 #include "content/public/browser/web_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -128,4 +128,4 @@ EduCoexistenceStateTracker::EduCoexistenceStateTracker() = default;
 
 EduCoexistenceStateTracker::~EduCoexistenceStateTracker() = default;
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_COEXISTENCE_EDU_COEXISTENCE_STATE_TRACKER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_COEXISTENCE_EDU_COEXISTENCE_STATE_TRACKER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_EDU_COEXISTENCE_EDU_COEXISTENCE_STATE_TRACKER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_EDU_COEXISTENCE_EDU_COEXISTENCE_STATE_TRACKER_H_
 
 #include <map>
 #include <string>
@@ -15,7 +15,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // A tracker used for the communication between
 // `EduCoexistenceChildSigninHelper` and `EduCoexistenceLoginHandler` to allow
@@ -121,11 +121,6 @@ class EduCoexistenceStateTracker {
   std::map<const content::WebUI*, FlowState> state_tracker_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::EduCoexistenceStateTracker;
-}
-
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_COEXISTENCE_EDU_COEXISTENCE_STATE_TRACKER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_EDU_COEXISTENCE_EDU_COEXISTENCE_STATE_TRACKER_H_

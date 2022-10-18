@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 
 #include <memory>
 #include <utility>
@@ -28,7 +28,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
+#include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -49,7 +49,7 @@
 #include "net/base/url_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -132,7 +132,7 @@ std::string GetDeviceIdForActiveUserProfile() {
 
 void EduCoexistenceLoginHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(ash::prefs::kEduCoexistenceId,
+  registry->RegisterStringPref(prefs::kEduCoexistenceId,
                                std::string() /* default_value */);
 }
 
@@ -216,8 +216,8 @@ void EduCoexistenceLoginHandler::OnRefreshTokenUpdatedForAccount(
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
-  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, ash::edu_coexistence::UserConsentInfo(
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(
                    account_info.gaia, terms_of_service_version_number_));
 
   EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
@@ -361,4 +361,4 @@ void EduCoexistenceLoginHandler::OnError(const base::Value::List& args) {
       web_ui(), EduCoexistenceStateTracker::FlowResult::kError);
 }
 
-}  // namespace chromeos
+}  // namespace ash

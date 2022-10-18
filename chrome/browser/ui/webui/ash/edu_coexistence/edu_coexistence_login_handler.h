@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_COEXISTENCE_EDU_COEXISTENCE_LOGIN_HANDLER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_COEXISTENCE_EDU_COEXISTENCE_LOGIN_HANDLER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_EDU_COEXISTENCE_EDU_COEXISTENCE_LOGIN_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_EDU_COEXISTENCE_EDU_COEXISTENCE_LOGIN_HANDLER_H_
 
 #include <string>
 
@@ -18,7 +18,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // Handler for EDU account login flow.
 class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
@@ -39,7 +39,7 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
   void OnJavascriptDisallowed() override;
 
-  // chromeos::IdentityManager::Observer:
+  // IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
@@ -90,11 +90,6 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
   bool in_error_state_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::EduCoexistenceLoginHandler;
-}
-
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_COEXISTENCE_EDU_COEXISTENCE_LOGIN_HANDLER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_EDU_COEXISTENCE_EDU_COEXISTENCE_LOGIN_HANDLER_H_

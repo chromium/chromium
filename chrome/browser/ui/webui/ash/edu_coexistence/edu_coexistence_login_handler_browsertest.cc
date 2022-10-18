@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 
 #include <memory>
 #include <string>
@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
+#include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -30,7 +30,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   account.gaia = FakeGaiaMixin::kFakeUserGaiaId;
   handler->OnRefreshTokenUpdatedForAccount(account);
 
-  const std::string& accepted_tos = ash::edu_coexistence::GetAcceptedToSVersion(
+  const std::string& accepted_tos = edu_coexistence::GetAcceptedToSVersion(
       ProfileManager::GetActiveUserProfile(), FakeGaiaMixin::kFakeUserGaiaId);
   EXPECT_EQ(accepted_tos, std::string(kToSVersion));
 
@@ -246,34 +246,34 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
-  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, ash::edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion1));
-  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion1));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
             std::string(kVersion1));
 
-  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, ash::edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion1));
-  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion1));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
             std::string(kVersion1));
 
-  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, ash::edu_coexistence::UserConsentInfo(kUser3GaiaId, kVersion1));
-  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser3GaiaId, kVersion1));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
             std::string(kVersion1));
 
-  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, ash::edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion2));
-  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser2GaiaId, kVersion2));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser2GaiaId),
             std::string(kVersion2));
-  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
             std::string(kVersion1));
-  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser3GaiaId),
             std::string(kVersion1));
 
-  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, ash::edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion2));
-  EXPECT_EQ(ash::edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
+  edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion2));
+  EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile, kUser1GaiaId),
             std::string(kVersion2));
 }
 
-}  // namespace chromeos
+}  // namespace ash

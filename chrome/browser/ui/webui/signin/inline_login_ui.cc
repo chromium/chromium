@@ -42,8 +42,8 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.h"
-#include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_chromeos.h"
 #include "chrome/grit/arc_account_picker_resources.h"
@@ -363,10 +363,9 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
           base::Value::List() /* args */)));
   if (profile->IsChild()) {
     web_ui->AddMessageHandler(
-        std::make_unique<chromeos::EduCoexistenceLoginHandler>(
-            base::BindRepeating(&WebDialogUIBase::CloseDialog,
-                                weak_factory_.GetWeakPtr(),
-                                base::Value::List() /* args */)));
+        std::make_unique<ash::EduCoexistenceLoginHandler>(base::BindRepeating(
+            &WebDialogUIBase::CloseDialog, weak_factory_.GetWeakPtr(),
+            base::Value::List() /* args */)));
   }
 
 #else
