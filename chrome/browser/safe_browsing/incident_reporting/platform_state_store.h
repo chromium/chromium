@@ -32,7 +32,7 @@ namespace platform_state_store {
 // Loads the platform-specific storage for |profile|. Returns absl::nullopt if
 // there is no such storage for the current platform or in case of error;
 // otherwise, a (possibly empty) dictionary.
-absl::optional<base::Value> Load(Profile* profile);
+absl::optional<base::Value::Dict> Load(Profile* profile);
 
 // Stores the state for |profile| in |incidents_sent| into platform-specific
 // storage if there is such for the current platform.
@@ -72,8 +72,9 @@ void SerializeIncidentsSent(const base::Value::Dict& incidents_sent,
 
 // Deserializes |data| into |value_dict|. Returns SUCCESS if |data| is empty or
 // fully processed. Exposed for testing.
-PlatformStateStoreLoadResult DeserializeIncidentsSent(const std::string& data,
-                                                      base::Value* value_dict);
+PlatformStateStoreLoadResult DeserializeIncidentsSent(
+    const std::string& data,
+    base::Value::Dict& value_dict);
 
 #endif  // USE_PLATFORM_STATE_STORE
 

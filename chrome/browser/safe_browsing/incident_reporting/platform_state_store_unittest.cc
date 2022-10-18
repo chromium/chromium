@@ -45,11 +45,11 @@ base::Value::Dict CreateTestIncidentsSentPref() {
 
 // Tests that DeserializeIncidentsSent handles an empty payload properly.
 TEST(PlatformStateStoreTest, DeserializeEmpty) {
-  base::Value deserialized(base::Value::Type::DICT);
+  base::Value::Dict deserialized;
   PlatformStateStoreLoadResult load_result =
-      DeserializeIncidentsSent(std::string(), &deserialized);
+      DeserializeIncidentsSent(std::string(), deserialized);
   ASSERT_EQ(PlatformStateStoreLoadResult::SUCCESS, load_result);
-  ASSERT_TRUE(deserialized.GetDict().empty());
+  ASSERT_TRUE(deserialized.empty());
 }
 
 // Tests that serialize followed by deserialize doesn't lose data.
@@ -62,9 +62,9 @@ TEST(PlatformStateStoreTest, RoundTrip) {
   ASSERT_EQ(std::string(reinterpret_cast<const char*>(&kTestData[0]),
                         sizeof(kTestData)), data);
 
-  base::Value deserialized(base::Value::Type::DICT);
+  base::Value::Dict deserialized;
   PlatformStateStoreLoadResult load_result =
-      DeserializeIncidentsSent(data, &deserialized);
+      DeserializeIncidentsSent(data, deserialized);
   ASSERT_EQ(PlatformStateStoreLoadResult::SUCCESS, load_result);
   EXPECT_EQ(incidents_sent, deserialized);
 }

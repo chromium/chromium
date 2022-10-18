@@ -90,12 +90,11 @@ void IncidentsSentToProtobuf(
 void RestoreOfTypeFromProtobuf(
     const RepeatedPtrField<StateStoreData::Incidents::KeyDigestMapFieldEntry>&
         key_digest_pairs,
-    base::Value* type_dict) {
+    base::Value::Dict& type_dict) {
   for (const auto& key_digest : key_digest_pairs) {
     if (!key_digest.has_key() || !key_digest.has_digest())
       continue;
-    type_dict->SetKey(key_digest.key(),
-                      base::Value(base::NumberToString(key_digest.digest())));
+    type_dict.Set(key_digest.key(), base::NumberToString(key_digest.digest()));
   }
 }
 
@@ -103,21 +102,16 @@ void RestoreOfTypeFromProtobuf(
 void RestoreFromProtobuf(
     const RepeatedPtrField<StateStoreData::TypeIncidentsMapFieldEntry>&
         type_incidents_pairs,
-    base::Value* value_dict) {
+    base::Value::Dict& value_dict) {
   for (const auto& type_incidents : type_incidents_pairs) {
     if (!type_incidents.has_type() || !type_incidents.has_incidents() ||
         type_incidents.incidents().key_to_digest_size() == 0) {
       continue;
     }
     std::string type_string(base::NumberToString(type_incidents.type()));
-    base::Value* type_dict =
-        value_dict->FindKeyOfType(type_string, base::Value::Type::DICTIONARY);
-    if (!type_dict) {
-      type_dict = value_dict->SetKey(
-          type_string, base::Value(base::Value::Type::DICTIONARY));
-    }
+    base::Value::Dict* type_dict = value_dict.EnsureDict(type_string);
     RestoreOfTypeFromProtobuf(type_incidents.incidents().key_to_digest(),
-                              type_dict);
+                              *type_dict);
   }
 }
 
@@ -125,13 +119,13 @@ void RestoreFromProtobuf(
 
 #endif  // USE_PLATFORM_STATE_STORE
 
-absl::optional<base::Value> Load(Profile* profile) {
+absl::optional<base::Value::Dict> Load(Profile* profile) {
 #if defined(USE_PLATFORM_STATE_STORE)
-  base::Value value_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict value_dict;
   std::string data;
   PlatformStateStoreLoadResult result = ReadStoreData(profile, &data);
   if (result == PlatformStateStoreLoadResult::SUCCESS)
-    result = DeserializeIncidentsSent(data, &value_dict);
+    result = DeserializeIncidentsSent(data, value_dict);
   switch (result) {
     case PlatformStateStoreLoadResult::SUCCESS:
     case PlatformStateStoreLoadResult::CLEARED_DATA:
@@ -173,16 +167,17 @@ void SerializeIncidentsSent(const base::Value::Dict& incidents_sent,
   store_data.SerializeToString(data);
 }
 
-PlatformStateStoreLoadResult DeserializeIncidentsSent(const std::string& data,
-                                                      base::Value* value_dict) {
+PlatformStateStoreLoadResult DeserializeIncidentsSent(
+    const std::string& data,
+    base::Value::Dict& value_dict) {
   StateStoreData store_data;
   if (data.empty()) {
-    value_dict->DictClear();
+    value_dict.clear();
     return PlatformStateStoreLoadResult::SUCCESS;
   }
   if (!store_data.ParseFromString(data))
     return PlatformStateStoreLoadResult::PARSE_ERROR;
-  value_dict->DictClear();
+  value_dict.clear();
   RestoreFromProtobuf(store_data.type_to_incidents(), value_dict);
   return PlatformStateStoreLoadResult::SUCCESS;
 }
