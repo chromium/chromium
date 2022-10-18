@@ -22,6 +22,8 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -93,14 +95,24 @@ class Header : public views::Button {
     // pointer.
     holding_space_prefs::AddSuggestionsExpandedChangedCallback(
         pref_change_registrar_.get(),
-        base::BindRepeating(&Header::UpdateChevron, base::Unretained(this)));
+        base::BindRepeating(&Header::UpdateState, base::Unretained(this)));
   }
 
  private:
   // views::Button:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    views::Button::GetAccessibleNodeData(node_data);
+
+    // Add expanded/collapsed state to `node_data`.
+    auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+    node_data->AddState(holding_space_prefs::IsSuggestionsExpanded(prefs)
+                            ? ax::mojom::State::kExpanded
+                            : ax::mojom::State::kCollapsed);
+  }
+
   void OnThemeChanged() override {
     views::Button::OnThemeChanged();
-    UpdateChevron();
+    UpdateState();
   }
 
   void OnPressed() {
@@ -113,9 +125,8 @@ class Header : public views::Button {
                  : holding_space_metrics::SuggestionsAction::kExpand);
   }
 
-  // Sets the header's `chevron_` icon to the correct color (based on theme) and
-  // orientation (based on whether the `section_` is `expanded_`).
-  void UpdateChevron() {
+  void UpdateState() {
+    // Chevron.
     auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
     chevron_->SetImage(gfx::CreateVectorIcon(
         holding_space_prefs::IsSuggestionsExpanded(prefs)
@@ -124,6 +135,10 @@ class Header : public views::Button {
         kHoldingSpaceSectionChevronIconSize,
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorSecondary)));
+
+    // Accessibility.
+    NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged,
+                             /*send_native_event=*/true);
   }
 
   // Owned by view hierarchy.

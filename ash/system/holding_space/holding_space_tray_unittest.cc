@@ -47,6 +47,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
@@ -605,8 +607,15 @@ class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
 
     // The section header should be visible as long as suggestions are
     // available.
-    EXPECT_EQ(IsViewVisible(test_api()->GetSuggestionsSectionHeader()),
-              item_present);
+    views::View* const header = test_api()->GetSuggestionsSectionHeader();
+    EXPECT_EQ(IsViewVisible(header), item_present);
+
+    // The section header's accessibility data should indicate whether the
+    // section is expanded or collapsed.
+    ui::AXNodeData node_data;
+    header->GetAccessibleNodeData(&node_data);
+    EXPECT_TRUE(node_data.HasState(expanded ? ax::mojom::State::kExpanded
+                                            : ax::mojom::State::kCollapsed));
 
     // The section header's chevron icon should indicate whether the section is
     // expanded or collapsed.
