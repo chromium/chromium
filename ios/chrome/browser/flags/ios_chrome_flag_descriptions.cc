@@ -166,7 +166,8 @@ extern const char kEnableExpKitCalendarTextClassifierDescription[] =
 extern const char kMapsExperienceKitName[] = "Experience Kit Maps";
 extern const char kMapsExperienceKitDescription[] =
     "When enabled, long pressing on an address will trigger Experience Kit Maps"
-    "location and directions handling";
+    "location and directions handling. Requires "
+    "#enable-long-press-surrounding-text to be enabled";
 
 extern const char kLongPressSurroundingTextName[] =
     "Enable Long Press Surrounding Text";
