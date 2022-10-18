@@ -196,7 +196,8 @@ void HTMLTrackElement::LoadTimerFired(TimerBase*) {
   // 8. [X] If the track element's parent is a media element then let CORS mode
   // be the state of the parent media element's crossorigin content attribute.
   // Otherwise, let CORS mode be No CORS.
-  const AtomicString& cors_mode = MediaElementCrossOriginAttribute();
+  const CrossOriginAttributeValue cors_mode =
+      GetCrossOriginAttributeValue(MediaElementCrossOriginAttribute());
 
   // 9. End the synchronous section, continuing the remaining steps in parallel.
 
@@ -229,7 +230,7 @@ void HTMLTrackElement::LoadTimerFired(TimerBase*) {
   loader_ =
       MakeGarbageCollected<TextTrackLoader, TextTrackLoaderClient&, Document&>(
           *this, GetDocument());
-  if (!loader_->Load(url_, GetCrossOriginAttributeValue(cors_mode)))
+  if (!loader_->Load(url_, cors_mode))
     DidCompleteLoad(kFailure);
 }
 
