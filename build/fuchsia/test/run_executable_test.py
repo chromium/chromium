@@ -111,10 +111,10 @@ class ExecutableTestRunner(TestRunner):
             child_args.append(
                 '--isolated-script-test-output=/custom_artifacts/%s' %
                 os.path.basename(self._isolated_script_test_output))
-        if args.test_launcher_shard_index:
+        if args.test_launcher_shard_index is not None:
             child_args.append('--test-launcher-shard-index=%d' %
                               args.test_launcher_shard_index)
-        if args.test_launcher_total_shards:
+        if args.test_launcher_total_shards is not None:
             child_args.append('--test-launcher-total-shards=%d' %
                               args.test_launcher_total_shards)
         if args.test_launcher_summary_output:
@@ -129,7 +129,7 @@ class ExecutableTestRunner(TestRunner):
                 args.test_launcher_filter_file.split(';'))
             child_args.append('--test-launcher-filter-file=' +
                               ';'.join(test_launcher_filter_files))
-        if args.test_launcher_jobs:
+        if args.test_launcher_jobs is not None:
             test_concurrency = args.test_launcher_jobs
         else:
             test_concurrency = DEFAULT_TEST_SERVER_CONCURRENCY
