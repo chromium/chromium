@@ -272,7 +272,7 @@ crbug.com/1302831 [ Mac10.14 ] external/wpt/html/browsers/browsing-the-web/back-
 crbug.com/1302831 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 
 # This is temporarily disabled in order to merge http://crrev.com/c/3940518
-crbug.com/1351286 http/tests/devtools/console-xhr-logging.js [ Pass Failure ]
+crbug.com/1351286 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
 
 # These tests require the experimental speculative prefetch feature, and requires extra switches to enable content implementation of speculation rules prefetch.
 # This expectation and the virtual suite can be removed once that is enabled by default.

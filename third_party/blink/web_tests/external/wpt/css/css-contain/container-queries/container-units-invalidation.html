@@ -11,7 +11,7 @@
   .w500 { width: 500px; }
   .h400 { height: 400px; }
   .w300 { width: 300px; }
-  #child {
+  .child {
     padding-left: 10cqi;
     padding-right: 10cqb;
   }
@@ -20,7 +20,8 @@
 <div id=outer class="h600">
   <div id=size class="w500 h400">
     <div id=inline class="w300">
-      <div id=child>Test</div>
+      <div id=child class="child">Test</div>
+      <div><div id=deeper class="child">Test</div></div>
     </div>
   </div>
 </div>
@@ -37,67 +38,82 @@
 
   test(function(t) {
     assert_cqi_equals(child, '30px');
+    assert_cqi_equals(deeper, '30px');
 
     try {
       inline.style.containerType = 'normal';
       assert_cqi_equals(child, '50px');
+      assert_cqi_equals(deeper, '50px');
     } finally {
       inline.style = '';
     }
 
     assert_cqi_equals(child, '30px');
+    assert_cqi_equals(deeper, '30px');
   }, `cqi respond when selected container changes type (inline-size -> normal)`);
 
   test(function() {
     assert_cqb_equals(child, '40px');
+    assert_cqb_equals(deeper, '40px');
 
     try {
       size.style.containerType = 'normal';
       assert_cqb_equals(child, '60px');
+      assert_cqb_equals(deeper, '60px');
     } finally {
       size.style = '';
     }
 
     assert_cqb_equals(child, '40px');
+    assert_cqb_equals(deeper, '40px');
   }, `cqb respond when selected container changes type (size -> normal)`);
 
   test(function() {
     assert_cqb_equals(child, '40px');
+    assert_cqb_equals(deeper, '40px');
 
     try {
       inline.style.containerType = 'size';
       inline.style.height = '200px';
       assert_cqb_equals(child, '20px');
+      assert_cqb_equals(deeper, '20px');
     } finally {
       inline.style = '';
     }
 
     assert_cqb_equals(child, '40px');
+    assert_cqb_equals(deeper, '40px');
   }, `cqb respond when intermediate container changes type (inline-size -> size)`);
 
   test(function() {
     assert_cqi_equals(child, '30px');
+    assert_cqi_equals(deeper, '30px');
 
     try {
       inline.style.width = '50px';
       assert_cqi_equals(child, '5px');
+      assert_cqi_equals(deeper, '5px');
     } finally {
       inline.style = '';
     }
 
     assert_cqi_equals(child, '30px');
+    assert_cqi_equals(deeper, '30px');
   }, 'cqi respond when selected container changes inline-size');
 
   test(function() {
     assert_cqb_equals(child, '40px');
+    assert_cqb_equals(deeper, '40px');
 
     try {
       size.style.height = '50px';
       assert_cqb_equals(child, '5px');
+      assert_cqb_equals(deeper, '5px');
     } finally {
       size.style = '';
     }
 
     assert_cqb_equals(child, '40px');
+    assert_cqb_equals(deeper, '40px');
   }, 'cqb respond when selected container changes block-size');
 </script>

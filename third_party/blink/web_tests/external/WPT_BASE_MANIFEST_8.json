@@ -4005,6 +4005,13 @@
        {}
       ]
      ],
+     "outdent-indent-inserthorizontalrule-on-selectionchange.html": [
+      "800d9d1969a8203443d525312ea9061fb0b67df3",
+      [
+       null,
+       {}
+      ]
+     ],
      "queryCommandIndeterm-backcolor-and-hilitecolor-in-empty-iframe-in-designMode.html": [
       "6cf2524a54495d85af5da9a0b932ea77b4a88117",
       [
@@ -4788,6 +4795,512 @@
        {}
       ]
      ],
+     "mozilla": {
+      "1028521-1.xhtml": [
+       "b8d0947741de21f452aa5d485abe7406c507a8ae",
+       [
+        null,
+        {}
+       ]
+      ],
+      "1061027.html": [
+       "3187f500a3f20d6ff2156352e7dca9bd2c845e02",
+       [
+        null,
+        {}
+       ]
+      ],
+      "1221888-1.html": [
+       "741daa7503fb5a997478bbcc252aeb7cbdd093cf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "1373767-1.html": [
+       "a159cec7bef547d14843ffc96042769e6194d1cd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "1376158.html": [
+       "42b6dd73c85606f8a9a0807c87d302b7aaa2f48e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "151054-1.xml": [
+       "f634d089f3cebe9bb671f7b807edc333242c6063",
+       [
+        null,
+        {}
+       ]
+      ],
+      "1600635.html": [
+       "d6ad31588539f4a84c0330a99644afefef605ddf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "289180-1.xml": [
+       "8d1f2e843c570ce5d427eb23bc911f2eabc75464",
+       [
+        null,
+        {}
+       ]
+      ],
+      "307826-1.xhtml": [
+       "02d436e8259f6f4f28589cb01e5e11405eae36ec",
+       [
+        null,
+        {}
+       ]
+      ],
+      "307839-1.xhtml": [
+       "a26e58ac07eef8279431b6338a9cef8a21196ba6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "307839-2.xhtml": [
+       "05dc08a78f488b68c121d61ae29814a0610b1863",
+       [
+        null,
+        {}
+       ]
+      ],
+      "323733-1.xml": [
+       "5551d8588c282165de15e2efa98ecb38de74d77f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "323737-1.xml": [
+       "ad673f94609821d8bf26b9c6f39912f02c68e356",
+       [
+        null,
+        {}
+       ]
+      ],
+      "323738-1.xml": [
+       "318aa93b4eed2f6d2f222beb61244863e0b492f8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "323741-1.xml": [
+       "8527c1a7835ea8c88f2ee3c7b4f84cd482256804",
+       [
+        null,
+        {}
+       ]
+      ],
+      "323742-1.xml": [
+       "2cd225990d38703b13530d761c9bcf2864b2c525",
+       [
+        null,
+        {}
+       ]
+      ],
+      "336074-1.xhtml": [
+       "3d1f5b422373b986f50999e931021805a34bc8b0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "347355-1-inner.xhtml": [
+       "22689c3c129f3a3f044fbf3a7130bebac0be2866",
+       [
+        null,
+        {}
+       ]
+      ],
+      "347355-1.html": [
+       "0d61fb9d4a69122c330207af79dbd0921a53de51",
+       [
+        null,
+        {}
+       ]
+      ],
+      "347495-1.xhtml": [
+       "4a65b8f34d914b23ee708354b62ddcce0b278aab",
+       [
+        null,
+        {}
+       ]
+      ],
+      "347507-1.xhtml": [
+       "274ae48ff2167c5961cab67da79c13be2d91b75e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "348492-1.xhtml": [
+       "f59c9353a426263ee88295e1ce69fa6f3171d23c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "348709-1.xhtml": [
+       "907ede6abb7ca66d82fd3bdebdb147d826cc9c11",
+       [
+        null,
+        {}
+       ]
+      ],
+      "348811-1.xhtml": [
+       "f6557e5a67bc5ebfef7bc93d9d0629135f512719",
+       [
+        null,
+        {}
+       ]
+      ],
+      "348811-2.xhtml": [
+       "d6a741765a0183ba492c5cd08d7166e343596e8c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "353612-1.xhtml": [
+       "386e66f933d53eda1c53d425242ed7d96debf38d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "355986-1.xhtml": [
+       "787e1f6772cf7889a024a6baf8b718bb277f2676",
+       [
+        null,
+        {}
+       ]
+      ],
+      "364685-1.xhtml": [
+       "ab2b56a2f80352afe80ca7425f6575a28ac69869",
+       [
+        null,
+        {}
+       ]
+      ],
+      "366012-1.xhtml": [
+       "55f29f3ac3e440f99d1eca9f355fe8f0a8d10a76",
+       [
+        null,
+        {}
+       ]
+      ],
+      "366564-1.xhtml": [
+       "8bb112a30d71952600e1d182ae8f1d4bf6e25fa7",
+       [
+        null,
+        {}
+       ]
+      ],
+      "367107-1.html": [
+       "775ace87e0aad48263500e8b031a93f708761f43",
+       [
+        null,
+        {}
+       ]
+      ],
+      "368430-1.xhtml": [
+       "79e10c46accf410fa942cbce6654ea38cfa66eb1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "370791-1.xhtml": [
+       "d72eb5f709f43451894a3dbf5c408aecfc0186dd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "370862-1.xhtml": [
+       "fa2f1a4d67474892ff47a3cceeffc6dc2112d0d1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "372483-1.xhtml": [
+       "41edd7d9b71c03ec8dfb10a1650fe05d53c89477",
+       [
+        null,
+        {}
+       ]
+      ],
+      "373472-1.xhtml": [
+       "6c6a304a734dfdb2f4a3547d2e1f9a0caf8f73f0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "373472-2.xhtml": [
+       "1c7e1c7ade090a598d0fafeb1673b78b24ac93fc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "375562-1.xhtml": [
+       "7b00d1f91ad5c7a652d00db0dcbb36272c35fdf5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "377824-1.xhtml": [
+       "ddbe7da66441916a31615a8a71b73b70b6292f14",
+       [
+        null,
+        {}
+       ]
+      ],
+      "379418-1.xhtml": [
+       "dc6e9e57119799cb350446c2e56518dd623d3681",
+       [
+        null,
+        {}
+       ]
+      ],
+      "385226-1.xhtml": [
+       "b1d261eb380b250693318b24e93ad6add9b89971",
+       [
+        null,
+        {}
+       ]
+      ],
+      "393760-1.xhtml": [
+       "cb5c2d7a129df166d1445b558045fd131c68341d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "397518-1.xhtml": [
+       "bc460ead11ca2779dd401c730f5f6493e7edf2e0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "398038-1.html": [
+       "b383141c459edcf408f8c720c85c0821d6e64d59",
+       [
+        null,
+        {}
+       ]
+      ],
+      "400475-1.xhtml": [
+       "13ff2fcb6303837499112433b1ba24f4b90e6108",
+       [
+        null,
+        {}
+       ]
+      ],
+      "402400-1.xhtml": [
+       "5212d67f163f04f294096bb035cc486f9f7fd1c8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "403156-1.xhtml": [
+       "b49bff7d04d964f06c34292588a349fc00700881",
+       [
+        null,
+        {}
+       ]
+      ],
+      "404485-1.xhtml": [
+       "fea18cbd5960fe55f7f783d9524aab73706b7351",
+       [
+        null,
+        {}
+       ]
+      ],
+      "405187-1.xhtml": [
+       "537512e62928131b6d348c931105de54d18087f4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "405271-1.xml": [
+       "c94525c6383c90a9b3d4f16768bc664148720e09",
+       [
+        null,
+        {}
+       ]
+      ],
+      "412237-1.xml": [
+       "2e8f13b73e0ea6a6969b8546428d2f66c8025657",
+       [
+        null,
+        {}
+       ]
+      ],
+      "413063-1.xhtml": [
+       "b595acd1cea55e35426b52c249614f95b729b1b1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "416907-1.xhtml": [
+       "94a9abde2129a12ca0b83714f13204554b7acc2b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "420420-1.xhtml": [
+       "db17b277a781d4b37b371a3a686aac9772cc653a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "431072-1.xhtml": [
+       "f25ce28f141c1e97d0feb1470b2e7934fa06efe9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "443089-1.xhtml": [
+       "2630cea131110794f4b5649a4ca95252b4d16e88",
+       [
+        null,
+        {}
+       ]
+      ],
+      "462929-1.html": [
+       "386d8e138f955daaf7f76037c31343a6f391ff81",
+       [
+        null,
+        {}
+       ]
+      ],
+      "463763-1.xhtml": [
+       "61df8ff0c33920f53465cda32585f902d93ba74f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "463763-2.xhtml": [
+       "8d41abade0dff82f0a91a32f6f1613790362c02b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "476547-1.xhtml": [
+       "0cece35eaa3945cae201d82e9bfe8c01732f9ce4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "541620-1.xhtml": [
+       "ccef762e48896fc4156f86de816aee6ffc8c198f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "557474-1.html": [
+       "1bf8d534ca259896654a9671fa0fddd7c8da6a9e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "654928-1.html": [
+       "da52f34b452ef3a8db1d6cabbcffeb437f1f6170",
+       [
+        null,
+        {}
+       ]
+      ],
+      "655451-1.xhtml": [
+       "0d5fb687b79cd1936eebb8937ca32c138c48c745",
+       [
+        null,
+        {}
+       ]
+      ],
+      "713606-1.html": [
+       "a0d4939a83fb8754e74d22847df1d156315c38b8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "716349-1.html": [
+       "9b5895ad64b3ba10f799adbde591d046cb6b9bab",
+       [
+        null,
+        {}
+       ]
+      ],
+      "767251.xhtml": [
+       "aa3632a6ba0c189e59b1e24345d639a0c40edcd5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "770710-1.html": [
+       "2171966769b545d964664dbc20e1f044a817f4bc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "848725-1.html": [
+       "7ce9c434ccb8ee083cf43c362e01b4b2f0252270",
+       [
+        null,
+        {}
+       ]
+      ],
+      "848725-2.html": [
+       "b6362f9bf2b39f82945c2a8e15425e1d67763729",
+       [
+        null,
+        {}
+       ]
+      ],
+      "947557-1.html": [
+       "3ddfb7b984144b47870006401e44945ab0f1b64c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "973322-1.xhtml": [
+       "dfac127fb4a6aff690b73dd4b5e1a88444e403f3",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "mtd-as-multicol.html": [
       "f00fa488154ff42e8c3ecfa5cc48ceb2aca4f131",
       [
@@ -239426,6 +239939,19 @@
        ]
       },
       "the-frameset-and-frame-elements": {
+       "different-writing-modes.html": [
+        "c697d4dbbf0fb8ae3df3fc9f6f7db0a1eaaaa18e",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-frameset-and-frame-elements/reference/different-writing-modes-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "frameset-visibility-hidden.html": [
         "b6c454b03fd78f22812c8eea91825c23fb289d6c",
         [
@@ -304094,7 +304620,7 @@
       []
      ],
      "getComputedStyle-detached-subtree-expected.txt": [
-      "c4f7f27af8a36d9d548cd2cd1b844576c0ffb559",
+      "35c11f0d1aaa335d70b7519d42eb40ab52f82aba",
       []
      ],
      "getComputedStyle-insets-absolute-expected.txt": [
@@ -304106,7 +304632,7 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "b55571e7eb0c0b52bee0e50ecf234b108dfe69c3",
+      "6c46afec27c8d8a79fcea0945517a8b28ab7fe24",
       []
      ],
      "getComputedStyle-width-scroll.tentative-expected.txt": [
@@ -324950,6 +325476,10 @@
         []
        ],
        "reference": {
+        "different-writing-modes-ref.html": [
+         "9d5e5977f0b58219c6a4931a54b3b9be0da41caa",
+         []
+        ],
         "empty-ref.html": [
          "0e76edd65b7baf5316fc9d0c4da59a3502e4c27a",
          []
@@ -334118,7 +334648,7 @@
     ]
    },
    "lint.ignore": [
-    "b8a4093ae998ced631dbccf758984721499ce973",
+    "ffce0430cf0a2cf92556853072707e05f89a471b",
     []
    ],
    "loading": {
@@ -334456,6 +334986,14 @@
      "4511b3e7df8e2a169e52dd6b8bdea2b8b369b21f",
      []
     ],
+    "crashtests": {
+     "mozilla": {
+      "347355-1.gif": [
+       "475ea8c1641d41a986df41d1177247b9a9c80829",
+       []
+      ]
+     }
+    },
     "presentation-markup": {
      "direction": {
       "direction-006-ref.html": [
@@ -393849,7 +394387,7 @@
        ]
       ],
       "container-units-invalidation.html": [
-       "1bc708dc88b0c20a406d5b779a12d0a43e5db747",
+       "abb766cd0c77b033e4aace48cf499897c3fd2347",
        [
         null,
         {}
@@ -418198,7 +418736,7 @@
       ]
      ],
      "getComputedStyle-detached-subtree.html": [
-      "b522baa42b390e3b6dd29f7ecb75f43856914437",
+      "211d512b28ca73489cbcf43e92cb0ef3bbaee53d",
       [
        null,
        {}
@@ -418324,7 +418862,7 @@
       ]
      ],
      "getComputedStyle-pseudo.html": [
-      "fb8ab653845c317d5d322759b801c6b481cfd539",
+      "40af5b0818c3a92adf8386d622b64f7c7dc292c2",
       [
        null,
        {}

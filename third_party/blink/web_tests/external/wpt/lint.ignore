@@ -852,3 +852,5 @@ SET TIMEOUT: editing/crashtests/insertorderedlist-in-text-adopted-to-other-docum
 SET TIMEOUT: editing/crashtests/make-editable-div-inline-and-set-contenteditable-of-input-to-false.html
 SET TIMEOUT: editing/crashtests/outdent-across-svg-boundary.html
 SET TIMEOUT: editing/crashtests/textarea-will-be-blurred-by-focus-event-listener.html
+SET TIMEOUT: mathml/crashtests/mozilla/*
+PARSE-FAILED: mathml/crashtests/mozilla/289180-1.xml
