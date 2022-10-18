@@ -62,6 +62,7 @@ class CORE_EXPORT TreeScopeAdopter {
   void MoveNodeToNewDocument(Node&,
                              Document& old_document,
                              Document& new_document) const;
+  void WillMoveTreeToNewDocument(Node& root) const;
   TreeScope& OldScope() const { return *old_scope_; }
   TreeScope& NewScope() const { return *new_scope_; }
 

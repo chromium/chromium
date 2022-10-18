@@ -7,11 +7,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+
+namespace {
+
+class DoNothingListener : public NativeEventListener {
+  void Invoke(ExecutionContext*, Event*) override {}
+};
+
+}  // namespace
 
 // TODO(hayato): It's hard to see what's happening in these tests.
 // It would be better to refactor these tests.
@@ -44,5 +55,49 @@ TEST(TreeScopeAdopterTest, SimpleMove) {
   EXPECT_EQ(div2->ownerDocument(), doc1);
 }
 
+TEST(TreeScopeAdopterTest, MoveNestedShadowRoots) {
+  DummyPageHolder source_page_holder;
+  auto* source_doc = &source_page_holder.GetDocument();
+  NativeEventListener* listener = MakeGarbageCollected<DoNothingListener>();
+
+  Element* html = source_doc->CreateRawElement(html_names::kHTMLTag);
+  source_doc->body()->AppendChild(html);
+  Element* outer_div = source_doc->CreateRawElement(html_names::kDivTag);
+  html->AppendChild(outer_div);
+
+  ShadowRoot& outer_shadow =
+      outer_div->AttachShadowRootInternal(ShadowRootType::kOpen);
+  Element* middle_div = source_doc->CreateRawElement(html_names::kDivTag);
+  outer_shadow.AppendChild(middle_div);
+
+  // Append an event target to a node that will be traversed after the inner
+  // shadow tree.
+  Element* middle_target = source_doc->CreateRawElement(html_names::kDivTag);
+  outer_shadow.AppendChild(middle_target);
+  ASSERT_TRUE(middle_target->addEventListener(event_type_names::kMousewheel,
+                                              listener, false));
+
+  ShadowRoot& middle_shadow =
+      middle_div->AttachShadowRootInternal(ShadowRootType::kOpen);
+  Element* inner_div = source_doc->CreateRawElement(html_names::kDivTag);
+  middle_shadow.AppendChild(inner_div);
+  // This event listener may force a consistency check in EventHandlerRegistry,
+  // which will check the consistency of the above event handler as a
+  // side-effect too.
+  ASSERT_TRUE(inner_div->addEventListener(event_type_names::kMousewheel,
+                                          listener, false));
+
+  DummyPageHolder target_page_holder;
+  auto* target_doc = &target_page_holder.GetDocument();
+  ASSERT_TRUE(target_doc->GetPage());
+  ASSERT_NE(source_doc->GetPage(), target_doc->GetPage());
+
+  TreeScopeAdopter adopter(*outer_div, *target_doc);
+  ASSERT_TRUE(adopter.NeedsScopeChange());
+
+  adopter.Execute();
+  EXPECT_EQ(outer_shadow.ownerDocument(), target_doc);
+  EXPECT_EQ(middle_shadow.ownerDocument(), target_doc);
+}
 
 }  // namespace blink

@@ -2581,6 +2581,11 @@ ExecutionContext* Node::GetExecutionContext() const {
 
 void Node::WillMoveToNewDocument(Document& old_document,
                                  Document& new_document) {
+#if DCHECK_IS_ON()
+  if (RuntimeEnabledFeatures::UseSeparateTraversalForWillMoveEnabled()) {
+    DCHECK_NE(&GetDocument(), &new_document);
+  }
+#endif  // DCHECK_IS_ON()
   // In rare situations, this node may be the focused element of the old
   // document. In this case, we need to clear the focused element of the old
   // document, and since we are currently in an event forbidden scope, we can't
@@ -2610,6 +2615,7 @@ void Node::WillMoveToNewDocument(Document& old_document,
 
 void Node::DidMoveToNewDocument(Document& old_document) {
   TreeScopeAdopter::EnsureDidMoveToNewDocumentWasCalled(old_document);
+  DCHECK_NE(&GetDocument(), &old_document);
 
   if (const EventTargetData* event_target_data = GetEventTargetData()) {
     const EventListenerMap& listener_map =
