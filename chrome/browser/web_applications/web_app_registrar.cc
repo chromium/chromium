@@ -618,13 +618,12 @@ bool WebAppRegistrar::AppsExistWithExternalConfigData() const {
 
 void WebAppRegistrar::Start() {
   // Profile manager can be null in unit tests.
-  if (g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->AddObserver(this);
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager())
+    profile_manager_observation_.Observe(profile_manager);
 }
 
 void WebAppRegistrar::Shutdown() {
-  if (g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->RemoveObserver(this);
+  profile_manager_observation_.Reset();
 }
 
 void WebAppRegistrar::SetSubsystems(
@@ -1067,6 +1066,10 @@ void WebAppRegistrar::OnProfileMarkedForPermanentDeletion(
   // diverged from the sync server registry and from the on-disk registry
   // (WebAppDatabase/LevelDB and "Web Applications" profile directory).
   registry_profile_being_deleted_ = true;
+}
+
+void WebAppRegistrar::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
 }
 
 WebAppRegistrar::AppSet::AppSet(const WebAppRegistrar* registrar,

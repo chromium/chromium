@@ -17,6 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -363,6 +365,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // ProfileManagerObserver:
   void OnProfileMarkedForPermanentDeletion(
       Profile* profile_to_be_deleted) override;
+  void OnProfileManagerDestroying() override;
 
   // A filter must return false to skip the |web_app|.
   using Filter = bool (*)(const WebApp& web_app);
@@ -460,6 +463,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   raw_ptr<WebAppPolicyManager> policy_manager_ = nullptr;
   raw_ptr<WebAppTranslationManager> translation_manager_ = nullptr;
 
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
   base::ObserverList<AppRegistrarObserver, /*check_empty=*/true> observers_;
 
   Registry registry_;
