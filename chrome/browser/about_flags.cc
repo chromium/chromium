@@ -9793,6 +9793,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseNAT64ForIPv4LiteralDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kUseNAT64ForIPv4Literal)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-passwords-account-storage",
+     flag_descriptions::kEnablePasswordsAccountStorageName,
+     flag_descriptions::kEnablePasswordsAccountStorageDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kEnablePasswordsAccountStorage)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

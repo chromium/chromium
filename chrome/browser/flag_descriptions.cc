@@ -3599,6 +3599,12 @@ const char kEnableFamilyInfoFeedbackName[] =
 const char kEnableFamilyInfoFeedbackDescription[] =
     "Enable FamilyLink feedback source in Chrome Settings feedback";
 
+const char kEnablePasswordsAccountStorageName[] =
+    "Enable the account data storage for passwords";
+const char kEnablePasswordsAccountStorageDescription[] =
+    "Enables storing passwords in a second, Gaia-account-scoped storage for "
+    "signed-in but not syncing users";
+
 const char kEnableOskResizesVisualViewportByDefaultName[] =
     "Enable OSK resizes visual viewport by default";
 const char kEnableOskResizesVisualViewportByDefaultDescription[] =

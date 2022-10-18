@@ -2026,6 +2026,9 @@ extern const char kEnableCommandLineOnNoRootedDescription[];
 extern const char kEnableFamilyInfoFeedbackName[];
 extern const char kEnableFamilyInfoFeedbackDescription[];
 
+extern const char kEnablePasswordsAccountStorageName[];
+extern const char kEnablePasswordsAccountStorageDescription[];
+
 extern const char kEnableOskResizesVisualViewportByDefaultName[];
 extern const char kEnableOskResizesVisualViewportByDefaultDescription[];
 

@@ -1267,6 +1267,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableCompromisedPasswordsMutingDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kMuteCompromisedPasswords)},
+    {"enable-passwords-account-storage",
+     flag_descriptions::kEnablePasswordsAccountStorageName,
+     flag_descriptions::kEnablePasswordsAccountStorageDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kEnablePasswordsAccountStorage)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

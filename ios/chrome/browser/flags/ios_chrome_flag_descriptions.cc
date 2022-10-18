@@ -308,6 +308,12 @@ const char kEnableOpenInDownloadName[] = "Enable Open In download";
 const char kEnableOpenInDownloadDescription[] =
     "Enable new download for Open In menu (iOS 14.5+).";
 
+const char kEnablePasswordsAccountStorageName[] =
+    "Enable the account data storage for passwords";
+const char kEnablePasswordsAccountStorageDescription[] =
+    "Enables storing passwords in a second, Gaia-account-scoped storage for "
+    "signed-in but not syncing users";
+
 const char kEnableRefineDataSourceReloadReportingName[] =
     "Enable Refine Data Source Reload Reporting";
 const char kEnableRefineDataSourceReloadReportingDescription[] =

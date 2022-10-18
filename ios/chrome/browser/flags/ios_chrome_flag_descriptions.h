@@ -287,6 +287,10 @@ extern const char kPasswordsGroupingDescription[];
 extern const char kEnableOpenInDownloadName[];
 extern const char kEnableOpenInDownloadDescription[];
 
+// Title and description for the flag to enable the passwords account storage.
+extern const char kEnablePasswordsAccountStorageName[];
+extern const char kEnablePasswordsAccountStorageDescription[];
+
 // Title and description for the flag to enable refining data source reload
 // reporting when having a very short attention log.
 extern const char kEnableRefineDataSourceReloadReportingName[];

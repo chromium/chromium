@@ -2792,6 +2792,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-passwords-account-storage",
+    "owners": [ "victorvianna", "chrome-sync-dev+finch@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "enable-pci-guard-ui",
     "owners": [ "jimmyxgong", "cros-peripherals@google.com" ],
     "expiry_milestone": 112
