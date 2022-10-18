@@ -12,14 +12,15 @@
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence_egl.h"
-#include "ui/gl/gl_image_ahardwarebuffer.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -159,7 +160,7 @@ bool ArImageTransport::ResizeSharedBuffer(WebXrPresentationState* webxr,
   DVLOG(2) << __FUNCTION__ << ": width=" << size.width()
            << " height=" << size.height();
   // Remove reference to previous image (if any).
-  buffer->local_glimage = nullptr;
+  buffer->local_eglimage.reset();
 
   static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
@@ -178,18 +179,19 @@ bool ArImageTransport::ResizeSharedBuffer(WebXrPresentationState* webxr,
            << buffer->mailbox_holder.mailbox.ToDebugString() << ", SyncToken="
            << buffer->mailbox_holder.sync_token.ToDebugString();
 
-  auto img = base::MakeRefCounted<gl::GLImageAHardwareBuffer>(size);
-
   base::android::ScopedHardwareBufferHandle ahb =
       buffer->gmb->CloneHandle().android_hardware_buffer;
-  bool ret = img->Initialize(ahb.get(), false /* preserved */);
-  if (!ret) {
+
+  // Create an EGLImage for the buffer.
+  auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(ahb.get());
+  if (!egl_image.is_valid()) {
     DLOG(WARNING) << __FUNCTION__ << ": ERROR: failed to initialize image!";
     return false;
   }
+
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, buffer->local_texture);
-  img->BindTexImage(GL_TEXTURE_EXTERNAL_OES);
-  buffer->local_glimage = std::move(img);
+  glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
+  buffer->local_eglimage = std::move(egl_image);
 
   // Save size to avoid resize next time.
   DVLOG(1) << __FUNCTION__ << ": resized to " << size.width() << "x"
@@ -222,8 +224,8 @@ gpu::MailboxHolder ArImageTransport::TransferFrame(
   ResizeSharedBuffer(webxr, frame_size, shared_buffer);
   // Sanity check that the lazily created/resized buffer looks valid.
   DCHECK(!shared_buffer->mailbox_holder.mailbox.IsZero());
-  DCHECK(shared_buffer->local_glimage);
-  DCHECK_EQ(shared_buffer->local_glimage->GetSize(), frame_size);
+  DCHECK(shared_buffer->local_eglimage.is_valid());
+  DCHECK_EQ(shared_buffer->size, frame_size);
 
   // We don't need to create a sync token here. ResizeSharedBuffer has created
   // one on reallocation, including initial buffer creation, and we can use
@@ -270,8 +272,8 @@ gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
   }
   // Sanity checks for the camera image buffer.
   DCHECK(!camera_image_shared_buffer->mailbox_holder.mailbox.IsZero());
-  DCHECK(camera_image_shared_buffer->local_glimage);
-  DCHECK_EQ(camera_image_shared_buffer->local_glimage->GetSize(), frame_size);
+  DCHECK(camera_image_shared_buffer->local_eglimage.is_valid());
+  DCHECK_EQ(camera_image_shared_buffer->size, frame_size);
 
   // Temporarily change drawing buffer to the camera image buffer.
   if (!camera_image_fbo_) {

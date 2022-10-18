@@ -89,6 +89,7 @@ static_library("vr_android") {
     "//device/vr:vr_util",
     "//device/vr/android:vr_android",
     "//device/vr/buildflags:buildflags",
+    "//gpu/command_buffer/service:gles2",
     "//services/device/public/mojom",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/viz/public/cpp/gpu",

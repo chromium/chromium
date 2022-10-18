@@ -53,6 +53,7 @@ component("arcore") {
     "//device/base",
     "//device/vr:vr_util",
     "//device/vr/android:vr_android",
+    "//gpu/command_buffer/service:gles2",
     "//mojo/public/cpp/bindings",
     "//services/viz/privileged/mojom",
     "//ui/android",
