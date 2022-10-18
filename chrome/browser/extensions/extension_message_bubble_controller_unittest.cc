@@ -720,11 +720,6 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
-#if BUILDFLAG(IS_MAC)
-  // On Mac, this API is limited to trunk.
-  ScopedCurrentChannel scoped_channel(version_info::Channel::UNKNOWN);
-#endif  // BUILDFLAG(IS_MAC)
-
   Init();
 
   for (int i = 0; i < 3; ++i) {
