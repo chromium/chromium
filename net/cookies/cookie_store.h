@@ -147,7 +147,7 @@ class NET_EXPORT CookieStore {
   // Protects session cookies from deletion on shutdown, if the underlying
   // CookieStore implemention is currently configured to store them to disk.
   // Otherwise, does nothing.
-  virtual void SetForceKeepSessionState();
+  virtual void SetForceKeepSessionState() {}
 
   // The interface used to observe changes to this CookieStore's contents.
   virtual CookieChangeDispatcher& GetChangeDispatcher() = 0;
