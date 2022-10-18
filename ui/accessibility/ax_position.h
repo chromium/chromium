@@ -611,7 +611,8 @@ class AXPosition {
         AXPositionInstance child_position =
             CreateChildPositionAt(adjusted_child_index);
         DCHECK(child_position && !child_position->IsNullPosition());
-        return child_position->GetAnchor()->IsIgnored();
+        return child_position->IsNullPosition() ||
+               child_position->GetAnchor()->IsIgnored();
       }
       case AXPositionKind::TEXT_POSITION:
         // If the corresponding leaf position is ignored, the current text
