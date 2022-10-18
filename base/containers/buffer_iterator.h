@@ -76,7 +76,7 @@ class BufferIterator {
     size_t size = sizeof(T);
     if (size > remaining_.size())
       return nullptr;
-    T* t = bit_cast<T*>(remaining_.data());
+    T* t = reinterpret_cast<T*>(remaining_.data());
     remaining_ = remaining_.subspan(size);
     return t;
   }
@@ -114,7 +114,7 @@ class BufferIterator {
       return span<T>();
     if (size > remaining_.size())
       return span<T>();
-    auto result = span<T>(bit_cast<T*>(remaining_.data()), count);
+    auto result = span<T>(reinterpret_cast<T*>(remaining_.data()), count);
     remaining_ = remaining_.subspan(size);
     return result;
   }

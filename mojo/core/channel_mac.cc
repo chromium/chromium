@@ -289,7 +289,7 @@ class ChannelMac : public Channel,
   // Acquires the peer's send right from the handshake message sent via
   // SendHandshake(). After this, bi-directional communication is established
   // and this Channel can send to its peer any pending messages.
-  bool ReceiveHandshake(base::BufferIterator<const char> buffer) {
+  bool ReceiveHandshake(base::BufferIterator<char>& buffer) {
     if (handshake_done_) {
       OnError(Error::kReceivedMalformedData);
       return false;
@@ -501,8 +501,8 @@ class ChannelMac : public Channel,
 
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-    base::BufferIterator<const char> buffer(
-        reinterpret_cast<const char*>(receive_buffer_.address()),
+    base::BufferIterator<char> buffer(
+        reinterpret_cast<char*>(receive_buffer_.address()),
         receive_buffer_.size());
     auto* header = buffer.MutableObject<mach_msg_header_t>();
     *header = mach_msg_header_t{};
