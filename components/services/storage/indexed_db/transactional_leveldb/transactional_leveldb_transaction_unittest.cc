@@ -74,12 +74,10 @@ class TransactionalLevelDBTransactionTest : public LevelDBScopesTestBase {
           lock_requests) {
     base::RunLoop loop;
     PartitionedLockHolder locks_receiver;
-    bool success = lock_manager->AcquireLocks(
+    lock_manager->AcquireLocks(
         lock_requests, locks_receiver.AsWeakPtr(),
         base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
-    EXPECT_TRUE(success);
-    if (success)
-      loop.Run();
+    loop.Run();
     return std::move(locks_receiver.locks);
   }
 
@@ -152,7 +150,7 @@ class TransactionalLevelDBTransactionTest : public LevelDBScopesTestBase {
  private:
   DefaultTransactionalLevelDBFactory transactional_leveldb_factory_;
   std::unique_ptr<TransactionalLevelDBDatabase> leveldb_database_;
-  PartitionedLockManagerImpl lock_manager_{3};
+  PartitionedLockManagerImpl lock_manager_;
 };
 
 TEST_F(TransactionalLevelDBTransactionTest, GetPutDelete) {
@@ -201,7 +199,7 @@ TEST_F(TransactionalLevelDBTransactionTest, GetPutDelete) {
   EXPECT_EQ(Compare(got_value, another_value), 0);
 
   TransactionRemove(transaction.get(), another_key);
-  EXPECT_EQ(136ull, transaction->GetTransactionSize());
+  EXPECT_EQ(124ull, transaction->GetTransactionSize());
 
   status = transaction->Get(another_key, &got_value, &found);
   EXPECT_FALSE(found);

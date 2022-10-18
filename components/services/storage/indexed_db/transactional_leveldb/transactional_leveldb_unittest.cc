@@ -66,7 +66,7 @@ class TransactionalLevelDBDatabaseTest : public LevelDBScopesTestBase {
 
   leveldb::Status OpenLevelDBDatabase() {
     CHECK(leveldb_);
-    lock_manager_ = std::make_unique<PartitionedLockManagerImpl>(1);
+    lock_manager_ = std::make_unique<PartitionedLockManagerImpl>();
     std::unique_ptr<LevelDBScopes> scopes = std::make_unique<LevelDBScopes>(
         std::vector<uint8_t>{'a'}, 1024ul, leveldb_, lock_manager_.get(),
         base::DoNothing());

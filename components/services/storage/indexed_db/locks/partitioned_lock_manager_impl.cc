@@ -30,40 +30,37 @@ PartitionedLockManagerImpl::Lock::~Lock() = default;
 PartitionedLockManagerImpl::Lock& PartitionedLockManagerImpl::Lock::operator=(
     PartitionedLockManagerImpl::Lock&&) noexcept = default;
 
-PartitionedLockManagerImpl::PartitionedLockManagerImpl(int level_count)
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
-  locks_.resize(level_count);
-}
+PartitionedLockManagerImpl::PartitionedLockManagerImpl()
+    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
 PartitionedLockManagerImpl::~PartitionedLockManagerImpl() = default;
 
 int64_t PartitionedLockManagerImpl::LocksHeldForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int64_t locks = 0;
-  for (const LockLevelMap& map : locks_) {
-    for (const auto& pair : map) {
-      locks += pair.second.acquired_count;
-    }
+  for (const auto& [lock_id, lock] : locks_) {
+    locks += lock.acquired_count;
   }
   return locks;
 }
+
 int64_t PartitionedLockManagerImpl::RequestsWaitingForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int64_t requests = 0;
-  for (const LockLevelMap& map : locks_) {
-    for (const auto& pair : map) {
-      requests += pair.second.queue.size();
-    }
+  for (const auto& [lock_id, lock] : locks_) {
+    requests += lock.queue.size();
   }
   return requests;
 }
 
-bool PartitionedLockManagerImpl::AcquireLocks(
+void PartitionedLockManagerImpl::AcquireLocks(
     base::flat_set<PartitionedLockRequest> lock_requests,
     base::WeakPtr<PartitionedLockHolder> locks_holder,
     LocksAcquiredCallback callback) {
-  if (!locks_holder)
-    return false;
+  if (!locks_holder) {
+    std::move(callback).Run();
+    return;
+  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Code relies on free locks being granted synchronously. If the locks aren't
@@ -93,87 +90,42 @@ bool PartitionedLockManagerImpl::AcquireLocks(
           task_runner_, run_callback_synchonously, locks_holder,
           std::move(callback)));
   for (PartitionedLockRequest& request : lock_requests) {
-    bool success = AcquireLock(std::move(request), locks_holder,
-                               all_locks_acquired_barrier);
-    if (!success) {
-      locks_holder->locks.clear();
-      return false;
-    }
+    AcquireLock(std::move(request), locks_holder, all_locks_acquired_barrier);
   }
   // If the barrier wasn't run yet, then it will be run asynchronously.
   run_callback_synchonously->data = false;
-  return true;
 }
 
 PartitionedLockManagerImpl::TestLockResult PartitionedLockManagerImpl::TestLock(
     PartitionedLockRequest request) {
-  if (request.level < 0 || static_cast<size_t>(request.level) >= locks_.size())
-    return TestLockResult::kInvalid;
-  if (request.range.begin >= request.range.end)
-    return TestLockResult::kInvalid;
-
-  auto& level_locks = locks_[request.level];
-
-  // TODO(dmurph): Remove this weird juggling we do here to support disjoint
-  // ranges once we remove range support. https://crbug.com/1322109
-  auto it = level_locks.find(request.range);
-  if (it == level_locks.end()) {
-    it = level_locks
-             .emplace(std::piecewise_construct,
-                      std::forward_as_tuple(request.range),
-                      std::forward_as_tuple())
-             .first;
-  }
-
-  if (!IsRangeDisjointFromNeighbors(level_locks, request.range)) {
-    level_locks.erase(it);
-    return TestLockResult::kInvalid;
-  }
-
-  Lock& lock = it->second;
+  Lock& lock = locks_[request.lock_id];
   return lock.CanBeAcquired(request.type) ? TestLockResult::kFree
                                           : TestLockResult::kLocked;
 }
 
-void PartitionedLockManagerImpl::RemoveLockRange(
-    int level,
-    const PartitionedLockRange& range) {
+void PartitionedLockManagerImpl::RemoveLockId(
+    const PartitionedLockId& lock_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_LT(level, static_cast<int>(locks_.size()));
-  auto& level_locks = locks_[level];
-  auto it = level_locks.find(range);
-  if (it != level_locks.end()) {
+  auto it = locks_.find(lock_id);
+  if (it != locks_.end()) {
     DCHECK_EQ(0, it->second.acquired_count);
-    level_locks.erase(it);
+    locks_.erase(it);
   }
 }
 
-bool PartitionedLockManagerImpl::AcquireLock(
+void PartitionedLockManagerImpl::AcquireLock(
     PartitionedLockRequest request,
     base::WeakPtr<PartitionedLockHolder> locks_holder,
     base::OnceClosure acquired_callback) {
   DCHECK(locks_holder);
-  if (request.level < 0 || static_cast<size_t>(request.level) >= locks_.size())
-    return false;
-  if (request.range.begin >= request.range.end)
-    return false;
 
-  auto& level_locks = locks_[request.level];
-
-  // TODO(dmurph): Remove this weird juggling we do here to support disjoint
-  // ranges once we remove range support. https://crbug.com/1322109
-  auto it = level_locks.find(request.range);
-  if (it == level_locks.end()) {
-    it = level_locks
+  auto it = locks_.find(request.lock_id);
+  if (it == locks_.end()) {
+    it = locks_
              .emplace(std::piecewise_construct,
-                      std::forward_as_tuple(request.range),
+                      std::forward_as_tuple(request.lock_id),
                       std::forward_as_tuple())
              .first;
-  }
-
-  if (!IsRangeDisjointFromNeighbors(level_locks, request.range)) {
-    level_locks.erase(it);
-    return false;
   }
 
   Lock& lock = it->second;
@@ -182,7 +134,7 @@ bool PartitionedLockManagerImpl::AcquireLock(
     lock.lock_mode = request.type;
     auto released_callback = base::BindOnce(
         &PartitionedLockManagerImpl::LockReleased, weak_factory_.GetWeakPtr());
-    locks_holder->locks.emplace_back(std::move(request.range), request.level,
+    locks_holder->locks.emplace_back(std::move(request.lock_id),
                                      std::move(released_callback));
     std::move(acquired_callback).Run();
   } else {
@@ -192,16 +144,12 @@ bool PartitionedLockManagerImpl::AcquireLock(
     lock.queue.emplace_back(request.type, std::move(locks_holder),
                             std::move(acquired_callback));
   }
-  return true;
 }
 
-void PartitionedLockManagerImpl::LockReleased(int level,
-                                              PartitionedLockRange range) {
+void PartitionedLockManagerImpl::LockReleased(PartitionedLockId lock_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_LT(level, static_cast<int>(locks_.size()));
-  auto& level_locks = locks_[level];
-  auto it = level_locks.find(range);
-  DCHECK(it != level_locks.end());
+  auto it = locks_.find(lock_id);
+  DCHECK(it != locks_.end());
   Lock& lock = it->second;
 
   DCHECK_GT(lock.acquired_count, 0);
@@ -228,7 +176,7 @@ void PartitionedLockManagerImpl::LockReleased(int level,
           base::BindOnce(&PartitionedLockManagerImpl::LockReleased,
                          weak_factory_.GetWeakPtr());
       // Grant the lock.
-      requester.locks_holder->locks.emplace_back(range, level,
+      requester.locks_holder->locks.emplace_back(lock_id,
                                                  std::move(released_callback));
       std::move(requester.acquired_callback).Run();
       // This can only happen if acquired_count was 0.
@@ -236,25 +184,6 @@ void PartitionedLockManagerImpl::LockReleased(int level,
         return;
     }
   }
-}
-
-// static
-bool PartitionedLockManagerImpl::IsRangeDisjointFromNeighbors(
-    const LockLevelMap& map,
-    const PartitionedLockRange& range) {
-  DCHECK_EQ(map.count(range), 1ull);
-  auto it = map.find(range);
-  auto next_it = it;
-  ++next_it;
-  if (next_it != map.end()) {
-    return range.end <= next_it->first.begin;
-  }
-  auto last_it = it;
-  if (last_it != map.begin()) {
-    --last_it;
-    return last_it->first.end <= range.begin;
-  }
-  return true;
 }
 
 }  // namespace content

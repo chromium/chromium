@@ -11,18 +11,10 @@
 namespace content {
 namespace {
 
-TEST(PartitionedLockManager, TestRangePopulation) {
-  PartitionedLockRange range = {"1", "2"};
-  EXPECT_EQ("1", range.begin);
-  EXPECT_EQ("2", range.end);
-  EXPECT_TRUE(range.IsValid());
-}
-
-TEST(PartitionedLockManager, TestInvalidRange) {
-  PartitionedLockRange range = {"2", "1"};
-  EXPECT_FALSE(range.IsValid());
-  range = {"2", "2"};
-  EXPECT_FALSE(range.IsValid());
+TEST(PartitionedLockManager, TestIdPopulation) {
+  PartitionedLockId lock_id = {1, "2"};
+  EXPECT_EQ(1, lock_id.partition);
+  EXPECT_EQ("2", lock_id.key);
 }
 
 }  // namespace

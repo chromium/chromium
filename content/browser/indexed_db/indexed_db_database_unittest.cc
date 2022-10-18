@@ -53,7 +53,7 @@ void CreateAndBindTransactionPlaceholder(
 
 class IndexedDBDatabaseTest : public ::testing::Test {
  public:
-  IndexedDBDatabaseTest() : lock_manager_(kIndexedDBLockLevelCount) {}
+  IndexedDBDatabaseTest() = default;
 
   void SetUp() override {
     backing_store_ = std::make_unique<IndexedDBFakeBackingStore>();
@@ -460,8 +460,7 @@ leveldb::Status DummyOperation(IndexedDBTransaction* transaction) {
 class IndexedDBDatabaseOperationTest : public testing::Test {
  public:
   IndexedDBDatabaseOperationTest()
-      : lock_manager_(kIndexedDBLockLevelCount),
-        commit_success_(leveldb::Status::OK()),
+      : commit_success_(leveldb::Status::OK()),
         factory_(std::make_unique<MockIndexedDBFactory>()) {}
 
   IndexedDBDatabaseOperationTest(const IndexedDBDatabaseOperationTest&) =

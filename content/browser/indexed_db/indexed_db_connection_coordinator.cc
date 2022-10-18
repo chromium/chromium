@@ -215,8 +215,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
 
     if (!has_connections) {
       std::vector<PartitionedLockManager::PartitionedLockRequest>
-          lock_requests = {{kDatabaseRangeLockLevel,
-                            GetDatabaseLockRange(db_->metadata_.id),
+          lock_requests = {{GetDatabaseLockId(db_->metadata_.id),
                             PartitionedLockManager::LockType::kExclusive}};
       state_ = RequestState::kPendingLocks;
       db_->lock_manager_->AcquireLocks(
@@ -263,7 +262,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
   void OnNoConnections() override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
     std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-        {{kDatabaseRangeLockLevel, GetDatabaseLockRange(db_->metadata().id),
+        {{GetDatabaseLockId(db_->metadata().id),
           PartitionedLockManager::LockType::kExclusive}};
     state_ = RequestState::kPendingLocks;
     db_->lock_manager_->AcquireLocks(
@@ -407,8 +406,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
     if (!has_connections) {
       // No connections, so delete immediately.
       std::vector<PartitionedLockManager::PartitionedLockRequest>
-          lock_requests = {{kDatabaseRangeLockLevel,
-                            GetDatabaseLockRange(db_->metadata().id),
+          lock_requests = {{GetDatabaseLockId(db_->metadata().id),
                             PartitionedLockManager::LockType::kExclusive}};
       state_ = RequestState::kPendingLocks;
       db_->lock_manager_->AcquireLocks(
@@ -437,7 +435,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
   void OnNoConnections() override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
     std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-        {{kDatabaseRangeLockLevel, GetDatabaseLockRange(db_->metadata().id),
+        {{GetDatabaseLockId(db_->metadata().id),
           PartitionedLockManager::LockType::kExclusive}};
     state_ = RequestState::kPendingLocks;
     db_->lock_manager_->AcquireLocks(

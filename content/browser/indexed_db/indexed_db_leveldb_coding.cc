@@ -84,6 +84,9 @@ constexpr unsigned char kIndexNamesKeyTypeByte = 201;
 constexpr unsigned char kObjectMetaDataTypeMaximum = 255;
 constexpr unsigned char kIndexMetaDataTypeMaximum = 255;
 
+const constexpr int kDatabaseLockPartition = 0;
+const constexpr int kObjectStoreLockPartition = 1;
+
 inline void EncodeIntSafely(int64_t value, int64_t max, std::string* into) {
   DCHECK_LE(value, max);
   return EncodeInt(value, into);
@@ -1211,28 +1214,24 @@ std::string IndexedDBKeyToDebugString(base::StringPiece key) {
   return result.str();
 }
 
-PartitionedLockRange GetDatabaseLockRange(int64_t database_id) {
-  // The numbers are transformed into big-endian to make them
-  // bytewise-comparable. Eventually, these lock ranges should just match the
-  // leveldb keys when they are bytewise-comparable.
-  uint64_t first[1] = {ByteSwapToBE64(static_cast<uint64_t>(database_id))};
-  uint64_t next[1] = {ByteSwapToBE64(static_cast<uint64_t>(database_id + 1))};
-  return {std::string(reinterpret_cast<char*>(&first), sizeof(first)),
-          std::string(reinterpret_cast<char*>(&next), sizeof(next))};
+PartitionedLockId GetDatabaseLockId(int64_t database_id) {
+  // These keys used to attempt to be bytewise-comparable, which is why
+  // it uses big-endian encoding here. There was a goal to match the
+  // existing leveldb key scheme used by IndexedDB. This is no longer a goal.
+  uint64_t key[1] = {ByteSwapToBE64(static_cast<uint64_t>(database_id))};
+  return {kDatabaseLockPartition,
+          std::string(reinterpret_cast<char*>(&key), sizeof(key))};
 }
 
-PartitionedLockRange GetObjectStoreLockRange(int64_t database_id,
-                                             int64_t object_store_id) {
-  // The numbers are transformed into big-endian to make them
-  // bytewise-comparable. Eventually, these lock ranges should just match the
-  // leveldb keys when they are bytewise-comparable.
-  uint64_t first[2] = {ByteSwapToBE64(static_cast<uint64_t>(database_id)),
-                       ByteSwapToBE64(static_cast<uint64_t>(object_store_id))};
-  uint64_t next[2] = {
-      ByteSwapToBE64(static_cast<uint64_t>(database_id)),
-      ByteSwapToBE64(static_cast<uint64_t>(object_store_id + 1))};
-  return {std::string(reinterpret_cast<char*>(&first), sizeof(first)),
-          std::string(reinterpret_cast<char*>(&next), sizeof(next))};
+PartitionedLockId GetObjectStoreLockId(int64_t database_id,
+                                       int64_t object_store_id) {
+  // These keys used to attempt to be bytewise-comparable, which is why
+  // it uses big-endian encoding here. There was a goal to match the
+  // existing leveldb key scheme used by IndexedDB. This is no longer a goal.
+  uint64_t key[2] = {ByteSwapToBE64(static_cast<uint64_t>(database_id)),
+                     ByteSwapToBE64(static_cast<uint64_t>(object_store_id))};
+  return {kObjectStoreLockPartition,
+          std::string(reinterpret_cast<char*>(&key), sizeof(key))};
 }
 
 KeyPrefix::KeyPrefix()

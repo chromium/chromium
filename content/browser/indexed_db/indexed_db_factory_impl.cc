@@ -666,7 +666,7 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
   // arguments to this method.
   DefaultLevelDBScopesFactory scopes_factory;
   std::unique_ptr<PartitionedLockManagerImpl> lock_manager =
-      std::make_unique<PartitionedLockManagerImpl>(kIndexedDBLockLevelCount);
+      std::make_unique<PartitionedLockManagerImpl>();
   IndexedDBDataLossInfo data_loss_info;
   std::unique_ptr<IndexedDBBackingStore> backing_store;
   bool disk_full = false;

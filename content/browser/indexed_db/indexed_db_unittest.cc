@@ -632,23 +632,21 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
 }
 
 TEST(PartitionedLockManager, TestRangeDifferences) {
-  PartitionedLockRange range_db1;
-  PartitionedLockRange range_db2;
-  PartitionedLockRange range_db1_os1;
-  PartitionedLockRange range_db1_os2;
+  PartitionedLockId lock_id_db1;
+  PartitionedLockId lock_id_db2;
+  PartitionedLockId lock_id_db1_os1;
+  PartitionedLockId lock_id_db1_os2;
   for (int64_t i = 0; i < 512; ++i) {
-    range_db1 = GetDatabaseLockRange(i);
-    range_db2 = GetDatabaseLockRange(i + 1);
-    range_db1_os1 = GetObjectStoreLockRange(i, i);
-    range_db1_os2 = GetObjectStoreLockRange(i, i + 1);
-    EXPECT_TRUE(range_db1.IsValid() && range_db2.IsValid() &&
-                range_db1_os1.IsValid() && range_db1_os2.IsValid());
-    EXPECT_LT(range_db1, range_db2);
-    EXPECT_LT(range_db1, range_db1_os1);
-    EXPECT_LT(range_db1, range_db1_os2);
-    EXPECT_LT(range_db1_os1, range_db1_os2);
-    EXPECT_LT(range_db1_os1, range_db2);
-    EXPECT_LT(range_db1_os2, range_db2);
+    lock_id_db1 = GetDatabaseLockId(i);
+    lock_id_db2 = GetDatabaseLockId(i + 1);
+    lock_id_db1_os1 = GetObjectStoreLockId(i, i);
+    lock_id_db1_os2 = GetObjectStoreLockId(i, i + 1);
+    EXPECT_NE(lock_id_db1, lock_id_db2);
+    EXPECT_NE(lock_id_db1, lock_id_db1_os1);
+    EXPECT_NE(lock_id_db1, lock_id_db1_os2);
+    EXPECT_NE(lock_id_db1_os1, lock_id_db1_os2);
+    EXPECT_NE(lock_id_db1_os1, lock_id_db2);
+    EXPECT_NE(lock_id_db1_os2, lock_id_db2);
   }
 }
 

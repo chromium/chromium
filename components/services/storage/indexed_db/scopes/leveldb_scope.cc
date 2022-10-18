@@ -422,10 +422,9 @@ void LevelDBScope::SetModeToUndoLog() {
   LevelDBScopesScopeMetadata metadata;
   for (PartitionedLock& lock : locks_) {
     auto* lock_proto = metadata.add_locks();
-    lock_proto->set_level(lock.level());
-    auto* range = lock_proto->mutable_range();
-    range->set_begin(lock.range().begin);
-    range->set_end(lock.range().end);
+    lock_proto->set_partition(lock.lock_id().partition);
+    auto* key = lock_proto->mutable_key();
+    key->set_key(lock.lock_id().key);
   }
   metadata.SerializeToString(&value_buffer_);
   buffer_batch_.Put(key_encoder_.ScopeMetadataKey(prefix_, scope_id_),

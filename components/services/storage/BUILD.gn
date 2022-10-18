@@ -116,12 +116,12 @@ component("lock_manager") {
   sources = [
     "indexed_db/locks/partitioned_lock.cc",
     "indexed_db/locks/partitioned_lock.h",
+    "indexed_db/locks/partitioned_lock_id.cc",
+    "indexed_db/locks/partitioned_lock_id.h",
     "indexed_db/locks/partitioned_lock_manager.cc",
     "indexed_db/locks/partitioned_lock_manager.h",
     "indexed_db/locks/partitioned_lock_manager_impl.cc",
     "indexed_db/locks/partitioned_lock_manager_impl.h",
-    "indexed_db/locks/partitioned_lock_range.cc",
-    "indexed_db/locks/partitioned_lock_range.h",
   ]
   deps = [ "//base" ]
   defines = [ "IS_LOCK_MANAGER_IMPL" ]

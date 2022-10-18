@@ -51,7 +51,7 @@ class WebAppLockManager {
       base::OnceClosure on_lock_acquired);
 
  private:
-  content::PartitionedLockManagerImpl lock_manager_{2};
+  content::PartitionedLockManagerImpl lock_manager_;
 };
 
 }  // namespace web_app

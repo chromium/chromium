@@ -36,10 +36,9 @@ namespace content {
 class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManagerImpl
     : public PartitionedLockManager {
  public:
-  // Creates a lock manager with the given number of levels, the comparator for
-  // leveldb keys, and the current task runner that we are running on. The task
-  // runner will be used for the lock acquisition callbacks.
-  explicit PartitionedLockManagerImpl(int level_count);
+  // Grabs the current task runner that we are running on to be used for the
+  // lock acquisition callbacks.
+  explicit PartitionedLockManagerImpl();
 
   PartitionedLockManagerImpl(const PartitionedLockManagerImpl&) = delete;
   PartitionedLockManagerImpl& operator=(const PartitionedLockManagerImpl&) =
@@ -50,22 +49,18 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManagerImpl
   int64_t LocksHeldForTesting() const override;
   int64_t RequestsWaitingForTesting() const override;
 
-  // Returns if the request was valid. To be valid, all requests must have:
-  // * lock level < |level_count| populated above,
-  // * |range.begin| < |range.end| using the |comparator| above,
-  // * range disjoint from other lock ranges (which is an implementation
-  //   invariant).
-  bool AcquireLocks(base::flat_set<PartitionedLockRequest> lock_requests,
+  // Acquires locks for the given requests. Lock partitions are treated as
+  // completely independent domains.
+  void AcquireLocks(base::flat_set<PartitionedLockRequest> lock_requests,
                     base::WeakPtr<PartitionedLockHolder> locks_holder,
                     LocksAcquiredCallback callback) override;
 
-  enum class TestLockResult { kInvalid, kLocked, kFree };
   // Tests to see if the given lock request can be acquired.
-  TestLockResult TestLock(PartitionedLockRequest lock_requests);
+  TestLockResult TestLock(PartitionedLockRequest lock_requests) override;
 
-  // Remove the given lock range at the given level. The lock range must not be
-  // in use. Use this if the lock will never be used again.
-  void RemoveLockRange(int level, const PartitionedLockRange& range);
+  // Remove the given lock lock_id. The lock lock_id must not be in use. Call
+  // this if the lock will never be used again.
+  void RemoveLockId(const PartitionedLockId& lock_id);
 
  private:
   struct LockRequest {
@@ -82,9 +77,9 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManagerImpl
     base::OnceClosure acquired_callback;
   };
 
-  // Represents a lock, which has a range and a level. To support shared access,
-  // there can be multiple acquisitions of this lock, represented in
-  // |acquired_count|. Also holds the pending requests for this lock.
+  // Represents a lock, which has a lock_id. To support shared access, there can
+  // be multiple acquisitions of this lock, represented in |acquired_count|.
+  // Also holds the pending requests for this lock.
   struct Lock {
     Lock();
     Lock(const Lock&) = delete;
@@ -104,20 +99,14 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManagerImpl
     std::list<LockRequest> queue;
   };
 
-  using LockLevelMap = base::flat_map<PartitionedLockRange, Lock>;
-
-  bool AcquireLock(PartitionedLockRequest request,
+  void AcquireLock(PartitionedLockRequest request,
                    base::WeakPtr<PartitionedLockHolder> locks_holder,
                    base::OnceClosure acquired_callback);
 
-  void LockReleased(int level, PartitionedLockRange range);
-
-  static bool IsRangeDisjointFromNeighbors(const LockLevelMap& map,
-                                           const PartitionedLockRange& range);
+  void LockReleased(PartitionedLockId lock_id);
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  // This vector should never be modified after construction.
-  std::vector<LockLevelMap> locks_;
+  base::flat_map<PartitionedLockId, Lock> locks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PartitionedLockManagerImpl> weak_factory_{this};

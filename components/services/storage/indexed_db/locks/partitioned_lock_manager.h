@@ -6,14 +6,16 @@
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_
 
 #include <iosfwd>
+#include <list>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_range.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
 namespace content {
 
@@ -40,14 +42,14 @@ struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockHolder {
   base::WeakPtrFactory<PartitionedLockHolder> weak_factory{this};
 };
 
-// Generic two-level lock management system based on ranges. Granted locks are
+// Generic two-level lock management system based on lock_ids. Granted locks are
 // represented by the |PartitionedLock| class.
 class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
  public:
   using LocksAcquiredCallback = base::OnceClosure;
 
-  // Shared locks can share access to a lock range, while exclusive locks
-  // require that they are the only lock for their range.
+  // Shared locks can share access to a lock id, while exclusive locks
+  // require that they are the only lock for their lock id.
   enum class LockType { kShared, kExclusive };
 
   PartitionedLockManager();
@@ -58,22 +60,20 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
   virtual int64_t LocksHeldForTesting() const = 0;
   virtual int64_t RequestsWaitingForTesting() const = 0;
 
-  // Acquires locks for the given requests. Lock levels are treated as
-  // completely independent domains. The lock levels start at zero.
-  // Returns false if any of the lock ranges were invalid or an invariant was
-  // broken.
+  // Acquires locks for the given requests. Lock partitions are treated as
+  // completely independent domains.
   struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockRequest {
-    PartitionedLockRequest(int level,
-                           PartitionedLockRange range,
-                           LockType type);
-    int level;
-    PartitionedLockRange range;
+    PartitionedLockRequest(PartitionedLockId lock_id, LockType type);
+    PartitionedLockId lock_id;
     LockType type;
   };
-  virtual bool AcquireLocks(
+  virtual void AcquireLocks(
       base::flat_set<PartitionedLockRequest> lock_requests,
       base::WeakPtr<PartitionedLockHolder> locks_receiever,
       LocksAcquiredCallback callback) = 0;
+
+  enum class TestLockResult { kLocked, kFree };
+  virtual TestLockResult TestLock(PartitionedLockRequest lock_requests) = 0;
 
  private:
   base::WeakPtrFactory<PartitionedLockManager> weak_factory_{this};

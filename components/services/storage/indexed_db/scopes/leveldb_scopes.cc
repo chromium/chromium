@@ -136,22 +136,26 @@ leveldb::Status LevelDBScopes::Initialize() {
     // The commit point isn't there, so that scope needs to be reverted.
     // Acquire all locks necessary to undo the scope to prevent user-created
     // scopes for reading or writing changes that will be undone.
-    PartitionedLockRange range;
+    PartitionedLockId lock_id;
     base::flat_set<PartitionedLockManager::PartitionedLockRequest>
         lock_requests;
     lock_requests.reserve(scope_metadata.locks().size());
     for (const auto& lock : scope_metadata.locks()) {
-      range.begin = lock.range().begin();
-      range.end = lock.range().end();
-      lock_requests.emplace(lock.level(), range,
+      lock_id.partition = lock.partition();
+      lock_id.key = lock.key().key();
+      lock_requests.emplace(lock_id,
                             PartitionedLockManager::LockType::kExclusive);
+      if (UNLIKELY(
+              lock_manager_->TestLock(
+                  {lock_id, PartitionedLockManager::LockType::kExclusive}) !=
+              PartitionedLockManager::TestLockResult::kFree)) {
+        return leveldb::Status::Corruption("Invalid locks on disk.");
+      }
     }
     PartitionedLockHolder receiver;
-    bool locks_acquired = lock_manager_->AcquireLocks(
-        std::move(lock_requests), receiver.weak_factory.GetWeakPtr(),
-        base::DoNothing());
-    if (UNLIKELY(!locks_acquired))
-      return leveldb::Status::Corruption("Invalid locks on disk.");
+    lock_manager_->AcquireLocks(std::move(lock_requests),
+                                receiver.weak_factory.GetWeakPtr(),
+                                base::DoNothing());
 
     // AcquireLocks should grant the locks synchronously because
     // 1. There should be no locks acquired before calling this method, and

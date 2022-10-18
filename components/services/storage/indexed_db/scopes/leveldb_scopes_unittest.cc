@@ -27,7 +27,7 @@ class LevelDBScopesStartupTest : public LevelDBScopesTestBase {
 TEST_F(LevelDBScopesStartupTest, CleanupOnRecovery) {
   const int64_t kScopeToCleanUp = 19;
   SetUpRealDatabase();
-  PartitionedLockManagerImpl lock_manager(3);
+  PartitionedLockManagerImpl lock_manager;
   WriteScopesMetadata(kScopeToCleanUp, true);
 
   leveldb::Status failure_callback = leveldb::Status::OK();
@@ -60,7 +60,7 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   const std::string kKeyWithinCleanupDeleteRange = "b2";
   const std::string kCleanupDeleteRangeEnd = "b3";
   SetUpRealDatabase();
-  PartitionedLockManagerImpl lock_manager(3);
+  PartitionedLockManagerImpl lock_manager;
 
   // Tests that the revert execution on startup is performed correctly. This
   // includes:
@@ -69,11 +69,9 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   //   execute the cleanup tasks.
 
   metadata_buffer_.mutable_locks()->Add();
-  metadata_buffer_.mutable_locks()->Mutable(0)->set_level(0);
-  metadata_buffer_.mutable_locks()->Mutable(0)->mutable_range()->set_begin(
+  metadata_buffer_.mutable_locks()->Mutable(0)->set_partition(0);
+  metadata_buffer_.mutable_locks()->Mutable(0)->mutable_key()->set_key(
       simple_lock_begin_);
-  metadata_buffer_.mutable_locks()->Mutable(0)->mutable_range()->set_end(
-      simple_lock_end_);
   WriteScopesMetadata(kScopeToResumeRevert, false);
 
   // Cleanup task that will be ignored.

@@ -181,7 +181,7 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
   lock_requests.reserve(1 + transaction->scope().size());
   lock_requests.emplace_back(
-      kDatabaseRangeLockLevel, GetDatabaseLockRange(id()),
+      GetDatabaseLockId(id()),
       transaction->mode() == blink::mojom::IDBTransactionMode::VersionChange
           ? PartitionedLockManager::LockType::kExclusive
           : PartitionedLockManager::LockType::kShared);
@@ -190,8 +190,7 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
           ? PartitionedLockManager::LockType::kShared
           : PartitionedLockManager::LockType::kExclusive;
   for (int64_t object_store : transaction->scope()) {
-    lock_requests.emplace_back(kObjectStoreRangeLockLevel,
-                               GetObjectStoreLockRange(id(), object_store),
+    lock_requests.emplace_back(GetObjectStoreLockId(id(), object_store),
                                lock_type);
   }
   lock_manager_->AcquireLocks(

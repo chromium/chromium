@@ -14,16 +14,12 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_range.h"
 
 namespace web_app {
 
 namespace {
-// Creates a `PartitionedLockRange` that only includes the provided string `key`
-content::PartitionedLockRange StringToLockRange(std::string key) {
-  return content::PartitionedLockRange{key, key + static_cast<char>(0)};
-}
 
 enum class LockLevel {
   kStatic = 0,
@@ -40,18 +36,19 @@ enum KeysOnStaticLevel {
 content::PartitionedLockManager::PartitionedLockRequest GetSystemLock(
     content::PartitionedLockManager::LockType type) {
   return content::PartitionedLockManager::PartitionedLockRequest(
-      static_cast<int>(LockLevel::kStatic),
-      StringToLockRange(base::NumberToString(KeysOnStaticLevel::kFullSystem)),
+      content::PartitionedLockId(
+          {static_cast<int>(LockLevel::kStatic),
+           base::NumberToString(KeysOnStaticLevel::kFullSystem)}),
       type);
 }
 
 content::PartitionedLockManager::PartitionedLockRequest
 GetSharedWebContentsLock() {
   return content::PartitionedLockManager::PartitionedLockRequest(
-      {static_cast<int>(LockLevel::kStatic),
-       StringToLockRange(
-           base::NumberToString(KeysOnStaticLevel::kBackgroundWebContents)),
-       content::PartitionedLockManager::LockType::kExclusive});
+      content::PartitionedLockId(
+          {static_cast<int>(LockLevel::kStatic),
+           base::NumberToString(KeysOnStaticLevel::kBackgroundWebContents)}),
+      content::PartitionedLockManager::LockType::kExclusive);
 }
 
 std::vector<content::PartitionedLockManager::PartitionedLockRequest>
@@ -60,7 +57,7 @@ GetAppIdLocks(const base::flat_set<AppId>& app_ids) {
       lock_requests;
   for (const AppId& app_id : app_ids) {
     lock_requests.emplace_back(
-        static_cast<int>(LockLevel::kApp), StringToLockRange(app_id),
+        content::PartitionedLockId({static_cast<int>(LockLevel::kApp), app_id}),
         content::PartitionedLockManager::LockType::kExclusive);
   }
   return lock_requests;
@@ -117,10 +114,8 @@ void WebAppLockManager::AcquireLock(Lock& lock,
                      base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
                      std::move(on_lock_acquired));
   lock.holder_ = std::make_unique<content::PartitionedLockHolder>();
-  bool success =
-      lock_manager_.AcquireLocks(std::move(requests), lock.holder_->AsWeakPtr(),
-                                 std::move(posted_callback));
-  DCHECK(success);
+  lock_manager_.AcquireLocks(std::move(requests), lock.holder_->AsWeakPtr(),
+                             std::move(posted_callback));
 }
 
 std::unique_ptr<SharedWebContentsWithAppLock>
@@ -138,10 +133,9 @@ WebAppLockManager::UpgradeAndAcquireLock(
       base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
                      base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
                      std::move(on_lock_acquired));
-  bool success = lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
-                                            result_lock->holder_->AsWeakPtr(),
-                                            std::move(posted_callback));
-  DCHECK(success);
+  lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
+                             result_lock->holder_->AsWeakPtr(),
+                             std::move(posted_callback));
   return result_lock;
 }
 
@@ -158,10 +152,9 @@ std::unique_ptr<AppLock> WebAppLockManager::UpgradeAndAcquireLock(
       base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
                      base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
                      std::move(on_lock_acquired));
-  bool success = lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
-                                            result_lock->holder_->AsWeakPtr(),
-                                            std::move(posted_callback));
-  DCHECK(success);
+  lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
+                             result_lock->holder_->AsWeakPtr(),
+                             std::move(posted_callback));
   return result_lock;
 }
 

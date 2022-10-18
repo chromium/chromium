@@ -8,9 +8,8 @@
 #include <iosfwd>
 
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/component_export.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_range.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
 namespace content {
 
@@ -22,7 +21,7 @@ namespace content {
 class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLock {
  public:
   using LockReleasedCallback =
-      base::OnceCallback<void(int level, PartitionedLockRange range)>;
+      base::OnceCallback<void(PartitionedLockId lock_id)>;
 
   PartitionedLock();
 
@@ -34,8 +33,7 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLock {
   // |lock_released_callback| is called when the lock is released, either by
   // destruction of this object or by the |Released()| call. It will be called
   // synchronously on the sequence runner this lock is released on.
-  PartitionedLock(PartitionedLockRange range,
-                  int level,
+  PartitionedLock(PartitionedLockId lock_id,
                   LockReleasedCallback lock_released_callback);
   // The lock in |other| is not released, and |this| must not be holding a lock.
   PartitionedLock& operator=(PartitionedLock&& other) noexcept;
@@ -50,12 +48,11 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLock {
   // instance that does not hold a granted lock.
   void Release();
 
-  int level() const { return level_; }
-  const PartitionedLockRange& range() const { return range_; }
+  const PartitionedLockId& lock_id() const { return lock_id_; }
 
  private:
-  PartitionedLockRange range_;
-  int level_ = 0;
+  PartitionedLockId lock_id_;
+
   // Closure to run when the lock is released. The lock is held when this is
   // non-null.
   LockReleasedCallback lock_released_callback_;
@@ -63,10 +60,10 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLock {
 
 // Logging support.
 COMPONENT_EXPORT(LOCK_MANAGER)
-std::ostream& operator<<(std::ostream& out, const PartitionedLock& range);
+std::ostream& operator<<(std::ostream& out, const PartitionedLock& lock_id);
 
 // Equality doesn't take into account whether the lock 'is_locked()' or not,
-// only the level and the range.
+// only the partition and the lock_id.
 COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator==(const PartitionedLock& x, const PartitionedLock& y);
 COMPONENT_EXPORT(LOCK_MANAGER)

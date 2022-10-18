@@ -366,13 +366,11 @@ class IndexedDBBackingStoreTest : public testing::Test {
   std::vector<PartitionedLock> CreateDummyLock() {
     base::RunLoop loop;
     PartitionedLockHolder locks_receiver;
-    bool success = lock_manager_->AcquireLocks(
-        {{0, {"01", "11"}, PartitionedLockManager::LockType::kShared}},
+    lock_manager_->AcquireLocks(
+        {{{0, "01"}, PartitionedLockManager::LockType::kShared}},
         locks_receiver.AsWeakPtr(),
         base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
-    EXPECT_TRUE(success);
-    if (success)
-      loop.Run();
+    loop.Run();
     return std::move(locks_receiver.locks);
   }
 

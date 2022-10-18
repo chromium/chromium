@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_range.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -68,7 +68,7 @@ class PartitionedLockManagerImplTest : public testing::Test {
 
 TEST_F(PartitionedLockManagerImplTest, BasicAcquisition) {
   const size_t kTotalLocks = 10;
-  PartitionedLockManagerImpl lock_manager(1);
+  PartitionedLockManagerImpl lock_manager;
 
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
@@ -81,23 +81,23 @@ TEST_F(PartitionedLockManagerImplTest, BasicAcquisition) {
 
     std::vector<PartitionedLockManager::PartitionedLockRequest> locks1_requests;
     for (size_t i = 0; i < kTotalLocks / 2; ++i) {
-      PartitionedLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
+      PartitionedLockId lock_id = {0, IntegerKey(i)};
       locks1_requests.emplace_back(
-          0, std::move(range), PartitionedLockManager::LockType::kExclusive);
+          std::move(lock_id), PartitionedLockManager::LockType::kExclusive);
     }
-    EXPECT_TRUE(lock_manager.AcquireLocks(locks1_requests, holder1.AsWeakPtr(),
-                                          barrier.AddClosure()));
+    lock_manager.AcquireLocks(std::move(locks1_requests), holder1.AsWeakPtr(),
+                              barrier.AddClosure());
 
     // Now acquire kTotalLocks/2 locks starting at (kTotalLocks-1) to verify
     // they acquire in the correct order.
     std::vector<PartitionedLockManager::PartitionedLockRequest> locks2_requests;
     for (size_t i = kTotalLocks - 1; i >= kTotalLocks / 2; --i) {
-      PartitionedLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
+      PartitionedLockId lock_id = {0, IntegerKey(i)};
       locks2_requests.emplace_back(
-          0, std::move(range), PartitionedLockManager::LockType::kExclusive);
+          std::move(lock_id), PartitionedLockManager::LockType::kExclusive);
     }
-    EXPECT_TRUE(lock_manager.AcquireLocks(locks2_requests, holder2.AsWeakPtr(),
-                                          barrier.AddClosure()));
+    lock_manager.AcquireLocks(std::move(locks2_requests), holder2.AsWeakPtr(),
+                              barrier.AddClosure());
   }
   loop.Run();
   EXPECT_EQ(static_cast<int64_t>(kTotalLocks),
@@ -127,11 +127,11 @@ TEST_F(PartitionedLockManagerImplTest, BasicAcquisition) {
 }
 
 TEST_F(PartitionedLockManagerImplTest, Shared) {
-  PartitionedLockManagerImpl lock_manager(1);
+  PartitionedLockManagerImpl lock_manager;
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
-  PartitionedLockRange range = {IntegerKey(0), IntegerKey(1)};
+  PartitionedLockId lock_id = {0, IntegerKey(0)};
 
   PartitionedLockHolder locks_holder1;
   PartitionedLockHolder locks_holder2;
@@ -140,16 +140,16 @@ TEST_F(PartitionedLockManagerImplTest, Shared) {
     BarrierBuilder barrier(loop.QuitClosure());
     EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
               lock_manager.TestLock(
-                  {0, range, PartitionedLockManager::LockType::kShared}));
-    EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{0, range, PartitionedLockManager::LockType::kShared}},
-        locks_holder1.AsWeakPtr(), barrier.AddClosure()));
+                  {lock_id, PartitionedLockManager::LockType::kShared}));
+    lock_manager.AcquireLocks(
+        {{lock_id, PartitionedLockManager::LockType::kShared}},
+        locks_holder1.AsWeakPtr(), barrier.AddClosure());
     EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
               lock_manager.TestLock(
-                  {0, range, PartitionedLockManager::LockType::kShared}));
-    EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{0, range, PartitionedLockManager::LockType::kShared}},
-        locks_holder2.AsWeakPtr(), barrier.AddClosure()));
+                  {lock_id, PartitionedLockManager::LockType::kShared}));
+    lock_manager.AcquireLocks(
+        {{lock_id, PartitionedLockManager::LockType::kShared}},
+        locks_holder2.AsWeakPtr(), barrier.AddClosure());
   }
   loop.Run();
   EXPECT_EQ(2ll, lock_manager.LocksHeldForTesting());
@@ -159,11 +159,11 @@ TEST_F(PartitionedLockManagerImplTest, Shared) {
 }
 
 TEST_F(PartitionedLockManagerImplTest, SharedAndExclusiveQueuing) {
-  PartitionedLockManagerImpl lock_manager(1);
+  PartitionedLockManagerImpl lock_manager;
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
-  PartitionedLockRange range = {IntegerKey(0), IntegerKey(1)};
+  PartitionedLockId lock_id = {0, IntegerKey(0)};
 
   PartitionedLockHolder shared_lock1_holder;
   PartitionedLockHolder shared_lock2_holder;
@@ -174,12 +174,12 @@ TEST_F(PartitionedLockManagerImplTest, SharedAndExclusiveQueuing) {
     base::RunLoop loop;
     {
       BarrierBuilder barrier(loop.QuitClosure());
-      EXPECT_TRUE(lock_manager.AcquireLocks(
-          {{0, range, PartitionedLockManager::LockType::kShared}},
-          shared_lock1_holder.AsWeakPtr(), barrier.AddClosure()));
-      EXPECT_TRUE(lock_manager.AcquireLocks(
-          {{0, range, PartitionedLockManager::LockType::kShared}},
-          shared_lock2_holder.AsWeakPtr(), barrier.AddClosure()));
+      lock_manager.AcquireLocks(
+          {{lock_id, PartitionedLockManager::LockType::kShared}},
+          shared_lock1_holder.AsWeakPtr(), barrier.AddClosure());
+      lock_manager.AcquireLocks(
+          {{lock_id, PartitionedLockManager::LockType::kShared}},
+          shared_lock2_holder.AsWeakPtr(), barrier.AddClosure());
     }
     loop.Run();
   }
@@ -189,19 +189,19 @@ TEST_F(PartitionedLockManagerImplTest, SharedAndExclusiveQueuing) {
   // Exclusive request is blocked, shared is free.
   EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kLocked,
             lock_manager.TestLock(
-                {0, range, PartitionedLockManager::LockType::kExclusive}));
+                {lock_id, PartitionedLockManager::LockType::kExclusive}));
   EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
             lock_manager.TestLock(
-                {0, range, PartitionedLockManager::LockType::kShared}));
+                {lock_id, PartitionedLockManager::LockType::kShared}));
 
   // Both of the following locks should be queued - the exclusive is next in
   // line, then the shared lock will come after it.
-  EXPECT_TRUE(lock_manager.AcquireLocks(
-      {{0, range, PartitionedLockManager::LockType::kExclusive}},
-      exclusive_lock3_holder.AsWeakPtr(), base::DoNothing()));
-  EXPECT_TRUE(lock_manager.AcquireLocks(
-      {{0, range, PartitionedLockManager::LockType::kShared}},
-      shared_lock3_holder.AsWeakPtr(), base::DoNothing()));
+  lock_manager.AcquireLocks(
+      {{lock_id, PartitionedLockManager::LockType::kExclusive}},
+      exclusive_lock3_holder.AsWeakPtr(), base::DoNothing());
+  lock_manager.AcquireLocks(
+      {{lock_id, PartitionedLockManager::LockType::kShared}},
+      shared_lock3_holder.AsWeakPtr(), base::DoNothing());
   // Flush the task queue.
   {
     base::RunLoop loop;
@@ -234,10 +234,10 @@ TEST_F(PartitionedLockManagerImplTest, SharedAndExclusiveQueuing) {
   // Both exclusive and shared requests are blocked.
   EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kLocked,
             lock_manager.TestLock(
-                {0, range, PartitionedLockManager::LockType::kExclusive}));
+                {lock_id, PartitionedLockManager::LockType::kExclusive}));
   EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kLocked,
             lock_manager.TestLock(
-                {0, range, PartitionedLockManager::LockType::kShared}));
+                {lock_id, PartitionedLockManager::LockType::kShared}));
 
   exclusive_lock3_holder.locks.clear();
 
@@ -254,85 +254,36 @@ TEST_F(PartitionedLockManagerImplTest, SharedAndExclusiveQueuing) {
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 }
 
-TEST_F(PartitionedLockManagerImplTest, LevelsOperateSeparately) {
-  PartitionedLockManagerImpl lock_manager(2);
+TEST_F(PartitionedLockManagerImplTest, PartitionsOperateSeparately) {
+  PartitionedLockManagerImpl lock_manager;
   base::RunLoop loop;
-  PartitionedLockHolder l0_lock_holder;
-  PartitionedLockHolder l1_lock_holder;
+  PartitionedLockHolder p0_lock_holder;
+  PartitionedLockHolder p1_lock_holder;
   {
     BarrierBuilder barrier(loop.QuitClosure());
-    PartitionedLockRange range = {IntegerKey(0), IntegerKey(1)};
+    PartitionedLockId lock_id_p0 = {0, IntegerKey(0)};
+    PartitionedLockId lock_id_p1 = {1, IntegerKey(0)};
     EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
               lock_manager.TestLock(
-                  {0, range, PartitionedLockManager::LockType::kExclusive}));
-    EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{0, range, PartitionedLockManager::LockType::kExclusive}},
-        l0_lock_holder.AsWeakPtr(), barrier.AddClosure()));
+                  {lock_id_p0, PartitionedLockManager::LockType::kExclusive}));
+    lock_manager.AcquireLocks(
+        {{lock_id_p0, PartitionedLockManager::LockType::kExclusive}},
+        p0_lock_holder.AsWeakPtr(), barrier.AddClosure());
     EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
               lock_manager.TestLock(
-                  {1, range, PartitionedLockManager::LockType::kExclusive}));
-    EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{1, range, PartitionedLockManager::LockType::kExclusive}},
-        l1_lock_holder.AsWeakPtr(), barrier.AddClosure()));
+                  {lock_id_p1, PartitionedLockManager::LockType::kExclusive}));
+    lock_manager.AcquireLocks(
+        {{lock_id_p1, PartitionedLockManager::LockType::kExclusive}},
+        p1_lock_holder.AsWeakPtr(), barrier.AddClosure());
   }
   loop.Run();
-  EXPECT_FALSE(l0_lock_holder.locks.empty());
-  EXPECT_FALSE(l1_lock_holder.locks.empty());
+  EXPECT_FALSE(p0_lock_holder.locks.empty());
+  EXPECT_FALSE(p1_lock_holder.locks.empty());
   EXPECT_EQ(2ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
-  l0_lock_holder.locks.clear();
-  l1_lock_holder.locks.clear();
+  p0_lock_holder.locks.clear();
+  p1_lock_holder.locks.clear();
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
-}
-
-TEST_F(PartitionedLockManagerImplTest, InvalidRequests) {
-  PartitionedLockManagerImpl lock_manager(2);
-  PartitionedLockHolder locks_holder;
-  PartitionedLockRange range1 = {IntegerKey(0), IntegerKey(2)};
-  PartitionedLockRange range2 = {IntegerKey(1), IntegerKey(3)};
-
-  // Invalid because the ranges intersect.
-  EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{0, range1, PartitionedLockManager::LockType::kShared},
-       {0, range2, PartitionedLockManager::LockType::kShared}},
-      locks_holder.AsWeakPtr(), base::DoNothing()));
-  EXPECT_TRUE(locks_holder.locks.empty());
-  EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
-  EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
-
-  // Invalid level.
-  EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{-1, range1, PartitionedLockManager::LockType::kShared}},
-      locks_holder.AsWeakPtr(), base::DoNothing()));
-  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kInvalid,
-            lock_manager.TestLock(
-                {-1, range1, PartitionedLockManager::LockType::kShared}));
-  EXPECT_TRUE(locks_holder.locks.empty());
-  EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
-  EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
-
-  // Invalid level.
-  EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{4, range1, PartitionedLockManager::LockType::kShared}},
-      locks_holder.AsWeakPtr(), base::DoNothing()));
-  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kInvalid,
-            lock_manager.TestLock(
-                {4, range1, PartitionedLockManager::LockType::kShared}));
-  EXPECT_TRUE(locks_holder.locks.empty());
-  EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
-  EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
-
-  // Invalid range.
-  PartitionedLockRange range3 = {IntegerKey(2), IntegerKey(1)};
-  EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{0, range3, PartitionedLockManager::LockType::kShared}},
-      locks_holder.AsWeakPtr(), base::DoNothing()));
-  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kInvalid,
-            lock_manager.TestLock(
-                {0, range3, PartitionedLockManager::LockType::kShared}));
-  EXPECT_TRUE(locks_holder.locks.empty());
-  EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
-  EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 }
 
 }  // namespace

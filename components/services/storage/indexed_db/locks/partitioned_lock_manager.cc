@@ -19,21 +19,20 @@ PartitionedLockManager::PartitionedLockManager() = default;
 PartitionedLockManager::~PartitionedLockManager() = default;
 
 PartitionedLockManager::PartitionedLockRequest::PartitionedLockRequest(
-    int level,
-    PartitionedLockRange range,
+    PartitionedLockId lock_id,
     LockType type)
-    : level(level), range(std::move(range)), type(type) {}
+    : lock_id(std::move(lock_id)), type(type) {}
 
 bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,
                const PartitionedLockManager::PartitionedLockRequest& y) {
-  if (x.level != y.level)
-    return x.level < y.level;
-  return x.range < y.range;
+  if (x.lock_id != y.lock_id)
+    return x.lock_id < y.lock_id;
+  return x.type < y.type;
 }
 
 bool operator==(const PartitionedLockManager::PartitionedLockRequest& x,
                 const PartitionedLockManager::PartitionedLockRequest& y) {
-  return x.level == y.level && x.range == y.range && x.type == y.type;
+  return x.lock_id == y.lock_id && x.type == y.type;
 }
 
 bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,

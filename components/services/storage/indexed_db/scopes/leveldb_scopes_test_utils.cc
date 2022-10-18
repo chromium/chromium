@@ -228,31 +228,24 @@ bool LevelDBScopesTestBase::ScopeDataExistsOnDisk() {
 
 PartitionedLockManager::PartitionedLockRequest
 LevelDBScopesTestBase::CreateSimpleSharedLock() {
-  return {0,
-          {simple_lock_begin_, simple_lock_end_},
-          PartitionedLockManager::LockType::kShared};
+  return {{0, simple_lock_begin_}, PartitionedLockManager::LockType::kShared};
 }
 
 PartitionedLockManager::PartitionedLockRequest
 LevelDBScopesTestBase::CreateSimpleExclusiveLock() {
-  return {0,
-          {simple_lock_begin_, simple_lock_end_},
+  return {{0, simple_lock_begin_},
           PartitionedLockManager::LockType::kExclusive};
 }
 
 PartitionedLockManager::PartitionedLockRequest
 LevelDBScopesTestBase::CreateSharedLock(int i) {
-  return {0,
-          {base::StringPrintf("%010d", i * 2),
-           base::StringPrintf("%010d", i * 2 + 1)},
+  return {{0, base::StringPrintf("%010d", i * 2)},
           PartitionedLockManager::LockType::kShared};
 }
 
 PartitionedLockManager::PartitionedLockRequest
 LevelDBScopesTestBase::CreateExclusiveLock(int i) {
-  return {0,
-          {base::StringPrintf("%010d", i * 2),
-           base::StringPrintf("%010d", i * 2 + 1)},
+  return {{0, base::StringPrintf("%010d", i * 2)},
           PartitionedLockManager::LockType::kExclusive};
 }
 

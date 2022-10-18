@@ -22,7 +22,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_range.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
