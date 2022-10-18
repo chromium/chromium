@@ -22,7 +22,6 @@ import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
-import {NamingController} from './naming_controller.js';
 import {TaskHistory} from './task_history.js';
 import {ComboButton} from './ui/combobutton.js';
 import {DefaultTaskDialog} from './ui/default_task_dialog.js';
@@ -52,18 +51,16 @@ export class FileTasks {
    * @param {!FileManagerUI} ui
    * @param {?FileTransferController} fileTransferController
    * @param {!Array<!Entry>} entries
-   * @param {!Array<?string>} mimeTypes
    * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks
    * @param {?chrome.fileManagerPrivate.FileTask} defaultTask
    * @param {!TaskHistory} taskHistory
-   * @param {!NamingController} namingController
    * @param {!Crostini} crostini
    * @param {!ProgressCenter} progressCenter
    */
   constructor(
       volumeManager, metadataModel, directoryModel, ui, fileTransferController,
-      entries, mimeTypes, resultingTasks, defaultTask, taskHistory,
-      namingController, crostini, progressCenter) {
+      entries, resultingTasks, defaultTask, taskHistory, crostini,
+      progressCenter) {
     /** @private @const {!VolumeManager} */
     this.volumeManager_ = volumeManager;
 
@@ -82,9 +79,6 @@ export class FileTasks {
     /** @private @const {!Array<!Entry>} */
     this.entries_ = entries;
 
-    /** @private @const {!Array<?string>} */
-    this.mimeTypes_ = mimeTypes;
-
     /** @private @const {!chrome.fileManagerPrivate.ResultingTasks} */
     this.resultingTasks_ = resultingTasks;
 
@@ -93,9 +87,6 @@ export class FileTasks {
 
     /** @private @const {!TaskHistory} */
     this.taskHistory_ = taskHistory;
-
-    /** @private @const {!NamingController} */
-    this.namingController_ = namingController;
 
     /** @private @const {!Crostini} */
     this.crostini_ = crostini;
@@ -127,17 +118,14 @@ export class FileTasks {
    * @param {!FileManagerUI} ui
    * @param {?FileTransferController} fileTransferController
    * @param {!Array<!Entry>} entries
-   * @param {!Array<?string>} mimeTypes
    * @param {!TaskHistory} taskHistory
-   * @param {!NamingController} namingController
    * @param {!Crostini} crostini
    * @param {!ProgressCenter} progressCenter
    * @return {!Promise<!FileTasks>}
    */
   static async create(
       volumeManager, metadataModel, directoryModel, ui, fileTransferController,
-      entries, mimeTypes, taskHistory, namingController, crostini,
-      progressCenter) {
+      entries, taskHistory, crostini, progressCenter) {
     /** @type {!chrome.fileManagerPrivate.ResultingTasks} */
     let resultingTasks = {tasks: []};
 
@@ -158,7 +146,7 @@ export class FileTasks {
     // dialog with an error message, similar to when attempting to run Crostini
     // tasks with non-Crostini entries.
     if (entries.length !== 1 ||
-        !(FileTasks.isCrostiniEntry(entries[0], volumeManager) ||
+        !(isCrostiniEntry(entries[0], volumeManager) ||
           crostini.canSharePath(
               constants.DEFAULT_CROSTINI_VM, entries[0],
               false /* persist */))) {
@@ -175,8 +163,8 @@ export class FileTasks {
 
     return new FileTasks(
         volumeManager, metadataModel, directoryModel, ui,
-        fileTransferController, entries, mimeTypes, resultingTasks, defaultTask,
-        taskHistory, namingController, crostini, progressCenter);
+        fileTransferController, entries, resultingTasks, defaultTask,
+        taskHistory, crostini, progressCenter);
   }
 
   /**
@@ -185,14 +173,6 @@ export class FileTasks {
    */
   getTaskItems() {
     return this.resultingTasks_.tasks;
-  }
-
-  /**
-   * Gets tasks which are categorized as OPEN tasks.
-   * @return {!Array<!chrome.fileManagerPrivate.FileTask>}
-   */
-  getOpenTaskItems() {
-    return this.resultingTasks_.tasks.filter(FileTasks.isOpenTask);
   }
 
   /**
@@ -384,18 +364,6 @@ export class FileTasks {
     }
   }
 
-  /**
-   * Returns true if the given task is categorized as an OPEN task.
-   *
-   * @param {!chrome.fileManagerPrivate.FileTask} task
-   * @return {boolean} True if the given task is an OPEN task.
-   */
-  static isOpenTask(task) {
-    // We consider following types of tasks as OPEN tasks.
-    // - Files app's internal tasks
-    // - file_handler tasks with OPEN_WITH verb
-    return !task.verb || task.verb == chrome.fileManagerPrivate.Verb.OPEN_WITH;
-  }
 
   /**
    * Annotates tasks returned from the API.
@@ -423,7 +391,6 @@ export class FileTasks {
         if (parsedActionId === 'mount-archive') {
           task.iconType = 'archive';
           task.title = loadTimeData.getString('MOUNT_ARCHIVE');
-          task.verb = undefined;
         } else if (parsedActionId === 'open-hosted-generic') {
           if (entries.length > 1) {
             task.iconType = 'generic';
@@ -431,54 +398,41 @@ export class FileTasks {
             task.iconType = FileType.getIcon(entries[0]);
           }
           task.title = loadTimeData.getString('TASK_OPEN');
-          task.verb = undefined;
         } else if (parsedActionId === 'open-hosted-gdoc') {
           task.iconType = 'gdoc';
           task.title = loadTimeData.getString('TASK_OPEN_GDOC');
-          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'open-hosted-gsheet') {
           task.iconType = 'gsheet';
           task.title = loadTimeData.getString('TASK_OPEN_GSHEET');
-          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'open-hosted-gslides') {
           task.iconType = 'gslides';
           task.title = loadTimeData.getString('TASK_OPEN_GSLIDES');
-          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'open-web-drive-office-word') {
           task.iconType = 'gdoc';
           task.title = loadTimeData.getString('TASK_OPEN_GDOC');
-          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'open-web-drive-office-excel') {
           task.iconType = 'gsheet';
           task.title = loadTimeData.getString('TASK_OPEN_GSHEET');
-          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'upload-office-to-drive') {
           task.iconType = 'generic';
           task.title = 'Upload to Drive';
-          task.verb = undefined;
         } else if (parsedActionId === 'open-web-drive-office-powerpoint') {
           task.iconType = 'gslides';
           task.title = loadTimeData.getString('TASK_OPEN_GSLIDES');
-          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'open-in-office') {
           task.title = loadTimeData.getString('TASK_OPEN_OFFICE');
-          task.verb = chrome.fileManagerPrivate.Verb.OPEN_WITH;
         } else if (parsedActionId === 'install-linux-package') {
           task.iconType = 'crostini';
           task.title = loadTimeData.getString('TASK_INSTALL_LINUX_PACKAGE');
-          task.verb = undefined;
         } else if (parsedActionId === 'import-crostini-image') {
           task.iconType = 'tini';
           task.title = loadTimeData.getString('TASK_IMPORT_CROSTINI_IMAGE');
-          task.verb = undefined;
         } else if (parsedActionId === 'view-pdf') {
           task.iconType = 'pdf';
           task.title = loadTimeData.getString('TASK_VIEW');
-          task.verb = undefined;
         } else if (parsedActionId === 'view-in-browser') {
           task.iconType = 'generic';
           task.title = loadTimeData.getString('TASK_VIEW');
-          task.verb = undefined;
         }
       }
       if (!task.iconType && taskType === 'web-intent') {
@@ -491,27 +445,7 @@ export class FileTasks {
     return result;
   }
 
-  /**
-   * @param {!Entry} entry
-   * @param {!VolumeManager} volumeManager
-   * @return {boolean} True if the entry is from crostini.
-   */
-  static isCrostiniEntry(entry, volumeManager) {
-    const location = volumeManager.getLocationInfo(entry);
-    return !!location &&
-        location.rootType === VolumeManagerCommon.RootType.CROSTINI;
-  }
 
-  /**
-   * @param {!Entry} entry
-   * @param {!VolumeManager} volumeManager
-   * @return {boolean} True if the entry is from MyFiles.
-   */
-  static isMyFilesEntry(entry, volumeManager) {
-    const location = volumeManager.getLocationInfo(entry);
-    return !!location &&
-        location.rootType === VolumeManagerCommon.RootType.DOWNLOADS;
-  }
 
   /**
    * Show dialog when user opens or drags a file with PluginVM and the file
@@ -532,7 +466,7 @@ export class FileTasks {
       entries, volumeManager, metadataModel, ui, moveMessage, copyMessage,
       fileTransferController, directoryModel) {
     assert(entries.length > 0);
-    const isMyFiles = FileTasks.isMyFilesEntry(entries[0], volumeManager);
+    const isMyFiles = isMyFilesEntry(entries[0], volumeManager);
     const dialog = new FilesConfirmDialog(ui.element);
     dialog.setOkLabel(strf(
         isMyFiles ? 'CONFIRM_MOVE_BUTTON_LABEL' : 'CONFIRM_COPY_BUTTON_LABEL'));
@@ -618,7 +552,6 @@ export class FileTasks {
 
     const filename = this.entries_[0].name;
     const extension = util.splitExtension(filename)[1] || null;
-    const mimeType = this.mimeTypes_[0] || null;
 
     const showAlert = () => {
       let textMessageId;
@@ -768,8 +701,6 @@ export class FileTasks {
    */
   checkAvailability_(callback) {
     const areAll = (entries, props, name) => {
-      // TODO(cmihail): Make files in directories available offline.
-      // See http://crbug.com/569767.
       let okEntriesNum = 0;
       for (let i = 0; i < entries.length; i++) {
         // If got no properties, we safely assume that item is available.
@@ -1068,7 +999,7 @@ export class FileTasks {
    * @public
    */
   display(openCombobutton) {
-    this.updateOpenComboButton_(openCombobutton, this.getOpenTaskItems());
+    this.updateOpenComboButton_(openCombobutton, this.getTaskItems());
   }
 
   /**
@@ -1212,7 +1143,7 @@ export class FileTasks {
    * @param {FileTasks.TaskPickerType} pickerType Task picker type.
    */
   showTaskPicker(taskDialog, title, message, onSuccess, pickerType) {
-    let items = this.createItems_(this.getOpenTaskItems());
+    let items = this.createItems_(this.getTaskItems());
     if (pickerType == FileTasks.TaskPickerType.ChangeDefault) {
       items = items.filter(item => !item.isGenericFileHandler);
     }
@@ -1432,4 +1363,26 @@ function hasOfficeExtension(entry) {
 export function parseActionId(actionId) {
   const swaUrl = SWA_FILES_APP_URL.toString() + '?';
   return actionId.replace(swaUrl, '');
+}
+
+/**
+ * @param {!Entry} entry
+ * @param {!VolumeManager} volumeManager
+ * @return {boolean} True if the entry is from crostini.
+ */
+function isCrostiniEntry(entry, volumeManager) {
+  const location = volumeManager.getLocationInfo(entry);
+  return !!location &&
+      location.rootType === VolumeManagerCommon.RootType.CROSTINI;
+}
+
+/**
+ * @param {!Entry} entry
+ * @param {!VolumeManager} volumeManager
+ * @return {boolean} True if the entry is from MyFiles.
+ */
+function isMyFilesEntry(entry, volumeManager) {
+  const location = volumeManager.getLocationInfo(entry);
+  return !!location &&
+      location.rootType === VolumeManagerCommon.RootType.DOWNLOADS;
 }

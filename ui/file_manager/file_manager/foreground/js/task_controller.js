@@ -21,7 +21,6 @@ import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
-import {NamingController} from './naming_controller.js';
 import {TaskHistory} from './task_history.js';
 import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
@@ -44,14 +43,12 @@ export class TaskController {
    * @param {!DirectoryModel} directoryModel
    * @param {!FileSelectionHandler} selectionHandler
    * @param {!MetadataUpdateController} metadataUpdateController
-   * @param {!NamingController} namingController
    * @param {!Crostini} crostini
    * @param {!ProgressCenter} progressCenter
    */
   constructor(
       dialogType, volumeManager, ui, metadataModel, directoryModel,
-      selectionHandler, metadataUpdateController, namingController, crostini,
-      progressCenter) {
+      selectionHandler, metadataUpdateController, crostini, progressCenter) {
     /**
      * @private {DialogType}
      * @const
@@ -97,12 +94,6 @@ export class TaskController {
      * @private
      */
     this.metadataUpdateController_ = metadataUpdateController;
-
-    /**
-     * @private {!NamingController}
-     * @const
-     */
-    this.namingController_ = namingController;
 
     /**
      * @type {!Crostini}
@@ -421,7 +412,7 @@ export class TaskController {
       const tasks = await this.getFileTasks();
       // Update the DOM.
       tasks.display(this.ui_.taskMenuButton);
-      const openTaskItems = tasks.getOpenTaskItems();
+      const openTaskItems = tasks.getTaskItems();
       const policyDefaultHandlerStatus = tasks.getPolicyDefaultHandlerStatus();
       this.updateContextMenuTaskItems_(
           {tasks: openTaskItems, policyDefaultHandlerStatus});
@@ -459,8 +450,7 @@ export class TaskController {
           .create(
               this.volumeManager_, this.metadataModel_, this.directoryModel_,
               this.ui_, this.fileTransferController_, selection.entries,
-              assert(selection.mimeTypes), this.taskHistory_,
-              this.namingController_, this.crostini_, this.progressCenter_)
+              this.taskHistory_, this.crostini_, this.progressCenter_)
           .then(tasks => {
             if (this.selectionHandler_.selection !== selection) {
               if (util.isSameEntries(this.tasksEntries_, selection.entries)) {
@@ -547,9 +537,8 @@ export class TaskController {
     return this.metadataModel_.get([entry], ['contentMimeType']).then(props => {
       return FileTasks.create(
           this.volumeManager_, this.metadataModel_, this.directoryModel_,
-          this.ui_, this.fileTransferController_, [entry],
-          [props[0].contentMimeType || null], this.taskHistory_,
-          this.namingController_, this.crostini_, this.progressCenter_);
+          this.ui_, this.fileTransferController_, [entry], this.taskHistory_,
+          this.crostini_, this.progressCenter_);
     });
   }
 

@@ -4,7 +4,6 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {decorate} from 'chrome://resources/js/cr/ui.js';
-import {Command} from './ui/command.js';
 import {assertNotReached} from 'chrome://webui-test/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
@@ -23,8 +22,8 @@ import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
-import {NamingController} from './naming_controller.js';
 import {TaskController} from './task_controller.js';
+import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**
@@ -117,8 +116,7 @@ function createTaskController(fileSelectionHandler) {
         getCurrentRootType: () => null,
       }),
       fileSelectionHandler,
-      /** @type {!MetadataUpdateController} */ ({}),
-      /** @type {!NamingController} */ ({}), createCrostiniForTest(),
+      /** @type {!MetadataUpdateController} */ ({}), createCrostiniForTest(),
       /** @type {!ProgressCenter} */ ({}));
 
   return taskController;

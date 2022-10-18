@@ -23,7 +23,6 @@ import {DirectoryModel} from './directory_model.js';
 import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
-import {NamingController} from './naming_controller.js';
 import {TaskHistory} from './task_history.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 
@@ -235,7 +234,6 @@ function getMockFileManager() {
       speakA11yMessage: (text) => {},
     }),
     metadataModel: /** @type {!MetadataModel} */ ({}),
-    namingController: /** @type {!NamingController} */ ({}),
     directoryModel: /** @type {!DirectoryModel} */ ({
       getCurrentRootType: function() {
         return null;
@@ -273,9 +271,8 @@ function showHtmlOfAlertDialogIsCalled(entries, expectedTitle, expectedText) {
         .create(
             fileManager.volumeManager, fileManager.metadataModel,
             fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, entries, [null], mockTaskHistory,
-            fileManager.namingController, fileManager.crostini,
-            fileManager.progressCenter)
+            mockFileTransferController, entries, mockTaskHistory,
+            fileManager.crostini, fileManager.progressCenter)
         .then(tasks => {
           tasks.executeDefault();
         });
@@ -286,10 +283,9 @@ function showHtmlOfAlertDialogIsCalled(entries, expectedTitle, expectedText) {
  * Returns a promise that resolves when the task picker is called.
  *
  * @param {!Array<!Entry>} entries Entries.
- * @param {!Array<?string>} mimeTypes Mime types.
  * @return {!Promise}
  */
-function showDefaultTaskDialogCalled(entries, mimeTypes) {
+function showDefaultTaskDialogCalled(entries) {
   return new Promise((resolve, reject) => {
     const fileManager = getMockFileManager();
     fileManager.ui.defaultTaskPicker = {
@@ -303,9 +299,8 @@ function showDefaultTaskDialogCalled(entries, mimeTypes) {
         .create(
             fileManager.volumeManager, fileManager.metadataModel,
             fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, entries, mimeTypes, mockTaskHistory,
-            fileManager.namingController, fileManager.crostini,
-            fileManager.progressCenter)
+            mockFileTransferController, entries, mockTaskHistory,
+            fileManager.crostini, fileManager.progressCenter)
         .then(tasks => {
           tasks.executeDefault();
         });
@@ -331,9 +326,8 @@ function showImportCrostiniImageDialogIsCalled(entries) {
         .create(
             fileManager.volumeManager, fileManager.metadataModel,
             fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, entries, [null], mockTaskHistory,
-            fileManager.namingController, fileManager.crostini,
-            fileManager.progressCenter)
+            mockFileTransferController, entries, mockTaskHistory,
+            fileManager.crostini, fileManager.progressCenter)
         .then(tasks => {
           tasks.executeDefault();
         });
@@ -428,8 +422,7 @@ export function testOpenTaskPicker(callback) {
   const mockFileSystem = new MockFileSystem('volumeId');
   const mockEntry = MockFileEntry.create(mockFileSystem, '/test.tiff');
 
-  reportPromise(
-      showDefaultTaskDialogCalled([mockEntry], ['image/tiff']), callback);
+  reportPromise(showDefaultTaskDialogCalled([mockEntry]), callback);
 }
 
 /**
@@ -519,9 +512,8 @@ export function testOpenWithMostRecentlyExecuted(callback) {
         .create(
             fileManager.volumeManager, fileManager.metadataModel,
             fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, [mockEntry], [null], taskHistory,
-            fileManager.namingController, fileManager.crostini,
-            fileManager.progressCenter)
+            mockFileTransferController, [mockEntry], taskHistory,
+            fileManager.crostini, fileManager.progressCenter)
         .then(tasks => {
           tasks.executeDefault();
           assertTrue(util.descriptorEqual(latestTaskDescriptor, executedTask));
@@ -575,9 +567,8 @@ export function testOpenInstallLinuxPackageDialog(callback) {
         .create(
             fileManager.volumeManager, fileManager.metadataModel,
             fileManager.directoryModel, fileManager.ui,
-            mockFileTransferController, [mockEntry], [null], mockTaskHistory,
-            fileManager.namingController, fileManager.crostini,
-            fileManager.progressCenter)
+            mockFileTransferController, [mockEntry], mockTaskHistory,
+            fileManager.crostini, fileManager.progressCenter)
         .then(tasks => {
           tasks.executeDefault();
         });
@@ -646,8 +637,7 @@ export async function testMountArchiveAndChangeDirectoryNotificationSuccess(
   const tasks = await FileTasks.create(
       fileManager.volumeManager, fileManager.metadataModel,
       fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      [], [null], mockTaskHistory, fileManager.namingController,
-      fileManager.crostini, fileManager.progressCenter);
+      [], mockTaskHistory, fileManager.crostini, fileManager.progressCenter);
 
   fileManager.volumeManager.mountArchive = function(url, password) {
     // Check: progressing state.
@@ -688,8 +678,7 @@ testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done) {
   const tasks = await FileTasks.create(
       fileManager.volumeManager, fileManager.metadataModel,
       fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      [], [null], mockTaskHistory, fileManager.namingController,
-      fileManager.crostini, fileManager.progressCenter);
+      [], mockTaskHistory, fileManager.crostini, fileManager.progressCenter);
 
   fileManager.volumeManager.mountArchive = function(url, password) {
     return Promise.reject(VolumeManagerCommon.VolumeError.INTERNAL);
@@ -726,8 +715,7 @@ testMountArchiveAndChangeDirectoryNotificationCancelPassword(done) {
   const tasks = await FileTasks.create(
       fileManager.volumeManager, fileManager.metadataModel,
       fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      [], [null], mockTaskHistory, fileManager.namingController,
-      fileManager.crostini, fileManager.progressCenter);
+      [], mockTaskHistory, fileManager.crostini, fileManager.progressCenter);
 
   fileManager.volumeManager.mountArchive = function(url, password) {
     return Promise.reject(VolumeManagerCommon.VolumeError.NEED_PASSWORD);
@@ -769,8 +757,7 @@ testMountArchiveAndChangeDirectoryNotificationEncryptedArchive(done) {
   const tasks = await FileTasks.create(
       fileManager.volumeManager, fileManager.metadataModel,
       fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      [], [null], mockTaskHistory, fileManager.namingController,
-      fileManager.crostini, fileManager.progressCenter);
+      [], mockTaskHistory, fileManager.crostini, fileManager.progressCenter);
 
   fileManager.volumeManager.mountArchive = function(url, password) {
     return new Promise((resolve, reject) => {
