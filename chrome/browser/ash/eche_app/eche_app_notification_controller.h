@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;
 
@@ -48,27 +47,6 @@ class EcheAppNotificationController {
 
  private:
   friend class EcheAppNotificationControllerTest;
-
-  // NotificationDelegate implementation for handling click events.
-  class NotificationDelegate : public message_center::NotificationDelegate {
-   public:
-    NotificationDelegate(const std::string& notification_id,
-                         const base::WeakPtr<EcheAppNotificationController>&
-                             notification_controller);
-
-    NotificationDelegate(const NotificationDelegate&) = delete;
-    NotificationDelegate& operator=(const NotificationDelegate&) = delete;
-
-    // message_center::NotificationDelegate:
-    void Click(const absl::optional<int>& button_index,
-               const absl::optional<std::u16string>& reply) override;
-
-   private:
-    ~NotificationDelegate() override;
-
-    std::string notification_id_;
-    base::WeakPtr<EcheAppNotificationController> notification_controller_;
-  };
 
   virtual void LaunchSettings();
   virtual void LaunchTryAgain();

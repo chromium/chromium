@@ -113,7 +113,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
 
   // Clicking the notification button should relaunch again.
   EXPECT_CALL(*notification_controller_, LaunchTryAgain());
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
 
   title = u"Connection Lost Title";
   message = u"Connection Lost Message";
@@ -129,7 +129,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
 
   // Clicking the notification button should relaunch again.
   EXPECT_CALL(*notification_controller_, LaunchTryAgain());
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
 
   title = u"Inactivity Title";
   message = u"Inactivity Message";
@@ -145,7 +145,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
 
   // Clicking the first notification button should relaunch again.
   EXPECT_CALL(*notification_controller_, LaunchTryAgain());
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
 
   title = u"Check WIFI Title";
   message = u"Check WIFI Message";
@@ -161,7 +161,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
 
   // Clicking the notification button should launch network settings.
   EXPECT_CALL(*notification_controller_, LaunchNetworkSettings());
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
 }
 
 TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
@@ -177,7 +177,7 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
 
   // Clicking the notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchSettings());
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
 }
 
 TEST_F(EcheAppNotificationControllerTest,
@@ -195,7 +195,7 @@ TEST_F(EcheAppNotificationControllerTest,
 
   // Clicking the notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchSettings());
-  notification->delegate()->Click(0, absl::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
 }
 
 TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
