@@ -7244,7 +7244,7 @@ crbug.com/1370307 external/wpt/encoding-detection/zh-GBK-late.tentative.html [ F
 crbug.com/1363138 http/tests/inspector-protocol/cachestorage/read-cached-response.js [ Skip ]
 
 # Investigate the flake
-crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.window.js [ Failure Pass ]
+crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.window.html [ Failure Pass ]
 
 # Disable top flakes trigger step failure on builders
 crbug.com/1371949 [ Mac12 ] virtual/low-priority-script-loading/http/tests/devtools/network/resource-priority.js [ Failure Pass ]
