@@ -310,6 +310,52 @@ struct SameSizeAsDocumentLoader
 // DocumentLoader::CreateWebNavigationParamsToCloneDocument().
 ASSERT_SIZE(DocumentLoader, SameSizeAsDocumentLoader);
 
+void WarnIfSandboxIneffective(LocalDOMWindow* window) {
+  if (!RuntimeEnabledFeatures::WarnSandboxIneffectiveEnabled())
+    return;
+
+  if (window->document()->IsInitialEmptyDocument())
+    return;
+
+  if (window->IsInFencedFrame())
+    return;
+
+  const Frame* frame = window->GetFrame();
+  if (!frame)
+    return;
+
+  using WebSandboxFlags = network::mojom::blink::WebSandboxFlags;
+  const WebSandboxFlags& sandbox =
+      window->GetSecurityContext().GetSandboxFlags();
+
+  auto allow = [sandbox](WebSandboxFlags flag) {
+    return (sandbox & flag) == WebSandboxFlags::kNone;
+  };
+
+  if (allow(WebSandboxFlags::kAll))
+    return;
+
+  // "allow-scripts" + "allow-same-origin" allows escaping the sandbox, by
+  // accessing the parent via `eval` or `document.open`.
+  //
+  // Similarly to Firefox, warn only when this is a simply nested same-origin
+  // iframe
+  if (allow(WebSandboxFlags::kOrigin) && allow(WebSandboxFlags::kScripts) &&
+      window->parent() && window->parent()->GetFrame()->IsMainFrame() &&
+      !frame->IsCrossOriginToNearestMainFrame()) {
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "An iframe which has both allow-scripts and allow-same-origin for its "
+        "sandbox attribute can remove its sandboxing."));
+    window->CountUse(WebFeature::kSandboxIneffectiveAllowOriginAllowScript);
+  }
+
+  // Note: It would be interesting to add additional warning. For instance,
+  // Firefox warn that "allow-top-navigation-by-user-activation" is useless if
+  // "allow-top-navigation" is set.
+}
+
 }  // namespace
 
 // Base class for body data received by the loader. This allows abstracting away
@@ -1888,6 +1934,8 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
         message.content));
   }
   document_policy_parsing_messages_.clear();
+
+  WarnIfSandboxIneffective(document->domWindow());
 }
 
 void DocumentLoader::WillCommitNavigation() {

@@ -41676,6 +41676,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4370" label="GetDisplayMediaWithoutUserActivation"/>
   <int value="4371" label="BackForwardCacheNotRestoredReasons"/>
   <int value="4372" label="CSSNesting"/>
+  <int value="4373" label="SandboxIneffectiveAllowOriginAllowScript"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

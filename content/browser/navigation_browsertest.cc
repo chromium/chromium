@@ -6161,4 +6161,80 @@ IN_PROC_BROWSER_TEST_F(CacheTransparencyNavigationBrowserTest,
   ExpectCacheNotUsed();
 }
 
+class NavigationBrowserTestWarnSandboxIneffective
+    : public NavigationBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "WarnSandboxIneffective");
+  }
+
+  static constexpr char kSandboxEscapeWarningMessage[] =
+      "An iframe which has both allow-scripts and allow-same-origin for its "
+      "sandbox attribute can remove its sandboxing.";
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWarnSandboxIneffective,
+                       WarnEscapableSandboxSameOrigin) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/empty.html")));
+
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kSandboxEscapeWarningMessage);
+
+  // Create same-origin iframe.
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+      const iframe = document.createElement("iframe");
+      iframe.src = location.href;  // Same-origin iframe.
+      iframe.sandbox = "allow-same-origin allow-scripts";
+      document.body.appendChild(iframe);
+  )"));
+  console_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWarnSandboxIneffective,
+                       WarnEscapableSandboxCrossOrigin) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/empty.html")));
+
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kSandboxEscapeWarningMessage);
+
+  // Create cross-origin iframe.
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+      const iframe = document.createElement("iframe");
+      // Cross-origin iframe:
+      iframe.src = location.href.replace("a.com", "b.com");
+      iframe.sandbox = "allow-same-origin allow-scripts";
+      document.body.appendChild(iframe);
+  )"));
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(console_observer.messages().size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWarnSandboxIneffective,
+                       WarnEscapableSandboxSameOriginGrandChild) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/empty.html")));
+
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kSandboxEscapeWarningMessage);
+
+  // Create a same-origin doubly nested sandboxed iframe.
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+      const child = document.createElement("iframe");
+      document.body.appendChild(child);
+
+      const grand_child = child.contentDocument.createElement("iframe");
+      grand_child.src = location.href;
+      grand_child.sandbox = "allow-same-origin allow-scripts";
+      child.contentDocument.body.appendChild(grand_child);
+  )"));
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(console_observer.messages().size(), 0u);
+}
+
 }  // namespace content

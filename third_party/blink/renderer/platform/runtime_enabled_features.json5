@@ -2797,6 +2797,11 @@
       name: "WarnOnContentVisibilityRenderAccess",
     },
     {
+      // A kill switch. Please consider removing this after M112.
+      name: "WarnSandboxIneffective",
+      status: "stable",
+    },
+    {
       name: "WebAnimationsAPI",
       status: "stable",
       implied_by: ["AnimationWorklet"],
