@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_primary_mediator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
@@ -25,6 +28,8 @@
 // The view controller used to display price notifications.
 @property(nonatomic, strong)
     PriceNotificationsTableViewController* tableViewController;
+// The mediator being managed by this coordinator.
+@property(nonatomic, strong) PriceNotificationsPrimaryMediator* mediator;
 
 @end
 
@@ -35,6 +40,12 @@
 - (void)start {
   self.tableViewController = [[PriceNotificationsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  commerce::ShoppingService* shoppingService =
+      commerce::ShoppingServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  self.mediator = [[PriceNotificationsPrimaryMediator alloc]
+      initWithShoppingService:shoppingService];
+  self.mediator.consumer = self.tableViewController;
 
   // Add the "Done" button and hook it up to stop.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]

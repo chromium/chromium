@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 // View controller that displays PriceNotifications list items in a table view.
-@interface PriceNotificationsTableViewController : ChromeTableViewController
+@interface PriceNotificationsTableViewController
+    : ChromeTableViewController <PriceNotificationsConsumer>
 
 @end
 

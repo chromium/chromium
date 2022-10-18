@@ -5,6 +5,8 @@
 source_set("price_notifications") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "price_notifications_primary_mediator.h",
+    "price_notifications_primary_mediator.mm",
     "price_notifications_view_coordinator.h",
     "price_notifications_view_coordinator.mm",
   ]
@@ -12,6 +14,9 @@ source_set("price_notifications") {
   deps = [
     ":price_notifications_ui",
     "//base",
+    "//components/commerce/core:shopping_service",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/commerce:shopping_service",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
@@ -23,6 +28,7 @@ source_set("price_notifications") {
 source_set("price_notifications_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "price_notifications_consumer.h",
     "price_notifications_table_view_controller.h",
     "price_notifications_table_view_controller.mm",
   ]
