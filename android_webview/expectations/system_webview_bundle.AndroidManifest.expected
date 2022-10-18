@@ -11,7 +11,7 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-  <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="33"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"
       android:extractNativeLibs="True"
