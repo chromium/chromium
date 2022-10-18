@@ -129,7 +129,9 @@ _CONFIG = [
             'base::WritableSharedMemoryMapping',
             'base::as_bytes',
             'base::bit_cast',
+            'base::expected',
             'base::make_span',
+            'base::unexpected',
             'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
             'base::span',
@@ -731,6 +733,11 @@ _CONFIG = [
     {
         'paths': ['third_party/blink/renderer/bindings/'],
         'allowed': ['gin::.+'],
+    },
+    {
+        'paths':
+        ['third_party/blink/renderer/bindings/core/v8/serialization/'],
+        'allowed': ['base::BufferIterator'],
     },
     {
         'paths':

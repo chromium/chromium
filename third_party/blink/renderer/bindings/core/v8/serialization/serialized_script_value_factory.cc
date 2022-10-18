@@ -52,4 +52,11 @@ v8::Local<v8::Value> SerializedScriptValueFactory::Deserialize(
   return deserializer.Deserialize();
 }
 
+bool SerializedScriptValueFactory::ExecutionContextExposesInterface(
+    ExecutionContext* execution_context,
+    SerializationTag interface_tag) {
+  return V8ScriptValueDeserializer::ExecutionContextExposesInterface(
+      execution_context, interface_tag);
+}
+
 }  // namespace blink

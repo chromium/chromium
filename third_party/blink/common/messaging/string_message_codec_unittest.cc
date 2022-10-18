@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -247,20 +248,52 @@ TEST(StringMessageCodecTest, V8ToSelfTest_ArrayBuffer_transferrable) {
                 message);
 }
 
+TransferableMessage TransferableMessageFromRawData(std::vector<uint8_t> data) {
+  TransferableMessage message;
+  message.owned_encoded_message = std::move(data);
+  message.encoded_message = message.owned_encoded_message;
+  return message;
+}
+
 TEST(StringMessageCodecTest, Overflow) {
   const std::vector<uint8_t> kOverflowOneByteData{'"', 0xff, 0xff, 0xff, 0x7f};
+  EXPECT_FALSE(DecodeToWebMessagePayload(
+      TransferableMessageFromRawData(kOverflowOneByteData)));
+
   const std::vector<uint8_t> kOverflowTwoByteData{'c', 0xff, 0xff, 0xff, 0x7f};
+  EXPECT_FALSE(DecodeToWebMessagePayload(
+      TransferableMessageFromRawData(kOverflowTwoByteData)));
+}
 
-  TransferableMessage one_byte_message;
-  one_byte_message.owned_encoded_message = kOverflowOneByteData;
-  one_byte_message.encoded_message = one_byte_message.owned_encoded_message;
+TEST(StringMessageCodecTest, InvalidDecode) {
+  auto decode_from_raw = [](std::vector<uint8_t> data) {
+    return DecodeToWebMessagePayload(
+        TransferableMessageFromRawData(std::move(data)));
+  };
 
-  TransferableMessage two_byte_message;
-  two_byte_message.owned_encoded_message = kOverflowTwoByteData;
-  two_byte_message.encoded_message = two_byte_message.owned_encoded_message;
+  EXPECT_FALSE(decode_from_raw({})) << "no data";
+  EXPECT_FALSE(decode_from_raw({0xff, 0x01})) << "only one version";
+  EXPECT_FALSE(decode_from_raw({0xff, 0x80}))
+      << "end of buffer during first version";
+  EXPECT_FALSE(decode_from_raw({0xff, 0x01, 0xff, 0x01}))
+      << "only two versions";
+  EXPECT_FALSE(decode_from_raw({0xff, 0x10, 0xff, 0x80}))
+      << "end of buffer during second version";
+  EXPECT_FALSE(decode_from_raw({0xff, 0x15, 0xfe, 0xff, 0x01, '"', 0x01, 'a'}))
+      << "end of buffer during trailer offset";
+  EXPECT_FALSE(decode_from_raw({0xff, 0x15, 0x7f, 0x00, 0x00, 0x00, 0x00,
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                0x00, 0xff, 0x10, '"',  0x01, 'a'}))
+      << "unrecognized trailer offset tag";
 
-  EXPECT_FALSE(DecodeToWebMessagePayload(one_byte_message));
-  EXPECT_FALSE(DecodeToWebMessagePayload(two_byte_message));
+  // Confirm that aside from the specific errors above, this encoding is
+  // generally correct.
+  auto valid_payload = decode_from_raw(
+      {0xff, 0x15, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+       0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x10, '"',  0x01, 'a'});
+  ASSERT_TRUE(valid_payload.has_value());
+  ASSERT_TRUE(absl::holds_alternative<std::u16string>(*valid_payload));
+  EXPECT_EQ(absl::get<std::u16string>(*valid_payload), u"a");
 }
 
 }  // namespace

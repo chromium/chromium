@@ -673,17 +673,16 @@ void ServiceWorkerContainer::DispatchMessageEvent(
     }
   }
   if (!event) {
-    if (!msg.locked_to_sender_agent_cluster ||
-        GetExecutionContext()->IsSameAgentCluster(
-            msg.sender_agent_cluster_id)) {
-      event = MessageEvent::Create(
-          ports, std::move(msg.message),
-          GetExecutionContext()->GetSecurityOrigin()->ToString(),
-          String() /* lastEventId */, service_worker);
+    auto* context = GetExecutionContext();
+    if ((!msg.locked_to_sender_agent_cluster ||
+         context->IsSameAgentCluster(msg.sender_agent_cluster_id)) &&
+        msg.message->CanDeserializeIn(context)) {
+      event = MessageEvent::Create(ports, std::move(msg.message),
+                                   context->GetSecurityOrigin()->ToString(),
+                                   String() /* lastEventId */, service_worker);
     } else {
       event = MessageEvent::CreateError(
-          GetExecutionContext()->GetSecurityOrigin()->ToString(),
-          service_worker);
+          context->GetSecurityOrigin()->ToString(), service_worker);
     }
   }
   // Schedule the event to be dispatched on the correct task source:

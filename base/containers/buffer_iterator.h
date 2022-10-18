@@ -10,6 +10,7 @@
 #include "base/bit_cast.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -70,14 +71,10 @@ class BufferIterator {
   // position. On success, the iterator position is advanced by sizeof(T). If
   // there are not sizeof(T) bytes remaining in the buffer, returns nullptr.
   template <typename T,
-            typename =
-                typename std::enable_if_t<std::is_trivially_copyable<T>::value>>
+            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
   T* MutableObject() {
     size_t size = sizeof(T);
-    size_t next_position;
-    if (!CheckAdd(position(), size).AssignIfValid(&next_position))
-      return nullptr;
-    if (next_position > total_size())
+    if (size > remaining_.size())
       return nullptr;
     T* t = bit_cast<T*>(remaining_.data());
     remaining_ = remaining_.subspan(size);
@@ -87,10 +84,22 @@ class BufferIterator {
   // Returns a const pointer to an object of type T in the buffer at the current
   // position.
   template <typename T,
-            typename =
-                typename std::enable_if_t<std::is_trivially_copyable<T>::value>>
+            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
   const T* Object() {
     return MutableObject<const T>();
+  }
+
+  // Copies out an object. As compared to using Object, this avoids potential
+  // unaligned access which may be undefined behavior.
+  template <typename T,
+            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
+  absl::optional<T> CopyObject() {
+    absl::optional<T> t;
+    if (remaining_.size() >= sizeof(T)) {
+      memcpy(&t.emplace(), remaining_.data(), sizeof(T));
+      remaining_ = remaining_.subspan(sizeof(T));
+    }
+    return t;
   }
 
   // Returns a span of |count| T objects in the buffer at the current position.
@@ -98,16 +107,12 @@ class BufferIterator {
   // there are not enough bytes remaining in the buffer to fulfill the request,
   // returns an empty span.
   template <typename T,
-            typename =
-                typename std::enable_if_t<std::is_trivially_copyable<T>::value>>
+            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
   span<T> MutableSpan(size_t count) {
     size_t size;
     if (!CheckMul(sizeof(T), count).AssignIfValid(&size))
       return span<T>();
-    size_t next_position;
-    if (!CheckAdd(position(), size).AssignIfValid(&next_position))
-      return span<T>();
-    if (next_position > total_size())
+    if (size > remaining_.size())
       return span<T>();
     auto result = span<T>(bit_cast<T*>(remaining_.data()), count);
     remaining_ = remaining_.subspan(size);
@@ -117,8 +122,7 @@ class BufferIterator {
   // Returns a span to |count| const objects of type T in the buffer at the
   // current position.
   template <typename T,
-            typename =
-                typename std::enable_if_t<std::is_trivially_copyable<T>::value>>
+            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
   span<const T> Span(size_t count) {
     return MutableSpan<const T>(count);
   }
@@ -126,11 +130,19 @@ class BufferIterator {
   // Resets the iterator position to the absolute offset |to|.
   void Seek(size_t to) { remaining_ = buffer_.subspan(to); }
 
+  // Limits the remaining data to the specified size.
+  // Seeking to an absolute offset reverses this.
+  void TruncateTo(size_t size) { remaining_ = remaining_.first(size); }
+
   // Returns the total size of the underlying buffer.
-  size_t total_size() { return buffer_.size(); }
+  size_t total_size() const { return buffer_.size(); }
 
   // Returns the current position in the buffer.
-  size_t position() { return buffer_.size_bytes() - remaining_.size_bytes(); }
+  size_t position() const {
+    DCHECK(buffer_.data() <= remaining_.data());
+    DCHECK(remaining_.data() <= buffer_.data() + buffer_.size());
+    return static_cast<size_t>(remaining_.data() - buffer_.data());
+  }
 
  private:
   // The original buffer that the iterator was constructed with.

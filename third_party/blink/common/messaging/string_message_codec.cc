@@ -145,16 +145,34 @@ absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
   base::BufferIterator<const uint8_t> iter(message.encoded_message);
   uint8_t tag;
 
-  // Discard any leading version and padding tags.
-  // There may be more than one version, due to Blink and V8 having separate
-  // version tags.
-  do {
+  // Discard the outer envelope, including trailer info if applicable.
+  if (!ReadUint8(iter, &tag))
+    return absl::nullopt;
+  if (tag == kVersionTag) {
+    uint32_t version = 0;
+    if (!ReadUint32(iter, &version))
+      return absl::nullopt;
+    static constexpr uint32_t kMinWireFormatVersionWithTrailer = 21;
+    if (version >= kMinWireFormatVersionWithTrailer) {
+      // In these versions, we expect kTrailerOffsetTag (0xFE) followed by an
+      // offset and size. See details in
+      // third_party/blink/renderer/core/v8/serialization/serialization_tag.h.
+      auto span = iter.Span<uint8_t>(1 + sizeof(uint64_t) + sizeof(uint32_t));
+      if (span.empty() || span[0] != 0xFE)
+        return absl::nullopt;
+    }
     if (!ReadUint8(iter, &tag))
       return absl::nullopt;
+  }
+
+  // Discard any leading version and padding tags.
+  while (tag == kVersionTag || tag == kPaddingTag) {
     uint32_t version;
     if (tag == kVersionTag && !ReadUint32(iter, &version))
       return absl::nullopt;
-  } while (tag == kVersionTag || tag == kPaddingTag);
+    if (!ReadUint8(iter, &tag))
+      return absl::nullopt;
+  }
 
   switch (tag) {
     case kOneByteStringTag: {

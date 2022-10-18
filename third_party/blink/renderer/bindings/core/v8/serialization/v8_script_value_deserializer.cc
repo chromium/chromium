@@ -6,13 +6,36 @@
 
 #include <limits>
 
+#include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_read_only.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_point.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_read_only.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_quad.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_file_list.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_image_data.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mojo_handle.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_transform_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -92,6 +115,16 @@ size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
   // envelope.
   if (version < kMinVersionForSeparateEnvelope)
     return 0;
+
+  // These versions expect a trailer offset in the envelope.
+  if (version >= TrailerReader::kMinWireFormatVersion) {
+    static constexpr size_t kTrailerOffsetDataSize =
+        1 + sizeof(uint64_t) + sizeof(uint32_t);
+    DCHECK_LT(i, std::numeric_limits<size_t>::max() - kTrailerOffsetDataSize);
+    i += kTrailerOffsetDataSize;
+    if (i >= length)
+      return 0;
+  }
 
   // Otherwise, we did read the envelope. Hurray!
   *out_version = version;
@@ -252,6 +285,10 @@ bool V8ScriptValueDeserializer::ReadUTF8String(String* string) {
 ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
     SerializationTag tag,
     ExceptionState& exception_state) {
+  if (!ExecutionContextExposesInterface(
+          ExecutionContext::From(GetScriptState()), tag)) {
+    return nullptr;
+  }
   switch (tag) {
     case kBlobTag: {
       if (Version() < 3)
@@ -817,6 +854,85 @@ V8ScriptValueDeserializer::GetSharedValueConveyor(v8::Isolate* isolate) {
   exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                     "Unable to deserialize shared JS value.");
   return nullptr;
+}
+
+// static
+bool V8ScriptValueDeserializer::ExecutionContextExposesInterface(
+    ExecutionContext* execution_context,
+    SerializationTag interface_tag) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSSVTrailerEnforceExposureAssertion)) {
+    return true;
+  }
+
+  // If you're updating this, consider whether you should also update
+  // V8ScriptValueSerializer to call TrailerWriter::RequireExposedInterface
+  // (generally via WriteAndRequireInterfaceTag). Any interface which might
+  // potentially not be exposed on all realms, even if not currently (i.e., most
+  // or all) should probably be listed here.
+  switch (interface_tag) {
+    case kBlobTag:
+    case kBlobIndexTag:
+      return V8Blob::IsExposed(execution_context);
+    case kFileTag:
+    case kFileIndexTag:
+      return V8File::IsExposed(execution_context);
+    case kFileListTag:
+    case kFileListIndexTag: {
+      const bool is_exposed = V8FileList::IsExposed(execution_context);
+      if (is_exposed)
+        DCHECK(V8File::IsExposed(execution_context));
+      return is_exposed;
+    }
+    case kImageBitmapTag:
+    case kImageBitmapTransferTag:
+      return V8ImageBitmap::IsExposed(execution_context);
+    case kImageDataTag:
+      return V8ImageData::IsExposed(execution_context);
+    case kDOMPointTag:
+      return V8DOMPoint::IsExposed(execution_context);
+    case kDOMPointReadOnlyTag:
+      return V8DOMPointReadOnly::IsExposed(execution_context);
+    case kDOMRectTag:
+      return V8DOMRect::IsExposed(execution_context);
+    case kDOMRectReadOnlyTag:
+      return V8DOMRectReadOnly::IsExposed(execution_context);
+    case kDOMQuadTag:
+      return V8DOMQuad::IsExposed(execution_context);
+    case kDOMMatrix2DTag:
+    case kDOMMatrixTag:
+      return V8DOMMatrix::IsExposed(execution_context);
+    case kDOMMatrix2DReadOnlyTag:
+    case kDOMMatrixReadOnlyTag:
+      return V8DOMMatrixReadOnly::IsExposed(execution_context);
+    case kMessagePortTag:
+      return V8MessagePort::IsExposed(execution_context);
+    case kMojoHandleTag:
+      // This would ideally be V8MojoHandle::IsExposed, but WebUSB tests
+      // currently rely on being able to send handles to frames and workers
+      // which don't otherwise have MojoJS exposed.
+      return (execution_context->IsWindow() ||
+              execution_context->IsWorkerGlobalScope()) &&
+             RuntimeEnabledFeatures::MojoJSEnabled();
+    case kOffscreenCanvasTransferTag:
+      return V8OffscreenCanvas::IsExposed(execution_context);
+    case kReadableStreamTransferTag:
+      return V8ReadableStream::IsExposed(execution_context);
+    case kWritableStreamTransferTag:
+      return V8WritableStream::IsExposed(execution_context);
+    case kTransformStreamTransferTag: {
+      const bool is_exposed = V8TransformStream::IsExposed(execution_context);
+      if (is_exposed) {
+        DCHECK(V8ReadableStream::IsExposed(execution_context));
+        DCHECK(V8WritableStream::IsExposed(execution_context));
+      }
+      return is_exposed;
+    }
+    case kDOMExceptionTag:
+      return V8DOMException::IsExposed(execution_context);
+    default:
+      return false;
+  }
 }
 
 }  // namespace blink

@@ -128,7 +128,13 @@ enum SerializationTag {
   kDeprecatedDetectedTextTag = 't',
 
   kDOMExceptionTag = 'x',  // name:String,message:String,stack:String
-  kVersionTag = 0xFF       // version:uint32_t -> Uses this as the file version.
+  kTrailerOffsetTag =
+      0xFE,  // offset:uint64_t (fixed width, network order) from buffer start
+             // size:uint32_t (fixed width, network order)
+  kVersionTag = 0xFF,  // version:uint32_t -> Uses this as the file version.
+
+  // Tags used in trailers.
+  kTrailerRequiresInterfacesTag = 0xA0,
 };
 
 }  // namespace blink

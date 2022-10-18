@@ -39,6 +39,9 @@ class MODULES_EXPORT V8ScriptValueDeserializerForModules final
       const Options& options = Options())
       : V8ScriptValueDeserializer(script_state, std::move(value), options) {}
 
+  static bool ExecutionContextExposesInterface(ExecutionContext*,
+                                               SerializationTag interface_tag);
+
  protected:
   ScriptWrappable* ReadDOMObject(SerializationTag, ExceptionState&) override;
 

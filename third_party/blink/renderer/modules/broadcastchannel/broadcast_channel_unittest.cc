@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -171,6 +172,30 @@ TEST(BroadcastChannelTest, AgentClusterLockedMismatch) {
   BlinkCloneableMessage message = MakeNullMessage();
   message.locked_to_sender_agent_cluster = true;
   tester->PostMessage(std::move(message));
+  run_loop.Run();
+
+  ASSERT_EQ(tester->received_events().size(), 1u);
+  EXPECT_EQ(tester->received_events()[0]->type(),
+            event_type_names::kMessageerror);
+}
+
+TEST(BroadcastChannelTest, MessageCannotDeserialize) {
+  DummyPageHolder holder;
+  LocalDOMWindow* window = holder.GetFrame().DomWindow();
+  auto* tester = MakeGarbageCollected<BroadcastChannelTester>(window);
+
+  SerializedScriptValue::ScopedOverrideCanDeserializeInForTesting
+      override_can_deserialize_in(base::BindLambdaForTesting(
+          [&](const SerializedScriptValue& value,
+              ExecutionContext* execution_context, bool can_deserialize) {
+            EXPECT_EQ(execution_context, window);
+            EXPECT_TRUE(can_deserialize);
+            return false;
+          }));
+
+  base::RunLoop run_loop;
+  tester->AwaitNextUpdate(run_loop.QuitClosure());
+  tester->PostMessage(MakeNullMessage());
   run_loop.Run();
 
   ASSERT_EQ(tester->received_events().size(), 1u);

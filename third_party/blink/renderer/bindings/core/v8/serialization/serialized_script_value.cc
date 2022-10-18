@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -59,12 +60,23 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
+
+namespace {
+
+SerializedScriptValue::CanDeserializeInCallback& GetCanDeserializeInCallback() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      SerializedScriptValue::CanDeserializeInCallback, g_callback, ());
+  return g_callback;
+}
+
+}  // namespace
 
 scoped_refptr<SerializedScriptValue> SerializedScriptValue::Serialize(
     v8::Isolate* isolate,
@@ -670,6 +682,31 @@ bool SerializedScriptValue::IsLockedToAgentCluster() const {
 
 bool SerializedScriptValue::IsOriginCheckRequired() const {
   return file_system_access_tokens_.size() > 0 || wasm_modules_.size() > 0;
+}
+
+bool SerializedScriptValue::CanDeserializeIn(
+    ExecutionContext* execution_context) {
+  TrailerReader reader(GetWireData());
+  if (auto result = reader.SkipToTrailer(); !result.has_value())
+    return false;
+  if (auto result = reader.Read(); !result.has_value())
+    return false;
+  auto& factory = SerializedScriptValueFactory::Instance();
+  bool result = base::ranges::all_of(
+      reader.required_exposed_interfaces(), [&](SerializationTag tag) {
+        return factory.ExecutionContextExposesInterface(execution_context, tag);
+      });
+  if (const auto& callback = GetCanDeserializeInCallback())
+    result = callback.Run(*this, execution_context, result);
+  return result;
+}
+
+// static
+void SerializedScriptValue::OverrideCanDeserializeInForTesting(
+    SerializedScriptValue::CanDeserializeInCallback callback) {
+  auto& global = GetCanDeserializeInCallback();
+  CHECK_NE(callback.is_null(), global.is_null());
+  global = std::move(callback);
 }
 
 // This ensures that the version number published in

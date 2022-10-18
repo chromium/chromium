@@ -15,7 +15,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b0610800200
+Serialized key bytes: 5c4b0610800200a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -31,7 +31,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b061080020130
+Serialized key bytes: 5c4b061080020130a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -47,7 +47,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b06108002080011223344554677
+Serialized key bytes: 5c4b06108002080011223344554677a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -63,7 +63,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b061080020b00112233445546778899aa
+Serialized key bytes: 5c4b061080020b00112233445546778899aaa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -79,7 +79,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b061080021030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b061080021030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -95,7 +95,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b06102000
+Serialized key bytes: 5c4b06102000a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -111,7 +111,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b0610200130
+Serialized key bytes: 5c4b0610200130a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -127,7 +127,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b061020080011223344554677
+Serialized key bytes: 5c4b061020080011223344554677a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -143,7 +143,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b0610200b00112233445546778899aa
+Serialized key bytes: 5c4b0610200b00112233445546778899aaa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -159,7 +159,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b0610201030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b0610201030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -175,7 +175,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a00200
+Serialized key bytes: 5c4b0610a00200a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -191,7 +191,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a0020130
+Serialized key bytes: 5c4b0610a0020130a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -207,7 +207,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a002080011223344554677
+Serialized key bytes: 5c4b0610a002080011223344554677a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -223,7 +223,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a0020b00112233445546778899aa
+Serialized key bytes: 5c4b0610a0020b00112233445546778899aaa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -239,7 +239,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a0021030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b0610a0021030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -255,7 +255,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b0610800200
+Serialized key bytes: 5c4b0610800200a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -271,7 +271,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b061080020130
+Serialized key bytes: 5c4b061080020130a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -287,7 +287,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b06108002080011223344554677
+Serialized key bytes: 5c4b06108002080011223344554677a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -303,7 +303,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b061080020b00112233445546778899aa
+Serialized key bytes: 5c4b061080020b00112233445546778899aaa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -319,7 +319,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b061080021030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b061080021030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -335,7 +335,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b06102000
+Serialized key bytes: 5c4b06102000a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -351,7 +351,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b0610200130
+Serialized key bytes: 5c4b0610200130a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -367,7 +367,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b061020080011223344554677
+Serialized key bytes: 5c4b061020080011223344554677a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -383,7 +383,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b0610200b00112233445546778899aa
+Serialized key bytes: 5c4b0610200b00112233445546778899aaa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -399,7 +399,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b0610201030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b0610201030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -415,7 +415,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a00200
+Serialized key bytes: 5c4b0610a00200a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -431,7 +431,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a0020130
+Serialized key bytes: 5c4b0610a0020130a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -447,7 +447,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a002080011223344554677
+Serialized key bytes: 5c4b0610a002080011223344554677a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -463,7 +463,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a0020b00112233445546778899aa
+Serialized key bytes: 5c4b0610a0020b00112233445546778899aaa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -479,7 +479,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a0021030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b0610a0021030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -495,7 +495,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b0610800200
+Serialized key bytes: 5c4b0610800200a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -511,7 +511,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b061080020130
+Serialized key bytes: 5c4b061080020130a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -527,7 +527,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b06108002080011223344554677
+Serialized key bytes: 5c4b06108002080011223344554677a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -543,7 +543,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b061080020b00112233445546778899aa
+Serialized key bytes: 5c4b061080020b00112233445546778899aaa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -559,7 +559,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveBits"
-Serialized key bytes: 5c4b061080021030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b061080021030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -575,7 +575,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b06102000
+Serialized key bytes: 5c4b06102000a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -591,7 +591,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b0610200130
+Serialized key bytes: 5c4b0610200130a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -607,7 +607,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b061020080011223344554677
+Serialized key bytes: 5c4b061020080011223344554677a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -623,7 +623,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b0610200b00112233445546778899aa
+Serialized key bytes: 5c4b0610200b00112233445546778899aaa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -639,7 +639,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey"
-Serialized key bytes: 5c4b0610201030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b0610201030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -655,7 +655,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a00200
+Serialized key bytes: 5c4b0610a00200a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -671,7 +671,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a0020130
+Serialized key bytes: 5c4b0610a0020130a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -687,7 +687,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a002080011223344554677
+Serialized key bytes: 5c4b0610a002080011223344554677a0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -703,7 +703,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a0020b00112233445546778899aa
+Serialized key bytes: 5c4b0610a0020b00112233445546778899aaa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -719,7 +719,7 @@ PASS typeof clonedKey.extractable is 'boolean'
 PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "HKDF"
 PASS clonedKey.usages.join(',') is "deriveKey,deriveBits"
-Serialized key bytes: 5c4b0610a0021030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b0610a0021030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS successfullyParsed is true

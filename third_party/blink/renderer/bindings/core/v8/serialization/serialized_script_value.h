@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/ranges/algorithm.h"
@@ -124,6 +125,8 @@ class CORE_EXPORT SerializedScriptValue
   //             support color space information, compression, etc.
   // Version 19: Add DetectedBarcode, DetectedFace, and DetectedText support.
   // Version 20: Remove DetectedBarcode, DetectedFace, and DetectedText support.
+  // Version 21: Add support for trailer data which marks required exposed
+  //             interfaces.
   //
   // The following versions cannot be used, in order to be able to
   // deserialize version 0 SSVs. The class implementation has details.
@@ -136,7 +139,11 @@ class CORE_EXPORT SerializedScriptValue
   //
   // Recent changes are routinely reverted in preparation for branch, and this
   // has been the cause of at least one bug in the past.
-  static constexpr uint32_t kWireFormatVersion = 20;
+  //
+  // WARNING: if you're changing this from version 21, your change will interact
+  // with the fix to https://crbug.com/1341844. Consult bug owner before
+  // proceeding. (After that is settled, remove this paragraph.)
+  static constexpr uint32_t kWireFormatVersion = 21;
 
   // This enumeration specifies whether we're serializing a value for storage;
   // e.g. when writing to IndexedDB. This corresponds to the forStorage flag of
@@ -298,6 +305,29 @@ class CORE_EXPORT SerializedScriptValue
   // Returns true after serializing script values that remote origins cannot
   // access.
   bool IsOriginCheckRequired() const;
+
+  // Returns true if it is expected to be possible to deserialize this value in
+  // the provided context. It might not be if, for instance, the value contains
+  // interfaces not exposed in all realms.
+  bool CanDeserializeIn(ExecutionContext*);
+
+  // Testing hook to allow overriding whether a value can be deserialized in a
+  // particular execution context. Callers are responsible for assuring thread
+  // safety, and resetting this after the test.
+  using CanDeserializeInCallback =
+      base::RepeatingCallback<bool(const SerializedScriptValue&,
+                                   ExecutionContext*,
+                                   bool can_deserialize)>;
+  static void OverrideCanDeserializeInForTesting(CanDeserializeInCallback);
+  struct ScopedOverrideCanDeserializeInForTesting {
+    explicit ScopedOverrideCanDeserializeInForTesting(
+        CanDeserializeInCallback callback) {
+      OverrideCanDeserializeInForTesting(std::move(callback));
+    }
+    ~ScopedOverrideCanDeserializeInForTesting() {
+      OverrideCanDeserializeInForTesting({});
+    }
+  };
 
   // Derive from Attachments to define collections of objects to serialize in
   // modules. They can be registered using GetOrCreateAttachment().

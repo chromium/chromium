@@ -552,14 +552,20 @@ void WorkerGlobalScope::ReceiveMessage(BlinkTransferableMessage message) {
       WorkerThreadDebugger::From(GetThread()->GetIsolate());
   if (debugger)
     debugger->ExternalAsyncTaskStarted(message.sender_stack_trace_id);
-  UserActivation* user_activation = nullptr;
-  if (message.user_activation) {
-    user_activation = MakeGarbageCollected<UserActivation>(
-        message.user_activation->has_been_active,
-        message.user_activation->was_active);
+
+  if (message.message->CanDeserializeIn(this)) {
+    UserActivation* user_activation = nullptr;
+    if (message.user_activation) {
+      user_activation = MakeGarbageCollected<UserActivation>(
+          message.user_activation->has_been_active,
+          message.user_activation->was_active);
+    }
+    DispatchEvent(*MessageEvent::Create(ports, std::move(message.message),
+                                        user_activation));
+  } else {
+    DispatchEvent(*MessageEvent::CreateError());
   }
-  DispatchEvent(*MessageEvent::Create(ports, std::move(message.message),
-                                      user_activation));
+
   if (debugger)
     debugger->ExternalAsyncTaskFinished(message.sender_stack_trace_id);
 }

@@ -43,6 +43,9 @@ class SerializedScriptValueForModulesFactory final
       UnpackedSerializedScriptValue*,
       v8::Isolate*,
       const SerializedScriptValue::DeserializeOptions&) override;
+
+  bool ExecutionContextExposesInterface(ExecutionContext*,
+                                        SerializationTag) override;
 };
 
 }  // namespace blink

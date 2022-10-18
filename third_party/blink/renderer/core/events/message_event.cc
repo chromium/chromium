@@ -384,6 +384,12 @@ bool MessageEvent::IsLockedToAgentCluster() const {
   return data_as_serialized_script_value_->Value()->IsLockedToAgentCluster();
 }
 
+bool MessageEvent::CanDeserializeIn(ExecutionContext* execution_context) const {
+  return data_type_ != kDataTypeSerializedScriptValue ||
+         data_as_serialized_script_value_->Value()->CanDeserializeIn(
+             execution_context);
+}
+
 void MessageEvent::EntangleMessagePorts(ExecutionContext* context) {
   ports_ = MessagePort::EntanglePorts(*context, std::move(channels_));
   is_ports_dirty_ = true;

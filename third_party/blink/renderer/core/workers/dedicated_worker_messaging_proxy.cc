@@ -221,8 +221,12 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerObject(
   MessagePortArray* ports = MessagePort::EntanglePorts(
       *GetExecutionContext(), std::move(message.ports));
   debugger->ExternalAsyncTaskStarted(message.sender_stack_trace_id);
-  worker_object_->DispatchEvent(
-      *MessageEvent::Create(ports, std::move(message.message)));
+  if (message.message->CanDeserializeIn(GetExecutionContext())) {
+    worker_object_->DispatchEvent(
+        *MessageEvent::Create(ports, std::move(message.message)));
+  } else {
+    worker_object_->DispatchEvent(*MessageEvent::CreateError());
+  }
   debugger->ExternalAsyncTaskFinished(message.sender_stack_trace_id);
 }
 

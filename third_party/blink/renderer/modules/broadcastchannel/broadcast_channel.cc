@@ -160,17 +160,17 @@ void BroadcastChannel::Trace(Visitor* visitor) const {
 }
 
 void BroadcastChannel::OnMessage(BlinkCloneableMessage message) {
+  auto* context = GetExecutionContext();
+
   // Queue a task to dispatch the event.
   MessageEvent* event;
-  if (!message.locked_to_sender_agent_cluster ||
-      GetExecutionContext()->IsSameAgentCluster(
-          message.sender_agent_cluster_id)) {
-    event = MessageEvent::Create(
-        nullptr, std::move(message.message),
-        GetExecutionContext()->GetSecurityOrigin()->ToString());
+  if ((!message.locked_to_sender_agent_cluster ||
+       context->IsSameAgentCluster(message.sender_agent_cluster_id)) &&
+      message.message->CanDeserializeIn(context)) {
+    event = MessageEvent::Create(nullptr, std::move(message.message),
+                                 context->GetSecurityOrigin()->ToString());
   } else {
-    event = MessageEvent::CreateError(
-        GetExecutionContext()->GetSecurityOrigin()->ToString());
+    event = MessageEvent::CreateError(context->GetSecurityOrigin()->ToString());
   }
   // <specdef
   // href="https://html.spec.whatwg.org/multipage/web-messaging.html#dom-broadcastchannel-postmessage">

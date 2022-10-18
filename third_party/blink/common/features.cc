@@ -1654,5 +1654,17 @@ const base::FeatureParam<IsolateSandboxedIframesGrouping>
         IsolateSandboxedIframesGrouping::kPerSite,
         &isolated_sandboxed_iframes_grouping_types};
 
+BASE_FEATURE(kSSVTrailerWriteNewVersion,
+             "SSVTrailerWriteNewVersion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSSVTrailerWriteExposureAssertion,
+             "SSVTrailerWriteExposureAssertion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSSVTrailerEnforceExposureAssertion,
+             "SSVTrailerEnforceExposureAssertion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

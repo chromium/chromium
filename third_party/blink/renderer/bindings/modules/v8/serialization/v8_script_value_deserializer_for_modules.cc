@@ -4,15 +4,32 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 
+#include "base/feature_list.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/serialized_track_params.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_directory_handle.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_file_handle.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_source_handle.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
@@ -49,6 +66,10 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
           V8ScriptValueDeserializer::ReadDOMObject(tag, exception_state))
     return wrappable;
 
+  if (!ExecutionContextExposesInterface(
+          ExecutionContext::From(GetScriptState()), tag)) {
+    return nullptr;
+  }
   switch (tag) {
     case kCryptoKeyTag:
       return ReadCryptoKey();
@@ -635,6 +656,62 @@ V8ScriptValueDeserializerForModules::ReadMediaSourceHandle() {
   return MakeGarbageCollected<MediaSourceHandleImpl>(
       std::move(handle_internals.attachment_provider),
       std::move(handle_internals.internal_blob_url));
+}
+
+// static
+bool V8ScriptValueDeserializerForModules::ExecutionContextExposesInterface(
+    ExecutionContext* execution_context,
+    SerializationTag interface_tag) {
+  // If you're updating this, consider whether you should also update
+  // V8ScriptValueSerializerForModules to call
+  // TrailerWriter::RequireExposedInterface (generally via
+  // WriteAndRequireInterfaceTag). Any interface which might potentially not be
+  // exposed on all realms, even if not currently (i.e., most or all) should
+  // probably be listed here.
+  if (V8ScriptValueDeserializer::ExecutionContextExposesInterface(
+          execution_context, interface_tag)) {
+    return true;
+  }
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kSSVTrailerEnforceExposureAssertion))
+      << "V8ScriptValueDeserializer should already have handled this";
+  switch (interface_tag) {
+    case kCryptoKeyTag:
+      return V8CryptoKey::IsExposed(execution_context);
+    case kDOMFileSystemTag:
+      // TODO(crbug.com/1366065): In theory this should be the result of
+      // V8DOMFileSystem::IsExposed, but that's actually _nowhere_ right now.
+      // This is an attempt to preserve things that might be working while
+      // someone with actual file system API expertise looks into it.
+      return execution_context->IsWindow() ||
+             execution_context->IsWorkerGlobalScope();
+    case kFileSystemFileHandleTag:
+      return V8FileSystemFileHandle::IsExposed(execution_context);
+    case kFileSystemDirectoryHandleTag:
+      return V8FileSystemDirectoryHandle::IsExposed(execution_context);
+    case kRTCCertificateTag:
+      return V8RTCCertificate::IsExposed(execution_context);
+    case kRTCEncodedAudioFrameTag:
+      return V8RTCEncodedAudioFrame::IsExposed(execution_context);
+    case kRTCEncodedVideoFrameTag:
+      return V8RTCEncodedVideoFrame::IsExposed(execution_context);
+    case kAudioDataTag:
+      return V8AudioData::IsExposed(execution_context);
+    case kVideoFrameTag:
+      return V8VideoFrame::IsExposed(execution_context);
+    case kEncodedAudioChunkTag:
+      return V8EncodedAudioChunk::IsExposed(execution_context);
+    case kEncodedVideoChunkTag:
+      return V8EncodedVideoChunk::IsExposed(execution_context);
+    case kMediaStreamTrack:
+      return V8MediaStreamTrack::IsExposed(execution_context);
+    case kCropTargetTag:
+      return V8CropTarget::IsExposed(execution_context);
+    case kMediaSourceHandleTag:
+      return V8MediaSourceHandle::IsExposed(execution_context);
+    default:
+      return false;
+  }
 }
 
 }  // namespace blink

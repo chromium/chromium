@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
@@ -504,6 +505,36 @@ TEST_F(ServiceWorkerContainerTest, ReceiveMessageLockedToAgentCluster) {
   auto message = MakeTransferableMessage();
   message.locked_to_sender_agent_cluster = true;
   container->ReceiveMessage(MakeServiceWorkerObjectInfo(), std::move(message));
+  run_loop.Run();
+
+  auto* event = wait->GetLastEvent();
+  EXPECT_EQ(event->type(), event_type_names::kMessageerror);
+}
+
+TEST_F(ServiceWorkerContainerTest, ReceiveMessageWhichCannotDeserialize) {
+  SetPageURL("http://localhost/x/index.html");
+
+  StubWebServiceWorkerProvider stub_provider;
+  LocalDOMWindow* window = GetFrame().DomWindow();
+  ServiceWorkerContainer* container = ServiceWorkerContainer::CreateForTesting(
+      *window, stub_provider.Provider());
+
+  SerializedScriptValue::ScopedOverrideCanDeserializeInForTesting
+      override_can_deserialize_in(base::BindLambdaForTesting(
+          [&](const SerializedScriptValue& value,
+              ExecutionContext* execution_context, bool can_deserialize) {
+            EXPECT_EQ(execution_context, window);
+            EXPECT_TRUE(can_deserialize);
+            return false;
+          }));
+
+  base::RunLoop run_loop;
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  wait->AddEventListener(container, event_type_names::kMessage);
+  wait->AddEventListener(container, event_type_names::kMessageerror);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+  container->ReceiveMessage(MakeServiceWorkerObjectInfo(),
+                            MakeTransferableMessage());
   run_loop.Run();
 
   auto* event = wait->GetLastEvent();

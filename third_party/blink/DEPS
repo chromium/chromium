@@ -11,8 +11,8 @@ include_rules = [
 ]
 
 specific_include_rules = {
-    ".*_test\.cc": [
-        # Some tests use base::RunLoop.
+    ".*_(unit)?test\.cc": [
         "+base/run_loop.h",
+        "+base/test",
     ],
 }

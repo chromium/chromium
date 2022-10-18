@@ -17,7 +17,7 @@ PASS clonedKey.extractable is true
 PASS clonedKey.algorithm.name is "AES-CTR"
 PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "wrapKey,unwrapKey"
-Serialized key bytes: 5c4b010b10c1011030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b010b10c1011030112233445566778899aabbccddeeffa0000000014b
 PASS: Cloned key exported data should be [30112233445566778899aabbccddeeff] and was
 
 
@@ -36,7 +36,7 @@ PASS clonedKey.extractable is true
 PASS clonedKey.algorithm.name is "AES-CTR"
 PASS clonedKey.algorithm.length is 256
 PASS clonedKey.usages.join(',') is "wrapKey,unwrapKey"
-Serialized key bytes: 5c4b010b20c1012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
+Serialized key bytes: 5c4b010b20c1012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0fa0000000014b
 PASS: Cloned key exported data should be [00112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f] and was
 
 
@@ -55,7 +55,7 @@ PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "AES-CTR"
 PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "wrapKey,unwrapKey"
-Serialized key bytes: 5c4b010b10c0011030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b010b10c0011030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -73,7 +73,7 @@ PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "AES-CTR"
 PASS clonedKey.algorithm.length is 256
 PASS clonedKey.usages.join(',') is "wrapKey,unwrapKey"
-Serialized key bytes: 5c4b010b20c0012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
+Serialized key bytes: 5c4b010b20c0012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0fa0000000014b
 
 
 PASS successfullyParsed is true

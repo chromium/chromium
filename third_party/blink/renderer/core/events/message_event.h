@@ -193,6 +193,10 @@ class CORE_EXPORT MessageEvent final : public Event {
   // agent cluster.
   bool IsLockedToAgentCluster() const;
 
+  // Returns true when |data_as_serialized_script_value_| is not prevented from
+  // being deserialized in the provided execution context.
+  bool CanDeserializeIn(ExecutionContext*) const;
+
   void EntangleMessagePorts(ExecutionContext*);
 
   void Trace(Visitor*) const override;

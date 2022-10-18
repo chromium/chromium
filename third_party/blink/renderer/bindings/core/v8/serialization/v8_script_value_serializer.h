@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_writer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -73,6 +74,11 @@ class CORE_EXPORT V8ScriptValueSerializer
   void WriteUnguessableToken(const base::UnguessableToken& token);
   void WriteUTF8String(const String&);
 
+  void WriteAndRequireInterfaceTag(SerializationTag tag) {
+    GetTrailerWriter().RequireExposedInterface(tag);
+    WriteTag(tag);
+  }
+
   template <typename E>
   void WriteUint32Enum(E value) {
     static_assert(
@@ -90,6 +96,8 @@ class CORE_EXPORT V8ScriptValueSerializer
   bool IsForStorage() const { return for_storage_; }
 
   const Transferables* GetTransferables() const { return transferables_; }
+
+  TrailerWriter& GetTrailerWriter() { return trailer_writer_; }
 
  private:
   // Transfer is split into two phases: scanning the transferables so that we
@@ -128,6 +136,7 @@ class CORE_EXPORT V8ScriptValueSerializer
   ScriptState* script_state_;
   scoped_refptr<SerializedScriptValue> serialized_script_value_;
   v8::ValueSerializer serializer_;
+  TrailerWriter trailer_writer_;
   const Transferables* transferables_ = nullptr;
   const ExceptionState* exception_state_ = nullptr;
   WebBlobInfoArray* blob_info_array_ = nullptr;

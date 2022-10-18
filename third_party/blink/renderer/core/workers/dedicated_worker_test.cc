@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -362,6 +363,32 @@ TEST_F(DedicatedWorkerTest, DispatchMessageEventOnWorkerObject) {
   EXPECT_EQ(wait->GetLastEvent()->type(), event_type_names::kMessage);
 }
 
+TEST_F(DedicatedWorkerTest,
+       DispatchMessageEventOnWorkerObject_CannotDeserialize) {
+  StartWorker();
+
+  base::RunLoop run_loop;
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  wait->AddEventListener(WorkerObject(), event_type_names::kMessage);
+  wait->AddEventListener(WorkerObject(), event_type_names::kMessageerror);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+
+  SerializedScriptValue::ScopedOverrideCanDeserializeInForTesting
+      override_can_deserialize_in(base::BindLambdaForTesting(
+          [&](const SerializedScriptValue&, ExecutionContext* execution_context,
+              bool can_deserialize) {
+            EXPECT_EQ(execution_context, GetFrame().DomWindow());
+            EXPECT_TRUE(can_deserialize);
+            return false;
+          }));
+  auto message = MakeTransferableMessage(
+      GetDocument().GetExecutionContext()->GetAgentClusterID());
+  WorkerMessagingProxy()->PostMessageToWorkerObject(std::move(message));
+  run_loop.Run();
+
+  EXPECT_EQ(wait->GetLastEvent()->type(), event_type_names::kMessageerror);
+}
+
 TEST_F(DedicatedWorkerTest, DispatchMessageEventOnWorkerGlobalScope) {
   // Script must run for the worker global scope to dispatch messages.
   const String source_code = "// Do nothing";
@@ -408,6 +435,65 @@ TEST_F(DedicatedWorkerTest, DispatchMessageEventOnWorkerGlobalScope) {
   run_loop_2.Run();
 
   EXPECT_EQ(event_type, event_type_names::kMessage);
+}
+
+TEST_F(DedicatedWorkerTest,
+       DispatchMessageEventOnWorkerGlobalScope_CannotDeserialize) {
+  // Script must run for the worker global scope to dispatch messages.
+  const String source_code = "// Do nothing";
+  StartWorker();
+  EvaluateClassicScript(source_code);
+
+  AtomicString event_type;
+  base::RunLoop run_loop_1;
+  base::RunLoop run_loop_2;
+
+  auto* worker_thread = GetWorkerThread();
+  SerializedScriptValue::ScopedOverrideCanDeserializeInForTesting
+      override_can_deserialize_in(base::BindLambdaForTesting(
+          [&](const SerializedScriptValue&, ExecutionContext* execution_context,
+              bool can_deserialize) {
+            EXPECT_EQ(execution_context, worker_thread->GlobalScope());
+            EXPECT_TRUE(can_deserialize);
+            return false;
+          }));
+
+  PostCrossThreadTask(
+      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(
+          [](DedicatedWorkerThreadForTest* worker_thread,
+             AtomicString* event_type, WTF::CrossThreadOnceClosure quit_1,
+             WTF::CrossThreadOnceClosure quit_2) {
+            auto* global_scope = worker_thread->GlobalScope();
+            auto* wait = MakeGarbageCollected<WaitForEvent>();
+            wait->AddEventListener(global_scope, event_type_names::kMessage);
+            wait->AddEventListener(global_scope,
+                                   event_type_names::kMessageerror);
+            wait->AddCompletionClosure(WTF::BindOnce(
+                [](WaitForEvent* wait, AtomicString* event_type,
+                   WTF::CrossThreadOnceClosure quit_closure) {
+                  *event_type = wait->GetLastEvent()->type();
+                  std::move(quit_closure).Run();
+                },
+                WrapPersistent(wait), WTF::Unretained(event_type),
+                std::move(quit_2)));
+            std::move(quit_1).Run();
+          },
+          CrossThreadUnretained(worker_thread),
+          CrossThreadUnretained(&event_type),
+          WTF::CrossThreadOnceClosure(run_loop_1.QuitClosure()),
+          WTF::CrossThreadOnceClosure(run_loop_2.QuitClosure())));
+
+  // Wait for the first run loop to quit, which signals that the event listeners
+  // are registered. Then post the message and wait to be notified of the
+  // result. Each run loop can only be used once.
+  run_loop_1.Run();
+  auto message = MakeTransferableMessage(
+      GetDocument().GetExecutionContext()->GetAgentClusterID());
+  WorkerMessagingProxy()->PostMessageToWorkerGlobalScope(std::move(message));
+  run_loop_2.Run();
+
+  EXPECT_EQ(event_type, event_type_names::kMessageerror);
 }
 
 }  // namespace blink

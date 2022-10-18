@@ -384,6 +384,9 @@ Event* MessagePort::CreateMessageEvent(BlinkTransferableMessage& message) {
     }
   }
 
+  if (!message.message->CanDeserializeIn(context))
+    return MessageEvent::CreateError();
+
   MessagePortArray* ports = MessagePort::EntanglePorts(
       *GetExecutionContext(), std::move(message.ports));
   UserActivation* user_activation = nullptr;

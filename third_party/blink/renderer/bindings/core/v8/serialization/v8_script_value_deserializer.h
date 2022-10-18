@@ -49,6 +49,9 @@ class CORE_EXPORT V8ScriptValueDeserializer
 
   v8::Local<v8::Value> Deserialize();
 
+  static bool ExecutionContextExposesInterface(ExecutionContext*,
+                                               SerializationTag interface_tag);
+
  protected:
   virtual ScriptWrappable* ReadDOMObject(SerializationTag, ExceptionState&);
 

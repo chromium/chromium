@@ -117,7 +117,7 @@ function logSerializedKey(o)
     if (internals) {
         // Removing the version tag from the output so serialization format changes don't need to update all the crypto tests.
         var serialized = internals.serializeObject(o);
-        var serializedWithoutVersion = new Uint8Array(serialized, 4);
+        var serializedWithoutVersion = new Uint8Array(serialized, 17);
         debug("Serialized key bytes: " + bytesToHexString(serializedWithoutVersion));
     }
 }

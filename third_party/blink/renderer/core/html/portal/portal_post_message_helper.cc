@@ -76,17 +76,22 @@ void PortalPostMessageHelper::CreateAndDispatchMessageEvent(
   DCHECK(source_origin->IsSameOriginWith(
       event_target->GetExecutionContext()->GetSecurityOrigin()));
 
-  UserActivation* user_activation = nullptr;
-  if (message.user_activation) {
-    user_activation = MakeGarbageCollected<UserActivation>(
-        message.user_activation->has_been_active,
-        message.user_activation->was_active);
+  ExecutionContext* context = event_target->GetExecutionContext();
+  MessageEvent* event;
+  if (message.message->CanDeserializeIn(context)) {
+    UserActivation* user_activation = nullptr;
+    if (message.user_activation) {
+      user_activation = MakeGarbageCollected<UserActivation>(
+          message.user_activation->has_been_active,
+          message.user_activation->was_active);
+    }
+    event = MessageEvent::Create(message.ports, message.message,
+                                 source_origin->ToString(), String(),
+                                 event_target, user_activation);
+    event->EntangleMessagePorts(context);
+  } else {
+    event = MessageEvent::CreateError(source_origin->ToString(), event_target);
   }
-
-  MessageEvent* event = MessageEvent::Create(
-      message.ports, message.message, source_origin->ToString(), String(),
-      event_target, user_activation);
-  event->EntangleMessagePorts(event_target->GetExecutionContext());
 
   ThreadDebugger* debugger = MainThreadDebugger::Instance();
   if (debugger)

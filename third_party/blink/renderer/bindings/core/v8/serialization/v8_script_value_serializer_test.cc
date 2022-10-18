@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_serializer.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -35,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -61,6 +65,7 @@
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -1004,6 +1009,10 @@ TEST(V8ScriptValueSerializerTest, OutOfRangeMessagePortIndex) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripMojoHandle) {
   V8TestingScope scope;
+  ContextFeatureSettings::From(
+      scope.GetExecutionContext(),
+      ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+      ->EnableMojoJS(true);
 
   mojo::MessagePipe pipe;
   auto* handle = MakeGarbageCollected<MojoHandle>(
@@ -2060,7 +2069,7 @@ TEST(V8ScriptValueSerializerTest, DecodeHardcodedNullValue) {
 TEST(V8ScriptValueSerializerTest, DecodeWithInefficientVersionEnvelope) {
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input =
-      SerializedValue({0xff, 0x80, 0x09, 0xff, 0x09, 0x54});
+      SerializedValue({0xff, 0x90, 0x00, 0xff, 0x09, 0x54});
   EXPECT_TRUE(
       V8ScriptValueDeserializer(scope.GetScriptState(), std::move(input))
           .Deserialize()
@@ -2178,6 +2187,89 @@ TEST(V8ScriptValueSerializerTest, NoSharedValueConveyor) {
   v8::Local<v8::Value> result =
       V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
   EXPECT_TRUE(result->IsNull());
+}
+
+TEST(V8ScriptValueSerializerTest, CanDeserializeIn_OldValues) {
+  // This is `true` serialized in version 9. It should still return true from
+  // CanDeserializeIn.
+  V8TestingScope scope;
+  scoped_refptr<SerializedScriptValue> input =
+      SerializedValue({0xff, 0x09, 'T', 0x00});
+  EXPECT_TRUE(input->CanDeserializeIn(scope.GetExecutionContext()));
+}
+
+// TODO(crbug.com/1341844): Remove this along with the rest of the plumbing for
+// `features::kSSVTrailerWriteNewVersion.
+TEST(V8ScriptValueSerializerTest, SSVTrailerWriteNewVersionDisabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(features::kSSVTrailerWriteNewVersion);
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  // Should still be able to write and read the old version.
+  EXPECT_TRUE(RoundTrip(v8::True(isolate), scope)->IsTrue());
+
+  // Should actually be the old version (decimal 20).
+  V8ScriptValueSerializer serializer(scope.GetScriptState());
+  auto value = serializer.Serialize(v8::True(isolate), ASSERT_NO_EXCEPTION);
+  EXPECT_THAT(value->GetWireData().first(2), ::testing::ElementsAre(0xff, 20));
+}
+
+// TODO(crbug.com/1341844): Remove this along with the rest of the plumbing for
+// `features::kSSVTrailerWriteExposureAssertion`.
+TEST(V8ScriptValueSerializerTest, SSVTrailerWriteExposureAssertionDisabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(
+      features::kSSVTrailerWriteExposureAssertion);
+  V8TestingScope scope;
+
+  // Even though this has an exposure restriction, it should not be reflected
+  // while the feature to write the assertion is disabled.
+  DOMPoint* point = DOMPoint::Create(0, 0);
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<DOMPoint>::ToV8(scope.GetScriptState(), point)
+          .ToLocalChecked();
+  V8ScriptValueSerializer serializer(scope.GetScriptState());
+  auto value = serializer.Serialize(wrapper, ASSERT_NO_EXCEPTION);
+  TrailerReader trailer_reader(value->GetWireData());
+  ASSERT_TRUE(trailer_reader.SkipToTrailer().has_value());
+  ASSERT_TRUE(trailer_reader.Read().has_value());
+  EXPECT_THAT(trailer_reader.required_exposed_interfaces(),
+              ::testing::IsEmpty());
+}
+
+// TODO(crbug.com/1341844): Remove this along with the rest of the plumbing for
+// `features::kSSVTrailerWriteExposureAssertion`.
+TEST(V8ScriptValueSerializerTest, SSVTrailerEnforceExposureAssertionDisabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(
+      features::kSSVTrailerEnforceExposureAssertion);
+  scoped_refptr<SerializedScriptValue> ssv;
+  mojo::MessagePipe pipe;
+
+  {
+    V8TestingScope scope;
+    ContextFeatureSettings::From(
+        scope.GetExecutionContext(),
+        ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+        ->EnableMojoJS(true);
+    auto* handle = MakeGarbageCollected<MojoHandle>(
+        mojo::ScopedHandle::From(std::move(pipe.handle0)));
+    Transferables transferables;
+    transferables.mojo_handles.push_back(handle);
+
+    V8ScriptValueSerializer::Options options;
+    options.transferables = &transferables;
+    V8ScriptValueSerializer serializer(scope.GetScriptState(), options);
+    ssv = serializer.Serialize(ToV8(handle, scope.GetScriptState()),
+                               ASSERT_NO_EXCEPTION);
+  }
+
+  {
+    ScopedMojoJSForTest disable_mojo_js(false);
+    V8TestingScope scope;
+    EXPECT_TRUE(ssv->CanDeserializeIn(scope.GetExecutionContext()));
+  }
 }
 
 }  // namespace blink

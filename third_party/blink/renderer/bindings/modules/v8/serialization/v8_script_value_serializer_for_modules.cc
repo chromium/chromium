@@ -184,7 +184,7 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
           "A FileSystem object could not be cloned.");
       return false;
     }
-    WriteTag(kDOMFileSystemTag);
+    WriteAndRequireInterfaceTag(kDOMFileSystemTag);
     // This locks in the values of the FileSystemType enumerators.
     WriteUint32(static_cast<uint32_t>(fs->GetType()));
     WriteUTF8String(fs->name());
@@ -208,7 +208,7 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
   }
   if (auto* certificate = dispatcher.ToMostDerived<RTCCertificate>()) {
     rtc::RTCCertificatePEM pem = certificate->Certificate()->ToPEM();
-    WriteTag(kRTCCertificateTag);
+    WriteAndRequireInterfaceTag(kRTCCertificateTag);
     WriteUTF8String(pem.private_key().c_str());
     WriteUTF8String(pem.certificate().c_str());
     return true;
@@ -455,7 +455,7 @@ uint32_t KeyUsagesForWireFormat(WebCryptoKeyUsageMask usages,
 bool V8ScriptValueSerializerForModules::WriteCryptoKey(
     const WebCryptoKey& key,
     ExceptionState& exception_state) {
-  WriteTag(kCryptoKeyTag);
+  WriteAndRequireInterfaceTag(kCryptoKeyTag);
 
   // Write params.
   const WebCryptoKeyAlgorithm& algorithm = key.Algorithm();
@@ -541,7 +541,7 @@ bool V8ScriptValueSerializerForModules::WriteFileSystemHandle(
   tokens_array.push_back(std::move(token));
   const uint32_t token_index = static_cast<uint32_t>(tokens_array.size() - 1);
 
-  WriteTag(tag);
+  WriteAndRequireInterfaceTag(tag);
   WriteUTF8String(file_system_handle->name());
   WriteUint32(token_index);
   return true;
@@ -556,7 +556,7 @@ bool V8ScriptValueSerializerForModules::WriteRTCEncodedAudioFrame(
   frames.push_back(audio_frame->Delegate());
   const uint32_t index = static_cast<uint32_t>(frames.size() - 1);
 
-  WriteTag(kRTCEncodedAudioFrameTag);
+  WriteAndRequireInterfaceTag(kRTCEncodedAudioFrameTag);
   WriteUint32(index);
   return true;
 }
@@ -570,7 +570,7 @@ bool V8ScriptValueSerializerForModules::WriteRTCEncodedVideoFrame(
   frames.push_back(video_frame->Delegate());
   const uint32_t index = static_cast<uint32_t>(frames.size() - 1);
 
-  WriteTag(kRTCEncodedVideoFrameTag);
+  WriteAndRequireInterfaceTag(kRTCEncodedVideoFrameTag);
   WriteUint32(index);
   return true;
 }
@@ -583,7 +583,7 @@ bool V8ScriptValueSerializerForModules::WriteVideoFrameHandle(
   frames.push_back(std::move(handle));
   const uint32_t index = static_cast<uint32_t>(frames.size() - 1);
 
-  WriteTag(kVideoFrameTag);
+  WriteAndRequireInterfaceTag(kVideoFrameTag);
   WriteUint32(index);
 
   return true;
@@ -597,7 +597,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaAudioBuffer(
   audio_buffers.push_back(std::move(audio_data));
   const uint32_t index = static_cast<uint32_t>(audio_buffers.size() - 1);
 
-  WriteTag(kAudioDataTag);
+  WriteAndRequireInterfaceTag(kAudioDataTag);
   WriteUint32(index);
 
   return true;
@@ -612,7 +612,8 @@ bool V8ScriptValueSerializerForModules::WriteDecoderBuffer(
   buffers.push_back(std::move(data));
   const uint32_t index = static_cast<uint32_t>(buffers.size() - 1);
 
-  WriteTag(for_audio ? kEncodedAudioChunkTag : kEncodedVideoChunkTag);
+  WriteAndRequireInterfaceTag(for_audio ? kEncodedAudioChunkTag
+                                        : kEncodedVideoChunkTag);
   WriteUint32(index);
 
   return true;
@@ -639,7 +640,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   // interface.
   auto transfer_id = base::UnguessableToken::Create();
 
-  WriteTag(kMediaStreamTrack);
+  WriteAndRequireInterfaceTag(kMediaStreamTrack);
   auto track_impl_subtype = SerializeTrackImplSubtype(dispatcher);
   WriteUint32Enum(track_impl_subtype);
   WriteUnguessableToken(*device->serializable_session_id());
@@ -685,7 +686,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
 
 bool V8ScriptValueSerializerForModules::WriteCropTarget(
     CropTarget* crop_target) {
-  WriteTag(kCropTargetTag);
+  WriteAndRequireInterfaceTag(kCropTargetTag);
   WriteUTF8String(crop_target->GetCropId());
   return true;
 }
@@ -730,7 +731,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaSourceHandle(
   handle->mark_serialized();
   const uint32_t index = static_cast<uint32_t>(attachments.size() - 1);
 
-  WriteTag(kMediaSourceHandleTag);
+  WriteAndRequireInterfaceTag(kMediaSourceHandleTag);
   WriteUint32(index);
 
   return true;

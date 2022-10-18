@@ -17,7 +17,7 @@ PASS clonedKey.extractable is true
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "encrypt"
-Serialized key bytes: 5c4b010910031030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b010910031030112233445566778899aabbccddeeffa0000000014b
 PASS: Cloned key exported data should be [30112233445566778899aabbccddeeff] and was
 
 
@@ -36,7 +36,7 @@ PASS clonedKey.extractable is true
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 256
 PASS clonedKey.usages.join(',') is "encrypt"
-Serialized key bytes: 5c4b010920032000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
+Serialized key bytes: 5c4b010920032000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0fa0000000014b
 PASS: Cloned key exported data should be [00112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f] and was
 
 
@@ -55,7 +55,7 @@ PASS clonedKey.extractable is true
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "decrypt,wrapKey"
-Serialized key bytes: 5c4b010910451030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b010910451030112233445566778899aabbccddeeffa0000000014b
 PASS: Cloned key exported data should be [30112233445566778899aabbccddeeff] and was
 
 
@@ -74,7 +74,7 @@ PASS clonedKey.extractable is true
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 256
 PASS clonedKey.usages.join(',') is "decrypt,wrapKey"
-Serialized key bytes: 5c4b010920452000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
+Serialized key bytes: 5c4b010920452000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0fa0000000014b
 PASS: Cloned key exported data should be [00112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f] and was
 
 
@@ -93,7 +93,7 @@ PASS clonedKey.extractable is true
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "encrypt,wrapKey,unwrapKey"
-Serialized key bytes: 5c4b010910c3011030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b010910c3011030112233445566778899aabbccddeeffa0000000014b
 PASS: Cloned key exported data should be [30112233445566778899aabbccddeeff] and was
 
 
@@ -112,7 +112,7 @@ PASS clonedKey.extractable is true
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 256
 PASS clonedKey.usages.join(',') is "encrypt,wrapKey,unwrapKey"
-Serialized key bytes: 5c4b010920c3012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
+Serialized key bytes: 5c4b010920c3012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0fa0000000014b
 PASS: Cloned key exported data should be [00112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f] and was
 
 
@@ -131,7 +131,7 @@ PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "encrypt"
-Serialized key bytes: 5c4b010910021030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b010910021030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -149,7 +149,7 @@ PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 256
 PASS clonedKey.usages.join(',') is "encrypt"
-Serialized key bytes: 5c4b010920022000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
+Serialized key bytes: 5c4b010920022000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0fa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -167,7 +167,7 @@ PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "decrypt,wrapKey"
-Serialized key bytes: 5c4b010910441030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b010910441030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -185,7 +185,7 @@ PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 256
 PASS clonedKey.usages.join(',') is "decrypt,wrapKey"
-Serialized key bytes: 5c4b010920442000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
+Serialized key bytes: 5c4b010920442000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0fa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -203,7 +203,7 @@ PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 128
 PASS clonedKey.usages.join(',') is "encrypt,wrapKey,unwrapKey"
-Serialized key bytes: 5c4b010910c2011030112233445566778899aabbccddeeff
+Serialized key bytes: 5c4b010910c2011030112233445566778899aabbccddeeffa0000000014b
 
 
 PASS importedKey.extraProperty is "hi"
@@ -221,7 +221,7 @@ PASS clonedKey.extractable is false
 PASS clonedKey.algorithm.name is "AES-GCM"
 PASS clonedKey.algorithm.length is 256
 PASS clonedKey.usages.join(',') is "encrypt,wrapKey,unwrapKey"
-Serialized key bytes: 5c4b010920c2012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0f
+Serialized key bytes: 5c4b010920c2012000112233445546778899aabbccddeeff000102030405060708090a0b0c0d0e0fa0000000014b
 
 
 PASS successfullyParsed is true

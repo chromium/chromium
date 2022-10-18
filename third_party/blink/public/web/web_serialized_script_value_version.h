@@ -38,7 +38,7 @@ namespace blink {
 // Embedders may serialize this as out-of-band metadata along with
 // collections of serialized data so that version skew can be detected
 // before deserializing individual values.
-const unsigned kSerializedScriptValueVersion = 20;
+const unsigned kSerializedScriptValueVersion = 21;
 
 }  // namespace blink
 

@@ -35,6 +35,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -187,6 +188,7 @@
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -1676,6 +1678,41 @@ TEST_F(WebFrameTest, PostMessageThenDetach) {
 
   // Success is not crashing.
   RunPendingTasks();
+}
+
+TEST_F(WebFrameTest, PostMessageEvent_CannotDeserialize) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad("about:blank");
+
+  auto* frame =
+      To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
+  LocalDOMWindow* window = frame->DomWindow();
+
+  base::RunLoop run_loop;
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  wait->AddEventListener(window, event_type_names::kMessage);
+  wait->AddEventListener(window, event_type_names::kMessageerror);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+
+  scoped_refptr<SerializedScriptValue> message =
+      SerializeString("message", ToScriptStateForMainWorld(frame));
+  SerializedScriptValue::ScopedOverrideCanDeserializeInForTesting
+      override_can_deserialize_in(base::BindLambdaForTesting(
+          [&](const SerializedScriptValue& value,
+              ExecutionContext* execution_context, bool can_deserialize) {
+            EXPECT_EQ(&value, message.get());
+            EXPECT_EQ(execution_context, window);
+            EXPECT_TRUE(can_deserialize);
+            return false;
+          }));
+
+  NonThrowableExceptionState exception_state;
+  frame->DomWindow()->PostMessageForTesting(message, MessagePortArray(), "*",
+                                            window, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+
+  run_loop.Run();
+  EXPECT_EQ(wait->GetLastEvent()->type(), event_type_names::kMessageerror);
 }
 
 namespace {
