@@ -76,16 +76,6 @@ int GridTitleHorizontalPaddingForType(ash::AppListConfigType type) {
   }
 }
 
-// TODO(crbug.com/1372228): Remove this function.
-int GridFocusDimensionForType(ash::AppListConfigType type) {
-  switch (type) {
-    // Unused for ProductivityLauncher.
-    case ash::AppListConfigType::kRegular:
-    case ash::AppListConfigType::kDense:
-      return -1;
-  }
-}
-
 int AppTitleMaxLineHeightForType(ash::AppListConfigType type) {
   switch (type) {
     case ash::AppListConfigType::kRegular:
@@ -181,7 +171,6 @@ AppListConfig::AppListConfig(AppListConfigType type)
       grid_title_bottom_padding_(GridTitleBottomPaddingForType(type)),
       grid_title_horizontal_padding_(GridTitleHorizontalPaddingForType(type)),
       grid_title_width_(grid_tile_width_),
-      grid_focus_dimension_(GridFocusDimensionForType(type)),
       grid_focus_corner_radius_(8),
       app_title_max_line_height_(AppTitleMaxLineHeightForType(type)),
       app_title_font_(AppTitleFontForType(type)),
@@ -208,7 +197,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
       grid_title_horizontal_padding_(
           Scale(base_config.grid_title_horizontal_padding_, scale_x)),
       grid_title_width_(base_config.grid_tile_width_),
-      grid_focus_dimension_(Scale(base_config.grid_focus_dimension_, scale_x)),
       grid_focus_corner_radius_(
           Scale(base_config.grid_focus_corner_radius_, scale_x)),
       app_title_max_line_height_(base_config.app_title_max_line_height_),

@@ -191,10 +191,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return gfx::Size(grid_icon_dimension_, grid_icon_dimension_);
   }
 
-  gfx::Size grid_focus_size() const {
-    return gfx::Size(grid_focus_dimension_, grid_focus_dimension_);
-  }
-
   gfx::Size folder_icon_size() const {
     return gfx::Size(folder_icon_dimension_, folder_icon_dimension_);
   }
@@ -244,11 +240,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The title width of tile views in apps grid view.
   const int grid_title_width_;
-
-  // The focus dimension of tile views in apps grid view. Only used when
-  // ProductivityLauncher is disabled. ProductivityLauncher draws the focus ring
-  // around the entire AppListItemView.
-  const int grid_focus_dimension_;
 
   // Corner radius of the focus ring for tile views in apps grid view.
   const int grid_focus_corner_radius_;
