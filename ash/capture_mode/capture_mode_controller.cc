@@ -809,6 +809,16 @@ void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
   OnVideoRecordCountDownFinished();
 }
 
+void CaptureModeController::MaybeRestoreCachedCaptureConfigurations() {
+  if (!cached_normal_session_configs_)
+    return;
+
+  type_ = cached_normal_session_configs_->type;
+  source_ = cached_normal_session_configs_->source;
+  enable_audio_recording_ = cached_normal_session_configs_->audio_on;
+  cached_normal_session_configs_.reset();
+}
+
 void CaptureModeController::PushNewRootSizeToRecordingService(
     const gfx::Size& root_size,
     float device_scale_factor) {
@@ -1462,6 +1472,11 @@ void CaptureModeController::BeginVideoRecording(
   LaunchRecordingServiceAndStartRecording(capture_params,
                                           std::move(cursor_overlay_receiver));
 
+  // Restore the capture mode configurations that include the `type_`, `source_`
+  // and `enable_audio_recording_` after projector-inititated recording starts
+  // if any of them was overridden in projector-initiated capture mode session.
+  MaybeRestoreCachedCaptureConfigurations();
+
   capture_mode_util::SetStopRecordingButtonVisibility(
       capture_params.window->GetRootWindow(), true);
 
@@ -1641,8 +1656,12 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
            "capture is disabled by policy.";
 
     for_projector = true;
-    // TODO(afakhry): Discuss with PM whether we want this to affect the audio
-    // settings of future generic capture mode sessions.
+
+    // Cache the normal capture mode configurations that will be used for
+    // restoration when switching to the normal capture mode session if needed.
+    cached_normal_session_configs_ =
+        CaptureSessionConfigs{type_, source_, enable_audio_recording_};
+
     enable_audio_recording_ = true;
     SetType(CaptureModeType::kVideo);
     SetSource(CaptureModeSource::kFullscreen);

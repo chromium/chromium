@@ -730,6 +730,12 @@ void CaptureModeSession::Shutdown() {
       // settings of the normal capture mode session being overridden by the
       // projector-initiated capture mode session.
       controller_->camera_controller()->MaybeRevertAutoCameraSelection();
+
+      // Restore the capture mode configurations that include the `type_`,
+      // `source_` and `enable_audio_recording_` when the projector-initiated
+      // session ends without starting a new recording, in case any of them were
+      // overwritten by projector.
+      controller_->MaybeRestoreCachedCaptureConfigurations();
     }
   }
 

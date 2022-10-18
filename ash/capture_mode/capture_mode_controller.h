@@ -253,6 +253,11 @@ class ASH_EXPORT CaptureModeController
   // video recording right away for testing purposes.
   void StartVideoRecordingImmediatelyForTesting();
 
+  // Restores the capture mode configurations that include the `type_`,
+  // `source_` and `enable_audio_recording_` if any of them gets overridden in
+  // the projector-initiated capture mode session.
+  void MaybeRestoreCachedCaptureConfigurations();
+
   CaptureModeDelegate* delegate_for_testing() const { return delegate_.get(); }
   VideoRecordingWatcher* video_recording_watcher_for_testing() const {
     return video_recording_watcher_.get();
@@ -261,6 +266,15 @@ class ASH_EXPORT CaptureModeController
  private:
   friend class CaptureModeTestApi;
   friend class VideoRecordingWatcher;
+
+  // Contains the cached normal capture mode configurations that will be used
+  // for configurations restoration when switching from the projector-initiated
+  // capture mode session if needed.
+  struct CaptureSessionConfigs {
+    CaptureModeType type;
+    CaptureModeSource source;
+    bool audio_on;
+  };
 
   // Called by |video_recording_watcher_| when the display on which recording is
   // happening changes its bounds such as on display rotation or device scale
@@ -564,6 +578,8 @@ class ASH_EXPORT CaptureModeController
 
   // True in the scope of BeginVideoRecording().
   bool is_initializing_recording_ = false;
+
+  absl::optional<CaptureSessionConfigs> cached_normal_session_configs_;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

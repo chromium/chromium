@@ -5425,6 +5425,56 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
                   NewScreencastPreconditionState::kEnabled, {})));
 }
 
+// Tests that the capture mode configurations in normal capture mode session
+// that include the capture mode type, capture mode source and capture mode
+// audio settings will not be overridden by the projector-initiated capture mode
+// session.
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       RestoreCaptureSessionConfigurationsInNormalCaptureSession) {
+  // Start an image capture mode session in window mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+
+  // Stop the normal capture mode session and start a new projector-initated
+  // capture mode session. By default the session will be of type video and in
+  // fullscreen mode with audio on.
+  controller->Stop();
+  StartProjectorModeSession();
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
+  EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
+  EXPECT_TRUE(controller->GetAudioRecordingEnabled());
+
+  // Stop the projector-initiated capture mode session and the original capture
+  // mode configurations will be restored.
+  controller->Stop();
+  EXPECT_EQ(controller->type(), CaptureModeType::kImage);
+  EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
+  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+
+  // Start a new projector-initiated capture mode session and start the region
+  // recording.
+  StartProjectorModeSession();
+  controller->SetSource(CaptureModeSource::kRegion);
+  CaptureModeTestApi test_api;
+  test_api.SetUserSelectedRegion(gfx::Rect(100, 100, 200, 200));
+  test_api.PerformCapture();
+  WaitForSeconds(1);
+
+  // Start another capture mode session and the source should be restored as
+  // what has been set before the projector-initiated capture mode session.
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
+  controller->Stop();
+  test_api.StopVideoRecording();
+
+  // After completing the video recording in projector-initiated capture mode
+  // session, the capture mode configurations will be restored as what has been
+  // set before the projector-initiated capture mode session.
+  EXPECT_EQ(controller->type(), CaptureModeType::kImage);
+  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+}
+
 namespace {
 
 enum AbortReason {
