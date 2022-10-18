@@ -6,6 +6,12 @@
 #define IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_DETAIL_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
+#import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
+
+@protocol WhatsNewDetailViewDelegate;
+@protocol WhatsNewDetailViewActionHandler;
+
+class GURL;
 
 // A base view controller for showing a What's New feature or chrome tip in
 // detail.
@@ -18,13 +24,22 @@
                       subtitle:(NSString*)subtitle
             primaryActionTitle:(NSString*)primaryAction
               instructionSteps:(NSArray<NSString*>*)instructionSteps
-              hasPrimaryAction:(BOOL)hasPrimaryAction NS_DESIGNATED_INITIALIZER;
+              hasPrimaryAction:(BOOL)hasPrimaryAction
+                          type:(WhatsNewType)type
+                  learnMoreURL:(const GURL&)learnMoreURL
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
+
+// The delegate object that manages interactions with the primary action.
+@property(nonatomic, weak) id<WhatsNewDetailViewActionHandler> actionHandler;
+
+// The delegate object to the main coordinator (`WhatsNewCoordinator`).
+@property(nonatomic, weak) id<WhatsNewDetailViewDelegate> delegate;
 
 @end
 

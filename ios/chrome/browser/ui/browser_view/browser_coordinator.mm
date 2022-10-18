@@ -1402,6 +1402,11 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   [self.whatsNewCoordinator start];
 }
 
+- (void)dismissWhatsNew {
+  [self.whatsNewCoordinator stop];
+  self.whatsNewCoordinator = nil;
+}
+
 #pragma mark - DefaultPromoCommands
 
 - (void)showTailoredPromoStaySafe {

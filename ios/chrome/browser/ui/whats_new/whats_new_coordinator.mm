@@ -4,9 +4,16 @@
 
 #import "ios/chrome/browser/ui/whats_new/whats_new_coordinator.h"
 
+#import "base/check_op.h"
+#import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_detail_coordinator.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_controller.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,6 +35,9 @@ NSString* const kTableViewNavigationDismissButtonId =
     TableViewNavigationController* navigationController;
 // The view controller used to display the What's New features and chrome tips.
 @property(nonatomic, strong) WhatsNewTableViewController* tableViewController;
+// The coordinator used for What's New feature.
+@property(nonatomic, strong)
+    WhatsNewDetailCoordinator* whatsNewDetailCoordinator;
 
 @end
 
@@ -37,11 +47,14 @@ NSString* const kTableViewNavigationDismissButtonId =
 
 - (void)start {
   self.mediator = [[WhatsNewMediator alloc] init];
+  self.mediator.urlLoadingAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
   self.tableViewController = [[WhatsNewTableViewController alloc] init];
   self.tableViewController.navigationItem.rightBarButtonItem =
       [self dismissButton];
 
-  self.tableViewController.delegate = self.mediator;
+  self.tableViewController.delegate = self;
+  self.tableViewController.actionHandler = self.mediator;
   self.mediator.consumer = self.tableViewController;
 
   [self.tableViewController reloadData];
@@ -56,8 +69,33 @@ NSString* const kTableViewNavigationDismissButtonId =
 }
 
 - (void)stop {
+  if (self.whatsNewDetailCoordinator) {
+    [self.whatsNewDetailCoordinator stop];
+    self.whatsNewDetailCoordinator = nil;
+  }
   self.mediator = nil;
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  self.tableViewController = nil;
+  self.navigationController = nil;
+
   [super stop];
+}
+
+#pragma mark - WhatsNewTableViewDelegate
+
+- (void)detailViewController:
+            (WhatsNewTableViewController*)whatsNewTableviewController
+    openDetailViewControllerForItem:(WhatsNewItem*)item {
+  DCHECK_EQ(self.tableViewController, whatsNewTableviewController);
+
+  self.whatsNewDetailCoordinator = [[WhatsNewDetailCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:self.browser
+                                  item:item
+                         actionHandler:self.mediator];
+  [self.whatsNewDetailCoordinator start];
 }
 
 #pragma mark Private
@@ -72,13 +110,15 @@ NSString* const kTableViewNavigationDismissButtonId =
 }
 
 - (void)dismissButtonTapped {
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
-  self.tableViewController = nil;
-  self.navigationController = nil;
+  [self dismiss];
+}
 
-  [self stop];
+- (void)dismiss {
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  DCHECK(handler);
+
+  [handler dismissWhatsNew];
 }
 
 @end

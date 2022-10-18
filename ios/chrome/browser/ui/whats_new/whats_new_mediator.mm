@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,14 +65,10 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
   return self;
 }
 
-#pragma mark - WhatsNewPrimaryActionHandler
+#pragma mark - WhatsNewDetailViewActionHandler
 
-- (void)didTapActionButton:(WhatsNewItem*)item {
-  if (!item.hasPrimaryAction) {
-    return;
-  }
-
-  switch (item.type) {
+- (void)didTapActionButton:(WhatsNewType)type {
+  switch (type) {
     case WhatsNewType::kAddPasswordManually:
     case WhatsNewType::kUseChromeByDefault:
     case WhatsNewType::kPasswordsInOtherApps:
@@ -79,6 +78,12 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
       NOTREACHED();
       break;
   };
+}
+
+- (void)didTapLearnMoreButton:(const GURL&)learnMoreURL {
+  UrlLoadParams params = UrlLoadParams::InNewTab(learnMoreURL);
+  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  self.urlLoadingAgent->Load(params);
 }
 
 #pragma mark - WhatsNewTableViewActionHandler

@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_MEDIATOR_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_MEDIATOR_CONSUMER_H_
 
-#import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
+@class WhatsNewItem;
 
-// Handles `WhatsNewTableViewController` updates.
+// Handles updates from the mediator to the UI.
 @protocol WhatsNewMediatorConsumer <NSObject>
 
 // Sets the highlighted What's New feature item, the array of other What's New
