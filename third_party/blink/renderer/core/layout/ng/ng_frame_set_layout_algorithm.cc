@@ -284,6 +284,7 @@ void NGFrameSetLayoutAlgorithm::LayoutChildren(
   NGLayoutInputNode child = Node().FirstChild();
   if (!child)
     return;
+  auto container_direction = Style().GetWritingDirection();
   for (wtf_size_t row = 0; row < layout_data.row_sizes.size(); ++row) {
     position.left = LayoutUnit();
     const LayoutUnit row_size = layout_data.row_sizes[row];
@@ -291,20 +292,18 @@ void NGFrameSetLayoutAlgorithm::LayoutChildren(
       const LayoutUnit col_size = layout_data.col_sizes[col];
       const bool kNewFormattingContext = true;
       NGConstraintSpaceBuilder space_builder(
-          Style().GetWritingMode(), child.Style().GetWritingDirection(),
-          kNewFormattingContext);
-      space_builder.SetAvailableSize(
-          IsHorizontalWritingMode(child.Style().GetWritingMode())
-              ? LogicalSize(col_size, row_size)
-              : LogicalSize(row_size, col_size));
+          container_direction.GetWritingMode(),
+          child.Style().GetWritingDirection(), kNewFormattingContext);
+      space_builder.SetAvailableSize(container_direction.IsHorizontal()
+                                         ? LogicalSize(col_size, row_size)
+                                         : LogicalSize(row_size, col_size));
       space_builder.SetIsFixedInlineSize(true);
       space_builder.SetIsFixedBlockSize(true);
       const NGLayoutResult* result =
           To<NGBlockNode>(child).Layout(space_builder.ToConstraintSpace());
       container_builder_.AddResult(
-          *result,
-          position.ConvertToLogical(Style().GetWritingDirection(),
-                                    frameset_size, {col_size, row_size}));
+          *result, position.ConvertToLogical(container_direction, frameset_size,
+                                             {col_size, row_size}));
 
       child = child.NextSibling();
       if (!child)

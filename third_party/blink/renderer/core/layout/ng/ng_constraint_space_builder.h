@@ -79,6 +79,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     *inline_size = orthogonal_fallback_inline_size_;
   }
 
+  // |available_size| is logical for the writing-mode of the container.
   void SetAvailableSize(LogicalSize available_size) {
 #if DCHECK_IS_ON()
     is_available_size_set_ = true;
