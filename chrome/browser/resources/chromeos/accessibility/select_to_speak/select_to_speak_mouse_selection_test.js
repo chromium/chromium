@@ -302,3 +302,45 @@ AX_TEST_F(
       };
       this.triggerReadMouseSelectedText(downEvent, upEvent);
     });
+
+AX_TEST_F('SelectToSpeakMouseSelectionTest', 'SystemUI', async function() {
+  this.runWithLoadedDesktop(desktop => {
+    // Select STS tray and system tray to ensure STS tray is spoken.
+    // We can test against the STS tray text because we own it, the
+    // rest of the system tray may change.
+    const systemTray = desktop.find({
+      attributes: {className: 'UnifiedSystemTray'},
+    });
+    const stsTray = desktop.find({
+      attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME},
+    });
+    const start = {
+      screenX: stsTray.location.left + 1,
+      screenY: stsTray.location.top + 1,
+    };
+    const end = {
+      screenX: systemTray.location.left + systemTray.location.width - 1,
+      screenY: systemTray.location.top + 10,
+    };
+    this.mockTts.setOnSpeechCallbacks([this.newCallback(function(utterance) {
+      assertTrue(this.mockTts.currentlySpeaking());
+      this.assertEqualsCollapseWhitespace(
+          this.mockTts.pendingUtterances()[0], 'Select-to-speak');
+    })]);
+
+    focusRingsCallback = this.newCallback((focusRings) => {
+      // Check focus rings are reasonably sized.
+      assertTrue(focusRings[0].rects[0].width < 200);
+      assertTrue(focusRings[0].rects[0].height < 100);
+    });
+    // Override focus rings method for this test.
+    chrome.accessibilityPrivate.setFocusRings = rings => {
+      if (focusRingsCallback && rings.length > 0 && rings[0].rects.length > 0) {
+        focusRingsCallback(rings);
+        focusRingsCallback = null;
+      }
+    };
+
+    this.triggerReadMouseSelectedText(start, end);
+  });
+});

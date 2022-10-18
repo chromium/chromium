@@ -29,6 +29,12 @@ export class ParagraphUtils {
         node.parent.role === RoleType.SVG_ROOT) {
       return true;
     }
+    // Many native view containers have UNKNOWN roles. Web elements will
+    // probably not have UNKNOWN roles. This allows us to break at native
+    // view containers rather than walking up to the Desktop root.
+    if (node.role === RoleType.UNKNOWN) {
+      return true;
+    }
     return false;
   }
 
