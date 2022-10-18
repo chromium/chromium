@@ -534,6 +534,17 @@ void ConvertSiteGroupMapToList(
     // eTLD+1 is the effective top level domain + 1.
     base::Value::Dict site_group;
     site_group.Set(kEffectiveTopLevelDomainPlus1Name, entry.first);
+
+    // Isolated Web Apps do not support sub domains, so the origins set always
+    // contains only 1 entry.
+    absl::optional<std::string> isolated_web_app_name =
+        site_settings::GetIsolatedWebAppName(profile,
+                                             GURL(entry.second.begin()->first));
+    if (isolated_web_app_name.has_value()) {
+      site_group.Set(site_settings::kIsolatedWebAppName,
+                     isolated_web_app_name.value());
+    }
+
     bool has_installed_pwa = false;
     base::Value::List origin_list;
     for (const auto& origin_is_partitioned : entry.second) {

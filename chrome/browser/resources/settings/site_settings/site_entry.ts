@@ -69,7 +69,9 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
       /**
        * The name to display beside the icon. If grouped_() is true, it will be
-       * the eTLD+1 for all the origins, otherwise, it will return the host.
+       * the eTLD+1 for all the origins. For Isolated Web Apps instead of
+       * displaying the origin, the short name of the app will be displayed.
+       * Otherwise, it will return the host.
        */
       displayName_: String,
 
@@ -236,7 +238,8 @@ export class SiteEntryElement extends SiteEntryElementBase {
       this.cookieString_ = string;
     });
     this.updateOrigins_(this.sortMethod);
-    this.displayName_ = this.siteGroupRepresentation_(siteGroup);
+    this.displayName_ = siteGroup.isolatedWebAppName ??
+        this.siteGroupRepresentation_(siteGroup);
   }
 
   /**

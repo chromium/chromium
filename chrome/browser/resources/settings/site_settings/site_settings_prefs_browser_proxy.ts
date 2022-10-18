@@ -68,6 +68,7 @@ export interface SiteGroup {
   fpsNumMembers?: number;
   fpsEnterpriseManaged?: boolean;
   hasInstalledPWA: boolean;
+  isolatedWebAppName?: string;
 }
 
 /**
