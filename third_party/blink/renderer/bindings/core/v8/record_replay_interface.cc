@@ -1231,17 +1231,6 @@ struct BrowserEvent {
 
   BrowserEvent(std::string&& name, std::string&& payload)
     : name(std::move(name)), payload(std::move(payload)) {}
-
-  // Disable assignment and copy-construction
-  BrowserEvent(const BrowserEvent&) = delete;
-  BrowserEvent& operator=(const BrowserEvent&) = delete;
-  BrowserEvent& operator=(BrowserEvent&&) = delete;
-
-  // Allow move-construction.
-  BrowserEvent(BrowserEvent&& other):
-      name(std::move(other.name)),
-      payload(std::move(other.payload))
-  {}
 };
 
 static std::vector<BrowserEvent> *gBrowserEvents = nullptr;
@@ -1265,11 +1254,69 @@ static void HandleNetworkPrepareRequestEvent(const base::DictionaryValue& info) 
   event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->DeepCopy()));
   event.Set("requestMethod", std::unique_ptr<base::Value>(info.FindPath("requestMethod")->DeepCopy()));
   event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->DeepCopy()));
-  std::string request_id;
-  info.FindPath("requestId")->GetAsString(&request_id);
+  std::string request_id = *info.FindPath("requestId")->GetIfString();
 
   gCurrentNetworkRequestEvent = &event;
   recordreplay::OnNetworkRequestEvent(request_id.c_str());
+  gCurrentNetworkRequestEvent = nullptr;
+}
+
+static void HandleNetworkDidReceiveResponseEvent(const base::DictionaryValue& info) {
+  base::DictionaryValue event;
+  event.SetString("kind", "response");
+  event.Set("responseHeaders", std::unique_ptr<base::Value>(
+    info.FindPath("responseHeaders")->DeepCopy()
+  ));
+  event.Set("responseProtocolVersion", std::unique_ptr<base::Value>(
+    info.FindPath("responseProtocolVersion")->DeepCopy()
+  ));
+  event.Set("responseStatus", std::unique_ptr<base::Value>(
+    info.FindPath("responseStatus")->DeepCopy()
+  ));
+  uint64_t identifier =
+    *info.FindPath("identifier")->GetIfDouble();
+  char request_id[64];
+  snprintf(request_id, 64, "%d.%lu", getpid(), identifier);
+
+  gCurrentNetworkRequestEvent = &event;
+  recordreplay::OnNetworkRequestEvent(request_id);
+  gCurrentNetworkRequestEvent = nullptr;
+}
+
+static void HandleNetworkDidFinishLoadingEvent(const base::DictionaryValue& info) {
+  base::DictionaryValue event;
+  event.SetString("kind", "request-done");
+  event.Set("encodedBodySize", std::unique_ptr<base::Value>(
+    info.FindPath("encodedBodySize")->DeepCopy()
+  ));
+  event.Set("decodedBodySize", std::unique_ptr<base::Value>(
+    info.FindPath("decodedBodySize")->DeepCopy()
+  ));
+
+  uint64_t identifier =
+    *info.FindPath("identifier")->GetIfDouble();
+  char request_id[64];
+  snprintf(request_id, 64, "%d.%lu", getpid(), identifier);
+
+  gCurrentNetworkRequestEvent = &event;
+  recordreplay::OnNetworkRequestEvent(request_id);
+  gCurrentNetworkRequestEvent = nullptr;
+}
+
+static void HandleNetworkDidFailLoadingEvent(const base::DictionaryValue& info) {
+  base::DictionaryValue event;
+  event.SetString("kind", "request-failed");
+  event.Set("requestFailedReason", std::unique_ptr<base::Value>(
+    info.FindPath("requestFailedReason")->DeepCopy()
+  ));
+
+  uint64_t identifier =
+    *info.FindPath("identifier")->GetIfDouble();
+  char request_id[64];
+  snprintf(request_id, 64, "%d.%lu", getpid(), identifier);
+
+  gCurrentNetworkRequestEvent = &event;
+  recordreplay::OnNetworkRequestEvent(request_id);
   gCurrentNetworkRequestEvent = nullptr;
 }
 
@@ -1283,15 +1330,20 @@ static void HandleBrowserEvent(const char* name, const char* payload) {
   if (!gBrowserEvents) {
     gBrowserEvents = new std::vector<BrowserEvent>();
   }
-  gBrowserEvents->push_back(
-    BrowserEvent(std::string(name), std::string(payload))
-  );
+  BrowserEvent event = BrowserEvent(std::string(name), std::string(payload));
+  gBrowserEvents->push_back(std::move(event));
 
   base::Value val = base::JSONReader::Read(payload).value_or(base::Value());
   assert(!val.is_none() && "Browser event JSON failed");
   assert(!val.is_dict() && "Browser event JSON is not a dictionary");
   if (!strcmp(name, "Network.PrepareRequest")) {
     HandleNetworkPrepareRequestEvent(base::Value::AsDictionaryValue(val));
+  } else if (!strcmp(name, "Network.DidReceiveResponse")) {
+    HandleNetworkDidReceiveResponseEvent(base::Value::AsDictionaryValue(val));
+  } else if (!strcmp(name, "Network.DidFinishLoading")) {
+    HandleNetworkDidFinishLoadingEvent(base::Value::AsDictionaryValue(val));
+  } else if (!strcmp(name, "Network.DidFailLoading")) {
+    HandleNetworkDidFailLoadingEvent(base::Value::AsDictionaryValue(val));
   }
 }
 

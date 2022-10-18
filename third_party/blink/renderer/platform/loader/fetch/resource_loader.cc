@@ -38,6 +38,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/net_errors.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/features.h"
@@ -213,6 +214,23 @@ void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
 
 static bool PermitRecordReplayBrowserEvents() {
   return recordreplay::IsRecordingOrReplaying("notify-network") && v8::IsMainThread();
+}
+
+static const char* HttpVersionToString(ResourceResponse::HTTPVersion version) {
+  switch (version) {
+    case ResourceResponse::HTTPVersion::kHTTPVersion_0_9:
+      return "http/0.9";
+    case ResourceResponse::HTTPVersion::kHTTPVersion_1_0:
+      return "http/1.0";
+    case ResourceResponse::HTTPVersion::kHTTPVersion_1_1:
+      return "http/1.1";
+    case ResourceResponse::HTTPVersion::kHTTPVersion_2_0:
+      return "http/2.0";
+    case ResourceResponse::HTTPVersion::kHTTPVersionUnknown:
+      return "http";
+    default:
+      return "http/unknown";
+  }
 }
 
 // CodeCacheRequest handles the requests to fetch data from code cache.
@@ -1073,6 +1091,25 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   resource_->ResponseReceived(response);
 
+  if (PermitRecordReplayBrowserEvents()) {
+    base::DictionaryValue dict;
+    dict.SetDouble("identifier", (double) resource_->InspectorId());
+    const char* http_version = HttpVersionToString(response.HttpVersion());
+    base::ListValue headers;
+    for (auto header : response.HttpHeaderFields()) {
+      base::DictionaryValue header_obj;
+      header_obj.SetString("name", header.key.Utf8());
+      header_obj.SetString("value", header.value.Utf8());
+      headers.Append(std::move(header_obj));
+    }
+    dict.SetKey("responseHeaders", std::move(headers));
+    dict.SetString("responseProtocolVersion", http_version);
+    dict.SetDouble("responseStatus", response.HttpStatusCode());
+    dict.SetString("responseStatusText", response.HttpStatusText().Utf8());
+    dict.SetBoolean("responseFromCache", response.WasCached());
+    recordreplay::BrowserEvent("Network.DidReceiveResponse", dict);
+  }
+
   // Send the cached code after we notify that the response is received.
   // Resource expects that we receive the response first before the
   // corresponding cached code.
@@ -1180,6 +1217,14 @@ void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
   resource_->SetEncodedBodyLength(encoded_body_length);
   resource_->SetDecodedBodyLength(decoded_body_length);
 
+  if (PermitRecordReplayBrowserEvents()) {
+    base::DictionaryValue dict;
+    dict.SetDouble("identifier", (double) resource_->InspectorId());
+    dict.SetDouble("encodedBodySize", (double) encoded_body_length);
+    dict.SetDouble("decodedBodySize", (double) decoded_body_length);
+    recordreplay::BrowserEvent("Network.DidFinishLoading", dict);
+  }
+
   response_end_time_for_error_cases_ = response_end_time;
 
   if ((response_body_loader_ && !has_seen_end_of_body_ &&
@@ -1222,6 +1267,14 @@ void ResourceLoader::DidFail(const WebURLError& error,
                              int64_t decoded_body_length) {
   const ResourceRequestHead& request = resource_->GetResourceRequest();
   response_end_time_for_error_cases_ = response_end_time;
+
+  if (PermitRecordReplayBrowserEvents()) {
+    std::string reason = net::ErrorToShortString(error.reason());
+    base::DictionaryValue dict;
+    dict.SetDouble("identifier", (double) resource_->InspectorId());
+    dict.SetString("requestFailedReason", std::move(reason));
+    recordreplay::BrowserEvent("Network.DidFailLoading", dict);
+  }
 
   if (request.IsAutomaticUpgrade()) {
     mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
