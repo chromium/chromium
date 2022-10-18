@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 
+#import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_image_container_view.h"
+#import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_menu_button.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_price_chip_view.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
@@ -58,12 +60,6 @@ const CGFloat kCellContentSpacing = 14;
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
 
   if (self) {
-    // TODO(crbug.com/1368700) Once the PriceNotificationImageContainerView,
-    // PriceNotificationsPriceChipView, and PriceNotificationsMenuItem is
-    // created, instatiate instances of each class and extend the TableViewCell
-    // to stores these instances as properties. In addition, this class will
-    // need to be adapted to integrate the UI elements in to the table cell.
-
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.font =
         CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
@@ -73,30 +69,33 @@ const CGFloat kCellContentSpacing = 14;
     _URLLabel.adjustsFontForContentSizeCategory = YES;
     _URLLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _trackButton = [[PriceNotificationsTrackButton alloc] init];
+    _menuButton = [[PriceNotificationsMenuButton alloc] init];
     _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
     _priceNotificationsChip.translatesAutoresizingMaskIntoConstraints = NO;
+    _priceNotificationsImageContainerView =
+        [[PriceNotificationsImageContainerView alloc] init];
+    _priceNotificationsImageContainerView
+        .translatesAutoresizingMaskIntoConstraints = NO;
 
     // Use stack views to layout the subviews except for the Price Notification
     // Image.
     UIStackView* verticalStack =
         [[UIStackView alloc] initWithArrangedSubviews:@[
-          self.titleLabel, self.URLLabel, self.priceNotificationsChip
+          _titleLabel, _URLLabel, _priceNotificationsChip
         ]];
     verticalStack.axis = UILayoutConstraintAxisVertical;
     verticalStack.distribution = UIStackViewDistributionEqualSpacing;
     verticalStack.alignment = UIStackViewAlignmentLeading;
 
-    UIStackView* horizontalStack =
-        [[UIStackView alloc] initWithArrangedSubviews:@[
-          verticalStack,
-          self.trackButton,
-        ]];
+    UIStackView* horizontalStack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ verticalStack, _trackButton, _menuButton ]];
     horizontalStack.axis = UILayoutConstraintAxisHorizontal;
     horizontalStack.spacing = kTableViewHorizontalSpacing;
     horizontalStack.distribution = UIStackViewDistributionEqualSpacing;
     horizontalStack.alignment = UIStackViewAlignmentCenter;
-
     horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [self.contentView addSubview:_priceNotificationsImageContainerView];
     [self.contentView addSubview:horizontalStack];
 
     NSLayoutConstraint* heightConstraint = [self.contentView.heightAnchor
@@ -106,10 +105,18 @@ const CGFloat kCellContentSpacing = 14;
     heightConstraint.priority = UILayoutPriorityRequired - 1;
 
     [NSLayoutConstraint activateConstraints:@[
+      [self.priceNotificationsImageContainerView.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor
+                         constant:kTableViewHorizontalSpacing],
+      [self.priceNotificationsImageContainerView.centerYAnchor
+          constraintEqualToAnchor:self.contentView.centerYAnchor],
+
       // The stack view fills the remaining space, has an intrinsic height, and
       // is centered vertically.
       [horizontalStack.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor],
+          constraintEqualToAnchor:self.priceNotificationsImageContainerView
+                                      .trailingAnchor
+                         constant:kTableViewHorizontalSpacing],
       [horizontalStack.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
@@ -130,10 +137,12 @@ const CGFloat kCellContentSpacing = 14;
 - (void)setTracking:(BOOL)tracking {
   if (tracking) {
     self.trackButton.hidden = YES;
+    self.menuButton.hidden = NO;
     return;
   }
 
   self.trackButton.hidden = NO;
+  self.menuButton.hidden = YES;
   _tracking = tracking;
 }
 
