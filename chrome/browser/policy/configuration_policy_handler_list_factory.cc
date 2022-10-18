@@ -570,10 +570,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kScreenCaptureAllowedByOrigins,
     prefs::kScreenCaptureAllowedByOrigins,
     base::Value::Type::LIST },
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   { key::kSecurityKeyPermitAttestation,
     prefs::kSecurityKeyPermitAttestation,
     base::Value::Type::LIST },
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   { key::kLoadCryptoTokenExtension,
     extensions::pref_names::kLoadCryptoTokenExtension,
     base::Value::Type::BOOLEAN },
@@ -1648,12 +1648,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     extensions::pref_names::kAppFullscreenAllowed,
     base::Value::Type::BOOLEAN },
 #endif  // !BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  { key::kSecurityKeyPermitAttestation,
-    prefs::kSecurityKeyPermitAttestation,
-    base::Value::Type::LIST },
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
   { key::kBlockExternalExtensions,

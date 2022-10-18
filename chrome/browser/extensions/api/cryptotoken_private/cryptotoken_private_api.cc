@@ -96,11 +96,6 @@ content::RenderFrameHost* RenderFrameHostForTabAndFrameId(
 
 }  // namespace
 
-void CryptotokenRegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kSecurityKeyPermitAttestation);
-}
-
 CryptotokenPrivateCanOriginAssertAppIdFunction::
     CryptotokenPrivateCanOriginAssertAppIdFunction() = default;
 

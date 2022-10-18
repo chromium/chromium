@@ -18,9 +18,6 @@ class PrefRegistrySyncable;
 namespace extensions {
 namespace api {
 
-void CryptotokenRegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry);
-
 class CryptotokenPrivateCanOriginAssertAppIdFunction
     : public ExtensionFunction {
  public:

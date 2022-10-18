@@ -484,6 +484,7 @@ ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
 // static
 void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterListPref(prefs::kSecurityKeyPermitAttestation);
 #if BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(kWebAuthnLastOperationWasNativeAPI, false);
   LocalCredentialManagementWin::RegisterProfilePrefs(registry);
