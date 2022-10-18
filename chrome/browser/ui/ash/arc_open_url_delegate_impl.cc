@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
@@ -54,6 +55,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
 #include "net/base/url_util.h"
@@ -291,6 +293,23 @@ void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
     return;
 
   GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
+  // If Lacros is primary browser, convert externalfile:// url into file:// url
+  // managed by the FuseBox moniker system because Lacros cannot handle
+  // externalfile:// urls.
+  // TODO(crbug.com/1374575): Check if other externalfile:// urls can use the
+  // same logic. If so, move this code into CrosapiNewWindowDelegate::OpenUrl()
+  // which is only for Lacros.
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser() &&
+      url_to_open.SchemeIs(content::kExternalFileScheme)) {
+    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(
+        user_manager::UserManager::Get()->GetPrimaryUser());
+    // `profile` may be null if sign-in has happened but the profile isn't
+    // loaded yet.
+    if (!profile)
+      return;
+    url_to_open = ConvertToMonikerFileUrl(profile, url);
+  }
+
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url_to_open, ash::NewWindowDelegate::OpenUrlFrom::kArc,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -307,7 +326,7 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   if (!user)
     return;
 
-  // |profile| may be null if sign-in has happened but the profile isn't loaded
+  // `profile` may be null if sign-in has happened but the profile isn't loaded
   // yet.
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
