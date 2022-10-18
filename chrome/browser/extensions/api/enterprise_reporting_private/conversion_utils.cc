@@ -233,8 +233,8 @@ absl::optional<ParsedSignalsError> ConvertSettingsResponse(
     response.hive = ConvertHiveToApi(settings_item.hive);
 
     std::string json_value;
-    if (settings_item.setting_json_value &&
-        base::JSONWriter::Write(settings_item.setting_json_value.value(),
+    if (settings_item.setting_value &&
+        base::JSONWriter::Write(settings_item.setting_value.value(),
                                 &json_value)) {
       response.value = json_value;
     }

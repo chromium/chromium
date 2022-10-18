@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/device_signals/test/test_constants.h"
@@ -33,7 +32,7 @@ class PlistSettingsClientTest : public testing::Test {
                                  const std::string& setting_value) {
     SettingsItem item;
     if (!setting_value.empty())
-      item.setting_json_value = "\"" + setting_value + "\"";
+      item.setting_value = base::Value(setting_value);
     return FinishSettingItemSetup(item, key_path, value);
   }
 
@@ -41,7 +40,7 @@ class PlistSettingsClientTest : public testing::Test {
                                  PresenceValue value,
                                  const int setting_value) {
     SettingsItem item;
-    item.setting_json_value = base::StringPrintf("%d", setting_value);
+    item.setting_value = base::Value(setting_value);
     return FinishSettingItemSetup(item, key_path, value);
   }
 
@@ -49,7 +48,7 @@ class PlistSettingsClientTest : public testing::Test {
                                  PresenceValue value,
                                  const double setting_value) {
     SettingsItem item;
-    item.setting_json_value = base::StringPrintf("%f", setting_value);
+    item.setting_value = base::Value(setting_value);
     return FinishSettingItemSetup(item, key_path, value);
   }
 

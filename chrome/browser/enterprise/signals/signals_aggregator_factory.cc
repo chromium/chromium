@@ -28,21 +28,10 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-#include "components/device_signals/core/browser/win/registry_settings_client.h"
 #include "components/device_signals/core/browser/win/win_signals_collector.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace enterprise_signals {
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-std::unique_ptr<device_signals::SettingsClient> CreateSettingsClient() {
-#if BUILDFLAG(IS_WIN)
-  return std::make_unique<device_signals::RegistrySettingsClient>();
-#else
-  return std::make_unique<device_signals::PlistSettingsClient>();
-#endif  // BUILDFLAG(IS_WIN)
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // static
 SignalsAggregatorFactory* SignalsAggregatorFactory::GetInstance() {
@@ -77,11 +66,11 @@ KeyedService* SignalsAggregatorFactory::BuildServiceInstanceFor(
       std::make_unique<device_signals::FileSystemSignalsCollector>(
           service_host));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   collectors.push_back(
       std::make_unique<device_signals::SettingsSignalsCollector>(
-          CreateSettingsClient()));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+          std::make_unique<device_signals::PlistSettingsClient>()));
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
   collectors.push_back(

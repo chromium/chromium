@@ -10,10 +10,8 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/json/json_writer.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/device_signals/core/browser/settings_client.h"
@@ -159,22 +157,17 @@ std::vector<SettingsItem> GetSettingItems(
     }
 
     if (NSString* setting_str = base::mac::ObjCCast<NSString>(value_ptr)) {
-      if ([setting_str length] <= kMaxStringSizeInBytes) {
-        std::string setting_json_string;
-        base::JSONWriter::Write(
-            base::ValueView(base::SysNSStringToUTF8(setting_str)),
-            &setting_json_string);
-        item.setting_json_value = setting_json_string;
-      }
+      if ([setting_str length] <= kMaxStringSizeInBytes)
+        item.setting_value = base::Value(base::SysNSStringToUTF8(setting_str));
     } else if (NSNumber* value_num = base::mac::ObjCCast<NSNumber>(value_ptr)) {
       // Differentiating between integer and float types.
       const char* value_type = [value_num objCType];
       if (strcmp(value_type, "d") == 0 || strcmp(value_type, "f") == 0) {
         double setting_num = [value_num doubleValue];
-        item.setting_json_value = base::StringPrintf("%f", setting_num);
+        item.setting_value = base::Value(setting_num);
       } else {
         int setting_num = [value_num integerValue];
-        item.setting_json_value = base::StringPrintf("%d", setting_num);
+        item.setting_value = base::Value(setting_num);
       }
     }
     items.push_back(item);
