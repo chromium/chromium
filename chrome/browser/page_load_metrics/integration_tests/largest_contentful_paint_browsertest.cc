@@ -274,6 +274,10 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
 
 class IsAnimatedLCPTest : public MetricIntegrationTest {
  public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "LCPAnimatedImagesWebExposed");
+  }
   void test_is_animated(const char* html_name,
                         blink::LargestContentfulPaintType flag_set,
                         bool expected,
@@ -283,7 +287,8 @@ class IsAnimatedLCPTest : public MetricIntegrationTest {
             web_contents());
     waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                    TimingField::kLargestContentfulPaint);
-    waiter->AddMinimumCompleteResourcesExpectation(entries);
+    if (entries)
+      waiter->AddMinimumCompleteResourcesExpectation(entries);
     Start();
     Load(html_name);
     EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test()").error,
@@ -318,6 +323,19 @@ IN_PROC_BROWSER_TEST_F(
   test_is_animated("/animated_image_with_larger_text_first.html",
                    blink::LargestContentfulPaintType::kAnimatedImage,
                    /*expected=*/false);
+}
+
+// crbug.com/1373885: This test seems to be unreliable on Lacros
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_LargestContentfulPaint_IsVideo \
+  DISABLED_LargestContentfulPaint_IsVideo
+#else
+#define MAYBE_LargestContentfulPaint_IsVideo LargestContentfulPaint_IsVideo
+#endif
+IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
+                       MAYBE_LargestContentfulPaint_IsVideo) {
+  test_is_animated("/is_video.html", blink::LargestContentfulPaintType::kVideo,
+                   /*expected=*/true, /*entries=*/0);
 }
 
 class MouseoverLCPTest : public MetricIntegrationTest {
