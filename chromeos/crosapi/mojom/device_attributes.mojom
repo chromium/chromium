@@ -1,6 +1,8 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// Next MinVersion: 2
 
 module crosapi.mojom;
 
@@ -36,4 +38,13 @@ interface DeviceAttributes {
 
   // Fetches the device's hostname as set by DeviceHostnameTemplate policy.
   GetDeviceHostname@4() => (DeviceAttributesStringResult result);
+
+  // Fetches the user type by device type segment for metrics. The user type
+  // and the device type are combined to construct device type segment for
+  // metrics via UserTypeByDeviceTypeMetricsProvider::ConstructUmaValue from
+  // the ash side. Though this value is not an enum it's version-skew stable
+  // as it's used by UKM(ChromeOS.WebsiteUsageTime) which already depends on
+  // version stability.
+  [MinVersion=1]
+  GetDeviceTypeForMetrics@5() => (int32 device_type);
 };

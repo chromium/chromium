@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
@@ -114,6 +115,11 @@ void DeviceAttributesAsh::GetDeviceHostname(
   } else {
     std::move(callback).Run(StringResult::NewContents(*result));
   }
+}
+
+void DeviceAttributesAsh::GetDeviceTypeForMetrics(
+    GetDeviceTypeForMetricsCallback callback) {
+  std::move(callback).Run(apps::GetUserTypeByDeviceTypeMetrics());
 }
 
 void DeviceAttributesAsh::SetDeviceAttributesForTesting(

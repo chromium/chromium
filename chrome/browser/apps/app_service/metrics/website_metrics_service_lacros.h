@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_SERVICE_LACROS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_SERVICE_LACROS_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
 namespace apps {
@@ -32,12 +33,17 @@ class WebsiteMetricsServiceLacros {
   // arrived to report noisy AppKMs events.
   void CheckForNoisyAppKMReportingInterval();
 
+  // Called asynchronously when crosapi returns the device type for metrics.
+  void OnGetDeviceTypeForMetrics(int result);
+
   // A periodic timer that checks if five minutes have arrived.
   base::RepeatingTimer five_minutes_timer_;
 
   // A periodic timer that checks if the reporting interval for noisy AppKMs has
   // arrived to report noisy AppKM events.
   base::RepeatingTimer noisy_appkm_reporting_interval_timer_;
+
+  base::WeakPtrFactory<WebsiteMetricsServiceLacros> weak_ptr_factory_{this};
 };
 
 }  // namespace apps

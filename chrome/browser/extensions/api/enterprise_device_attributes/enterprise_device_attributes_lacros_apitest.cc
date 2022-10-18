@@ -82,6 +82,9 @@ class FakeDeviceAttributesAsh : public crosapi::mojom::DeviceAttributes {
     RunCallbackWithResultOrError(std::move(callback), kHostname);
   }
 
+  void GetDeviceTypeForMetrics(
+      GetDeviceTypeForMetricsCallback callback) override {}
+
   void RunCallbackWithResultOrError(StringResultCallback callback,
                                     const std::string& result) {
     std::move(callback).Run(is_affiliated_ ? StringResult::NewContents(result)

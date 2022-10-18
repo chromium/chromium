@@ -5,6 +5,8 @@
 #include "chrome/browser/apps/app_service/metrics/website_metrics_service_lacros.h"
 
 #include "base/time/time.h"
+#include "chromeos/crosapi/mojom/device_attributes.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 
 namespace apps {
 
@@ -18,7 +20,25 @@ constexpr base::TimeDelta kFiveMinutes = base::Minutes(5);
 
 }  // namespace
 
-WebsiteMetricsServiceLacros::WebsiteMetricsServiceLacros() = default;
+WebsiteMetricsServiceLacros::WebsiteMetricsServiceLacros() {
+  auto* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::DeviceAttributes>()) {
+    return;
+  }
+
+  int mojo_version =
+      service->GetInterfaceVersion(crosapi::mojom::DeviceAttributes::Uuid_);
+  if (mojo_version < int{crosapi::mojom::DeviceAttributes::MethodMinVersions::
+                             kGetDeviceTypeForMetricsMinVersion}) {
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::DeviceAttributes>()
+      .get()
+      ->GetDeviceTypeForMetrics(base::BindOnce(
+          &WebsiteMetricsServiceLacros::OnGetDeviceTypeForMetrics,
+          weak_ptr_factory_.GetWeakPtr()));
+}
 
 WebsiteMetricsServiceLacros::~WebsiteMetricsServiceLacros() = default;
 
@@ -43,6 +63,11 @@ void WebsiteMetricsServiceLacros::CheckForFiveMinutes() {
 void WebsiteMetricsServiceLacros::CheckForNoisyAppKMReportingInterval() {
   // TODO(crbug.com/1334173): Call WebsiteMetrics OnTwoHours to log website
   // metrics UKM.
+}
+
+void WebsiteMetricsServiceLacros::OnGetDeviceTypeForMetrics(
+    int user_type_by_device_type) {
+  // TODO(crbug.com/1334173): Get the device type and create website metrics.
 }
 
 }  // namespace apps

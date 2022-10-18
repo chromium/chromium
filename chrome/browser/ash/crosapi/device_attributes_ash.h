@@ -34,6 +34,8 @@ class DeviceAttributesAsh : public mojom::DeviceAttributes {
   void GetDeviceAnnotatedLocation(
       GetDeviceAnnotatedLocationCallback callback) override;
   void GetDeviceHostname(GetDeviceHostnameCallback callback) override;
+  void GetDeviceTypeForMetrics(
+      GetDeviceTypeForMetricsCallback callback) override;
 
   void SetDeviceAttributesForTesting(
       std::unique_ptr<policy::FakeDeviceAttributes> attributes);
