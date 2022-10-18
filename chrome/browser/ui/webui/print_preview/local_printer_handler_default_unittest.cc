@@ -85,20 +85,40 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
       const LocalPrinterHandlerDefaultTestBase&) = delete;
   ~LocalPrinterHandlerDefaultTestBase() override = default;
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   TestPrintBackend* sandboxed_print_backend() {
     return sandboxed_test_backend_.get();
   }
   TestPrintBackend* unsandboxed_print_backend() {
     return unsandboxed_test_backend_.get();
   }
+#endif
+
+  TestPrintBackend* default_print_backend() {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    return sandboxed_print_backend();
+#else
+    return default_print_backend_.get();
+#endif
+  }
+
+  void CreateDefaultBackend() {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    sandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
+#else
+    default_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
+#endif
+  }
 
   // Indicate if calls to print backend should be made using a service instead
   // of a local task runner.
   virtual bool UseService() = 0;
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Indicate if fallback support for access-denied errors should be included
   // when using a service for print backend calls.
   virtual bool SupportFallback() = 0;
+#endif
 
   void SetUp() override {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -118,13 +138,13 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
     profile_ = builder.Build();
     initiator_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_.get()));
-    sandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
 
     local_printer_handler_ =
         std::make_unique<LocalPrinterHandlerDefault>(initiator_.get());
 
     if (UseService()) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+      sandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
       sandboxed_print_backend_service_ =
           PrintBackendServiceTestImpl::LaunchForTesting(sandboxed_test_remote_,
                                                         sandboxed_test_backend_,
@@ -143,7 +163,8 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
     } else {
       // Use of task runners will call `PrintBackend::CreateInstance()`, which
       // needs a test backend registered for it to use.
-      PrintBackend::SetPrintBackendForTesting(sandboxed_test_backend_.get());
+      CreateDefaultBackend();
+      PrintBackend::SetPrintBackendForTesting(default_print_backend());
     }
   }
 
@@ -163,6 +184,7 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
         id, display_name, description,
         /*printer_status=*/0, is_default, PrinterBasicInfoOptions{});
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (SupportFallback()) {
       // Need to populate same values into a second print backend.
       // For fallback they will always be treated as valid.
@@ -173,12 +195,17 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
       unsandboxed_print_backend()->AddValidPrinter(
           id, std::move(caps_unsandboxed), std::move(basic_info_unsandboxed));
     }
+#endif
 
     if (requires_elevated_permissions) {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandboxed_print_backend()->AddAccessDeniedPrinter(id);
+#else
+      NOTREACHED();
+#endif
     } else {
-      sandboxed_print_backend()->AddValidPrinter(id, std::move(caps),
-                                                 std::move(basic_info));
+      default_print_backend()->AddValidPrinter(id, std::move(caps),
+                                               std::move(basic_info));
     }
   }
 
@@ -204,18 +231,20 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> initiator_;
-  scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
-  scoped_refptr<TestPrintBackend> unsandboxed_test_backend_;
   std::unique_ptr<LocalPrinterHandlerDefault> local_printer_handler_;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Support for testing via a service instead of with a local task runner.
   base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
+  scoped_refptr<TestPrintBackend> unsandboxed_test_backend_;
   mojo::Remote<mojom::PrintBackendService> sandboxed_test_remote_;
   mojo::Remote<mojom::PrintBackendService> unsandboxed_test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> sandboxed_print_backend_service_;
   std::unique_ptr<PrintBackendServiceTestImpl>
       unsandboxed_print_backend_service_;
+#else
+  scoped_refptr<TestPrintBackend> default_print_backend_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 };
 
@@ -235,7 +264,9 @@ class LocalPrinterHandlerDefaultTestProcess
   ~LocalPrinterHandlerDefaultTestProcess() override = default;
 
   bool UseService() override { return GetParam(); }
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   bool SupportFallback() override { return false; }
+#endif
 };
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -481,6 +512,8 @@ TEST_P(LocalPrinterHandlerDefaultTestProcess,
   EXPECT_TRUE(fetched_caps.empty());
 }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+
 // Test that installed printers to which the user does not have permission to
 // access will fail to get any capabilities.
 TEST_P(LocalPrinterHandlerDefaultTestProcess, StartGetCapabilityAccessDenied) {
@@ -496,8 +529,6 @@ TEST_P(LocalPrinterHandlerDefaultTestProcess, StartGetCapabilityAccessDenied) {
 
   EXPECT_TRUE(fetched_caps.empty());
 }
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
 
 // Tests that fetching capabilities can eventually succeed with fallback
 // processing when a printer requires elevated permissions.
