@@ -2859,8 +2859,6 @@ source_set("browser") {
     sources += [
       "accessibility/accessibility_event_recorder_auralinux.cc",
       "accessibility/accessibility_event_recorder_auralinux.h",
-      "accessibility/accessibility_tree_formatter_auralinux.cc",
-      "accessibility/accessibility_tree_formatter_auralinux.h",
       "accessibility/browser_accessibility_auralinux.cc",
       "accessibility/browser_accessibility_auralinux.h",
       "accessibility/browser_accessibility_manager_auralinux.cc",

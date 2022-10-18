@@ -1,41 +1,37 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_AURALINUX_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_AURALINUX_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_AURALINUX_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_AURALINUX_H_
 
 #include <atk/atk.h>
 #include <atspi/atspi.h>
 
-#include "content/common/content_export.h"
+#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 namespace ui {
+
 class AXPlatformNodeAuraLinux;
-}
 
-namespace content {
-
-class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
-    : public ui::AXTreeFormatterBase {
+class AX_EXPORT AXTreeFormatterAuraLinux : public AXTreeFormatterBase {
  public:
-  AccessibilityTreeFormatterAuraLinux();
-  ~AccessibilityTreeFormatterAuraLinux() override;
+  AXTreeFormatterAuraLinux();
+  ~AXTreeFormatterAuraLinux() override;
 
  private:
   std::string ProcessTreeForOutput(
       const base::Value::Dict& node) const override;
 
-  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::Value::Dict BuildTree(AXPlatformNodeDelegate* root) const override;
   base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
 
-  std::string EvaluateScript(
-      const AXTreeSelector& selector,
-      const ui::AXInspectScenario& scenario) const override;
+  std::string EvaluateScript(const AXTreeSelector& selector,
+                             const AXInspectScenario& scenario) const override;
 
   void RecursiveBuildTree(AtspiAccessible* node, base::Value::Dict* dict) const;
   void RecursiveBuildTree(AtkObject*, base::Value::Dict*) const;
@@ -50,11 +46,11 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
                            base::Value::Dict* dict) const;
   void AddValueProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
   void AddTableProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
-  void AddTableCellProperties(const ui::AXPlatformNodeAuraLinux* node,
+  void AddTableCellProperties(const AXPlatformNodeAuraLinux* node,
                               AtkObject* atk_object,
                               base::Value::Dict* dict) const;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_AURALINUX_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT__AX_TREE_FORMATTER_AURALINUX_H_

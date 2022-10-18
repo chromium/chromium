@@ -247,6 +247,8 @@ source_set("platform") {
         "inspect/ax_call_statement_invoker_auralinux.h",
         "inspect/ax_inspect_utils_auralinux.cc",
         "inspect/ax_inspect_utils_auralinux.h",
+        "inspect/ax_tree_formatter_auralinux.cc",
+        "inspect/ax_tree_formatter_auralinux.h",
         "inspect/ax_tree_indexer.h",
         "inspect/ax_tree_indexer_auralinux.h",
       ]
