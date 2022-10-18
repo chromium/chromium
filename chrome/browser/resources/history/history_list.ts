@@ -17,7 +17,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -59,7 +59,7 @@ declare global {
   }
 }
 
-const HistoryListElementBase = WebUIListenerMixin(I18nMixin(PolymerElement));
+const HistoryListElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class HistoryListElement extends HistoryListElementBase {
   static get is() {

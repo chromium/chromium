@@ -28,7 +28,7 @@ import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.j
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -61,9 +61,9 @@ type FocusConfig = Map<string, string|(() => void)>;
 
 const PasswordsListHandlerElementBase =
     RouteObserverMixin(PasswordRemovalMixin(PasswordRequestorMixin(
-        WebUIListenerMixin(I18nMixin(PolymerElement))))) as {
+        WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nMixinInterface &
-          WebUIListenerMixinInterface & PasswordRequestorMixinInterface &
+          WebUiListenerMixinInterface & PasswordRequestorMixinInterface &
           PasswordRemovalMixinInterface & RouteObserverMixinInterface,
     };
 

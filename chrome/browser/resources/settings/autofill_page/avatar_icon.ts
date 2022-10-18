@@ -7,14 +7,14 @@
  * the placeholder avatar if the user is not signed-in.
  */
 
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
 import {getTemplate} from './avatar_icon.html.js';
 
-const SettingsAvatarIconElementBase = WebUIListenerMixin(PolymerElement);
+const SettingsAvatarIconElementBase = WebUiListenerMixin(PolymerElement);
 
 class SettingsAvatarIconElement extends SettingsAvatarIconElementBase {
   static get is() {

@@ -22,7 +22,7 @@ import '../../settings_shared.css.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -42,9 +42,9 @@ interface SettingsDevicePageElement {
 const SettingsDevicePageElementBase =
     mixinBehaviors(
         [RouteObserverBehavior],
-        I18nMixin(WebUIListenerMixin(PolymerElement))) as {
+        I18nMixin(WebUiListenerMixin(PolymerElement))) as {
       new (): PolymerElement & I18nMixinInterface &
-          WebUIListenerMixinInterface & RouteObserverBehaviorInterface,
+          WebUiListenerMixinInterface & RouteObserverBehaviorInterface,
     };
 
 class SettingsDevicePageElement extends SettingsDevicePageElementBase {

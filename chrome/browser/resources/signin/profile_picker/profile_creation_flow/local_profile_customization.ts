@@ -21,7 +21,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -44,7 +44,7 @@ export interface LocalProfileCustomizationElement {
 }
 
 const LocalProfileCustomizationElementBase =
-    WebUIListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class LocalProfileCustomizationElement extends
     LocalProfileCustomizationElementBase {

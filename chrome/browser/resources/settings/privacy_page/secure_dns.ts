@@ -24,7 +24,7 @@ import './secure_dns_input.js';
 
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -46,7 +46,7 @@ export interface SettingsSecureDnsElement {
 }
 
 const SettingsSecureDnsElementBase =
-    WebUIListenerMixin(PrefsMixin(PolymerElement));
+    WebUiListenerMixin(PrefsMixin(PolymerElement));
 
 export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   static get is() {

@@ -19,7 +19,7 @@ import './strings.m.js';
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {isRTL} from 'chrome://resources/js/util.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -78,7 +78,7 @@ export interface InlineLoginAppElement {
   };
 }
 
-const InlineLoginAppElementBase = WebUIListenerMixin(I18nMixin(PolymerElement));
+const InlineLoginAppElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class InlineLoginAppElement extends InlineLoginAppElementBase {
   static get is() {

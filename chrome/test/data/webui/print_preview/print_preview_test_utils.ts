@@ -6,7 +6,7 @@ import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationO
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -338,7 +338,7 @@ export function triggerInputEvent(
   return eventToPromise('input-change', parentElement);
 }
 
-const TestListenerElementBase = WebUIListenerMixin(PolymerElement);
+const TestListenerElementBase = WebUiListenerMixin(PolymerElement);
 class TestListenerElement extends TestListenerElementBase {
   static get is() {
     return 'test-listener-element';

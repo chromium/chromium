@@ -27,7 +27,7 @@ import './safety_check_chrome_cleaner_child.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
@@ -46,7 +46,7 @@ interface ParentChangedEvent {
 }
 
 const SettingsSafetyCheckPageElementBase =
-    WebUIListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class SettingsSafetyCheckPageElement extends
     SettingsSafetyCheckPageElementBase {

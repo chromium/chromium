@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
@@ -18,8 +18,8 @@ type Constructor<T> = new (...args: any[]) => T;
  */
 export const UserUtilMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T):
-        (T|WebUIListenerMixinInterface)&Constructor<UserUtilMixinInterface> => {
-          class UserUtilMixin extends WebUIListenerMixin
+        (T|WebUiListenerMixinInterface)&Constructor<UserUtilMixinInterface> => {
+          class UserUtilMixin extends WebUiListenerMixin
           (superClass) {
             static get properties() {
               return {

@@ -25,7 +25,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -69,10 +69,10 @@ export interface PasswordsDeviceSectionElement {
 type Constructor<T> = new (...args: any[]) => T;
 
 const PasswordsDeviceSectionElementBase =
-    MergePasswordsStoreCopiesMixin(GlobalScrollTargetMixin(WebUIListenerMixin(
+    MergePasswordsStoreCopiesMixin(GlobalScrollTargetMixin(WebUiListenerMixin(
         RouteObserverMixin(PolymerElement) as unknown as
         Constructor<PolymerElement>))) as {
-      new (): PolymerElement & WebUIListenerMixinInterface &
+      new (): PolymerElement & WebUiListenerMixinInterface &
           MergePasswordsStoreCopiesMixinInterface & RouteObserverMixinInterface,
     };
 

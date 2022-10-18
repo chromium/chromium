@@ -28,7 +28,7 @@ import {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -60,7 +60,7 @@ export interface SettingsSecurityKeysBioEnrollDialogElement {
 }
 
 const SettingsSecurityKeysBioEnrollDialogElementBase =
-    WebUIListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class SettingsSecurityKeysBioEnrollDialogElement extends
     SettingsSecurityKeysBioEnrollDialogElementBase {

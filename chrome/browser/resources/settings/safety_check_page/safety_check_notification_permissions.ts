@@ -11,7 +11,7 @@
 
 import './safety_check_child.js';
 
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,7 +29,7 @@ export interface SettingsSafetyCheckNotificationPermissionsElement {
 }
 
 const SettingsSafetyCheckNotificationPermissionsElementBase =
-    WebUIListenerMixin(PolymerElement);
+    WebUiListenerMixin(PolymerElement);
 
 export class SettingsSafetyCheckNotificationPermissionsElement extends
     SettingsSafetyCheckNotificationPermissionsElementBase {

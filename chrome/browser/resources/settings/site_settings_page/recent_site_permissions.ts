@@ -12,7 +12,7 @@ import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_too
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,9 +33,9 @@ export interface SettingsRecentSitePermissionsElement {
 
 const SettingsRecentSitePermissionsElementBase =
     RouteObserverMixin(
-        SiteSettingsMixin(WebUIListenerMixin(I18nMixin(PolymerElement)))) as {
+        SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
       new (): PolymerElement & I18nMixinInterface &
-          WebUIListenerMixinInterface & SiteSettingsMixinInterface &
+          WebUiListenerMixinInterface & SiteSettingsMixinInterface &
           RouteObserverMixinInterface,
     };
 

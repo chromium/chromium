@@ -16,7 +16,7 @@ import '../settings_shared.css.js';
 import './incompatible_application_item.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -25,7 +25,7 @@ import {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from 
 import {getTemplate} from './incompatible_applications_page.html.js';
 
 const SettingsIncompatibleApplicationsPageElementBase =
-    WebUIListenerMixin(PolymerElement);
+    WebUiListenerMixin(PolymerElement);
 
 export class SettingsIncompatibleApplicationsPageElement extends
     SettingsIncompatibleApplicationsPageElementBase {

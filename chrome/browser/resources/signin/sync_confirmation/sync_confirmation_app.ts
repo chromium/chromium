@@ -13,7 +13,7 @@ import './signin_vars.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './sync_confirmation_app.html.js';
@@ -25,7 +25,7 @@ interface AccountInfo {
   showEnterpriseBadge: boolean;
 }
 
-const SyncConfirmationAppElementBase = WebUIListenerMixin(PolymerElement);
+const SyncConfirmationAppElementBase = WebUiListenerMixin(PolymerElement);
 
 export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   static get is() {

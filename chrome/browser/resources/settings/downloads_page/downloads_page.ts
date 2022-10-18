@@ -16,7 +16,7 @@ import '../settings_shared.css.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
@@ -31,7 +31,7 @@ interface AccountInfo {
 }
 
 const SettingsDownloadsPageElementBase =
-    WebUIListenerMixin(PrefsMixin(PolymerElement));
+    WebUiListenerMixin(PrefsMixin(PolymerElement));
 
 export class SettingsDownloadsPageElement extends
     SettingsDownloadsPageElementBase {

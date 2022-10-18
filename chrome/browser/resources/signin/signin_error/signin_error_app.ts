@@ -10,13 +10,13 @@ import './strings.m.js';
 import './signin_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './signin_error_app.html.js';
 
 
-const SigninErrorAppElementBase = WebUIListenerMixin(PolymerElement);
+const SigninErrorAppElementBase = WebUiListenerMixin(PolymerElement);
 
 class SigninErrorAppElement extends SigninErrorAppElementBase {
   static get is() {

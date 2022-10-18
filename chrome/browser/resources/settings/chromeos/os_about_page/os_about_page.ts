@@ -27,7 +27,7 @@ import './detailed_build_info.js';
 import './update_warning_dialog.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -65,9 +65,9 @@ const OsSettingsAboutPageBaseElement =
           MainPageBehavior,
           RouteObserverBehavior,
         ],
-        I18nMixin(WebUIListenerMixin(PolymerElement))) as {
+        I18nMixin(WebUiListenerMixin(PolymerElement))) as {
       new (): PolymerElement & DeepLinkingBehaviorInterface &
-          WebUIListenerMixinInterface & MainPageBehaviorInterface &
+          WebUiListenerMixinInterface & MainPageBehaviorInterface &
           RouteObserverBehaviorInterface & I18nMixinInterface,
     };
 

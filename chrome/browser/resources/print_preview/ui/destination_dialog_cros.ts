@@ -24,7 +24,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
@@ -51,7 +51,7 @@ export interface PrintPreviewDestinationDialogCrosElement {
 }
 
 const PrintPreviewDestinationDialogCrosElementBase =
-    ListPropertyUpdateMixin(WebUIListenerMixin(PolymerElement));
+    ListPropertyUpdateMixin(WebUiListenerMixin(PolymerElement));
 
 export class PrintPreviewDestinationDialogCrosElement extends
     PrintPreviewDestinationDialogCrosElementBase {

@@ -38,7 +38,7 @@ import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -64,7 +64,7 @@ export interface CategoryDefaultSettingElement {
 }
 
 const CategoryDefaultSettingElementBase =
-    WebUIListenerMixin(SiteSettingsMixin(PolymerElement));
+    WebUiListenerMixin(SiteSettingsMixin(PolymerElement));
 
 export class CategoryDefaultSettingElement extends
     CategoryDefaultSettingElementBase {

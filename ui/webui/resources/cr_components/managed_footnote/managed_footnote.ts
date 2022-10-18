@@ -20,12 +20,12 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
-import {WebUIListenerMixin} from '../../cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from '../../cr_elements/web_ui_listener_mixin.js';
 
 import {getTemplate} from './managed_footnote.html.js';
 
 const ManagedFootnoteElementBase =
-    I18nMixin(WebUIListenerMixin(PolymerElement));
+    I18nMixin(WebUiListenerMixin(PolymerElement));
 
 export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
   static get is() {

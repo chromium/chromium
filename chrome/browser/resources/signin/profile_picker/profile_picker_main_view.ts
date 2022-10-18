@@ -15,7 +15,7 @@ import './strings.m.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
@@ -35,7 +35,7 @@ export interface ProfilePickerMainViewElement {
 }
 
 const ProfilePickerMainViewElementBase =
-    WebUIListenerMixin(NavigationMixin(PolymerElement));
+    WebUiListenerMixin(NavigationMixin(PolymerElement));
 
 export class ProfilePickerMainViewElement extends
     ProfilePickerMainViewElementBase {

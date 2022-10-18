@@ -15,7 +15,7 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KioskApp, KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
@@ -31,7 +31,7 @@ export interface ExtensionsKioskDialogElement {
   };
 }
 
-const ExtensionsKioskDialogElementBase = WebUIListenerMixin(PolymerElement);
+const ExtensionsKioskDialogElementBase = WebUiListenerMixin(PolymerElement);
 
 export class ExtensionsKioskDialogElement extends
     ExtensionsKioskDialogElementBase {

@@ -13,14 +13,14 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../icons.html.js';
 import '../settings_shared.css.js';
 
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_browser_proxy.js';
 import {getTemplate} from './default_browser_page.html.js';
 
 const SettingsDefaultBrowserPageElementBase =
-    WebUIListenerMixin(PolymerElement);
+    WebUiListenerMixin(PolymerElement);
 
 export class SettingsDefaultBrowserPageElement extends
     SettingsDefaultBrowserPageElementBase {

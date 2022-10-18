@@ -17,7 +17,7 @@ import './startup_url_dialog.js';
 
 import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EDIT_STARTUP_URL_EVENT} from './startup_url_entry.js';
@@ -26,7 +26,7 @@ import {StartupPageInfo, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProx
 
 
 const SettingsStartupUrlsPageElementBase =
-    CrScrollableMixin(WebUIListenerMixin(PolymerElement));
+    CrScrollableMixin(WebUiListenerMixin(PolymerElement));
 
 export class SettingsStartupUrlsPageElement extends
     SettingsStartupUrlsPageElementBase {

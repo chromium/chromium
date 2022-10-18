@@ -28,7 +28,7 @@ import '../multidevice_page/multidevice_page.js';
 import '../os_bluetooth_page/os_bluetooth_page.js';
 import '../os_icons.js';
 
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {beforeNextRender, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -46,8 +46,8 @@ import {SettingsIdleLoadElement} from './settings_idle_load.js';
 
 const OsSettingsPageElementBase = mixinBehaviors(
                                       [MainPageBehavior, RouteObserverBehavior],
-                                      WebUIListenerMixin(PolymerElement)) as {
-  new (): PolymerElement & WebUIListenerMixinInterface &
+                                      WebUiListenerMixin(PolymerElement)) as {
+  new (): PolymerElement & WebUiListenerMixinInterface &
       MainPageBehaviorInterface & RouteObserverBehaviorInterface,
 };
 

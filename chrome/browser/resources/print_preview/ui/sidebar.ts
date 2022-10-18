@@ -32,7 +32,7 @@ import './link_container.js';
 // </if>
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
@@ -56,7 +56,7 @@ export interface PrintPreviewSidebarElement {
 }
 
 const PrintPreviewSidebarElementBase = CrContainerShadowMixin(
-    WebUIListenerMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
+    WebUiListenerMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
 
 export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   static get is() {

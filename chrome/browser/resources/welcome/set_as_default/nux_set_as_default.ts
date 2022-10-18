@@ -13,7 +13,7 @@ import '../shared/step_indicator.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
@@ -29,7 +29,7 @@ export interface NuxSetAsDefaultElement {
 }
 
 const NuxSetAsDefaultElementBase =
-    WebUIListenerMixin(NavigationMixin(PolymerElement));
+    WebUiListenerMixin(NavigationMixin(PolymerElement));
 
 /** @polymer */
 export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {

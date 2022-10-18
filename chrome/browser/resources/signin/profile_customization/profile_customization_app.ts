@@ -22,7 +22,7 @@ import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manag
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './profile_customization_app.html.js';
@@ -40,7 +40,7 @@ export interface ProfileCustomizationAppElement {
 }
 
 const ProfileCustomizationAppElementBase =
-    WebUIListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class ProfileCustomizationAppElement extends
     ProfileCustomizationAppElementBase {

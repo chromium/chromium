@@ -13,11 +13,11 @@ import {addWebUIListener, removeWebUIListener, WebUIListener} from '../js/cr.m.j
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const WebUIListenerMixin = dedupingMixin(
+export const WebUiListenerMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
-    Constructor<WebUIListenerMixinInterface> => {
-      class WebUIListenerMixin extends superClass implements
-          WebUIListenerMixinInterface {
+    Constructor<WebUiListenerMixinInterface> => {
+      class WebUiListenerMixin extends superClass implements
+          WebUiListenerMixinInterface {
         /**
          * Holds WebUI listeners that need to be removed when this element is
          * destroyed.
@@ -44,9 +44,9 @@ export const WebUIListenerMixin = dedupingMixin(
           }
         }
       }
-      return WebUIListenerMixin;
+      return WebUiListenerMixin;
     });
 
-export interface WebUIListenerMixinInterface {
+export interface WebUiListenerMixinInterface {
   addWebUIListener(eventName: string, callback: Function): void;
 }

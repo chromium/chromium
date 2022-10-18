@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './media_picker.html.js';
@@ -26,7 +26,7 @@ interface MediaPickerElement {
 }
 
 const MediaPickerElementBase =
-    SiteSettingsMixin(WebUIListenerMixin(PolymerElement));
+    SiteSettingsMixin(WebUiListenerMixin(PolymerElement));
 
 class MediaPickerElement extends MediaPickerElementBase {
   static get is() {
