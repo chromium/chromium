@@ -82,9 +82,12 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
     }
 
     /**
+     * @param popupListener for handling show events.
      * @param delegate for handling menu button presses.
      */
-    public void setListMenuButtonDelegate(ListMenuButtonDelegate delegate) {
+    public void setListMenuButtonDelegate(
+            ListMenuButton.PopupMenuShownListener popupListener, ListMenuButtonDelegate delegate) {
+        mMenuButton.addPopupListener(popupListener);
         mMenuButton.setDelegate(delegate);
     }
 

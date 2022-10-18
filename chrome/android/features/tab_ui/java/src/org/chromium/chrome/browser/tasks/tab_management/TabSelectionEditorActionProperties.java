@@ -34,7 +34,7 @@ public class TabSelectionEditorActionProperties {
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Drawable> ICON =
-            new WritableObjectPropertyKey<>();
+            new WritableObjectPropertyKey<>(true);
     public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey ITEM_COUNT = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<ColorStateList> TEXT_TINT =
@@ -55,8 +55,12 @@ public class TabSelectionEditorActionProperties {
 
     public static final WritableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey SHOULD_DISMISS_MENU =
+            new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<Callback<List<Integer>>>
             ON_SELECTION_STATE_CHANGE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> ON_SHOWN_IN_MENU =
+            new WritableObjectPropertyKey<>();
 
     /**
      * Keys for the {@link TabSelectionEditorAction}.
@@ -64,11 +68,11 @@ public class TabSelectionEditorActionProperties {
     public static final PropertyKey[] ACTION_KEYS = {MENU_ITEM_ID, SHOW_MODE, BUTTON_TYPE,
             ICON_POSITION, TITLE_RESOURCE_ID, TITLE_IS_PLURAL, CONTENT_DESCRIPTION_RESOURCE_ID,
             ICON, ENABLED, ITEM_COUNT, TEXT_TINT, ICON_TINT, SKIP_ICON_TINT, ON_CLICK_LISTENER,
-            ON_SELECTION_STATE_CHANGE};
+            SHOULD_DISMISS_MENU, ON_SELECTION_STATE_CHANGE, ON_SHOWN_IN_MENU};
 
     /**
      * Keys for the {@link TabSelectionEditorMenuItem}.
      */
-    public static final PropertyKey[] MENU_ITEM_KEYS = {
-            MENU_ITEM_ID, TITLE, CONTENT_DESCRIPTION, ICON, ENABLED, ITEM_COUNT};
+    public static final PropertyKey[] MENU_ITEM_KEYS = {MENU_ITEM_ID, TITLE, CONTENT_DESCRIPTION,
+            ICON, ICON_TINT, ENABLED, ITEM_COUNT, ON_SHOWN_IN_MENU};
 }
