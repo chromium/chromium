@@ -852,7 +852,6 @@ public class AppBannerManagerTest {
     @MediumTest
     @Feature({"AppBanners"})
     @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_INFOBAR)
-    @DisabledTest(message = "Test is flaky, see crbug.com/1054196")
     public void testAmbientBadgeDoesNotAppearWhenEventCanceled() throws Exception {
         String webBannerUrl = WebappTestPage.getServiceWorkerUrlWithAction(
                 mTestServer, "stash_event_and_prevent_default");
