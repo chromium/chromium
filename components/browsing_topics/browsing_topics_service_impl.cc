@@ -274,51 +274,51 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
 
   for (const EpochTopics* epoch :
        browsing_topics_state_.EpochsForSite(top_domain)) {
-    bool output_is_true_topic = false;
-    bool candidate_topic_filtered = false;
-    absl::optional<Topic> topic = epoch->TopicForSite(
-        top_domain, hashed_context_domain, browsing_topics_state_.hmac_key(),
-        output_is_true_topic, candidate_topic_filtered);
+    CandidateTopic candidate_topic = epoch->CandidateTopicForSite(
+        top_domain, hashed_context_domain, browsing_topics_state_.hmac_key());
 
-    if (candidate_topic_filtered)
-      has_filtered_topics = true;
-
-    // Only add a non-empty topic to the result.
-    if (!topic)
+    if (!candidate_topic.IsValid())
       continue;
 
+    if (candidate_topic.should_be_filtered()) {
+      has_filtered_topics = true;
+      continue;
+    }
+
     // Although a top topic can never be in the disallowed state, the returned
-    // `topic` may be the random one. Thus we still need this check.
+    // `candidate_topic` may be the random one. Thus we still need this check.
     if (!privacy_sandbox_settings_->IsTopicAllowed(
-            privacy_sandbox::CanonicalTopic(*topic,
-                                            epoch->taxonomy_version()))) {
+            privacy_sandbox::CanonicalTopic(
+                candidate_topic.topic(), candidate_topic.taxonomy_version()))) {
+      DCHECK(!candidate_topic.is_true_topic());
       continue;
     }
 
     // `PageSpecificContentSettings` should only observe true top topics
     // accessed on the page. It's okay to notify the same topic multiple
     // times even though duplicate topics will be removed in the end.
-    if (output_is_true_topic) {
+    if (candidate_topic.is_true_topic()) {
       privacy_sandbox::CanonicalTopic canonical_topic(
-          browsing_topics::Topic(topic.value()), epoch->taxonomy_version());
+          candidate_topic.topic(), candidate_topic.taxonomy_version());
       content_settings::PageSpecificContentSettings::TopicAccessed(
           main_frame, context_origin, /*blocked_by_policy=*/false,
           canonical_topic);
     }
 
     auto result_topic = blink::mojom::EpochTopic::New();
-    result_topic->topic = topic.value().value();
+    result_topic->topic = candidate_topic.topic().value();
     result_topic->config_version = base::StrCat(
         {"chrome.", base::NumberToString(
                         blink::features::kBrowsingTopicsConfigVersion.Get())});
-    result_topic->model_version = base::NumberToString(epoch->model_version());
+    result_topic->model_version =
+        base::NumberToString(candidate_topic.model_version());
     result_topic->taxonomy_version =
-        base::NumberToString(epoch->taxonomy_version());
+        base::NumberToString(candidate_topic.taxonomy_version());
     result_topic->version = base::StrCat({result_topic->config_version, ":",
                                           result_topic->taxonomy_version, ":",
                                           result_topic->model_version});
     topics_with_status.emplace_back(std::move(result_topic),
-                                    output_is_true_topic);
+                                    candidate_topic.is_true_topic());
   }
 
   // Sort `topics_with_status` based on `EpochTopicPtr` first, and if the

@@ -949,7 +949,8 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
   task_environment()->FastForwardBy(kCalculatorDelay);
 
-  NavigateToPage(GURL("https://www.foo.com"));
+  // This domain would let a random topic (Topic(130)) be returned.
+  NavigateToPage(GURL("https://www.foo81.com"));
 
   // Current time is before the epoch switch time.
   std::vector<blink::mojom::EpochTopicPtr> result =
@@ -962,13 +963,22 @@ TEST_F(BrowsingTopicsServiceImplTest,
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
 
+  result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+
+  // Some topics are returned.
+  EXPECT_FALSE(result.empty());
+
   privacy_sandbox_settings_->SetTopicAllowed(
-      privacy_sandbox::CanonicalTopic(Topic(2), /*taxonomy_version=*/1), false);
+      privacy_sandbox::CanonicalTopic(Topic(130), /*taxonomy_version=*/1),
+      false);
 
   result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
       web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
 
+  // The topic was blocked by the settings.
   EXPECT_TRUE(result.empty());
 }
 

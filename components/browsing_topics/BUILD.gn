@@ -13,6 +13,8 @@ source_set("browsing_topics") {
     "browsing_topics_service_impl.h",
     "browsing_topics_state.cc",
     "browsing_topics_state.h",
+    "candidate_topic.cc",
+    "candidate_topic.h",
     "epoch_topics.cc",
     "epoch_topics.h",
     "topic_and_domains.cc",

@@ -154,18 +154,13 @@ base::Value::Dict EpochTopics::ToDictValue() const {
   return result_dict;
 }
 
-absl::optional<Topic> EpochTopics::TopicForSite(
+CandidateTopic EpochTopics::CandidateTopicForSite(
     const std::string& top_domain,
     const HashedDomain& hashed_context_domain,
-    ReadOnlyHmacKey hmac_key,
-    bool& output_is_true_topic,
-    bool& candidate_topic_filtered) const {
-  DCHECK(!output_is_true_topic);
-  DCHECK(!candidate_topic_filtered);
-
+    ReadOnlyHmacKey hmac_key) const {
   // The topics calculation failed, or the topics has been cleared.
   if (empty())
-    return absl::nullopt;
+    return CandidateTopic::CreateInvalid();
 
   uint64_t random_or_top_topic_decision_hash =
       HashTopDomainForRandomOrTopTopicDecision(hmac_key, calculation_time_,
@@ -178,7 +173,11 @@ absl::optional<Topic> EpochTopics::TopicForSite(
 
     size_t random_topic_index = random_topic_index_decision % taxonomy_size_;
 
-    return Topic(base::checked_cast<int>(random_topic_index + 1));
+    Topic topic = Topic(base::checked_cast<int>(random_topic_index + 1));
+
+    return CandidateTopic::Create(topic, /*is_true_topic=*/false,
+                                  /*should_be_filtered=*/false,
+                                  taxonomy_version(), model_version());
   }
 
   uint64_t top_topic_index_decision_hash =
@@ -192,19 +191,16 @@ absl::optional<Topic> EpochTopics::TopicForSite(
       top_topics_and_observing_domains_[top_topic_index];
 
   if (!topic_and_observing_domains.IsValid())
-    return absl::nullopt;
+    return CandidateTopic::CreateInvalid();
 
-  // Only add the topic if the context has observed it before.
-  if (!topic_and_observing_domains.hashed_domains().count(
-          hashed_context_domain)) {
-    candidate_topic_filtered = true;
-    return absl::nullopt;
-  }
+  bool is_true_topic = (top_topic_index < padded_top_topics_start_index_);
 
-  if (top_topic_index < padded_top_topics_start_index_)
-    output_is_true_topic = true;
+  bool should_be_filtered = !topic_and_observing_domains.hashed_domains().count(
+      hashed_context_domain);
 
-  return topic_and_observing_domains.topic();
+  return CandidateTopic::Create(topic_and_observing_domains.topic(),
+                                is_true_topic, should_be_filtered,
+                                taxonomy_version(), model_version());
 }
 
 void EpochTopics::ClearTopics() {

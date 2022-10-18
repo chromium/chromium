@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/browsing_topics/candidate_topic.h"
 #include "components/browsing_topics/topic_and_domains.h"
 #include "components/browsing_topics/util.h"
 #include "url/origin.h"
@@ -39,20 +40,18 @@ class EpochTopics {
   static EpochTopics FromDictValue(const base::Value::Dict& dict_value);
   base::Value::Dict ToDictValue() const;
 
-  // Calculate the topic to expose on `top_domain` when requested by a context
-  // where the domain hash is `hashed_context_domain`. `output_is_true_topic`
-  // will indicate whether the returned topic (if any) is a true top topic.
-  // `candidate_topic_filtered` will indicate whether the empty result is due to
-  // the candicate topic is filtered. Return absl::nullopt when there are no
-  // topics (i.e. calculation failed, or the topics were cleared), or when the
-  // candidate topic is filtered due to the context has not observed the topic
-  // before. The `hmac_key` is the one used to hash the domains inside
-  // `top_topics_and_observing_domains_` and `hashed_context_domain`.
-  absl::optional<Topic> TopicForSite(const std::string& top_domain,
-                                     const HashedDomain& hashed_context_domain,
-                                     ReadOnlyHmacKey hmac_key,
-                                     bool& output_is_true_topic,
-                                     bool& candidate_topic_filtered) const;
+  // Calculate the candidate topic to expose on `top_domain` when requested by a
+  // context where the domain hash is `hashed_context_domain`. The candidate
+  // topic will be annotated with `is_true_topic` and `should_be_filtered` based
+  // on its type and/or whether `hashed_context_domain` has observed the topic.
+  // Returns an invalid `CandidateTopic` when there is no topic (e.g.
+  // failed epoch topics calculation, cleared history, or cleared/blocked
+  // individual topics). The `hmac_key` is the one used to hash the domains
+  // inside `top_topics_and_observing_domains_` and `hashed_context_domain`.
+  CandidateTopic CandidateTopicForSite(
+      const std::string& top_domain,
+      const HashedDomain& hashed_context_domain,
+      ReadOnlyHmacKey hmac_key) const;
 
   // Whether `top_topics_and_observing_domains_` is empty.
   bool empty() const { return top_topics_and_observing_domains_.empty(); }
