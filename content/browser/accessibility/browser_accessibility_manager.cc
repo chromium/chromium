@@ -1684,38 +1684,6 @@ ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
   return GetPlatformNodeFromTree(node.id());
 }
 
-ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
-    const {
-  ui::AXTreeManager* parent_manager = GetParentManager();
-  if (!parent_manager)
-    return nullptr;
-
-  DCHECK(GetRoot());
-
-  std::set<int32_t> host_node_ids =
-      parent_manager->ax_tree()->GetNodeIdsForChildTreeId(ax_tree_id_);
-  if (host_node_ids.empty()) {
-    // Parent tree has host node but the change has not been serialized yet.
-    // For example, this could happen if an <iframe> or <portal> was added to
-    // the parent's DOM.
-    return nullptr;
-  }
-
-  CHECK_EQ(host_node_ids.size(), 1U)
-      << "Multiple nodes cannot claim the same child tree ID.";
-
-  ui::AXNode* parent_node =
-      parent_manager->GetNode(*(host_node_ids.begin()));
-  DCHECK(parent_node);
-  DCHECK_EQ(ax_tree_id_,
-            ui::AXTreeID::FromString(parent_node->GetStringAttribute(
-                ax::mojom::StringAttribute::kChildTreeId)))
-      << "A node that hosts a child tree should expose its tree ID in its "
-         "`kChildTreeId` attribute.";
-
-  return parent_node;
-}
-
 ui::AXPlatformNodeDelegate* BrowserAccessibilityManager::RootDelegate() const {
   return GetBrowserAccessibilityRoot();
 }

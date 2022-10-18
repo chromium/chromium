@@ -82,7 +82,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // If this tree has a parent tree, returns the node in the parent tree that
   // hosts the current tree. Returns nullptr if this tree doesn't have a parent
   // tree.
-  virtual AXNode* GetParentNodeFromParentTreeAsAXNode() const = 0;
+  virtual AXNode* GetParentNodeFromParentTreeAsAXNode() const;
 
   void Initialize(const AXTreeUpdate& initial_tree);
 

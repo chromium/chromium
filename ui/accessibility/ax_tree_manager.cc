@@ -222,4 +222,31 @@ AXTreeManager* AXTreeManager::GetRootManager() const {
   return parent->GetRootManager();
 }
 
+AXNode* AXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
+  AXTreeManager* parent_manager = GetParentManager();
+  if (!parent_manager)
+    return nullptr;
+
+  DCHECK(GetRoot());
+
+  std::set<int32_t> host_node_ids =
+      parent_manager->ax_tree()->GetNodeIdsForChildTreeId(GetTreeID());
+  if (host_node_ids.empty()) {
+    // Parent tree has host node but the change has not yet been serialized.
+    return nullptr;
+  }
+
+  CHECK_EQ(host_node_ids.size(), 1U)
+  << "Multiple nodes cannot claim the same child tree ID.";
+
+  AXNode* parent_node = parent_manager->GetNode(*(host_node_ids.begin()));
+  DCHECK(parent_node);
+  DCHECK_EQ(ax_tree_id_, AXTreeID::FromString(parent_node->GetStringAttribute(
+                             ax::mojom::StringAttribute::kChildTreeId)))
+      << "A node that hosts a child tree should expose its tree ID in its "
+         "`kChildTreeId` attribute.";
+
+  return parent_node;
+}
+
 }  // namespace ui
