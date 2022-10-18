@@ -3186,23 +3186,6 @@
           'isolated_scripts': 'ios_simulator_cronet_tests'
         },
       },
-      # TODO(crbug.com/1254986): remove this after the migration.
-      'ios-reclient': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_12_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_14_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_code_coverage_tests'
-        }
-      },
       'ios-simulator-code-coverage': {
         'mixins': [
           'has_native_resultdb_integration',

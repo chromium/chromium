@@ -406,7 +406,6 @@
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64',
-      'ios-reclient': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_reclient',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest_reclient',

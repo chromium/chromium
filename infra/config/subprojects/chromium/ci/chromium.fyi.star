@@ -2017,23 +2017,6 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios-reclient",
-    console_view_entry = consoles.console_view_entry(
-        category = "iOS",
-        short_name = "re",
-    ),
-    # Because of an error in the wrapper function implementation, this value was
-    # not modifying the config. The goma property should have no effect if the
-    # GN args to use goma isn't set, so commenting this out to avoid modifying
-    # the generated config during the freeze.
-    # goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    description_html = "experiment reclient for ios. remove after the migration. crbug.com/1254986",
-    builderless = True,
-    os = os.MAC_DEFAULT,
-)
-
-fyi_ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
