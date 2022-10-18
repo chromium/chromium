@@ -19,10 +19,9 @@ struct AudioDevice;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
     : public base::RefCountedThreadSafe<AudioDevicesPrefHandler> {
  public:
-  // Integer because C++ does not allow static const double in header files.
-  static const int kDefaultInputGainPercent = 50;
-  static const int kDefaultOutputVolumePercent = 75;
-  static const int kDefaultHdmiOutputVolumePercent = 100;
+  static constexpr double kDefaultInputGainPercent = 50;
+  static constexpr double kDefaultOutputVolumePercent = 75;
+  static constexpr double kDefaultHdmiOutputVolumePercent = 100;
 
   // Gets the audio output volume value from prefs for a device. Since we can
   // only have either a gain or a volume for a device (depending on whether it

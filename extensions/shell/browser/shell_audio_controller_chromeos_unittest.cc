@@ -126,8 +126,7 @@ TEST_F(ShellAudioControllerTest, InitialVolume) {
 
   EXPECT_FALSE(audio_handler()->IsOutputMuted());
   EXPECT_FALSE(audio_handler()->IsInputMuted());
-  EXPECT_EQ(static_cast<double>(
-                ash::AudioDevicesPrefHandler::kDefaultOutputVolumePercent),
+  EXPECT_EQ(ash::AudioDevicesPrefHandler::kDefaultOutputVolumePercent,
             audio_handler()->GetOutputVolumePercent());
 
   EXPECT_EQ(75.0, audio_handler()->GetInputGainPercent());
