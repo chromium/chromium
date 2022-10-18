@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
       size_t keep_devices) = 0;
 
  protected:
-  virtual ~AudioDevicesPrefHandler() {}
+  virtual ~AudioDevicesPrefHandler() = default;
 
  private:
   friend class base::RefCountedThreadSafe<AudioDevicesPrefHandler>;
