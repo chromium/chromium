@@ -123,6 +123,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     return s_test_delegate_->get_authenticator_interaction_status();
   }
 
+  bool get_add_shortcut_dialog_shown() const {
+    return s_test_delegate_->get_add_shortcut_dialog_shown();
+  }
+
  private:
   raw_ptr<TestPasswordsPrivateDelegate> s_test_delegate_ = nullptr;
 };
@@ -365,5 +369,11 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
   EXPECT_TRUE(get_authenticator_interaction_status());
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AddShortcut) {
+  EXPECT_FALSE(get_add_shortcut_dialog_shown());
+  EXPECT_TRUE(RunPasswordsSubtest("showAddShortcutDialog")) << message_;
+  EXPECT_TRUE(get_add_shortcut_dialog_shown());
+}
 
 }  // namespace extensions

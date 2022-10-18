@@ -9,6 +9,7 @@ import './prefs/pref_toggle_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import {getTemplate} from './settings_section.html.js';
 
@@ -26,6 +27,13 @@ export class SettingsSectionElement extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  private onAddShortcutClick_() {
+    // TODO(crbug.com/1358448): Record metrics on all entry points usage.
+    // TODO(crbug.com/1358448): Hide the button for users after the shortcut is
+    // installed.
+    PasswordManagerImpl.getInstance().showAddShortcutDialog();
   }
 }
 

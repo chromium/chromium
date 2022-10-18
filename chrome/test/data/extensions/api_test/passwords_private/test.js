@@ -696,6 +696,12 @@ var availableTests = [
     chrome.test.assertNoLastError();
     chrome.test.succeed();
   },
+
+  function showAddShortcutDialog() {
+    chrome.passwordsPrivate.showAddShortcutDialog();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
 ];
 
 var testToRun = window.location.search.substring(1);

@@ -358,4 +358,9 @@ void TestPasswordsPrivateDelegate::SwitchBiometricAuthBeforeFillingState(
   authenticator_interacted_ = true;
 }
 
+void TestPasswordsPrivateDelegate::ShowAddShortcutDialog(
+    content::WebContents* web_contents) {
+  add_shortcut_dialog_shown_ = true;
+}
+
 }  // namespace extensions

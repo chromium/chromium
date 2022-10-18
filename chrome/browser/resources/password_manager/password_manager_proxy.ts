@@ -85,6 +85,11 @@ export interface PasswordManagerProxy {
    * Records a given interaction on the Password Check page.
    */
   recordPasswordCheckInteraction(interaction: PasswordCheckInteraction): void;
+
+  /**
+   * Triggers the shortcut creation dialog.
+   */
+  showAddShortcutDialog(): void;
 }
 
 /**
@@ -142,6 +147,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.BulkCheck.UserAction', interaction,
         PasswordCheckInteraction.COUNT);
+  }
+
+  showAddShortcutDialog() {
+    chrome.passwordsPrivate.showAddShortcutDialog();
   }
 
   static getInstance(): PasswordManagerProxy {

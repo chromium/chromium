@@ -26,8 +26,16 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_porter_interface.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/webapps/chrome_webapps_client.h"
 #include "chrome/common/extensions/api/passwords_private.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/device_reauth/mock_biometric_authenticator.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
@@ -244,9 +252,9 @@ MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
 
 }  // namespace
 
-class PasswordsPrivateDelegateImplTest : public testing::Test {
+class PasswordsPrivateDelegateImplTest : public WebAppTest {
  public:
-  PasswordsPrivateDelegateImplTest();
+  PasswordsPrivateDelegateImplTest() = default;
 
   PasswordsPrivateDelegateImplTest(const PasswordsPrivateDelegateImplTest&) =
       delete;
@@ -254,6 +262,8 @@ class PasswordsPrivateDelegateImplTest : public testing::Test {
       const PasswordsPrivateDelegateImplTest&) = delete;
 
   ~PasswordsPrivateDelegateImplTest() override;
+
+  void SetUp() override;
 
   // Sets up a testing password store and fills it with |forms|.
   void SetUpPasswordStores(std::vector<password_manager::PasswordForm> forms);
@@ -265,30 +275,31 @@ class PasswordsPrivateDelegateImplTest : public testing::Test {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
   raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
-  scoped_refptr<TestPasswordStore> profile_store_ =
-      CreateAndUseTestPasswordStore(&profile_);
-  scoped_refptr<TestPasswordStore> account_store_ =
-      CreateAndUseTestAccountPasswordStore(&profile_);
-  raw_ptr<ui::TestClipboard> test_clipboard_ =
-      ui::TestClipboard::CreateForCurrentThread();
+  scoped_refptr<TestPasswordStore> profile_store_;
+  scoped_refptr<TestPasswordStore> account_store_;
+  raw_ptr<ui::TestClipboard> test_clipboard_;
   scoped_refptr<device_reauth::MockBiometricAuthenticator>
-      biometric_authenticator_ =
-          base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+      biometric_authenticator_;
 
  private:
   base::HistogramTester histogram_tester_;
 };
 
-PasswordsPrivateDelegateImplTest::PasswordsPrivateDelegateImplTest() {
-  SetUpRouters();
-  SetUpSyncInTransportMode(&profile_);
-}
-
 PasswordsPrivateDelegateImplTest::~PasswordsPrivateDelegateImplTest() {
   ui::Clipboard::DestroyClipboardForCurrentThread();
+}
+
+void PasswordsPrivateDelegateImplTest::SetUp() {
+  WebAppTest::SetUp();
+  profile_store_ = CreateAndUseTestPasswordStore(profile());
+  account_store_ = CreateAndUseTestAccountPasswordStore(profile());
+  test_clipboard_ = ui::TestClipboard::CreateForCurrentThread();
+  biometric_authenticator_ =
+      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+
+  SetUpRouters();
+  SetUpSyncInTransportMode(profile());
 }
 
 void PasswordsPrivateDelegateImplTest::SetUpPasswordStores(
@@ -306,16 +317,16 @@ void PasswordsPrivateDelegateImplTest::SetUpPasswordStores(
 }
 
 void PasswordsPrivateDelegateImplTest::SetUpRouters() {
-  event_router_ = extensions::CreateAndUseTestEventRouter(&profile_);
+  event_router_ = extensions::CreateAndUseTestEventRouter(profile());
   // Set the production PasswordsPrivateEventRouter::Create as a testing
   // factory, because at some point during the preceding initialization, a null
   // factory is set, resulting in nul PasswordsPrivateEventRouter.
   PasswordsPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
-      &profile_, base::BindRepeating(&BuildPasswordsPrivateEventRouter));
+      profile(), base::BindRepeating(&BuildPasswordsPrivateEventRouter));
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetSavedPasswordsList) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
 
   base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
   EXPECT_CALL(callback, Run).Times(0);
@@ -330,7 +341,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetSavedPasswordsList) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        PasswordsDuplicatedInStoresAreRepresentedAsSingleEntity) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
 
   password_manager::PasswordForm account_password =
       CreateSampleForm(password_manager::PasswordForm::Store::kAccountStore);
@@ -350,7 +361,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetPasswordExceptionsList) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
 
   base::MockCallback<PasswordsPrivateDelegate::ExceptionEntriesCallback>
       callback;
@@ -366,7 +377,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasswordExceptionsList) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        ExceptionsDuplicatedInStoresAreRepresentedAsSingleEntity) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   password_manager::PasswordForm account_exception;
   account_exception.blocked_by_user = true;
   account_exception.url = GURL("https://test.com");
@@ -388,15 +399,13 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(false));
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
@@ -439,13 +448,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
 
   // NOT update default store if not opted-in for account storage.
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
@@ -476,13 +483,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        ImportPasswordsDoesNotUpdateDefaultStore) {
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
 
   auto mock_porter = std::make_unique<MockPasswordManagerPorter>();
   auto* mock_porter_ptr = mock_porter.get();
@@ -501,13 +506,11 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, ImportPasswordsUpdatesDefaultStore) {
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
 
   auto mock_porter = std::make_unique<MockPasswordManagerPorter>();
   auto* mock_porter_ptr = mock_porter.get();
@@ -530,7 +533,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   password_manager::PasswordForm sample_form = CreateSampleForm();
   SetUpPasswordStores({sample_form});
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
@@ -580,7 +583,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordInBothStores) {
   account_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
   SetUpPasswordStores({profile_form, account_form});
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
@@ -618,7 +621,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordInAccountStore) {
   account_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
   SetUpPasswordStores({profile_form, account_form});
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
@@ -645,7 +648,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
   password_manager::PasswordForm form = CreateSampleForm();
   SetUpPasswordStores({form});
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   base::RunLoop().RunUntilIdle();
 
   MockReauthCallback callback;
@@ -673,11 +676,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestShouldReauthForOptIn) {
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories;
-
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
@@ -687,17 +687,14 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestShouldReauthForOptIn) {
               TriggerReauthForPrimaryAccount(
                   signin_metrics::ReauthAccessPoint::kPasswordSettings, _));
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   delegate.SetAccountStorageOptIn(true, web_contents.get());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        TestShouldNotReauthForOptOutAndShouldSetPref) {
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories;
-
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   password_manager::MockPasswordFeatureManager* feature_manager =
@@ -711,14 +708,14 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       .Times(0);
   EXPECT_CALL(*feature_manager, OptOutOfAccountStorageAndClearSettings);
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   delegate.SetAccountStorageOptIn(false, web_contents.get());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
   SetUpPasswordStores({CreateSampleForm()});
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   base::RunLoop().RunUntilIdle();
 
   MockReauthCallback callback;
@@ -750,7 +747,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
 TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {
   SetUpPasswordStores({CreateSampleForm()});
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
@@ -781,7 +778,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
                                  /*date_created=*/base::Time::Now());
   SetUpPasswordStores({sample_form});
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
@@ -813,7 +810,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
   SetUpPasswordStores({CreateSampleForm()});
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
@@ -840,7 +837,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
        TestFailedReauthOnRequestCredentialDetails) {
   SetUpPasswordStores({CreateSampleForm()});
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
@@ -866,7 +863,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnExport) {
   StrictMock<base::MockCallback<base::OnceCallback<void(const std::string&)>>>
       mock_accepted;
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   // Spin the loop to allow PasswordStore tasks posted on the creation of
   // |delegate| to be completed.
   base::RunLoop().RunUntilIdle();
@@ -885,7 +882,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnExport) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionValueWithSchemeWhenIpAddress) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   const absl::optional<api::passwords_private::UrlCollection> urls =
       delegate.GetUrlCollection("127.0.0.1");
   EXPECT_TRUE(urls.has_value());
@@ -896,7 +893,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionValueWithSchemeWhenWebAddress) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   const absl::optional<api::passwords_private::UrlCollection> urls =
       delegate.GetUrlCollection("example.com/login");
   EXPECT_TRUE(urls.has_value());
@@ -907,7 +904,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionStrippedValueWhenFullUrl) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   const absl::optional<api::passwords_private::UrlCollection> urls =
       delegate.GetUrlCollection(
           "http://username:password@example.com/login?param=value#ref");
@@ -919,7 +916,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionNoValueWhenUnsupportedScheme) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   const absl::optional<api::passwords_private::UrlCollection> urls =
       delegate.GetUrlCollection("scheme://unsupported");
   EXPECT_FALSE(urls.has_value());
@@ -927,22 +924,20 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionNoValueWhenInvalidUrl) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   const absl::optional<api::passwords_private::UrlCollection> urls =
       delegate.GetUrlCollection("https://;/invalid");
   EXPECT_FALSE(urls.has_value());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
 
   EXPECT_CALL(*(client->GetPasswordFeatureManager()), GetDefaultPasswordStore)
       .WillOnce(Return(password_manager::PasswordForm::Store::kAccountStore));
@@ -954,16 +949,14 @@ TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
 
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
 
   password_manager::PasswordForm form1 =
       CreateSampleForm(password_manager::PasswordForm::Store::kProfileStore);
@@ -988,7 +981,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
 
   password_manager::PasswordForm android_form;
   android_form.signon_realm = "android://hash@example.com";
@@ -1127,14 +1120,12 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kBiometricAuthenticationForFilling);
-  // This enables uses of TestWebContents.
-  content::RenderViewHostTestEnabler test_render_host_factories;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   client->SetBiometricAuthenticator(biometric_authenticator_);
-  profile_.GetPrefs()->SetBoolean(
+  profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
   EXPECT_CALL(
       *biometric_authenticator_.get(),
@@ -1142,12 +1133,53 @@ TEST_F(PasswordsPrivateDelegateImplTest,
           device_reauth::BiometricAuthRequester::kPasswordsInSettings, _, _))
       .WillOnce(testing::WithArgs<2>(
           [](auto callback) { std::move(callback).Run(/*successful=*/true); }));
-  PasswordsPrivateDelegateImpl delegate(&profile_);
+  PasswordsPrivateDelegateImpl delegate(profile());
   delegate.SwitchBiometricAuthBeforeFillingState(web_contents.get());
   // Expects that the switch value will change.
-  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling));
 }
 #endif
+
+TEST_F(PasswordsPrivateDelegateImplTest, ShowAddShortcutDialog) {
+  // Set up a browser instance and simulate a navigation.
+  Browser::CreateParams params(profile(), /*user_gesture=*/true);
+  params.type = Browser::TYPE_NORMAL;
+  auto window = std::make_unique<TestBrowserWindow>();
+  params.window = window.get();
+  auto browser = std::unique_ptr<Browser>(Browser::Create(params));
+  NavigateParams nav_params(browser.get(), GURL("chrome://password-manager"),
+                            ui::PAGE_TRANSITION_TYPED);
+  nav_params.tabstrip_index = 0;
+  nav_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&nav_params);
+  content::RenderFrameHostTester::CommitPendingLoad(
+      &nav_params.navigated_or_inserted_contents->GetController());
+
+  webapps::ChromeWebappsClient::GetInstance();
+  auto* provider = web_app::FakeWebAppProvider::Get(profile());
+  provider->SetDefaultFakeSubsystems();
+  provider->StartWithSubsystems();
+  task_environment()->RunUntilIdle();
+
+  // Check that no web app installation is happening at the moment.
+  ASSERT_EQ(provider->command_manager().GetCommandCountForTesting(), 0u);
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetWebContentsAt(0);
+  ASSERT_FALSE(
+      provider->command_manager().IsInstallingForWebContents(web_contents));
+
+  PasswordsPrivateDelegateImpl delegate(profile());
+  delegate.ShowAddShortcutDialog(web_contents);
+  task_environment()->RunUntilIdle();
+
+  // Check that app installation was triggered.
+  EXPECT_EQ(provider->command_manager().GetCommandCountForTesting(), 1u);
+  EXPECT_TRUE(
+      provider->command_manager().IsInstallingForWebContents(web_contents));
+
+  // Close the browser prior to TearDown.
+  browser->tab_strip_model()->CloseAllTabs();
+}
 
 }  // namespace extensions

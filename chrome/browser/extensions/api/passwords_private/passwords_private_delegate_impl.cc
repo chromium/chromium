@@ -26,8 +26,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -755,6 +758,14 @@ void PasswordsPrivateDelegateImpl::SwitchBiometricAuthBeforeFillingState(
           profile_->GetPrefs()),
       std::move(callback));
 #endif
+}
+
+void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
+    content::WebContents* web_contents) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  DCHECK(browser);
+  web_app::CreateWebAppFromCurrentWebContents(
+      browser, web_app::WebAppInstallFlow::kCreateShortcut);
 }
 
 password_manager::InsecureCredentialsManager*

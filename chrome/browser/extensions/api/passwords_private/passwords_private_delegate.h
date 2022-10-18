@@ -239,6 +239,9 @@ class PasswordsPrivateDelegate : public KeyedService {
   // successful authentication.
   virtual void SwitchBiometricAuthBeforeFillingState(
       content::WebContents* web_contents) = 0;
+
+  // Triggers a dialog for installing the shortcut for PasswordManager page.
+  virtual void ShowAddShortcutDialog(content::WebContents* web_contents) = 0;
 };
 
 }  // namespace extensions

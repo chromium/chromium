@@ -86,4 +86,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   recordPasswordCheckInteraction(interaction: PasswordCheckInteraction) {
     this.methodCalled('recordPasswordCheckInteraction', interaction);
   }
+
+  showAddShortcutDialog() {
+    this.methodCalled('showAddShortcutDialog');
+  }
 }

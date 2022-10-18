@@ -440,6 +440,11 @@ chrome.passwordsPrivate.extendAuthValidity = function(callback) {};
 chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState = function() {};
 
 /**
+ * Shows a dialog for creating a shortcut for the PasswordManager page.
+ */
+chrome.passwordsPrivate.showAddShortcutDialog = function() {};
+
+/**
  * Fired when the saved passwords list has changed, meaning that an entry has
  * been added or removed.
  * @type {!ChromeEvent}

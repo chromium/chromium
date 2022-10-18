@@ -117,6 +117,7 @@ class PasswordsPrivateDelegateImpl
   void ExtendAuthValidity() override;
   void SwitchBiometricAuthBeforeFillingState(
       content::WebContents* web_contents) override;
+  void ShowAddShortcutDialog(content::WebContents* web_contents) override;
 
   // KeyedService overrides:
   void Shutdown() override;

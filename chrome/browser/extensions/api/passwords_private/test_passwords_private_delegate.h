@@ -100,6 +100,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ExtendAuthValidity() override;
   void SwitchBiometricAuthBeforeFillingState(
       content::WebContents* web_contents) override;
+  void ShowAddShortcutDialog(content::WebContents* web_contents) override;
 
   void SetProfile(Profile* profile);
   void SetOptedInForAccountStorage(bool opted_in);
@@ -132,6 +133,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   bool get_authenticator_interaction_status() const {
     return authenticator_interacted_;
+  }
+
+  bool get_add_shortcut_dialog_shown() const {
+    return add_shortcut_dialog_shown_;
   }
 
  private:
@@ -183,6 +188,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Used to track whether user interacted with the ExtendAuthValidity API.
   bool authenticator_interacted_ = false;
+
+  // Used to track whether shortcut creation dialog was shown.
+  bool add_shortcut_dialog_shown_ = false;
 };
 }  // namespace extensions
 

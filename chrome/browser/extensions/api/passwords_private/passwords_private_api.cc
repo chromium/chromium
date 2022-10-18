@@ -498,4 +498,10 @@ PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// PasswordsPrivateShowAddShortcutDialogFunction
+ResponseAction PasswordsPrivateShowAddShortcutDialogFunction::Run() {
+  GetDelegate(browser_context())->ShowAddShortcutDialog(GetSenderWebContents());
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions
