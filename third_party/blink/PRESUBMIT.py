@@ -216,7 +216,9 @@ def _CheckStyle(input_api, output_api):
             input_api.canned_checks.GetPylint(
                 input_api,
                 output_api,
-                files_to_check=affected_python_files,
+                files_to_check=[
+                    re.escape(path) for path in affected_python_files
+                ],
                 pylintrc=pylintrc)))
     return results
 

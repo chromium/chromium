@@ -68,7 +68,7 @@ class PresubmitTest(unittest.TestCase):
             mock_input_api.canned_checks.GetPylint.assert_called_once_with(
                 mock.ANY,
                 mock.ANY,
-                files_to_check=['file_blink.py'],
+                files_to_check=[r'file_blink\.py'],
                 pylintrc=mock_input_api.os_path.join('tools', 'blinkpy',
                                                      'pylintrc'))
 
