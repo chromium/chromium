@@ -8,9 +8,9 @@
 #import <Foundation/Foundation.h>
 
 class ChromeAccountManagerService;
-@class ChromeIdentity;
 @class ConsistencyDefaultAccountMediator;
 @protocol ConsistencyDefaultAccountConsumer;
+@protocol SystemIdentity;
 
 // Delegate for ConsistencyDefaultAccountMediator.
 @protocol ConsistencyDefaultAccountMediatorDelegate <NSObject>
@@ -35,7 +35,7 @@ class ChromeAccountManagerService;
     delegate;
 @property(nonatomic, strong) id<ConsistencyDefaultAccountConsumer> consumer;
 // Identity presented to the user.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
 // Disconnect the mediator.
 - (void)disconnect;

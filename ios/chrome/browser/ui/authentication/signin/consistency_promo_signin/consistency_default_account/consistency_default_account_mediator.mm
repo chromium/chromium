@@ -54,7 +54,7 @@
   [self selectSelectedIdentity];
 }
 
-- (void)setSelectedIdentity:(ChromeIdentity*)identity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)identity {
   DCHECK(identity);
   if ([_selectedIdentity isEqual:identity]) {
     return;
@@ -71,13 +71,10 @@
     return;
   }
 
-  ChromeIdentity* identity = self.accountManagerService->GetDefaultIdentity();
+  id<SystemIdentity> identity =
+      self.accountManagerService->GetDefaultIdentity();
   if (!identity) {
     [self.delegate consistencyDefaultAccountMediatorNoIdentities:self];
-    return;
-  }
-
-  if ([identity isEqual:self.selectedIdentity]) {
     return;
   }
 
@@ -86,11 +83,12 @@
 
 // Updates the view controller using the default identity.
 - (void)updateSelectedIdentityUI {
-  [self.consumer updateWithFullName:self.selectedIdentity.userFullName
-                          givenName:self.selectedIdentity.userGivenName
-                              email:self.selectedIdentity.userEmail];
+  id<SystemIdentity> selectedIdentity = self.selectedIdentity;
+  [self.consumer updateWithFullName:selectedIdentity.userFullName
+                          givenName:selectedIdentity.userGivenName
+                              email:selectedIdentity.userEmail];
   UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
-      self.selectedIdentity, IdentityAvatarSize::TableViewIcon);
+      selectedIdentity, IdentityAvatarSize::TableViewIcon);
   [self.consumer updateUserAvatar:avatar];
 }
 

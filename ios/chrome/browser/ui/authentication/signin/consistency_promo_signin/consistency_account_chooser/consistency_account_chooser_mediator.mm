@@ -21,14 +21,14 @@
       _accountManagerServiceObserver;
 }
 
-// Configurators based on ChromeIdentity list.
+// Configurators based on identity list.
 @property(nonatomic, strong) NSArray* sortedIdentityItemConfigurators;
 
 @end
 
 @implementation ConsistencyAccountChooserMediator
 
-- (instancetype)initWithSelectedIdentity:(ChromeIdentity*)selectedIdentity
+- (instancetype)initWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity
                    accountManagerService:
                        (ChromeAccountManagerService*)accountManagerService {
   if (self = [super init]) {
@@ -54,12 +54,12 @@
 
 #pragma mark - Properties
 
-- (void)setSelectedIdentity:(ChromeIdentity*)identity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)identity {
   DCHECK(identity);
   if ([_selectedIdentity isEqual:identity]) {
     return;
   }
-  ChromeIdentity* previousSelectedIdentity = _selectedIdentity;
+  id<SystemIdentity> previousSelectedIdentity = _selectedIdentity;
   _selectedIdentity = identity;
   [self identityChanged:previousSelectedIdentity];
   [self identityChanged:_selectedIdentity];
@@ -67,16 +67,17 @@
 
 #pragma mark - Private
 
-// Updates `self.sortedIdentityItemConfigurators` based on ChromeIdentity list.
+// Updates `self.sortedIdentityItemConfigurators` based on identity list.
 - (void)loadIdentityItemConfigurators {
   if (!_accountManagerService) {
     return;
   }
 
   NSMutableArray* configurators = [NSMutableArray array];
-  NSArray* identities = _accountManagerService->GetAllIdentities();
+  NSArray<id<SystemIdentity>>* identities =
+      _accountManagerService->GetAllIdentities();
   BOOL hasSelectedIdentity = NO;
-  for (ChromeIdentity* identity in identities) {
+  for (id<SystemIdentity> identity in identities) {
     IdentityItemConfigurator* configurator =
         [[IdentityItemConfigurator alloc] init];
     [self updateIdentityItemConfigurator:configurator withIdentity:identity];

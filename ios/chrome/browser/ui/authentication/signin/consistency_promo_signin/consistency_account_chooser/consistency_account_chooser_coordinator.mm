@@ -34,7 +34,7 @@
 
 @implementation ConsistencyAccountChooserCoordinator
 
-- (void)startWithSelectedIdentity:(ChromeIdentity*)selectedIdentity {
+- (void)startWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   [super start];
   self.mediator = [[ConsistencyAccountChooserMediator alloc]
       initWithSelectedIdentity:selectedIdentity
@@ -62,7 +62,7 @@
   return self.accountChooserViewController;
 }
 
-- (ChromeIdentity*)selectedIdentity {
+- (id<SystemIdentity>)selectedIdentity {
   return self.mediator.selectedIdentity;
 }
 
@@ -75,12 +75,11 @@
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  ChromeIdentity* identity = accountManagerService->GetIdentityWithGaiaID(
+  id<SystemIdentity> identity = accountManagerService->GetIdentityWithGaiaID(
       base::SysNSStringToUTF8(gaiaID));
   DCHECK(identity);
   self.mediator.selectedIdentity = identity;
-  [self.delegate
-      consistencyAccountChooserCoordinatorChromeIdentitySelected:self];
+  [self.delegate consistencyAccountChooserCoordinatorIdentitySelected:self];
 }
 
 - (void)consistencyAccountChooserTableViewControllerDidTapOnAddAccount:

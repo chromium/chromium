@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
-#import "base/mac/foundation_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -55,7 +54,7 @@
 @property(nonatomic, strong)
     ConsistencyAccountChooserCoordinator* accountChooserCoordinator;
 // `self.defaultAccountCoordinator.selectedIdentity`.
-@property(nonatomic, strong, readonly) ChromeIdentity* selectedIdentity;
+@property(nonatomic, strong, readonly) id<SystemIdentity> selectedIdentity;
 // Coordinator to add an account to the device.
 @property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
 // The access point that triggered sign-in.
@@ -144,7 +143,7 @@
 
 #pragma mark - Properties
 
-- (ChromeIdentity*)selectedIdentity {
+- (id<SystemIdentity>)selectedIdentity {
   return self.defaultAccountCoordinator.selectedIdentity;
 }
 
@@ -216,7 +215,7 @@
 
 #pragma mark - ConsistencyAccountChooserCoordinatorDelegate
 
-- (void)consistencyAccountChooserCoordinatorChromeIdentitySelected:
+- (void)consistencyAccountChooserCoordinatorIdentitySelected:
     (ConsistencyAccountChooserCoordinator*)coordinator {
   self.defaultAccountCoordinator.selectedIdentity =
       self.accountChooserCoordinator.selectedIdentity;

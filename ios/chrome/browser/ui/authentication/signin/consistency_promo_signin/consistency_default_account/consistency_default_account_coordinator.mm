@@ -78,11 +78,11 @@
   return self.defaultAccountViewController;
 }
 
-- (ChromeIdentity*)selectedIdentity {
+- (id<SystemIdentity>)selectedIdentity {
   return self.mediator.selectedIdentity;
 }
 
-- (void)setSelectedIdentity:(ChromeIdentity*)identity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)identity {
   DCHECK(self.mediator);
   self.mediator.selectedIdentity = identity;
 }

@@ -7,9 +7,9 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@class ChromeIdentity;
 @class ConsistencyDefaultAccountCoordinator;
 @protocol ConsistencyLayoutDelegate;
+@protocol SystemIdentity;
 
 namespace signin_metrics {
 enum class AccessPoint : int;
@@ -53,7 +53,7 @@ enum class AccessPoint : int;
     delegate;
 @property(nonatomic, weak) id<ConsistencyLayoutDelegate> layoutDelegate;
 // This property can be used only after the coordinator is started.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
 // Starts the spinner and disables buttons.
 - (void)startSigninSpinner;
