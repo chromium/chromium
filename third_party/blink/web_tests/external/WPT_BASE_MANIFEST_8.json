@@ -4371,6 +4371,21 @@
     },
     "semantics": {
      "embedded-content": {
+      "media-elements": {
+       "track": {
+        "track-element": {
+         "crashtests": {
+          "track-element-src-aborted-load-onerror-crash.html": [
+           "9db5ef0748172b058fa154c8cef0fb7f580c5f0d",
+           [
+            null,
+            {}
+           ]
+          ]
+         }
+        }
+       }
+      },
       "the-audio-element": {
        "audio-appendChild-to-inactive-document-crash.html": [
         "33d52ca89946298d02349877164e5439626232df",
@@ -277130,10 +277145,6 @@
        "2acc510d2d23c28a952753bdb54017eff2af8632",
        []
       ],
-      "font-palette-values-valid-expected.txt": [
-       "be5b205e314f55cf7151293ff06def1061a77f14",
-       []
-      ],
       "font-size-adjust-computed-expected.txt": [
        "c824213e0a9e82e61b31deac83c0dcdaecc30276",
        []
@@ -328146,7 +328157,7 @@
         []
        ],
        "dialog-focus-shadow-expected.txt": [
-        "9981d126149c0a1a6889ce699cf00176eab3ab64",
+        "a3f268e6e0187a5c4a52cce5894ac9152f3d2ad1",
         []
        ],
        "dialog-focusing-steps-inert-expected.txt": [
@@ -334648,7 +334659,7 @@
     ]
    },
    "lint.ignore": [
-    "ffce0430cf0a2cf92556853072707e05f89a471b",
+    "28a976acac2ff1cd3653fcff09ba0aa4c82bd254",
     []
    ],
    "loading": {
@@ -397810,13 +397821,6 @@
        {}
       ]
      ],
-     "font-palette-vs-shorthand.html": [
-      "6c5cc97da94162edf86374032dfd257eeded61c0",
-      [
-       null,
-       {}
-      ]
-     ],
      "font-shorthand-serialization-001.html": [
       "e44cc7b7c8ddb8de06c6366f251afc96affdd89d",
       [
@@ -398087,14 +398091,14 @@
        ]
       ],
       "font-palette-values-invalid.html": [
-       "2056055f3412d5d63cfc079b082dded04cb653a1",
+       "d439f6440fc6246c23db5d01c010f7702a629a8e",
        [
         null,
         {}
        ]
       ],
       "font-palette-values-valid.html": [
-       "3c0c0626f5871b4fce1ca9ceec4c01491a83faa5",
+       "e6e3dda9eb1ced5b187137bceb2a85ee8207e700",
        [
         null,
         {}
@@ -468966,7 +468970,7 @@
         ]
        ],
        "2d.filter.canvasFilterObject.componentTransfer.identity.tentative.html": [
-        "3b3dfdb82ed5705208db6f248291a63886c5fdb8",
+        "25eda36d96b08779e73cb385ae5496e623976461",
         [
          null,
          {}
@@ -500327,7 +500331,7 @@
         ]
        ],
        "dialog-focus-shadow.html": [
-        "9cdad92d80f575f5aa57d9dee11830e23ff3b012",
+        "b4c7590ba2e6f49aaf6eca9a67ccce42292a307a",
         [
          null,
          {}
@@ -544138,7 +544142,7 @@
      ]
     ],
     "response-status-code.html": [
-     "d0b24aef5075dc745632ac48accdbead3866f5ec",
+     "2da1a2c0c0da6f2265e154cca00472ce441292d5",
      [
       null,
       {}
@@ -578306,7 +578310,7 @@
      ]
     ],
     "videoFrame-construction.any.js": [
-     "07df649e66870604d767c714a00ff4ed8c298519",
+     "9a8ae03327b752f22f5d733846d25ed998001735",
      [
       "webcodecs/videoFrame-construction.any.html",
       {
@@ -578387,13 +578391,6 @@
       }
      ]
     ],
-    "videoFrame-construction.crossOriginSource.sub.html": [
-     "9238dc0ebdabbe0c95dd033dc31d8743d9e9c1ae",
-     [
-      null,
-      {}
-     ]
-    ],
     "videoFrame-construction.window.js": [
      "02f84215522aed4e3ede029342838119bd92fba2",
      [
@@ -578409,7 +578406,7 @@
      ]
     ],
     "videoFrame-copyTo.any.js": [
-     "79ba3c63043f1c949a7a37eaff072c0b1cf16d9e",
+     "6f73d82426016ecc5a0a0bd1200472fd70b85f34",
      [
       "webcodecs/videoFrame-copyTo.any.html",
       {
@@ -615146,6 +615143,20 @@
      ],
      "nested-multicol-with-spanner-and-oof-crash-006.html": [
       "b969f925d3fa132a332fca462917f1f893973f05",
+      [
+       null,
+       {}
+      ]
+     ],
+     "nested-multicol-with-spanner-and-oof-crash-007.html": [
+      "861aac2bc3dd0e2af03372ac8b0b031f2501f93a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "nested-multicol-with-spanner-and-oof-crash-008.html": [
+      "a8d0f3e77ea62d9976a5e1606e74cd0602a38b02",
       [
        null,
        {}
