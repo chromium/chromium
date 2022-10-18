@@ -138,6 +138,7 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
   switch (code) {
     case kDismissDomCode:
       DismissSuggestion();
+      RecordActionMetric(IMEPKLongpressDiacriticAction::kDismiss);
       return SuggestionStatus::kDismiss;
     case kAcceptDomCode:
       if (highlighted_index_.has_value()) {
@@ -185,6 +186,7 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
 
       // Dismiss on any unexpected key events.
       DismissSuggestion();
+      RecordActionMetric(IMEPKLongpressDiacriticAction::kDismiss);
       // NotHandled is passed so that the IME will let the key event pass
       // through.
       return SuggestionStatus::kNotHandled;
@@ -246,7 +248,6 @@ void LongpressDiacriticsSuggester::DismissSuggestion() {
     LOG(ERROR) << "Failed to dismiss suggestion. " << error;
     return;
   }
-  RecordActionMetric(IMEPKLongpressDiacriticAction::kDismiss);
   Reset();
   return;
 }
