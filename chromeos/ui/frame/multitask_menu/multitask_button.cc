@@ -8,7 +8,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 namespace chromeos {
@@ -34,11 +33,9 @@ MultitaskButton::MultitaskButton(PressedCallback callback,
                                      : kMultitaskButtonLandscapeSize);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetBaseColor(kMultitaskButtonDefaultColor);
-  SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColorId(kMultitaskButtonDefaultColor);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kMultitaskBaseButtonBorderRadius);
-  SetAccessibleName(name);
+  SetTooltipText(name);
 }
 
 void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {

@@ -49,7 +49,7 @@ class SplitButtonView::SplitButton : public views::Button {
         button_color_(kMultitaskButtonDefaultColor),
         insets_(insets),
         hovered_callback_(std::move(hovered_callback)) {
-    SetAccessibleName(name);
+    SetTooltipText(name);
   }
 
   SplitButton(const SplitButton&) = delete;
