@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -60,14 +61,45 @@ class WebFeedDialogCoordinator {
      *
      * @param context The {@link Context}.
      * @param feedLauncher {@link FeedLauncher} for launching the NTP.
-     * @param title The title of the site that was just followed.
+     * @param title The title of the Web Feed that was just followed.
      * @param isActive Whether the followed site is active (has content available).
      */
     void initialize(Context context, FeedLauncher feedLauncher, String title, boolean isActive) {
+        Runnable positiveAction = () -> {
+            FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN,
+                    FeedUserActionType.TAPPED_GO_TO_FEED_POST_FOLLOW_ACTIVE_HELP);
+            feedLauncher.openFollowingFeed();
+        };
+        initializeInternal(context, positiveAction,
+                R.string.web_feed_post_follow_dialog_go_to_following, title, isActive);
+    }
+
+    /**
+     * Initializes the {@link WebFeedDialogCoordinator}.
+     *
+     * @param context The {@link Context}.
+     * @param activeAction {@link Runnable} to execute for the primary when-active action.
+     * @param title The title of the Web Feed that was just followed.
+     * @param isActive Whether the followed site is active (has content available).
+     */
+    void initializeForInFollowingFollow(
+            Context context, @Nullable Runnable activeAction, String title, boolean isActive) {
+        Runnable positiveAction = () -> {
+            FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN,
+                    FeedUserActionType.TAPPED_GOT_IT_FEED_POST_FOLLOW_ACTIVE_HELP);
+            if (activeAction != null) activeAction.run();
+        };
+        initializeInternal(context, positiveAction, R.string.web_feed_post_follow_dialog_got_it,
+                title, isActive);
+    }
+
+    private void initializeInternal(Context context, Runnable positiveAction,
+            int positiveActionLabelId, String title, boolean isActive) {
         mContext = context;
         View webFeedDialogView =
                 LayoutInflater.from(context).inflate(R.layout.web_feed_dialog, null);
-        WebFeedDialogContents dialogContents = buildDialogContents(feedLauncher, isActive, title);
+        WebFeedDialogContents dialogContents =
+                buildDialogContents(positiveAction, positiveActionLabelId, title, isActive);
         PropertyModel model = buildModel(dialogContents);
         mMediator.initialize(webFeedDialogView, dialogContents);
         PropertyModelChangeProcessor.create(
@@ -79,7 +111,7 @@ class WebFeedDialogCoordinator {
     }
 
     private WebFeedDialogContents buildDialogContents(
-            FeedLauncher feedLauncher, boolean isActive, String title) {
+            Runnable positiveAction, int positiveActionLabelId, String title, boolean isActive) {
         RecordHistogram.recordEnumeratedHistogram(
                 "ContentSuggestions.Feed.WebFeed.PostFollowDialog.Show",
                 isActive ? WebFeedPostFollowDialogPresentation.AVAILABLE
@@ -93,14 +125,11 @@ class WebFeedDialogCoordinator {
         if (isActive) {
             description = mContext.getString(
                     R.string.web_feed_post_follow_dialog_stories_ready_description, title);
-            primaryButtonText =
-                    mContext.getString(R.string.web_feed_post_follow_dialog_open_a_new_tab);
+            primaryButtonText = mContext.getString(positiveActionLabelId);
             secondaryButtonText = mContext.getString(R.string.close);
             buttonClickCallback = dismissalCause -> {
                 if (dismissalCause.equals(DialogDismissalCause.POSITIVE_BUTTON_CLICKED)) {
-                    FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN,
-                            FeedUserActionType.TAPPED_GO_TO_FEED_POST_FOLLOW_ACTIVE_HELP);
-                    feedLauncher.openFollowingFeed();
+                    positiveAction.run();
                 } else {
                     FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN,
                             FeedUserActionType.TAPPED_DISMISS_POST_FOLLOW_ACTIVE_HELP);

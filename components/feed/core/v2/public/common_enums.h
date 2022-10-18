@@ -107,8 +107,8 @@ enum class FeedUserActionType {
   kTappedRefollowAfterUnfollowOnSnackbar = 35,
   // User tapped to unfollow using the snackbar 'try again' option.
   kTappedUnfollowTryAgainOnSnackbar = 36,
-  // After following an active web feed, the user tapped to go to feed using the
-  // post-follow help dialog.
+  // After following an active web feed, the user tapped to go to Following feed
+  // using the post-follow help dialog.
   kTappedGoToFeedPostFollowActiveHelp = 37,
   // After following an active web feed, the user tapped to dismiss the
   // post-follow help dialog.
@@ -165,7 +165,10 @@ enum class FeedUserActionType {
   kFollowingFeedSelectedGroupByPublisher = 59,
   // User selected the "Sort by Latest" Following feed sort type.
   kFollowingFeedSelectedSortByLatest = 60,
-  kMaxValue = kFollowingFeedSelectedSortByLatest,
+  // After following an active web feed, the user tapped on 'got it' to
+  // close the post-follow help dialog.
+  kTappedGotItFeedPostFollowActiveHelp = 61,
+  kMaxValue = kTappedGotItFeedPostFollowActiveHelp,
 };
 
 // For testing and debugging only.

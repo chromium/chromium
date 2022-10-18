@@ -144,9 +144,11 @@ public class FeedSurfaceMediatorTest {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mFeedSurfaceCoordinator.isActive()).thenReturn(true);
         when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(new RecyclerView(mActivity));
-        when(mFeedSurfaceCoordinator.createFeedStream(eq(StreamKind.FOLLOWING)))
+        when(mFeedSurfaceCoordinator.createFeedStream(
+                     eq(StreamKind.FOLLOWING), any(Stream.StreamsMediator.class)))
                 .thenReturn(mFollowingStream);
-        when(mFeedSurfaceCoordinator.createFeedStream(eq(StreamKind.FOR_YOU)))
+        when(mFeedSurfaceCoordinator.createFeedStream(
+                     eq(StreamKind.FOR_YOU), any(Stream.StreamsMediator.class)))
                 .thenReturn(mForYouStream);
         when(mFeedSurfaceCoordinator.getReliabilityLogger()).thenReturn(mReliabilityLogger);
         when(mReliabilityLogger.getLaunchLogger()).thenReturn(mLaunchReliabilityLogger);
@@ -157,9 +159,9 @@ public class FeedSurfaceMediatorTest {
         ObservableSupplierImpl<Boolean> hasUnreadContent = new ObservableSupplierImpl<>();
         hasUnreadContent.set(false);
         when(mForYouStream.hasUnreadContent()).thenReturn(hasUnreadContent);
-        when(mForYouStream.getStreamKind()).thenReturn(1);
+        when(mForYouStream.getStreamKind()).thenReturn(StreamKind.FOR_YOU);
         when(mFollowingStream.hasUnreadContent()).thenReturn(hasUnreadContent);
-        when(mFollowingStream.getStreamKind()).thenReturn(2);
+        when(mFollowingStream.getStreamKind()).thenReturn(StreamKind.FOLLOWING);
 
         FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistrar, mPrefService);
         FeedFeatures.setFakePrefsForTest(mPrefService);
@@ -541,6 +543,13 @@ public class FeedSurfaceMediatorTest {
 
     private OnSectionHeaderSelectedListener getOnSectionHeaderSelectedListener(
             PropertyModel model, PropertyModel forYou, boolean value) {
+        // Notes:
+        // * The returned PropertyModel's will be configured to simulate the Following feed being
+        //   the one selected.
+        // * There's no point in returning PropertyModel's for the Following (or other) headers
+        //   because individual Mediator onSectionHeader* will only affect the acted-on header. At
+        //   runtime, many of them will be called in sequence to keep all headers in a consistent
+        //   state.
         model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(forYou);
         forYou.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, true);
         forYou.set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY, ViewVisibility.GONE);
@@ -548,6 +557,8 @@ public class FeedSurfaceMediatorTest {
         model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
+
+        model.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, 1);
 
         when(mForYouStream.supportsOptions()).thenReturn(value);
         mFeedSurfaceMediator.setStreamForTesting(
@@ -738,6 +749,22 @@ public class FeedSurfaceMediatorTest {
                         eq(DiscoverLaunchResult.SWITCHED_FEED_TABS), eq(false));
         verify(mLaunchReliabilityLogger, times(1))
                 .logSwitchedFeeds(eq(StreamType.FOR_YOU), anyLong());
+    }
+
+    @Test
+    public void testStreamsMediatorImpl_switchToStreamKind() {
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
+        OnSectionHeaderSelectedListener listener =
+                getOnSectionHeaderSelectedListener(model, forYou, true);
+
+        Stream.StreamsMediator streamsMediator = mFeedSurfaceMediator.new StreamsMediatorImpl();
+        streamsMediator.switchToStreamKind(StreamKind.FOR_YOU);
+
+        assertEquals(0, model.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+        assertEquals(false, forYou.get(SectionHeaderProperties.UNREAD_CONTENT_KEY));
+        assertEquals(ViewVisibility.VISIBLE,
+                forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
     }
 
     private FeedSurfaceMediator createMediator() {

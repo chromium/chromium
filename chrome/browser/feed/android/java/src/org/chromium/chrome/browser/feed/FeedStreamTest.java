@@ -154,6 +154,8 @@ public class FeedStreamTest {
     private WebFeedFollowUpdate.Callback mWebFeedFollowUpdateCallback;
     @Mock
     private FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
+    @Mock
+    private Stream.StreamsMediator mStreamsMediator;
 
     @Rule
     public JniMocker mocker = new JniMocker();
@@ -190,7 +192,7 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null, mFeedContentFirstLoadWatcher);
+                /*helpAndFeedbackLauncher=*/null, mFeedContentFirstLoadWatcher, mStreamsMediator);
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
@@ -1010,7 +1012,7 @@ public class FeedStreamTest {
                 /* isInterestFeed= */ StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
         mFeedStream = stream;
         createHeaderContent(1);
         bindToView();
@@ -1031,7 +1033,7 @@ public class FeedStreamTest {
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
         assertNull(stream.getUnreadContentObserverForTest());
     }
 
@@ -1046,7 +1048,7 @@ public class FeedStreamTest {
                 /* isInterestFeed= */ StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
         assertNotNull(stream.getUnreadContentObserverForTest());
         FeatureList.setTestFeatures(null);
     }
@@ -1062,7 +1064,7 @@ public class FeedStreamTest {
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
         assertNotNull(stream.getUnreadContentObserverForTest());
         FeatureList.setTestFeatures(null);
     }
@@ -1078,7 +1080,7 @@ public class FeedStreamTest {
                 StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
         assertFalse(stream.supportsOptions());
     }
 
@@ -1093,7 +1095,7 @@ public class FeedStreamTest {
                 StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
         assertFalse(stream.supportsOptions());
     }
 
@@ -1108,7 +1110,7 @@ public class FeedStreamTest {
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
         assertFalse(stream.supportsOptions());
     }
 
@@ -1123,7 +1125,7 @@ public class FeedStreamTest {
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
         assertTrue(stream.supportsOptions());
     }
 

@@ -696,10 +696,11 @@ public class FeedSurfaceCoordinator
      * @param kind Kind of stream being created.
      * @return The FeedStream created.
      */
-    FeedStream createFeedStream(@StreamKind int kind) {
+    FeedStream createFeedStream(@StreamKind int kind, Stream.StreamsMediator streamsMediator) {
         return new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 mIsPlaceholderShownInitially, mWindowAndroid, mShareSupplier, kind, this,
-                mActionDelegate, mHelpAndFeedbackLauncher, this /* FeedContentFirstLoadWatcher */);
+                mActionDelegate, mHelpAndFeedbackLauncher, this /* FeedContentFirstLoadWatcher */,
+                streamsMediator);
     }
 
     private void setHeaders(List<View> headerViews) {

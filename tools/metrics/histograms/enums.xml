@@ -42283,6 +42283,9 @@ Called by update_permissions_policy_enum.py.-->
       label="User selected the 'Group by Publisher' Following feed sort type."/>
   <int value="60"
       label="User selected the 'Sort by Latest' Following feed sort type."/>
+  <int value="61"
+      label="After following an active web feed, the user tapped on 'got it'
+             to close the post-follow help dialog."/>
 </enum>
 
 <enum name="FeedUserCommandType">
