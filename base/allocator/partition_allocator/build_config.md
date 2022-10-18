@@ -63,18 +63,6 @@ Does nothing special when value is `"none"`. Enables
   with `use_partition_alloc` (see above).
 ***
 
-### `use_backup_ref_ptr`
-
-Specifies `BackupRefPtr` as the implementation for `base::raw_ptr<T>`
-when `true`. See the [MiraclePtr documentation][miracleptr-doc].
-
-*** aside
-BRP requires support from PartitionAlloc, so `use_backup_ref_ptr` also
-compiles the relevant code into PA. However, this arg does _not_ govern
-whether or not BRP is actually enabled at runtime - that functionality
-is controlled by a Finch flag.
-***
-
 ## Note: Component Builds
 
 When working on PartitionAlloc, know that `is_debug` defaults to

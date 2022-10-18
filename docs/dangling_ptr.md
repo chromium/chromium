@@ -36,13 +36,12 @@ is_debug = false
 dcheck_always_on = true
 enable_backup_ref_ptr_support = true
 enable_dangling_raw_ptr_checks = true
-use_backup_ref_ptr = true
 ```
 
 We want to emphasize that `is_debug = false` is important. It is a common
 mistake to set it to true, which in turn turns on component builds, which
-disabled PartitionAlloc-Everywhere. `use_backup_ref_ptr = true` can't be used
-without PartitionAlloc-Everywhere, leading to error:
+disabled PartitionAlloc-Everywhere. `enable_backup_ref_ptr_support = true` can't
+be used without PartitionAlloc-Everywhere, leading to error:
 ```
 ERROR at //base/allocator/allocator.gni:126:3: Assertion failed.
   assert(!use_backup_ref_ptr || use_allocator == "partition",

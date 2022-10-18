@@ -30,8 +30,6 @@ declare_args() {
 }
 
 declare_args() {
-  # Set use_backup_ref_ptr true to use BackupRefPtr (BRP) as the implementation
-  # of raw_ptr<T>, and enable PartitionAlloc support for it.
   enable_backup_ref_ptr_support =
       enable_backup_ref_ptr_support_default && use_allocator == "partition"
 
