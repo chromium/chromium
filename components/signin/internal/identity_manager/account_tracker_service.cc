@@ -160,6 +160,18 @@ void GetString(const base::Value::Dict& dict,
   }
 }
 
+std::string AccountsToString(
+    const std::map<CoreAccountId, AccountInfo>& accounts) {
+  std::string result = "[";
+  for (const auto& entry : accounts) {
+    result += "{" + entry.first.ToString() + ": {" +
+              entry.second.account_id.ToString() + "," + entry.second.email +
+              "," + entry.second.gaia + "}";
+  }
+  result += ']';
+  return result;
+}
+
 }  // namespace
 
 AccountTrackerService::AccountTrackerService() {
@@ -486,7 +498,8 @@ AccountTrackerService::ComputeNewMigrationState() const {
 }
 
 void AccountTrackerService::SetMigrationState(AccountIdMigrationState state) {
-  DCHECK(state != MIGRATION_DONE || AreAllAccountsMigrated());
+  DCHECK(state != MIGRATION_DONE || AreAllAccountsMigrated())
+      << "state: " << state << ", accounts = " << AccountsToString(accounts_);
   pref_service_->SetInteger(prefs::kAccountIdMigrationState, state);
 }
 
@@ -684,12 +697,15 @@ void AccountTrackerService::LoadFromPrefs() {
       MigrateToGaiaId();
     }
   }
-  DCHECK(GetMigrationState() != MIGRATION_DONE || AreAllAccountsMigrated());
+  DCHECK(GetMigrationState() != MIGRATION_DONE || AreAllAccountsMigrated())
+      << "state: " << (int)GetMigrationState()
+      << ", accounts = " << AccountsToString(accounts_);
 
   UMA_HISTOGRAM_ENUMERATION("Signin.AccountTracker.GaiaIdMigrationState",
                             GetMigrationState(), NUM_MIGRATION_STATES);
 #else
-  DCHECK(AreAllAccountsMigrated());
+  DCHECK(AreAllAccountsMigrated())
+      << "accounts = " << AccountsToString(accounts_);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   UMA_HISTOGRAM_COUNTS_100("Signin.AccountTracker.CountOfLoadedAccounts",
