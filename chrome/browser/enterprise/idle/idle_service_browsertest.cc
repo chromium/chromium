@@ -11,9 +11,11 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/idle/idle_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -91,6 +93,7 @@ class IdleServiceTest : public InProcessBrowserTest {
     scoped_idle_provider_ =
         std::make_unique<ui::test::ScopedIdleProviderForTest>(
             std::move(time_provider));
+    IdleService::SetDialogTimeoutForTesting(base::Milliseconds(0));
   }
 
   void TearDownOnMainThread() override {

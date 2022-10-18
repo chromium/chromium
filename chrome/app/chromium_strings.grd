@@ -1328,6 +1328,26 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_DESKTOP_MEDIA_PICKER_TITLE_WEB_CONTENTS_ONLY" desc="Title for the window picker dialog shown when desktop capture of a tab is requested by an app.">
         Share a Chromium tab
       </message>
+      <!-- Idle timeout dialog. -->
+      <if expr="not is_android and not is_chromeos">
+        <message name="IDS_IDLE_TIMEOUT_TITLE" desc="Title of the Idle Timeout dialog, warning the user that their windows are about to close.">
+          Chromium is inactive
+        </message>
+        <message name="IDS_IDLE_TIMEOUT_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that all browsers are about to close automatically.">
+          {COUNT, plural,
+          =1 {Your administrator has configured Chromium to close if it is idle for more than 1 minute.}
+          other {Your administrator has configured Chromium to close if it is idle for more than # minutes.}}
+        </message>
+        <message name="IDS_IDLE_TIMEOUT_COUNTDOWN" desc="In the Idle Timeout dialog, a countdown that ticks every second. When it reaches zero, Chrome closes all browsers.">
+          {0, plural,
+          =0 {Chromium will close now.}
+          =1 {Chromium will close in 1 second.}
+          other {Chromium will close in # seconds.}}
+        </message>
+        <message name="IDS_IDLE_DISMISS_BUTTON" desc="Button label in the Idle Timeout dialog, this button dismisses the dialog and prevents browsers from closing automatically.">
+          Continue using Chromium
+        </message>
+      </if>
       <!-- User happiness tracking survey UI -->
       <if expr="not is_android">
         <message name="IDS_HATS_BUBBLE_TITLE" translateable="false" desc="The title of Happiness Tracking Survey's invitation banner, it invites users to take a survey">

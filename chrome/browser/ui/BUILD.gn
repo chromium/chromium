@@ -5448,6 +5448,7 @@ static_library("ui") {
 
     if (!is_chromeos) {
       sources += [
+        "idle_dialog.h",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.h",
         "views/frame/opaque_browser_frame_view.cc",
@@ -5456,6 +5457,8 @@ static_library("ui") {
         "views/frame/opaque_browser_frame_view_layout.h",
         "views/frame/opaque_browser_frame_view_layout_delegate.cc",
         "views/frame/opaque_browser_frame_view_layout_delegate.h",
+        "views/policy/idle_dialog_view.cc",
+        "views/policy/idle_dialog_view.h",
         "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
         "views/sharing_hub/sharing_hub_bubble_view_impl.h",
       ]

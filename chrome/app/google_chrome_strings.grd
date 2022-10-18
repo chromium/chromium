@@ -1421,6 +1421,29 @@ Permissions you've already given to websites and apps may apply to this account.
         Share a Chrome tab
       </message>
 
+    <!-- Idle timeout dialog. -->
+    <if expr="not is_android and not is_chromeos">
+      <message name="IDS_IDLE_TIMEOUT_TITLE" desc="TODO">
+        Chrome is inactive
+      </message>
+      <!-- TODO(crbug.com/1326685): Show different text for long durations.
+           e.g., say "4 hours" instead of "240 minutes". -->
+      <message name="IDS_IDLE_TIMEOUT_BODY" desc="TODO">
+        {COUNT, plural,
+          =1 {Your administrator has configured Chrome to close if it is idle for more than 1 minute.}
+          other {Your administrator has configured Chrome to close if it is idle for more than # minutes.}}
+      </message>
+      <message name="IDS_IDLE_TIMEOUT_COUNTDOWN" desc="TODO">
+        {0, plural,
+          =0 {Chrome will close now.}
+          =1 {Chrome will close in 1 second.}
+          other {Chrome will close in # seconds.}}
+      </message>
+      <message name="IDS_IDLE_ACCEPT_BUTTON" desc="TODO">
+        Continue using Chrome
+      </message>
+    </if>
+
       <!-- User happiness tracking survey UI -->
       <if expr="not is_android">
         <message name="IDS_HATS_BUBBLE_TITLE" translateable="false" desc="The title of Happiness Tracking Survey's invitation banner, it invites users to take a survey">

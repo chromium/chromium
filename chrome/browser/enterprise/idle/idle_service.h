@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_IDLE_IDLE_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_IDLE_IDLE_SERVICE_H_
 
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -27,6 +28,8 @@ class IdleService : public KeyedService {
 
   // KeyedService:
   void Shutdown() override;
+
+  static void SetDialogTimeoutForTesting(base::TimeDelta dialog_timeout);
 
  private:
   // Called when the IdleProfileCloseTimeout policy changes, via the

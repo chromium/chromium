@@ -6,20 +6,22 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
-#include "base/time/time.h"
 #include "chrome/browser/enterprise/idle/idle_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/idle_dialog.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/idle_polling_service.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -67,6 +69,10 @@ class IdleRegistry : public ui::IdlePollingService::Observer {
       polling_service_observation_.Reset();
   }
 
+  void SetDialogTimeoutForTesting(base::TimeDelta dialog_timeout) {
+    dialog_timeout_ = dialog_timeout;
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<IdleRegistry>;
 
@@ -78,6 +84,8 @@ class IdleRegistry : public ui::IdlePollingService::Observer {
   // ui::IdlePollingService::Observer:
   void OnIdleStateChange(
       const ui::IdlePollingService::State& polled_state) override {
+    base::flat_set<Profile*> profiles_to_close;
+
     for (auto& [profile, state] : profiles_) {
       if (polled_state.idle_time < state.threshold)
         continue;  // Profile is not idle.
@@ -86,20 +94,83 @@ class IdleRegistry : public ui::IdlePollingService::Observer {
       if (!ProfileHasBrowsers(profile))
         continue;  // Can't close a profile with no browsers...
 
-      // Profile just became idle. Trigger idle logic.
-      closing_profiles_.insert(profile->GetPath());
-      should_open_profile_picker_ = true;
+      // Profile just became idle.
+      profiles_to_close.insert(profile);
+    }
 
-      // Close all browsers for this profile. If there are onbeforeunload
-      // handlers, the operation can be aborted (by the user or by JavaScript).
-      // This runs OnCloseAborted(), and we don't show the profile picker.
+    if (!profiles_to_close.empty()) {
+      // One or more profiles just became idle. Show the dialog, and start the
+      // 30s timer.
+
+      // TODO(nicolaso): Don't show it every time, i.e. if it's already visible
+      // from a previous profile becoming idle right before this one. Running
+      // this code multiple times like that could cause race conditions/weird
+      // behaviour.
+      //
+      // ... but as currently written, it's impossible to reach that state. The
+      // dialog only shows for 30s, and there's at least 60s between 2 different
+      // profiles triggering idle state non-simultaneously.
+      //
+      // For now, this CHECK() should be enough.
+      DCHECK(closing_profiles_.empty());
+
+      should_open_profile_picker_ = true;
+      for (Profile* profile : profiles_to_close)
+        closing_profiles_.insert(profile->GetPath());
+
+      dialog_ = IdleDialog::Show(
+          dialog_timeout_, profiles_[*profiles_to_close.begin()].threshold,
+          base::BindRepeating(&IdleRegistry::OnDialogClosedByUser,
+                              base::Unretained(this)));
+      dialog_timer_.Start(FROM_HERE, dialog_timeout_,
+                          base::BindOnce(&IdleRegistry::OnDialogExpired,
+                                         base::Unretained(this)));
+    }
+  }
+
+  // Abort the close operation.
+  void OnDialogClosedByUser() {
+    closing_profiles_.clear();
+    should_open_profile_picker_ = false;
+    if (dialog_)
+      dialog_->Close();
+    dialog_.reset();
+    dialog_timer_.Stop();
+  }
+
+  // Perform the close operation, then show the profile picker in the callback
+  // to CloseAllBrowsersWithProfile().
+  void OnDialogExpired() {
+    DCHECK(!closing_profiles_.empty());
+    DCHECK(should_open_profile_picker_);
+
+    if (dialog_)
+      dialog_->Close();
+    dialog_.reset();
+
+    for (auto& [profile, state] : profiles_) {
+      if (!base::Contains(closing_profiles_, profile->GetPath()))
+        continue;
+      if (!ProfileHasBrowsers(profile)) {
+        // Can't close a profile with no browsers. The browsers may have been
+        // closed programmatically (e.g. by an extension) during the 30s delay.
+        closing_profiles_.erase(profile->GetPath());
+        continue;
+      }
+      // TODO(crbug.com/1316551): Get customer feedback on whether
+      // skip_beforeunload should be true or false.
       BrowserList::CloseAllBrowsersWithProfile(
           profile,
           base::BindRepeating(&IdleRegistry::OnCloseSuccess,
                               base::Unretained(this)),
           base::BindRepeating(&IdleRegistry::OnCloseAborted,
                               base::Unretained(this)),
-          false);
+          /*skip_beforeunload=*/true);
+    }
+
+    if (closing_profiles_.empty()) {
+      // If no profile had any browsers, then we're not actually closing.
+      should_open_profile_picker_ = false;
     }
   }
 
@@ -107,8 +178,7 @@ class IdleRegistry : public ui::IdlePollingService::Observer {
     // TODO(crbug.com/1316551): What should we do if the profile's been "closed"
     // and *then* a new window is created?
     closing_profiles_.erase(profile_dir);
-    // The user (or JavaScript) aborted the close. Don't show the profile
-    // picker.
+    // Something aborted the close. Don't show the profile picker.
     should_open_profile_picker_ = false;
   }
 
@@ -117,10 +187,6 @@ class IdleRegistry : public ui::IdlePollingService::Observer {
     // TODO(crbug.com/1316551): Reset `closing_profiles_` and
     // `should_open_profile_picker_` if something weird happens (e.g. new
     // browser window is created by an extension).
-    //
-    // TODO(crbug.com/1316551): Technically, a policy refresh could cause the
-    // IdleProfileCloseTimeout policy to change its value while browsers are
-    // closing. We should try to do something sensible in those cases.
     if (profiles_.empty())
       return;
     if (!base::Contains(closing_profiles_, profile_dir))
@@ -137,18 +203,25 @@ class IdleRegistry : public ui::IdlePollingService::Observer {
     }
   }
 
-  // Set of profiles being closed right now. Filled in when idle logic triggers,
+  // Set of profiles being closed right now. Filled in when idle logic triggers
   // and becomes empty again when:
   //
   // (a) All idle browsers finish closing.
-  // (b) The user aborts closing by clicking "don't leave" on an in-progress
-  //     form.
-  std::set<base::FilePath> closing_profiles_;
+  // (b) The user aborts closing by dismissing the dialog.
+  base::flat_set<base::FilePath> closing_profiles_;
   // Whether to open the profile picker after the last profile in
   // `closing_profiles_` finishes closing.
   bool should_open_profile_picker_ = false;
 
   std::map<Profile*, ProfileState> profiles_;
+
+  // Dialog shown for 30s before doing the close operation. If the user
+  // dismisses it or clicks "Continue using Chrome", the idle timer resets to
+  // 0s.
+  base::WeakPtr<views::Widget> dialog_;
+  // 30s timer for |dialog_|.
+  base::OneShotTimer dialog_timer_;
+  base::TimeDelta dialog_timeout_ = base::Seconds(30);
 
   base::ScopedObservation<ui::IdlePollingService,
                           ui::IdlePollingService::Observer>
@@ -175,6 +248,11 @@ IdleService::~IdleService() {
 
 void IdleService::Shutdown() {
   IdleRegistry::GetInstance().Remove(profile_);
+}
+
+void IdleService::SetDialogTimeoutForTesting(base::TimeDelta dialog_timeout) {
+  IdleRegistry::GetInstance().SetDialogTimeoutForTesting(  // IN-TEST
+      dialog_timeout);
 }
 
 void IdleService::OnIdleProfileCloseTimeoutPrefChanged() {
