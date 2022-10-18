@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
-#include "components/exo/wayland/clients/simple.h"
 
 namespace switches {
 // Specifies if VSync timing updates should be logged on the output.

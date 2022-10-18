@@ -7,7 +7,6 @@
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/shell_surface.h"
-#include "components/exo/shell_surface_util.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "ui/events/base_event_utils.h"

@@ -8,11 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/test/perf_time_logger.h"
-#include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "base/timer/elapsed_timer.h"
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -23,8 +18,11 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/perf_time_logger.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"

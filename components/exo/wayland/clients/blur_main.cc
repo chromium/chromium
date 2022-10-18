@@ -12,7 +12,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
-#include "components/exo/wayland/clients/blur.h"
 
 namespace switches {
 
