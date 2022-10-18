@@ -2065,6 +2065,27 @@ crbug.com/248894 external/wpt/web-animations/responsive/textIndent.html [ Failur
 
 crbug.com/1364304 external/wpt/css/css-variables/css-variable-change-style-001.html [ Failure Pass ]
 
+# nth-* selectors
+crbug.com/304163 external/wpt/css/selectors/nth-child-and-nth-last-child.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-classname.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-complex-selector.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-compound-selector.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-of-tagname.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-specificity-1.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-specificity-2.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-specificity-3.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-child-specificity-4.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-of-classname.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-of-complex-selector.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-of-compound-selector.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-of-style-sharing-1.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-of-style-sharing-2.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-of-tagname.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-specificity-1.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-specificity-2.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-specificity-3.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/nth-last-child-specificity-4.html [ Failure ]
+
 # ====== Style team owned tests to here ======
 
 # Failing WPT html/semantics/* tests. Not all have been investigated.
@@ -3336,25 +3357,6 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/css-fonts/rlh-in-monospace.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-and-nth-last-child.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-classname.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-complex-selector.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-compound-selector.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-of-tagname.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-specificity-1.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-specificity-2.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-specificity-3.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-child-specificity-4.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-of-classname.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-of-complex-selector.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-of-compound-selector.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-of-style-sharing-1.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-of-style-sharing-2.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-of-tagname.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-specificity-1.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-specificity-2.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-specificity-3.html [ Failure ]
-crbug.com/626703 external/wpt/css/selectors/nth-last-child-specificity-4.html [ Failure ]
 crbug.com/626703 external/wpt/editing/crashtests/inserthorizontalrule-in-textarea-in-editor-and-undo-on-error-events.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/non-fully-active.html [ Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/screen-orientation/lock-basic.html [ Failure ]
