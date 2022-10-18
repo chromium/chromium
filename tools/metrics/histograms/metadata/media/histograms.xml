@@ -493,14 +493,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError.FormatRelated"
-    enum="AudioStreamFormatRelatedInitError" expires_after="2022-10-17">
-  <owner>guidou@chromium.org</owner>
+    enum="AudioStreamFormatRelatedInitError" expires_after="2023-10-14">
+  <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <summary>
     Errors from IAudioClient::Initialize() in
     WASAPIAudioInputStream::InitializeAudioEngine on Windows that are related to
     the audio format. Each error is split by whether format conversion was used
-    or not.
+    or not. Warning: this histogram was expired from 2022-10-17 to 2022-10-18;
+    data may be missing.
   </summary>
 </histogram>
 
@@ -571,13 +572,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CoreAudioDispatchOverrideLookupEvent"
-    enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2022-10-09">
-  <owner>guidou@chromium.org</owner>
+    enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2023-10-14">
+  <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <summary>
     Logged whenever the CoreAudio dispatch override hotfix needs to look up the
     calling function using dladdr(). Once ResumeIO and PauseIO have been
-    identified, no more lookups should be performed during the session.
+    identified, no more lookups should be performed during the session. Warning:
+    this histogram was expired from 2022-10-09 to 2022-10-18; data may be
+    missing.
   </summary>
 </histogram>
 
