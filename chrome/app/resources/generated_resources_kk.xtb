@@ -8465,7 +8465,7 @@
 <translation id="9037054491984310631">"<ph name="DEVICE" />" деп аталатын Bluetooth құрылғысына қосылды.</translation>
 <translation id="9037640663275993951">Құрылғыға рұқсат берілмеген.</translation>
 <translation id="9037818663270399707">Барлық желі трафигі үшін жеке байланыс жасалмайды.</translation>
-<translation id="9037965129289936994">Түпнұсқаны көрсету</translation>
+<translation id="9037965129289936994">Түпнұсқасын көрсету</translation>
 <translation id="9038489124413477075">Атаусыз қалта</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Сізде бір мүмкіндік қалды.}other{Сізде # мүмкіндік қалды.}}</translation>
 <translation id="9040473193163777637">ChromeOS-ке арналған ендірілген ChromeVox экранды оқу құралын іске қосқыңыз келе ме? Қосқыңыз келсе, екі дыбыс деңгейі пернесін бес секунд басып тұрыңыз.</translation>
@@ -8570,7 +8570,7 @@
 <translation id="9131487537093447019">Bluetooth құрылғыларына хабар жіберу және алу.</translation>
 <translation id="9134066738478820307">Сайттар қорғалған мазмұнды ойнату үшін идентификаторларды пайдалана алады.</translation>
 <translation id="913411432238655354">Қосылған кезде қолданбаларды қалпына келтіру</translation>
-<translation id="9137013805542155359">Түпнұсқаны көрсету</translation>
+<translation id="9137013805542155359">Түпнұсқасын көрсету</translation>
 <translation id="9137157311132182254">Таңдалған іздеу жүйесі</translation>
 <translation id="9137248913990643158">Қолданбаны пайдаланбас бұрын Chrome жүйесін іске қосып, оған кіріңіз.</translation>
 <translation id="9137916601698928395">Сілтемені <ph name="USER" /> ретінде ашу</translation>

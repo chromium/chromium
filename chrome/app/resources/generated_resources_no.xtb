@@ -704,7 +704,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1645004815457365098">Ukjent kilde</translation>
 <translation id="1645516838734033527">Smart Lock krever en skjermlås på telefonen for å holde <ph name="DEVICE_TYPE" />-enheten trygg.</translation>
 <translation id="1646982517418478057">Skriv inn et passord for å kryptere dette sertifikatet.</translation>
-<translation id="1647408325348388858">Vil du åpne og redigere <ph name="FILE_NAME" /> i dette nettprogrammet?</translation>
+<translation id="1647408325348388858">Vil du åpne og redigere <ph name="FILE_NAME" /> i denne nettappen?</translation>
 <translation id="1648528859488547844">Bruk Wifi eller mobilnettverk til å fastslå posisjonen</translation>
 <translation id="164936512206786300">Koble fra Bluetooth-enheten</translation>
 <translation id="1651008383952180276">Du må skrive inn den samme passordfrasen to ganger</translation>
@@ -808,7 +808,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1744060673522309905">Kan ikke knytte enheten til domenet. Kontrollér at du ikke har overskredet antall enheter som du kan legge til.</translation>
 <translation id="1744108098763830590">bakgrunnsside</translation>
 <translation id="1745732479023874451">Administrer kontakter</translation>
-<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Vil du åpne og redigere # filer i dette nettprogrammet?}}</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Vil du åpne og redigere # filer i denne nettappen?}}</translation>
 <translation id="1748563609363301860">Du kan lagre dette passordet i Google-kontoen din eller bare på denne enheten</translation>
 <translation id="1749733017156547309">Et passord kreves</translation>
 <translation id="1750172676754093297">Sikkerhetsnøkkelen din kan ikke lagre fingeravtrykk</translation>
@@ -7793,7 +7793,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8374243500935816406">Ikke la nettsteder administrere vinduer på alle skjermene dine</translation>
 <translation id="8376137163494131156">Fortell oss hva som skjer med Google Cast.</translation>
 <translation id="8376384591331888629">Inkludert informasjonskapsler fra tredjeparter på dette nettstedet</translation>
-<translation id="8376451933628734023">Hvis dette nettprogrammet prøver å lure deg til å tro at det er en annen app, må du avinstallere det.</translation>
+<translation id="8376451933628734023">Hvis denne nettappen prøver å lure deg til å tro at det er en annen app, må du avinstallere det.</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>
 <translation id="8379156816349755485">Ved pålogging lagres et unikt autentiseringstoken som blir brukt for alle fremtidige, kvalifiserte nedlastinger.</translation>
 <translation id="8379878387931047019">Denne enheten støtter ikke den typen sikkerhetsnøkkel som kreves av dette nettstedet</translation>
