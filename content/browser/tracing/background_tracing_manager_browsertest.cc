@@ -47,7 +47,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/zlib/zlib.h"
 
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 // Used by PerfettoSystemBackgroundScenario, nogncheck is required because this
 // is only included and used on Android.
 #include "services/tracing/perfetto/system_test_utils.h"  // nogncheck
@@ -112,7 +112,7 @@ std::unique_ptr<tracing::MockConsumer> CreateDefaultConsumer(
 }
 }  // namespace
 }  // namespace content
-#endif  // BUILDFLAG(IS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 using base::trace_event::TraceLog;
 
@@ -2076,7 +2076,10 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ReceiveCallback) {
   EXPECT_FALSE(checker.stats().has_interned_log_messages);
 }
 
-#if BUILDFLAG(IS_POSIX)
+// In SDK build, SystemProducer is not used. System tracing is done via the
+// tracing muxer, so this test's setup is irrelevant.
+// TODO(khokhlov): Figure out a way to test system tracing in SDK build.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                        PerfettoSystemBackgroundScenarioDefaultName) {
   // This test will ensure that a BackgroundTracing scenario set to SYSTEM mode
@@ -2214,6 +2217,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   // received we won't see any packets and |received_packets()| will be 0.
   EXPECT_LT(0u, system_consumer->received_packets());
 }
-#endif  // BUILDFLAG(IS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace content
