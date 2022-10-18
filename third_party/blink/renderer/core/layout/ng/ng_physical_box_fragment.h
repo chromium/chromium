@@ -409,7 +409,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const NGPhysicalBoxFragment&,
-                                    bool check_same_block_size) const;
+                                    bool check_same_block_size,
+                                    bool check_no_fragmentation) const;
 #endif
 
   const FrameSetLayoutData* GetFrameSetLayoutData() const {

@@ -492,9 +492,13 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     // We need to update the cached layout result, as the call to
     // RecalcLayoutOverflow() might have modified it.
     cached_layout_result = GetCachedLayoutResult(break_token);
+
 #if DCHECK_IS_ON()
+    // We haven't actually performed simplified layout. Skip the checks for no
+    // fragmentation, since it's okay to be fragmented in this case.
     cloned_cached_layout_result->CheckSameForSimplifiedLayout(
-        *cached_layout_result);
+        *cached_layout_result, /* check_same_block_size */ true,
+        /* check_no_fragmentation*/ false);
 #endif
   }
 

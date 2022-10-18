@@ -463,7 +463,16 @@ const NGLayoutResult* NGBlockNode::Layout(
         // the deal.
         layout_result =
             NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
-        StoreResultInLayoutBox(layout_result, break_token);
+        const auto& new_fragment =
+            To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+        // If we have fragment items, and we're not done (more fragments to
+        // follow), be sure to miss the cache for any subsequent fragments, lest
+        // finalization be missed (which could cause trouble for NGInlineCursor
+        // when walking the items).
+        bool clear_trailing_results =
+            new_fragment.BreakToken() && new_fragment.HasItems();
+        StoreResultInLayoutBox(layout_result, break_token,
+                               clear_trailing_results);
       }
       return layout_result;
     }
