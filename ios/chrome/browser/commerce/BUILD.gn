@@ -45,6 +45,7 @@ static_library("shopping_service") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/optimization_guide",
+    "//ios/chrome/browser/power_bookmarks",
     "//ios/chrome/browser/signin:signin",
     "//ios/web",
     "//services/network/public/cpp",

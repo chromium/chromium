@@ -2,6 +2,7 @@ include_rules = [
   "+components/bookmarks/browser",
   "+components/commerce/core/proto",
   "+components/session_proto_db",
+  "+ios/chrome/browser/power_bookmarks"
 ]
 
 specific_include_rules = {
