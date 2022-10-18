@@ -632,6 +632,10 @@ void HistoryMenuBridge::OnProfileMarkedForPermanentDeletion(Profile* profile) {
   ResetMenu();
 }
 
+void HistoryMenuBridge::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
+}
+
 void HistoryMenuBridge::OnProfileWillBeDestroyed() {
   profile_ = nullptr;
   history_service_observation_.Reset();

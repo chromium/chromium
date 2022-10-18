@@ -147,6 +147,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // ProfileManagerObserver:
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // Looks up an NSMenuItem in the |menu_item_map_| and returns the
   // corresponding HistoryItem.
