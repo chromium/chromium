@@ -33,7 +33,14 @@ class GeolocationChromeOsWifiDataProviderTest : public testing::Test {
     provider_.reset();
   }
 
-  bool GetAccessPointData() { return provider_->GetAccessPointData(&ap_data_); }
+  bool GetAccessPointData() {
+    auto wifi_data = provider_->GetWifiDataForTesting();
+    if (!wifi_data) {
+      return false;
+    }
+    ap_data_ = std::move(wifi_data->access_point_data);
+    return true;
+  }
 
   void AddAccessPoints(int ssids, int aps_per_ssid) {
     for (int i = 0; i < ssids; ++i) {

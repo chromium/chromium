@@ -8,8 +8,11 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/geolocation/wifi_polling_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -27,6 +30,8 @@ class WifiDataProviderChromeOs : public WifiDataProvider {
   bool GetData(WifiData* data) override;
   void ForceRescan() override;
 
+  absl::optional<WifiData> GetWifiDataForTesting();
+
  private:
   friend class GeolocationChromeOsWifiDataProviderTest;
   ~WifiDataProviderChromeOs() override;
@@ -34,12 +39,8 @@ class WifiDataProviderChromeOs : public WifiDataProvider {
   // Returns ownership.
   std::unique_ptr<WifiPollingPolicy> CreatePollingPolicy();
 
-  // NetworkHandler thread
-  void DoWifiScanTaskOnNetworkHandlerThread();
-
-  // Client thread
-  void DidWifiScanTaskNoResults();
-  void DidWifiScanTask(const WifiData& new_data);
+  void DoWifiScanTask();
+  void OnWifiScanTaskComplete(absl::optional<WifiData> wifi_data);
 
   // Will schedule a scan; i.e. enqueue DoWifiScanTask deferred task.
   void ScheduleNextScan(int interval);
@@ -50,20 +51,21 @@ class WifiDataProviderChromeOs : public WifiDataProvider {
   // Will schedule stopping of the scanning process.
   void ScheduleStop();
 
-  // Get access point data from chromeos.
-  bool GetAccessPointData(WifiData::AccessPointDataSet* data);
-
-  // The latest wifi data. (client thread)
+  // The latest Wi-Fi data.
   WifiData wifi_data_;
 
-  // Whether we have started the data provider. (client thread)
+  // Whether we have started the data provider.
   bool started_ = false;
 
-  // Whether we've successfully completed a scan for WiFi data. (client thread)
+  // Whether we've successfully completed a scan for Wi-Fi data.
   bool is_first_scan_complete_ = false;
 
-  // Whether our first scan was delayed due to polling policy. (client thread)
+  // Whether our first scan was delayed due to polling policy.
   bool first_scan_delayed_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<WifiDataProviderChromeOs> weak_factory_{this};
 };
 
 }  // namespace device
