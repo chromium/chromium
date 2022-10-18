@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,7 +50,8 @@
           instructionSteps:item.instructionSteps
           hasPrimaryAction:item.hasPrimaryAction
                       type:item.type
-              learnMoreURL:item.learnMoreURL];
+              learnMoreURL:item.learnMoreURL
+        hasLearnMoreAction:item.learnMoreURL.is_valid()];
     self.viewController.actionHandler = actionHandler;
     self.viewController.delegate = self;
   }

@@ -32,7 +32,7 @@
             <key>PrimaryActionTitle</key>
             <string></string>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome</string>
+            <string>https://support.google.com/chrome/?p=bling_use_tabs</string>
         </dict>
         <dict>
             <key>Type</key>
@@ -61,7 +61,7 @@
             <key>PrimaryActionTitle</key>
             <string></string>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome</string>
+            <string></string>
         </dict>
         <dict>
             <key>Type</key>
@@ -91,7 +91,7 @@
             <key>PrimaryActionTitle</key>
             <string></string>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome</string>
+            <string>https://support.google.com/chrome/?p=bling_share_highlight</string>
         </dict>
         <dict>
             <key>Type</key>
@@ -121,7 +121,7 @@
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_BUTTON_TITLE</string>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome</string>
+            <string>https://support.google.com/chrome/?p=bling_add_password</string>
         </dict>
     </array>
    <key>ChromeTips</key>
@@ -154,7 +154,7 @@
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_BUTTON_TITLE</string>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome</string>
+            <string>https://support.google.com/chrome/?p=bling_default_browser</string>
         </dict>
         <dict>
             <key>Type</key>
@@ -183,7 +183,7 @@
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_BUTTON_TITLE</string>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome</string>
+            <string>https://support.google.com/chrome/?p=bling_saved_passwords</string>
         </dict>
         <dict>
             <key>Type</key>
@@ -213,7 +213,7 @@
             <key>PrimaryActionTitle</key>
             <string></string>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome</string>
+            <string>https://support.google.com/chrome/?p=bling_autofill</string>
         </dict>
     </array>
 </dict>
