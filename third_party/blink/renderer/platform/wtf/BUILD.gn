@@ -123,6 +123,7 @@ component("wtf") {
     "text/case_map.h",
     "text/character_names.h",
     "text/character_visitor.h",
+    "text/copy_lchars_from_uchar_source.h",
     "text/integer_to_string_conversion.h",
     "text/line_ending.cc",
     "text/line_ending.h",
@@ -239,7 +240,7 @@ component("wtf") {
   }
 
   if (!is_mac && (current_cpu == "x86" || current_cpu == "x64")) {
-    sources += [ "text/ascii_fast_path.cc" ]
+    sources += [ "text/copy_lchars_from_uchar_source.cc" ]
   }
 
   if (is_win) {
