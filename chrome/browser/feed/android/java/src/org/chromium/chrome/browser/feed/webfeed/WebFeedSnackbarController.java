@@ -140,8 +140,7 @@ public class WebFeedSnackbarController {
                 mWebFeedDialogCoordinator.initialize(mContext, mFeedLauncher, title, isActive);
             }
             mWebFeedDialogCoordinator.showDialog();
-        } else if (followFromFeed == StreamKind.UNKNOWN) {
-            // TODO(b/243676323): The snackbar should show for all but in-For-You-feed follows.
+        } else if (followFromFeed != StreamKind.FOLLOWING) {
             SnackbarController snackbarController = new PinnedSnackbarController() {
                 @Override
                 public void onAction(Object actionData) {

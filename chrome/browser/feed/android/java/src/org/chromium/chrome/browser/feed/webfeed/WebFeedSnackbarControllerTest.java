@@ -159,12 +159,26 @@ public final class WebFeedSnackbarControllerTest {
     }
 
     @Test
-    public void showPostSuccessfulFollowHelp_NoSnackbar_FromForYouFeed() {
+    public void showPostSuccessfulFollowHelp_ShowsSnackbar_FromForYouFeed() {
         mWebFeedSnackbarController.showPostSuccessfulFollowHelp(sTitle, true, StreamKind.FOR_YOU);
 
-        verify(mSnackbarManager, times(0)).showSnackbar(any());
         assertFalse("Dialog should not be showing.", mDialogManager.isShowing());
-        // TODO(b/243676323): the snackbar should be shown when Following from the For You feed.
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+        assertEquals("Snackbar should be for successful follow.",
+                Snackbar.UMA_WEB_FEED_FOLLOW_SUCCESS, snackbar.getIdentifierForTesting());
+        assertEquals("Snackbar message should be for successful follow with title from metadata.",
+                mContext.getString(R.string.web_feed_follow_success_snackbar_message,
+                        getSuccessfulFollowResult().metadata.title),
+                snackbar.getTextForTesting());
+    }
+
+    @Test
+    public void showPostSuccessfulFollowHelp_NoSnackbar_FromFollowingFeed() {
+        mWebFeedSnackbarController.showPostSuccessfulFollowHelp(sTitle, true, StreamKind.FOLLOWING);
+
+        assertFalse("Dialog should not be showing.", mDialogManager.isShowing());
+        verify(mSnackbarManager, times(0)).showSnackbar(any());
     }
 
     @Test
