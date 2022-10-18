@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -22,6 +23,9 @@ namespace {
 const int kPrivacyIndicatorsViewExpandedShorterSideSize = 24;
 const int kPrivacyIndicatorsViewExpandedLongerSideSize = 50;
 const int kPrivacyIndicatorsViewSize = 8;
+
+constexpr char kPrivacyIndicatorsShowTypeHistogramName[] =
+    "Ash.PrivacyIndicators.ShowType";
 
 // Get the expected size in expand animation, given the animation value.
 int GetExpectedSizeInExpandAnimation(double progress) {
@@ -467,6 +471,51 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
                                     /*is_camera_used=*/false,
                                     /*is_microphone_used=*/false);
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+}
+
+TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
+  auto check_histogram_record = [](bool is_camera_used, bool is_microphone_used,
+                                   bool is_screen_sharing,
+                                   PrivacyIndicatorsTrayItemView* view,
+                                   PrivacyIndicatorsTrayItemView::Type type) {
+    base::HistogramTester histograms;
+    view->Update(/*app_id=*/"app_id", is_camera_used, is_microphone_used);
+    view->UpdateScreenShareStatus(is_screen_sharing);
+    histograms.ExpectBucketCount(kPrivacyIndicatorsShowTypeHistogramName, type,
+                                 1);
+  };
+
+  check_histogram_record(/*is_camera_used=*/true, /*is_microphone_used=*/false,
+                         /*is_screen_sharing=*/false, privacy_indicators_view(),
+                         PrivacyIndicatorsTrayItemView::Type::kCamera);
+
+  check_histogram_record(/*is_camera_used=*/false, /*is_microphone_used=*/true,
+                         /*is_screen_sharing=*/false, privacy_indicators_view(),
+                         PrivacyIndicatorsTrayItemView::Type::kMicrophone);
+
+  check_histogram_record(/*is_camera_used=*/false, /*is_microphone_used=*/false,
+                         /*is_screen_sharing=*/true, privacy_indicators_view(),
+                         PrivacyIndicatorsTrayItemView::Type::kScreenSharing);
+
+  check_histogram_record(
+      /*is_camera_used=*/true, /*is_microphone_used=*/true,
+      /*is_screen_sharing=*/false, privacy_indicators_view(),
+      PrivacyIndicatorsTrayItemView::Type::kCameraMicrophone);
+
+  check_histogram_record(
+      /*is_camera_used=*/true, /*is_microphone_used=*/false,
+      /*is_screen_sharing=*/true, privacy_indicators_view(),
+      PrivacyIndicatorsTrayItemView::Type::kCameraScreenSharing);
+
+  check_histogram_record(
+      /*is_camera_used=*/false, /*is_microphone_used=*/true,
+      /*is_screen_sharing=*/true, privacy_indicators_view(),
+      PrivacyIndicatorsTrayItemView::Type::kMicrophoneScreenSharing);
+
+  check_histogram_record(
+      /*is_camera_used=*/true, /*is_microphone_used=*/true,
+      /*is_screen_sharing=*/true, privacy_indicators_view(),
+      PrivacyIndicatorsTrayItemView::Type::kAllUsed);
 }
 
 }  // namespace ash

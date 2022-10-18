@@ -81628,6 +81628,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Notification"/>
 </enum>
 
+<enum name="PrivacyIndicatorsType">
+  <int value="2" label="Camera is in use"/>
+  <int value="4" label="Microphone is in use"/>
+  <int value="6" label="Microphone and Camera are in use"/>
+  <int value="8" label="Screen Sharing is in use"/>
+  <int value="10" label="Screen Sharing and Camera are in use"/>
+  <int value="12" label="Screen Sharing and Microphone are in use"/>
+  <int value="14" label="Screen Sharing, Microphone, and Camera are in use"/>
+</enum>
+
 <enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Download error"/>

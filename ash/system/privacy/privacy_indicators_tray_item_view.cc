@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -172,6 +173,11 @@ PrivacyIndicatorsTrayItemView::~PrivacyIndicatorsTrayItemView() = default;
 void PrivacyIndicatorsTrayItemView::Update(const std::string& app_id,
                                            bool is_camera_used,
                                            bool is_microphone_used) {
+  if (use_camera_apps_.contains(app_id) == is_camera_used &&
+      use_microphone_apps_.contains(app_id) == is_microphone_used) {
+    return;
+  }
+
   UpdateAccessStatus(app_id, /*is_accessed=*/is_camera_used, use_camera_apps_);
   UpdateAccessStatus(app_id,
                      /*is_accessed=*/is_microphone_used, use_microphone_apps_);
@@ -183,6 +189,7 @@ void PrivacyIndicatorsTrayItemView::Update(const std::string& app_id,
   camera_icon_->SetVisible(IsCameraUsed());
   microphone_icon_->SetVisible(IsMicrophoneUsed());
   TooltipTextChanged();
+  RecordPrivacyIndicatorsType();
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateScreenShareStatus(
@@ -192,8 +199,12 @@ void PrivacyIndicatorsTrayItemView::UpdateScreenShareStatus(
   is_screen_sharing_ = is_screen_sharing;
 
   UpdateVisibility();
+  if (!GetVisible())
+    return;
+
   screen_share_icon_->SetVisible(is_screen_sharing_);
   TooltipTextChanged();
+  RecordPrivacyIndicatorsType();
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
@@ -473,6 +484,18 @@ void PrivacyIndicatorsTrayItemView::EndAllAnimations() {
     throughput_tracker_->Stop();
     throughput_tracker_.reset();
   }
+}
+
+void PrivacyIndicatorsTrayItemView::RecordPrivacyIndicatorsType() {
+  int camera_used = IsCameraUsed() ? static_cast<int>(Type::kCamera) : 0;
+  int microphone_used =
+      IsMicrophoneUsed() ? static_cast<int>(Type::kMicrophone) : 0;
+  int screen_sharing =
+      is_screen_sharing_ ? static_cast<int>(Type::kScreenSharing) : 0;
+
+  base::UmaHistogramEnumeration(
+      "Ash.PrivacyIndicators.ShowType",
+      static_cast<Type>(camera_used | microphone_used | screen_sharing));
 }
 
 }  // namespace ash

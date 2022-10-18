@@ -3634,6 +3634,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PrivacyIndicators.ShowType" enum="PrivacyIndicatorsType"
+    expires_after="2023-09-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the type of privacy indicators shown. Emitted when the privacy
+    indicators view is shown in the status tray.
+  </summary>
+</histogram>
+
 <histogram name="Ash.PrivacyIndicators.{Icon}.AnimationSmoothness" units="%"
     expires_after="2023-09-19">
   <owner>leandre@chromium.org</owner>
