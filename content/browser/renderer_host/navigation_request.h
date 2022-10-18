@@ -1673,6 +1673,7 @@ class CONTENT_EXPORT NavigationRequest
 
   std::unique_ptr<NavigationURLLoader> loader_;
 
+  bool navigation_visible_to_embedder_ = false;
 #if BUILDFLAG(IS_ANDROID)
   // For each C++ NavigationHandle, there is a Java counterpart. It is the JNI
   // bridge in between the two.

@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
@@ -173,9 +174,9 @@ import org.chromium.url.Origin;
                     : params.getInputStartTimestamp();
             RecordHistogram.recordTimesHistogram("Android.Omnibox.InputToNavigationControllerStart",
                     SystemClock.uptimeMillis() - inputStart);
-            NavigationControllerImplJni.get().loadUrl(mNativeNavigationControllerAndroid,
-                    NavigationControllerImpl.this, params.getUrl(), params.getLoadUrlType(),
-                    params.getTransitionType(),
+            NavigationHandle navigationHandle = NavigationControllerImplJni.get().loadUrl(
+                    mNativeNavigationControllerAndroid, NavigationControllerImpl.this,
+                    params.getUrl(), params.getLoadUrlType(), params.getTransitionType(),
                     params.getReferrer() != null ? params.getReferrer().getUrl() : null,
                     params.getReferrer() != null ? params.getReferrer().getPolicy() : 0,
                     params.getUserAgentOverrideOption(), headers, params.getPostData(),
@@ -187,6 +188,10 @@ import org.chromium.url.Origin;
                     params.getNavigationUIDataSupplier() == null
                             ? 0
                             : params.getNavigationUIDataSupplier().get());
+            // Use the navigation handle object to store user data passed in.
+            if (navigationHandle != null) {
+                navigationHandle.setUserDataHost(params.takeNavigationHandleUserData());
+            }
         }
     }
 
@@ -365,9 +370,9 @@ import org.chromium.url.Origin;
                 boolean checkForRepost);
         void reloadBypassingCache(long nativeNavigationControllerAndroid,
                 NavigationControllerImpl caller, boolean checkForRepost);
-        void loadUrl(long nativeNavigationControllerAndroid, NavigationControllerImpl caller,
-                String url, int loadUrlType, int transitionType, String referrerUrl,
-                int referrerPolicy, int uaOverrideOption, String extraHeaders,
+        NavigationHandle loadUrl(long nativeNavigationControllerAndroid,
+                NavigationControllerImpl caller, String url, int loadUrlType, int transitionType,
+                String referrerUrl, int referrerPolicy, int uaOverrideOption, String extraHeaders,
                 ResourceRequestBody postData, String baseUrlForDataUrl, String virtualUrlForDataUrl,
                 String dataUrlAsString, boolean canLoadLocalResources, boolean isRendererInitiated,
                 boolean shouldReplaceCurrentEntry, Origin initiatorOrigin, boolean hasUserGesture,

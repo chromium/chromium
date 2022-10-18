@@ -1830,6 +1830,8 @@ NavigationRequest::NavigationRequest(
           compositor->GetCompositorLock(features::kCompositorLockTimeout.Get());
     }
   }
+
+  navigation_handle_proxy_ = std::make_unique<NavigationHandleProxy>(this);
 #endif
 
   if (base::FeatureList::IsEnabled(features::kNavigationRequestPreconnect) &&
@@ -1897,7 +1899,7 @@ NavigationRequest::~NavigationRequest() {
   pending_entry_ref_.reset();
 
 #if BUILDFLAG(IS_ANDROID)
-  if (navigation_handle_proxy_)
+  if (navigation_visible_to_embedder_)
     navigation_handle_proxy_->DidFinish();
 #endif
 
@@ -2506,8 +2508,11 @@ void NavigationRequest::StartNavigation() {
         /*candidate_prerender_frame_tree_node_id=*/absl::nullopt);
   }
 
+  navigation_visible_to_embedder_ = true;
 #if BUILDFLAG(IS_ANDROID)
-  navigation_handle_proxy_ = std::make_unique<NavigationHandleProxy>(this);
+  // Once the navigation has started, fill in the details in the Java side
+  // navigation handle.
+  navigation_handle_proxy_->DidStart();
 #endif
 
   if (IsInMainFrame()) {
@@ -2567,7 +2572,7 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
   DCHECK(!loader_);
 
 #if BUILDFLAG(IS_ANDROID)
-  if (navigation_handle_proxy_)
+  if (navigation_visible_to_embedder_)
     navigation_handle_proxy_->DidFinish();
 #endif
 
@@ -2589,9 +2594,12 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
   is_navigation_started_ = false;
   processing_navigation_throttle_ = false;
 
+  navigation_visible_to_embedder_ = false;
 #if BUILDFLAG(IS_ANDROID)
-  if (navigation_handle_proxy_)
+  if (navigation_visible_to_embedder_) {
     navigation_handle_proxy_.reset();
+    navigation_handle_proxy_ = std::make_unique<NavigationHandleProxy>(this);
+  }
 #endif
 
   // Reset the previously selected RenderFrameHost. This is expected to be null
@@ -8306,7 +8314,6 @@ std::string NavigationRequest::GetPrerenderEmbedderHistogramSuffix() {
 #if BUILDFLAG(IS_ANDROID)
 const base::android::JavaRef<jobject>&
 NavigationRequest::GetJavaNavigationHandle() {
-  DCHECK_GE(state_, WILL_START_REQUEST);
   return navigation_handle_proxy_->java_navigation_handle();
 }
 #endif

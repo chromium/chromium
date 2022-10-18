@@ -70,7 +70,7 @@ class CONTENT_EXPORT NavigationControllerAndroid {
   void GoToNavigationIndex(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            jint index);
-  void LoadUrl(
+  base::android::ScopedJavaGlobalRef<jobject> LoadUrl(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& url,
