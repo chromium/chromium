@@ -122,9 +122,14 @@ void APIResponseValidator::ValidateEvent(
       "input.ime.onFocus",
       "inputMethodPrivate.onFocus",
       "test.onMessage",
+
       // https://crbug.com/1343611.
       "runtime.onMessage",
+      "runtime.onConnect",
       "contextMenus.onClicked",
+
+      // https://crbug.com/1375903.
+      "downloads.onCreated",
   };
 
   if (base::ranges::find(kBrokenSignaturesToIgnore, event_name) !=
