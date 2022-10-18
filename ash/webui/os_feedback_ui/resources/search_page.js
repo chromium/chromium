@@ -82,6 +82,12 @@ export class SearchPageElement extends SearchPageElementBase {
         readonly: true,
         observer: SearchPageElement.prototype.descriptionTemplateChanged_,
       },
+      descriptionPlaceholderText: {
+        type: String,
+        readonly: true,
+        observer:
+            SearchPageElement.prototype.descriptionPlaceholderTextChanged_,
+      },
       helpContentSearchResultCount: {
         type: Number,
         notify: true,
@@ -103,6 +109,9 @@ export class SearchPageElement extends SearchPageElementBase {
 
     /** @type {string} */
     this.descriptionTemplate = '';
+
+    /** @type {string} */
+    this.descriptionPlaceholderText = '';
 
     /** @private {number} */
     this.helpContentSearchResultCount = 0;
@@ -364,6 +373,18 @@ export class SearchPageElement extends SearchPageElementBase {
    */
   descriptionTemplateChanged_(currentTemplate) {
     this.getInputElement_().value = currentTemplate;
+  }
+
+  /**
+   * @param {string} currentPlaceholder
+   * @protected
+   */
+  descriptionPlaceholderTextChanged_(currentPlaceholder) {
+    if (currentPlaceholder === '') {
+      this.getInputElement_().placeholder = this.i18n('descriptionHint');
+    } else {
+      this.getInputElement_().placeholder = currentPlaceholder;
+    }
   }
 
   /**

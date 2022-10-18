@@ -50,6 +50,8 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kExtraDiagnosticsQueryParam[] = "extra_diagnostics";
 constexpr char kDescriptionTemplateQueryParam[] = "description_template";
+constexpr char kDescriptionPlaceholderQueryParam[] =
+    "description_placeholder_text";
 constexpr char kFromAssistantQueryParam[] = "from_assistant";
 constexpr char kCategoryTagParam[] = "category_tag";
 constexpr char kPageURLParam[] = "page_url";
@@ -67,6 +69,7 @@ std::string StrCatQueryParam(const std::string query_param,
 // Returns URL for OS Feedback with additional data passed as query parameters.
 GURL BuildFeedbackUrl(const std::string extra_diagnostics,
                       const std::string description_template,
+                      const std::string description_placeholder_text,
                       const std::string category_tag,
                       const GURL page_url,
                       bool from_assistant) {
@@ -80,6 +83,11 @@ GURL BuildFeedbackUrl(const std::string extra_diagnostics,
   if (!description_template.empty()) {
     query_params.emplace_back(
         StrCatQueryParam(kDescriptionTemplateQueryParam, description_template));
+  }
+
+  if (!description_placeholder_text.empty()) {
+    query_params.emplace_back(StrCatQueryParam(
+        kDescriptionPlaceholderQueryParam, description_placeholder_text));
   }
 
   if (!category_tag.empty()) {
@@ -179,9 +187,9 @@ void RequestFeedbackFlow(const GURL& page_url,
   }
   if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
     ash::SystemAppLaunchParams params{};
-    params.url =
-        BuildFeedbackUrl(extra_diagnostics, description_template, category_tag,
-                         page_url, source == kFeedbackSourceAssistant);
+    params.url = BuildFeedbackUrl(extra_diagnostics, description_template,
+                                  description_placeholder_text, category_tag,
+                                  page_url, source == kFeedbackSourceAssistant);
 
     ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
                                  std::move(params));

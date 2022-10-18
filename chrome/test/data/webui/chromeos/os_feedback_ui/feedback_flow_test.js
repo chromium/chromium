@@ -583,6 +583,11 @@ export function FeedbackFlowTestSuite() {
         queryParams.set(
             AdditionalContextQueryParam.DESCRIPTION_TEMPLATE,
             description_template);
+        const description_placeholder_text =
+            'Thanks%20for%20giving%20feedback%20on%20the%20Camera%20app';
+        queryParams.set(
+            AdditionalContextQueryParam.DESCRIPTION_PLACEHOLDER_TEXT,
+            description_placeholder_text);
         const category_tag = 'some%20category%20tag';
         queryParams.set(AdditionalContextQueryParam.CATEGORY_TAG, category_tag);
         const page_url = 'some%20page%20url';
@@ -604,6 +609,9 @@ export function FeedbackFlowTestSuite() {
             feedbackContext.extraDiagnostics);
         assertEquals(
             decodeURIComponent(description_template), descriptionElement.value);
+        assertEquals(
+            decodeURIComponent(description_placeholder_text),
+            descriptionElement.placeholder);
         assertEquals(
             decodeURIComponent(category_tag), feedbackContext.categoryTag);
         assertTrue(feedbackContext.fromAssistant);

@@ -52,6 +52,7 @@ export const FeedbackFlowState = {
  */
 export const AdditionalContextQueryParam = {
   DESCRIPTION_TEMPLATE: 'description_template',
+  DESCRIPTION_PLACEHOLDER_TEXT: 'description_placeholder_text',
   EXTRA_DIAGNOSTICS: 'extra_diagnostics',
   CATEGORY_TAG: 'category_tag',
   PAGE_URL: 'page_url',
@@ -208,6 +209,15 @@ export class FeedbackFlowElement extends PolymerElement {
     this.descriptionTemplate_;
 
     /**
+     * The descripiton placeholder text is used to give the user a hint on how
+     * to write the description. Some apps, such as the Camera app can use a
+     * custom placeholder.
+     * @type {string}
+     * @protected
+     */
+    this.descriptionPlaceholderText_;
+
+    /**
      * The status of sending report.
      * @type {?SendReportStatus}
      * @private
@@ -333,6 +343,12 @@ export class FeedbackFlowElement extends PolymerElement {
     this.descriptionTemplate_ =
         descriptionTemplate && descriptionTemplate.length > 0 ?
         decodeURIComponent(descriptionTemplate) :
+        '';
+    const descriptionPlaceholderText =
+        params.get(AdditionalContextQueryParam.DESCRIPTION_PLACEHOLDER_TEXT);
+    this.descriptionPlaceholderText_ =
+        descriptionPlaceholderText && descriptionPlaceholderText.length > 0 ?
+        decodeURIComponent(descriptionPlaceholderText) :
         '';
     const categoryTag = params.get(AdditionalContextQueryParam.CATEGORY_TAG);
     this.feedbackContext_.categoryTag =

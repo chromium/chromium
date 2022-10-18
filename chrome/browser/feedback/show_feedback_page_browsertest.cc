@@ -98,6 +98,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 // Test that when parameters appended include:
 // - `extra_diagnostics` string.
 // - `description_template` string.
+// - `description_placeholder_text` string.
 // - `category_tag` string.
 // - `page_url` GURL.
 // - `from_assistant` set true.
@@ -110,12 +111,17 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
       browser()->session_id(), browser()->tab_strip_model()->active_index());
   const std::string extra_diagnostics = "extra diagnostics param";
   const std::string description_template = "Q1: Question one?";
+  const std::string description_placeholder_text =
+      "Thanks for giving feedback on the Camera app";
   const std::string category_tag = "category tag param";
   GURL expected_url(base::StrCat(
       {ash::kChromeUIOSFeedbackUrl, "/?extra_diagnostics=",
        base::EscapeQueryParamValue(extra_diagnostics, /*use_plus=*/false),
        "&description_template=",
        base::EscapeQueryParamValue(description_template, /*use_plus=*/false),
+       "&description_placeholder_text=",
+       base::EscapeQueryParamValue(description_placeholder_text,
+                                   /*use_plus=*/false),
        "&category_tag=",
        base::EscapeQueryParamValue(category_tag, /*use_plus=*/false),
        "&page_url=",
@@ -128,11 +134,12 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                true);
-  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceAssistant,
-                           /*description_template=*/description_template,
-                           /*description_placeholder_text=*/unused,
-                           /*category_tag=*/category_tag,
-                           /*extra_diagnostics=*/extra_diagnostics);
+  chrome::ShowFeedbackPage(
+      browser(), chrome::kFeedbackSourceAssistant,
+      /*description_template=*/description_template,
+      /*description_placeholder_text=*/description_placeholder_text,
+      /*category_tag=*/category_tag,
+      /*extra_diagnostics=*/extra_diagnostics);
   navigation_observer.Wait();
 
   const GURL visible_url = chrome::FindLastActive()
