@@ -47,8 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.AppSeedFreshness" units="minutes"
-    expires_after="2022-10-23">
-  <owner>rmcelrath@chromium.org</owner>
+    expires_after="2023-10-17">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
