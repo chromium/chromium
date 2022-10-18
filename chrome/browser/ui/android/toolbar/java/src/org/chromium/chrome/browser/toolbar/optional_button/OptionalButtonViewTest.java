@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -665,5 +666,28 @@ public class OptionalButtonViewTest {
         // Calling updateButtonWithAnimation with the same ButtonData instance but with a different
         // visibility many times should begin a new animation.
         verify(mMockBeginDelayedTransition, times(2)).onResult(any());
+    }
+
+    @Test
+    public void testUpdateButton_actionChipWidthIsRestricted() {
+        ButtonDataImpl buttonData = getDataForPriceTrackingActionChip();
+        // Set a string that's too long as an action chip label. Real code measures the number of
+        // pixels this will take on screen, but robolectric just uses the character count, so use
+        // any string with more than 150 characters.
+        buttonData.updateActionChipResourceId(R.string.sign_in_managed_account_description);
+
+        int maxActionChipWidth = mOptionalButtonView.getResources().getDimensionPixelSize(
+                R.dimen.toolbar_phone_optional_button_action_chip_max_width);
+
+        ViewGroup transitionRoot = mock(ViewGroup.class);
+        mOptionalButtonView.setTransitionRoot(transitionRoot);
+
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Button shouldn't be wider than the established maximum.
+        Assert.assertThat(mOptionalButtonView.getLayoutParams().width,
+                Matchers.lessThanOrEqualTo(maxActionChipWidth));
     }
 }
