@@ -4,27 +4,27 @@
 
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 
+#include <initializer_list>
+#include <map>
 #include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "base/containers/flat_set.h"
+#include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/traits_bag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
+#include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
-#include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -44,18 +45,19 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -104,45 +106,22 @@ class WebAppInstallManagerTest
   void SetUp() override {
     WebAppTest::SetUp();
 
-    provider_ = web_app::FakeWebAppProvider::Get(profile());
-    provider_->SetDefaultFakeSubsystems();
+    auto* fake_provider = web_app::FakeWebAppProvider::Get(profile());
+    fake_provider->SetDefaultFakeSubsystems();
 
     file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    auto icon_manager =
-        std::make_unique<WebAppIconManager>(profile(), file_utils_);
-    icon_manager_ = icon_manager.get();
 
-    auto install_finalizer =
-        std::make_unique<WebAppInstallFinalizer>(profile());
-    install_finalizer_ = install_finalizer.get();
-
-    auto install_manager = std::make_unique<WebAppInstallManager>(profile());
-    install_manager_ = install_manager.get();
-
-    // These are needed to set up the WebAppSyncBridge for testing.
-    auto command_manager = std::make_unique<WebAppCommandManager>(profile());
-    auto registrar = std::make_unique<WebAppRegistrarMutable>(profile());
-    registrar_ = registrar.get();
-    auto sync_bridge = std::make_unique<WebAppSyncBridge>(registrar.get());
-    auto database_factory = std::make_unique<FakeWebAppDatabaseFactory>();
-    sync_bridge->SetSubsystems(database_factory.get(), install_manager_,
-                               command_manager.get());
-
-    auto test_url_loader = std::make_unique<TestWebAppUrlLoader>();
-    test_url_loader_ = test_url_loader.get();
-    install_manager_->SetUrlLoaderForTesting(std::move(test_url_loader));
-
-    provider_->SetIconManager(std::move(icon_manager));
-    provider_->SetInstallFinalizer(std::move(install_finalizer));
-    provider_->SetInstallManager(std::move(install_manager));
-    provider_->SetCommandManager(std::move(command_manager));
-    provider_->SetRegistrar(std::move(registrar));
-    provider_->SetDatabaseFactory(std::move(database_factory));
-    provider_->SetSyncBridge(std::move(sync_bridge));
+    fake_provider->SetIconManager(
+        std::make_unique<WebAppIconManager>(profile(), file_utils_));
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
 
-    provider_->sync_bridge().set_disable_checks_for_testing(true);
+    provider().sync_bridge().set_disable_checks_for_testing(true);
+
+    auto test_url_loader = std::make_unique<TestWebAppUrlLoader>();
+    test_url_loader_ = test_url_loader.get();
+    provider().install_manager().SetUrlLoaderForTesting(
+        std::move(test_url_loader));
   }
 
   void TearDown() override {
@@ -150,19 +129,21 @@ class WebAppInstallManagerTest
     WebAppTest::TearDown();
   }
 
-  WebAppRegistrar& registrar() const { return *registrar_; }
+  WebAppRegistrar& registrar() { return provider().registrar(); }
   WebAppCommandManager& command_manager() {
-    return provider_->command_manager();
+    return provider().command_manager();
   }
-  WebAppInstallManager& install_manager() { return *install_manager_; }
-  WebAppInstallFinalizer& finalizer() { return *install_finalizer_; }
-  WebAppIconManager& icon_manager() { return *icon_manager_; }
+  WebAppInstallManager& install_manager() {
+    return provider().install_manager();
+  }
+  WebAppInstallFinalizer& finalizer() { return provider().install_finalizer(); }
+  WebAppIconManager& icon_manager() { return provider().icon_manager(); }
   TestWebAppUrlLoader& url_loader() { return *test_url_loader_; }
   TestFileUtils& file_utils() {
     DCHECK(file_utils_);
     return *file_utils_;
   }
-  FakeWebAppProvider& provider() { return *provider_; }
+  WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 
   std::unique_ptr<WebApp> CreateWebAppFromSyncAndPendingInstallation(
       const GURL& start_url,
@@ -238,7 +219,7 @@ class WebAppInstallManagerTest
     return result;
   }
 
-  int GetNumFullyInstalledApps() const {
+  int GetNumFullyInstalledApps() {
     int num_apps = 0;
 
     for ([[maybe_unused]] const WebApp& app : registrar().GetApps()) {
@@ -332,11 +313,6 @@ class WebAppInstallManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<TestWebAppUrlLoader> test_url_loader_ = nullptr;
-  raw_ptr<FakeWebAppProvider> provider_;
-  raw_ptr<WebAppIconManager> icon_manager_;
-  raw_ptr<WebAppInstallManager> install_manager_;
-  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
-  raw_ptr<WebAppRegistrar> registrar_;
 
   scoped_refptr<TestFileUtils> file_utils_;
 };
