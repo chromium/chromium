@@ -22,18 +22,52 @@ namespace {
 
 // Helper for ImportJwkRsaFailures. Restores the JWK JSON
 // dictionary to a good state
-void RestoreJwkRsaDictionary(base::DictionaryValue* dict) {
-  dict->DictClear();
-  dict->SetString("kty", "RSA");
-  dict->SetString("alg", "RS256");
-  dict->SetString("use", "sig");
-  dict->SetBoolean("ext", false);
-  dict->SetString(
+base::Value::Dict BuildTestJwk() {
+  base::Value::Dict jwk;
+  jwk.Set("kty", "RSA");
+  jwk.Set("alg", "RS256");
+  jwk.Set("use", "sig");
+  jwk.Set("ext", false);
+  jwk.Set(
       "n",
       "qLOyhK-OtQs4cDSoYPFGxJGfMYdjzWxVmMiuSBGh4KvEx-CwgtaTpef87Wdc9GaFEncsDLxk"
       "p0LGxjD1M8jMcvYq6DPEC_JYQumEu3i9v5fAEH1VvbZi9cTg-rmEXLUUjvc5LdOq_5OuHmtm"
       "e7PUJHYW1PW6ENTP0ibeiNOfFvs");
-  dict->SetString("e", "AQAB");
+  jwk.Set("e", "AQAB");
+  return jwk;
+}
+
+blink::WebCryptoAlgorithm RS256Algorithm() {
+  return CreateRsaHashedImportAlgorithm(
+      blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
+      blink::kWebCryptoAlgorithmIdSha256);
+}
+
+blink::WebCryptoKey ImportJwkRS256OrDie(const std::string& jwk) {
+  std::vector<uint8_t> jwk_bytes(jwk.begin(), jwk.end());
+  blink::WebCryptoKey key;
+  Status status =
+      ImportKey(blink::kWebCryptoKeyFormatJwk, jwk_bytes, RS256Algorithm(),
+                true, blink::kWebCryptoKeyUsageSign, &key);
+  CHECK(status.IsSuccess()) << StatusToString(status);
+  return key;
+}
+
+Status ImportJwkRS256MustFail(const std::string& jwk) {
+  std::vector<uint8_t> jwk_bytes(jwk.begin(), jwk.end());
+  blink::WebCryptoKey key;
+  Status status =
+      ImportKey(blink::kWebCryptoKeyFormatJwk, jwk_bytes, RS256Algorithm(),
+                true, blink::kWebCryptoKeyUsageSign, &key);
+  CHECK(!status.IsSuccess());
+  return status;
+}
+
+std::vector<uint8_t> ExportPkcs8OrDie(blink::WebCryptoKey key) {
+  std::vector<uint8_t> exported;
+  Status status = ExportKey(blink::kWebCryptoKeyFormatPkcs8, key, &exported);
+  CHECK(status.IsSuccess()) << StatusToString(status);
+  return exported;
 }
 
 class WebCryptoRsaSsaTest : public WebCryptoTestBase {};
@@ -190,115 +224,93 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaPrivateKeyJwkToPkcs8RoundTrip) {
   ASSERT_EQ(HexStringToBytes(kPrivateKeyPkcs8DerHex), exported_key_pkcs8);
 }
 
-// Tests importing multiple RSA private keys from JWK, and then exporting to
-// PKCS8.
-//
+const char kRsa512Jwk_0[] =
+    R"({
+      "alg": "RS256",
+      "d": "DXYeCQ4W_Yv9zN4vCIQQtgvunsoeWfPeRvYEgVAIYdhuNFRmcinD9UuNP70VOoe2qiZ0DNAjsQn-uYCW9TEZ4Q",
+      "dp": "5f8auF7xPSfhZlklUtBnKFYKEDaYR2dFWg_zQB7oCzE",
+      "dq": "hkRVAMcErDAaCKp0V3QzWYhY_J22nJkiNXIxHz4Ja2c",
+      "e": "AQAB",
+      "kty": "RSA",
+      "n": "yLuHfrJbqUSFFqhUu70z585pWrw1IFcnBCccj43uwGOiesMkx0SWw4jyk3UNTux5AO-7VVCU8jb7237YYaOmOw",
+      "p": "8rLWJeMlHCtwZstui6p8jyai6m7GQ6fC1hK17vxA_JE",
+      "q": "07vkNpoE6SUze7Af2KEP6M_sz8dABZ3EQJuQ6JfiDAs",
+      "qi": "kxd6mc-3AhJtuixmzrSywxvwVwChdEG4I6WVTBe_bvE"
+   })";
+// Note that the first letter of "d" has been changed.
+const char kRsa512Jwk_0_Damaged[] =
+    R"({
+      "alg": "RS256",
+      "d": "EXYeCQ4W_Yv9zN4vCIQQtgvunsoeWfPeRvYEgVAIYdhuNFRmcinD9UuNP70VOoe2qiZ0DNAjsQn-uYCW9TEZ4Q",
+      "dp": "5f8auF7xPSfhZlklUtBnKFYKEDaYR2dFWg_zQB7oCzE",
+      "dq": "hkRVAMcErDAaCKp0V3QzWYhY_J22nJkiNXIxHz4Ja2c",
+      "e": "AQAB",
+      "kty": "RSA",
+      "n": "yLuHfrJbqUSFFqhUu70z585pWrw1IFcnBCccj43uwGOiesMkx0SWw4jyk3UNTux5AO-7VVCU8jb7237YYaOmOw",
+      "p": "8rLWJeMlHCtwZstui6p8jyai6m7GQ6fC1hK17vxA_JE",
+      "q": "07vkNpoE6SUze7Af2KEP6M_sz8dABZ3EQJuQ6JfiDAs",
+      "qi": "kxd6mc-3AhJtuixmzrSywxvwVwChdEG4I6WVTBe_bvE"
+   })";
+const char kRsa512Pkcs8_0[] =
+    "30820156020100300D06092A864886F70D0101010500048201403082013C020100024100C8"
+    "BB877EB25BA9448516A854BBBD33E7CE695ABC3520572704271C8F8DEEC063A27AC324C744"
+    "96C388F293750D4EEC7900EFBB555094F236FBDB7ED861A3A63B020301000102400D761E09"
+    "0E16FD8BFDCCDE2F088410B60BEE9ECA1E59F3DE46F60481500861D86E3454667229C3F54B"
+    "8D3FBD153A87B6AA26740CD023B109FEB98096F53119E1022100F2B2D625E3251C2B7066CB"
+    "6E8BAA7C8F26A2EA6EC643A7C2D612B5EEFC40FC91022100D3BBE4369A04E925337BB01FD8"
+    "A10FE8CFECCFC740059DC4409B90E897E20C0B022100E5FF1AB85EF13D27E166592552D067"
+    "28560A1036984767455A0FF3401EE80B3102210086445500C704AC301A08AA745774335988"
+    "58FC9DB69C99223572311F3E096B6702210093177A99CFB702126DBA2C66CEB4B2C31BF057"
+    "00A17441B823A5954C17BF6EF1";
+
+const char kRsa512Jwk_1[] =
+    R"({
+      "alg": "RS256",
+      "d": "phZ8gCMB14I-A35dwg7j16uSd91COBNN4GuwZchy7FPGH0hNzaH2jOYBU3sWy2ORxwWN8PbKqKOkZb8mh4v_gQ",
+      "dp": "PPEZjFS3paYuOvD2ROr6Es1mP2gGeM_9QNouoZjbpZE",
+      "dq": "pXDNDS8Z77HJXB2EsG40JLsNv-sUkakmAbEzwDfSoFE",
+      "e": "AQAB",
+      "kty": "RSA",
+      "n": "zg5KF3GIFp9XJdOMD9Iz-SeC_CVdUeI-gTxw2Igpd8FB0cJllMxg6n3FALqZ7YKPAp7rCL3VYhu-GR8OnqhNaQ",
+      "p": "8TlLFr-SEpz_ItKjdarp9q8S8_2OHy2RFysdY6yGndE",
+      "q": "2q2EDZHQQ_dp9-Cx2Z8kWn7sYo8K9caFneAJge8ZpBk",
+      "qi": "GT51ibfjUV05KRQhyjiqeCkGT12aAWvLzKRsaV9VE54"
+   })";
+const char kRsa512Pkcs8_1[] =
+    "30820155020100300D06092A864886F70D01010105000482013F3082013B020100024100CE"
+    "0E4A177188169F5725D38C0FD233F92782FC255D51E23E813C70D8882977C141D1C26594CC"
+    "60EA7DC500BA99ED828F029EEB08BDD5621BBE191F0E9EA84D690203010001024100A6167C"
+    "802301D7823E037E5DC20EE3D7AB9277DD4238134DE06BB065C872EC53C61F484DCDA1F68C"
+    "E601537B16CB6391C7058DF0F6CAA8A3A465BF26878BFF81022100F1394B16BF92129CFF22"
+    "D2A375AAE9F6AF12F3FD8E1F2D91172B1D63AC869DD1022100DAAD840D91D043F769F7E0B1"
+    "D99F245A7EEC628F0AF5C6859DE00981EF19A41902203CF1198C54B7A5A62E3AF0F644EAFA"
+    "12CD663F680678CFFD40DA2EA198DBA591022100A570CD0D2F19EFB1C95C1D84B06E3424BB"
+    "0DBFEB1491A92601B133C037D2A0510220193E7589B7E3515D39291421CA38AA7829064F5D"
+    "9A016BCBCCA46C695F55139E";
+
 // This is a regression test for http://crbug.com/378315, for which importing
 // a sequence of keys from JWK could yield the wrong key. The first key would
 // be imported correctly, however every key after that would actually import
 // the first key.
-TEST_F(WebCryptoRsaSsaTest, ImportMultipleRSAPrivateKeysJwk) {
-  // For this test to be meaningful the keys MUST be kept alive before importing
-  // new keys.
-  std::vector<blink::WebCryptoKey> live_keys;
-
-  base::Value::List keys = ReadJsonTestFileAsList("rsa_private_keys.json");
-  for (const auto& key_values : keys) {
-    SCOPED_TRACE(&key_values - &keys[0]);
-
-    ASSERT_TRUE(key_values.is_dict());
-    const base::DictionaryValue* key_values_dict =
-        &base::Value::AsDictionaryValue(key_values);
-
-    // Get the JWK representation of the key.
-    const base::DictionaryValue* key_jwk;
-    ASSERT_TRUE(key_values_dict->GetDictionary("jwk", &key_jwk));
-
-    // Get the PKCS8 representation of the key.
-    std::string pkcs8_hex_string;
-    ASSERT_TRUE(key_values_dict->GetString("pkcs8", &pkcs8_hex_string));
-    std::vector<uint8_t> pkcs8_bytes = HexStringToBytes(pkcs8_hex_string);
-
-    // Get the modulus length for the key.
-    absl::optional<int> modulus_length_bits =
-        key_values_dict->FindIntKey("modulusLength");
-    ASSERT_TRUE(modulus_length_bits);
-
-    blink::WebCryptoKey private_key;
-
-    // Import the key from JWK.
-    ASSERT_EQ(Status::Success(),
-              ImportKeyJwkFromDict(
-                  *key_jwk,
-                  CreateRsaHashedImportAlgorithm(
-                      blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
-                      blink::kWebCryptoAlgorithmIdSha256),
-                  true, blink::kWebCryptoKeyUsageSign, &private_key));
-
-    live_keys.push_back(private_key);
-
-    EXPECT_EQ(
-        *modulus_length_bits,
-        static_cast<int>(
-            private_key.Algorithm().RsaHashedParams()->ModulusLengthBits()));
-
-    // Export to PKCS8 and verify that it matches expectation.
-    std::vector<uint8_t> exported_key_pkcs8;
-    ASSERT_EQ(Status::Success(), ExportKey(blink::kWebCryptoKeyFormatPkcs8,
-                                           private_key, &exported_key_pkcs8));
-
-    EXPECT_BYTES_EQ(pkcs8_bytes, exported_key_pkcs8);
-  }
+TEST_F(WebCryptoRsaSsaTest, ImportMultipleRsaKeysJwk) {
+  // Ensure that both keys stay alive across the whole test body, to ensure the
+  // existence of one doesn't impact the other.
+  std::vector<blink::WebCryptoKey> keys = {
+      ImportJwkRS256OrDie(kRsa512Jwk_0),
+      ImportJwkRS256OrDie(kRsa512Jwk_1),
+  };
+  EXPECT_EQ(HexStringToBytes(kRsa512Pkcs8_0), ExportPkcs8OrDie(keys[0]));
+  EXPECT_EQ(HexStringToBytes(kRsa512Pkcs8_1), ExportPkcs8OrDie(keys[1]));
 }
 
 // Import an RSA private key using JWK. Next import a JWK containing the same
 // modulus, but mismatched parameters for the rest. It should NOT be possible
 // that the second import retrieves the first key. See http://crbug.com/378315
 // for how that could happen.
-TEST_F(WebCryptoRsaSsaTest, ImportJwkExistingModulusAndInvalid) {
-  base::Value::List key_list = ReadJsonTestFileAsList("rsa_private_keys.json");
-
-  // Import a 1024-bit private key.
-  const base::Value& key1_props_value = key_list[1];
-  ASSERT_TRUE(key1_props_value.is_dict());
-  const base::DictionaryValue* key1_props =
-      &base::Value::AsDictionaryValue(key1_props_value);
-  const base::DictionaryValue* key1_jwk;
-  ASSERT_TRUE(key1_props->GetDictionary("jwk", &key1_jwk));
-
-  blink::WebCryptoKey key1;
-  ASSERT_EQ(
-      Status::Success(),
-      ImportKeyJwkFromDict(*key1_jwk,
-                           CreateRsaHashedImportAlgorithm(
-                               blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
-                               blink::kWebCryptoAlgorithmIdSha256),
-                           true, blink::kWebCryptoKeyUsageSign, &key1));
-
-  ASSERT_EQ(1024u, key1.Algorithm().RsaHashedParams()->ModulusLengthBits());
-
-  // Construct a JWK using the modulus of key1, but all the other fields from
-  // another key (also a 1024-bit private key).
-  base::Value& key2_props_value = key_list[5];
-  ASSERT_TRUE(key2_props_value.is_dict());
-  base::DictionaryValue* key2_props = const_cast<base::DictionaryValue*>(
-      &base::Value::AsDictionaryValue(key2_props_value));
-  base::DictionaryValue* key2_jwk;
-  ASSERT_TRUE(key2_props->GetDictionary("jwk", &key2_jwk));
-  std::string modulus;
-  key1_jwk->GetString("n", &modulus);
-  key2_jwk->SetString("n", modulus);
-
-  // This should fail, as the n,e,d parameters are not consistent. It MUST NOT
-  // somehow return the key created earlier.
-  blink::WebCryptoKey key2;
-  ASSERT_EQ(
-      Status::OperationError(),
-      ImportKeyJwkFromDict(*key2_jwk,
-                           CreateRsaHashedImportAlgorithm(
-                               blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
-                               blink::kWebCryptoAlgorithmIdSha256),
-                           true, blink::kWebCryptoKeyUsageSign, &key2));
+TEST_F(WebCryptoRsaSsaTest, ImportCorruptKeyReusedModulus) {
+  blink::WebCryptoKey key = ImportJwkRS256OrDie(kRsa512Jwk_0);
+  EXPECT_EQ(Status::OperationError(),
+            ImportJwkRS256MustFail(kRsa512Jwk_0_Damaged));
 }
 
 TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsa) {
@@ -700,15 +712,13 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaPublicKeyBadUsage_JWK) {
       blink::kWebCryptoKeyUsageEncrypt | blink::kWebCryptoKeyUsageDecrypt,
   };
 
-  base::DictionaryValue dict;
-  RestoreJwkRsaDictionary(&dict);
-  dict.RemoveKey("use");
-  dict.SetString("alg", "RS256");
+  base::Value::Dict jwk = BuildTestJwk();
+  jwk.Remove("use");
 
   for (auto usage : kBadUsages) {
     blink::WebCryptoKey public_key;
     ASSERT_EQ(Status::ErrorCreateKeyBadUsages(),
-              ImportKeyJwkFromDict(dict, algorithm, false, usage, &public_key));
+              ImportKeyJwkFromDict(jwk, algorithm, false, usage, &public_key));
   }
 }
 
@@ -898,8 +908,6 @@ TEST_F(WebCryptoRsaSsaTest, ImportExportJwkRsaPublicKey) {
 }
 
 TEST_F(WebCryptoRsaSsaTest, ImportJwkRsaFailures) {
-  base::DictionaryValue dict;
-  RestoreJwkRsaDictionary(&dict);
   blink::WebCryptoAlgorithm algorithm = CreateRsaHashedImportAlgorithm(
       blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
       blink::kWebCryptoAlgorithmIdSha256);
@@ -913,8 +921,8 @@ TEST_F(WebCryptoRsaSsaTest, ImportJwkRsaFailures) {
   // section 6.3.
 
   // Baseline pass.
-  EXPECT_EQ(Status::Success(),
-            ImportKeyJwkFromDict(dict, algorithm, false, usages, &key));
+  EXPECT_EQ(Status::Success(), ImportKeyJwkFromDict(BuildTestJwk(), algorithm,
+                                                    false, usages, &key));
   EXPECT_EQ(algorithm.Id(), key.Algorithm().Id());
   EXPECT_FALSE(key.Extractable());
   EXPECT_EQ(blink::kWebCryptoKeyUsageVerify, key.Usages());
@@ -923,24 +931,23 @@ TEST_F(WebCryptoRsaSsaTest, ImportJwkRsaFailures) {
   // The following are specific failure cases for when kty = "RSA".
 
   // Fail if either "n" or "e" is not present or malformed.
-  for (auto* const parm : {"n", "e"}) {
+  for (auto* const param : {"n", "e"}) {
+    base::Value::Dict jwk = BuildTestJwk();
+
     // Fail on missing parameter.
-    dict.RemoveKey(parm);
+    jwk.Remove(param);
     EXPECT_NE(Status::Success(),
-              ImportKeyJwkFromDict(dict, algorithm, false, usages, &key));
-    RestoreJwkRsaDictionary(&dict);
+              ImportKeyJwkFromDict(jwk, algorithm, false, usages, &key));
 
     // Fail on bad b64 parameter encoding.
-    dict.SetString(parm, "Qk3f0DsytU8lfza2au #$% Htaw2xpop9yTuH0");
+    jwk.Set(param, "Qk3f0DsytU8lfza2au #$% Htaw2xpop9yTuH0");
     EXPECT_NE(Status::Success(),
-              ImportKeyJwkFromDict(dict, algorithm, false, usages, &key));
-    RestoreJwkRsaDictionary(&dict);
+              ImportKeyJwkFromDict(jwk, algorithm, false, usages, &key));
 
     // Fail on empty parameter.
-    dict.SetString(parm, "");
-    EXPECT_EQ(Status::ErrorJwkEmptyBigInteger(parm),
-              ImportKeyJwkFromDict(dict, algorithm, false, usages, &key));
-    RestoreJwkRsaDictionary(&dict);
+    jwk.Set(param, "");
+    EXPECT_EQ(Status::ErrorJwkEmptyBigInteger(param),
+              ImportKeyJwkFromDict(jwk, algorithm, false, usages, &key));
   }
 }
 
