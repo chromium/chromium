@@ -159,6 +159,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_COUNTRY_FROM_LOCAL_NAME,
                     "Chrome needs to map country names to country codes. If enabled, the lookup "
                             + "considers all locales that are registered for a country."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_MIN3_FIELD_TYPES_FOR_LOCAL_HEURISTICS,
+                    "Require at least 3 distinct field types for local heuristics to return "
+                            + "classifications."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                     "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_RANKING_FORMULA,

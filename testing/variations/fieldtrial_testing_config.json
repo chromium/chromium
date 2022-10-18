@@ -1292,6 +1292,28 @@
             ]
         }
     ],
+    "AutofillMin3FieldTypesForLocalHeuristics": [
+        {
+            "platforms": [
+                "android_webview",
+                "android_weblayer",
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillMin3FieldTypesForLocalHeuristics"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillParseAsync": [
         {
             "platforms": [

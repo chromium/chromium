@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
@@ -22,11 +23,20 @@ namespace autofill {
 
 class FormFieldTest
     : public FormFieldTestBase,
-      public ::testing::TestWithParam<PatternProviderFeatureState> {
+      public ::testing::TestWithParam<std::tuple<
+          PatternProviderFeatureState,
+          /* features::kAutofillMin3FieldTypesForLocalHeuristics */ bool>> {
  public:
-  FormFieldTest() : FormFieldTestBase(GetParam()) {}
+  FormFieldTest();
   FormFieldTest(const FormFieldTest&) = delete;
   FormFieldTest& operator=(const FormFieldTest&) = delete;
+
+  const PatternProviderFeatureState& pattern_provider_feature_state() const {
+    return std::get<0>(GetParam());
+  }
+  bool require_min_3_field_types_for_local_heuristics() const {
+    return std::get<1>(GetParam());
+  }
 
  protected:
   // Parses all added fields using `ParseFormFields`.
@@ -54,12 +64,26 @@ class FormFieldTest
                                    const LanguageCode& page_language) override {
     return nullptr;
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+FormFieldTest::FormFieldTest()
+    : FormFieldTestBase(pattern_provider_feature_state()) {
+  if (require_min_3_field_types_for_local_heuristics()) {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillMin3FieldTypesForLocalHeuristics);
+  } else {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAutofillMin3FieldTypesForLocalHeuristics);
+  }
+}
 
 INSTANTIATE_TEST_SUITE_P(
     FormFieldTest,
     FormFieldTest,
-    ::testing::ValuesIn(PatternProviderFeatureState::All()));
+    ::testing::Combine(::testing::ValuesIn(PatternProviderFeatureState::All()),
+                       ::testing::Values(true, false)));
 
 struct MatchTestCase {
   std::u16string label;
@@ -305,6 +329,36 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
     EXPECT_EQ(scanner.CursorPosition(), 0u);
     EXPECT_THAT(matched_fields, ::testing::Each(nullptr));
   }
+}
+
+// Today, local heuristics typically classify fields if at least 3 different
+// fields get a fillable type assigned. This leads to false positives as in this
+// example case. features::kAutofillMin3FieldTypesForLocalHeuristics changes the
+// rule to require at least 3 different field *types*.
+// Note that "fillable" refers to the field type, not whether a specific field
+// is visible and editable by the user.
+TEST_P(FormFieldTest, ParseFormRequires3DistinctFieldTypes) {
+  AddTextFormFieldData("name_origin", "From:", NAME_FULL);
+  AddTextFormFieldData("name_destination", "To:", NAME_FULL);
+  AddTextFormFieldData("name_via", "Via...", NAME_FULL);
+  AddTextFormFieldData("name_notVia", "Not via...", NAME_FULL);
+
+  // Ensure that the parser does not return anything if
+  // features::kAutofillMin3FieldTypesForLocalHeuristics is enabled because it
+  // found only 1 field type.
+  if (require_min_3_field_types_for_local_heuristics()) {
+    EXPECT_EQ(0, ParseFormFields());
+  } else {
+    EXPECT_EQ(4, ParseFormFields());
+    TestClassificationExpectations();
+  }
+
+  // Add two more fields and ensure that the parser now returns all fields even
+  // in the presence of features::kAutofillMin3FieldTypesForLocalHeuristics.
+  AddTextFormFieldData("", "Address line 1", ADDRESS_HOME_LINE1);
+  AddTextFormFieldData("", "Address line 2", ADDRESS_HOME_LINE2);
+  EXPECT_EQ(6, ParseFormFields());
+  TestClassificationExpectations();
 }
 
 }  // namespace autofill

@@ -422,6 +422,22 @@ BASE_FEATURE(kAutofillPreventOverridingPrefilledValues,
              "AutofillPreventOverridingPrefilledValues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// We used to consider local heuristics only if at least 3 fields were
+// classified by the heuristics [*]. With this feature enabled, we require that
+// local heuristics discover at least 3 different fillable field *types*,
+// meaning that 3 fields of the same type don't meet the bar. This is motivated
+// by cases where we saw the same field type multiple times (e.g. due to the
+// occurrence of the term "name") which produced false positives. crbug/1352826
+// contains some statistics.
+// Note that "fillable" refers to the field type, not whether a specific field
+// is visible and editable by the user.
+// [*] Precisely, at least 3 fields had to have a fillable field type, except
+// that emails and other single field types were not bound to this rule.
+// TODO(crbug/1352826): Remove once experiment is finished.
+BASE_FEATURE(kAutofillMin3FieldTypesForLocalHeuristics,
+             "AutofillMin3FieldTypesForLocalHeuristics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, use the parsing patterns from a JSON file for heuristics, rather
 // than the hardcoded ones from autofill_regex_constants.cc.
 // The specific pattern set is controlled by the
