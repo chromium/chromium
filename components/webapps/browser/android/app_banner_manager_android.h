@@ -113,6 +113,9 @@ class AppBannerManagerAndroid : public AppBannerManager,
   void PerformInstallableChecks() override;
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   void PerformInstallableWebAppCheck() override;
+  void PerformWorkerCheckForAmbientBadge() override;
+  void OnDidPerformWorkerCheckForAmbientBadge(
+      const InstallableData& data) override;
   void ResetCurrentPageData() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
   void MaybeShowAmbientBadge() override;

@@ -465,6 +465,15 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
         InstallableWebAppCheckResult::kYes_ByUserRequest);
   }
 
+  if (features::SkipServiceWorkerForInstallPromotion()) {
+    PerformWorkerCheckForAmbientBadge();
+
+    SetInstallableWebAppCheckResult(
+        InstallableWebAppCheckResult::kYes_Promotable);
+    CheckSufficientEngagement();
+    return;
+  }
+
   PerformServiceWorkerCheck();
 }
 
@@ -489,19 +498,27 @@ void AppBannerManager::OnDidPerformWorkerCheck(const InstallableData& data) {
 
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kYes_Promotable);
-
-    // If we triggered the installability check on page load, then it's
-    // possible we don't have enough engagement yet. If that's the case,
-    // return here but don't call Terminate(). We wait for OnEngagementEvent
-    // to tell us that we should trigger.
-    if (!HasSufficientEngagement()) {
-      UpdateState(State::PENDING_ENGAGEMENT);
-      return;
-    }
-
-    SendBannerPromptRequest();
+    CheckSufficientEngagement();
   }
 }
+
+void AppBannerManager::CheckSufficientEngagement() {
+  // If we triggered the installability check on page load, then it's
+  // possible we don't have enough engagement yet. If that's the case,
+  // return here but don't call Terminate(). We wait for OnEngagementEvent
+  // to tell us that we should trigger.
+  if (!HasSufficientEngagement()) {
+    UpdateState(State::PENDING_ENGAGEMENT);
+    return;
+  }
+
+  SendBannerPromptRequest();
+}
+
+void AppBannerManager::PerformWorkerCheckForAmbientBadge() {}
+
+void AppBannerManager::OnDidPerformWorkerCheckForAmbientBadge(
+    const InstallableData& data) {}
 
 void AppBannerManager::RecordDidShowBanner() {
   content::WebContents* contents = web_contents();
