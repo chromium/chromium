@@ -1798,7 +1798,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.NewlySavedPasswordHasEmptyUsername.{PasswordType}"
-    enum="Boolean" expires_after="2022-10-23">
+    enum="Boolean" expires_after="2023-04-23">
   <owner>khamutov@google.com</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
