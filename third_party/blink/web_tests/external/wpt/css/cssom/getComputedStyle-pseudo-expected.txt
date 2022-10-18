@@ -7,6 +7,6 @@ PASS Item-based blockification of pseudo-elements
 PASS Item-based blockification of nonexistent pseudo-elements
 PASS display: contents on pseudo-elements
 PASS Dynamically change to display: contents on pseudo-elements
-FAIL Unknown pseudo-elements assert_equals: Should return an empty style for unknown pseudo-elements starting with double-colon expected 0 but got 367
+FAIL Unknown pseudo-elements assert_true: Should return an empty style for unknown pseudo-elements starting with double-colon expected true got false
 Harness: the test ran to completion.
 
