@@ -118,8 +118,9 @@ const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "
     "Chrome start-up.";
 
-const char kGaiaIdInAMFName[] = "Gaia Id In AccountManagerFacade (AMF)";
-const char kGaiaIdInAMFDescription[] =
+const char kGaiaIdCacheInAccountManagerFacadeName[] =
+    "Gaia Id In AccountManagerFacade (AMF)";
+const char kGaiaIdCacheInAccountManagerFacadeDescription[] =
     "If enabled, starts fetching gaia id from android accounts in "
     "AccountManagerFacade (AMF)";
 

@@ -6,6 +6,8 @@ package org.chromium.components.signin;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -23,7 +25,6 @@ import android.os.UserManager;
 
 import androidx.test.rule.GrantPermissionRule;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,7 +35,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowAccountManager;
@@ -43,17 +43,18 @@ import org.robolectric.shadows.ShadowUserManager;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.UmaRecorder;
 import org.chromium.base.metrics.UmaRecorderHolder;
-import org.chromium.base.task.PostTask;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Robolectric tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeTest}.
@@ -96,7 +97,6 @@ public class AccountManagerFacadeImplTest {
 
     @Before
     public void setUp() {
-        PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
         UmaRecorderHolder.setNonNativeDelegate(mUmaRecorderMock);
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
@@ -110,11 +110,6 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate =
                 new AccountManagerFacadeImpl(new SystemAccountManagerDelegate());
-    }
-
-    @After
-    public void tearDown() {
-        PostTask.resetPrenativeThreadPoolExecutorForTesting();
     }
 
     @Test
@@ -177,6 +172,56 @@ public class AccountManagerFacadeImplTest {
 
         removeTestAccount(account2);
         Assert.assertEquals(List.of(account, account3), mFacade.getAccounts().getResult());
+    }
+
+    @Test
+    public void testGetCoreAccountInfos() {
+        Account account1 = addTestAccount("test1@gmail.com");
+        Account account2 = addTestAccount("test2@gmail.com");
+
+        final List<CoreAccountInfo> coreAccountInfos = mFacade.getCoreAccountInfos().getResult();
+
+        final CoreAccountInfo coreAccountInfo1 = CoreAccountInfo.createFromEmailAndGaiaId(
+                account1.name, mFacade.getAccountGaiaId(account1.name));
+        final CoreAccountInfo coreAccountInfo2 = CoreAccountInfo.createFromEmailAndGaiaId(
+                account2.name, mFacade.getAccountGaiaId(account2.name));
+        Assert.assertEquals(List.of(coreAccountInfo1, coreAccountInfo2), coreAccountInfos);
+    }
+
+    @Test
+    public void testGetCoreAccountInfosWhenGaiaIdIsNull() {
+        final String accountName = "test@gmail.com";
+        AtomicBoolean accountRemoved = new AtomicBoolean(false);
+        doAnswer(invocation -> {
+            // Simulate removal of account during the gaia-id fetch process.
+            // This method may be called after the account is already removed. Without this check
+            // FakeAccountManagerDelegate.removeAccount() will crash because the account doesn't
+            // exist.
+            if (!accountRemoved.get()) {
+                removeTestAccount(AccountUtils.createAccountFromName(invocation.getArgument(0)));
+                accountRemoved.set(true);
+            }
+            return null;
+        })
+                .when(mDelegate)
+                .getAccountGaiaId(accountName);
+
+        addTestAccount(accountName);
+        final List<CoreAccountInfo> coreAccountInfos = mFacade.getCoreAccountInfos().getResult();
+
+        verify(mDelegate, atLeastOnce()).getAccountGaiaId(accountName);
+        Assert.assertTrue(coreAccountInfos.isEmpty());
+    }
+
+    @Test
+    public void testCoreAccountInfosAreCached() {
+        final Account account = addTestAccount("test@gmail.com");
+
+        mFacade.getCoreAccountInfos().getResult();
+        mFacade.getCoreAccountInfos().getResult();
+
+        // The second call to getCoreAccountInfos() should not re-fetch gaia id.
+        verify(mDelegate).getAccountGaiaId(account.name);
     }
 
     @Test

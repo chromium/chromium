@@ -17,6 +17,7 @@ import androidx.annotation.WorkerThread;
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.List;
 
@@ -55,17 +56,30 @@ public interface AccountManagerFacade {
     void removeObserver(AccountsChangeObserver observer);
 
     /**
-     * Retrieves all the accounts on the device.
+     * Retrieves accounts on device after filtering them through account restriction patterns.
      * The {@link Promise} will be fulfilled once the accounts cache will be populated.
      * If an error occurs while getting account list, the returned {@link Promise} will wrap an
      * empty array.
      *
      * Since a different {@link Promise} will be returned every time the accounts get updated,
-     * this makes it a bad candidate for end users to cache the {@link Promise} locally unless
+     * this makes the {@link Promise} a bad candidate for end users to cache locally unless
      * the end users are awaiting the current list of accounts only.
      */
     @MainThread
     Promise<List<Account>> getAccounts();
+
+    /**
+     * Retrieves corresponding {@link CoreAccountInfo}s for filtered accounts.
+     * The {@link Promise} will be fulfilled once the accounts cache is populated and gaia ids are
+     * fetched. If an error occurs while getting account list, the returned {@link Promise} will
+     * wrap an empty array.
+     *
+     * Since a different {@link Promise} will be returned every time the accounts get updated,
+     * this makes he {@link Promise}t a bad candidate for end users to cache locally unless
+     * the end users are awaiting the {@link CoreAccountInfo}s for current list of accounts only.
+     */
+    @MainThread
+    Promise<List<CoreAccountInfo>> getCoreAccountInfos();
 
     /**
      * @return Whether or not there is an account authenticator for Google accounts.

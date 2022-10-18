@@ -158,6 +158,13 @@ public class AccountTrackerService {
             accountManagerFacade.addObserver(mAccountsChangeObserver);
         }
 
+        if (AccountTrackerServiceJni.get().isGaiaIdInAMFEnabled()) {
+            accountManagerFacade.getCoreAccountInfos().then(coreAccountInfos -> {
+                finishSeedingAccounts(coreAccountInfos, accountsChanged);
+            });
+            return;
+        }
+
         accountManagerFacade.getAccounts().then(accounts -> {
             final List<String> emails = AccountUtils.toAccountNames(accounts);
             new AsyncTask<List<String>>() {
@@ -165,7 +172,7 @@ public class AccountTrackerService {
                 public List<String> doInBackground() {
                     Log.d(TAG, "Getting id/email mapping");
                     final long seedingStartTime = SystemClock.elapsedRealtime();
-                    final List<String> gaiaIds = new ArrayList<>();
+                    final List<String> gaiaIds = new java.util.ArrayList<>();
                     for (String email : emails) {
                         final String gaiaId = accountManagerFacade.getAccountGaiaId(email);
                         if (gaiaId == null) {
@@ -180,7 +187,9 @@ public class AccountTrackerService {
                 @Override
                 public void onPostExecute(List<String> gaiaIds) {
                     if (gaiaIds.size() == emails.size()) {
-                        finishSeedingAccounts(gaiaIds, emails, accountsChanged);
+                        finishSeedingAccounts(
+                                createCoreAccountInfosFromEmailsAndGaiaIds(emails, gaiaIds),
+                                accountsChanged);
                     } else {
                         mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
                         seedAccounts(/*accountsChanged=*/accountsChanged);
@@ -190,11 +199,28 @@ public class AccountTrackerService {
         });
     }
 
+    private List<CoreAccountInfo> createCoreAccountInfosFromEmailsAndGaiaIds(
+            List<String> emails, List<String> gaiaIds) {
+        List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
+        for (int index = 0; index < gaiaIds.size(); index++) {
+            coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(
+                    emails.get(index), gaiaIds.get(index)));
+        }
+        return coreAccountInfos;
+    }
+
     private void finishSeedingAccounts(
-            List<String> gaiaIds, List<String> emails, boolean accountsChanged) {
-        assert gaiaIds.size() == emails.size() : "gaia IDs and emails should have the same size!";
-        AccountTrackerServiceJni.get().seedAccountsInfo(mNativeAccountTrackerService,
-                gaiaIds.toArray(new String[0]), emails.toArray(new String[0]));
+            List<CoreAccountInfo> coreAccountInfos, boolean accountsChanged) {
+        String[] emails = new String[coreAccountInfos.size()];
+        String[] gaiaIds = new String[coreAccountInfos.size()];
+        for (int index = 0; index < coreAccountInfos.size(); index++) {
+            emails[index] = coreAccountInfos.get(index).getEmail();
+            gaiaIds[index] = coreAccountInfos.get(index).getGaiaId();
+        }
+        // TODO(https://crbug.com/1336704): Change native method to take CoreAccountInfo as
+        // argument.
+        AccountTrackerServiceJni.get().seedAccountsInfo(
+                mNativeAccountTrackerService, gaiaIds, emails);
         mAccountsSeedingStatus = AccountsSeedingStatus.DONE;
 
         if (mExistsPendingSeedAccountsTask) {
@@ -211,18 +237,20 @@ public class AccountTrackerService {
             runnable.run();
         }
 
-        final List<CoreAccountInfo> accountInfos = new ArrayList<>();
-        for (int i = 0; i < gaiaIds.size(); ++i) {
-            accountInfos.add(
-                    CoreAccountInfo.createFromEmailAndGaiaId(emails.get(i), gaiaIds.get(i)));
-        }
         for (Observer observer : mObservers) {
-            observer.onAccountsSeeded(accountInfos, accountsChanged);
+            observer.onAccountsSeeded(coreAccountInfos, accountsChanged);
         }
     }
 
     @NativeMethods
     interface Natives {
         void seedAccountsInfo(long nativeAccountTrackerService, String[] gaiaIds, String[] emails);
+
+        /**
+         * Returns whether GaiaIdCacheInAccountManagerFacade feature is enabled in native code.
+         * We call native to get feature state due to limitation of adding chrome dependency in
+         * components code.
+         */
+        boolean isGaiaIdInAMFEnabled();
     }
 }

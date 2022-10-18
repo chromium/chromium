@@ -25,6 +25,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,6 +103,17 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                 return mBlockedGetAccountsPromise;
             }
             return Promise.fulfilled(getAccountsInternal());
+        }
+    }
+
+    @Override
+    public Promise<List<CoreAccountInfo>> getCoreAccountInfos() {
+        Promise<List<Account>> accountsPromise = getAccounts();
+        if (accountsPromise.isFulfilled()) {
+            return Promise.fulfilled(buildCoreAccountInfos(accountsPromise.getResult()));
+        } else {
+            return accountsPromise.then(
+                    (List<Account> accounts) -> buildCoreAccountInfos(accounts));
         }
     }
 
@@ -271,5 +283,14 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         for (AccountsChangeObserver observer : mObservers) {
             observer.onAccountsChanged();
         }
+    }
+
+    private List<CoreAccountInfo> buildCoreAccountInfos(List<Account> accounts) {
+        List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
+        for (Account account : accounts) {
+            coreAccountInfos.add(
+                    CoreAccountInfo.createFromEmailAndGaiaId(account.name, toGaiaId(account.name)));
+        }
+        return coreAccountInfos;
     }
 }

@@ -9,6 +9,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.MainThread;
@@ -25,6 +26,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +60,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             new AtomicReference<>();
 
     private @NonNull Promise<List<Account>> mAccountsPromise = new Promise<>();
+
+    private @NonNull Promise<List<CoreAccountInfo>> mCoreAccountInfosPromise = new Promise<>();
 
     /**
      * @param delegate the AccountManagerDelegate to use as a backend
@@ -101,6 +105,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public Promise<List<Account>> getAccounts() {
         ThreadUtils.assertOnUiThread();
         return mAccountsPromise;
+    }
+
+    @MainThread
+    @Override
+    public Promise<List<CoreAccountInfo>> getCoreAccountInfos() {
+        ThreadUtils.assertOnUiThread();
+        return mCoreAccountInfosPromise;
     }
 
     /**
@@ -162,6 +173,36 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
+     * @param account The account used to look up capabilities.
+     * @return Set of supported account capability values.
+     */
+    @Override
+    public Promise<AccountCapabilities> getAccountCapabilities(Account account) {
+        ThreadUtils.assertOnUiThread();
+        Promise<AccountCapabilities> accountCapabilitiesPromise = new Promise<>();
+        new AsyncTask<AccountCapabilities>() {
+            @Override
+            public AccountCapabilities doInBackground() {
+                Map<String, Integer> capabilitiesResponse = new HashMap<>();
+                for (String capabilityName :
+                        AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
+                    @CapabilityResponse
+                    int capability = mDelegate.hasCapability(
+                            account, getAndroidCapabilityName(capabilityName));
+                    capabilitiesResponse.put(capabilityName, capability);
+                }
+                return AccountCapabilities.parseFromCapabilitiesResponse(capabilitiesResponse);
+            }
+
+            @Override
+            protected void onPostExecute(AccountCapabilities result) {
+                accountCapabilitiesPromise.fulfill(result);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        return accountCapabilitiesPromise;
+    }
+
+    /**
      * Creates an intent that will ask the user to add a new account to the device. See
      * {@link AccountManager#addAccount} for details.
      * @param callback The callback to get the created intent. Will be invoked on the main thread.
@@ -198,33 +239,49 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * @param account The account used to look up capabilities.
-     * @return Set of supported account capability values.
+     * Fetches gaia ids, wraps them into {@link CoreAccountInfo} and returns them.
      */
-    @Override
-    public Promise<AccountCapabilities> getAccountCapabilities(Account account) {
-        Promise<AccountCapabilities> accountCapabilitiesPromise = new Promise<>();
+    @MainThread
+    private void fetchGaiaIdsAndFulfillCoreAccountInfosPromise() {
         ThreadUtils.assertOnUiThread();
-        new AsyncTask<AccountCapabilities>() {
-            @Override
-            public AccountCapabilities doInBackground() {
-                Map<String, Integer> capabilitiesResponse = new HashMap<>();
-                for (String capabilityName :
-                        AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
-                    @CapabilityResponse
-                    int capability = mDelegate.hasCapability(
-                            account, getAndroidCapabilityName(capabilityName));
-                    capabilitiesResponse.put(capabilityName, capability);
+        getAccounts().then(accounts -> {
+            List<String> emails = AccountUtils.toAccountNames(accounts);
+            new AsyncTask<List<String>>() {
+                @Override
+                public @Nullable List<String> doInBackground() {
+                    final long seedingStartTime = SystemClock.elapsedRealtime();
+                    List<String> gaiaIds = new ArrayList<>();
+                    for (String email : AccountUtils.toAccountNames(accounts)) {
+                        final String gaiaId = getAccountGaiaId(email);
+                        if (gaiaId == null) {
+                            return null;
+                        }
+                        gaiaIds.add(gaiaId);
+                    }
+                    RecordHistogram.recordTimesHistogram("Signin.AndroidGetAccountIdsTime",
+                            SystemClock.elapsedRealtime() - seedingStartTime);
+                    return gaiaIds;
                 }
-                return AccountCapabilities.parseFromCapabilitiesResponse(capabilitiesResponse);
-            }
 
-            @Override
-            protected void onPostExecute(AccountCapabilities result) {
-                accountCapabilitiesPromise.fulfill(result);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        return accountCapabilitiesPromise;
+                @Override
+                public void onPostExecute(@Nullable List<String> gaiaIds) {
+                    if (gaiaIds == null) {
+                        fetchGaiaIdsAndFulfillCoreAccountInfosPromise();
+                        return;
+                    }
+                    List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
+                    for (int index = 0; index < emails.size(); index++) {
+                        coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(
+                                emails.get(index), gaiaIds.get(index)));
+                    }
+                    if (mCoreAccountInfosPromise.isFulfilled()) {
+                        mCoreAccountInfosPromise = Promise.fulfilled(coreAccountInfos);
+                    } else {
+                        mCoreAccountInfosPromise.fulfill(coreAccountInfos);
+                    }
+                }
+            }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        });
     }
 
     private void onAccountsUpdated() {
@@ -239,6 +296,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             protected void onPostExecute(List<Account> allAccounts) {
                 mAllAccounts.set(allAccounts);
                 updateAccounts();
+                fetchGaiaIdsAndFulfillCoreAccountInfosPromise();
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }

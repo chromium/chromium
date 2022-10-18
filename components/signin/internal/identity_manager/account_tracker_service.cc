@@ -871,4 +871,9 @@ void AccountTrackerService::SeedAccountsInfo(
     SeedAccountInfo(gaia_ids[i], account_names[i]);
   }
 }
+
+jboolean signin::JNI_AccountTrackerService_IsGaiaIdInAMFEnabled(JNIEnv* env) {
+  return base::FeatureList::IsEnabled(
+      switches::kGaiaIdCacheInAccountManagerFacade);
+}
 #endif

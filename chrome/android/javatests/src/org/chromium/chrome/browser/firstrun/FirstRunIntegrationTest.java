@@ -376,6 +376,10 @@ public class FirstRunIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertNull("mAccountsPromise is already initialized!", mAccountsPromise);
             mAccountsPromise = new Promise<>();
+            // getCoreAccountInfos() is called by AccountTrackerService.seedAccounts();
+            // TODO(https://crbug.com/1336704): Remove when account manager facade initiates
+            //  seeding.
+            Mockito.when(mAccountManagerFacade.getCoreAccountInfos()).thenReturn(new Promise<>());
         });
         Mockito.when(mAccountManagerFacade.getAccounts()).thenReturn(mAccountsPromise);
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);

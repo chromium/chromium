@@ -26,7 +26,7 @@ BASE_DECLARE_FEATURE(kAccountIdMigration);
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAllowSyncOffForChildAccounts);
 BASE_DECLARE_FEATURE(kCreateSigninCheckerBeforeSyncConsentFragment);
-BASE_DECLARE_FEATURE(kGaiaIdInAMF);
+BASE_DECLARE_FEATURE(kGaiaIdCacheInAccountManagerFacade);
 #endif
 
 BASE_DECLARE_FEATURE(kNewSigninRequestHeaderCheckOrder);

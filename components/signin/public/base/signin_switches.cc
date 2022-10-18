@@ -33,7 +33,9 @@ BASE_FEATURE(kCreateSigninCheckerBeforeSyncConsentFragment,
 
 // If enabled, starts gaia id fetching process from android accounts in
 // AccountManagerFacade (AMF). Thus clients can get gaia id from AMF directly.
-BASE_FEATURE(kGaiaIdInAMF, "GaiaIdInAMF", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGaiaIdCacheInAccountManagerFacade,
+             "GaiaIdCacheInAccountManagerFacade",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // If enabled, performs the URL-based check first when proving that the

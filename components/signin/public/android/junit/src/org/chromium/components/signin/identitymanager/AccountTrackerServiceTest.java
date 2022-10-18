@@ -11,10 +11,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
 
@@ -63,6 +63,7 @@ public class AccountTrackerServiceTest {
     @Rule
     public final JniMocker mocker = new JniMocker();
 
+    // TODO(https://crbug.com/1336704): Use mock instead of spy.
     @Spy
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             new FakeAccountManagerFacade();
@@ -102,6 +103,7 @@ public class AccountTrackerServiceTest {
 
     @Test
     public void testSeedAccountsIfNeededBeforeAccountsAreSeeded() {
+        doReturn(true).when(mNativeMock).isGaiaIdInAMFEnabled();
         mService.seedAccountsIfNeeded(mRunnableMock);
 
         verify(mFakeAccountManagerFacade).addObserver(notNull());
@@ -117,6 +119,7 @@ public class AccountTrackerServiceTest {
 
     @Test
     public void testSeedAccountsIfNeededWhenSeedingIsInProgress() {
+        doReturn(true).when(mNativeMock).isGaiaIdInAMFEnabled();
         final AtomicBoolean isInvoked = new AtomicBoolean(false);
         doAnswer(invocation -> {
             if (!isInvoked.getAndSet(true)) {
@@ -142,6 +145,7 @@ public class AccountTrackerServiceTest {
 
     @Test
     public void testSeedAccountsIfNeededAfterAccountsAreSeeded() {
+        doReturn(true).when(mNativeMock).isGaiaIdInAMFEnabled();
         mService.seedAccountsIfNeeded(() -> {});
 
         mService.seedAccountsIfNeeded(mRunnableMock);
@@ -160,6 +164,7 @@ public class AccountTrackerServiceTest {
 
     @Test
     public void testAddingNewAccountTriggersSeedingAccounts() {
+        doReturn(true).when(mNativeMock).isGaiaIdInAMFEnabled();
         mService.seedAccountsIfNeeded(() -> {});
         mService.addObserver(mObserverMock);
         final Account newAccount = AccountUtils.createAccountFromName("test2@gmail.com");
@@ -184,6 +189,7 @@ public class AccountTrackerServiceTest {
      */
     @Test
     public void testAddingAccountTriggersSeedingWhenAnotherSeedingIsInProgress() {
+        doReturn(false).when(mNativeMock).isGaiaIdInAMFEnabled();
         final Account newAccount = AccountUtils.createAccountFromName("test2@gmail.com");
         final AtomicBoolean isNewAccountAdded = new AtomicBoolean(false);
         doAnswer(invocation -> {
@@ -221,10 +227,11 @@ public class AccountTrackerServiceTest {
 
     @Test
     public void testSeedAccountsWhenGaiaIdIsNull() {
+        doReturn(false).when(mNativeMock).isGaiaIdInAMFEnabled();
         // When gaia ID is null, seedAccounts() will be called recursively in the
         // current code, the test sets a limit number for this invocation artificially
         // by mocking AccountManagerFacade#getAccounts().
-        when(mFakeAccountManagerFacade.getAccountGaiaId(anyString())).thenReturn(null);
+        doReturn(null).when(mFakeAccountManagerFacade).getAccountGaiaId(anyString());
         final int expectedNumberOfInvocations = 3;
         final AtomicInteger invocationCount = new AtomicInteger(0);
         // This will cause mock counts for getAccounts() method to be 1 greater than
@@ -248,6 +255,7 @@ public class AccountTrackerServiceTest {
 
     @Test
     public void testSeedAccountsWithObserverAttached() {
+        doReturn(true).when(mNativeMock).isGaiaIdInAMFEnabled();
         mService.addObserver(mObserverMock);
         verify(mObserverMock, never()).onAccountsSeeded(any(), anyBoolean());
 
@@ -262,6 +270,7 @@ public class AccountTrackerServiceTest {
 
     @Test
     public void testSeedAccountsWithObserverRemoved() {
+        doReturn(true).when(mNativeMock).isGaiaIdInAMFEnabled();
         mService.addObserver(mObserverMock);
         mService.removeObserver(mObserverMock);
 

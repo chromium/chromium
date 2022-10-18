@@ -6837,9 +6837,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceStartupSigninPromoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kForceStartupSigninPromo)},
 
-    {"gaia-id-in-amf", flag_descriptions::kGaiaIdInAMFName,
-     flag_descriptions::kGaiaIdInAMFDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kGaiaIdInAMF)},
+    {"gaia-id-in-amf",
+     flag_descriptions::kGaiaIdCacheInAccountManagerFacadeName,
+     flag_descriptions::kGaiaIdCacheInAccountManagerFacadeDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kGaiaIdCacheInAccountManagerFacade)},
 
     {"tangible-sync", flag_descriptions::kTangibleSyncName,
      flag_descriptions::kTangibleSyncDescription, kOsAndroid,
