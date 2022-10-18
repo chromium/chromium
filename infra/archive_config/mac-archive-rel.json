@@ -18,7 +18,8 @@
         },
         {
             "files": [
-                "chromedriver"
+                "chromedriver",
+                "LICENSE.chromedriver"
             ],
             "rename_dirs": [
                 {"from_dir": ".", "to_dir": "chromedriver_mac64"}

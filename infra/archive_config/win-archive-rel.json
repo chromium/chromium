@@ -89,7 +89,8 @@
         },
         {
             "files": [
-                "chromedriver.exe"
+                "chromedriver.exe",
+                "LICENSE.chromedriver"
             ],
             "rename_dirs": [
                 {"from_dir": ".", "to_dir": "chromedriver_win32"}
