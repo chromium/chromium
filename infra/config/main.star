@@ -102,7 +102,10 @@ luci.project(
     bindings = [
         luci.binding(
             roles = "role/configs.validator",
-            groups = "project-chromium-try-task-accounts",
+            groups = [
+                "project-chromium-try-task-accounts",
+                "project-chromium-ci-task-accounts",
+            ],
         ),
         # Roles for LUCI Analysis.
         luci.binding(
