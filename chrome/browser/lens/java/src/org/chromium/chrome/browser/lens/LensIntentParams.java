@@ -16,8 +16,6 @@ public class LensIntentParams {
     private String mImageTitleOrAltText;
     private String mPageUrl;
     private boolean mIsIncognito;
-    // TODO(b/182675578): Remove requiresConfirmation from LensIntentParams.
-    private boolean mRequiresConfirmation;
     private int mIntentType;
     private String mProactiveSessionId;
     private int mProactiveQueryId;
@@ -32,7 +30,6 @@ public class LensIntentParams {
         private String mImageTitleOrAltText;
         private String mPageUrl;
         private boolean mIsIncognito;
-        private boolean mRequiresConfirmation;
         private int mIntentType;
         private String mProactiveSessionId;
         private int mProactiveQueryId;
@@ -89,17 +86,6 @@ public class LensIntentParams {
         }
 
         /**
-         * Sets whether the client requires account confirmation.
-         *
-         * @param requiresConfirmation Whether the client requires account confirmation as a boolean
-         *         parameter
-         */
-        public Builder withRequiresConfirmation(boolean requiresConfirmation) {
-            this.mRequiresConfirmation = requiresConfirmation;
-            return this;
-        }
-
-        /**
          * Sets the intent type.
          *
          * @param intentType The intent type to set as a parameter
@@ -138,7 +124,6 @@ public class LensIntentParams {
             lensIntentParams.mIsIncognito = mIsIncognito;
             lensIntentParams.mLensEntryPoint = mLensEntryPoint;
             lensIntentParams.mIntentType = mIntentType;
-            lensIntentParams.mRequiresConfirmation = mRequiresConfirmation;
             lensIntentParams.mProactiveSessionId = mProactiveSessionId;
             lensIntentParams.mProactiveQueryId = mProactiveQueryId;
             if (!Uri.EMPTY.equals(mImageUri)) {
@@ -180,11 +165,6 @@ public class LensIntentParams {
     /** Returns the isIncognito for this set of params. */
     public boolean getIsIncognito() {
         return mIsIncognito;
-    }
-
-    /** Returns the requiresConfirmation for this set of params. */
-    public boolean getRequiresConfirmation() {
-        return mRequiresConfirmation;
     }
 
     /** Returns the intentType for this set of params. */
