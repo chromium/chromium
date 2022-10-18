@@ -190,35 +190,39 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
   }
 
   if (!seller_ad_beacon_map.empty()) {
+    bool has_bad_beacon_map = false;
     for (const auto& element : seller_ad_beacon_map) {
       if (!IsEventLevelReportingUrlValid(element.second)) {
         mojo::ReportBadMessage(base::StrCat(
             {"Invalid seller beacon URL for '", element.first, "'"}));
-        // TODO(mmenke): Call into other worklets, despite failure.
-        OnReportingComplete(
-            /*success=*/false);
-        return;
+        // No need to skip rest of work on failure - all fields are validated
+        // and consumed independently, and it's not worth the complexity to make
+        // sure everything is dropped when a field is invalid.
+        has_bad_beacon_map = true;
+        break;
       }
     }
-    if (seller_info == &top_level_seller_winning_bid_info_) {
-      ad_beacon_map_.metadata[blink::mojom::ReportingDestination::kSeller] =
-          seller_ad_beacon_map;
-    } else {
-      ad_beacon_map_
-          .metadata[blink::mojom::ReportingDestination::kComponentSeller] =
-          seller_ad_beacon_map;
+    if (!has_bad_beacon_map) {
+      if (seller_info == &top_level_seller_winning_bid_info_) {
+        ad_beacon_map_.metadata[blink::mojom::ReportingDestination::kSeller] =
+            seller_ad_beacon_map;
+      } else {
+        ad_beacon_map_
+            .metadata[blink::mojom::ReportingDestination::kComponentSeller] =
+            seller_ad_beacon_map;
+      }
     }
   }
 
   if (seller_report_url) {
     if (!IsEventLevelReportingUrlValid(*seller_report_url)) {
       mojo::ReportBadMessage("Invalid seller report URL");
-      // TODO(mmenke): Call into other worklets, despite failure.
-      OnReportingComplete(/*success=*/false);
-      return;
+      // No need to skip rest of work on failure - all fields are validated and
+      // consumed independently, and it's not worth the complexity to make sure
+      // everything is dropped when a field is invalid.
+    } else {
+      report_urls_.push_back(*seller_report_url);
     }
-
-    report_urls_.push_back(*seller_report_url);
   }
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
