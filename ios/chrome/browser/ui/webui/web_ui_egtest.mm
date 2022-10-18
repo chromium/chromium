@@ -43,7 +43,8 @@ using chrome_test_util::ForwardButton;
 
   NSString* userAgent = [ChromeEarlGrey mobileUserAgentString];
   // Verify that JavaScript navigator.userAgent returns the mobile User Agent.
-  auto result = [ChromeEarlGrey evaluateJavaScript:@"navigator.userAgent"];
+  base::Value result =
+      [ChromeEarlGrey evaluateJavaScript:@"navigator.userAgent"];
   GREYAssertTrue(result.is_string(), @"Result is not a string.");
   NSString* navigatorUserAgent = base::SysUTF8ToNSString(result.GetString());
   GREYAssertEqualObjects(userAgent, navigatorUserAgent,

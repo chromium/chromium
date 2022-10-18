@@ -1746,7 +1746,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                              return;
                            if ([strongSelf isIncognitoForced])
                              return;
-                           auto editNodes = [strongSelf editNodes];
+                           std::vector<const bookmarks::BookmarkNode*>
+                               editNodes = [strongSelf editNodes];
                            [strongSelf openAllURLs:GetUrlsToOpen(editNodes)
                                        inIncognito:NO
                                             newTab:NO];
@@ -1762,7 +1763,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                              return;
                            if (![strongSelf isIncognitoAvailable])
                              return;
-                           auto editNodes = [strongSelf editNodes];
+                           std::vector<const bookmarks::BookmarkNode*>
+                               editNodes = [strongSelf editNodes];
                            [strongSelf openAllURLs:GetUrlsToOpen(editNodes)
                                        inIncognito:YES
                                             newTab:NO];

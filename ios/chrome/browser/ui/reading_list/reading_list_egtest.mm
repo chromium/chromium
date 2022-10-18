@@ -686,7 +686,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   GREYAssertFalse(self.serverServedRedImage,
                   @"Offline page accessed online resource.");
 
-  auto checkImage = [ChromeEarlGrey evaluateJavaScript:kCheckImagesJS];
+  base::Value checkImage = [ChromeEarlGrey evaluateJavaScript:kCheckImagesJS];
 
   GREYAssertTrue(checkImage.is_bool(), @"CheckImage is not a boolean.");
   GREYAssert(checkImage.GetBool(), @"Incorrect image loading.");

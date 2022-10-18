@@ -156,7 +156,7 @@ bool LinkToTextTabHelper::IsOnlyBoundaryChars(NSString* str) {
     }
   }
   int max_len = MIN(kBoundaryCharSearchLimit, [str length]);
-  auto range = [not_boundary_char_regex_
+  NSRange range = [not_boundary_char_regex_
       rangeOfFirstMatchInString:str
                         options:0
                           range:NSMakeRange(0, max_len)];

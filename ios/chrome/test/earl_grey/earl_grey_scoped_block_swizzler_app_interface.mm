@@ -65,14 +65,16 @@
                                 withBlock:(id)block {
   Class target = NSClassFromString(targetString);
   SEL selector = NSSelectorFromString(selectorString);
-  auto helper = [EarlGreyScopedBlockSwizzlerHelper sharedInstance];
+  EarlGreyScopedBlockSwizzlerHelper* helper =
+      [EarlGreyScopedBlockSwizzlerHelper sharedInstance];
   auto swizzler =
       std::make_unique<ScopedBlockSwizzler>(target, selector, block);
   return [helper insertScopedBlockSwizzler:std::move(swizzler)];
 }
 
 + (void)deleteScopedBlockSwizzlerForID:(int)uniqueID {
-  auto helper = [EarlGreyScopedBlockSwizzlerHelper sharedInstance];
+  EarlGreyScopedBlockSwizzlerHelper* helper =
+      [EarlGreyScopedBlockSwizzlerHelper sharedInstance];
   [helper removeScopedBlockSwizzler:uniqueID];
 }
 

@@ -97,7 +97,7 @@ NSArray<NSString*>* GetMarkedText() {
                   "  }"
                   "  return markedText;"
                   "})();";
-  auto result = [ChromeEarlGrey evaluateJavaScript:js];
+  base::Value result = [ChromeEarlGrey evaluateJavaScript:js];
   GREYAssertTrue(result.is_list(), @"Result is not iterable.");
 
   NSMutableArray<NSString*>* marked_texts = [NSMutableArray array];
@@ -125,7 +125,7 @@ NSString* GetFirstVisibleMarkedText() {
        "    rect.right <= window.innerWidth;"
        "  return isVisible ? firstMark.innerText : '';"
        "})();";
-  auto result = [ChromeEarlGrey evaluateJavaScript:js];
+  base::Value result = [ChromeEarlGrey evaluateJavaScript:js];
   GREYAssertTrue(result.is_string(), @"Result is not a string.");
   return base::SysUTF8ToNSString(result.GetString());
 }

@@ -514,7 +514,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   TableViewTextEditCell* rowCell =
       base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
 
-  auto rowItemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  ItemType rowItemType = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
   // If the expiration date cell is displayed then we're transitioning to the
   // expiration date form. Only focus the CVC cell when we're not transitioning
   // to the expiration date form.
@@ -549,7 +550,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
 
-  NSInteger rowItemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  ItemType rowItemType = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
 
   if (rowItemType == ItemTypeCVCInput) {
     TableViewTextEditCell* rowCell =

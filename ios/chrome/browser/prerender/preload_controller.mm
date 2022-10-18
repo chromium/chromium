@@ -465,7 +465,8 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   [self removeScheduledPrerenderRequests];
 
   // Use the helper function to properly release the web::WebState.
-  auto webState = [self releasePrerenderContentsInternal];
+  std::unique_ptr<web::WebState> webState =
+      [self releasePrerenderContentsInternal];
 
   // The WebState will be converted to a proper tab. Record navigations that
   // happened during pre-rendering to the HistoryService.

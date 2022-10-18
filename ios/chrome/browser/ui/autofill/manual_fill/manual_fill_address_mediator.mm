@@ -92,7 +92,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
   NSString* manageAddressesTitle =
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_ADDRESSES);
   __weak __typeof(self) weakSelf = self;
-  auto manageAddressesItem = [[ManualFillActionItem alloc]
+  ManualFillActionItem* manageAddressesItem = [[ManualFillActionItem alloc]
       initWithTitle:manageAddressesTitle
              action:^{
                base::RecordAction(base::UserMetricsAction(

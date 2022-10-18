@@ -171,7 +171,8 @@ BOOL AreCredentialsAtIndexesConnected(
     (UISearchController*)searchController {
   NSString* searchText = searchController.searchBar.text;
   if (!searchText.length) {
-    auto credentials = [self createItemsForCredentials:self.credentials];
+    NSArray<ManualFillCredentialItem*>* credentials =
+        [self createItemsForCredentials:self.credentials];
     [self.consumer presentCredentials:credentials];
     return;
   }
@@ -181,7 +182,8 @@ BOOL AreCredentialsAtIndexesConnected(
                           searchText, searchText];
   NSArray* filteredCredentials =
       [self.credentials filteredArrayUsingPredicate:predicate];
-  auto credentials = [self createItemsForCredentials:filteredCredentials];
+  NSArray<ManualFillCredentialItem*>* credentials =
+      [self createItemsForCredentials:filteredCredentials];
   [self.consumer presentCredentials:credentials];
 }
 
@@ -204,7 +206,8 @@ BOOL AreCredentialsAtIndexesConnected(
   if (!self.consumer) {
     return;
   }
-  auto credentials = [self createItemsForCredentials:self.credentials];
+  NSArray<ManualFillCredentialItem*>* credentials =
+      [self createItemsForCredentials:self.credentials];
   [self.consumer presentCredentials:credentials];
 }
 
@@ -219,7 +222,7 @@ BOOL AreCredentialsAtIndexesConnected(
     BOOL isConnectedToNextItem =
         AreCredentialsAtIndexesConnected(credentials, i, i + 1);
     ManualFillCredential* credential = credentials[i];
-    auto item = [[ManualFillCredentialItem alloc]
+    ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
                initWithCredential:credential
         isConnectedToPreviousItem:isConnectedToPreviousItem
             isConnectedToNextItem:isConnectedToNextItem
@@ -253,7 +256,7 @@ BOOL AreCredentialsAtIndexesConnected(
           useUpdatedStrings
               ? IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS
               : IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);
-      auto suggestPasswordItem = [[ManualFillActionItem alloc]
+      ManualFillActionItem* suggestPasswordItem = [[ManualFillActionItem alloc]
           initWithTitle:suggestPasswordTitleString
                  action:^{
                    base::RecordAction(base::UserMetricsAction(
@@ -269,7 +272,7 @@ BOOL AreCredentialsAtIndexesConnected(
         useUpdatedStrings
             ? IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS
             : IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
-    auto otherPasswordsItem = [[ManualFillActionItem alloc]
+    ManualFillActionItem* otherPasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:otherPasswordsTitleString
                action:^{
                  base::RecordAction(base::UserMetricsAction(
@@ -285,7 +288,7 @@ BOOL AreCredentialsAtIndexesConnected(
     NSString* managePasswordsTitle = l10n_util::GetNSString(
         useUpdatedStrings ? IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS
                           : IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
-    auto managePasswordsItem = [[ManualFillActionItem alloc]
+    ManualFillActionItem* managePasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:managePasswordsTitle
                action:^{
                  base::RecordAction(base::UserMetricsAction(

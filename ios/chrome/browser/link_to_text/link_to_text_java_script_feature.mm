@@ -101,11 +101,12 @@ void LinkToTextJavaScriptFeature::HandleResponse(
     base::ElapsedTimer link_generation_timer,
     base::OnceCallback<void(LinkToTextResponse*)> final_callback,
     const base::Value* response) {
-  auto* parsed_response = [LinkToTextResponse
+  LinkToTextResponse* parsed_response = [LinkToTextResponse
       linkToTextResponseWithValue:response
                          webState:web_state
                           latency:link_generation_timer.Elapsed()];
-  auto error = [parsed_response error];
+  absl::optional<shared_highlighting::LinkGenerationError> error =
+      [parsed_response error];
 
   std::vector<web::WebFrame*> amp_frames;
   if (ShouldAttemptIframeGeneration(error, web_state->GetLastCommittedURL())) {

@@ -159,7 +159,8 @@ bool SessionRestorationBrowserAgent::RestoreSession() {
   DCHECK(session_identifier_.length != 0);
 
   PreviousSessionInfo* session_info = [PreviousSessionInfo sharedInstance];
-  auto scoped_restore = [session_info startSessionRestoration];
+  base::ScopedClosureRunner scoped_restore =
+      [session_info startSessionRestoration];
 
   SessionIOS* session = [session_service_
       loadSessionWithSessionID:session_identifier_

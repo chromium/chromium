@@ -118,7 +118,7 @@ NSString* const kAddCreditCardsAccessibilityIdentifier =
   NSString* manageCreditCardsTitle =
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_CREDIT_CARDS);
   __weak __typeof(self) weakSelf = self;
-  auto manageCreditCardsItem = [[ManualFillActionItem alloc]
+  ManualFillActionItem* manageCreditCardsItem = [[ManualFillActionItem alloc]
       initWithTitle:manageCreditCardsTitle
              action:^{
                base::RecordAction(base::UserMetricsAction(
@@ -131,7 +131,7 @@ NSString* const kAddCreditCardsAccessibilityIdentifier =
   NSString* addCreditCardsTitle =
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_ADD_PAYMENT_METHOD);
 
-  auto addCreditCardsItem = [[ManualFillActionItem alloc]
+  ManualFillActionItem* addCreditCardsItem = [[ManualFillActionItem alloc]
       initWithTitle:addCreditCardsTitle
              action:^{
                base::RecordAction(base::UserMetricsAction(

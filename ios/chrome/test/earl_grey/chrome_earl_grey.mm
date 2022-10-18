@@ -502,7 +502,7 @@ UIWindow* GetAnyKeyWindow() {
 - (NSDictionary*)cookies {
   NSString* const kGetCookiesScript =
       @"document.cookie ? document.cookie.split(/;\\s*/) : [];";
-  auto result = [self evaluateJavaScript:kGetCookiesScript];
+  base::Value result = [self evaluateJavaScript:kGetCookiesScript];
 
   EG_TEST_HELPER_ASSERT_TRUE(result.is_list(),
                              @"The script response is not iterable.");
@@ -1138,7 +1138,7 @@ UIWindow* GetAnyKeyWindow() {
 
 - (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition {
   auto verifyBlock = ^BOOL {
-    auto value = [ChromeEarlGrey evaluateJavaScript:javaScriptCondition];
+    base::Value value = [ChromeEarlGrey evaluateJavaScript:javaScriptCondition];
     DCHECK(value.is_bool());
     return value.GetBool();
   };
