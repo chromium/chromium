@@ -21,9 +21,10 @@ std::vector<std::string> GetLogLines(const std::string& log) {
                            base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
-std::vector<std::string> GetLogLineContents(const std::string& log_line) {
+std::vector<std::string> GetLogLineContents(const std::string& log_line,
+                                            const std::string& separators) {
   const std::vector<std::string> result = base::SplitString(
-      log_line, kSeparator, base::WhitespaceHandling::TRIM_WHITESPACE,
+      log_line, separators, base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
   return result;
 }
