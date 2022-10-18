@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/functional/overloaded.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,6 +14,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -368,9 +370,14 @@ bool AutofillContextMenuManager::CreateSubMenuWithData(
     }
 
     std::u16string value = absl::visit(
-        [type](const auto& alternative) {
-          return alternative->GetRawInfo(type);
-        },
+        base::Overloaded{[type](const CreditCard* card) {
+                           if (type == CREDIT_CARD_NUMBER)
+                             return card->ObfuscatedLastFourDigits();
+                           return card->GetRawInfo(type);
+                         },
+                         [type](const AutofillProfile* profile) {
+                           return profile->GetRawInfo(type);
+                         }},
         profile_or_credit_card);
 
     if (value.empty())

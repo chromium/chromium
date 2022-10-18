@@ -180,7 +180,8 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
   auto* card_details_submenu = card_menu_model->GetSubmenuModelAt(0);
   ASSERT_EQ(card_details_submenu->GetItemCount(), 5u);
   static constexpr std::array expected_credit_card_values = {
-      u"Test User", u"4111111111111111", u""};
+      u"Test User",
+      u"‪•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠1111‬", u""};
   for (size_t i = 0; i < expected_credit_card_values.size(); i++) {
     ASSERT_EQ(card_details_submenu->GetLabelAt(i),
               expected_credit_card_values[i]);
