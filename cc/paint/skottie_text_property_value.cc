@@ -39,7 +39,7 @@ void SkottieTextPropertyValue::SetText(std::string text) {
   if (incoming_text_hash == text_hash_)
     return;
   text_hash_ = incoming_text_hash;
-  text_ = base::RefCountedString::TakeString(&text);
+  text_ = base::MakeRefCounted<base::RefCountedString>(std::move(text));
 }
 
 }  // namespace cc
