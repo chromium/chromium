@@ -726,7 +726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Frame.FirstInputDelay.MainFrame" units="ms"
-    expires_after="2022-11-30">
+    expires_after="2023-10-18">
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -744,7 +744,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore"
-    units="ms" expires_after="2022-11-30">
+    units="ms" expires_after="2023-10-18">
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -761,7 +761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Frame.FirstInputDelay.SubFrame" units="ms"
-    expires_after="2022-11-30">
+    expires_after="2023-10-18">
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -779,7 +779,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore"
-    units="ms" expires_after="2022-11-30">
+    units="ms" expires_after="2023-10-18">
   <owner>danieltwhite@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
