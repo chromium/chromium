@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Windows.CetAvailable" enum="BooleanAvailable"
-    expires_after="2022-12-01">
+    expires_after="2023-12-01">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
