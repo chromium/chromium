@@ -468,6 +468,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
     pixel_tests_results_dict = {'tests':{}, 'num_failures_by_type': {}}
     for test_file in self.pixel_tests:
+      logger.info('Running pixel test %s', test_file)
       try:
         # The test result will for each tests will be set after
         # comparing the test screenshots to skia gold baselines.
@@ -642,6 +643,9 @@ class WebViewFinchTestCase(FinchTestCase):
   @property
   def pixel_tests(self):
     return super(WebViewFinchTestCase, self).pixel_tests + [
+        'external/wpt/svg/render/reftests/blending-001.svg',
+        'external/wpt/svg/render/reftests/blending-svg-foreign-object.html',
+        'external/wpt/svg/render/reftests/filter-effects-on-pattern.html',
         'external/wpt/svg/pservers/reftests/radialgradient-basic-002.svg',
     ]
 
