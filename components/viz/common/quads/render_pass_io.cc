@@ -917,14 +917,13 @@ base::Value ColorSpaceToDict(const gfx::ColorSpace& color_space) {
   return dict;
 }
 
-bool ColorSpaceFromDict(const base::Value& dict, gfx::ColorSpace* color_space) {
+bool ColorSpaceFromDict(const base::Value::Dict& dict,
+                        gfx::ColorSpace* color_space) {
   DCHECK(color_space);
-  if (!dict.is_dict())
-    return false;
-  const std::string* primaries = dict.FindStringKey("primaries");
-  const std::string* transfer = dict.FindStringKey("transfer");
-  const std::string* matrix = dict.FindStringKey("matrix");
-  const std::string* range = dict.FindStringKey("range");
+  const std::string* primaries = dict.FindString("primaries");
+  const std::string* transfer = dict.FindString("transfer");
+  const std::string* matrix = dict.FindString("matrix");
+  const std::string* range = dict.FindString("range");
   if (!primaries || !transfer || !matrix || !range)
     return false;
   uint8_t primary_id = StringToColorSpacePrimaryId(*primaries);
@@ -938,7 +937,7 @@ bool ColorSpaceFromDict(const base::Value& dict, gfx::ColorSpace* color_space) {
       primary_id == static_cast<uint8_t>(gfx::ColorSpace::PrimaryID::CUSTOM);
   if (uses_custom_primary_matrix) {
     const base::Value::List* custom_primary_matrix =
-        dict.GetDict().FindList("custom_primary_matrix");
+        dict.FindList("custom_primary_matrix");
     if (!custom_primary_matrix ||
         !Matrix3x3FromList(*custom_primary_matrix, &t_custom_primary_matrix)) {
       return false;
@@ -952,7 +951,7 @@ bool ColorSpaceFromDict(const base::Value& dict, gfx::ColorSpace* color_space) {
           static_cast<uint8_t>(gfx::ColorSpace::TransferID::CUSTOM_HDR);
   if (uses_custom_transfer_params) {
     const base::Value::List* custom_transfer_params =
-        dict.GetDict().FindList("custom_transfer_params");
+        dict.FindList("custom_transfer_params");
     if (!custom_transfer_params ||
         !TransferFunctionFromList(*custom_transfer_params,
                                   &t_custom_transfer_params)) {
@@ -1601,8 +1600,8 @@ bool YUVVideoDrawQuadFromDict(const base::Value& dict_value,
   absl::optional<double> resource_multiplier =
       dict.FindDouble("resource_multiplier");
   absl::optional<int> bits_per_channel = dict.FindInt("bits_per_channel");
-  const base::Value* video_color_space =
-      dict_value.FindDictKey("video_color_space");
+  const base::Value::Dict* video_color_space =
+      dict.FindDict("video_color_space");
   const std::string* protected_video_type =
       dict.FindString("protected_video_type");
 
@@ -2118,7 +2117,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassColorSpace)) {
-    const base::Value* color_space = dict_value.FindDictKey("color_space");
+    const base::Value::Dict* color_space = dict.FindDict("color_space");
     if (!color_space)
       return nullptr;
 
