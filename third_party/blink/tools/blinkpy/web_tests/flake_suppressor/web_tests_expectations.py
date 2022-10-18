@@ -57,7 +57,7 @@ class WebTestsExpectationProcessor(expectations_module.ExpectationProcessor):
                                         expectation_file)
         return expectation_file
 
-    def GetTagGroups(self, contents: str) -> List[str]:
+    def GetTagGroups(self, contents: str) -> List[List[str]]:
         tag_groups = super().GetTagGroups(contents)
         tag_groups_lower = [[t.lower() for t in tg] for tg in tag_groups]
         return tag_groups_lower
@@ -69,3 +69,7 @@ class WebTestsExpectationProcessor(expectations_module.ExpectationProcessor):
         if fraction < flaky_threshold:
             return None
         return 'Failure'
+
+    def ProcessTypTagsBeforeWriting(self, typ_tags: ct.TagTupleType
+                                    ) -> ct.TagTupleType:
+        return tuple([tag.capitalize() for tag in typ_tags])

@@ -279,10 +279,8 @@ class ExpectationProcessor():
     bug = '%s ' % bug if bug else bug
 
     def AppendExpectationToEnd():
-      # TODO(crbug/1358735) : Process the tags to capitalize the first letter
-      # for web tests before writing.
-      expectation_line = '%s[ %s ] %s [ %s ]\n' % (bug, ' '.join(typ_tags),
-                                                   test, expected_result)
+      expectation_line = '%s[ %s ] %s [ %s ]\n' % (bug, ' '.join(
+          self.ProcessTypTagsBeforeWriting(typ_tags)), test, expected_result)
       with open(expectation_file, 'a') as outfile:
         outfile.write(expectation_line)
 
@@ -299,10 +297,8 @@ class ExpectationProcessor():
           tags_to_use = typ_tags
         # enumerate starts at 0 but line numbers start at 1.
         insertion_line -= 1
-        tags_to_use = list(tags_to_use)
+        tags_to_use = list(self.ProcessTypTagsBeforeWriting(tags_to_use))
         tags_to_use.sort()
-        # TODO(crbug/1358735) : Process the tags to capitalize the first letter
-        # for web tests before writing.
         expectation_line = '%s[ %s ] %s [ %s ]\n' % (bug, ' '.join(tags_to_use),
                                                      test, expected_result)
         with open(expectation_file) as infile:
@@ -513,7 +509,7 @@ class ExpectationProcessor():
     """
     raise NotImplementedError
 
-  def GetTagGroups(self, contents: str) -> List[str]:
+  def GetTagGroups(self, contents: str) -> List[List[str]]:
     tag_groups = []
     for match in TAG_GROUP_REGEX.findall(contents):
       tag_groups.append(match.strip().replace('#', '').split())
@@ -521,3 +517,7 @@ class ExpectationProcessor():
 
   def GetExpectedResult(self, fraction: float, flaky_threshold: float) -> str:
     raise NotImplementedError
+
+  def ProcessTypTagsBeforeWriting(self,
+                                  typ_tags: ct.TagTupleType) -> ct.TagTupleType:
+    return typ_tags
