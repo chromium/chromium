@@ -23,7 +23,6 @@
 
 namespace {
 
-using ::base::DictionaryValue;
 using ::base::Value;
 using ::testing::Optional;
 
@@ -33,9 +32,7 @@ class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
       SupervisedUserSettingsService* settings_service);
   ~SupervisedUserPrefStoreFixture() override;
 
-  base::DictionaryValue* changed_prefs() {
-    return &changed_prefs_;
-  }
+  base::Value::Dict* changed_prefs() { return &changed_prefs_; }
 
   bool initialization_completed() const {
     return initialization_completed_;
@@ -47,7 +44,7 @@ class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
 
  private:
   scoped_refptr<SupervisedUserPrefStore> pref_store_;
-  base::DictionaryValue changed_prefs_;
+  base::Value::Dict changed_prefs_;
   bool initialization_completed_;
 };
 
@@ -66,7 +63,7 @@ void SupervisedUserPrefStoreFixture::OnPrefValueChanged(
     const std::string& key) {
   const base::Value* value = nullptr;
   ASSERT_TRUE(pref_store_->GetValue(key, &value));
-  changed_prefs_.SetPath(key, value->Clone());
+  changed_prefs_.SetByDottedPath(key, value->Clone());
 }
 
 void SupervisedUserPrefStoreFixture::OnInitializationCompleted(bool succeeded) {
@@ -114,7 +111,7 @@ TEST_F(SupervisedUserPrefStoreTest,
   // kAllowDeletingBrowserHistory is based on the state of the feature
   // supervised_users::kAllowHistoryDeletionForChildAccounts.
   // This is enabled in scope.
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolPath(
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kAllowDeletingBrowserHistory),
               Optional(true));
 }
@@ -128,50 +125,50 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   // activated yet.
   pref_store_->SetInitializationCompleted();
   EXPECT_TRUE(fixture.initialization_completed());
-  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
+  EXPECT_EQ(0u, fixture.changed_prefs()->size());
 
   service_.SetActive(true);
 
   // kAllowDeletingBrowserHistory is based on the state of the feature
   // supervised_users::kAllowHistoryDeletionForChildAccounts.
   // This is disabled in scope.
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolPath(
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kAllowDeletingBrowserHistory),
               Optional(false));
 
   // kIncognitoModeAvailability must be disabled for all supervised users.
   EXPECT_THAT(
-      fixture.changed_prefs()->FindIntPath(prefs::kIncognitoModeAvailability),
+      fixture.changed_prefs()->FindIntByDottedPath(
+          prefs::kIncognitoModeAvailability),
       Optional(static_cast<int>(IncognitoModePrefs::Availability::kDisabled)));
 
   // kSupervisedModeManualHosts does not have a hardcoded value.
-  base::DictionaryValue* manual_hosts = nullptr;
-  EXPECT_FALSE(fixture.changed_prefs()->GetDictionary(
-      prefs::kSupervisedUserManualHosts, &manual_hosts));
+  EXPECT_FALSE(fixture.changed_prefs()->FindDictByDottedPath(
+      prefs::kSupervisedUserManualHosts));
 
   // kForceGoogleSafeSearch defaults to true and kForceYouTubeRestrict defaults
   // to Moderate for supervised users.
-  EXPECT_THAT(
-      fixture.changed_prefs()->FindBoolPath(prefs::kForceGoogleSafeSearch),
-      Optional(true));
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
+                  prefs::kForceGoogleSafeSearch),
+              Optional(true));
   int force_youtube_restrict =
       fixture.changed_prefs()
-          ->FindIntPath(prefs::kForceYouTubeRestrict)
+          ->FindIntByDottedPath(prefs::kForceYouTubeRestrict)
           .value_or(safe_search_util::YOUTUBE_RESTRICT_OFF);
   EXPECT_EQ(force_youtube_restrict,
             safe_search_util::YOUTUBE_RESTRICT_MODERATE);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Permissions requests default to disallowed.
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolPath(
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kSupervisedUserExtensionsMayRequestPermissions),
               Optional(false));
 #endif
 
   // Activating the service again should not change anything.
-  fixture.changed_prefs()->DictClear();
+  fixture.changed_prefs()->clear();
   service_.SetActive(true);
-  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
+  EXPECT_EQ(0u, fixture.changed_prefs()->size());
 
   // kSupervisedModeManualHosts can be configured by the custodian.
   base::Value hosts(base::Value::Type::DICTIONARY);
@@ -179,24 +176,27 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   hosts.SetBoolKey("moose.org", false);
   service_.SetLocalSetting(supervised_users::kContentPackManualBehaviorHosts,
                            std::make_unique<base::Value>(hosts.Clone()));
-  EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
-  ASSERT_TRUE(fixture.changed_prefs()->GetDictionary(
-      prefs::kSupervisedUserManualHosts, &manual_hosts));
+  EXPECT_EQ(1u, fixture.changed_prefs()->size());
+
+  base::Value::Dict* manual_hosts =
+      fixture.changed_prefs()->FindDictByDottedPath(
+          prefs::kSupervisedUserManualHosts);
+  ASSERT_TRUE(manual_hosts);
   EXPECT_TRUE(*manual_hosts == hosts);
 
   // kForceGoogleSafeSearch and kForceYouTubeRestrict can be configured by the
   // custodian, overriding the hardcoded default.
-  fixture.changed_prefs()->DictClear();
+  fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_users::kForceSafeSearch,
                            std::make_unique<base::Value>(false));
-  EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
-  EXPECT_THAT(
-      fixture.changed_prefs()->FindBoolPath(prefs::kForceGoogleSafeSearch),
-      Optional(false));
+  EXPECT_EQ(1u, fixture.changed_prefs()->size());
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
+                  prefs::kForceGoogleSafeSearch),
+              Optional(false));
 
   force_youtube_restrict =
       fixture.changed_prefs()
-          ->FindIntPath(prefs::kForceYouTubeRestrict)
+          ->FindIntByDottedPath(prefs::kForceYouTubeRestrict)
           .value_or(safe_search_util::YOUTUBE_RESTRICT_MODERATE);
   EXPECT_EQ(force_youtube_restrict, safe_search_util::YOUTUBE_RESTRICT_OFF);
 
@@ -210,11 +210,11 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   histogram_tester.ExpectTotalCount(
       "SupervisedUsers.ExtensionsMayRequestPermissions", 0);
 
-  fixture.changed_prefs()->DictClear();
+  fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
                            std::make_unique<base::Value>(false));
-  EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolPath(
+  EXPECT_EQ(1u, fixture.changed_prefs()->size());
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kSupervisedUserExtensionsMayRequestPermissions),
               Optional(true));
 
@@ -223,11 +223,11 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   histogram_tester.ExpectTotalCount(
       "SupervisedUsers.ExtensionsMayRequestPermissions", 1);
 
-  fixture.changed_prefs()->DictClear();
+  fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
                            std::make_unique<base::Value>(true));
-  EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolPath(
+  EXPECT_EQ(1u, fixture.changed_prefs()->size());
+  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kSupervisedUserExtensionsMayRequestPermissions),
               Optional(false));
 
@@ -245,11 +245,11 @@ TEST_F(SupervisedUserPrefStoreTest, ActivateSettingsBeforeInitialization) {
 
   service_.SetActive(true);
   EXPECT_FALSE(fixture.initialization_completed());
-  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
+  EXPECT_EQ(0u, fixture.changed_prefs()->size());
 
   pref_store_->SetInitializationCompleted();
   EXPECT_TRUE(fixture.initialization_completed());
-  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
+  EXPECT_EQ(0u, fixture.changed_prefs()->size());
 }
 
 TEST_F(SupervisedUserPrefStoreTest, CreatePrefStoreAfterInitialization) {
@@ -258,5 +258,5 @@ TEST_F(SupervisedUserPrefStoreTest, CreatePrefStoreAfterInitialization) {
 
   SupervisedUserPrefStoreFixture fixture(&service_);
   EXPECT_TRUE(fixture.initialization_completed());
-  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
+  EXPECT_EQ(0u, fixture.changed_prefs()->size());
 }
