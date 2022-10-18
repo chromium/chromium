@@ -21,6 +21,7 @@
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_export.h"
+#include "device/vr/windows/compositor_base.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
@@ -40,7 +41,7 @@ class VRTestHook;
 class ServiceTestHook;
 
 using SessionStartedCallback = base::OnceCallback<void(XrResult result)>;
-using SessionEndedCallback = base::RepeatingCallback<void()>;
+using SessionEndedCallback = base::RepeatingCallback<void(ExitXrPresentReason)>;
 using VisibilityChangedCallback =
     base::RepeatingCallback<void(mojom::XRVisibilityState)>;
 

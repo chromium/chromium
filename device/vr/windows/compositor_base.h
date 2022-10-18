@@ -33,6 +33,17 @@ class GLES2Interface;
 
 namespace device {
 
+enum class ExitXrPresentReason : int32_t {
+  kUnknown = 0,
+  kMojoConnectionError = 1,
+  kOpenXrUninitialize = 2,
+  kStartRuntimeFailed = 3,
+  kOpenXrStartFailed = 4,
+  kXrEndFrameFailed = 5,
+  kGetFrameAfterSessionEnded = 6,
+  kSubmitFrameFailed = 7,
+};
+
 class XRDeviceAbstraction {
  public:
   virtual mojom::XRFrameDataPtr GetNextFrameData();
@@ -82,7 +93,7 @@ class XRCompositorCommon : public base::Thread,
                           on_visibility_state_changed,
                       mojom::XRRuntimeSessionOptionsPtr options,
                       RequestSessionCallback callback);
-  void ExitPresent();
+  void ExitPresent(ExitXrPresentReason reason);
 
   void GetFrameData(mojom::XRFrameDataRequestOptionsPtr options,
                     XRFrameDataProvider::GetFrameDataCallback callback) final;

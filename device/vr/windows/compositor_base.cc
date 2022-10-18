@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "ui/gfx/geometry/angle_conversions.h"
@@ -307,8 +308,9 @@ void XRCompositorCommon::StartRuntimeFinish(
   texture_helper_.SetSourceAndOverlayVisible(webxr_visible_, overlay_visible_);
 }
 
-void XRCompositorCommon::ExitPresent() {
-  TRACE_EVENT_INSTANT0("xr", "ExitPresent", TRACE_EVENT_SCOPE_THREAD);
+void XRCompositorCommon::ExitPresent(ExitXrPresentReason reason) {
+  TRACE_EVENT_INSTANT1("xr", "ExitPresent", TRACE_EVENT_SCOPE_THREAD, "reason",
+                       base::to_underlying(reason));
   is_presenting_ = false;
   webxr_has_pose_ = false;
   presentation_receiver_.reset();
@@ -390,7 +392,7 @@ void XRCompositorCommon::GetFrameData(
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
   TRACE_EVENT0("xr", "GetFrameData");
   if (HasSessionEnded()) {
-    ExitPresent();
+    ExitPresent(ExitXrPresentReason::kGetFrameAfterSessionEnded);
     return;
   }
 
@@ -596,7 +598,7 @@ void XRCompositorCommon::MaybeCompositeAndSubmit() {
     if (copy_successful) {
       pending_frame_->frame_ready_time_ = base::TimeTicks::Now();
       if (!SubmitCompositedFrame()) {
-        ExitPresent();
+        ExitPresent(ExitXrPresentReason::kSubmitFrameFailed);
         // ExitPresent() clears pending_frame_, so return here to avoid
         // accessing it below.
         return;

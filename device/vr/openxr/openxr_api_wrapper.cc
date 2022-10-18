@@ -224,7 +224,7 @@ void OpenXrApiWrapper::Uninitialize() {
     test_hook_->DetachCurrentThread();
 
   if (on_session_ended_callback_) {
-    on_session_ended_callback_.Run();
+    on_session_ended_callback_.Run(ExitXrPresentReason::kOpenXrUninitialize);
   }
 
   // If we haven't reported that the session started yet, we need to report
@@ -1349,6 +1349,9 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
     }
 
     if (XR_FAILED(xr_result)) {
+      TRACE_EVENT_INSTANT2("xr", "EventProcessingFailed",
+                           TRACE_EVENT_SCOPE_THREAD, "type", event_data.type,
+                           "xr_result", xr_result);
       Uninitialize();
       return xr_result;
     }
@@ -1357,8 +1360,12 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
     xr_result = xrPollEvent(instance_, &event_data);
   }
 
-  if (XR_FAILED(xr_result))
+  // This catches the error where we failed to poll events only.
+  if (XR_FAILED(xr_result)) {
+    TRACE_EVENT_INSTANT1("xr", "EventPollingFailed", TRACE_EVENT_SCOPE_THREAD,
+                         "xr_result", xr_result);
     Uninitialize();
+  }
   return xr_result;
 }
 

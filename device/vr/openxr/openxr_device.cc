@@ -204,7 +204,8 @@ void OpenXrDevice::OnPresentingControllerMojoConnectionError() {
   if (render_loop_) {
     render_loop_->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&XRCompositorCommon::ExitPresent,
-                                  base::Unretained(render_loop_.get())));
+                                  base::Unretained(render_loop_.get()),
+                                  ExitXrPresentReason::kMojoConnectionError));
   }
   OnExitPresent();
   exclusive_controller_receiver_.reset();

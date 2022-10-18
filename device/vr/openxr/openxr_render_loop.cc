@@ -141,7 +141,7 @@ void OpenXrRenderLoop::StartRuntime(
           std::move(on_session_started_callback),
           std::move(on_session_ended_callback),
           std::move(on_visibility_state_changed)))) {
-    ExitPresent();
+    ExitPresent(ExitXrPresentReason::kStartRuntimeFailed);
     std::move(start_runtime_split_callback.second).Run(false);
   }
 }
@@ -150,7 +150,7 @@ void OpenXrRenderLoop::OnOpenXrSessionStarted(
     StartRuntimeCallback start_runtime_callback,
     XrResult result) {
   if (XR_FAILED(result)) {
-    ExitPresent();
+    ExitPresent(ExitXrPresentReason::kOpenXrStartFailed);
     std::move(start_runtime_callback).Run(false);
     return;
   }
@@ -247,7 +247,7 @@ void OpenXrRenderLoop::ClearPendingFrameInternal() {
   if (openxr_->HasPendingFrame() && XR_FAILED(openxr_->EndFrame())) {
     // The start of the next frame will detect that the session has ended via
     // HasSessionEnded and will exit presentation.
-    ExitPresent();
+    ExitPresent(ExitXrPresentReason::kXrEndFrameFailed);
     return;
   }
 }
