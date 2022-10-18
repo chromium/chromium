@@ -111,50 +111,6 @@ const char* ToShutdownTypeString(ShutdownType type) {
   return "";
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void LogShutdownMetrics() {
-  base::UmaHistogramEnumeration("Shutdown.ShutdownType2", g_shutdown_type);
-
-  const char* time_metric_name = nullptr;
-  switch (g_shutdown_type) {
-    case ShutdownType::kNotValid:
-      time_metric_name = "Shutdown.NotValid.Time2";
-      break;
-
-    case ShutdownType::kSilentExit:
-      time_metric_name = "Shutdown.SilentExit.Time2";
-      break;
-
-    case ShutdownType::kWindowClose:
-      time_metric_name = "Shutdown.WindowClose.Time2";
-      break;
-
-    case ShutdownType::kBrowserExit:
-      time_metric_name = "Shutdown.BrowserExit.Time2";
-      break;
-
-    case ShutdownType::kEndSession:
-      time_metric_name = "Shutdown.EndSession.Time2";
-      break;
-
-    case ShutdownType::kOtherExit:
-      time_metric_name = "Shutdown.OtherExit.Time2";
-      break;
-  }
-  DCHECK(time_metric_name);
-
-  if (g_shutdown_started) {
-    base::TimeDelta shutdown_delta = base::Time::Now() - *g_shutdown_started;
-    base::UmaHistogramMediumTimes(time_metric_name, shutdown_delta);
-  }
-
-  base::UmaHistogramCounts100("Shutdown.Renderers.Total2",
-                              g_shutdown_num_processes);
-  base::UmaHistogramCounts100("Shutdown.Renderers.Slow2",
-                              g_shutdown_num_processes_slow);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // Utility function to verify that globals are accessed on the UI/Main thread.
 void CheckAccessedOnCorrectThread() {
   // Some APIs below are accessed after UI thread has been torn down, so cater
@@ -261,6 +217,48 @@ bool ShutdownPreThreadsStop() {
   return restart_last_session;
 }
 
+void RecordShutdownMetrics() {
+  base::UmaHistogramEnumeration("Shutdown.ShutdownType2", g_shutdown_type);
+
+  const char* time_metric_name = nullptr;
+  switch (g_shutdown_type) {
+    case ShutdownType::kNotValid:
+      time_metric_name = "Shutdown.NotValid.Time2";
+      break;
+
+    case ShutdownType::kSilentExit:
+      time_metric_name = "Shutdown.SilentExit.Time2";
+      break;
+
+    case ShutdownType::kWindowClose:
+      time_metric_name = "Shutdown.WindowClose.Time2";
+      break;
+
+    case ShutdownType::kBrowserExit:
+      time_metric_name = "Shutdown.BrowserExit.Time2";
+      break;
+
+    case ShutdownType::kEndSession:
+      time_metric_name = "Shutdown.EndSession.Time2";
+      break;
+
+    case ShutdownType::kOtherExit:
+      time_metric_name = "Shutdown.OtherExit.Time2";
+      break;
+  }
+  DCHECK(time_metric_name);
+
+  if (g_shutdown_started) {
+    base::TimeDelta shutdown_delta = base::Time::Now() - *g_shutdown_started;
+    base::UmaHistogramMediumTimes(time_metric_name, shutdown_delta);
+  }
+
+  base::UmaHistogramCounts100("Shutdown.Renderers.Total2",
+                              g_shutdown_num_processes);
+  base::UmaHistogramCounts100("Shutdown.Renderers.Slow2",
+                              g_shutdown_num_processes_slow);
+}
+
 bool RecordShutdownInfoPrefs() {
   CheckAccessedOnCorrectThread();
   PrefService* prefs = g_browser_process->local_state();
@@ -365,9 +363,6 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
     // complete).
     base::WriteFile(shutdown_ms_file, shutdown_ms.c_str(), len);
   }
-
-  // Log shutdown timing metrics.
-  LogShutdownMetrics();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   NotifyAndTerminate(false /* fast_path */);

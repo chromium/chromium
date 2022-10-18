@@ -88,6 +88,9 @@ ShutdownType GetShutdownType();
 // Returns true if the session should be restarted.
 bool ShutdownPreThreadsStop();
 
+// Records the shutdown retrics.
+void RecordShutdownMetrics();
+
 // Records the shutdown related prefs, and returns true if the browser should be
 // restarted on exit.
 bool RecordShutdownInfoPrefs();

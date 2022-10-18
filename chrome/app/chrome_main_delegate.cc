@@ -624,7 +624,18 @@ ChromeMainDelegate::ChromeMainDelegate(base::TimeTicks exe_entry_point_ticks) {
   RecordMainStartupMetrics(exe_entry_point_ticks);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+ChromeMainDelegate::~ChromeMainDelegate() {
+  std::string process_type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProcessType);
+  const bool is_browser_process = process_type.empty();
+  if (is_browser_process)
+    browser_shutdown::RecordShutdownMetrics();
+}
+#else
 ChromeMainDelegate::~ChromeMainDelegate() = default;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
