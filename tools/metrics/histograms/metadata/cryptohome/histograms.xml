@@ -386,7 +386,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceDuringLoginTotalFreedInMb" units="MiB"
-    expires_after="2023-02-01">
+    expires_after="2023-04-16">
   <owner>vsavu@google.com</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
@@ -545,7 +545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupProgress"
-    enum="CryptohomeLoginDiskCleanupProgress" expires_after="2023-02-01">
+    enum="CryptohomeLoginDiskCleanupProgress" expires_after="2023-04-16">
   <owner>vsavu@google.com</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
@@ -571,7 +571,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupTotalTime" units="ms"
-    expires_after="2023-02-01">
+    expires_after="2023-04-16">
   <owner>vsavu@google.com</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MaskedDownloadsItems" units="items"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>benreich@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

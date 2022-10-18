@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc.InputClippingRate" units="%"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <owner>minyue@chromium.org</owner>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.AgcClippingAdjustmentAllowed" enum="Boolean"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The automatic gain control (AGC) in WebRTC tries to adjust the microphone
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainDecreaseAverage" units="level"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainDecreaseRate" units="changes/minute"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainIncreaseAverage" units="level"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainUpdateAverage" units="level"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainUpdateRate" units="changes/minute"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -1194,7 +1194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCapturerResult"
-    enum="WebRtcWgcCapturerResult" expires_after="2023-02-12">
+    enum="WebRtcWgcCapturerResult" expires_after="2023-04-16">
   <owner>alcooper@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
@@ -1205,7 +1205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionGetFrameResult"
-    enum="WebRtcWgcCaptureSessionGetFrameResult" expires_after="2023-02-12">
+    enum="WebRtcWgcCaptureSessionGetFrameResult" expires_after="2023-04-16">
   <owner>alcooper@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
@@ -1215,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionStartResult"
-    enum="WebRtcWgcCaptureSessionStartResult" expires_after="2023-02-12">
+    enum="WebRtcWgcCaptureSessionStartResult" expires_after="2023-04-16">
   <owner>alcooper@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
@@ -1897,7 +1897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ThermalThrottling" units="boolean"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>handellm@google.com</owner>
   <owner>hbos@chromium.org</owner>
   <summary>

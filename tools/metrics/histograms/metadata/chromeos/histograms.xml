@@ -205,7 +205,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Attestation.AttestationFlowStatus"
-    enum="AttestationFlowStatus" expires_after="2023-02-12">
+    enum="AttestationFlowStatus" expires_after="2023-04-16">
   <owner>cylai@chromium.org</owner>
   <owner>cros-hwsec+umas@chromium.org</owner>
   <summary>
@@ -663,7 +663,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CWP.ParsePSIMemory" enum="ChromeOSParsePSIMemStatus"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>raging@google.com</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -832,7 +832,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
@@ -844,7 +844,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
@@ -1434,7 +1434,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Liveness.PingResponseTime" units="ms"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>rtinkoff@google.com</owner>
   <owner>xiyuan@google.com</owner>
   <summary>
@@ -1746,7 +1746,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SecurityAnomaly" enum="SecurityAnomaly"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-security-core@google.com</owner>
   <summary>
@@ -1892,7 +1892,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sync.PreferencesMigrated" enum="BooleanMigrated"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>rsorokin@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -2106,7 +2106,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.TypeC.UsbDeviceSpeed" enum="UsbDeviceSpeedMetric"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>wonchung@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -2127,7 +2127,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.UrlXattrsCount" units="units"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>jorgelo@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <summary>
@@ -2251,7 +2251,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.WXMountCount" units="count"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-security-core@google.com</owner>
   <summary>

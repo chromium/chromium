@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeOut" units="%"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -267,7 +267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>gayane@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>

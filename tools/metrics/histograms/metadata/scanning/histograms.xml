@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumScanSettingChanges" units="changes"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanCompleteAction" enum="ScanCompleteAction"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -186,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.ColorMode"
-    enum="ScanJobSettingsColorMode" expires_after="2023-02-12">
+    enum="ScanJobSettingsColorMode" expires_after="2023-04-16">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.PageSize"
-    enum="ScanJobSettingsPageSize" expires_after="2023-02-12">
+    enum="ScanJobSettingsPageSize" expires_after="2023-04-16">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.Resolution"
-    enum="ScanJobSettingsResolution" expires_after="2023-02-12">
+    enum="ScanJobSettingsResolution" expires_after="2023-04-16">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

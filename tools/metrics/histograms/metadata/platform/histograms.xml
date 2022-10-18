@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DetachableBase.ActivePercent" units="%"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>fshao@chromium.org</owner>
   <owner>phoenixshen@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DetachableBase.AttachedOnBoot" enum="BooleanAttached"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>fshao@chromium.org</owner>
   <owner>phoenixshen@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
@@ -350,7 +350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DiskUsage.NumUserHomeDirectories"
-    units="home directories" expires_after="2023-02-12">
+    units="home directories" expires_after="2023-04-16">
   <owner>achuith@chromium.org</owner>
   <owner>tls@chromium.org</owner>
   <summary>
@@ -689,7 +689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.IntelMaxMicroArchitecture"
-    enum="IntelMaxMicroArchitecture" expires_after="2023-02-12">
+    enum="IntelMaxMicroArchitecture" expires_after="2023-04-16">
   <owner>fbarchard@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -1572,7 +1572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.UnaggregatedUsageTime" units="seconds"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>

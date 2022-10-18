@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="NaCl.AppType" enum="NaClAppTypeEnum"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>

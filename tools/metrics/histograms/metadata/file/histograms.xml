@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Downloads.DirectoryPercentageOfDiskUsage"
-    units="%" expires_after="2023-02-10">
+    units="%" expires_after="2023-04-16">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.DownloadsCount" units="units"
-    expires_after="2023-02-10">
+    expires_after="2023-04-16">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FileBrowser.HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin"
-    units="ms" expires_after="2023-02-12">
+    units="ms" expires_after="2023-04-16">
   <owner>dmblack@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -618,7 +618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.UseOutsideDrive"
-    enum="OfficeFilesUseOutsideDriveHook" expires_after="2023-02-15">
+    enum="OfficeFilesUseOutsideDriveHook" expires_after="2023-04-16">
   <owner>cassycc@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -676,7 +676,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Recent.FilterByType"
-    enum="FileManagerRecentFilterType" expires_after="2023-02-12">
+    enum="FileManagerRecentFilterType" expires_after="2023-04-16">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

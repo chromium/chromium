@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationCacheStatus" enum="GCMRegistrationCacheStatus"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequest" units="requests"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>peter@chromium.org</owner>
   <summary>
     Number of registration requests sent to Google Cloud Messaging. Recorded
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequest.NetErrorCode" enum="NetErrorCodes"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>peter@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>

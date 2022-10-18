@@ -531,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.MacroFailed"
-    enum="CrosDictationMacroName" expires_after="2023-01-30">
+    enum="CrosDictationMacroName" expires_after="2023-04-16">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Recorded whenever Dictation fails to perform a macro.</summary>
@@ -1620,7 +1620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.Duration" units="ms"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1630,7 +1630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.WinAPIs" enum="AccessibilityWinAPIEnum"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>aleventhal@chromium.org</owner>
   <owner>nektar@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1853,7 +1853,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.ReaderMode.EntryPoint"
-    enum="ReaderModeEntryPoint" expires_after="2023-02-12">
+    enum="ReaderModeEntryPoint" expires_after="2023-04-16">
   <owner>katie@chromium.org</owner>
   <owner>gilmanmh@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

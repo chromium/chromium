@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultMediaStreamMicSetting"
-    enum="ContentSetting" expires_after="2023-02-15">
+    enum="ContentSetting" expires_after="2023-04-16">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultMIDISysExSetting" enum="ContentSetting"
-    expires_after="2023-02-15">
+    expires_after="2023-04-16">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultPopupsSetting" enum="ContentSetting"
-    expires_after="2023-02-15">
+    expires_after="2023-04-16">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -290,14 +290,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultSoundSetting" enum="ContentSetting"
-    expires_after="2023-02-15">
+    expires_after="2023-04-16">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default sound setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultSubresourceFilterSetting"
-    enum="ContentSetting" expires_after="2023-02-15">
+    enum="ContentSetting" expires_after="2023-04-16">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -307,14 +307,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultUsbGuardSetting" enum="ContentSetting"
-    expires_after="2023-02-12">
+    expires_after="2023-04-16">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default permission setting for WebUSB at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultWebBluetoothGuardSetting"
-    enum="ContentSetting" expires_after="2023-02-15">
+    enum="ContentSetting" expires_after="2023-04-16">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
