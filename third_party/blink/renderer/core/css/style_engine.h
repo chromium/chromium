@@ -476,6 +476,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // body element which changed between being the document.body element and not.
   void FirstBodyElementChanged(HTMLBodyElement*);
 
+  // Invalidate caches that depends on the base url.
+  void BaseURLChanged();
+
   unsigned StyleForElementCount() const { return style_for_element_count_; }
   void IncStyleForElementCount() { style_for_element_count_++; }
 
@@ -607,6 +610,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return style_image_cache_.CacheStyleImage(GetDocument(), params,
                                               origin_clean, is_ad_related);
   }
+
+  void AddCachedFillOrClipPathURIValue(const AtomicString& string,
+                                       const CSSValue& value);
+  const CSSValue* GetCachedFillOrClipPathURIValue(const AtomicString& string);
 
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
@@ -976,6 +983,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Cache for sharing StyleFetchedImage between CSSValues referencing the same
   // URL.
   StyleImageCache style_image_cache_;
+
+  // A cache for CSSURIValue objects for SVG element presentation attributes for
+  // fill and clip path. See SVGElement::CollectStyleForPresentationAttribute()
+  // for more info.
+  HeapHashMap<AtomicString, Member<const CSSValue>>
+      fill_or_clip_path_uri_value_cache_;
 };
 
 // Helper function for checking if we need to handle legacy fragmentation cases

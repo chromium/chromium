@@ -3403,6 +3403,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(parent_for_detached_subtree_);
   visitor->Trace(ua_document_transition_style_);
   visitor->Trace(style_image_cache_);
+  visitor->Trace(fill_or_clip_path_uri_value_cache_);
   FontSelectorClient::Trace(visitor);
 }
 
@@ -3483,6 +3484,23 @@ bool StyleEngine::AllowSkipStyleRecalcForScope() const {
     return !view->IsSubtreeLayout();
   }
   return true;
+}
+
+void StyleEngine::AddCachedFillOrClipPathURIValue(const AtomicString& string,
+                                                  const CSSValue& value) {
+  fill_or_clip_path_uri_value_cache_.insert(string, &value);
+}
+
+const CSSValue* StyleEngine::GetCachedFillOrClipPathURIValue(
+    const AtomicString& string) {
+  auto it = fill_or_clip_path_uri_value_cache_.find(string);
+  if (it == fill_or_clip_path_uri_value_cache_.end())
+    return nullptr;
+  return it->value;
+}
+
+void StyleEngine::BaseURLChanged() {
+  fill_or_clip_path_uri_value_cache_.clear();
 }
 
 }  // namespace blink

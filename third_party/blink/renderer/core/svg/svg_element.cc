@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_types_map.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
@@ -791,6 +792,15 @@ bool SVGElement::IsPresentationAttribute(const QualifiedName& name) const {
          CSSPropertyID::kInvalid;
 }
 
+namespace {
+
+bool ProbablyUrlFunction(const AtomicString& value) {
+  return value.length() > 5 && value.Is8Bit() &&
+         memcmp(value.Characters8(), "url(", 4) == 0;
+}
+
+}  // namespace
+
 void SVGElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
@@ -798,7 +808,36 @@ void SVGElement::CollectStyleForPresentationAttribute(
   CSSPropertyID property_id =
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), name);
   if (property_id > CSSPropertyID::kInvalid) {
-    AddPropertyToPresentationAttributeStyle(style, property_id, value);
+    if ((property_id == CSSPropertyID::kFill ||
+         property_id == CSSPropertyID::kClipPath) &&
+        ProbablyUrlFunction(value)) {
+      // Cache CSSURIValue objects for a given attribute value string. If other
+      // presentation attributes change repeatedly while the fill or clip-path
+      // stay the same, we still recreate the presentation attribute style for
+      // the mentioned attributes/properties. Cache them to avoid expensive url
+      // parsing and resolution.
+      //
+      // Alternatively, we could start to update SVG presentation attribute
+      // style synchronously. See https://crbug.com/1375215
+      StyleEngine& engine = GetDocument().GetStyleEngine();
+      if (const CSSValue* cached_value =
+              engine.GetCachedFillOrClipPathURIValue(value)) {
+        AddPropertyToPresentationAttributeStyle(style, property_id,
+                                                *cached_value);
+      } else {
+        AddPropertyToPresentationAttributeStyle(style, property_id, value);
+        if (unsigned count = style->PropertyCount()) {
+          // Cache the value if it was added.
+          CSSPropertyValueSet::PropertyReference last_decl =
+              style->PropertyAt(--count);
+          if (last_decl.Id() == property_id) {
+            engine.AddCachedFillOrClipPathURIValue(value, last_decl.Value());
+          }
+        }
+      }
+    } else {
+      AddPropertyToPresentationAttributeStyle(style, property_id, value);
+    }
   } else if (name.Matches(xml_names::kLangAttr)) {
     if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled())
       MapLanguageAttributeToLocale(value, style);
