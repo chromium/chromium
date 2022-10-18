@@ -14,6 +14,7 @@
 #include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "content/public/renderer/render_frame.h"
+#include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_message_port_converter.h"
 #include "v8-local-handle.h"
+#include "v8-primitive.h"
 #include "v8-value.h"
 #include "v8/include/v8.h"
 
@@ -176,8 +178,24 @@ gin::ObjectTemplateBuilder JsBinding::GetObjectTemplateBuilder(
 }
 
 void JsBinding::PostMessage(gin::Arguments* args) {
-  std::u16string message;
-  if (!args->GetNext(&message)) {
+  v8::Local<v8::Value> payload;
+  if (!args->GetNext(&payload)) {
+    args->ThrowError();
+    return;
+  }
+  JsWebMessage js_message;
+  if (payload->IsString()) {
+    std::u16string string;
+    gin::Converter<std::u16string>::FromV8(args->isolate(), payload, &string);
+    js_message.payload = std::move(string);
+  } else if (payload->IsArrayBuffer()) {
+    v8::Local<v8::ArrayBuffer> array_buffer =
+        v8::Local<v8::ArrayBuffer>::Cast(payload);
+    js_message.payload =
+        std::vector<uint8_t>(static_cast<uint8_t*>(array_buffer->Data()),
+                             static_cast<uint8_t*>(array_buffer->Data()) +
+                                 array_buffer->ByteLength());
+  } else {
     args->ThrowError();
     return;
   }

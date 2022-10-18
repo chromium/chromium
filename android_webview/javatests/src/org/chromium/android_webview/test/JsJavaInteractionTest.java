@@ -133,7 +133,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(url, data.mSourceOrigin);
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertTrue(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
