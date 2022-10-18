@@ -500,43 +500,52 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.currentController.setDisplayAnnotations(e.detail);
   }
 
-  private onPresentClick_() {
+  private async enterPresentationMode_(): Promise<void> {
     const scroller = this.$.scroller;
 
     this.viewport.saveZoomState();
 
-    Promise
-        .all([
-          eventToPromise('fullscreenchange', scroller),
-          scroller.requestFullscreen(),
-        ])
-        .then(() => {
-          this.forceFit(FittingType.FIT_TO_HEIGHT);
+    await Promise.all([
+      eventToPromise('fullscreenchange', scroller),
+      scroller.requestFullscreen(),
+    ]);
 
-          // Switch viewport's wheel behavior.
-          this.viewport.setPresentationMode(true);
+    this.forceFit(FittingType.FIT_TO_HEIGHT);
 
-          // Set presentation mode, which restricts the content to read only
-          // (e.g. disable forms and links).
-          this.pluginController_!.setPresentationMode(true);
+    // Switch viewport's wheel behavior.
+    this.viewport.setPresentationMode(true);
 
-          // Revert back to the normal state when exiting Presentation mode.
-          eventToPromise('fullscreenchange', scroller).then(() => {
-            assert(document.fullscreenElement === null);
-            this.viewport.setPresentationMode(false);
-            this.pluginController_!.setPresentationMode(false);
+    // Set presentation mode, which restricts the content to read only
+    // (e.g. disable forms and links).
+    this.pluginController_!.setPresentationMode(true);
 
-            // Ensure that directional keys still work after exiting.
-            this.shadowRoot!.querySelector('embed')!.focus();
-
-            // Set zoom back to original zoom before presentation mode.
-            this.viewport.restoreZoomState();
-          });
-
-          // Nothing else to do here. The viewport will be updated as a result
-          // of a 'resize' event callback.
-        });
+    // Nothing else to do here. The viewport will be updated as a result
+    // of a 'resize' event callback.
   }
+
+  private exitPresentationMode_(): void {
+    // Revert back to the normal state when exiting Presentation mode.
+    assert(document.fullscreenElement === null);
+    this.viewport.setPresentationMode(false);
+    this.pluginController_!.setPresentationMode(false);
+
+    // Ensure that directional keys still work after exiting.
+    this.shadowRoot!.querySelector('embed')!.focus();
+
+    // Set zoom back to original zoom before presentation mode.
+    this.viewport.restoreZoomState();
+  }
+
+  private async onPresentClick_() {
+    await this.enterPresentationMode_();
+
+    // When fullscreen changes, it means that the user exited Presentation
+    // mode.
+    await eventToPromise('fullscreenchange', this.$.scroller);
+
+    this.exitPresentationMode_();
+  }
+
 
   private onPropertiesClick_() {
     assert(!this.showPropertiesDialog_);
