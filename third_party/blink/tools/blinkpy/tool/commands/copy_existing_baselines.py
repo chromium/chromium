@@ -78,18 +78,24 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
             new_baseline = self._tool.filesystem.join(
                 port.baseline_version_dir(),
                 self._file_name_for_expected_result(test_name, suffix))
-            if self._tool.filesystem.exists(new_baseline):
-                _log.debug('Existing baseline at %s, not copying over it.',
-                           new_baseline)
+
+            if port.skips_test(test_name):
+                self._log_skipped_test(port, test_name)
+                if self._tool.filesystem.exists(new_baseline):
+                    self._tool.filesystem.remove(new_baseline)
                 continue
 
             full_expectations = TestExpectations(port)
             if ResultType.Skip in full_expectations.get_expectations(
                     test_name).results:
                 self._log_skipped_test(port, test_name)
+                # do not delete existing baseline in this case, as this happens
+                # more often, and such baselines could still be in use.
                 continue
-            if port.skips_test(test_name):
-                self._log_skipped_test(port, test_name)
+
+            if self._tool.filesystem.exists(new_baseline):
+                _log.debug('Existing baseline at %s, not copying over it.',
+                           new_baseline)
                 continue
 
             old_baseline = port.expected_filename(test_name, '.' + suffix)
@@ -133,13 +139,20 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
                 # Not a valid virtual test
                 continue
 
-            if ResultType.Skip in full_expectations.get_expectations(
-                    virtual_test_name).results:
-                self._log_skipped_test(port, virtual_test_name)
-                continue
+            new_baseline = self._tool.filesystem.join(
+                port.baseline_version_dir(),
+                self._file_name_for_expected_result(virtual_test_name, suffix))
 
             if port.skips_test(test_name):
                 self._log_skipped_test(port, virtual_test_name)
+                if self._tool.filesystem.exists(new_baseline):
+                    self._tool.filesystem.remove(new_baseline)
+                continue
+
+            if ResultType.Skip in full_expectations.get_expectations(
+                    virtual_test_name).results:
+                self._log_skipped_test(port, virtual_test_name)
+                # same as above, do not delete existing baselines
                 continue
 
             baseline_dir, filename = port.expected_baselines(
@@ -153,10 +166,6 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
                            suffix, virtual_test_name)
                 # TODO: downloading all passing baseline for this virtual test harness test
                 continue
-
-            new_baseline = self._tool.filesystem.join(
-                port.baseline_version_dir(),
-                self._file_name_for_expected_result(virtual_test_name, suffix))
 
             _log.debug('Copying baseline from %s to %s.', old_baseline,
                        new_baseline)

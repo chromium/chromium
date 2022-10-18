@@ -1410,6 +1410,16 @@ class Port(object):
         return self._filesystem.join(self.web_tests_dir(), 'SmokeTests',
                                      'Default.txt')
 
+    @memoized
+    def _never_fix_test_expectations(self):
+        # Note: The parsing logic here (reading the file, constructing a
+        # parser, etc.) is very similar to blinkpy/w3c/test_copier.py.
+        path = self.path_to_never_fix_tests_file()
+        contents = self._filesystem.read_text_file(path)
+        test_expectations = TestExpectations(tags=self.get_platform_tags())
+        test_expectations.parse_tagged_list(contents)
+        return test_expectations
+
     def skipped_in_never_fix_tests(self, test):
         """Checks if the test is marked as Skip in NeverFixTests for this port.
 
@@ -1420,12 +1430,7 @@ class Port(object):
         Note: this will not work with skipped directories. See also the same
         issue with update_all_test_expectations_files in test_importer.py.
         """
-        # Note: The parsing logic here (reading the file, constructing a
-        # parser, etc.) is very similar to blinkpy/w3c/test_copier.py.
-        path = self.path_to_never_fix_tests_file()
-        contents = self._filesystem.read_text_file(path)
-        test_expectations = TestExpectations(tags=self.get_platform_tags())
-        test_expectations.parse_tagged_list(contents)
+        test_expectations = self._never_fix_test_expectations()
         return ResultType.Skip in test_expectations.expectations_for(
             test).results
 

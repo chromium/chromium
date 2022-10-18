@@ -31,6 +31,8 @@ import logging
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.models.testharness_results import is_all_pass_testharness_result
+from blinkpy.web_tests.models.test_expectations import TestExpectations
+from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
 
@@ -79,38 +81,55 @@ class BaselineOptimizer(object):
         # For CLI compatibility, "suffix" is an extension without the leading
         # dot. Yet we use dotted extension everywhere else in the codebase.
         # TODO(robertma): Investigate changing the CLI.
+        _log.debug('Optimizing %s(%s).' % (test_name, suffix))
         assert not suffix.startswith('.')
         extension = '.' + suffix
         succeeded = True
 
-        self._optimize_flag_specific_baselines(test_name, extension)
-
-        baseline_name = self._default_port.output_filename(
-            test_name, self._default_port.BASELINE_SUFFIX, extension)
         non_virtual_test_name = self._virtual_test_base(test_name)
         if non_virtual_test_name:
-            # The test belongs to a virtual suite.
-            _log.debug('Optimizing virtual fallback path.')
-            self._patch_virtual_subtree(test_name, extension, baseline_name)
-            succeeded &= self._optimize_subtree(test_name, baseline_name)
-
-            # Update the non-virtual baseline name
+            # Optimize a virtual test and its flag specific versions
             non_virtual_baseline_name = self._default_port.output_filename(
                 non_virtual_test_name, self._default_port.BASELINE_SUFFIX,
                 extension)
-            self._optimize_virtual_root(test_name, extension, baseline_name,
-                                        non_virtual_baseline_name)
+            succeeded = self._optimize_virtual_baseline(
+                test_name, extension, non_virtual_baseline_name)
         else:
-            # The given baseline is already non-virtual.
-            non_virtual_baseline_name = baseline_name
+            # Optimize a real test and all derived virtual/flag specific versions.
+            baseline_name = self._default_port.output_filename(
+                test_name, self._default_port.BASELINE_SUFFIX, extension)
 
-        _log.debug('Optimizing non-virtual fallback path.')
-        succeeded &= self._optimize_subtree(test_name,
-                                            non_virtual_baseline_name)
-        self._remove_extra_result_at_root(test_name, non_virtual_baseline_name)
+            _log.debug('Optimizing virtual fallback paths.')
+            for vts in self._default_port.virtual_test_suites():
+                virtual_test_name = vts.full_prefix + test_name
+                if self._default_port.lookup_virtual_test_base(
+                        virtual_test_name) is None:
+                    # Not a valid virtual test
+                    continue
+                succeeded &= self._optimize_virtual_baseline(
+                    virtual_test_name, extension, baseline_name)
+
+            _log.debug('Optimizing non-virtual fallback path.')
+            succeeded &= self._optimize_subtree(test_name, baseline_name)
+            self._optimize_flag_specific_baselines(test_name, extension)
+            self._remove_extra_result_at_root(test_name, baseline_name)
 
         if not succeeded:
             _log.error('Heuristics failed to optimize %s', baseline_name)
+        return succeeded
+
+    def _optimize_virtual_baseline(self, test_name, extension,
+                                   non_virtual_baseline_name):
+        baseline_name = self._default_port.output_filename(
+            test_name, self._default_port.BASELINE_SUFFIX, extension)
+
+        self._patch_virtual_subtree(test_name, extension, baseline_name)
+        succeeded = self._optimize_subtree(test_name, baseline_name)
+
+        self._optimize_virtual_root(test_name, extension, baseline_name,
+                                    non_virtual_baseline_name)
+
+        self._optimize_flag_specific_baselines(test_name, extension)
         return succeeded
 
     def _optimize_flag_specific_baselines(self, test_name, extension):
@@ -122,20 +141,8 @@ class BaselineOptimizer(object):
                                                        flag_specific)
             if not flag_spec_port:
                 continue
-            non_virtual_test_name = self._virtual_test_base(test_name)
-            if non_virtual_test_name:
-                _log.debug(
-                    'Optimizing flag-specific virtual fallback path '
-                    'for "%s".', flag_specific)
-                self._optimize_single_baseline_flag_specific(
-                    test_name, extension, flag_spec_port)
-            else:
-                non_virtual_test_name = test_name
-            _log.debug(
-                'Optimizing flag-specific non-virtual fallback path '
-                'for "%s".', flag_specific)
             self._optimize_single_baseline_flag_specific(
-                non_virtual_test_name, extension, flag_spec_port)
+                test_name, extension, flag_spec_port)
 
     def _get_baseline_paths(self, test_name, extension, port):
         """Get paths to baselines that the provided port would search.
@@ -404,8 +411,16 @@ class BaselineOptimizer(object):
             test_name, non_virtual_baseline_name)
         results_by_port_name = self._results_by_port_name(results_by_directory)
 
-        for port_name in self._ports.keys():
+        for port_name, port in self._ports.items():
             assert port_name in results_by_port_name
+            # When the virtual test is skipped on a port, the baseline for the
+            # non virtual test on the same port won't matter
+            full_expectations = TestExpectations(port)
+            if ResultType.Skip in full_expectations.get_expectations(
+                    test_name).results:
+                continue
+            if port.skips_test(test_name):
+                continue
             if results_by_port_name[port_name] != virtual_root_digest:
                 return
 

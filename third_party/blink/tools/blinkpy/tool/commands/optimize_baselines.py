@@ -49,6 +49,12 @@ class OptimizeBaselines(AbstractRebaseliningCommand):
             return
         port = tool.port_factory.get(port_names[0], options)
         optimizer = BaselineOptimizer(tool, port, port_names)
-        tests = port.tests() if options.all_tests else port.tests(args)
-        for test_name in tests:
+        test_set = set(port.tests() if options.all_tests else port.tests(args))
+        virtual_tests_to_exclude = set([
+            test for test in test_set
+            if port.lookup_virtual_test_base(test) in test_set
+        ])
+        test_set -= virtual_tests_to_exclude
+
+        for test_name in test_set:
             self._optimize_baseline(optimizer, test_name)

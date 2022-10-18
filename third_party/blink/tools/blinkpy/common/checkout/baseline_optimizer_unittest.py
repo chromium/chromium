@@ -128,6 +128,12 @@ class BaselineOptimizerTest(unittest.TestCase):
             self.fs.join(web_tests_dir, 'FlagSpecificConfig'),
             '[{"name": "highdpi", "args": ["--force-device-scale-factor=1.5"]}]'
         )
+        self.fs.write_text_file(
+            self.fs.join(web_tests_dir, 'NeverFixTests'),
+            '# tags: [ Linux Mac Mac10.13 Mac10.14 Mac10.15 Mac11 Mac12 Win Win10.20h2 Win11 ]\n'
+            '# results: [ Skip Pass ]\n'
+            '[ Win10.20h2 ] virtual/gpu/fast/canvas/mock-test.html [ Skip ] \n'
+        )
 
         for dirname, contents in results_by_directory.items():
             self.fs.write_text_file(
@@ -355,6 +361,21 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/mac/fast/canvas': None,
                 'platform/win/fast/canvas': None,
             },
+            baseline_dirname='fast/canvas')
+
+    def test_virtual_root_redundant_with_ancestors_exclude_skipped(self):
+        self._assert_optimization(
+            {
+                'virtual/gpu/fast/canvas': '2',
+                'platform/mac/fast/canvas': '2',
+                'platform/win/fast/canvas': '2',
+                'platform/win10/fast/canvas': '1',
+            }, {
+                'virtual/gpu/fast/canvas': None,
+                'platform/mac/fast/canvas': '2',
+                'platform/win/fast/canvas': '2',
+                'platform/win10/fast/canvas': '1',
+            },
             baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_root_not_redundant_with_ancestors(self):
@@ -365,6 +386,38 @@ class BaselineOptimizerTest(unittest.TestCase):
             }, {
                 'virtual/gpu/fast/canvas': '2',
                 'platform/mac/fast/canvas': '1',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_virtual_root_not_redundant_with_some_ancestors(self):
+        self._assert_optimization(
+            {
+                'virtual/gpu/fast/canvas': '2',
+                'platform/mac/fast/canvas': '2',
+                'platform/mac-mac11/fast/canvas': '1',
+            }, {
+                'virtual/gpu/fast/canvas': '2',
+                'platform/mac/fast/canvas': '2',
+                'platform/mac-mac11/fast/canvas': '1',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_virtual_root_not_redundant_with_flag_specific_ancestors(self):
+        # virtual root should not be removed when any flag specific non virtual
+        # baseline differs with the virtual root, otherwise virtual flag
+        # specific will fall back to a different baseline after optimization.
+        # TODO: fix this together when we do away with patch virtual subtree.
+        self._assert_optimization(
+            {
+                'virtual/gpu/fast/canvas': '2',
+                'platform/mac/fast/canvas': '2',
+                'platform/win/fast/canvas': '2',
+                'flag-specific/highdpi/fast/canvas': '1',
+            }, {
+                'virtual/gpu/fast/canvas': None,
+                'platform/mac/fast/canvas': '2',
+                'platform/win/fast/canvas': '2',
+                'flag-specific/highdpi/fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
@@ -578,7 +631,7 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/linux/fast/canvas': None,
             },
             test_path='fast/canvas',
-            baseline_dirname='virtual/gpu/fast/canvas')
+            baseline_dirname='fast/canvas')
 
     def test_flag_specific_falls_back_to_base(self):
         self._assert_optimization(
@@ -625,7 +678,7 @@ class BaselineOptimizerTest(unittest.TestCase):
             }, {
                 'fast/canvas': '1',
             },
-            baseline_dirname='virtual/gpu/fast/canvas')
+            baseline_dirname='fast/canvas')
 
     # Tests for protected methods - pylint: disable=protected-access
 

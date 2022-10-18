@@ -521,6 +521,16 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 continue
             test_set.add(test)
 
+        # For real tests we will optimize all the virtual tests derived from
+        # that. No need to include a virtual tests if we will also optimize the
+        # non virtual version.
+        port = self._tool.port_factory.get()
+        virtual_tests_to_exclude = set([
+            test for test in test_set
+            if port.lookup_virtual_test_base(test) in test_set
+        ])
+        test_set -= virtual_tests_to_exclude
+
         # Process the test_list so that each list caps at MAX_TESTS_IN_OPTIMIZE_CMDLINE tests
         capped_test_list = []
         test_list = list(test_set)
