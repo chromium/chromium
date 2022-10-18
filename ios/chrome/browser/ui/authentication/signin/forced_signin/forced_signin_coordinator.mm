@@ -82,7 +82,7 @@
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   void (^completion)(void) = ^{
     SigninCoordinatorResult result =
@@ -134,7 +134,7 @@
 }
 
 - (void)finishWithResult:(SigninCoordinatorResult)result
-                identity:(ChromeIdentity*)identity {
+                identity:(id<SystemIdentity>)identity {
   [self.childCoordinator stop];
   self.childCoordinator = nil;
   self.navigationController = nil;
