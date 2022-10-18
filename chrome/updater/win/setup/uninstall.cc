@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
@@ -105,18 +106,16 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
     return kErrorNoBaseDirectory;
   }
 
-  wchar_t cmd_path[MAX_PATH] = {0};
-  DWORD size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\cmd.exe",
-                                        cmd_path, std::size(cmd_path));
-  if (!size || size >= MAX_PATH)
-    return kErrorPathTooLong;
+  base::FilePath cmd_exe_path;
+  if (!base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path))
+    return kErrorPathServiceFailed;
+  cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
 
   const base::FilePath script_path =
       versioned_dir->AppendASCII(kUninstallScript);
 
-  std::wstring cmdline = cmd_path;
-  base::StringAppendF(
-      &cmdline, L" /Q /C \"\"%ls\" --dir=\"%ls\"\"",
+  const std::wstring cmdline = base::StringPrintf(
+      L"\"%ls\" /Q /C \"\"%ls\" --dir=\"%ls\"\"", cmd_exe_path.value().c_str(),
       script_path.value().c_str(),
       (uninstall_all ? base_dir : versioned_dir)->value().c_str());
   base::LaunchOptions options;
