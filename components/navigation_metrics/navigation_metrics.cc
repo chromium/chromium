@@ -81,12 +81,21 @@ std::u16string GetEtldPlusOne16(const std::u16string& hostname16) {
   size_t label_count =
       base::ranges::count(etld_plus_one.begin(), etld_plus_one.end(), '.') + 1;
 
+  // Replace non-standard separators with "." (U002E). Sometimes users may input
+  // non-standard separators, causing issues when splitting labels based on ".".
+  // This follows the Unicode IDNA spec:
+  // https://www.unicode.org/reports/tr46/#TableDerivationStep1
+  std::u16string separator_replaced_hostname;
+  base::ReplaceChars(hostname16, u"\uff0e\u3002\uff61", u".",
+                     &separator_replaced_hostname);
+
   // Keeping empty labels is necessary if there is a trailing dot, to make sure
   // `label_count` matches the `labels16` vector. See crbug.com/1362507.
-  std::vector<std::u16string> labels16 = base::SplitString(
-      hostname16, u".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::u16string> labels16 =
+      base::SplitString(separator_replaced_hostname, u".",
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  CHECK_LE(label_count, labels16.size());
   size_t extra_label_count = labels16.size() - label_count;
-  DCHECK_LE(extra_label_count, labels16.size());
   labels16.erase(labels16.begin(), labels16.begin() + extra_label_count);
   return base::JoinString(labels16, u".");
 }
