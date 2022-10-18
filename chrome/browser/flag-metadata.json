@@ -3495,11 +3495,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "exo-pointer-lock",
-    "owners": [ "hollingum@google.com" ],
-    "expiry_milestone": 107
-  },
-  {
     "name": "expanded-tab-strip",
     "owners": [ "rkgibson@google.com", "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 105
