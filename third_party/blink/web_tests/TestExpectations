@@ -6201,8 +6201,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/elements/accessibility/edi
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] fast/layers/clip-rects-transformed-2.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] fast/layers/clip-rects-transformed-2.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/page-frames.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/timeline/page-frames.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/user-timing.js [ Failure Pass ]
@@ -6523,7 +6521,6 @@ crbug.com/1284572 virtual/threaded/http/tests/devtools/isolated-code-cache/same-
 crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Timeout ]
 
 # Sheriff 2022-01-07
-crbug.com/1285438 fast/layers/clip-rects-transformed.html [ Failure Pass ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-browser-navigate.js [ Crash Failure Pass Timeout ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-navigate.js [ Crash Failure Pass Timeout ]
 crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-subresource.js [ Crash Failure Pass Timeout ]

@@ -1,7 +1,5 @@
-<script>
-    if (window.testRunner)
-        testRunner.dumpAsText();
-</script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <p>
     Test 2/2 for <i><a href="rdar://problem/7398987">rdar://problem/7398987</a>
     Assertion failure in Layer::updateClipRects when a plugin&rsquo;s
@@ -16,3 +14,6 @@
         <embed type="application/x-blink-test-plugin">
     </div>
 </div>
+<script>
+test(() => {}, 'passes if no crash');
+</script>
