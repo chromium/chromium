@@ -1085,6 +1085,7 @@ if (!is_ios) {
       deps = [
         "//chrome/test/chromedriver:chromedriver",
         "//chrome/test/chromedriver:chromedriver_unittests",
+        "//chrome/test/chromedriver:generate_chromedriver_license",
       ]
     }
   }

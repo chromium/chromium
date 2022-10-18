@@ -33,7 +33,7 @@
 #include "chrome/test/chromedriver/element_util.h"
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/util.h"
-#include "third_party/webdriver/atoms.h"
+#include "third_party/selenium-atoms/atoms.h"
 
 const int kFlickTouchEventsPerSecond = 30;
 const std::set<std::string> textControlTypes = {"text", "search", "tel", "url",

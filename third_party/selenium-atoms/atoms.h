@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-    
 /* AUTO GENERATED - DO NOT EDIT BY HAND */
 #ifndef WEBDRIVER_ATOMS_H
 #define WEBDRIVER_ATOMS_H
 
-#include <string>    // For std::(w)string.
+#include <string>  // For std::(w)string.
 
 namespace webdriver {
 namespace atoms {
-    
+
 extern const char* const CLEAR[];
 extern const char* const CLEAR_LOCAL_STORAGE[];
 extern const char* const CLEAR_SESSION_STORAGE[];
@@ -71,5 +70,5 @@ static inline std::string asString(const char* const atom[]) {
 
 }  // namespace atoms
 }  // namespace webdriver
-    
+
 #endif  // WEBDRIVER_ATOMS_H

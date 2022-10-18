@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-
 /* AUTO GENERATED - DO NOT EDIT BY HAND */
 
-#include <stddef.h>  // For NULL.
 #include "atoms.h"
+#include <stddef.h>  // For NULL.
 
 namespace webdriver {
 namespace atoms {
@@ -15876,4 +15875,3 @@ const char* const SUBMIT[] = {
 
 }  // namespace atoms
 }  // namespace webdriver
-

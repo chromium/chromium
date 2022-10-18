@@ -12,6 +12,6 @@ include_rules = [
 
   "+components/crx_file",
 
-  "+third_party/webdriver",
+  "+third_party/selenium-atoms",
   "+third_party/zlib",
 ]

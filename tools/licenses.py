@@ -178,7 +178,7 @@ SPECIAL_CASES = {
     },
     os.path.join('third_party', 'ipcz'): {
         "Name": "ipcz",
-        "URL" : "https://chromium.googlesource.com/chromium/src/third_party/ipcz",
+        "URL": "https://chromium.googlesource.com/chromium/src/third_party/ipcz",
         "License": "BSD",
         "License File": "/third_party/ipcz/LICENSE",
     },
@@ -237,6 +237,12 @@ SPECIAL_CASES = {
         "License": "BSD",
         "License File": "NOT_SHIPPED",
     },
+    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party', 'getopt'): {
+        "Name": "getopt",
+        "URL": "https://sourceware.org/ml/newlib/2005/msg00758.html",
+        "License": "Public domain",
+        "License File": "/third_party/crashpad/crashpad/third_party/getopt/LICENSE",
+    },
     os.path.join('third_party', 'crashpad', 'crashpad', 'third_party', 'lss'): {
         "Name": "linux-syscall-support",
         "URL": "https://chromium.googlesource.com/linux-syscall-support/",
@@ -244,8 +250,7 @@ SPECIAL_CASES = {
         "License File": "NOT_SHIPPED",
     },
     os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
-                 'mini_chromium'):
-    {
+                 'mini_chromium'): {
         "Name": "mini_chromium",
         "URL": "https://chromium.googlesource.com/chromium/mini_chromium/",
         "License": "BSD",
@@ -346,6 +351,31 @@ SPECIAL_CASES = {
         "License": "Apache 2.0",
         "License File":
         "/third_party/swiftshader/third_party/SPIRV-Headers/LICENSE",
+    },
+    os.path.join('third_party', 'dawn', 'third_party', 'khronos'): {
+        "Name": "khronos_platform",
+        "URL": "http://www.khronos.org/registry/egl",
+        "License": "Apache 2.0",
+        "License File": "/third_party/dawn/third_party/khronos/LICENSE",
+    },
+    # Dependencies of Selenium Atoms
+    os.path.join('third_party', 'selenium-atoms', 'sizzle'): {
+        "Name": "Sizzle",
+        "URL": "http://sizzlejs.com/",
+        "License": "MIT, BSD and GPL v2",
+        "License File": "/third_party/selenium-atoms/LICENSE.sizzle",
+    },
+    os.path.join('third_party', 'selenium-atoms', 'wgxpath'): {
+        "Name": "Wicked Good XPath",
+        "URL": "https://github.com/google/wicked-good-xpath",
+        "License": "MIT",
+        "License File": "/third_party/selenium-atoms/LICENSE.wgxpath",
+    },
+    os.path.join('third_party', 'selenium-atoms', 'closure-lib'): {
+        "Name": "Closure Library",
+        "URL": "https://developers.google.com/closure/library",
+        "License": "Apache 2.0",
+        "License File": "/third_party/selenium-atoms/LICENSE.closure",
     },
 }
 
@@ -619,10 +649,13 @@ def GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os):
       # Skip over files that are known not to be used on iOS.
       continue
     third_party_deps.add(third_party_path[:-1])
-  return sorted(third_party_deps)
+  return third_party_deps
 
 
-def FindThirdPartyDeps(gn_out_dir, gn_target, target_os):
+def FindThirdPartyDeps(gn_out_dir,
+                       gn_target,
+                       target_os,
+                       extra_third_party_dirs=None):
   if not gn_out_dir:
     raise RuntimeError("--gn-out-dir is required if --gn-target is used.")
 
@@ -655,7 +688,10 @@ def FindThirdPartyDeps(gn_out_dir, gn_target, target_os):
       subprocess.check_call(['tasklist.exe'])
     raise
 
-  return GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os)
+  third_party_deps = GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os)
+  if extra_third_party_dirs:
+    third_party_deps.update(extra_third_party_dirs)
+  return sorted(third_party_deps)
 
 
 def ScanThirdPartyDirs(root=None):
@@ -711,7 +747,8 @@ def GenerateCredits(file_template_file,
     }
 
   if gn_target:
-    third_party_dirs = FindThirdPartyDeps(gn_out_dir, gn_target, target_os)
+    third_party_dirs = FindThirdPartyDeps(gn_out_dir, gn_target, target_os,
+                                          extra_third_party_dirs)
 
     # Sanity-check to raise a build error if invalid gn_... settings are
     # somehow passed to this script.
@@ -820,7 +857,11 @@ def _ReadFile(path):
     return f.read()
 
 
-def GenerateLicenseFile(output_file, gn_out_dir, gn_target, target_os):
+def GenerateLicenseFile(output_file,
+                        gn_out_dir,
+                        gn_target,
+                        target_os,
+                        extra_third_party_dirs=None):
   """Generate a plain-text LICENSE file which can be used when you ship a part
     of Chromium code (specified by gn_target) as a stand-alone library
     (e.g., //ios/web_view).
@@ -828,7 +869,14 @@ def GenerateLicenseFile(output_file, gn_out_dir, gn_target, target_os):
     The LICENSE file contains licenses of both Chromium and third-party
     libraries which gn_target depends on. """
 
-  third_party_dirs = FindThirdPartyDeps(gn_out_dir, gn_target, target_os)
+  # Convert the path separators to the OS specific ones
+  if extra_third_party_dirs is not None:
+    extra_third_party_dirs = [
+        os.path.normpath(path) for path in extra_third_party_dirs
+    ]
+
+  third_party_dirs = FindThirdPartyDeps(gn_out_dir, gn_target, target_os,
+                                        extra_third_party_dirs)
 
   # Start with Chromium's LICENSE file.
   content = [_ReadFile('LICENSE')]
@@ -886,7 +934,7 @@ def main():
   elif args.command == 'license_file':
     try:
       GenerateLicenseFile(args.output_file, args.gn_out_dir, args.gn_target,
-                          args.target_os)
+                          args.target_os, args.extra_third_party_dirs)
     except LicenseError as e:
       print("Failed to parse README.chromium: {}".format(e))
       return 1
