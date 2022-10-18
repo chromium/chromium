@@ -331,9 +331,9 @@ class DebianBuilder(InstrumentedPackageBuilder):
     files_file = os.path.join(self._source_dir, 'debian/files')
 
     for line in open(files_file, 'r').read().splitlines():
-      if not line.endswith('.deb'):
-        continue
       filename, category, section = line.split(' ')
+      if not filename.endswith('.deb'):
+        continue
       pathname = os.path.join(self._source_dir, '..', filename)
       deb_files.append(pathname)
 
