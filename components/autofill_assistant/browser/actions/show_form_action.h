@@ -26,6 +26,7 @@ class ShowFormAction : public Action {
   void InternalProcessAction(ProcessActionCallback callback) override;
 
   void OnFormValuesChanged(const FormProto::Result* form_result);
+  void OnLegalDisclaimerLinkClicked(int link);
   void OnCancelForm(const ClientStatus& status);
   void OnButtonClicked();
   bool IsFormValid(const FormProto& form, const FormProto::Result& result);

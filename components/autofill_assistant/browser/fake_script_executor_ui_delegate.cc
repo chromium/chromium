@@ -142,6 +142,16 @@ bool FakeScriptExecutorUiDelegate::SetForm(
   return true;
 }
 
+void FakeScriptExecutorUiDelegate::SetLegalDisclaimer(
+    std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+    base::OnceCallback<void(int)> legal_disclaimer_link_callback) {
+  legal_disclaimer_link_callback_.Reset();
+  if (legal_disclaimer) {
+    legal_disclaimer_link_callback_ = std::move(legal_disclaimer_link_callback);
+  }
+  legal_disclaimer_ = std::move(legal_disclaimer);
+}
+
 void FakeScriptExecutorUiDelegate::ShowQrCodeScanUi(
     std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
     base::OnceCallback<void(const ClientStatus&,

@@ -418,6 +418,20 @@ void UiController::SetUserActions(
   SetVisibilityAndUpdateUserActions();
 }
 
+void UiController::SetLegalDisclaimer(
+    std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+    base::OnceCallback<void(int)> legal_disclaimer_link_callback) {
+  legal_disclaimer_link_callback_.Reset();
+  if (legal_disclaimer) {
+    legal_disclaimer_link_callback_ = std::move(legal_disclaimer_link_callback);
+  }
+  legal_disclaimer_ = std::move(legal_disclaimer);
+
+  for (UiControllerObserver& observer : observers_) {
+    observer.OnLegalDisclaimerChanged(legal_disclaimer_.get());
+  }
+}
+
 bool UiController::ShouldChipsBeVisible() {
   return !(is_keyboard_showing_ && is_focus_on_bottom_sheet_text_input_);
 }
@@ -574,6 +588,10 @@ void UiController::CollapseBottomSheet() {
     // least be renamed to something like On*Requested.
     observer.OnCollapseBottomSheet();
   }
+}
+
+const LegalDisclaimerProto* UiController::GetLegalDisclaimer() const {
+  return legal_disclaimer_.get();
 }
 
 const FormProto* UiController::GetForm() const {
@@ -800,6 +818,12 @@ void UiController::OnFormActionLinkClicked(int link) {
     form_result_->set_link(link);
     form_changed_callback_.Run(form_result_.get());
     std::move(form_cancel_callback_).Run(ClientStatus(ACTION_APPLIED));
+  }
+}
+
+void UiController::OnLegalDisclaimerLinkClicked(int link) {
+  if (legal_disclaimer_link_callback_) {
+    std::move(legal_disclaimer_link_callback_).Run(link);
   }
 }
 

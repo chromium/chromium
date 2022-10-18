@@ -30,6 +30,7 @@ import org.chromium.components.autofill_assistant.generic_ui.AssistantGenericUiM
 import org.chromium.components.autofill_assistant.header.AssistantHeaderCoordinator;
 import org.chromium.components.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxCoordinator;
+import org.chromium.components.autofill_assistant.legal_disclaimer.AssistantLegalDisclaimerCoordinator;
 import org.chromium.components.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel;
@@ -76,6 +77,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
     private final ObservableSupplierImpl<Integer> mInsetSupplier = new ObservableSupplierImpl<>();
     private AssistantInfoBoxCoordinator mInfoBoxCoordinator;
     private AssistantCollectUserDataCoordinator mCollectUserDataCoordinator;
+    private AssistantLegalDisclaimerCoordinator mLegalDisclaimerCoordinator;
 
     // The transition triggered whenever the layout of the BottomSheet content changes.
     private final TransitionSet mLayoutTransition =
@@ -157,6 +159,8 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 new AssistantGenericUiCoordinator(activity, model.getPersistentGenericUiModel());
         AssistantGenericUiCoordinator genericUiCoordinator =
                 new AssistantGenericUiCoordinator(activity, model.getGenericUiModel());
+        mLegalDisclaimerCoordinator =
+                new AssistantLegalDisclaimerCoordinator(activity, model.getLegalDisclaimerModel());
 
         // We don't want to animate the carousels children views as they are already animated by the
         // recyclers ItemAnimator, so we exclude them to avoid a clash between the animations.
@@ -182,6 +186,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         scrollableContentContainer.addView(mCollectUserDataCoordinator.getView());
         scrollableContentContainer.addView(formCoordinator.getView());
         scrollableContentContainer.addView(genericUiCoordinator.getView());
+        mRootViewContainer.addView(mLegalDisclaimerCoordinator.getView());
         mRootViewContainer.addView(mActionsCoordinator.getView());
 
         // Set children top margins to have a spacing between them.

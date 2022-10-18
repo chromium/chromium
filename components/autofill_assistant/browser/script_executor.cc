@@ -425,7 +425,9 @@ void ScriptExecutor::Prompt(
     bool disable_force_expand_sheet,
     base::OnceCallback<void()> end_on_navigation_callback,
     bool browse_mode,
-    bool browse_mode_invisible) {
+    bool browse_mode_invisible,
+    std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+    base::OnceCallback<void(int link)> legal_disclaimer_link_callback) {
   if (!current_action_) {
     NOTREACHED() << "must not be called outside of actions";
     return;
@@ -455,12 +457,18 @@ void ScriptExecutor::Prompt(
     }
   }
 
+  if (legal_disclaimer != nullptr) {
+    ui_delegate_->SetLegalDisclaimer(std::move(legal_disclaimer),
+                                     std::move(legal_disclaimer_link_callback));
+  }
+
   if (user_actions != nullptr) {
     ui_delegate_->SetUserActions(std::move(user_actions));
   }
 }
 
 void ScriptExecutor::CleanUpAfterPrompt(bool consume_touchable_area) {
+  ui_delegate_->SetLegalDisclaimer(nullptr, base::DoNothing());
   ui_delegate_->SetUserActions(nullptr);
   if (consume_touchable_area) {
     // Mark touchable_elements_ as consumed, so that it won't affect the next

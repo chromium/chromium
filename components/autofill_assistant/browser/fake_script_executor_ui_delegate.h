@@ -18,6 +18,8 @@ namespace autofill_assistant {
 
 // Implementation of ScriptExecutorUiDelegate that's convenient to use in
 // unittests.
+
+// TODO: b/253549076 Move the Fake Implementation into Mock UI Delegate.
 class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
  public:
   enum InterruptNotification { INTERRUPT_STARTED = 0, INTERRUPT_FINISHED = 1 };
@@ -68,6 +70,9 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
       std::unique_ptr<FormProto> form,
       base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,
       base::OnceCallback<void(const ClientStatus&)> cancel_callback) override;
+  void SetLegalDisclaimer(
+      std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+      base::OnceCallback<void(int)> legal_disclaimer_link_callback) override;
   void ShowQrCodeScanUi(
       std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
       base::OnceCallback<void(const ClientStatus&,
@@ -108,8 +113,16 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
 
   const GenericUserInterfaceProto* GetGenericUi() { return generic_ui_.get(); }
 
+  const LegalDisclaimerProto* GetLegalDisclaimer() {
+    return legal_disclaimer_.get();
+  }
+
   const base::OnceCallback<void(const ClientStatus&)>& GetEndActionCallback() {
     return end_action_callback_;
+  }
+
+  const base::OnceCallback<void(int)>& GetLegalDisclaimerLinkCallback() {
+    return legal_disclaimer_link_callback_;
   }
 
   const base::OnceCallback<void(const ClientStatus&)>&
@@ -173,6 +186,8 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
   bool show_qr_code_scan_ui_ = false;
   std::unique_ptr<GenericUserInterfaceProto> generic_ui_;
   base::OnceCallback<void(const ClientStatus&)> end_action_callback_;
+  std::unique_ptr<LegalDisclaimerProto> legal_disclaimer_;
+  base::OnceCallback<void(int)> legal_disclaimer_link_callback_;
   base::OnceCallback<void(const ClientStatus&)>
       view_inflation_finished_callback_;
   base::RepeatingCallback<void(const RequestBackendDataProto&)>

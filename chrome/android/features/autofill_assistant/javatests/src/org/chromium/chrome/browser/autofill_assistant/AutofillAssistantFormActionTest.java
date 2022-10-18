@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.FormProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.InfoPopupProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.InfoPopupProto.DialogButton;
 import org.chromium.chrome.browser.autofill_assistant.proto.InfoPopupProto.DialogButton.OpenUrlInCCT;
+import org.chromium.chrome.browser.autofill_assistant.proto.LegalDisclaimerProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
@@ -276,6 +277,59 @@ public class AutofillAssistantFormActionTest {
         assertThat(formResult.get(2).getCounter().getValues(0), is(1));
 
         waitUntilViewMatchesCondition(withText("End"), isCompletelyDisplayed());
+    }
+
+    @Test
+    @MediumTest
+    @DisableIf.Build(sdk_is_less_than = 21)
+    public void testFormActionWithLegalDisclaimer() {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        FormProto.Builder formProto =
+                FormProto.newBuilder().addInputs(FormInputProto.newBuilder().setSelection(
+                        SelectionInputProto.newBuilder()
+                                .addChoices(SelectionInputProto.Choice.newBuilder()
+                                                    .setLabel("Choice 2")
+                                                    .setDescriptionLine2("<link2>Choice 2</link2>"))
+                                .addChoices(SelectionInputProto.Choice.newBuilder()
+                                                    .setLabel("Choice 3")
+                                                    .setDescriptionLine2("<link3>Choice 3</link3>"))
+                                .setAllowMultiple(false)));
+        LegalDisclaimerProto.Builder legalDisclaimerProto =
+                LegalDisclaimerProto.newBuilder().setLegalDisclaimerMessage(
+                        "<link4>Terms & Conditions</link4>");
+        list.add(ActionProto.newBuilder()
+                         .setShowForm(ShowFormProto.newBuilder()
+                                              .setChip(ChipProto.newBuilder()
+                                                               .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                               .setText("Continue"))
+                                              .setForm(formProto)
+                                              .setLegalDisclaimer(legalDisclaimerProto))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(withText("Terms & Conditions"), isCompletelyDisplayed());
+
+        int numNextActionsCalled = testService.getNextActionsCounter();
+        onView(withText("Terms & Conditions")).perform(click());
+        testService.waitUntilGetNextActions(numNextActionsCalled + 1);
+
+        List<ProcessedActionProto> processedActions = testService.getProcessedActions();
+        assertThat(processedActions, iterableWithSize(1));
+        assertThat(
+                processedActions.get(0).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
+        assertThat(processedActions.get(0).getResultDataCase(),
+                is(ProcessedActionProto.ResultDataCase.FORM_RESULT));
+        assertThat(processedActions.get(0).getFormResult().getLink(), is(4));
     }
 
     @Test

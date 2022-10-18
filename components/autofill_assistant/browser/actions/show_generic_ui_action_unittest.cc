@@ -127,8 +127,8 @@ TEST_F(ShowGenericUiActionTest, FailedViewInflationEndsAction) {
 
 TEST_F(ShowGenericUiActionTest, GoesIntoPromptState) {
   InSequence seq;
-  EXPECT_CALL(mock_action_delegate_, Prompt(_, _, _, _, _)).Times(1);
-  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(mock_action_delegate_, Prompt).Times(1);
+  EXPECT_CALL(mock_action_delegate_, SetGenericUi).Times(1);
   EXPECT_CALL(mock_action_delegate_, ClearGenericUi()).Times(1);
   EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true))).Times(1);
   EXPECT_CALL(
@@ -271,7 +271,7 @@ TEST_F(ShowGenericUiActionTest, ElementPreconditionMissesIdentifier) {
       ->add_filters()
       ->set_css_selector("selector");
 
-  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, SetGenericUi).Times(0);
   EXPECT_CALL(mock_action_delegate_, ClearGenericUi()).Times(1);
   EXPECT_CALL(
       callback_,
@@ -285,7 +285,7 @@ TEST_F(ShowGenericUiActionTest, ElementPreconditionMissesIdentifier) {
 }
 
 TEST_F(ShowGenericUiActionTest, EndActionOnNavigation) {
-  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _))
+  ON_CALL(mock_action_delegate_, SetGenericUi)
       .WillByDefault(Invoke(
           [&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
               base::OnceCallback<void(const ClientStatus&)> end_action_callback,
@@ -298,13 +298,7 @@ TEST_F(ShowGenericUiActionTest, EndActionOnNavigation) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(ACTION_APPLIED));
           }));
-  EXPECT_CALL(mock_action_delegate_, Prompt(_, _, _, _, _))
-      .WillOnce([](std::unique_ptr<std::vector<UserAction>> user_actions,
-                   bool disable_force_expand_sheet,
-                   base::OnceCallback<void()> end_navigation_callback,
-                   bool browse_mode, bool browse_mode_invisible) {
-        std::move(end_navigation_callback).Run();
-      });
+  EXPECT_CALL(mock_action_delegate_, Prompt).WillOnce(RunOnceCallback<2>());
   EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true))).Times(1);
   EXPECT_CALL(
       callback_,
@@ -320,14 +314,9 @@ TEST_F(ShowGenericUiActionTest, EndActionOnNavigation) {
 
 TEST_F(ShowGenericUiActionTest, BreakingNavigationBeforeUiIsSet) {
   // End action immediately with ACTION_APPLIED after it goes into prompt.
-  EXPECT_CALL(mock_action_delegate_, Prompt(_, _, _, _, _))
-      .WillOnce([](std::unique_ptr<std::vector<UserAction>> user_actions,
-                   bool disable_force_expand_sheet,
-                   base::OnceCallback<void()> end_navigation_callback,
-                   bool browse_mode, bool browse_mode_invisible) {
-        std::move(end_navigation_callback).Run();
-      });
-  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _))
+  EXPECT_CALL(mock_action_delegate_, Prompt).WillOnce(RunOnceCallback<2>());
+
+  ON_CALL(mock_action_delegate_, SetGenericUi)
       .WillByDefault(Invoke(
           [&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
               base::OnceCallback<void(const ClientStatus&)> end_action_callback,

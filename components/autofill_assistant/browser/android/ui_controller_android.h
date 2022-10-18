@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/android/assistant_generic_ui_delegate.h"
 #include "components/autofill_assistant/browser/android/assistant_header_delegate.h"
 #include "components/autofill_assistant/browser/android/assistant_header_model.h"
+#include "components/autofill_assistant/browser/android/assistant_legal_disclaimer_native_delegate.h"
 #include "components/autofill_assistant/browser/android/assistant_overlay_delegate.h"
 #include "components/autofill_assistant/browser/android/assistant_qr_code_camera_scan_model_wrapper.h"
 #include "components/autofill_assistant/browser/android/assistant_qr_code_image_picker_model_wrapper.h"
@@ -141,6 +142,8 @@ class UiControllerAndroid : public EmptyControllerObserver,
                      const FormProto::Result* result) override;
   void OnQrCodeScanUiChanged(
       const PromptQrCodeScanProto* qr_code_scan) override;
+  void OnLegalDisclaimerChanged(
+      const LegalDisclaimerProto* legal_disclaimer) override;
   void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) override;
   void OnShowAccountScreen(const ShowAccountScreenProto& proto,
@@ -182,6 +185,7 @@ class UiControllerAndroid : public EmptyControllerObserver,
   void OnLoginChoiceChanged(const std::string& identifier);
   void OnTextLinkClicked(int link);
   void OnFormActionLinkClicked(int link);
+  void OnLegalDisclaimerLinkClicked(int link);
   void OnKeyValueChanged(const std::string& key, const ValueProto& value);
   void OnInputTextFocusChanged(bool is_text_focused);
 
@@ -262,6 +266,7 @@ class UiControllerAndroid : public EmptyControllerObserver,
   base::android::ScopedJavaLocalRef<jobject> GetInfoBoxModel();
   base::android::ScopedJavaLocalRef<jobject> GetCollectUserDataModel();
   base::android::ScopedJavaLocalRef<jobject> GetFormModel();
+  base::android::ScopedJavaLocalRef<jobject> GetLegalDisclaimerModel();
   base::android::ScopedJavaLocalRef<jobject> GetGenericUiModel();
   base::android::ScopedJavaLocalRef<jobject> GetPersistentGenericUiModel();
   base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalSections(
@@ -330,6 +335,9 @@ class UiControllerAndroid : public EmptyControllerObserver,
   OverlayState overlay_state_ = OverlayState::FULL;
 
   std::unique_ptr<AssistantHeaderModel> header_model_;
+
+  std::unique_ptr<AssistantLegalDisclaimerNativeDelegate>
+      legal_disclaimer_delegate_;
 
   std::unique_ptr<AssistantQrCodeNativeDelegate> qr_code_native_delegate_;
   std::unique_ptr<AssistantQrCodeCameraScanModelWrapper>

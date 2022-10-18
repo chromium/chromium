@@ -133,6 +133,13 @@ void HeadlessUiController::ShowQrCodeScanUi(
 void HeadlessUiController::ClearQrCodeScanUi() {
   VLOG(2) << "Unexpected UI method called: " << __func__;
 }
+
+void HeadlessUiController::SetLegalDisclaimer(
+    std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+    base::OnceCallback<void(int)> legal_disclaimer_link_callback) {
+  VLOG(2) << "Unexpected UI method called: " << __func__;
+}
+
 void HeadlessUiController::SetGenericUi(
     std::unique_ptr<GenericUserInterfaceProto> generic_ui,
     base::OnceCallback<void(const ClientStatus&)> end_action_callback,

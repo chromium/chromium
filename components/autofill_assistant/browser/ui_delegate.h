@@ -117,6 +117,9 @@ class UiDelegate {
   // Called when the user clicks a link in the form action.
   virtual void OnFormActionLinkClicked(int link) = 0;
 
+  // Called when the user clicks a link in the legal disclaimer message.
+  virtual void OnLegalDisclaimerLinkClicked(int link) = 0;
+
   // Called when the user clicks the TTS button.
   virtual void OnTtsButtonClicked() = 0;
 
@@ -137,6 +140,9 @@ class UiDelegate {
 
   // Sets the state of the bottom sheet.
   virtual void SetBottomSheetState(BottomSheetState state) = 0;
+
+  // Returns the current legal disclaimer or nullptr if there is none.
+  virtual const LegalDisclaimerProto* GetLegalDisclaimer() const = 0;
 
   // Returns the current form. May be null if there is no form to show.
   virtual const FormProto* GetForm() const = 0;

@@ -14,9 +14,11 @@ namespace autofill_assistant {
 namespace {
 
 using ::base::test::RunCallback;
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
@@ -47,7 +49,7 @@ class ShowFormActionTest : public testing::Test {
 TEST_F(ShowFormActionTest, SucceedsWithoutValidation) {
   EXPECT_CALL(mock_action_delegate_,
               Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, true))),
-                     _, _, _, _));
+                     _, _, _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* counter = input->mutable_counter()->add_counters();
@@ -64,7 +66,7 @@ TEST_F(ShowFormActionTest, SucceedsWithoutValidation) {
 TEST_F(ShowFormActionTest, SucceedsWithValidForm) {
   EXPECT_CALL(mock_action_delegate_,
               Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, true))),
-                     _, _, _, _));
+                     _, _, _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* counter = input->mutable_counter()->add_counters();
@@ -87,7 +89,7 @@ TEST_F(ShowFormActionTest, FailsWithInvalidForm) {
   EXPECT_CALL(
       mock_action_delegate_,
       Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, false))), _, _,
-             _, _));
+             _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* counter = input->mutable_counter()->add_counters();
@@ -109,7 +111,7 @@ TEST_F(ShowFormActionTest, FailsWithInvalidForm) {
 TEST_F(ShowFormActionTest, SucceedsWithValidFormWithWeight) {
   EXPECT_CALL(mock_action_delegate_,
               Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, true))),
-                     _, _, _, _));
+                     _, _, _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* counter = input->mutable_counter()->add_counters();
@@ -133,7 +135,7 @@ TEST_F(ShowFormActionTest, FailsWithInvalidFormWithWeight) {
   EXPECT_CALL(
       mock_action_delegate_,
       Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, false))), _, _,
-             _, _));
+             _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* counter = input->mutable_counter()->add_counters();
@@ -167,7 +169,7 @@ TEST_F(ShowFormActionTest, FailsWithTooManyBooleanRulesSatisfied) {
   EXPECT_CALL(
       mock_action_delegate_,
       Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, false))), _, _,
-             _, _));
+             _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* counter = input->mutable_counter()->add_counters();
@@ -197,7 +199,7 @@ TEST_F(ShowFormActionTest, FailsWithTooLittleBooleanRulesSatisfied) {
   EXPECT_CALL(
       mock_action_delegate_,
       Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, false))), _, _,
-             _, _));
+             _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* counter = input->mutable_counter()->add_counters();
@@ -226,7 +228,7 @@ TEST_F(ShowFormActionTest, FailsWithTooLittleBooleanRulesSatisfied) {
 TEST_F(ShowFormActionTest, SucceedsWithEnoughBooleanRulesSatisfied) {
   EXPECT_CALL(mock_action_delegate_,
               Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, true))),
-                     _, _, _, _));
+                     _, _, _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* counter = input->mutable_counter()->add_counters();
@@ -255,7 +257,7 @@ TEST_F(ShowFormActionTest, SucceedsWithEnoughBooleanRulesSatisfied) {
 TEST_F(ShowFormActionTest, SucceedsInputSelectionValidation) {
   EXPECT_CALL(mock_action_delegate_,
               Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, true))),
-                     _, _, _, _));
+                     _, _, _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* selection = input->mutable_selection();
@@ -274,7 +276,7 @@ TEST_F(ShowFormActionTest, FailsInputSelectionValidation) {
   EXPECT_CALL(
       mock_action_delegate_,
       Prompt(Pointee(ElementsAre(Property(&UserAction::enabled, false))), _, _,
-             _, _));
+             _, _, _, _));
 
   auto* input = proto_.mutable_form()->add_inputs();
   auto* selection = input->mutable_selection();
@@ -285,6 +287,57 @@ TEST_F(ShowFormActionTest, FailsInputSelectionValidation) {
   auto* input_result = result_.add_input_results();
   input_result->mutable_selection()->add_selected(false);
   input_result->mutable_selection()->add_selected(true);
+
+  Run();
+}
+
+TEST_F(ShowFormActionTest, FormWithLegalDisclaimer) {
+  EXPECT_CALL(mock_action_delegate_,
+              Prompt(_, _, _, _, _,
+                     Pointee(Property(
+                         &LegalDisclaimerProto::legal_disclaimer_message,
+                         "Legal disclaimer message with <link3>Links</link3>")),
+                     _));
+
+  proto_.mutable_form();
+  proto_.mutable_legal_disclaimer()->set_legal_disclaimer_message(
+      "Legal disclaimer message with <link3>Links</link3>");
+
+  Run();
+}
+
+TEST_F(ShowFormActionTest, OnLegalDisclaimerLinkClicked) {
+  proto_.mutable_form();
+  proto_.mutable_legal_disclaimer()->set_legal_disclaimer_message(
+      "Legal disclaimer message with <link3>Links</link3>");
+
+  EXPECT_CALL(mock_action_delegate_,
+              Prompt(_, _, _, _, _,
+                     Pointee(Property(
+                         &LegalDisclaimerProto::legal_disclaimer_message,
+                         "Legal disclaimer message with <link3>Links</link3>")),
+                     _))
+      .WillOnce(RunOnceCallback<6>(3));
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(Property(&ProcessedActionProto::status, ACTION_APPLIED),
+                        Property(&ProcessedActionProto::form_result,
+                                 Property(&FormProto::Result::link, 3))))));
+
+  Run();
+}
+
+TEST_F(ShowFormActionTest, FormWithoutLegalDisclaimer) {
+  EXPECT_CALL(mock_action_delegate_, Prompt(_, _, _, _, _, Eq(nullptr), _));
+
+  auto* input = proto_.mutable_form()->add_inputs();
+  auto* counter = input->mutable_counter()->add_counters();
+  counter->set_min_value(0);
+  counter->set_max_value(1);
+  counter->set_label("Counter");
+
+  auto* input_result = result_.add_input_results();
+  input_result->mutable_counter()->add_values(1);
 
   Run();
 }

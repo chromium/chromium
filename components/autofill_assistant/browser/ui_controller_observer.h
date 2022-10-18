@@ -88,6 +88,10 @@ class UiControllerObserver : public base::CheckedObserver {
   virtual void OnQrCodeScanUiChanged(
       const PromptQrCodeScanProto* qr_code_scan) = 0;
 
+  // Called when the legal_disclaimer is set or cleared.
+  virtual void OnLegalDisclaimerChanged(
+      const LegalDisclaimerProto* legal_disclaimer) = 0;
+
   // Called when the generic user interface to show has been changed or cleared.
   virtual void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) = 0;

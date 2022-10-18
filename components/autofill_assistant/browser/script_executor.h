@@ -175,7 +175,10 @@ class ScriptExecutor : public ActionDelegate,
               bool disable_force_expand_sheet,
               base::OnceCallback<void()> end_on_navigation_callback,
               bool browse_mode,
-              bool browse_mode_invisible) override;
+              bool browse_mode_invisible,
+              std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+              base::OnceCallback<void(int link)> legal_disclaimer_link_callback)
+      override;
   void CleanUpAfterPrompt(bool consume_touchable_area = true) override;
   void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
   void RetrieveElementFormAndFieldData(

@@ -3324,6 +3324,12 @@ message ConfigureBottomSheetProto {
   }
 }
 
+// A legal disclaimer that optionally may contain one or several
+// <linkN>text<linkN> markups.
+message LegalDisclaimerProto {
+  optional string legal_disclaimer_message = 1;
+}
+
 // Allow scripts to display a form with multiple inputs.
 message ShowFormProto {
   // The form to display.
@@ -3333,6 +3339,10 @@ message ShowFormProto {
   // form inputs are valid.
   optional ChipProto chip = 2;
 
+  // A legal_disclaimer message to display below the form.
+  // This will be added to the AutofillAssistant's bottom sheet and is always
+  // visible and doesn't scroll along.
+  optional LegalDisclaimerProto legal_disclaimer = 4;
   reserved 3;
 }
 

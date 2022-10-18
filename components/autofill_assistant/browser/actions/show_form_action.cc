@@ -62,9 +62,32 @@ void ShowFormAction::OnFormValuesChanged(const FormProto::Result* form_result) {
 
   auto user_actions = std::make_unique<std::vector<UserAction>>();
   user_actions->emplace_back(std::move(user_action));
+
+  std::unique_ptr<LegalDisclaimerProto> legal_disclaimer;
+  base::OnceCallback<void(int)> legal_disclaimer_callback = base::DoNothing();
+  if (proto_.show_form().has_legal_disclaimer()) {
+    legal_disclaimer = std::make_unique<LegalDisclaimerProto>(
+        proto_.show_form().legal_disclaimer());
+    legal_disclaimer_callback =
+        base::BindOnce(&ShowFormAction::OnLegalDisclaimerLinkClicked,
+                       weak_ptr_factory_.GetWeakPtr());
+  }
+
   delegate_->Prompt(std::move(user_actions),
-                    /* disable_force_expand_sheet = */ false);
+                    /* disable_force_expand_sheet = */ false,
+                    /* end_on_navigation_callback = */ base::DoNothing(),
+                    /* browse_mode = */ false,
+                    /* browse_mode_invisible = */ false,
+                    /* legal_disclaimer = */
+                    std::move(legal_disclaimer),
+                    /* legal_disclaimer_link_callback = */
+                    std::move(legal_disclaimer_callback));
   action_stopwatch_.StartWaitTime();
+}
+
+void ShowFormAction::OnLegalDisclaimerLinkClicked(int link) {
+  processed_action_proto_->mutable_form_result()->set_link(link);
+  EndAction(ClientStatus(ACTION_APPLIED));
 }
 
 void ShowFormAction::OnCancelForm(const ClientStatus& status) {

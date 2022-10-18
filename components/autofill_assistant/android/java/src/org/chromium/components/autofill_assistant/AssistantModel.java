@@ -12,6 +12,7 @@ import org.chromium.components.autofill_assistant.form.AssistantFormModel;
 import org.chromium.components.autofill_assistant.generic_ui.AssistantGenericUiModel;
 import org.chromium.components.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxModel;
+import org.chromium.components.autofill_assistant.legal_disclaimer.AssistantLegalDisclaimerModel;
 import org.chromium.components.autofill_assistant.overlay.AssistantOverlayModel;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel;
 import org.chromium.content_public.browser.WebContents;
@@ -46,6 +47,8 @@ public class AssistantModel extends PropertyModel {
     private final AssistantInfoBoxModel mInfoBoxModel = new AssistantInfoBoxModel();
     private final AssistantCollectUserDataModel mCollectUserDataModel =
             new AssistantCollectUserDataModel();
+    private final AssistantLegalDisclaimerModel mLegalDisclaimerModel =
+            new AssistantLegalDisclaimerModel();
     private final AssistantFormModel mFormModel = new AssistantFormModel();
     private final AssistantCarouselModel mActionsModel = new AssistantCarouselModel();
     private final AssistantGenericUiModel mPersistentGenericUiModel = new AssistantGenericUiModel();
@@ -80,6 +83,11 @@ public class AssistantModel extends PropertyModel {
     @CalledByNative
     public AssistantInfoBoxModel getInfoBoxModel() {
         return mInfoBoxModel;
+    }
+
+    @CalledByNative
+    public AssistantLegalDisclaimerModel getLegalDisclaimerModel() {
+        return mLegalDisclaimerModel;
     }
 
     @CalledByNative

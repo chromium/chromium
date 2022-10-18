@@ -92,12 +92,15 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD2(FindAllElements,
                      void(const Selector& selector,
                           ElementFinder::Callback callback));
-  MOCK_METHOD5(Prompt,
-               void(std::unique_ptr<std::vector<UserAction>> user_actions,
-                    bool disable_force_expand_sheet,
-                    base::OnceCallback<void()> end_on_navigation_callback,
-                    bool browse_mode,
-                    bool browse_mode_invisible));
+  MOCK_METHOD7(
+      Prompt,
+      void(std::unique_ptr<std::vector<UserAction>> user_actions,
+           bool disable_force_expand_sheet,
+           base::OnceCallback<void()> end_on_navigation_callback,
+           bool browse_mode,
+           bool browse_mode_invisible,
+           std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+           base::OnceCallback<void(int)> legal_disclaimer_link_callback));
   MOCK_METHOD1(CleanUpAfterPrompt, void(bool));
   MOCK_METHOD1(SetBrowseDomainsAllowlist,
                void(std::vector<std::string> domains));

@@ -26,6 +26,7 @@
 #include "components/autofill_assistant/android/jni_headers/AssistantGenericUiModel_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantInfoBoxModel_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantInfoBox_jni.h"
+#include "components/autofill_assistant/android/jni_headers/AssistantLegalDisclaimerModel_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantModel_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantOverlayModel_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantPlaceholdersConfiguration_jni.h"
@@ -750,6 +751,8 @@ void UiControllerAndroid::RestoreUi() {
   OnViewportModeChanged(execution_delegate_->GetViewportMode());
   OnPeekModeChanged(ui_delegate_->GetPeekMode());
   OnFormChanged(ui_delegate_->GetForm(), ui_delegate_->GetFormResult());
+  OnLegalDisclaimerChanged(ui_delegate_->GetLegalDisclaimer());
+
   ExecutionDelegate::OverlayColors colors;
   execution_delegate_->GetOverlayColors(&colors);
   OnOverlayColorsChanged(colors);
@@ -1221,6 +1224,10 @@ void UiControllerAndroid::OnTextLinkClicked(int link) {
 
 void UiControllerAndroid::OnFormActionLinkClicked(int link) {
   ui_delegate_->OnFormActionLinkClicked(link);
+}
+
+void UiControllerAndroid::OnLegalDisclaimerLinkClicked(int link) {
+  ui_delegate_->OnLegalDisclaimerLinkClicked(link);
 }
 
 void UiControllerAndroid::OnKeyValueChanged(const std::string& key,
@@ -1764,6 +1771,35 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
 // FormProto related methods.
 base::android::ScopedJavaLocalRef<jobject> UiControllerAndroid::GetFormModel() {
   return Java_AssistantModel_getFormModel(AttachCurrentThread(), GetModel());
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+UiControllerAndroid::GetLegalDisclaimerModel() {
+  return Java_AssistantModel_getLegalDisclaimerModel(AttachCurrentThread(),
+                                                     GetModel());
+}
+
+void UiControllerAndroid::OnLegalDisclaimerChanged(
+    const LegalDisclaimerProto* legal_disclaimer) {
+  JNIEnv* env = AttachCurrentThread();
+  auto jmodel = GetLegalDisclaimerModel();
+
+  if (!legal_disclaimer) {
+    Java_AssistantLegalDisclaimerModel_setLegalDisclaimer(env, jmodel, nullptr,
+                                                          nullptr);
+    legal_disclaimer_delegate_.reset();
+    return;
+  }
+
+  if (!legal_disclaimer_delegate_) {
+    legal_disclaimer_delegate_ =
+        std::make_unique<AssistantLegalDisclaimerNativeDelegate>(this);
+  }
+
+  Java_AssistantLegalDisclaimerModel_setLegalDisclaimer(
+      env, jmodel, legal_disclaimer_delegate_->GetJavaObject(),
+      ConvertUTF8ToJavaString(env,
+                              legal_disclaimer->legal_disclaimer_message()));
 }
 
 void UiControllerAndroid::OnFormChanged(const FormProto* form,

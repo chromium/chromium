@@ -59,6 +59,7 @@ class ElementStore;
 class GenericUserInterfaceProto;
 class FormProto;
 class FormProto_Result;
+class LegalDisclaimerProto;
 class InfoBox;
 class PromptQrCodeScanProto;
 class UserAction;
@@ -199,7 +200,10 @@ class ActionDelegate {
       bool disable_force_expand_sheet,
       base::OnceCallback<void()> end_on_navigation_callback = base::DoNothing(),
       bool browse_mode = false,
-      bool browse_mode_invisible = false) = 0;
+      bool browse_mode_invisible = false,
+      std::unique_ptr<LegalDisclaimerProto> legal_disclaimer = nullptr,
+      base::OnceCallback<void(int link)> legal_disclaimer_link_callback =
+          base::DoNothing()) = 0;
 
   // Have the UI leave the prompt state and go back to its previous state.
   virtual void CleanUpAfterPrompt(bool consume_touchable_area = true) = 0;

@@ -60,6 +60,9 @@ class ScriptExecutorUiDelegate : public WaitForDomObserver {
           configuration) = 0;
   virtual void SetUserActions(
       std::unique_ptr<std::vector<UserAction>> user_action) = 0;
+  virtual void SetLegalDisclaimer(
+      std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+      base::OnceCallback<void(int)> legal_disclaimer_link_callback) = 0;
   virtual void SetPeekMode(ConfigureBottomSheetProto::PeekMode peek_mode) = 0;
   virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() = 0;
   virtual void ExpandBottomSheet() = 0;

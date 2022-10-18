@@ -63,6 +63,9 @@ class HeadlessUiController : public ScriptExecutorUiDelegate,
                               const absl::optional<ValueProto>&)> callback)
       override;
   void ClearQrCodeScanUi() override;
+  void SetLegalDisclaimer(
+      std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+      base::OnceCallback<void(int)> legal_disclaimer_link_callback) override;
   void SetGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)> end_action_callback,

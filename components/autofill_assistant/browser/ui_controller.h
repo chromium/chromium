@@ -86,6 +86,9 @@ class UiController : public ScriptExecutorUiDelegate,
       override;
   void SetUserActions(
       std::unique_ptr<std::vector<UserAction>> user_actions) override;
+  void SetLegalDisclaimer(
+      std::unique_ptr<LegalDisclaimerProto> legal_disclaimer,
+      base::OnceCallback<void(int)> legal_disclaimer_link_callback) override;
   void SetPeekMode(ConfigureBottomSheetProto::PeekMode peek_mode) override;
   void ExpandBottomSheet() override;
   void CollapseBottomSheet() override;
@@ -161,6 +164,7 @@ class UiController : public ScriptExecutorUiDelegate,
   void SetLoginOption(const std::string& identifier) override;
   void OnTextLinkClicked(int link) override;
   void OnFormActionLinkClicked(int link) override;
+  void OnLegalDisclaimerLinkClicked(int link) override;
   void OnTtsButtonClicked() override;
   void SetAdditionalValue(const std::string& client_memory_key,
                           const ValueProto& value) override;
@@ -169,6 +173,7 @@ class UiController : public ScriptExecutorUiDelegate,
   ConfigureBottomSheetProto::PeekMode GetPeekMode() override;
   BottomSheetState GetBottomSheetState() override;
   void SetBottomSheetState(BottomSheetState state) override;
+  const LegalDisclaimerProto* GetLegalDisclaimer() const override;
   const FormProto* GetForm() const override;
   const FormProto::Result* GetFormResult() const override;
   void SetCounterValue(int input_index, int counter_index, int value) override;
@@ -305,6 +310,11 @@ class UiController : public ScriptExecutorUiDelegate,
 
   // Current set of user actions. May be null, but never empty.
   std::unique_ptr<std::vector<UserAction>> user_actions_;
+
+  // Current legal disclaimer used in prompt-like actions.
+  std::unique_ptr<LegalDisclaimerProto> legal_disclaimer_;
+  base::OnceCallback<void(const int)> legal_disclaimer_link_callback_ =
+      base::DoNothing();
 
   // Current peek mode.
   ConfigureBottomSheetProto::PeekMode peek_mode_ =
