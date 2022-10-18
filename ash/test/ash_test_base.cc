@@ -307,6 +307,7 @@ aura::Window* AshTestBase::CreateTestWindowInShellWithDelegateAndType(
       .SetDelegate(delegate)
       .SetWindowType(type)
       .SetWindowId(id)
+      .SetWindowTitle(u"Window " + base::NumberToString16(id))
       .AllowAllWindowStates()
       .Build()
       .release();
