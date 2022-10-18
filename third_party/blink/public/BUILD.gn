@@ -107,6 +107,7 @@ source_set("test_headers") {
     "platform/scheduler/test/web_mock_thread_scheduler.h",
     "test/frame_widget_test_helper.h",
     "test/test_web_frame_content_dumper.h",
+    "test/test_web_frame_helper.h",
   ]
   public_deps = [ ":blink_headers" ]
   deps = [

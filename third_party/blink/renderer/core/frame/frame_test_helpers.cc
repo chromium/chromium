@@ -63,6 +63,7 @@
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/test/test_web_frame_helper.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
@@ -72,6 +73,7 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
@@ -799,6 +801,8 @@ void TestWebFrameClient::CommitNavigation(
     // guaranteed to have a local parent.
     blink::WebLocalFrame* parent = frame_->Parent()->ToWebLocalFrame();
     params->fallback_srcdoc_base_url = parent->GetDocument().BaseURL();
+    TestWebFrameHelper::FillStaticResponseForSrcdocNavigation(frame_,
+                                                              params.get());
   }
 
   MockPolicyContainerHost mock_policy_container_host;

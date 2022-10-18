@@ -874,23 +874,14 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
   const KURL& url = params->url;
   // See WebNavigationParams for special case explanations.
   if (url.IsAboutSrcdocURL()) {
-    if (params->body_loader)
-      return;
-    // TODO(wjmaclean): It seems some pathways don't go via the
-    // RenderFrameImpl::BeginNavigation/CommitNavigation functions.
-    // https://crbug.com/1290435.
-    String srcdoc;
-    HTMLFrameOwnerElement* owner_element = frame->DeprecatedLocalOwner();
-    if (!IsA<HTMLIFrameElement>(owner_element) ||
-        !owner_element->FastHasAttribute(html_names::kSrcdocAttr)) {
-      // Cannot retrieve srcdoc content anymore (perhaps, the attribute was
-      // cleared) - load empty instead.
-    } else {
-      srcdoc = owner_element->FastGetAttribute(html_names::kSrcdocAttr);
-      DCHECK(!srcdoc.IsNull());
-    }
-    WebNavigationParams::FillStaticResponse(params, "text/html", "UTF-8",
-                                            StringUTF8Adaptor(srcdoc));
+    CHECK(params->body_loader);
+    // Originally, this branch was responsible for retrieving the value of the
+    // srcdoc attribute and turning it into a body loader when committing a
+    // navigation to about:srcdoc. To support out-of-process sandboxed iframes,
+    // the value of the srcdoc attribute is now sent to the browser in
+    // BeginNavigation, and the body loader should have already been created
+    // by the time the browser asks the renderer to commit, like other
+    // standard navigations.
     return;
   }
 

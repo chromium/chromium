@@ -7,7 +7,10 @@ import("//third_party/blink/renderer/core/exported/build.gni")
 static_library("test_support") {
   testonly = true
 
-  sources = [ "test_web_frame_content_dumper.cc" ]
+  sources = [
+    "test_web_frame_content_dumper.cc",
+    "test_web_frame_helper.cc",
+  ]
 
   deps = [
     "//third_party/blink/public:test_headers",

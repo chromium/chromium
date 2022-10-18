@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
+#include "third_party/blink/public/test/test_web_frame_helper.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_control.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -366,6 +367,11 @@ void TestRenderFrame::BeginNavigation(
 
     navigation_params->policy_container->policies.sandbox_flags =
         navigation_params->frame_policy->sandbox_flags;
+
+    if (url.IsAboutSrcdoc()) {
+      blink::TestWebFrameHelper::FillStaticResponseForSrcdocNavigation(
+          GetWebFrame(), navigation_params.get());
+    }
 
     frame_->CommitNavigation(std::move(navigation_params),
                              nullptr /* extra_data */);
