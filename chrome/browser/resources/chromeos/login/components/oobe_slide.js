@@ -2,18 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #js_imports_placeholder */
-
 /**
- * @polymer
+ * @fileoverview
+ * Simple OOBE polymer element which is used for displaying single slide in a
+ * carousel.
+ *
+ * Example:
+ *   <oobe-slide is-warning>
+ *     <img ... slot="slide-img">
+ *     <div slot="title">...</div>
+ *     <div slot="text">...</div>
+ *   </oobe-slide>
+ *
+ *   Attributes:
+ *     is-warning - changes title slot color from blue to red.
  */
-class OobeSlide extends Polymer.Element {
 
+import './common_styles/oobe_dialog_host_styles.m.js';
+
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+/** @polymer */
+class OobeSlide extends PolymerElement {
   static get is() {
     return 'oobe-slide';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {

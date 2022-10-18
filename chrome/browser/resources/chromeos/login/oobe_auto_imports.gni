@@ -120,6 +120,7 @@ oobe_migrated_imports = [
   "chrome/browser/resources/chromeos/login/components/oobe_a11y_option.html",
   "chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.html",
   "chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.html",
+  "chrome/browser/resources/chromeos/login/components/oobe_slide.html",
   "chrome/browser/resources/chromeos/login/components/progress_list_item.html",
   "chrome/browser/resources/chromeos/login/components/security_token_pin.html",
   "chrome/browser/resources/chromeos/login/components/throbber_notice.html",

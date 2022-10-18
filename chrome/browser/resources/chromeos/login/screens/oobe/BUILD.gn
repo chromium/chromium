@@ -173,7 +173,7 @@ js_library("packaged_license.m") {
 js_library("update.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/update.m.js" ]
   deps = [
-    "../../components:oobe_slide.m",
+    "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",

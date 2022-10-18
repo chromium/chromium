@@ -95,7 +95,7 @@ js_library("gaia_password_changed") {
 js_library("lacros_data_migration") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_migration.js" ]
   deps = [
-    "../../components:oobe_slide.m",
+    "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/dialogs:oobe_loading_dialog.m",
@@ -106,7 +106,7 @@ js_library("lacros_data_migration") {
 js_library("lacros_data_backward_migration") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_backward_migration.js" ]
   deps = [
-    "../../components:oobe_slide.m",
+    "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/dialogs:oobe_loading_dialog.m",

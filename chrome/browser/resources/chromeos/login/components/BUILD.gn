@@ -37,7 +37,7 @@ group("closure_compile") {
     ":oobe_icons.m",
     ":oobe_network_icons.m",
     ":oobe_select.m",
-    ":oobe_slide.m",
+    ":oobe_slide",
     ":oobe_types.m",
     ":progress_list_item",
     ":security_token_pin",
@@ -63,7 +63,6 @@ group("polymer3_elements") {
                   ":oobe_icons_module",
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
-                  ":oobe_slide_module",
                 ] + [ ":modulize" ]
 }
 
@@ -215,12 +214,12 @@ js_library("oobe_select.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("oobe_slide.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_slide.m.js" ]
+js_library("oobe_slide") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_slide.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":oobe_slide_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("oobe_types.m") {
@@ -310,15 +309,6 @@ polymer_modulizer("oobe_network_icons") {
   html_type = "iron-iconset"
 }
 
-polymer_modulizer("oobe_slide") {
-  js_file = "oobe_slide.js"
-  html_file = "oobe_slide.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 js_modulizer("modulize") {
   input_files = [
     "display_manager_types.js",
@@ -343,6 +333,7 @@ html_to_js("web_components") {
     "oobe_a11y_option.js",
     "oobe_cr_lottie.js",
     "oobe_i18n_dropdown.js",
+    "oobe_slide.js",
     "progress_list_item.js",
     "security_token_pin.js",
     "throbber_notice.js",
