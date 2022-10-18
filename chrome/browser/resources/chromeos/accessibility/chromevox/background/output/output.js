@@ -675,32 +675,11 @@ export class Output {
 
   /**
    * Format the node given the format specifier.
-   * Please see below for more information on arguments.
-   * node: The AutomationNode of interest.
-   * outputFormat: The output format either specified as an output template
-   * string or a parsed output format tree.
-   * outputBuffer: Buffer to receive rendered output.
-   * outputRuleString: Used for logging and recording output.
-   * opt_prevNode: Optional argument. Helps provide context for certain speech
-   * output.
-   * opt_speechProps: Optional argument. Used to specify how speech should be
-   * verbalized; can specify pitch, rate, language, etc.
-   * @param {!{
-   *    node: AutomationNode,
-   *    outputFormat: (string|OutputFormatTree),
-   *    outputBuffer: !Array<Spannable>,
-   *    outputRuleString: !OutputRulesStr,
-   *    opt_prevNode: (!AutomationNode|undefined),
-   *    opt_speechProps: (!outputTypes.OutputSpeechProperties|undefined)
-   * }} params An object containing all required and optional parameters.
+   * @param {!outputTypes.OutputFormattingData} params All the required and
+   *     optional parameters for formatting.
    * @private
    */
   format_(params) {
-    const node = params['node'];
-    const format = params['outputFormat'];
-    const buff = params['outputBuffer'];
-    const ruleStr = params['outputRuleString'];
-    const prevNode = params['opt_prevNode'];
     let speechProps = params['opt_speechProps'];
     const owner = this;
     const observer =
@@ -715,40 +694,37 @@ export class Output {
             }
 
             if (token === 'value') {
-              owner.formatValue_(node, token, buff, options, ruleStr);
+              owner.formatValue_(params, token, options);
             } else if (token === 'name') {
-              owner.formatName_(node, prevNode, token, buff, options, ruleStr);
+              owner.formatName_(params, token, options);
             } else if (token === 'description') {
-              owner.formatDescription_(node, token, buff, options, ruleStr);
+              owner.formatDescription_(params, token, options);
             } else if (token === 'urlFilename') {
-              owner.formatUrlFilename_(node, token, buff, options, ruleStr);
+              owner.formatUrlFilename_(params, token, options);
             } else if (token === 'nameFromNode') {
-              owner.formatNameFromNode_(node, token, buff, options, ruleStr);
+              owner.formatNameFromNode_(params, token, options);
             } else if (token === 'nameOrDescendants') {
               // This token is similar to nameOrTextContent except it gathers
               // rich output for descendants. It also lets name from contents
               // override the descendants text if |node| has only static text
               // children.
-              owner.formatNameOrDescendants_(
-                  node, token, buff, options, ruleStr);
+              owner.formatNameOrDescendants_(params, token, options);
             } else if (token === 'indexInParent') {
-              owner.formatIndexInParent_(
-                  node, token, tree, buff, options, ruleStr);
+              owner.formatIndexInParent_(params, token, tree, options);
             } else if (token === 'restriction') {
-              owner.formatRestriction_(node, token, buff, ruleStr);
+              owner.formatRestriction_(params, token);
             } else if (token === 'checked') {
-              owner.formatChecked_(node, token, buff, ruleStr);
+              owner.formatChecked_(params, token);
             } else if (token === 'pressed') {
-              owner.formatPressed_(node, token, buff, ruleStr);
+              owner.formatPressed_(params, token);
             } else if (token === 'state') {
-              owner.formatState_(node, token, buff, ruleStr);
+              owner.formatState_(params, token);
             } else if (token === 'find') {
-              owner.formatFind_(node, token, tree, buff, ruleStr);
+              owner.formatFind_(params, token, tree);
             } else if (token === 'descendants') {
-              owner.formatDescendants_(node, token, buff, ruleStr);
+              owner.formatDescendants_(params, token);
             } else if (token === 'joinedDescendants') {
-              owner.formatJoinedDescendants_(
-                  node, token, buff, options, ruleStr);
+              owner.formatJoinedDescendants_(params, token, options);
             } else if (token === 'role') {
               if (localStorage['useVerboseMode'] === 'false') {
                 return true;
@@ -758,52 +734,50 @@ export class Output {
                 speechProps.properties['relativePitch'] = -0.3;
               }
 
-              owner.formatRole_(node, token, buff, options, ruleStr);
+              owner.formatRole_(params, token, options);
             } else if (token === 'inputType') {
-              owner.formatInputType_(node, token, buff, options, ruleStr);
+              owner.formatInputType_(params, token, options);
             } else if (
                 token === 'tableCellRowIndex' ||
                 token === 'tableCellColumnIndex') {
-              owner.formatTableCellIndex_(node, token, buff, options, ruleStr);
+              owner.formatTableCellIndex_(params, token, options);
             } else if (token === 'cellIndexText') {
-              owner.formatCellIndexText_(node, token, buff, options, ruleStr);
+              owner.formatCellIndexText_(params, token, options);
             } else if (token === 'node') {
-              owner.formatNode_(
-                  node, prevNode, token, tree, buff, options, ruleStr);
+              owner.formatNode_(params, token, tree, options);
             } else if (
                 token === 'nameOrTextContent' || token === 'textContent') {
-              owner.formatTextContent_(node, token, buff, options, ruleStr);
-            } else if (node[token] !== undefined) {
-              owner.formatAsFieldAccessor_(node, token, buff, options, ruleStr);
+              owner.formatTextContent_(params, token, options);
+            } else if (params.node[token] !== undefined) {
+              owner.formatAsFieldAccessor_(params, token, options);
             } else if (outputTypes.OUTPUT_STATE_INFO[token]) {
-              owner.formatAsStateValue_(node, token, buff, options, ruleStr);
+              owner.formatAsStateValue_(params, token, options);
             } else if (token === 'phoneticReading') {
-              owner.formatPhoneticReading_(node, buff);
+              owner.formatPhoneticReading_(params);
             } else if (token === 'listNestedLevel') {
-              owner.formatListNestedLevel_(node, buff);
+              owner.formatListNestedLevel_(params);
             } else if (token === 'precedingBullet') {
-              owner.formatPrecedingBullet_(node, buff);
+              owner.formatPrecedingBullet_(params);
             } else if (tree.firstChild) {
-              owner.formatCustomFunction_(
-                  node, token, tree, buff, options, ruleStr);
+              owner.formatCustomFunction_(params, token, tree, options);
             }
           }
 
           /** @override */
           onMessageToken(token, tree, options) {
-            ruleStr.write(' @');
+            params.outputRuleString.write(' @');
             if (owner.formatOptions_.auralStyle) {
               if (!speechProps) {
                 speechProps = new outputTypes.OutputSpeechProperties();
               }
               speechProps.properties['relativePitch'] = -0.2;
             }
-            owner.formatMessage_(node, token, tree, buff, options, ruleStr);
+            owner.formatMessage_(params, token, tree, options);
           }
 
           /** @override */
           onSpeechPropertyToken(token, tree, options) {
-            ruleStr.write(' ! ' + token + '\n');
+            params.outputRuleString.write(' ! ' + token + '\n');
             speechProps = new outputTypes.OutputSpeechProperties();
             speechProps.properties[token] = true;
             if (tree.firstChild) {
@@ -819,7 +793,7 @@ export class Output {
               if (float = parseFloat(value)) {
                 value = float;
               } else {
-                value = parseFloat(node[value]) / -10.0;
+                value = parseFloat(params.node[value]) / -10.0;
               }
               speechProps.properties[token] = value;
               return true;
@@ -828,6 +802,8 @@ export class Output {
 
           /** @override */
           onTokenEnd() {
+            const buff = params.outputBuffer;
+
             // Post processing.
             if (speechProps) {
               if (buff.length > 0) {
@@ -838,17 +814,19 @@ export class Output {
           }
         })();
 
-    new OutputFormatParser(observer).parse(format);
+    new OutputFormatParser(observer).parse(params.outputFormat);
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatValue_(node, token, buff, options, ruleStr) {
+  formatValue_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     const text = node.value || '';
     if (!node.state[StateType.EDITABLE] && node.name === text) {
       return;
@@ -878,14 +856,16 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
-   * @param {!AutomationNode|undefined} prevNode
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatName_(node, prevNode, token, buff, options, ruleStr) {
+  formatName_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const prevNode = data.opt_prevNode;
+    const ruleStr = data.outputRuleString;
+
     options.annotation.push(token);
     const earcon = node ? this.findEarcon_(node, prevNode) : null;
     if (earcon) {
@@ -909,13 +889,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatDescription_(node, token, buff, options, ruleStr) {
+  formatDescription_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     if (node.name === node.description) {
       return;
     }
@@ -926,13 +908,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatUrlFilename_(node, token, buff, options, ruleStr) {
+  formatUrlFilename_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     options.annotation.push('name');
     const url = node.url || '';
     let filename = '';
@@ -949,13 +933,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatNameFromNode_(node, token, buff, options, ruleStr) {
+  formatNameFromNode_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     if (node.nameFrom === NameFromType.CONTENTS) {
       return;
     }
@@ -966,13 +952,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatNameOrDescendants_(node, token, buff, options, ruleStr) {
+  formatNameOrDescendants_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     options.annotation.push(token);
     if (node.name &&
         (node.nameFrom !== NameFromType.CONTENTS ||
@@ -991,14 +979,16 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!OutputFormatTree} tree
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatIndexInParent_(node, token, tree, buff, options, ruleStr) {
+  formatIndexInParent_(data, token, tree, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     if (node.parent) {
       options.annotation.push(token);
       let roles;
@@ -1024,12 +1014,14 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatRestriction_(node, token, buff, ruleStr) {
+  formatRestriction_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     const msg = outputTypes.OutputPropertyMap.RESTRICTION[node.restriction];
     if (msg) {
       ruleStr.writeToken(token);
@@ -1043,12 +1035,14 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatChecked_(node, token, buff, ruleStr) {
+  formatChecked_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     const msg = outputTypes.OutputPropertyMap.CHECKED[node.checked];
     if (msg) {
       ruleStr.writeToken(token);
@@ -1062,12 +1056,14 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatPressed_(node, token, buff, ruleStr) {
+  formatPressed_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     const msg = outputTypes.OutputPropertyMap.PRESSED[node.checked];
     if (msg) {
       ruleStr.writeToken(token);
@@ -1081,12 +1077,14 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatState_(node, token, buff, ruleStr) {
+  formatState_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     if (node.state) {
       Object.getOwnPropertyNames(node.state).forEach(state => {
         const stateInfo = outputTypes.OUTPUT_STATE_INFO[state];
@@ -1104,13 +1102,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!OutputFormatTree} tree
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatFind_(node, token, tree, buff, ruleStr) {
+  formatFind_(data, token, tree) {
+    const buff = data.outputBuffer;
+    const ruleStr = data.outputRuleString;
+    let node = data.node;
+
     // Find takes two arguments: JSON query string and format string.
     if (tree.firstChild) {
       const jsonQuery = tree.firstChild.value;
@@ -1130,12 +1130,14 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatDescendants_(node, token, buff, ruleStr) {
+  formatDescendants_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     if (!node) {
       return;
     }
@@ -1177,13 +1179,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatJoinedDescendants_(node, token, buff, options, ruleStr) {
+  formatJoinedDescendants_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     const unjoined = [];
     ruleStr.write('joinedDescendants {');
     this.format_({
@@ -1198,13 +1202,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatRole_(node, token, buff, options, ruleStr) {
+  formatRole_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     options.annotation.push(token);
     let msg = node.role;
     const info = OutputRoleInfo[node.role];
@@ -1226,13 +1232,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatInputType_(node, token, buff, options, ruleStr) {
+  formatInputType_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     if (!node.inputType) {
       return;
     }
@@ -1247,13 +1255,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatTableCellIndex_(node, token, buff, options, ruleStr) {
+  formatTableCellIndex_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     let value = node[token];
     if (value === undefined) {
       return;
@@ -1265,13 +1275,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatCellIndexText_(node, token, buff, options, ruleStr) {
+  formatCellIndexText_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     if (node.htmlAttributes['aria-coltext']) {
       let value = node.htmlAttributes['aria-coltext'];
       let row = node;
@@ -1299,15 +1311,17 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
-   * @param {!AutomationNode|undefined} prevNode
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!OutputFormatTree} tree
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatNode_(node, prevNode, token, tree, buff, options, ruleStr) {
+  formatNode_(data, token, tree, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+    let prevNode = data.opt_prevNode;
+
     if (!tree.firstChild) {
       return;
     }
@@ -1353,13 +1367,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatTextContent_(node, token, buff, options, ruleStr) {
+  formatTextContent_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     if (node.name && token === 'nameOrTextContent') {
       ruleStr.writeToken(token);
       this.format_({
@@ -1397,13 +1413,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatAsFieldAccessor_(node, token, buff, options, ruleStr) {
+  formatAsFieldAccessor_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     options.annotation.push(token);
     let value = node[token];
     if (typeof value === 'number') {
@@ -1414,13 +1432,15 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatAsStateValue_(node, token, buff, options, ruleStr) {
+  formatAsStateValue_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     options.annotation.push('state');
     const stateInfo = outputTypes.OUTPUT_STATE_INFO[token];
     let resolvedInfo = {};
@@ -1442,20 +1462,24 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
-   * @param {!Array<Spannable>} buff
+   * @param {!outputTypes.OutputFormattingData} data
    */
-  formatPhoneticReading_(node, buff) {
+  formatPhoneticReading_(data) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+
     const text =
         PhoneticData.forText(node.name || '', chrome.i18n.getUILanguage());
     this.append_(buff, text);
   }
 
   /**
-   * @param {!AutomationNode} node
-   * @param {!Array<Spannable>} buff
+   * @param {!outputTypes.OutputFormattingData} data
    */
-  formatListNestedLevel_(node, buff) {
+  formatListNestedLevel_(data) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+
     let level = 0;
     let current = node;
     while (current) {
@@ -1468,10 +1492,12 @@ export class Output {
   }
 
   /**
-   * @param {!AutomationNode} node
-   * @param {!Array<Spannable>} buff
+   * @param {!outputTypes.OutputFormattingData} data
    */
-  formatPrecedingBullet_(node, buff) {
+  formatPrecedingBullet_(data) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+
     let current = node;
     if (current.role === RoleType.INLINE_TEXT_BOX) {
       current = current.parent;
@@ -1486,14 +1512,16 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!OutputFormatTree} tree
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatCustomFunction_(node, token, tree, buff, options, ruleStr) {
+  formatCustomFunction_(data, token, tree, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     // Custom functions.
     if (token === 'if') {
       ruleStr.writeToken(token);
@@ -1551,14 +1579,16 @@ export class Output {
   }
 
   /**
-   * @param {AutomationNode} node
+   * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!OutputFormatTree} tree
-   * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @param {!OutputRulesStr} ruleStr
    */
-  formatMessage_(node, token, tree, buff, options, ruleStr) {
+  formatMessage_(data, token, tree, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const ruleStr = data.outputRuleString;
+
     const isPluralized = (token[0] === '@');
     if (isPluralized) {
       token = token.slice(1);
