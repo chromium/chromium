@@ -183,6 +183,13 @@ void AndroidAutofillManager::Reset() {
     provider->Reset(this);
 }
 
+void AndroidAutofillManager::OnContextMenuShownInField(
+    const FormGlobalId& form_global_id,
+    const FieldGlobalId& field_global_id) {
+  // Not relevant for Android. Only called via context menu in Desktop.
+  NOTREACHED();
+}
+
 AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
   if (autofill_provider_for_testing_)
     return autofill_provider_for_testing_;

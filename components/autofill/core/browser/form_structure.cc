@@ -901,6 +901,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     }
 
     field->set_previously_autofilled(cached_field->previously_autofilled());
+    field->set_was_context_menu_shown(cached_field->was_context_menu_shown());
     if (cached_field->value_not_autofilled_over_existing_value_hash()) {
       field->set_value_not_autofilled_over_existing_value_hash(
           *cached_field->value_not_autofilled_over_existing_value_hash());

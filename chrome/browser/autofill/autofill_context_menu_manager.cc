@@ -81,11 +81,6 @@ AutofillContextMenuManager::~AutofillContextMenuManager() {
 }
 
 void AutofillContextMenuManager::AppendItems() {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillShowManualFallbackInContextMenu)) {
-    return;
-  }
-
   content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
   if (!rfh)
     return;
@@ -96,6 +91,23 @@ void AutofillContextMenuManager::AppendItems() {
   // filled by the driver. See crbug.com/1367547.
   if (!driver || !driver->CanShowAutofillUi())
     return;
+
+  if (params_.field_renderer_id) {
+    LocalFrameToken frame_token(rfh->GetFrameToken().value());
+    // Formless fields have default form renderer id.
+    FormGlobalId form_global_id = {
+        frame_token, params_.form_renderer_id
+                         ? FormRendererId(*params_.form_renderer_id)
+                         : FormRendererId()};
+    driver->OnContextMenuShownInField(
+        form_global_id,
+        {frame_token, FieldRendererId(*params_.field_renderer_id)});
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillShowManualFallbackInContextMenu)) {
+    return;
+  }
 
   DCHECK(personal_data_manager_);
   DCHECK(menu_model_);

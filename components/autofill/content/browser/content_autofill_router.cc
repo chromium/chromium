@@ -659,6 +659,27 @@ void ContentAutofillRouter::FillFormForAssistant(
   callback(target, fill_data, form, field, intent);
 }
 
+void ContentAutofillRouter::OnContextMenuShownInField(
+    ContentAutofillDriver* source,
+    const FormGlobalId& form_global_id,
+    const FieldGlobalId& field_global_id,
+    void (*callback)(ContentAutofillDriver* target,
+                     const FormGlobalId& form_global_id,
+                     const FieldGlobalId& field_global_id)) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+    callback(source, form_global_id, field_global_id);
+    return;
+  }
+
+  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
+
+  TriggerReparseExcept(source);
+
+  ForEachFrame(form_forest_, [&](ContentAutofillDriver* some_driver) {
+    callback(some_driver, form_global_id, field_global_id);
+  });
+}
+
 // Routing of events triggered by the browser.
 //
 // Below, `DriverOfFrame() == nullptr` does not necessarily indicate a bug and

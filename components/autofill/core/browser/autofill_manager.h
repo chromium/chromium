@@ -265,6 +265,11 @@ class AutofillManager
   // Resets cache.
   virtual void Reset();
 
+  // Invoked when the context menu is opened in a field.
+  virtual void OnContextMenuShownInField(
+      const FormGlobalId& form_global_id,
+      const FieldGlobalId& field_global_id) = 0;
+
   // translate::TranslateDriver::LanguageDetectionObserver:
   void OnTranslateDriverDestroyed(
       translate::TranslateDriver* translate_driver) override;

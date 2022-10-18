@@ -293,6 +293,15 @@ class ContentAutofillRouter {
           const FormFieldData& fiel,
           const autofill_assistant::AutofillAssistantIntent intent));
 
+  // Event called when the context menu is opened on a field.
+  void OnContextMenuShownInField(
+      ContentAutofillDriver* source,
+      const FormGlobalId& form_global_id,
+      const FieldGlobalId& field_global_id,
+      void (*callback)(ContentAutofillDriver* target,
+                       const FormGlobalId& form_global_id,
+                       const FieldGlobalId& field_global_id));
+
   // Routing of events called by the browser:
   std::vector<FieldGlobalId> FillOrPreviewForm(
       ContentAutofillDriver* source,

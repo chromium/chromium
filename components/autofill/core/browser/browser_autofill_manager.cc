@@ -774,6 +774,12 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                    ->value_not_autofilled_over_existing_value_hash() ==
               base::FastHash(base::UTF16ToUTF8(sanitized_submitted_value)));
     }
+
+    if (submitted_form->field(i)->was_context_menu_shown()) {
+      // TODO(crbug.com/1325811): The context menu was shown in this field, log
+      // the metrics by autocomplete type, form type and autofill type
+      // prediction of the field.
+    }
   }
   single_field_form_fill_router_->OnWillSubmitForm(
       form_for_autocomplete, submitted_form.get(),
@@ -1899,6 +1905,21 @@ void BrowserAutofillManager::Reset() {
   fast_checkout_delegate_->Reset();
   touch_to_fill_delegate_->Reset();
   filling_context_.clear();
+}
+
+void BrowserAutofillManager::OnContextMenuShownInField(
+    const FormGlobalId& form_global_id,
+    const FieldGlobalId& field_global_id) {
+  FormStructure* form = FindCachedFormByRendererId(form_global_id);
+  if (!form)
+    return;
+  auto field =
+      base::ranges::find_if(*form, [&field_global_id](const auto& field) {
+        return field->global_id() == field_global_id;
+      });
+
+  if (field != form->end())
+    (*field)->set_was_context_menu_shown(true);
 }
 
 bool BrowserAutofillManager::RefreshDataModels() {

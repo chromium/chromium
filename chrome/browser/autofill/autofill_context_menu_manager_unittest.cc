@@ -26,12 +26,15 @@ namespace autofill {
 
 namespace {
 // Generates a ContextMenuParams for the Autofill context menu options.
-static content::ContextMenuParams CreateContextMenuParams(
+content::ContextMenuParams CreateContextMenuParams(
+    absl::optional<autofill::FormRendererId> form_renderer_id = absl::nullopt,
     autofill::FieldRendererId field_render_id = autofill::FieldRendererId(0)) {
   content::ContextMenuParams rv;
   rv.is_editable = true;
   rv.page_url = GURL("http://test.page/");
   rv.input_field_type = blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  if (form_renderer_id)
+    rv.form_renderer_id = form_renderer_id->value();
   rv.field_renderer_id = field_render_id.value();
   return rv;
 }
@@ -46,6 +49,11 @@ class MockAutofillDriver : public TestAutofillDriver {
   MOCK_METHOD(void,
               RendererShouldFillFieldWithValue,
               (const FieldGlobalId& field_id, const std::u16string& value),
+              (override));
+  MOCK_METHOD(void,
+              OnContextMenuShownInField,
+              (const FormGlobalId& form_global_id,
+               const FieldGlobalId& field_global_id),
               (override));
 };
 
@@ -88,7 +96,6 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
             render_view_context_menu_.get(), menu_model_.get(), nullptr);
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams());
-    autofill_context_menu_manager_->AppendItems();
   }
 
   void TearDown() override {
@@ -126,10 +133,12 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
   base::test::ScopedFeatureList feature_;
   raw_ptr<MockAutofillDriver> driver_;
+  test::AutofillEnvironment autofill_environment_;
 };
 
 // Tests that the Autofill context menu is correctly set up.
 TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
+  autofill_context_menu_manager()->AppendItems();
   std::vector<std::u16string> all_added_strings;
 
   // Check for top level menu with autofill options.
@@ -208,10 +217,10 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 // `RendererShouldFillFieldWithValue`.
 TEST_F(AutofillContextMenuManagerTest, ExecuteCommand) {
   DCHECK(driver());
+  autofill_context_menu_manager()->AppendItems();
   auto mapper = autofill_context_menu_manager()
                     ->command_id_to_menu_item_value_mapper_for_testing();
   ASSERT_FALSE(mapper.empty());
-  int incremental_field_renderer_id = 0;
 
   for (auto const& [command_id, map_value] : mapper) {
     // Requires a browser instance which is not available in this test.
@@ -219,18 +228,36 @@ TEST_F(AutofillContextMenuManagerTest, ExecuteCommand) {
       continue;
     SCOPED_TRACE(testing::Message() << "Command " << *command_id);
 
-    FieldRendererId field_renderer_id(++incremental_field_renderer_id);
+    FieldRendererId field_renderer_id(test::MakeFieldRendererId());
     FieldGlobalId field_global_id{
         LocalFrameToken(main_rfh()->GetFrameToken().value()),
         field_renderer_id};
 
     autofill_context_menu_manager()->set_params_for_testing(
-        CreateContextMenuParams(field_renderer_id));
+        CreateContextMenuParams(absl::nullopt, field_renderer_id));
 
     EXPECT_CALL(*driver(), RendererShouldFillFieldWithValue(
                                field_global_id, map_value.fill_value));
     autofill_context_menu_manager()->ExecuteCommand(command_id);
   }
+}
+
+// Tests that the Autofill's ContentAutofillDriver is called to record metrics
+// when the context menu is triggered on a field.
+TEST_F(AutofillContextMenuManagerTest, RecordContextMenuIsShownOnField) {
+  FormRendererId form_renderer_id(test::MakeFormRendererId());
+  FieldRendererId field_renderer_id(test::MakeFieldRendererId());
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form_renderer_id, field_renderer_id));
+
+  FormGlobalId form_global_id{
+      LocalFrameToken(main_rfh()->GetFrameToken().value()), form_renderer_id};
+  FieldGlobalId field_global_id{
+      LocalFrameToken(main_rfh()->GetFrameToken().value()), field_renderer_id};
+
+  EXPECT_CALL(*driver(),
+              OnContextMenuShownInField(form_global_id, field_global_id));
+  autofill_context_menu_manager()->AppendItems();
 }
 
 }  // namespace autofill

@@ -562,6 +562,24 @@ void ContentAutofillDriver::FillFormForAssistant(
       });
 }
 
+void ContentAutofillDriver::OnContextMenuShownInFieldCallback(
+    const FormGlobalId& form_global_id,
+    const FieldGlobalId& field_global_id) {
+  autofill_manager_->OnContextMenuShownInField(form_global_id, field_global_id);
+}
+
+void ContentAutofillDriver::OnContextMenuShownInField(
+    const FormGlobalId& form_global_id,
+    const FieldGlobalId& field_global_id) {
+  autofill_router().OnContextMenuShownInField(
+      this, form_global_id, field_global_id,
+      [](ContentAutofillDriver* target, const FormGlobalId& form_global_id,
+         const FieldGlobalId& field_global_id) {
+        target->OnContextMenuShownInFieldCallback(form_global_id,
+                                                  field_global_id);
+      });
+}
+
 void ContentAutofillDriver::DidNavigateFrame(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsSameDocument()) {

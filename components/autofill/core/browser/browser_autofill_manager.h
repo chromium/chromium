@@ -262,6 +262,8 @@ class BrowserAutofillManager : public AutofillManager,
   void PropagateAutofillPredictions(
       const std::vector<FormStructure*>& forms) override;
   void Reset() override;
+  void OnContextMenuShownInField(const FormGlobalId& form_global_id,
+                                 const FieldGlobalId& field_global_id) override;
 
   // SingleFieldFormFiller::SuggestionsHandler:
   void OnSuggestionsReturned(
