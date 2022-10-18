@@ -1131,7 +1131,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.Projector.CaptureConfiguration.{TabletOrClamshell}"
-    enum="CaptureModeConfiguration" expires_after="2023-08-15">
+    enum="CaptureModeConfiguration" expires_after="2023-10-17">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1146,7 +1146,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.Projector.CaptureRegionAdjusted.{TabletOrClamshell}"
-    units="adjustments" expires_after="2023-08-15">
+    units="adjustments" expires_after="2023-10-17">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1162,7 +1162,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.Projector.RecordingStartsWithCamera.{TabletOrClamshell}"
-    enum="BooleanEnabled" expires_after="2023-08-01">
+    enum="BooleanEnabled" expires_after="2023-10-17">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1174,7 +1174,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.Projector.ScreenRecordingLength.{TabletOrClamshell}"
-    units="seconds" expires_after="2023-08-01">
+    units="seconds" expires_after="2023-10-17">
   <owner>afakhry@chromium.org</owner>
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
@@ -3651,7 +3651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.CreationFlow.{TabletOrClamshell}"
-    enum="ProjectorCreationFlow" expires_after="2022-12-01">
+    enum="ProjectorCreationFlow" expires_after="2023-10-17">
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
@@ -3663,7 +3663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.CreationFlowError.{TabletOrClamshell}"
-    enum="ProjectorCreationFlowError" expires_after="2022-12-01">
+    enum="ProjectorCreationFlowError" expires_after="2023-10-17">
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
@@ -3674,7 +3674,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.MarkerColor.{TabletOrClamshell}"
-    enum="ProjectorMarkerColor" expires_after="2022-12-01">
+    enum="ProjectorMarkerColor" expires_after="2023-10-17">
   <owner>tobyhuang@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>llin@chromium.org</owner>
@@ -3688,7 +3688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.PendingScreencastBatchIOTaskDuration" units="ms"
-    expires_after="2023-04-15">
+    expires_after="2023-10-17">
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
@@ -3698,7 +3698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.PendingScreencastChangeInterval" units="ms"
-    expires_after="2023-04-15">
+    expires_after="2023-10-17">
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
@@ -3709,7 +3709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.PolicyChangeHandlingError"
-    enum="ProjectorPolicyChangeHandlingError" expires_after="2022-12-01">
+    enum="ProjectorPolicyChangeHandlingError" expires_after="2023-10-17">
   <owner>llin@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
@@ -3719,7 +3719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.Toolbar.{TabletOrClamshell}"
-    enum="ProjectorToolbar" expires_after="2022-12-01">
+    enum="ProjectorToolbar" expires_after="2023-10-17">
   <owner>tobyhuang@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>llin@chromium.org</owner>
@@ -3732,7 +3732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.TranscriptsCount.{TabletOrClamshell}"
-    units="Number of transcripts" expires_after="2022-12-01">
+    units="Number of transcripts" expires_after="2023-10-17">
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
