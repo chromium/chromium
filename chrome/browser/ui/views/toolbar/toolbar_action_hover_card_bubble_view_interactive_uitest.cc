@@ -232,8 +232,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Hover over the simple extension pinned by the user.
-  // Verify card anchors to its action, and it contains the extension's name and
-  // no footnote.
+  // Verify card anchors to its action, and it only contains the extension's
+  // name.
   ToolbarActionView* simple_action =
       GetExtensionsToolbarContainer()->GetViewForId(simple_extension->id());
   HoverMouseOverActionView(simple_action);
@@ -244,12 +244,16 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_EQ(hover_card()->GetAnchorView(), simple_action);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
             simple_action->view_controller()->GetActionName());
-  EXPECT_FALSE(hover_card()->IsFooterVisible());
+  EXPECT_FALSE(hover_card()->IsSiteAccessSeparatorVisible());
+  EXPECT_FALSE(hover_card()->IsSiteAccessTitleVisible());
+  EXPECT_FALSE(hover_card()->IsSiteAccessDescriptionVisible());
+  EXPECT_FALSE(hover_card()->IsPolicySeparatorVisible());
+  EXPECT_FALSE(hover_card()->IsPolicyLabelVisible());
 
   // Hover over the extension installed by policy and pinned by the user.
   // Verify card anchors to its action using the same widget, because it
-  // transitions from one action view to the other, and it contains contains the
-  // extension's name and a footnote with only policy label.
+  // transitions from one action view to the other, and it contains the
+  // extension's name and policy content.
   ToolbarActionView* force_installed_action =
       GetExtensionsToolbarContainer()->GetViewForId(
           force_installed_extension->id());
@@ -260,16 +264,15 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_EQ(hover_card()->GetAnchorView(), force_installed_action);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
             force_installed_action->view_controller()->GetActionName());
-  EXPECT_TRUE(hover_card()->IsFooterVisible());
-  EXPECT_FALSE(hover_card()->IsFooterTitleLabelVisible());
-  EXPECT_FALSE(hover_card()->IsFooterDescriptionLabelVisible());
-  EXPECT_TRUE(hover_card()->IsFooterAdminPolicyVisible());
-  EXPECT_FALSE(hover_card()->IsFooterSeparatorVisible());
+  EXPECT_FALSE(hover_card()->IsSiteAccessSeparatorVisible());
+  EXPECT_FALSE(hover_card()->IsSiteAccessTitleVisible());
+  EXPECT_FALSE(hover_card()->IsSiteAccessDescriptionVisible());
+  EXPECT_TRUE(hover_card()->IsPolicySeparatorVisible());
+  EXPECT_TRUE(hover_card()->IsPolicyLabelVisible());
 
   // Hover over the extension with host permissions pinned by the user.
   // Verify card anchors to its action using the same widget, and it contains
-  // contains the extension's name and a footnote with only title and
-  // description labels.
+  // the extension's name and site access content.
   ToolbarActionView* action_with_host_permissions =
       GetExtensionsToolbarContainer()->GetViewForId(
           extension_with_host_permissions->id());
@@ -280,17 +283,15 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_EQ(hover_card()->GetAnchorView(), action_with_host_permissions);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
             action_with_host_permissions->view_controller()->GetActionName());
-  EXPECT_TRUE(hover_card()->IsFooterVisible());
-  EXPECT_TRUE(hover_card()->IsFooterTitleLabelVisible());
-  EXPECT_TRUE(hover_card()->IsFooterDescriptionLabelVisible());
-  EXPECT_FALSE(hover_card()->IsFooterAdminPolicyVisible());
-  EXPECT_FALSE(hover_card()->IsFooterSeparatorVisible());
+  EXPECT_TRUE(hover_card()->IsSiteAccessSeparatorVisible());
+  EXPECT_TRUE(hover_card()->IsSiteAccessTitleVisible());
+  EXPECT_TRUE(hover_card()->IsSiteAccessDescriptionVisible());
+  EXPECT_FALSE(hover_card()->IsPolicySeparatorVisible());
+  EXPECT_FALSE(hover_card()->IsPolicyLabelVisible());
 
   // Hover over the extension with host permission installed and pinned by
   // policy. Verify card anchors to its action using the same widget, and it
-  // contains contains the extension's name and a footnote with both title and
-  // description labels, and policy label. Since all labels are visible,
-  // separator should also be visible to distinct between them.
+  // contains the extension's name, site access and policy content.
   ToolbarActionView* force_pinned_action_with_host_permissions =
       GetExtensionsToolbarContainer()->GetViewForId(
           force_pinned_extension_with_host_permissions->id());
@@ -303,11 +304,11 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
             force_pinned_action_with_host_permissions->view_controller()
                 ->GetActionName());
-  EXPECT_TRUE(hover_card()->IsFooterVisible());
-  EXPECT_TRUE(hover_card()->IsFooterTitleLabelVisible());
-  EXPECT_TRUE(hover_card()->IsFooterDescriptionLabelVisible());
-  EXPECT_TRUE(hover_card()->IsFooterAdminPolicyVisible());
-  EXPECT_TRUE(hover_card()->IsFooterSeparatorVisible());
+  EXPECT_TRUE(hover_card()->IsSiteAccessSeparatorVisible());
+  EXPECT_TRUE(hover_card()->IsSiteAccessTitleVisible());
+  EXPECT_TRUE(hover_card()->IsSiteAccessDescriptionVisible());
+  EXPECT_TRUE(hover_card()->IsPolicySeparatorVisible());
+  EXPECT_TRUE(hover_card()->IsPolicyLabelVisible());
 }
 
 // Verify hover card is not visible when mouse moves inside the extensions
