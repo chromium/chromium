@@ -218,13 +218,6 @@ group("gn_all") {
     ]
   }
 
-  if (is_android) {
-    deps += [
-      "//weblayer/browser/android/javatests:browserfragment_support_instrumentation_test_apk",
-      "//weblayer/browser/java:weblayer_junit_tests",
-    ]
-  }
-
   if (!is_ios && !is_android) {
     deps += [
       "//components/cronet:cronet_tests",

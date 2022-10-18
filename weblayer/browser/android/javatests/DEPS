@@ -2,12 +2,12 @@ include_rules = [
   "-content/public",
   "+content/public/test",
 
-  # BrowserFragmentJUnit4ClassRunner should be used for all tests since it has logic to
+  # WebLayerJUnit4ClassRunner should be used for all tests since it has logic to
   # make command line flags work in WebLayer.
   "-base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
 ]
 specific_include_rules = {
-  "BrowserFragmentJUnit4ClassRunner.java": [
+  "WebLayerJUnit4ClassRunner.java": [
     "+base/test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
   ]
 }
