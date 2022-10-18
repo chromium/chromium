@@ -84,9 +84,9 @@ declare_args() {
       proprietary_codecs && (enable_cast_receiver || is_fuchsia)
 
   # Enable logging override, e.g. enable DVLOGs through level 2 at build time.
-  # On Chromecast, these are logged as INFO.
-  # On Fuchsia, these are logged as VLOGs.
-  enable_logging_override = is_cast_media_device || is_fuchsia
+  # On Cast devices, these are logged as INFO.
+  # When enabled on Fuchsia, these are logged as VLOGs.
+  enable_logging_override = is_cast_media_device
 
   enable_dav1d_decoder = !is_ios
 

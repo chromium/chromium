@@ -136,7 +136,7 @@ declare_args() {
   # If true, optimize for size.
   # Default to favoring speed over size for platforms not listed below.
   optimize_for_size =
-      !is_high_end_android && (is_android || is_ios || is_fuchsia || is_castos)
+      !is_high_end_android && (is_android || is_ios || is_castos)
 
   # Set to true to enable using the ML inliner in LLVM. This currently only
   # enables the ML inliner when targeting Android.
