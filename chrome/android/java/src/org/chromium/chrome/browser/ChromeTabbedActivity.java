@@ -365,9 +365,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private final UnownedUserDataSupplier<StartupPaintPreviewHelper>
             mStartupPaintPreviewHelperSupplier = new StartupPaintPreviewHelperSupplier();
 
-    /** An empty {@link Bundle} would be supplied in the event there was no saved instance state. */
-    private final OneshotSupplierImpl<Bundle> mSavedInstanceStateSupplier =
-            new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
 
@@ -457,7 +454,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 () -> findViewById(android.R.id.content),
                 this::getIntent, this::shouldIgnoreIntent, this::isTablet,
                 this::shouldShowOverviewPageOnStart, this::isInstantStartEnabled,
-                new IncognitoRestoreAppLaunchDrawBlockerFactory(mSavedInstanceStateSupplier,
+                new IncognitoRestoreAppLaunchDrawBlockerFactory(this::getSavedInstanceState,
                         getTabModelSelectorSupplier()));
         // clang-format on
     }
@@ -1321,10 +1318,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             super.initializeState();
             Log.i(TAG, "#initializeState");
             Intent intent = getIntent();
-            // Don't remove this line as this is used to unblock the app draw. Setting this
-            // supplier is very important.
-            mSavedInstanceStateSupplier.set(
-                    getSavedInstanceState() != null ? getSavedInstanceState() : new Bundle());
 
             boolean hadCipherData =
                     CipherFactory.getInstance().restoreFromBundle(getSavedInstanceState());
