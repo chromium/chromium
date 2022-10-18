@@ -1196,6 +1196,10 @@ void SiteSettingsHandler::HandleGetRecentSitePermissions(
     base::Value::Dict recent_site;
     recent_site.Set(site_settings::kOrigin, site_permissions.origin.spec());
     recent_site.Set(site_settings::kIncognito, site_permissions.incognito);
+    if (site_permissions.isolated_web_app_name.has_value()) {
+      recent_site.Set(site_settings::kIsolatedWebAppName,
+                      site_permissions.isolated_web_app_name.value());
+    }
 
     base::Value::List permissions_list;
     for (const auto& p : site_permissions.settings) {

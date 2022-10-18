@@ -59,6 +59,7 @@ constexpr char kEmbeddingOrigin[] = "embeddingOrigin";
 constexpr char kIncognito[] = "incognito";
 constexpr char kObject[] = "object";
 constexpr char kDisabled[] = "disabled";
+constexpr char kIsolatedWebAppName[] = "isolatedWebAppName";
 constexpr char kOrigin[] = "origin";
 constexpr char kOriginForFavicon[] = "originForFavicon";
 constexpr char kRecentPermissions[] = "recentPermissions";
@@ -192,6 +193,10 @@ base::Value::Dict CreateChooserExceptionObject(
 base::Value::List GetChooserExceptionListFromProfile(
     Profile* profile,
     const ChooserTypeNameEntry& chooser_type);
+
+// Returns the short name of a web app in case of an Isolated Web App.
+absl::optional<std::string> GetIsolatedWebAppName(Profile* profile,
+                                                  GURL origin);
 
 }  // namespace site_settings
 

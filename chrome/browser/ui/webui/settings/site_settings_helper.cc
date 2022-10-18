@@ -29,6 +29,7 @@
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -947,6 +948,21 @@ base::Value::List GetChooserExceptionListFromProfile(
   }
 
   return exceptions;
+}
+
+absl::optional<std::string> GetIsolatedWebAppName(Profile* profile,
+                                                  GURL origin) {
+  absl::optional<std::string> app_name;
+  if (auto* provider = web_app::WebAppProvider::GetForWebApps(profile)) {
+    if (absl::optional<web_app::AppId> app_id =
+            provider->registrar().FindAppWithUrlInScope(origin)) {
+      if (!provider->registrar().IsIsolated(*app_id)) {
+        return app_name;
+      }
+      app_name = provider->registrar().GetAppShortName(*app_id);
+    }
+  }
+  return app_name;
 }
 
 }  // namespace site_settings

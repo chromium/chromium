@@ -111,6 +111,7 @@ export interface SiteException {
  */
 export interface RecentSitePermissions {
   origin: string;
+  isolatedWebAppName?: string;
   incognito: boolean;
   recentPermissions: RawSiteException[];
 }
