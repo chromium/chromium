@@ -62,7 +62,7 @@ source_set("renderer") {
     "//url",
   ]
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [
       "//components/printing/common",
       "//components/printing/renderer",

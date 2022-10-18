@@ -299,7 +299,7 @@ source_set("browser") {
     "//url:gurl_android",
   ]
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [
       "//components/printing/browser",
       "//components/printing/common",

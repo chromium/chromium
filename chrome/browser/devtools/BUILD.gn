@@ -266,7 +266,7 @@ static_library("devtools") {
         "protocol/window_manager_handler.h",
       ]
     }
-    if (enable_basic_printing) {
+    if (enable_printing) {
       deps += [
         "//components/printing/browser/headless",
         "//components/printing/browser/print_to_pdf",

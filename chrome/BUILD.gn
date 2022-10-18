@@ -1416,7 +1416,7 @@ group("dependencies") {
     public_deps += [ "//ppapi/host" ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     public_deps += [ "//printing" ]
   }
 

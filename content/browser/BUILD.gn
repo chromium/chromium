@@ -2815,7 +2815,7 @@ source_set("browser") {
       "//ppapi/shared_impl",
     ]
 
-    assert(enable_basic_printing)
+    assert(enable_printing)
     deps += [ "//printing" ]
 
     if (is_chromeos) {

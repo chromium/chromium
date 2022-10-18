@@ -2483,7 +2483,7 @@ if (!is_android) {
     # TODO(crbug.com/1240796): Page.printToPdf is currently available only when
     # Chrome is running in headless mode and native headless mode is currently
     # available only on Linux, Windows and Mac platforms.
-    if (enable_basic_printing && enable_pdf && (is_linux || is_win || is_mac)) {
+    if (enable_printing && enable_pdf && (is_linux || is_win || is_mac)) {
       sources +=
           [ "../browser/devtools/protocol/devtools_printtopdf_browsertest.cc" ]
     }
@@ -8597,7 +8597,7 @@ test("unit_tests") {
     sources += [ "../common/pepper_permission_util_unittest.cc" ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     sources += [
       "../browser/policy/printing_restrictions_policy_handler_unittest.cc",
       "../browser/printing/print_job_unittest.cc",
@@ -9905,7 +9905,7 @@ if (!is_android) {
         "../browser/printing/test_print_view_manager_for_request_preview.h",
       ]
 
-      if (enable_basic_printing) {
+      if (enable_printing) {
         deps += [ "//components/printing/common:mojo_interfaces" ]
       }
     }
@@ -10450,7 +10450,7 @@ if (!is_android) {
     if (toolkit_views) {
       deps += [ "//ui/views" ]
     }
-    if (enable_basic_printing) {
+    if (enable_printing) {
       deps += [ "//printing" ]
     }
   }

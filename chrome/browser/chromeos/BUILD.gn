@@ -520,7 +520,7 @@ source_set("chromeos") {
     "//mojo/public/cpp/system",
     "//net",
 
-    # TODO: care about enable_basic_printing and enable_print_preview.
+    # TODO: care about enable_printing and enable_print_preview.
     "//printing",
     "//printing/backend",
     "//printing/mojom",

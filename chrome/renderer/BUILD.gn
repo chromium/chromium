@@ -341,7 +341,7 @@ static_library("renderer") {
     deps += [ "//components/spellcheck/renderer:renderer" ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [
       "//components/printing/renderer",
       "//printing",

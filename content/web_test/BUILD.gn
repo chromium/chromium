@@ -349,7 +349,7 @@ static_library("web_test_renderer") {
     "//third_party/blink/renderer/core/web_test",
   ]
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     sources += [
       "renderer/pixel_dump.cc",
       "renderer/pixel_dump.h",

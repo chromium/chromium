@@ -23,7 +23,7 @@ if (current_cpu == "mipsel" || current_cpu == "mips64el") {
 }
 
 skia_support_gpu = !is_ios
-skia_support_pdf = !is_ios && enable_basic_printing
+skia_support_pdf = !is_ios && enable_printing
 
 buildflag_header("buildflags") {
   header = "buildflags.h"

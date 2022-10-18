@@ -594,7 +594,7 @@ test("components_unittests") {
     ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [
       "//components/printing/browser/print_to_pdf:unit_tests",
       "//components/printing/common:unit_tests",
@@ -938,7 +938,7 @@ if (!is_ios) {
       ]
     }
 
-    if (enable_basic_printing) {
+    if (enable_printing) {
       sources += [ "printing/test/print_render_frame_helper_browsertest.cc" ]
       deps += [
         "//build:chromeos_buildflags",

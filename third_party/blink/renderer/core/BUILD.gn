@@ -346,7 +346,7 @@ component("core") {
     deps += [ "//ui/base/mojom" ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [ "//printing:metafile" ]
   }
 

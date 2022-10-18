@@ -799,7 +799,7 @@ if (current_toolchain == default_toolchain) {
     sources += commerce_subscriptions_java_sources
     deps += commerce_subscriptions_java_deps
 
-    if (enable_basic_printing) {
+    if (enable_printing) {
       deps += [ "//printing:printing_java" ]
     }
 
@@ -1830,7 +1830,7 @@ if (current_toolchain == default_toolchain) {
 
     deps += commerce_subscriptions_java_test_deps
 
-    if (enable_basic_printing) {
+    if (enable_printing) {
       deps += [ "//printing:printing_java" ]
     }
 

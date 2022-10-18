@@ -145,7 +145,7 @@ component("gtk") {
     "//url",
   ]
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [ "//printing" ]
   }
 

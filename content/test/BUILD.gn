@@ -2831,7 +2831,7 @@ test("content_unittests") {
         [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics" ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [
       "//printing",
       "//printing/backend",

@@ -6853,7 +6853,7 @@ static_library("browser") {
     ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     # Some form of printing support.
     sources += [
       "policy/printing_restrictions_policy_handler.cc",

@@ -5714,7 +5714,7 @@ static_library("ui") {
     ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [
       "//components/printing/browser",
       "//printing",

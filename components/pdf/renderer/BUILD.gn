@@ -60,7 +60,7 @@ static_library("renderer") {
     "//ui/gfx/geometry",
   ]
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [ "//components/printing/renderer" ]
   }
 }

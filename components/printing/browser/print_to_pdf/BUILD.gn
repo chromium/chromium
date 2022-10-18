@@ -5,7 +5,7 @@
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
-assert(enable_basic_printing)
+assert(enable_printing)
 
 static_library("print_to_pdf") {
   sources = [

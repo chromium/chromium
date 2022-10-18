@@ -32,7 +32,7 @@ static_library("print_compositor") {
   ]
 }
 
-if (enable_basic_printing) {
+if (enable_printing) {
   source_set("unit_tests") {
     testonly = true
     sources = [ "print_compositor_impl_unittest.cc" ]

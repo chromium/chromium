@@ -388,7 +388,7 @@ static_library("common_lib") {
   }
 
   # Printing.
-  if (enable_basic_printing) {
+  if (enable_printing) {
     public_deps += [
       "//components/printing/common",
       "//printing",

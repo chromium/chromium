@@ -224,7 +224,7 @@ static_library("utility") {
     configs += [ "//build/config/linux/nss" ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_printing) {
     deps += [
       "//components/services/print_compositor",
       "//components/services/print_compositor/public/mojom",

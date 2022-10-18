@@ -123,7 +123,7 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 // nogncheck because dependency on //printing is conditional upon
-// enable_basic_printing flags.
+// enable_printing flags.
 #include "printing/metafile_skia.h"          // nogncheck
 #endif
 

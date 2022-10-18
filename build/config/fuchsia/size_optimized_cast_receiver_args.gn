@@ -18,7 +18,7 @@
 # It is not possible to assert the platform because `target_os` is not defined
 # when this file is imported.
 
-enable_basic_printing = false
+enable_printing = false
 enable_cast_receiver = true
 enable_dav1d_decoder = false
 

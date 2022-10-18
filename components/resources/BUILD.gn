@@ -40,7 +40,7 @@ grit("components_resources") {
   ]
 
   defines = [
-    "enable_basic_printing=$enable_basic_printing",
+    "enable_printing=$enable_printing",
     "enable_print_preview=$enable_print_preview",
     "safe_browsing_mode=$safe_browsing_mode",
     "is_fuchsia=$is_fuchsia",
