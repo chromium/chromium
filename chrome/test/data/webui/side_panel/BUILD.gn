@@ -22,6 +22,7 @@ ts_library("build_ts") {
     "bookmarks/bookmarks_drag_manager_test.ts",
     "bookmarks/bookmarks_list_interactive_ui_test.ts",
     "bookmarks/bookmarks_list_test.ts",
+    "bookmarks/power_bookmarks_list_test.ts",
     "bookmarks/test_bookmarks_api_proxy.ts",
     "bookmarks/commerce/shopping_list_test.ts",
     "bookmarks/commerce/test_shopping_list_api_proxy.ts",

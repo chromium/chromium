@@ -44,6 +44,17 @@ TEST_F('SidePanelBookmarksListTest', 'All', function() {
   mocha.run();
 });
 
+var SidePanelPowerBookmarksListTest = class extends SidePanelBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/bookmarks/power_bookmarks_list_test.js';
+  }
+};
+
+TEST_F('SidePanelPowerBookmarksListTest', 'All', function() {
+  mocha.run();
+});
+
 
 var ShoppingListTest = class extends SidePanelBrowserTest {
   /** @override */

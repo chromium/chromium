@@ -8,7 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './reading_list/app.js'; /* <reading-list-app> */
 import '../strings.m.js';
 import './bookmarks/bookmarks_list.js';
-import './bookmarks/power_bookmark_row.js';
+import './bookmarks/power_bookmarks_list.js';
 import './read_anything/app.js'; /* <read-anything-app> */
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

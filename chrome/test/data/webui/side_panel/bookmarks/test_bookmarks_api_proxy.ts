@@ -10,6 +10,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestBookmarksApiProxy extends TestBrowserProxy implements
     BookmarksApiProxy {
+  private topLevelBookmarks_: chrome.bookmarks.BookmarkTreeNode[] = [];
   private folders_: chrome.bookmarks.BookmarkTreeNode[] = [];
   callbackRouter: {
     onChanged: FakeChromeEvent,
@@ -42,7 +43,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   getTopLevelBookmarks() {
     this.methodCalled('getTopLevelBookmarks');
-    return Promise.resolve(this.folders_);
+    return Promise.resolve(this.topLevelBookmarks_);
   }
 
   getFolders() {
@@ -54,6 +55,10 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       id: string, depth: number, clickModifiers: ClickModifiers,
       source: ActionSource) {
     this.methodCalled('openBookmark', id, depth, clickModifiers, source);
+  }
+
+  setTopLevelBookmarks(topLevelBookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+    this.topLevelBookmarks_ = topLevelBookmarks;
   }
 
   setFolders(folders: chrome.bookmarks.BookmarkTreeNode[]) {
