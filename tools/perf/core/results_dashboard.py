@@ -430,7 +430,9 @@ def _SendResultsJson(url, results_json, token_generator_callback):
   """
   # When data is provided to urllib2.Request, a POST is sent instead of GET.
   # The data must be in the application/x-www-form-urlencoded format.
-  data = six.moves.urllib.parse.urlencode({'data': results_json})
+  data = six.moves.urllib.parse.urlencode({
+      'data': results_json
+  }).encode('utf-8')
   req = six.moves.urllib.request.Request(url + SEND_RESULTS_PATH, data)
   try:
     oauth_token = token_generator_callback()
