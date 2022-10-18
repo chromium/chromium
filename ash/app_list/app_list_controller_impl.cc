@@ -32,7 +32,6 @@
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -1601,7 +1600,7 @@ void AppListControllerImpl::OnAppListPageChanged(AppListState page) {
 }
 
 int AppListControllerImpl::GetShelfSize() {
-  return ShelfConfig::Get()->system_shelf_size();
+  return ShelfConfig::Get()->GetSystemShelfSizeInTabletMode();
 }
 
 bool AppListControllerImpl::IsInTabletMode() {

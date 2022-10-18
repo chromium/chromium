@@ -40,6 +40,9 @@ constexpr int kDenseShelfScreenSizeThreshold = 600;
 // will trigger shelf visibility changes.
 constexpr float kDragHideRatioThreshold = 0.4f;
 
+constexpr int kSystemShelfSizeTabletModeDense = 48;
+constexpr int kSystemShelfSizeTabletModeNormal = 56;
+
 // Records the histogram value tracking the reason shelf control buttons are
 // shown in tablet mode.
 void RecordReasonForShowingShelfControls() {
@@ -65,6 +68,14 @@ void RecordReasonForShowingShelfControls() {
   base::UmaHistogramExactLinear(
       "Ash.Shelf.NavigationButtonsInTabletMode.ReasonShown",
       buttons_shown_reason_mask, kControlButtonsShownReasonCount);
+}
+
+int IsDenseForCurrentScreen() {
+  const gfx::Rect screen_size =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+
+  return screen_size.width() <= kDenseShelfScreenSizeThreshold ||
+         screen_size.height() <= kDenseShelfScreenSizeThreshold;
 }
 
 }  // namespace
@@ -394,13 +405,7 @@ float ShelfConfig::drag_hide_ratio_threshold() const {
 
 void ShelfConfig::UpdateConfig(bool new_is_app_list_visible,
                                bool tablet_mode_changed) {
-  const gfx::Rect screen_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-
-  const bool new_is_dense =
-      !in_tablet_mode_ ||
-      (screen_size.width() <= kDenseShelfScreenSizeThreshold ||
-       screen_size.height() <= kDenseShelfScreenSizeThreshold);
+  const bool new_is_dense = !in_tablet_mode_ || IsDenseForCurrentScreen();
 
   const bool can_hide_shelf_controls =
       in_tablet_mode_ && features::IsHideShelfControlsInTabletModeEnabled();
@@ -455,7 +460,8 @@ int ShelfConfig::GetShelfSize(bool ignore_in_app_state) const {
   if (!ignore_in_app_state && (is_in_app_ || in_split_view_with_overview_))
     return in_app_shelf_size();
 
-  return is_dense_ ? 48 : 56;
+  return is_dense_ ? kSystemShelfSizeTabletModeDense
+                   : kSystemShelfSizeTabletModeNormal;
 }
 
 SkColor ShelfConfig::GetShelfControlButtonColor(
@@ -532,6 +538,14 @@ gfx::Size ShelfConfig::DragHandleSize() const {
   return session_state == session_manager::SessionState::ACTIVE
              ? gfx::Size(80, 4)
              : gfx::Size(120, 4);
+}
+
+int ShelfConfig::GetSystemShelfSizeInTabletMode() const {
+  // Note that existing `is_dense_` takes in account current tablet/clamshell
+  // mode, but sometimes there is a need to get shelf size in tablet mode
+  // staying in clamshell mode.
+  return IsDenseForCurrentScreen() ? kSystemShelfSizeTabletModeDense
+                                   : kSystemShelfSizeTabletModeNormal;
 }
 
 void ShelfConfig::UpdateConfigForAccessibilityState() {

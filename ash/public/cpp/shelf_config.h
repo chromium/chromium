@@ -232,6 +232,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // The size of the shelf drag handle.
   gfx::Size DragHandleSize() const;
 
+  // Size of the shelf in tablet mode.
+  int GetSystemShelfSizeInTabletMode() const;
+
  private:
   friend class ShelfConfigTest;
 

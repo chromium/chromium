@@ -9,25 +9,21 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/apps_grid_row_change_animator.h"
-#include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test/test_focus_change_listener.h"
-#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_toast_view.h"
-#include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -256,7 +252,7 @@ TEST_F(PagedAppsGridViewTest, GridDimensionsChangesWithDisplaySize) {
 
   // Test with a display in landscape mode a with a little more height. This
   // should have equal rows on the first and second pages.
-  UpdateDisplay("1600x900");
+  UpdateDisplay("1600x910");
   EXPECT_EQ(4, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
   EXPECT_EQ(4, GetPagedAppsGridView()->GetRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
