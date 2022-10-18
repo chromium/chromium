@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/services/speech/audio_source_consumer.h"
 #include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,7 +23,8 @@ class SodaClient;
 namespace speech {
 
 class SpeechRecognitionRecognizerImpl
-    : public media::mojom::SpeechRecognitionRecognizer {
+    : public media::mojom::SpeechRecognitionRecognizer,
+      public AudioSourceConsumer {
  public:
   using OnRecognitionEventCallback =
       base::RepeatingCallback<void(media::SpeechRecognitionResult event)>;
@@ -82,6 +84,11 @@ class SpeechRecognitionRecognizerImpl
   void OnSpeechRecognitionError();
 
   void MarkDone() override;
+
+  // AudioSourceConsumer:
+  void AddAudio(media::mojom::AudioDataS16Ptr buffer) override;
+  void OnAudioCaptureEnd() override;
+  void OnAudioCaptureError() override;
 
  protected:
   virtual void SendAudioToSpeechRecognitionServiceInternal(

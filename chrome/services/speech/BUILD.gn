@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 source_set("lib") {
   sources = [
+    "audio_source_consumer.h",
     "audio_source_fetcher_impl.cc",
     "audio_source_fetcher_impl.h",
     "speech_recognition_recognizer_impl.cc",

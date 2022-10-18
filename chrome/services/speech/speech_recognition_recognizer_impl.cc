@@ -267,6 +267,17 @@ void SpeechRecognitionRecognizerImpl::MarkDone() {
   soda_client_->MarkDone();
 }
 
+void SpeechRecognitionRecognizerImpl::AddAudio(
+    media::mojom::AudioDataS16Ptr buffer) {
+  SendAudioToSpeechRecognitionService(std::move(buffer));
+}
+void SpeechRecognitionRecognizerImpl::OnAudioCaptureEnd() {
+  MarkDone();
+}
+void SpeechRecognitionRecognizerImpl::OnAudioCaptureError() {
+  OnSpeechRecognitionError();
+}
+
 void SpeechRecognitionRecognizerImpl::
     SendAudioToSpeechRecognitionServiceInternal(
         media::mojom::AudioDataS16Ptr buffer) {

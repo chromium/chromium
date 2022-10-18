@@ -24,9 +24,8 @@
 namespace speech {
 
 AudioSourceFetcherImpl::AudioSourceFetcherImpl(
-    std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer)
-    : speech_recognition_recognizer_(std::move(recognition_recognizer)),
-      is_started_(false) {}
+    std::unique_ptr<AudioSourceConsumer> audio_consumer)
+    : audio_consumer_(std::move(audio_consumer)), is_started_(false) {}
 
 AudioSourceFetcherImpl::~AudioSourceFetcherImpl() {
   Stop();
@@ -34,10 +33,10 @@ AudioSourceFetcherImpl::~AudioSourceFetcherImpl() {
 
 void AudioSourceFetcherImpl::Create(
     mojo::PendingReceiver<media::mojom::AudioSourceFetcher> receiver,
-    std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<AudioSourceFetcherImpl>(
-                                  std::move(recognition_recognizer)),
-                              std::move(receiver));
+    std::unique_ptr<AudioSourceConsumer> audio_consumer) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<AudioSourceFetcherImpl>(std::move(audio_consumer)),
+      std::move(receiver));
 }
 
 void AudioSourceFetcherImpl::Start(
@@ -88,7 +87,7 @@ void AudioSourceFetcherImpl::Stop() {
   }
   send_audio_callback_.Reset();
   is_started_ = false;
-  speech_recognition_recognizer_->MarkDone();
+  audio_consumer_->OnAudioCaptureEnd();
 }
 
 void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
@@ -111,13 +110,13 @@ void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
 void AudioSourceFetcherImpl::OnCaptureError(
     media::AudioCapturerSource::ErrorCode code,
     const std::string& message) {
-  speech_recognition_recognizer_->OnSpeechRecognitionError();
+  LOG(ERROR) << "Audio Capture Error" << message;
+  audio_consumer_->OnAudioCaptureError();
 }
 
 void AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr buffer) {
-  speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
-      std::move(buffer));
+  audio_consumer_->AddAudio(std::move(buffer));
 }
 
 media::AudioCapturerSource* AudioSourceFetcherImpl::GetAudioCapturerSource() {

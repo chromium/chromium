@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/services/speech/audio_source_consumer.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/mojo/common/audio_data_s16_converter.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
@@ -29,14 +30,14 @@ class AudioSourceFetcherImpl
       public media::mojom::AudioLog {
  public:
   AudioSourceFetcherImpl(
-      std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer);
+      std::unique_ptr<AudioSourceConsumer> recognition_recognizer);
   ~AudioSourceFetcherImpl() override;
   AudioSourceFetcherImpl(const AudioSourceFetcherImpl&) = delete;
   AudioSourceFetcherImpl& operator=(const AudioSourceFetcherImpl&) = delete;
 
   static void Create(
       mojo::PendingReceiver<media::mojom::AudioSourceFetcher> receiver,
-      std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer);
+      std::unique_ptr<AudioSourceConsumer> recognition_recognizer);
 
   // media::mojom::AudioSourceFetcher:
   void Start(
@@ -93,10 +94,8 @@ class AudioSourceFetcherImpl
   // Device ID used to record audio.
   std::string device_id_;
 
-  // Owned SpeechRecognitionRecognizerImpl was constructed by the
-  // SpeechRecognitionService as appropriate for the platform.
-  std::unique_ptr<SpeechRecognitionRecognizerImpl>
-      speech_recognition_recognizer_;
+  // Owned AudioSourceConsumer
+  std::unique_ptr<AudioSourceConsumer> audio_consumer_;
 
   // Whether audio capture is started.
   bool is_started_;
