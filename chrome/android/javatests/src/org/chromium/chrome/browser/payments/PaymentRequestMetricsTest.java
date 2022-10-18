@@ -211,14 +211,13 @@ public class PaymentRequestMetricsTest implements MainActivityStartCallback {
     }
 
     /**
-     * Expect only the ABORT_REASON_MOJO_RENDERER_CLOSING enum value gets logged when a user closes
-     * the tab during a Payment Request.
+     * Expect only the ABORT_REASON_ABORTED_BY_USER enum value gets logged when a user closes the
+     * tab during a Payment Request.
      */
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @DisabledTest(message = "Test is flaky, see crbug.com/968797")
-    public void testAbortMetrics_OtherAborted_TabClosed() throws TimeoutException {
+    public void testAbortMetrics_UserAborted_TabClosed() throws TimeoutException {
         // Install the apps so the user can complete the Payment Request.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -228,18 +227,17 @@ public class PaymentRequestMetricsTest implements MainActivityStartCallback {
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
 
-        // Press the back button.
         ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(),
                 mPaymentRequestTestRule.getActivity());
 
-        mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(
-                AbortReason.MOJO_RENDERER_CLOSING);
+        // Closing the tab will show Chrome's Tab Overview / Switcher UI, which triggers the "closed
+        // by user" event with "Tab overview mode dismissed Payment Request UI" error message.
+        mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(AbortReason.ABORTED_BY_USER);
 
         // Make sure the events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.OTHER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
+        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_SHIPPING
-                | Event.REQUEST_METHOD_OTHER;
-        // TODO(crbug.com/1260097): This expectation is no longer valid.
+                | Event.REQUEST_METHOD_OTHER | Event.AVAILABLE_METHOD_OTHER;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
