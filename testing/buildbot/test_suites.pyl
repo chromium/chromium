@@ -283,6 +283,14 @@
           'shards': 6,
         },
       },
+      'content_browsertests': {
+        'android_swarming': {
+          'shards': 15,
+        },
+        'swarming': {
+          'shards': 8,
+        },
+      },
       'content_unittests': {
         'android_swarming': {
           'shards': 3,
@@ -1605,17 +1613,218 @@
       },
     },
 
-    # At the moment only content_browsertests passes with dangling pointer
-    # detection on.
+    'dangling_pointer_detection_chromium_web_tests_and_wpt_webdriver_isolated_scripts': {
+      'blink_web_tests': {
+        # layout test failures are retried 3 times when '--test-list' is not
+        # passed, but 0 times when '--test-list' is passed. We want to always
+        # retry 3 times, so we explicitly specify it.
+        'args': [
+          '--num-retries=3',
+        ],
+        'isolate_name': 'blink_web_tests',
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'mixins': [
+          'blink_tests_write_run_histories',
+           # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
+          'skia_gold_test',
+        ],
+        'resultdb': {
+          'enable': True,
+        },
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 5,
+        },
+      },
+      'blink_wpt_tests': {
+        # layout test failures are retried 3 times when '--test-list' is not
+        # passed, but 0 times when '--test-list' is passed. We want to always
+        # retry 3 times, so we explicitly specify it.
+        'args': [
+          '--num-retries=3',
+          '--step-name=blink-wpt-tests',
+        ],
+        'isolate_name': 'blink_wpt_tests',
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'mixins': [
+          'blink_tests_write_run_histories',
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
+          'skia_gold_test',
+        ],
+        'resultdb': {
+          'enable': True,
+        },
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 7,
+        },
+      },
+      'dangling_pointer_detection_blink_web_tests': {
+        # layout test failures are retried 3 times when '--test-list' is not
+        # passed, but 0 times when '--test-list' is passed. We want to always
+        # retry 3 times, so we explicitly specify it.
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+          '--num-retries=3',
+        ],
+        'isolate_name': 'blink_web_tests',
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'mixins': [
+          'blink_tests_write_run_histories',
+           # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
+          'skia_gold_test',
+        ],
+        'resultdb': {
+          'enable': True,
+        },
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 5,
+        },
+      },
+      'dangling_pointer_detection_blink_wpt_tests': {
+        # layout test failures are retried 3 times when '--test-list' is not
+        # passed, but 0 times when '--test-list' is passed. We want to always
+        # retry 3 times, so we explicitly specify it.
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+          '--num-retries=3',
+          '--step-name=blink-wpt-tests',
+        ],
+        'isolate_name': 'blink_wpt_tests',
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'mixins': [
+          'blink_tests_write_run_histories',
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
+          'skia_gold_test',
+        ],
+        'resultdb': {
+          'enable': True,
+        },
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 7,
+        },
+      },
+    },
+
     'dangling_pointer_detection_tests': {
+      'dangling_pointer_detection_base_unittests': {
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'base_unittests',
+        'swarming': {
+          'shards': 8,
+        },
+      },
+      'dangling_pointer_detection_blink_common_unittests': {
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'blink_common_unittests',
+      },
+      'dangling_pointer_detection_blink_platform_unittests': {
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'blink_platform_unittests',
+      },
+      'dangling_pointer_detection_cast_unittests': {
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'cast_unittests',
+      },
+      'dangling_pointer_detection_cc_unittests': {
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'cc_unittests',
+      },
+      'dangling_pointer_detection_components_browsertests': {
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'components_browsertests',
+      },
+      'dangling_pointer_detection_components_unittests': {
+        'android_swarming': {
+          'shards': 6,
+        },
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'components_unittests',
+      },
       'dangling_pointer_detection_content_browsertests': {
         'args': [
           '--enable-features=PartitionAllocDanglingPtr:mode/crash',
         ],
         'test': 'content_browsertests',
+        'android_swarming': {
+          'shards': 15,
+        },
         'swarming': {
           'shards': 8,
         },
+      },
+      'dangling_pointer_detection_content_unittests': {
+        'android_swarming': {
+          'shards': 3,
+        },
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'content_unittests',
+      },
+      'dangling_pointer_detection_unit_tests': {
+        'android_swarming': {
+          'shards': 2,
+        },
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'unit_tests',
+      },
+      'dangling_pointer_detection_webkit_unit_tests': {
+        'android_swarming': {
+          'shards': 6,
+        },
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'blink_unittests',
+      },
+      'dangling_pointer_detection_wtf_unittests': {
+        'args': [
+          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+        ],
+        'test': 'wtf_unittests',
       },
     },
 

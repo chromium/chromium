@@ -2972,6 +2972,7 @@
       'android-backuprefptr-arm-fyi-rel': {
         'test_suites': {
           'gtest_tests': 'backuprefptr_gtests',
+          'isolated_scripts': 'dangling_pointer_detection_chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
         'mixins': [
           'has_native_resultdb_integration',
@@ -2986,6 +2987,7 @@
       'android-backuprefptr-arm64-fyi-rel': {
         'test_suites': {
           'gtest_tests': 'backuprefptr_gtests',
+          'isolated_scripts': 'dangling_pointer_detection_chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
         'mixins': [
           'has_native_resultdb_integration',
@@ -3392,6 +3394,7 @@
       'linux-backuprefptr-x64-fyi-rel': {
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_dangling_pointer_detection_gtests',
+          'isolated_scripts': 'dangling_pointer_detection_chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
         'mixins': [
           'linux-bionic',
@@ -3656,6 +3659,7 @@
       'mac-backuprefptr-x64-fyi-rel': {
         'test_suites': {
           'gtest_tests': 'chromium_mac_and_dangling_pointer_detection_gtests',
+          'isolated_scripts': 'dangling_pointer_detection_chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
         'mixins': [
           'mac_10.15',
@@ -3722,6 +3726,7 @@
       'win-backuprefptr-x64-fyi-rel': {
         'test_suites': {
           'gtest_tests': 'chromium_win_and_dangling_pointer_detection_gtests',
+          'isolated_scripts': 'dangling_pointer_detection_chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
         'mixins': [
           'win10',
@@ -3734,6 +3739,7 @@
       'win-backuprefptr-x86-fyi-rel': {
         'test_suites': {
           'gtest_tests': 'backuprefptr_gtests',
+          'isolated_scripts': 'dangling_pointer_detection_chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
         'mixins': [
           'win10',

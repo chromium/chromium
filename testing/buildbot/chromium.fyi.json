@@ -9096,6 +9096,53 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_base_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_base_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -9109,6 +9156,52 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_common_unittests",
+        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_blink_common_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_blink_common_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9183,6 +9276,99 @@
         },
         "test": "blink_platform_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_blink_platform_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_blink_platform_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_platform_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_webkit_unit_tests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_webkit_unit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 6
+        },
+        "test": "blink_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
         "args": [
@@ -9278,6 +9464,52 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_cast_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_cast_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_unittests",
+        "test_id_prefix": "ninja://media/cast:cast_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -9320,6 +9552,98 @@
         },
         "test": "cc_unittests",
         "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_cc_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_cc_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_components_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_components_browsertests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
         "args": [
@@ -9378,6 +9702,99 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "dangling_pointer_detection_components_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_components_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 6
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "content_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "dangling_pointer_detection_content_browsertests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -9409,7 +9826,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 15
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -9429,6 +9846,53 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_content_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_content_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9508,6 +9972,53 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_unit_tests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_unit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -9550,6 +10061,222 @@
         },
         "test": "wtf_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_wtf_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_wtf_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "wtf_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]
   },
@@ -9602,6 +10329,53 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_base_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_base_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -9615,6 +10389,52 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_common_unittests",
+        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_blink_common_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_blink_common_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9689,6 +10509,99 @@
         },
         "test": "blink_platform_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_blink_platform_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_blink_platform_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_platform_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_webkit_unit_tests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_webkit_unit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 6
+        },
+        "test": "blink_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
         "args": [
@@ -9784,6 +10697,52 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_cast_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_cast_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_unittests",
+        "test_id_prefix": "ninja://media/cast:cast_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -9826,6 +10785,98 @@
         },
         "test": "cc_unittests",
         "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_cc_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_cc_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_components_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_components_browsertests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
         "args": [
@@ -9884,6 +10935,99 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "dangling_pointer_detection_components_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_components_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 6
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "content_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "dangling_pointer_detection_content_browsertests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -9915,7 +11059,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 15
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -9935,6 +11079,53 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_content_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_content_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -10014,6 +11205,53 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_unit_tests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_unit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -10056,6 +11294,222 @@
         },
         "test": "wtf_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "dangling_pointer_detection_wtf_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "dangling_pointer_detection_wtf_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "wtf_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]
   },
@@ -88775,12 +90229,57 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_base_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_common_unittests",
+        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_blink_common_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -88856,6 +90355,50 @@
         },
         "test": "blink_platform_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_blink_platform_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_platform_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_webkit_unit_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
         "args": [
@@ -88988,12 +90531,56 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_cast_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_unittests",
+        "test_id_prefix": "ninja://media/cast:cast_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_cc_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -89093,12 +90680,56 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_components_browsertests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -89186,6 +90817,28 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -90273,6 +91926,28 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_unit_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -90442,6 +92117,28 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_wtf_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "wtf_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -90482,6 +92179,160 @@
         },
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]
   },
@@ -105192,12 +107043,57 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_base_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_common_unittests",
+        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_blink_common_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -105273,6 +107169,50 @@
         },
         "test": "blink_platform_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_blink_platform_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_platform_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_webkit_unit_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
         "args": [
@@ -105405,12 +107345,56 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_cast_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_unittests",
+        "test_id_prefix": "ninja://media/cast:cast_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_cc_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -105510,12 +107494,56 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_components_browsertests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -105603,6 +107631,28 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -106648,6 +108698,28 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_unit_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      },
+      {
+        "args": [
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
@@ -106756,6 +108828,28 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_wtf_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "wtf_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -106796,6 +108890,160 @@
         },
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-10.15"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]
   },
@@ -110624,12 +112872,57 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_base_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_common_unittests",
+        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_blink_common_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -110705,6 +112998,50 @@
         },
         "test": "blink_platform_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_blink_platform_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_platform_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_webkit_unit_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
         "args": [
@@ -110869,12 +113206,56 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_cast_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_unittests",
+        "test_id_prefix": "ninja://media/cast:cast_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_cc_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -111016,12 +113397,56 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_components_browsertests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_components_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -111109,6 +113534,28 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_content_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -112377,6 +114824,28 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_unit_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      },
+      {
+        "args": [
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
@@ -112601,6 +115070,28 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_wtf_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "wtf_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -112641,6 +115132,160 @@
         "test": "zucchini_unittests",
         "test_id_prefix": "ninja://components/zucchini:zucchini_unittests/"
       }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      }
     ]
   },
   "win-backuprefptr-x86-fyi-rel": {
@@ -112668,12 +115313,57 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_base_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_common_unittests",
+        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_blink_common_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -112707,6 +115397,50 @@
         },
         "test": "blink_platform_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_blink_platform_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_platform_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_webkit_unit_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
         "args": [
@@ -112753,6 +115487,28 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_cast_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_unittests",
+        "test_id_prefix": "ninja://media/cast:cast_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -112774,6 +115530,50 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_cc_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cc_unittests",
+        "test_id_prefix": "ninja://cc:cc_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_components_browsertests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
@@ -112792,6 +115592,50 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_components_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -112839,12 +115683,56 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_content_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_unit_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -112878,6 +115766,182 @@
         },
         "test": "wtf_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_wtf_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "wtf_unittests",
+        "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      },
+      {
+        "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--num-retries=3",
+          "--step-name=blink-wpt-tests",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--git-revision=${got_revision}"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_wpt_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "dangling_pointer_detection_blink_wpt_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]
   },
