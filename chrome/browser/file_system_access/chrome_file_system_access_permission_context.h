@@ -15,10 +15,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
-#include "components/content_settings/core/common/content_settings_types.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/object_permission_context_base.h"
-#include "components/permissions/permission_util.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -108,8 +105,8 @@ class ChromeFileSystemAccessPermissionContext
   std::u16string GetPickerTitle(
       const blink::mojom::FilePickerOptionsPtr& options) override;
 
-  ContentSetting GetReadGuardContentSetting(const url::Origin& origin);
-  ContentSetting GetWriteGuardContentSetting(const url::Origin& origin);
+  ContentSetting GetReadGuardContentSetting(const url::Origin& origin) const;
+  ContentSetting GetWriteGuardContentSetting(const url::Origin& origin) const;
 
   void SetMaxIdsPerOriginForTesting(unsigned int max_ids) {
     max_ids_per_origin_ = max_ids;
@@ -185,7 +182,7 @@ class ChromeFileSystemAccessPermissionContext
 
   // Returns whether persisted permission grants for the origin are subject to
   // the extended permission duration policy.
-  bool OriginHasExtendedPermissions(const url::Origin& origin);
+  bool OriginHasExtendedPermissions(const url::Origin& origin) const;
 
  private:
   enum class MetricsOptions { kRecord, kDoNotRecord };
@@ -236,7 +233,7 @@ class ChromeFileSystemAccessPermissionContext
 
   bool AncestorHasActivePermission(const url::Origin& origin,
                                    const base::FilePath& path,
-                                   GrantType grant_type);
+                                   GrantType grant_type) const;
   absl::optional<base::Value> GetPersistedPermission(
       const url::Origin& origin,
       const base::FilePath& path);
@@ -246,7 +243,7 @@ class ChromeFileSystemAccessPermissionContext
                               GrantType grant_type,
                               MetricsOptions options);
   bool PersistentPermissionIsExpired(const base::Time& last_used,
-                                     bool has_extended_permissions);
+                                     bool has_extended_permissions) const;
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 

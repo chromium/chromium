@@ -1143,18 +1143,18 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetObjectDisplayName(
 
 ContentSetting
 ChromeFileSystemAccessPermissionContext::GetWriteGuardContentSetting(
-    const url::Origin& origin) {
+    const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return content_settings()->GetContentSetting(
+  return content_settings_->GetContentSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
 }
 
 ContentSetting
 ChromeFileSystemAccessPermissionContext::GetReadGuardContentSetting(
-    const url::Origin& origin) {
+    const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return content_settings()->GetContentSetting(
+  return content_settings_->GetContentSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_READ_GUARD);
 }
@@ -1629,7 +1629,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
 bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
     const url::Origin& origin,
     const base::FilePath& path,
-    GrantType grant_type) {
+    GrantType grant_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(origin);
   if (it == origins_.end())
@@ -1656,7 +1656,7 @@ bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
 // longer than sites without an installed PWA or with a passively installed
 // PWA.
 bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermissions(
-    const url::Origin& origin) {
+    const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_ANDROID)
   // The File System Access API is not supported on Android (see
@@ -1856,7 +1856,7 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
 
 bool ChromeFileSystemAccessPermissionContext::PersistentPermissionIsExpired(
     const base::Time& last_used,
-    bool has_extended_permissions) {
+    bool has_extended_permissions) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeDelta duration =
       has_extended_permissions ? kPersistentPermissionExpirationTimeoutExtended
