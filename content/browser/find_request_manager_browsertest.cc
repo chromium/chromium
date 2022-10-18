@@ -1476,6 +1476,10 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerFencedFrameTest,
   auto options = blink::mojom::FindOptions::New();
   options->run_synchronously_for_testing = true;
   Find("result", options.Clone());
+  // Initial find request is pop from the queue immediately so we make a second
+  // find request.
+  options->new_session = false;
+  Find("result", options.Clone());
 
   // Create a fenced frame.
   GURL find_test_url =

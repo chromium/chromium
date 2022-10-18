@@ -383,6 +383,8 @@ void FindRequestManager::EmitFindRequest(int request_id,
   find_request_queue_.emplace(request_id, search_text, std::move(options));
   if (find_request_queue_.size() == 1)
     FindInternal(find_request_queue_.front());
+  if (request_id == current_session_id_)
+    find_request_queue_.pop();
 }
 
 void FindRequestManager::ForEachAddedFindInPageRenderFrameHost(

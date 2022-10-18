@@ -1999,7 +1999,6 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
 }
 
 void PDFiumEngine::AddFindResult(const PDFiumRange& result) {
-  bool first_result = find_results_.empty() && !resume_find_index_.has_value();
   // Figure out where to insert the new location, since we could have
   // started searching midway and now we wrapped.
   size_t result_index;
@@ -2015,10 +2014,6 @@ void PDFiumEngine::AddFindResult(const PDFiumRange& result) {
   find_results_.insert(find_results_.begin() + result_index, result);
   UpdateTickMarks();
   client_->NotifyNumberOfFindResultsChanged(find_results_.size(), false);
-  if (first_result) {
-    DCHECK(!current_find_index_);
-    SelectFindResult(/*forward=*/true);
-  }
 }
 
 bool PDFiumEngine::SelectFindResult(bool forward) {

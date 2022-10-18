@@ -245,8 +245,10 @@ IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTestWithPdfPartialLoading,
   // Verify that find-in-page works fine.
   auto options = blink::mojom::FindOptions::New();
   Find("FXCMAP_CMap", options.Clone());
+  delegate()->WaitForFinalReply();
   options->new_session = false;
   Find("FXCMAP_CMap", options.Clone());
+  delegate()->WaitForFinalReply();
   Find("FXCMAP_CMap", options.Clone());
   delegate()->WaitForFinalReply();
 
