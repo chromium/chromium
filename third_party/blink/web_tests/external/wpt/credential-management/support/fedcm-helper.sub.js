@@ -15,7 +15,7 @@ export function default_request_options() {
   return {
     identity: {
       providers: [{
-        configURL: manifest_origin + '/credential-management/support/fedcm.json',
+        configURL: manifest_origin + '/credential-management/support/fedcm/manifest.py',
         clientId: '1',
         nonce: '2',
       }]
