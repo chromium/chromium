@@ -97712,8 +97712,25 @@ Full version information for the fingerprint enum values:
   vendor specific: 784347206654504D
   version fingerprint: 987235505 3ad804b1 *
 
-  * Firmware version and vendor specific fields are different for different
+  * Firmware version and vendor fingerprint fields are different for different
     versions of Cr50 firmware, all released versions are listed in the enum
+    below
+  =====>
+
+  <=====
+  Google H1D3 based Security Chip running Ti50 firmware presents itself as a TPM
+  2.0 with the following properties:
+
+  TPM family: 322e3000
+  spec level:00000000000000a2
+  manufacturer: 43524f53
+  tpm_model: 00000001
+  firmware version: ff8e5ab88168c00 *
+  vendor specific: 784347206654504D
+  version fingerprint: 885470954 34c736ea *
+
+  * Firmware version and vendor fingerprint fields are different for different
+    versions of Ti50 firmware, all released versions are listed in the enum
     below
   =====>
 -->
@@ -97768,6 +97785,7 @@ Full version information for the fingerprint enum values:
   <int value="847042924" label="IFX 9645 rev 78 fw 133.33 build 00e3"/>
   <int value="849048014" label="CROS Cr50 0.6.5"/>
   <int value="867657196" label="CROS Cr50 0.2.2"/>
+  <int value="885470954" label="CROS Ti50 0.22.9"/>
   <int value="888846912" label="CROS Cr50 0.6.50"/>
   <int value="893364096" label="CROS Cr50 0.3.3"/>
   <int value="894811053" label="CROS Cr50 0.5.100"/>
