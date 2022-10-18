@@ -55,11 +55,9 @@
 
 #if CHECK_WILL_STREAM()
 #define EXPECT_CHECK_DEATH(statement) EXPECT_DEATH(statement, "Check failed")
-#define EXPECT_CHECK_DEATH_WITH(statement, msg) EXPECT_DEATH(statement, msg)
 #define ASSERT_CHECK_DEATH(statement) ASSERT_DEATH(statement, "Check failed")
 #else
 #define EXPECT_CHECK_DEATH(statement) EXPECT_DEATH(statement, "")
-#define EXPECT_CHECK_DEATH_WITH(statement, msg) EXPECT_DEATH(statement, "")
 #define ASSERT_CHECK_DEATH(statement) ASSERT_DEATH(statement, "")
 #endif  // CHECK_WILL_STREAM()
 
@@ -68,8 +66,6 @@
 // Note GTEST_UNSUPPORTED_DEATH_TEST takes a |regex| only to see whether it is a
 // valid regex. It is never evaluated.
 #define EXPECT_CHECK_DEATH(statement) \
-  GTEST_UNSUPPORTED_DEATH_TEST(statement, "", )
-#define EXPECT_CHECK_DEATH_WITH(statement, msg) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "", )
 #define ASSERT_CHECK_DEATH(statement) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "", return )

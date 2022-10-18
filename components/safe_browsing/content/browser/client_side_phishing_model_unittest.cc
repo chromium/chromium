@@ -14,7 +14,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
-#include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -386,11 +385,13 @@ TEST(ClientSidePhishingModelTest, FlatbufferonFollowingUpdate) {
             CSDModelType::kFlatbuffer);
 
   // Mapping should be undone automatically, even with a region copy lying
-  // around.
+  // around. Death tests misbehave on Android, or the memory may be re-mapped.
+  // See https://crbug.com/815537 and base/test/gtest_util.h.
   // Can remove this if flaky.
   // Windows ASAN flake: crbug.com/1234652
-#if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-  BASE_EXPECT_DEATH(memset(memory_addr, 'G', 1), "");
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID) && \
+    !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+  EXPECT_DEATH_IF_SUPPORTED(memset(memory_addr, 'G', 1), "");
 #endif
 }
 

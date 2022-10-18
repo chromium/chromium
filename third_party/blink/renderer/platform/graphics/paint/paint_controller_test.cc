@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
 
-#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -2060,6 +2059,9 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataValidData) {
   EXPECT_EQ(kBounds, chunks[0].region_capture_data->find(kCropId)->second);
 }
 
+// Death tests don't work properly on Android.
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+
 TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
   static const auto kCropId = RegionCaptureCropId(base::Token{});
   static const gfx::Rect kBounds(1, 2, 640, 480);
@@ -2072,7 +2074,7 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
     InitRootChunk();
 
 #if DCHECK_IS_ON()
-    EXPECT_DCHECK_DEATH_WITH(
+    EXPECT_DEATH(
         GetPaintController().RecordRegionCaptureData(client, kCropId, kBounds),
         "Check failed: !crop_id->is_zero");
   }
@@ -2115,9 +2117,9 @@ TEST_P(PaintControllerTest, DuplicatedSubsequences) {
   };
 
 #if DCHECK_IS_ON()
-  EXPECT_DCHECK_DEATH_WITH(paint_duplicated_subsequences(),
-                           "Multiple subsequences for client: \"test\"");
-#else   // DCHECK_IS_ON()
+  EXPECT_DEATH(paint_duplicated_subsequences(),
+               "Multiple subsequences for client: \"test\"");
+#else
   // The following is for non-DCHECK path. No security CHECK should trigger.
   {
     CommitCycleScope cycle_scope(GetPaintController());
@@ -2138,7 +2140,7 @@ TEST_P(PaintControllerTest, DuplicatedSubsequences) {
       DrawRect(context, client, kForegroundType, gfx::Rect(100, 100, 100, 100));
     }
   }
-#endif  // DCHECK_IS_ON()
+#endif
 }
 
 TEST_P(PaintControllerTest, DeletedClientInUnderInvalidatedSubsequence) {
@@ -2169,5 +2171,7 @@ TEST_P(PaintControllerTest, DeletedClientInUnderInvalidatedSubsequence) {
                                                                     container));
   }
 }
+
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

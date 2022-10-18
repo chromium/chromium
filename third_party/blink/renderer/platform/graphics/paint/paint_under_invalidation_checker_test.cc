@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
@@ -13,6 +12,9 @@
 using testing::ElementsAre;
 
 namespace blink {
+
+// Death tests don't work properly on Android.
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 class PaintControllerUnderInvalidationTest
     : private ScopedPaintUnderInvalidationCheckingForTest,
@@ -43,11 +45,11 @@ TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawing) {
     }
   };
 
-  BASE_EXPECT_DEATH(test(),
-                    "Under-invalidation: display item changed\n"
+  EXPECT_DEATH(test(),
+               "Under-invalidation: display item changed\n"
 #if DCHECK_IS_ON()
-                    ".*New display item:.*2,2 3x3.*\n"
-                    ".*Old display item:.*1,1 1x1"
+               ".*New display item:.*2,2 3x3.*\n"
+               ".*Old display item:.*1,1 1x1"
 #endif
   );
 }
@@ -122,12 +124,12 @@ TEST_F(PaintControllerUnderInvalidationTest, ChangeDrawingInSubsequence) {
     }
   };
 
-  BASE_EXPECT_DEATH(test(),
-                    "In cached subsequence for .*first.*\n"
-                    ".*Under-invalidation: display item changed\n"
+  EXPECT_DEATH(test(),
+               "In cached subsequence for .*first.*\n"
+               ".*Under-invalidation: display item changed\n"
 #if DCHECK_IS_ON()
-                    ".*New display item:.*2,2 1x1.*\n"
-                    ".*Old display item:.*1,1 1x1"
+               ".*New display item:.*2,2 1x1.*\n"
+               ".*Old display item:.*1,1 1x1"
 #endif
   );
 }
@@ -160,11 +162,11 @@ TEST_F(PaintControllerUnderInvalidationTest, MoreDrawingInSubsequence) {
     }
   };
 
-  BASE_EXPECT_DEATH(test(),
-                    "In cached subsequence for .*first.*\n"
-                    ".*Under-invalidation: extra display item\n"
+  EXPECT_DEATH(test(),
+               "In cached subsequence for .*first.*\n"
+               ".*Under-invalidation: extra display item\n"
 #if DCHECK_IS_ON()
-                    ".*New display item:.*1,1 3x3"
+               ".*New display item:.*1,1 3x3"
 #endif
   );
 }
@@ -197,9 +199,9 @@ TEST_F(PaintControllerUnderInvalidationTest, LessDrawingInSubsequence) {
     }
   };
 
-  BASE_EXPECT_DEATH(test(),
-                    "In cached subsequence for .*first.*\n"
-                    ".*Under-invalidation: chunk changed");
+  EXPECT_DEATH(test(),
+               "In cached subsequence for .*first.*\n"
+               ".*Under-invalidation: chunk changed");
 }
 
 TEST_F(PaintControllerUnderInvalidationTest, InvalidationInSubsequence) {
@@ -261,9 +263,9 @@ TEST_F(PaintControllerUnderInvalidationTest, SubsequenceBecomesEmpty) {
     }
   };
 
-  BASE_EXPECT_DEATH(test(),
-                    "In cached subsequence for .*target.*\n"
-                    ".*Under-invalidation: new subsequence wrong length");
+  EXPECT_DEATH(test(),
+               "In cached subsequence for .*target.*\n"
+               ".*Under-invalidation: new subsequence wrong length");
 }
 
 TEST_F(PaintControllerUnderInvalidationTest, SkipCacheInSubsequence) {
@@ -336,5 +338,7 @@ TEST_F(PaintControllerUnderInvalidationTest,
     }
   }
 }
+
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

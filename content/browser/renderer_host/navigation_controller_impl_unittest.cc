@@ -4312,8 +4312,10 @@ TEST_F(NavigationControllerTest, SubFrameNavigationUIData) {
   load_url_params.frame_tree_node_id = subframe->GetFrameTreeNodeId();
   navigation->SetLoadURLParams(&load_url_params);
 
+#if DCHECK_IS_ON()
   // We DCHECK to prevent misuse of the API.
-  EXPECT_DCHECK_DEATH(navigation->Start());
+  EXPECT_DEATH_IF_SUPPORTED(navigation->Start(), "");
+#endif
 }
 
 bool SrcDocRewriter(GURL* url, BrowserContext* browser_context) {

@@ -14,7 +14,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
-#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,9 +32,13 @@ namespace {
 constexpr int kNumHops = 13;
 constexpr int kNumTasks = 8;
 
-// Unused if CHECK strings are discarded to reduce code bloat;
-[[maybe_unused]] const char kDeathMatcher[] =
-    "Check failed:.*\n*.*BrowserTaskEnvironment";
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_ANDROID)
+// Expect that in builds with working DCHECK messages the failure message
+// includes a hint towards using the BrowserTaskEnvironment class.
+const char kDeathMatcher[] = "Check failed:.*\n*.*BrowserTaskEnvironment";
+#else
+const char kDeathMatcher[] = "";
+#endif
 
 void PostTaskToUIThread(int iteration, base::subtle::Atomic32* tasks_run);
 
@@ -118,10 +121,12 @@ TEST(BrowserTaskEnvironmentTest, RunIOThreadUntilIdle) {
 }
 
 TEST(BrowserTaskEnvironmentTest, MessageLoopTypeMismatch) {
+  testing::FLAGS_gtest_death_test_style = "threadsafe";
+
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::UI);
 
-  BASE_EXPECT_DEATH(
+  EXPECT_DEATH_IF_SUPPORTED(
       {
         BrowserTaskEnvironment second_task_environment(
             BrowserTaskEnvironment::IO_MAINLOOP);
@@ -130,7 +135,9 @@ TEST(BrowserTaskEnvironmentTest, MessageLoopTypeMismatch) {
 }
 
 TEST(BrowserTaskEnvironmentTest, MultipleBrowserTaskEnvironment) {
-  BASE_EXPECT_DEATH(
+  testing::FLAGS_gtest_death_test_style = "threadsafe";
+
+  EXPECT_DEATH_IF_SUPPORTED(
       {
         BrowserTaskEnvironment task_environment;
         BrowserTaskEnvironment other_task_environment;
@@ -185,28 +192,30 @@ TEST(BrowserTaskEnvironmentTest, TraitsConstructorOverrideMainThreadType) {
 // Verify that posting tasks to the UI thread without having the
 // BrowserTaskEnvironment instance cause a crash.
 TEST(BrowserTaskEnvironmentTest, NotInitializedUIThread) {
+  testing::FLAGS_gtest_death_test_style = "threadsafe";
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::UI);
 
-  EXPECT_DCHECK_DEATH_WITH(
-      GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()),
+  EXPECT_DEATH_IF_SUPPORTED(
+      { GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
       kDeathMatcher);
-  EXPECT_DCHECK_DEATH_WITH(
-      GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()),
+  EXPECT_DEATH_IF_SUPPORTED(
+      { GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
       kDeathMatcher);
 }
 
 // Verify that posting tasks to the IO thread without having the
 // BrowserTaskEnvironment instance cause a crash.
 TEST(BrowserTaskEnvironmentTest, NotInitializedIOThread) {
+  testing::FLAGS_gtest_death_test_style = "threadsafe";
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
 
-  EXPECT_DCHECK_DEATH_WITH(
-      GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()),
+  EXPECT_DEATH_IF_SUPPORTED(
+      { GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
       kDeathMatcher);
-  EXPECT_DCHECK_DEATH_WITH(
-      GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()),
+  EXPECT_DEATH_IF_SUPPORTED(
+      { GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
       kDeathMatcher);
 }
 

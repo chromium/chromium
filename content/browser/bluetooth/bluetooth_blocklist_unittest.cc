@@ -4,7 +4,6 @@
 
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 
-#include "base/test/gtest_util.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,10 +16,12 @@ using ManufacturerId = device::BluetoothDevice::ManufacturerId;
 namespace content {
 
 namespace {
-
-// Unused if CHECK strings are discarded to reduce code bloat;
-[[maybe_unused]] const char kInvalidUUIDErrorRegex[] = "uuid.IsValid\\(\\)";
-
+#ifdef OFFICIAL_BUILD
+// The official build does not print the reason a CHECK failed.
+const char kInvalidUUIDErrorRegex[] = "";
+#else
+const char kInvalidUUIDErrorRegex[] = "uuid.IsValid\\(\\)";
+#endif
 }  // namespace
 
 class BluetoothBlocklistTest : public ::testing::Test {
@@ -66,28 +67,28 @@ TEST_F(BluetoothBlocklistTest, ExcludeWritesUUID) {
 
 TEST_F(BluetoothBlocklistTest, EmptyStringUUID) {
   BluetoothUUID empty_string_uuid("");
-  EXPECT_CHECK_DEATH_WITH(
+  EXPECT_DEATH_IF_SUPPORTED(
       list_.Add(empty_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
       kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_.IsExcluded(empty_string_uuid),
-                          kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_.IsExcludedFromReads(empty_string_uuid),
-                          kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_.IsExcludedFromWrites(empty_string_uuid),
-                          kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(empty_string_uuid),
+                            kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(empty_string_uuid),
+                            kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(empty_string_uuid),
+                            kInvalidUUIDErrorRegex);
 }
 
 TEST_F(BluetoothBlocklistTest, InvalidUUID) {
   BluetoothUUID invalid_string_uuid("Not a valid UUID string.");
-  EXPECT_CHECK_DEATH_WITH(
+  EXPECT_DEATH_IF_SUPPORTED(
       list_.Add(invalid_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
       kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_.IsExcluded(invalid_string_uuid),
-                          kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_.IsExcludedFromReads(invalid_string_uuid),
-                          kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_.IsExcludedFromWrites(invalid_string_uuid),
-                          kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(invalid_string_uuid),
+                            kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(invalid_string_uuid),
+                            kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(invalid_string_uuid),
+                            kInvalidUUIDErrorRegex);
 }
 
 // Abreviated UUIDs used to create, or test against, the blocklist work
