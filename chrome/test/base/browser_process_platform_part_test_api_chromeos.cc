@@ -32,3 +32,8 @@ void BrowserProcessPlatformPartTestApi::ShutdownCrosComponentManager() {
   platform_part_->using_testing_cros_component_manager_ = false;
   platform_part_->cros_component_manager_.reset();
 }
+
+bool BrowserProcessPlatformPartTestApi::CanRestoreUrlsForProfile(
+    const Profile* profile) {
+  return platform_part_->CanRestoreUrlsForProfile(profile);
+}

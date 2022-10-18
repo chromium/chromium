@@ -7193,6 +7193,7 @@ test("unit_tests") {
       "../browser/apps/app_service/webapk/webapk_manager_unittest.cc",
       "../browser/ash/attestation/attestation_policy_unittest.cc",
       "../browser/ash/dbus/chrome_features_service_provider_unittest.cc",
+      "../browser/browser_process_platform_part_ash_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
       "../browser/device_identity/chromeos/device_oauth2_token_store_chromeos_unittest.cc",
