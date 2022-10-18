@@ -359,7 +359,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         if self.options.verbose:
             command.append('--verbose')
         if self.wptreport:
-            command.extend(['--wpt-report', self.wptreport])
+            command.extend(['--wpt-report',
+                            self.wptreport])
         common.run_command(command)
 
     def clean_up_after_test_run(self):

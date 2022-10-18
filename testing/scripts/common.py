@@ -329,7 +329,7 @@ class BaseIsolatedScriptArgsAdapter(object):
         required=False,
         help='value of $ISOLATED_OUTDIR from swarming task')
     self._parser.add_argument(
-        '--isolated-script-test-output', type=str,
+        '--isolated-script-test-output', type=os.path.abspath,
         required=False,
         help='path to write test results JSON object to')
     self._parser.add_argument(
@@ -354,7 +354,8 @@ class BaseIsolatedScriptArgsAdapter(object):
     self._parser.add_argument(
         '--isolated-script-test-chartjson-output', type=str)
     # This argument is ignored for now.
-    self._parser.add_argument('--isolated-script-test-perf-output', type=str)
+    self._parser.add_argument('--isolated-script-test-perf-output',
+        type=os.path.abspath)
 
     self.add_extra_arguments(self._parser)
 
