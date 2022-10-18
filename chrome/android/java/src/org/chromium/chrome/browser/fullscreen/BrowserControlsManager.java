@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -110,6 +112,7 @@ public class BrowserControlsManager
      * from animation start till the next offset update from compositor arrives.
      */
     private boolean mOffsetOverridden;
+    private boolean mContentViewScrolling;
 
     @IntDef({ControlsPosition.TOP, ControlsPosition.NONE})
     @Retention(RetentionPolicy.SOURCE)
@@ -127,7 +130,15 @@ public class BrowserControlsManager
             if (mControlContainer == null
                     || mControlContainer.getView().getVisibility() == visibility) {
                 return;
+            } else if (visibility == View.VISIBLE && mContentViewScrolling
+                    && FeatureList.isInitialized()
+                    && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+                // Don't make the controls visible until scrolling has stopped to avoid
+                // doing it more often than we need to. onContentViewScrollingStateChanged will
+                // schedule us again when scrolling ceases.
+                return;
             }
+
             try (TraceEvent e = TraceEvent.scoped(
                          "BrowserControlsManager.onAndroidVisibilityChanged")) {
                 // requestLayout is required to trigger a new gatherTransparentRegion(), which
@@ -226,6 +237,18 @@ public class BrowserControlsManager
                     onOffsetsChanged(topControlsOffset, bottomControlsOffset, contentOffset,
                             topControlsMinHeightOffset, bottomControlsMinHeightOffset);
                 }
+            }
+
+            @Override
+            public void onContentViewScrollingStateChanged(boolean scrolling) {
+                if (!scrolling && FeatureList.isInitialized()
+                        && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+                        && shouldShowAndroidControls()
+                        && mControlContainer.getView().getVisibility() != View.VISIBLE) {
+                    scheduleVisibilityUpdate();
+                }
+
+                mContentViewScrolling = scrolling;
             }
         };
         assert controlContainer != null || mControlsPosition == ControlsPosition.NONE;
