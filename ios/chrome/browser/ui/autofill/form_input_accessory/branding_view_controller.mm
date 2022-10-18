@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/branding_view_controller.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/threading/sequenced_task_runner_handle.h"
 #import "base/time/time.h"
@@ -117,9 +118,10 @@ constexpr base::TimeDelta kMinTimeIntervalBetweenAnimations = base::Seconds(3);
 - (void)setDelegate:(id<BrandingViewControllerDelegate>)delegate {
   _delegate = delegate;
   if (_delegate != nil) {
-    [(UIButton*)self.view addTarget:_delegate
-                             action:@selector(brandingIconPressed)
-                   forControlEvents:UIControlEventTouchUpInside];
+    [base::mac::ObjCCast<UIButton>(self.view)
+               addTarget:_delegate
+                  action:@selector(brandingIconPressed)
+        forControlEvents:UIControlEventTouchUpInside];
   }
 }
 
@@ -130,7 +132,7 @@ constexpr base::TimeDelta kMinTimeIntervalBetweenAnimations = base::Seconds(3);
 - (void)configureBrandingWithImageName:(NSString*)name {
   UIImage* logo = [[UIImage imageNamed:name]
       imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-  UIButton* button = (UIButton*)self.view;
+  UIButton* button = base::mac::ObjCCast<UIButton>(self.view);
   [button setImage:logo forState:UIControlStateNormal];
   [button setImage:logo forState:UIControlStateHighlighted];
   button.imageView.contentMode = UIViewContentModeScaleAspectFit;
