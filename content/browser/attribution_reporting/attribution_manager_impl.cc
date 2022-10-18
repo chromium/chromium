@@ -162,6 +162,11 @@ void RecordCreateReportStatus(CreateReportResult result) {
       "Bump version of Conversions.CreateReportStatus3 histogram.");
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus3",
                                 result.event_level_status());
+  static_assert(
+      AttributionTrigger::AggregatableResult::kMaxValue ==
+          AttributionTrigger::AggregatableResult::kDeduplicated,
+      "Bump version of Conversions.AggregatableReport.CreateReportStatus2 "
+      "histogram.");
   base::UmaHistogramEnumeration(
       "Conversions.AggregatableReport.CreateReportStatus2",
       result.aggregatable_status());
