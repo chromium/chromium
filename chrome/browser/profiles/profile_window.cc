@@ -6,9 +6,6 @@
 
 #include <stddef.h>
 
-#include <string>
-#include <vector>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -98,18 +95,6 @@ void ProfileLoadedCallback(base::OnceCallback<void(Profile*)> callback,
 }  // namespace
 
 namespace profiles {
-
-base::FilePath GetPathOfProfileWithEmail(ProfileManager* profile_manager,
-                                         const std::string& email) {
-  std::u16string profile_email = base::UTF8ToUTF16(email);
-  std::vector<ProfileAttributesEntry*> entries =
-      profile_manager->GetProfileAttributesStorage().GetAllProfilesAttributes();
-  for (ProfileAttributesEntry* entry : entries) {
-    if (entry->GetUserName() == profile_email)
-      return entry->GetPath();
-  }
-  return base::FilePath();
-}
 
 void FindOrCreateNewWindowForProfile(
     Profile* profile,
