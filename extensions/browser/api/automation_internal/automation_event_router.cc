@@ -45,6 +45,8 @@ AutomationEventRouter::AutomationEventRouter()
       ->GetAutomationInternalApiDelegate()
       ->SetAutomationEventRouterInterface(this);
 #endif
+
+  ui::AXActionHandlerRegistry::GetInstance()->AddObserver(this);
 }
 
 AutomationEventRouter::~AutomationEventRouter() {
@@ -306,6 +308,10 @@ void AutomationEventRouter::RemoveAutomationListener(
     for (AutomationEventRouterObserver& observer : observers_)
       observer.AllAutomationExtensionsGone();
   }
+}
+
+void AutomationEventRouter::TreeRemoved(ui::AXTreeID ax_tree_id) {
+  DispatchTreeDestroyedEvent(ax_tree_id, nullptr);
 }
 
 void AutomationEventRouter::UpdateActiveProfile() {

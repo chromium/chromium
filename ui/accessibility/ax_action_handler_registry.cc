@@ -99,6 +99,9 @@ void AXActionHandlerRegistry::RemoveAXTreeID(AXTreeID ax_tree_id) {
   auto action_it = id_to_action_handler_.find(ax_tree_id);
   if (action_it != id_to_action_handler_.end())
     id_to_action_handler_.erase(action_it);
+
+  for (AXActionHandlerObserver& observer : observers_)
+    observer.TreeRemoved(ax_tree_id);
 }
 
 AXActionHandlerRegistry::AXActionHandlerRegistry() {}

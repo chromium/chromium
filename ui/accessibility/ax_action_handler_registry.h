@@ -30,7 +30,10 @@ class AXActionHandlerObserver : public base::CheckedObserver {
   // routing is asynchronous and we do not know which observers intend to
   // respond to which actions -- so we forward all actions to all observers.
   // Only the observer that owns the unique |tree_id| will perform the action.
-  virtual void PerformAction(const ui::AXActionData& action_data) = 0;
+  virtual void PerformAction(const ui::AXActionData& action_data) {}
+
+  // Informs the observer that a tree has been removed.
+  virtual void TreeRemoved(AXTreeID tree_id) {}
 };
 
 // This class generates and saves a runtime id for an accessibility tree.

@@ -43,7 +43,8 @@ class AutomationEventRouterObserver {
 };
 
 class AutomationEventRouter : public content::RenderProcessHostObserver,
-                              public AutomationEventRouterInterface {
+                              public AutomationEventRouterInterface,
+                              public ui::AXActionHandlerObserver {
  public:
   static AutomationEventRouter* GetInstance();
 
@@ -137,6 +138,9 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+
+  // ui::AXActionHandlerObserver:
+  void TreeRemoved(ui::AXTreeID ax_tree_id) override;
 
   void RemoveAutomationListener(content::RenderProcessHost* host);
 
