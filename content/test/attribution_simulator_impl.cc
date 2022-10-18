@@ -357,6 +357,7 @@ class AttributionEventHandler : public AttributionObserver {
   // AttributionObserver:
 
   void OnSourceHandled(const StorableSource& source,
+                       absl::optional<uint64_t> cleared_debug_key,
                        StorableSource::Result result) override {
     DCHECK(!input_values_.empty());
     base::Value input_value = std::move(input_values_.front());
@@ -383,6 +384,7 @@ class AttributionEventHandler : public AttributionObserver {
   }
 
   void OnTriggerHandled(const AttributionTrigger& trigger,
+                        absl::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult& result) override {
     DCHECK(!input_values_.empty());
     base::Value input_value = std::move(input_values_.front());

@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {ClearedDebugKey, ClearedDebugKey_Type, FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {ReportType, SourceRegistrationError, SourceType} from './attribution_reporting.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
@@ -676,11 +676,51 @@ class AggregatableAttributionReportTableModel extends ReportTableModel {
 
 enum LogType {
   FAILED_SOURCE_REGISTRATION = 'FailedSourceRegistration',
+  CLEARED_DEBUG_KEY = 'ClearedDebugKey',
 }
 interface Log {
   timestamp: Date;
   type: LogType;
   metadata: Record<string, string>;
+}
+
+class ClearedDebugKeyLog implements Log {
+  public readonly type: LogType = LogType.CLEARED_DEBUG_KEY;
+
+  private readonly timestamp_: Date;
+  private readonly metadata_: Record<string, string>;
+
+  constructor(mojo: ClearedDebugKey) {
+    this.timestamp_ = new Date(mojo.time);
+    let clearedFrom;
+    switch (mojo.clearedFrom) {
+      case (ClearedDebugKey_Type.kSource):
+        clearedFrom = 'Source';
+        break;
+      case (ClearedDebugKey_Type.kTrigger):
+        clearedFrom = 'Trigger';
+        break;
+      default:
+        clearedFrom = 'Unknown type';
+        break;
+    }
+    // TODO(anthonygarant): Investigate reducing the amount of space the log
+    // takes.
+    this.metadata_ = {
+      'Cleared Debug Key': `${mojo.clearedDebugKey.value}`,
+      'From': clearedFrom,
+      'Report To': originToText(mojo.reportingOrigin),
+      'Reason': 'Debug cookie, `ar_debug=1; SameSite=None; Secure; HttpOnly`' +
+          ', is missing for the reporting origin',
+    };
+  }
+
+  get timestamp(): Date {
+    return this.timestamp_;
+  }
+  get metadata(): Record<string, string> {
+    return this.metadata_;
+  }
 }
 
 class FailedSourceRegistrationLog implements Log {
@@ -1055,6 +1095,11 @@ class Observer implements ObserverInterface {
   onFailedSourceRegistration(mojo: FailedSourceRegistration) {
     assert(logTableModel);
     logTableModel.addLog(new FailedSourceRegistrationLog(mojo));
+  }
+
+  onDebugKeyCleared(mojo: ClearedDebugKey) {
+    assert(logTableModel);
+    logTableModel.addLog(new ClearedDebugKeyLog(mojo));
   }
 }
 

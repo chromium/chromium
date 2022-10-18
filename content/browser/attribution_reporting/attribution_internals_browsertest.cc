@@ -347,8 +347,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        FailedSourceRegistrationLogShown) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  auto reporter1 = url::Origin::Create(GURL("https://a.test"));
-
   static constexpr char wait_script[] = R"(
     const table = document.querySelector('#logTable')
         .shadowRoot.querySelector('tbody');
@@ -378,6 +376,94 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   manager()->NotifySourceRegistrationFailure(
       "!", url::Origin::Create(GURL("https://a.test")),
       SourceRegistrationError::kInvalidJson);
+  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
+                       ClearedDebugKeyFromSource_LogShown) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+
+  static constexpr char wait_script[] = R"(
+    const table = document.querySelector('#logTable')
+        .shadowRoot.querySelector('tbody');
+
+    const logType = 'ClearedDebugKey';
+    const reason = '<dt>Reason</dt><dd>Debug cookie, `ar_debug=1; ' +
+                   'SameSite=None; Secure; HttpOnly`, is missing ' +
+                   'for the reporting origin</dd>';
+    const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
+                     '<dt>From</dt><dd>Source</dd>'+
+                     '<dt>Report To</dt><dd>https://report.test</dd>' +
+                     reason + '</dl>';
+
+    let obs = new MutationObserver((_, obs) => {
+      if (table.children.length === 1 &&
+          table.children[0].children.length >= 3 &&
+          table.children[0].children[1].innerText === logType &&
+          table.children[0].children[2].innerHTML === metadata
+      )  {
+        obs.disconnect();
+        document.title = $1;
+      }
+    });
+    obs.observe(table, {'childList': true});)";
+
+  ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+
+  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+
+  manager()->NotifySourceHandled(SourceBuilder().Build(),
+                                 StorableSource::Result::kSuccess,
+                                 /*cleared_debug_key=*/1234);
+
+  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
+                       ClearedDebugKeyFromTrigger_LogShown) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+
+  static constexpr char wait_script[] = R"(
+    const table = document.querySelector('#logTable')
+        .shadowRoot.querySelector('tbody');
+
+    const logType = 'ClearedDebugKey';
+    const reason = '<dt>Reason</dt><dd>Debug cookie, `ar_debug=1; ' +
+                   'SameSite=None; Secure; HttpOnly`, is missing ' +
+                   'for the reporting origin</dd>';
+    const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
+                     '<dt>From</dt><dd>Trigger</dd>'+
+                     '<dt>Report To</dt><dd>https://report.test</dd>' +
+                     reason + '</dl>';
+
+    let obs = new MutationObserver((_, obs) => {
+      if (table.children.length === 1 &&
+          table.children[0].children.length >= 3 &&
+          table.children[0].children[1].innerText === logType &&
+          table.children[0].children[2].innerHTML === metadata
+      )  {
+        obs.disconnect();
+        document.title = $1;
+      }
+    });
+    obs.observe(table, {'childList': true});)";
+
+  ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+
+  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+
+  manager()->NotifyTriggerHandled(
+      DefaultTrigger(),
+      CreateReportResult(
+          /*trigger_time=*/base::Time::Now(),
+          /*event_level_status=*/AttributionTrigger::EventLevelResult::kSuccess,
+          /*aggregatable_status=*/
+          AttributionTrigger::AggregatableResult::kSuccess,
+          /*replaced_event_level_report=*/absl::nullopt,
+          /*new_event_level_report=*/IrreleventEventLevelReport(),
+          /*new_aggregatable_report=*/IrreleventAggregatableReport()),
+      /*cleared_debug_key=*/1234);
+
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 

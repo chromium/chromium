@@ -359,9 +359,10 @@ void MockAttributionManager::NotifyReportsChanged(
 
 void MockAttributionManager::NotifySourceHandled(
     const StorableSource& source,
-    StorableSource::Result result) {
+    StorableSource::Result result,
+    absl::optional<uint64_t> cleared_debug_key) {
   for (auto& observer : observers_)
-    observer.OnSourceHandled(source, result);
+    observer.OnSourceHandled(source, cleared_debug_key, result);
 }
 
 void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
@@ -384,9 +385,10 @@ void MockAttributionManager::NotifySourceRegistrationFailure(
 
 void MockAttributionManager::NotifyTriggerHandled(
     const AttributionTrigger& trigger,
-    const CreateReportResult& result) {
+    const CreateReportResult& result,
+    absl::optional<uint64_t> cleared_debug_key) {
   for (auto& observer : observers_)
-    observer.OnTriggerHandled(trigger, result);
+    observer.OnTriggerHandled(trigger, cleared_debug_key, result);
 }
 
 void MockAttributionManager::SetDataHostManager(

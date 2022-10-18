@@ -326,13 +326,17 @@ class MockAttributionManager : public AttributionManager {
 
   void NotifySourcesChanged();
   void NotifyReportsChanged(AttributionReport::Type report_type);
-  void NotifySourceHandled(const StorableSource& source,
-                           StorableSource::Result result);
+  void NotifySourceHandled(
+      const StorableSource& source,
+      StorableSource::Result result,
+      absl::optional<uint64_t> cleared_debug_key = absl::nullopt);
   void NotifyReportSent(const AttributionReport& report,
                         bool is_debug_report,
                         const SendResult& info);
-  void NotifyTriggerHandled(const AttributionTrigger& trigger,
-                            const CreateReportResult& result);
+  void NotifyTriggerHandled(
+      const AttributionTrigger& trigger,
+      const CreateReportResult& result,
+      absl::optional<uint64_t> cleared_debug_key = absl::nullopt);
   void NotifySourceRegistrationFailure(
       const std::string& header_value,
       const url::Origin& reporting_origin,
@@ -362,7 +366,9 @@ class MockAttributionObserver : public AttributionObserver {
 
   MOCK_METHOD(void,
               OnSourceHandled,
-              (const StorableSource& source, StorableSource::Result result),
+              (const StorableSource& source,
+               absl::optional<uint64_t> cleared_debug_key,
+               StorableSource::Result result),
               (override));
 
   MOCK_METHOD(void,
@@ -375,6 +381,7 @@ class MockAttributionObserver : public AttributionObserver {
   MOCK_METHOD(void,
               OnTriggerHandled,
               (const AttributionTrigger& trigger,
+               absl::optional<uint64_t> cleared_debug_key,
                const CreateReportResult& result),
               (override));
 };

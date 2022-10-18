@@ -451,21 +451,25 @@ void AttributionManagerImpl::HandleSource(StorableSource source) {
   MaybeEnqueueEvent(std::move(source));
 }
 
-void AttributionManagerImpl::StoreSource(StorableSource source) {
+void AttributionManagerImpl::StoreSource(
+    StorableSource source,
+    absl::optional<uint64_t> cleared_debug_key) {
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
       .WithArgs(source)
       .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
-                           weak_factory_.GetWeakPtr(), std::move(source)));
+                           weak_factory_.GetWeakPtr(), std::move(source),
+                           cleared_debug_key));
 }
 
 void AttributionManagerImpl::OnSourceStored(
     StorableSource source,
+    absl::optional<uint64_t> cleared_debug_key,
     AttributionStorage::StoreSourceResult result) {
   // TODO(apaseltiner): Consider logging UMA based on `result` to help
   // understand how often this fails due to privacy limits, etc.
 
   for (auto& observer : observers_)
-    observer.OnSourceHandled(source, result.status);
+    observer.OnSourceHandled(source, cleared_debug_key, result.status);
 
   scheduler_timer_.MaybeSet(result.min_fake_report_time);
 
@@ -476,11 +480,14 @@ void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
   MaybeEnqueueEvent(std::move(trigger));
 }
 
-void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger) {
+void AttributionManagerImpl::StoreTrigger(
+    AttributionTrigger trigger,
+    absl::optional<uint64_t> cleared_debug_key) {
   attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReport)
       .WithArgs(trigger)
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
-                           weak_factory_.GetWeakPtr(), std::move(trigger)));
+                           weak_factory_.GetWeakPtr(), std::move(trigger),
+                           cleared_debug_key));
 }
 
 void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTrigger event) {
@@ -559,15 +566,19 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             if (!allowed) {
               this->OnSourceStored(
                   std::move(source),
+                  /*cleared_debug_key=*/absl::nullopt,
                   AttributionStorage::StoreSourceResult(
                       StorableSource::Result::kProhibitedByBrowserPolicy));
               return;
             }
 
-            if (!is_debug_cookie_set)
+            absl::optional<uint64_t> cleared_debug_key;
+            if (!is_debug_cookie_set && common_info.debug_key().has_value()) {
+              cleared_debug_key = common_info.debug_key();
               common_info.ClearDebugKey();
+            }
 
-            this->StoreSource(std::move(source));
+            this->StoreSource(std::move(source), cleared_debug_key);
           },
 
           [&](AttributionTrigger trigger) {
@@ -580,6 +591,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             if (!allowed) {
               this->OnReportStored(
                   std::move(trigger),
+                  /*cleared_debug_key=*/absl::nullopt,
                   CreateReportResult(/*trigger_time=*/base::Time::Now(),
                                      AttributionTrigger::EventLevelResult::
                                          kProhibitedByBrowserPolicy,
@@ -588,17 +600,22 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
               return;
             }
 
-            if (!is_debug_cookie_set)
+            absl::optional<uint64_t> cleared_debug_key;
+            if (!is_debug_cookie_set && trigger.debug_key().has_value()) {
+              cleared_debug_key = trigger.debug_key();
               trigger.ClearDebugKey();
+            }
 
-            this->StoreTrigger(std::move(trigger));
+            this->StoreTrigger(std::move(trigger), cleared_debug_key);
           },
       },
       std::move(event));
 }
 
-void AttributionManagerImpl::OnReportStored(const AttributionTrigger trigger,
-                                            CreateReportResult result) {
+void AttributionManagerImpl::OnReportStored(
+    const AttributionTrigger trigger,
+    absl::optional<uint64_t> cleared_debug_key,
+    CreateReportResult result) {
   RecordCreateReportStatus(result);
 
   absl::optional<base::Time> min_new_report_time;
@@ -631,7 +648,7 @@ void AttributionManagerImpl::OnReportStored(const AttributionTrigger trigger,
   }
 
   for (auto& observer : observers_)
-    observer.OnTriggerHandled(trigger, result);
+    observer.OnTriggerHandled(trigger, cleared_debug_key, result);
 }
 
 void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {

@@ -182,6 +182,21 @@ struct FailedSourceRegistration {
   attribution_reporting.mojom.SourceRegistrationError error;
 };
 
+// Struct containing details for a debug key that was removed from a source or
+// trigger due to a missing cookie to be displayed as a log by WebUI
+struct ClearedDebugKey {
+  double time;
+  url.mojom.Origin reporting_origin;
+  DebugKey cleared_debug_key;
+
+  enum Type {
+    kTrigger,
+    kSource,
+  };
+
+  Type cleared_from;
+};
+
 // Observer for events relevant to the attribution internals WebUI.
 interface Observer {
   // Called when the sources in storage changed, indicating that the observer
@@ -207,6 +222,9 @@ interface Observer {
 
   // Called when the source header registration JSON parser fails.
   OnFailedSourceRegistration(FailedSourceRegistration failure);
+
+  // Called when a debug key was removed from a source or trigger due to a missing cookie.
+  OnDebugKeyCleared(ClearedDebugKey notification);
 };
 
 // Mojo interface for the attribution internals WebUI to communicate with the

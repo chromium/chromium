@@ -151,8 +151,10 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void MaybeEnqueueEvent(SourceOrTrigger event);
   void ProcessEvents();
   void ProcessNextEvent(bool is_debug_cookie_set);
-  void StoreSource(StorableSource source);
-  void StoreTrigger(AttributionTrigger trigger);
+  void StoreSource(StorableSource source,
+                   absl::optional<uint64_t> cleared_debug_key);
+  void StoreTrigger(AttributionTrigger trigger,
+                    absl::optional<uint64_t> cleared_debug_key);
 
   void GetReportsToSend();
   void OnGetReportsToSend(std::vector<AttributionReport> reports);
@@ -182,8 +184,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void MarkReportCompleted(AttributionReport::Id report_id);
 
   void OnSourceStored(StorableSource source,
+                      absl::optional<uint64_t> cleared_debug_key,
                       AttributionStorage::StoreSourceResult result);
-  void OnReportStored(AttributionTrigger trigger, CreateReportResult result);
+  void OnReportStored(AttributionTrigger trigger,
+                      absl::optional<uint64_t> cleared_debug_key,
+                      CreateReportResult result);
 
   void MaybeSendDebugReport(AttributionReport&&);
 

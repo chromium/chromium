@@ -744,28 +744,30 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
   {
     InSequence seq;
 
-    EXPECT_CALL(observer,
-                OnTriggerHandled(
-                    _, CreateReportEventLevelStatusIs(
-                           AttributionTrigger::EventLevelResult::kSuccess)))
+    EXPECT_CALL(
+        observer,
+        OnTriggerHandled(_, _,
+                         CreateReportEventLevelStatusIs(
+                             AttributionTrigger::EventLevelResult::kSuccess)))
         .Times(3);
 
     EXPECT_CALL(checkpoint, Call(1));
 
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Optional(
-                                      EventLevelDataIs(TriggerPriorityIs(1)))),
-                                  CreateReportEventLevelStatusIs(
-                                      AttributionTrigger::EventLevelResult::
-                                          kSuccessDroppedLowerPriority))));
+        OnTriggerHandled(_, _,
+                         AllOf(ReplacedEventLevelReportIs(Optional(
+                                   EventLevelDataIs(TriggerPriorityIs(1)))),
+                               CreateReportEventLevelStatusIs(
+                                   AttributionTrigger::EventLevelResult::
+                                       kSuccessDroppedLowerPriority))));
 
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(
         observer,
         OnTriggerHandled(
-            _,
+            _, _,
             AllOf(ReplacedEventLevelReportIs(absl::nullopt),
                   CreateReportEventLevelStatusIs(
                       AttributionTrigger::EventLevelResult::kPriorityTooLow))));
@@ -774,18 +776,20 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
 
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Optional(
-                                      EventLevelDataIs(TriggerPriorityIs(2)))),
-                                  CreateReportEventLevelStatusIs(
-                                      AttributionTrigger::EventLevelResult::
-                                          kSuccessDroppedLowerPriority))));
+        OnTriggerHandled(_, _,
+                         AllOf(ReplacedEventLevelReportIs(Optional(
+                                   EventLevelDataIs(TriggerPriorityIs(2)))),
+                               CreateReportEventLevelStatusIs(
+                                   AttributionTrigger::EventLevelResult::
+                                       kSuccessDroppedLowerPriority))));
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Optional(
-                                      EventLevelDataIs(TriggerPriorityIs(3)))),
-                                  CreateReportEventLevelStatusIs(
-                                      AttributionTrigger::EventLevelResult::
-                                          kSuccessDroppedLowerPriority))));
+        OnTriggerHandled(_, _,
+                         AllOf(ReplacedEventLevelReportIs(Optional(
+                                   EventLevelDataIs(TriggerPriorityIs(3)))),
+                               CreateReportEventLevelStatusIs(
+                                   AttributionTrigger::EventLevelResult::
+                                       kSuccessDroppedLowerPriority))));
   }
 
   attribution_manager_->HandleSource(
@@ -1220,9 +1224,10 @@ TEST_F(AttributionManagerImplTest,
 
   const auto source = SourceBuilder().SetExpiry(kImpressionExpiry).Build();
 
-  EXPECT_CALL(observer,
-              OnSourceHandled(
-                  source, StorableSource::Result::kProhibitedByBrowserPolicy));
+  EXPECT_CALL(
+      observer,
+      OnSourceHandled(source, testing::Eq(absl::nullopt),
+                      StorableSource::Result::kProhibitedByBrowserPolicy));
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
@@ -1252,15 +1257,15 @@ TEST_F(AttributionManagerImplTest,
 
   const auto trigger = DefaultTrigger();
 
-  EXPECT_CALL(observer,
-              OnTriggerHandled(
-                  trigger, AllOf(_,
-                                 CreateReportEventLevelStatusIs(
-                                     AttributionTrigger::EventLevelResult::
-                                         kProhibitedByBrowserPolicy),
-                                 CreateReportAggregatableStatusIs(
-                                     AttributionTrigger::AggregatableResult::
-                                         kProhibitedByBrowserPolicy))));
+  EXPECT_CALL(observer, OnTriggerHandled(
+                            trigger, _,
+                            AllOf(_,
+                                  CreateReportEventLevelStatusIs(
+                                      AttributionTrigger::EventLevelResult::
+                                          kProhibitedByBrowserPolicy),
+                                  CreateReportAggregatableStatusIs(
+                                      AttributionTrigger::AggregatableResult::
+                                          kProhibitedByBrowserPolicy))));
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
@@ -1615,11 +1620,13 @@ const struct {
   absl::optional<uint64_t> input_debug_key;
   const char* reporting_origin;
   absl::optional<uint64_t> expected_debug_key;
+  absl::optional<uint64_t> expected_cleared_key;
 } kDebugKeyTestCases[] = {
     {
         "no debug key, no cookie",
         absl::nullopt,
         "https://r2.test",
+        absl::nullopt,
         absl::nullopt,
     },
     {
@@ -1627,11 +1634,13 @@ const struct {
         123,
         "https://r2.test",
         absl::nullopt,
+        123
     },
     {
         "no debug key, has cookie",
         absl::nullopt,
         "https://r1.test",
+        absl::nullopt,
         absl::nullopt,
     },
     {
@@ -1639,6 +1648,7 @@ const struct {
         123,
         "https://r1.test",
         123,
+        absl::nullopt,
     },
 };
 
@@ -1648,7 +1658,14 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
   cookie_checker_->AddOriginWithDebugCookieSet(
       url::Origin::Create(GURL("https://r1.test")));
 
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
   for (const auto& test_case : kDebugKeyTestCases) {
+    EXPECT_CALL(observer,
+                OnSourceHandled(_, test_case.expected_cleared_key, _));
     attribution_manager_->HandleSource(
         SourceBuilder()
             .SetReportingOrigin(
@@ -1673,6 +1690,11 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
   cookie_checker_->AddOriginWithDebugCookieSet(
       url::Origin::Create(GURL("https://r1.test")));
 
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
   for (const auto& test_case : kDebugKeyTestCases) {
     const auto reporting_origin =
         url::Origin::Create(GURL(test_case.reporting_origin));
@@ -1683,7 +1705,8 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
                                            .Build());
 
     EXPECT_THAT(StoredSources(), SizeIs(1)) << test_case.name;
-
+    EXPECT_CALL(observer,
+                OnTriggerHandled(_, test_case.expected_cleared_key, _));
     attribution_manager_->HandleTrigger(
         TriggerBuilder()
             .SetReportingOrigin(reporting_origin)
@@ -1797,8 +1820,8 @@ TEST_F(AttributionManagerImplTest,
 
   const StorableSource source = SourceBuilder().Build();
 
-  EXPECT_CALL(observer,
-              OnSourceHandled(source, StorableSource::Result::kSuccess));
+  EXPECT_CALL(observer, OnSourceHandled(source, testing::Eq(absl::nullopt),
+                                        StorableSource::Result::kSuccess));
 
   attribution_manager_->HandleSource(source);
   EXPECT_THAT(StoredSources(), SizeIs(1));

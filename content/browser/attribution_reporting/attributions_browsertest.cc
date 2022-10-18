@@ -263,7 +263,8 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     observation.Observe(attribution_manager());
 
     base::RunLoop loop;
-    EXPECT_CALL(observer, OnSourceHandled(_, StorableSource::Result::kSuccess))
+    EXPECT_CALL(observer,
+                OnSourceHandled(_, _, StorableSource::Result::kSuccess))
         .WillOnce([&]() { loop.Quit(); });
 
     EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
@@ -313,7 +314,7 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     base::RunLoop loop;
     bool received = false;
     EXPECT_CALL(source_observer,
-                OnSourceHandled(_, StorableSource::Result::kSuccess))
+                OnSourceHandled(_, _, StorableSource::Result::kSuccess))
         .WillOnce([&]() {
           received = true;
           loop.Quit();
@@ -1053,7 +1054,7 @@ IN_PROC_BROWSER_TEST_F(
   observation.Observe(attribution_manager());
 
   base::RunLoop loop;
-  EXPECT_CALL(observer, OnSourceHandled(_, StorableSource::Result::kSuccess))
+  EXPECT_CALL(observer, OnSourceHandled(_, _, StorableSource::Result::kSuccess))
       .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(ExecJs(
@@ -1132,7 +1133,7 @@ IN_PROC_BROWSER_TEST_F(
   observation.Observe(attribution_manager());
 
   base::RunLoop loop;
-  EXPECT_CALL(observer, OnSourceHandled(_, StorableSource::Result::kSuccess))
+  EXPECT_CALL(observer, OnSourceHandled(_, _, StorableSource::Result::kSuccess))
       .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(ExecJs(
