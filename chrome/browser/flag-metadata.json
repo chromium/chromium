@@ -4418,7 +4418,7 @@
   {
     "name": "launcher-play-store-search",
     "owners": [ "amandadeacon", "tby", "wrong" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 110
   },
   {
     "name": "legacy-tls-interstitial",
