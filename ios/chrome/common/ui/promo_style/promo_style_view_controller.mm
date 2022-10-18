@@ -27,6 +27,8 @@
 namespace {
 
 constexpr CGFloat kDefaultMargin = 16;
+// Default margin between the subtitle and the content view.
+constexpr CGFloat kDefaultSubtitleBottomMargin = 22;
 // Top margin for AvatarFullImageView in percentage of the dialog size.
 constexpr CGFloat kAvatarFullImageViewTopMarginPercentage = 0.04;
 constexpr CGFloat kFullAvatarImagerBottomMargin = 5;
@@ -105,7 +107,7 @@ constexpr CGFloat kFullAvatarImageSize = 100;
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _titleHorizontalMargin = kTitleHorizontalMargin;
-    _subtitleBottomMargin = kDefaultMargin;
+    _subtitleBottomMargin = kDefaultSubtitleBottomMargin;
   }
 
   return self;
