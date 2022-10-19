@@ -13,10 +13,10 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -87,12 +87,10 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
                                               void* info,
                                               DWORD info_len);
 
-  DWORD_PTR context() const { return reinterpret_cast<DWORD_PTR>(this); }
+  // Invoked by the last WinHTTPstatus status callback.
+  void HandleClosing();
 
-  void StatusCallback(HINTERNET handle,
-                      uint32_t status,
-                      void* info,
-                      uint32_t info_len);
+  DWORD_PTR context() const { return reinterpret_cast<DWORD_PTR>(this); }
 
   HRESULT BeginFetch(
       const std::string& data,
@@ -105,7 +103,7 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
   void HeadersAvailable();
   HRESULT ReadData();
   void ReadDataComplete(size_t num_bytes_read);
-  void RequestError(const WINHTTP_ASYNC_RESULT* result);
+  void RequestError(DWORD error);
   void CompleteFetch();
 
   void WriteDataToMemory();
