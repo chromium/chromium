@@ -20,8 +20,7 @@ namespace {
 static constexpr char kServerUrl[] =
     "http://localhost:9876/v1/app_provisioning/apps?alt=proto";
 
-// TODO(b/244500232): Temporary placeholder value. To be updated once server
-// design is completed. Maximum accepted size of an APS Response. 1MB.
+// Maximum accepted size of an APS Response. 1MB.
 constexpr int kMaxResponseSizeInBytes = 1024 * 1024;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
