@@ -203,9 +203,7 @@ void InputMethodAsh::OnTextInputTypeChanged(TextInputClient* client) {
 
   ui::TextInputMethod* engine = GetEngine();
   if (engine) {
-    ui::TextInputMethod::InputContext context(
-        GetTextInputType(), GetTextInputMode(), GetTextInputFlags(),
-        GetClientFocusReason(), GetClientPersonalizationMode());
+    const ui::TextInputMethod::InputContext context = GetInputContext();
     // When focused input client is not changed, a text input type change
     // should cause blur/focus events to engine. The focus in to or out from
     // password field should also notify engine.
@@ -364,10 +362,7 @@ void InputMethodAsh::OnDidChangeFocusedClient(TextInputClient* focused_before,
   UpdateContextFocusState();
 
   if (GetEngine()) {
-    ui::TextInputMethod::InputContext context(
-        GetTextInputType(), GetTextInputMode(), GetTextInputFlags(),
-        GetClientFocusReason(), GetClientPersonalizationMode());
-    GetEngine()->FocusIn(context);
+    GetEngine()->FocusIn(GetInputContext());
   }
 
   OnCaretBoundsChanged(GetTextInputClient());
@@ -570,10 +565,7 @@ void InputMethodAsh::UpdateContextFocusState() {
   if (assistive_window)
     assistive_window->FocusStateChanged();
 
-  ui::TextInputMethod::InputContext context(
-      GetTextInputType(), GetTextInputMode(), GetTextInputFlags(),
-      GetClientFocusReason(), GetClientPersonalizationMode());
-  ui::IMEBridge::Get()->SetCurrentInputContext(context);
+  ui::IMEBridge::Get()->SetCurrentInputContext(GetInputContext());
 }
 
 ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
@@ -855,20 +847,19 @@ bool InputMethodAsh::CanComposeInline() const {
   return client ? client->CanComposeInline() : true;
 }
 
-PersonalizationMode InputMethodAsh::GetClientPersonalizationMode() const {
+TextInputMethod::InputContext InputMethodAsh::GetInputContext() const {
   TextInputClient* client = GetTextInputClient();
-  return client && client->ShouldDoLearning() ? PersonalizationMode::kEnabled
-                                              : PersonalizationMode::kDisabled;
-}
+  if (!client) {
+    return TextInputMethod::InputContext(
+        ui::TEXT_INPUT_TYPE_NONE, ui::TEXT_INPUT_MODE_DEFAULT, /*flags=*/0,
+        ui::TextInputClient::FOCUS_REASON_NONE, PersonalizationMode::kDisabled);
+  }
 
-int InputMethodAsh::GetTextInputFlags() const {
-  TextInputClient* client = GetTextInputClient();
-  return client ? client->GetTextInputFlags() : 0;
-}
-
-TextInputMode InputMethodAsh::GetTextInputMode() const {
-  TextInputClient* client = GetTextInputClient();
-  return client ? client->GetTextInputMode() : TEXT_INPUT_MODE_DEFAULT;
+  return TextInputMethod::InputContext(
+      client->GetTextInputType(), client->GetTextInputMode(),
+      client->GetTextInputFlags(), client->GetFocusReason(),
+      client->ShouldDoLearning() ? PersonalizationMode::kEnabled
+                                 : PersonalizationMode::kDisabled);
 }
 
 void InputMethodAsh::SendKeyEvent(KeyEvent* event) {
@@ -1002,11 +993,6 @@ CompositionText InputMethodAsh::ExtractCompositionText(
 bool InputMethodAsh::IsPasswordOrNoneInputFieldFocused() {
   TextInputType type = GetTextInputType();
   return type == TEXT_INPUT_TYPE_NONE || type == TEXT_INPUT_TYPE_PASSWORD;
-}
-
-TextInputClient::FocusReason InputMethodAsh::GetClientFocusReason() const {
-  TextInputClient* client = GetTextInputClient();
-  return client ? client->GetFocusReason() : TextInputClient::FOCUS_REASON_NONE;
 }
 
 bool InputMethodAsh::HasCompositionText() {

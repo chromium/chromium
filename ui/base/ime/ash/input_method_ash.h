@@ -175,26 +175,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // Whether the focused text input client supports inline composition.
   bool CanComposeInline() const;
 
-  // Check whether text entered into the focused text input client should be
-  // used to improve typing suggestions for the user.
-  PersonalizationMode GetClientPersonalizationMode() const;
-
-  // Gets the text input flags of the focused text input client. Returns
-  // 0 if there is no focused client.
-  int GetTextInputFlags() const;
-
-  // Gets the text input mode of the focused text input client. Returns
-  // ui::TEXT_INPUT_MODE_DEFAULT if there is no focused client.
-  TextInputMode GetTextInputMode() const;
+  TextInputMethod::InputContext GetInputContext() const;
 
   // Called from the engine when it completes processing.
   void ProcessKeyEventDone(ui::KeyEvent* event,
                            ui::ime::KeyEventHandledState handled_state);
 
   bool IsPasswordOrNoneInputFieldFocused();
-
-  // Gets the reason how the focused text input client was focused.
-  TextInputClient::FocusReason GetClientFocusReason() const;
 
   // Gets the bounds of the composition text or cursor in |client|.
   std::vector<gfx::Rect> GetCompositionBounds(const TextInputClient* client);
