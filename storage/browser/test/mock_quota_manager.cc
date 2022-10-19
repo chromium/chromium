@@ -232,9 +232,8 @@ bool MockQuotaManager::BucketHasData(const BucketInfo& bucket,
 }
 
 int MockQuotaManager::BucketDataCount(QuotaClientType quota_client) {
-  return std::count_if(
-      buckets_.begin(), buckets_.end(),
-      [quota_client](const BucketData& bucket) {
+  return base::ranges::count_if(
+      buckets_, [quota_client](const BucketData& bucket) {
         return bucket.quota_client_types.contains(quota_client);
       });
 }
