@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/back_forward_cache_test_util.h"
+
 #include "base/ranges/algorithm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -182,15 +183,15 @@ void BackForwardCacheMetricsTestMatcher::ExpectReasons(
     base::Location location) {
   // Check that the expected reasons are consistent.
   bool expect_blocklisted =
-      std::count(
-          not_restored.begin(), not_restored.end(),
+      base::ranges::count(
+          not_restored,
           BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) > 0;
   bool has_blocklisted = block_listed.size() > 0;
   EXPECT_EQ(expect_blocklisted, has_blocklisted);
   bool expect_disabled_for_render_frame_host =
-      std::count(not_restored.begin(), not_restored.end(),
-                 BackForwardCacheMetrics::NotRestoredReason::
-                     kDisableForRenderFrameHostCalled) > 0;
+      base::ranges::count(not_restored,
+                          BackForwardCacheMetrics::NotRestoredReason::
+                              kDisableForRenderFrameHostCalled) > 0;
   bool has_disabled_for_render_frame_host =
       disabled_for_render_frame_host.size() > 0;
   EXPECT_EQ(expect_disabled_for_render_frame_host,

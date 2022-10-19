@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -170,8 +170,8 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
                              FILE_PATH_LITERAL("gif")));
   EXPECT_TRUE(base::Contains(dialog_params.file_types->extensions[0],
                              FILE_PATH_LITERAL("jpeg")));
-  EXPECT_EQ(1, base::STLCount(dialog_params.file_types->extensions[0],
-                              FILE_PATH_LITERAL("jpg")));
+  EXPECT_EQ(1, base::ranges::count(dialog_params.file_types->extensions[0],
+                                   FILE_PATH_LITERAL("jpg")));
 
   ASSERT_EQ(1u,
             dialog_params.file_types->extension_description_overrides.size());

@@ -12,7 +12,6 @@
 #include <windows.h>
 #endif  // BUILDFLAG(IS_WIN)
 
-#include <algorithm>
 #include <array>
 #include <iterator>
 #include <memory>
@@ -30,6 +29,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
@@ -1649,9 +1649,9 @@ GpuDataManagerImplPrivate::Are3DAPIsBlockedAtTime(const GURL& url,
   ExpireOldBlockedDomainsAtTime(at_time);
 
   std::string domain = GetDomainFromURL(url);
-  size_t losses_for_domain = std::count_if(
-      blocked_domains_.begin(), blocked_domains_.end(),
-      [domain](const auto& entry) { return (entry.second.domain == domain); });
+  size_t losses_for_domain = base::ranges::count(
+      blocked_domains_, domain,
+      [](const auto& entry) { return entry.second.domain; });
   // Allow one context loss per domain, so block if there are two or more.
   if (losses_for_domain > 1)
     return DomainBlockStatus::kBlocked;
