@@ -43,7 +43,9 @@ The dialog provides two properties that can be set directly from HTML.
       }
 
       #modalDialogTitle {
-        @apply --oobe-modal-dialog-header-font;
+        font-family: var(--oobe-default-font-family);
+        font-size: var(--oobe-modal-dialog-header-font-size);
+        font-weight: var(--oobe-modal-dialog-header-font-weight);
         margin: 0;
         user-select: none;
       }
