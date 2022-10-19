@@ -140,6 +140,8 @@ std::string GetDataCollectorName(
       return "Chrome OS Shill (Connection Manager) Logs";
     case support_tool::POLICIES:
       return "Policies";
+    case support_tool::CHROMEOS_SYSTEM_STATE:
+      return "Chrome OS System State and Logs";
     default:
       return "Error: Undefined";
   }

@@ -13,6 +13,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 #include "chrome/browser/support_tool/ash/network_routes_data_collector.h"
+#include "chrome/browser/support_tool/ash/system_state_data_collector.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/policy_data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
@@ -139,6 +140,9 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
         break;
       case support_tool::CHROMEOS_SHILL:
         handler->AddDataCollector(std::make_unique<ShillDataCollector>());
+        break;
+      case support_tool::CHROMEOS_SYSTEM_STATE:
+        handler->AddDataCollector(std::make_unique<SystemStateDataCollector>());
         break;
       case support_tool::CHROMEOS_REVEN:
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
