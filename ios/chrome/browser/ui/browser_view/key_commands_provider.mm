@@ -8,6 +8,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -31,13 +32,34 @@
 
 @interface KeyCommandsProvider ()
 
+// The current browser object.
 @property(nonatomic, assign) Browser* browser;
+
+// The view controller delegating key command actions handling.
+@property(nonatomic, weak) UIViewController* viewController;
+
+// Configures the responder following the receiver in the responder chain.
+@property(nonatomic, weak) UIResponder* followingNextResponder;
+
+// The current navigation agent.
 @property(nonatomic, assign, readonly)
     WebNavigationBrowserAgent* navigationAgent;
+
+// Whether the Find in Page… UI is currently available.
+@property(nonatomic, readonly, getter=isFindInPageAvailable)
+    BOOL findInPageAvailable;
+
+// The number of tabs displayed.
+@property(nonatomic, readonly) NSUInteger tabsCount;
+
+// Whether text is currently being edited.
+@property(nonatomic, readonly, getter=isEditingText) BOOL editingText;
 
 @end
 
 @implementation KeyCommandsProvider
+
+#pragma mark - Public
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
@@ -48,7 +70,19 @@
   return self;
 }
 
-- (NSArray<UIKeyCommand*>*)keyCommandsWithEditingText:(BOOL)editingText {
+- (void)respondBetweenViewController:(UIViewController*)viewController
+                        andResponder:(UIResponder*)nextResponder {
+  _viewController = viewController;
+  _followingNextResponder = nextResponder;
+}
+
+#pragma mark - UIResponder
+
+- (UIResponder*)nextResponder {
+  return _followingNextResponder;
+}
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
   __weak __typeof(self) weakSelf = self;
 
   // Block to have the tab model open the tab at `index`, if there is one.
@@ -56,7 +90,7 @@
     [weakSelf focusTabAtIndex:index];
   };
 
-  const BOOL hasTabs = [self tabsCount] > 0;
+  const BOOL hasTabs = self.tabsCount > 0;
 
   const BOOL useRTLLayout = UseRTLLayout();
 
@@ -158,7 +192,7 @@
   // List the commands that only appear when there is at least a tab. When they
   // appear, they are in the HUD since they have titles.
   if (hasTabs) {
-    if ([self isFindInPageAvailable]) {
+    if (self.isFindInPageAvailable) {
       [keyCommands addObjectsFromArray:@[
 
         [UIKeyCommand
@@ -282,7 +316,7 @@
 
     // Since cmd+left and cmd+right are valid system shortcuts when editing
     // text, don't register those if text is being edited.
-    if (!editingText) {
+    if (!self.editingText) {
       [keyCommands addObjectsFromArray:@[
         [UIKeyCommand cr_keyCommandWithInput:UIKeyInputLeftArrow
                                modifierFlags:UIKeyModifierCommand
@@ -343,7 +377,7 @@
                                   action:^{
                                     [weakSelf.dispatcher
                                         showSettingsFromViewController:
-                                            weakSelf.baseViewController];
+                                            weakSelf.viewController];
                                   }],
   ]];
 
@@ -433,7 +467,7 @@
                              modifierFlags:UIKeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab([weakSelf tabsCount] - 1);
+                                      focusTab(weakSelf.tabsCount - 1);
                                     }],
       [UIKeyCommand
           cr_keyCommandWithInput:@"\t"
@@ -473,6 +507,13 @@
 
 - (NSUInteger)tabsCount {
   return self.browser->GetWebStateList()->count();
+}
+
+- (BOOL)isEditingText {
+  UIResponder* firstResponder = GetFirstResponder();
+  return [firstResponder isKindOfClass:[UITextField class]] ||
+         [firstResponder isKindOfClass:[UITextView class]] ||
+         [[KeyboardObserverHelper sharedKeyboardObserver] isKeyboardVisible];
 }
 
 - (void)focusTabAtIndex:(NSUInteger)index {

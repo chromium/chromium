@@ -108,7 +108,6 @@
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/named_guide_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -1044,34 +1043,31 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return YES;
 }
 
-- (NSArray<UIKeyCommand*>*)keyCommands {
-  if (![self shouldRegisterKeyboardCommands]) {
-    return nil;
+- (UIResponder*)nextResponder {
+  UIResponder* nextResponder = [super nextResponder];
+  if (_keyCommandsProvider && [self shouldSupportKeyCommands]) {
+    [_keyCommandsProvider respondBetweenViewController:self
+                                          andResponder:nextResponder];
+    return _keyCommandsProvider;
+  } else {
+    return nextResponder;
   }
-
-  UIResponder* firstResponder = GetFirstResponder();
-  BOOL isEditingText =
-      [firstResponder isKindOfClass:[UITextField class]] ||
-      [firstResponder isKindOfClass:[UITextView class]] ||
-      [[KeyboardObserverHelper sharedKeyboardObserver] isKeyboardVisible];
-
-  return [_keyCommandsProvider keyCommandsWithEditingText:isEditingText];
 }
 
-#pragma mark - UIResponder helpers
+#pragma mark - UIResponder Helpers
 
 // Whether the BVC should declare keyboard commands.
 // Since `-keyCommands` can be called by UIKit at any time, no assumptions
 // about the state of `self` can be made; accordingly, if there's anything
 // not initialized (or being torn down), this method should return NO.
-- (BOOL)shouldRegisterKeyboardCommands {
+- (BOOL)shouldSupportKeyCommands {
   if (_isShutdown)
     return NO;
 
   if (!self.browser)
     return NO;
 
-  if ([self presentedViewController])
+  if (self.presentedViewController)
     return NO;
 
   if (_voiceSearchController.visible)

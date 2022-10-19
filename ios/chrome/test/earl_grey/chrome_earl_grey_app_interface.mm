@@ -1196,10 +1196,12 @@ NSString* SerializedValue(const base::Value* value) {
 #pragma mark - Keyboard Command Utilities
 
 + (NSInteger)registeredKeyCommandCount {
-  UIViewController* mainViewController =
+  UIViewController* browserViewController =
       chrome_test_util::GetMainController()
           .interfaceProvider.mainInterface.viewController;
-  return mainViewController.keyCommands.count;
+  // The BVC delegates its key commands to its next responder,
+  // KeyCommandsProvider.
+  return browserViewController.nextResponder.keyCommands.count;
 }
 
 + (void)simulatePhysicalKeyboardEvent:(NSString*)input

@@ -774,8 +774,6 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 }
 
 - (void)updateViewControllerDependencies {
-  _keyCommandsProvider.baseViewController = self.viewController;
-
   _bookmarkInteractionController.parentController = self.viewController;
 
   _bubblePresenter.delegate = self.viewController;

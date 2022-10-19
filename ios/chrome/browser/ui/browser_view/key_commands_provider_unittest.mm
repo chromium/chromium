@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +51,7 @@ class KeyCommandsProviderTest : public PlatformTest {
   WebStateList* web_state_list_;
 };
 
-TEST_F(KeyCommandsProviderTest, NoTabs_EditingText_ReturnsObjects) {
+TEST_F(KeyCommandsProviderTest, NoTabs_ReturnsObjects) {
   id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
      FindInPageCommands>
       dispatcher = nil;
@@ -62,7 +63,7 @@ TEST_F(KeyCommandsProviderTest, NoTabs_EditingText_ReturnsObjects) {
   // No tabs.
   EXPECT_EQ(web_state_list_->count(), 0);
 
-  EXPECT_NE(nil, [provider keyCommandsWithEditingText:YES]);
+  EXPECT_NE(0u, provider.keyCommands.count);
 }
 
 TEST_F(KeyCommandsProviderTest, ReturnsKeyCommandsObjects) {
@@ -77,7 +78,7 @@ TEST_F(KeyCommandsProviderTest, ReturnsKeyCommandsObjects) {
   // No tabs.
   EXPECT_EQ(web_state_list_->count(), 0);
 
-  for (id element in [provider keyCommandsWithEditingText:YES]) {
+  for (id element in provider.keyCommands) {
     EXPECT_TRUE([element isKindOfClass:[UIKeyCommand class]]);
   }
 }
@@ -94,15 +95,13 @@ TEST_F(KeyCommandsProviderTest, MoreKeyboardCommandsWhenTabs) {
   // No tabs.
   EXPECT_EQ(web_state_list_->count(), 0);
 
-  NSUInteger numberOfKeyCommandsWithoutTabs =
-      [[provider keyCommandsWithEditingText:NO] count];
+  NSUInteger numberOfKeyCommandsWithoutTabs = provider.keyCommands.count;
 
   InsertNewWebState(0);
 
   // Tabs.
   EXPECT_EQ(web_state_list_->count(), 1);
-  NSUInteger numberOfKeyCommandsWithTabs =
-      [[provider keyCommandsWithEditingText:NO] count];
+  NSUInteger numberOfKeyCommandsWithTabs = provider.keyCommands.count;
 
   EXPECT_GT(numberOfKeyCommandsWithTabs, numberOfKeyCommandsWithoutTabs);
 }
@@ -125,12 +124,15 @@ TEST_F(KeyCommandsProviderTest, LessKeyCommandsWhenTabsAndEditingText) {
   EXPECT_EQ(web_state_list_->count(), 1);
 
   // Not editing text.
-  NSUInteger numberOfKeyCommandsWhenNotEditingText =
-      [[provider keyCommandsWithEditingText:NO] count];
+  NSUInteger numberOfKeyCommandsWhenNotEditingText = provider.keyCommands.count;
+
+  // Focus a text field.
+  UITextField* textField = [[UITextField alloc] init];
+  [GetAnyKeyWindow() addSubview:textField];
+  [textField becomeFirstResponder];
 
   // Editing text.
-  NSUInteger numberOfKeyCommandsWhenEditingText =
-      [[provider keyCommandsWithEditingText:YES] count];
+  NSUInteger numberOfKeyCommandsWhenEditingText = provider.keyCommands.count;
 
   EXPECT_LT(numberOfKeyCommandsWhenEditingText,
             numberOfKeyCommandsWhenNotEditingText);
@@ -157,13 +159,11 @@ TEST_F(KeyCommandsProviderTest, MoreKeyboardCommandsWhenFindInPageAvailable) {
 
   // No Find in Page.
   web_state->SetContentIsHTML(false);
-  NSUInteger numberOfKeyCommandsWithoutFIP =
-      [[provider keyCommandsWithEditingText:NO] count];
+  NSUInteger numberOfKeyCommandsWithoutFIP = provider.keyCommands.count;
 
   // Can Find in Page.
   web_state->SetContentIsHTML(true);
-  NSUInteger numberOfKeyCommandsWithFIP =
-      [[provider keyCommandsWithEditingText:NO] count];
+  NSUInteger numberOfKeyCommandsWithFIP = provider.keyCommands.count;
 
   EXPECT_GT(numberOfKeyCommandsWithFIP, numberOfKeyCommandsWithoutFIP);
 }
@@ -184,7 +184,7 @@ TEST_F(KeyCommandsProviderTest, TestFocusNextPrevious) {
   UIKeyCommandAction focusNextTabAction;
   UIKeyCommandAction focusPreviousTabAction;
 
-  NSArray<UIKeyCommand*>* commands = [provider keyCommandsWithEditingText:NO];
+  NSArray<UIKeyCommand*>* commands = provider.keyCommands;
   for (UIKeyCommand* command in commands) {
     if (([command.input isEqualToString:@"\t"]) &&
         (command.modifierFlags & UIKeyModifierControl)) {
