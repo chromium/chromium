@@ -72,7 +72,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -399,10 +398,6 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
         result.is_under_advanced_protection,
         signin_metrics::SourceForRefreshTokenOperation::
             kInlineLoginHandler_Signin);
-
-    identity_manager->GetAccountsCookieMutator()->AddAccountToCookie(
-        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-        gaia::GaiaSource::kPrimaryAccountManager, {});
 
     signin_metrics::LogSigninReason(signin_metrics::Reason::kReauthentication);
   } else {
