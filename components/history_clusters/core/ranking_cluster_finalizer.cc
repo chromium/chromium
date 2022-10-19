@@ -29,6 +29,11 @@ float Smoothstep(float low, float high, float value) {
   return x * x * (3 - 2 * x);
 }
 
+// Returns whether |visit| should be shown in the UI.
+bool IsShownVisitCandidate(const history::ClusterVisit& visit) {
+  return !visit.annotated_visit.url_row.title().empty();
+}
+
 }  // namespace
 
 RankingClusterFinalizer::RankingClusterFinalizer() = default;
@@ -63,10 +68,6 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
     // Check if the visit contained a search query.
     if (!visit.annotated_visit.content_annotations.search_terms.empty()) {
       it->second.set_is_srp();
-    }
-
-    if (!visit.annotated_visit.url_row.title().empty()) {
-      it->second.set_has_page_title();
     }
 
     // Additional/future attribute checks go here.
@@ -125,7 +126,11 @@ void RankingClusterFinalizer::ComputeFinalVisitScores(
     auto visit_scores_it =
         url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
     if (visit_scores_it != url_visit_scores.end()) {
-      visit.score = visit_scores_it->second.GetTotalScore();
+      if (IsShownVisitCandidate(visit)) {
+        visit.score = visit_scores_it->second.GetTotalScore();
+      } else {
+        visit.score = 0.0;
+      }
       if (visit.score > max_score) {
         max_score = visit.score;
       }

@@ -87,6 +87,7 @@ history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,
   visit.visit_row.visit_id = visit_id;
   visit.visit_row.visit_time = visit_time;
   visit.url_row.set_url(url);
+  visit.url_row.set_title(u"sometitle");
   visit.visit_row.visit_duration = base::Seconds(10);
   return visit;
 }
