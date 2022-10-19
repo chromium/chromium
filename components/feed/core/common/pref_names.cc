@@ -47,6 +47,8 @@ const char kLastSeenFeedType[] = "feedv2.last_seen_feed_type";
 const char kFeedOnDeviceUserActionsCollector[] = "feed.user_actions_collection";
 const char kInfoCardStates[] = "feed.info_card_states";
 const char kExperimentsV2[] = "feedv2.experiments_v2";
+const char kHasSeenWebFeed[] = "webfeed.has_seen_feed";
+const char kLastBadgeAnimationTime[] = "webfeed.last_badge_animation_time";
 
 // Deprecated October 2022
 const char kExperimentsDeprecated[] = "feedv2.experiments";
@@ -99,6 +101,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(feed::prefs::kInfoCardStates, 0);
   registry->RegisterDictionaryPref(feed::prefs::kExperimentsV2);
+  registry->RegisterBooleanPref(feed::prefs::kHasSeenWebFeed, false);
+  registry->RegisterTimePref(feed::prefs::kLastBadgeAnimationTime,
+                             base::Time());
 
 #if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(feed::prefs::kLastFetchHadLoggingEnabled,

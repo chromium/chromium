@@ -84,6 +84,10 @@ extern const char kFeedOnDeviceUserActionsCollector[];
 extern const char kInfoCardStates[];
 // The pref name for storing the server experiments the client is in.
 extern const char kExperimentsV2[];
+// The pref name for whether the user has opened/seen web feed at least once.
+extern const char kHasSeenWebFeed[];
+// The pref name for when the user last saw badge animation for web feed.
+extern const char kLastBadgeAnimationTime[];
 
 // Deprecated prefs
 

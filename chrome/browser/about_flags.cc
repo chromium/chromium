@@ -2251,6 +2251,8 @@ const FeatureEntry::FeatureVariation kWebFeedVariations[] = {
 
 const FeatureEntry::FeatureParam kWebFeedAwareness_new_animation[] = {
     {"awareness_style", "new_animation"}};
+const FeatureEntry::FeatureParam kWebFeedAwareness_new_animation_no_limit[] = {
+    {"awareness_style", "new_animation_no_limit"}};
 
 const FeatureEntry::FeatureParam kWebFeedAwareness_IPH[] = {
     {"awareness_style", "IPH"}};
@@ -2258,6 +2260,8 @@ const FeatureEntry::FeatureParam kWebFeedAwareness_IPH[] = {
 const FeatureEntry::FeatureVariation kWebFeedAwarenessVariations[] = {
     {"new animation", kWebFeedAwareness_new_animation,
      std::size(kWebFeedAwareness_new_animation), nullptr},
+    {"new animation rate limit off", kWebFeedAwareness_new_animation_no_limit,
+     std::size(kWebFeedAwareness_new_animation_no_limit), nullptr},
     {"IPH and dot", kWebFeedAwareness_IPH, std::size(kWebFeedAwareness_IPH),
      nullptr},
 };
