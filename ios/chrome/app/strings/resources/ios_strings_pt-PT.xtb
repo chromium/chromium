@@ -109,6 +109,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1687475363370981210">Marcar tudo como lido</translation>
 <translation id="1689333818294560261">Alcunha</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
+<translation id="1715515772563243997">Se confiar em <ph name="SITE" />, pode usar uma palavra-passe guardada para iniciar sessão.</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1752547299766512813">Guardar Palavras-passe</translation>
 <translation id="1753905327828125965">Mais visitados</translation>
@@ -151,6 +152,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2155145621546387786">Partilhar o Chrome</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2178545675770638239">Selecione a palavra-passe</translation>
 <translation id="2218443599109088993">Diminuir zoom</translation>
 <translation id="2230173723195178503">Página Web carregada</translation>
 <translation id="2239626343334228536">A limpar os dados de navegação…</translation>
@@ -434,6 +436,8 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4502566650163919158">Verificar agora</translation>
 <translation id="4505980578794259603">Última verificação: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Fechar a promoção de início de sessão</translation>
+<translation id="4514889972748124117">Sugerir palavra-passe forte…</translation>
+<translation id="4520798012560649652">Saiba mais acerca do Modo de navegação anónima</translation>
 <translation id="4526249700380860531">Ver e gerir as palavras-passe guardadas em <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
 <translation id="4536418791685807335">Experimente iniciar sessão novamente.</translation>
@@ -1015,6 +1019,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8917490105272468696">Sim, aceito</translation>
 <translation id="8928133177108699615">Computador</translation>
 <translation id="8952559610785099500">Adicione uma palavra-passe</translation>
+<translation id="8953046091948372197">As suas palavras-passe são apresentadas aqui</translation>
 <translation id="895541991026785598">Comunicar um problema</translation>
 <translation id="8974714402877957201">1. Abra as Definições do iPad</translation>
 <translation id="8976382372951310360">Ajuda</translation>
@@ -1048,6 +1053,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9200875785104711666">Há <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Entrega</translation>
 <translation id="9223358826628549784">Relatório de falha enviado.</translation>
+<translation id="941747855997058526">Selecionar palavra-passe…</translation>
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="953008885340860025">Sessão terminada no Chrome</translation>
 <translation id="959066944189734975">Está a seguir <ph name="CHANNEL_NAME" /></translation>

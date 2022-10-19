@@ -270,6 +270,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2496180316473517155">Histórico de navegação</translation>
 <translation id="2497852260688568942">A sincronização foi desativada pelo gestor</translation>
 <translation id="250020030759455918">Pode ver o seu estado de início de sessão em <ph name="SITE_NAME" />, os dados de navegação e os dados do site no Chrome.</translation>
+<translation id="2510106555128151389">A instalar a app <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2513403576141822879">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Sincronização e serviços Google<ph name="END_LINK" />.</translation>
 <translation id="2517472476991765520">Digitalizar</translation>
 <translation id="2523184218357549926">Envia para a Google os URLs das páginas que visita.</translation>
@@ -892,7 +893,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5869789175361934029">Continue a partir de outro dispositivo</translation>
 <translation id="587735546353481577">Para seguir um site, aceda ao site, abra o menu do Chrome e toque em Seguir.</translation>
 <translation id="5879072387416556377">Obtenha sugestões melhores</translation>
-<translation id="5880748256563468367">Aceder ao feed</translation>
 <translation id="5884076754568147479">Para ajudar a concluir as tarefas, a Google vai receber os URLs e os conteúdos dos sites nos quais utiliza o Assistente, bem como as informações que envia através do mesmo</translation>
 <translation id="5906513782029855931">Conhecer os URLs dos sites permite que o Assistente Google ajude a concluir tarefas. Pode desativar o Assistente nas definições do Chrome.</translation>
 <translation id="5916664084637901428">Ativado</translation>
@@ -904,6 +904,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5956665950594638604">Abrir Centro de Ajuda do Chrome num novo separador</translation>
 <translation id="5957442310066583693">Para ver os seus sites principais, toque no botão página inicial.</translation>
 <translation id="5958275228015807058">Encontre os seus ficheiros e páginas nas Transferências.</translation>
+<translation id="5958994127112619898">Simplificar a página</translation>
 <translation id="5962718611393537961">Toque para reduzir</translation>
 <translation id="5964869237734432770">Parar descrições de imagens</translation>
 <translation id="5966233851250124270">O Chrome vai memorizar a sua escolha</translation>
@@ -1280,6 +1281,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="7887334752153342268">Duplicar</translation>
 <translation id="789763218334337857">Como utilizar o Chrome</translation>
 <translation id="7903184275147100332">Pode demorar alguns minutos.</translation>
+<translation id="7914399737746719723">App instalada</translation>
 <translation id="7919123827536834358">Traduza automaticamente estes idiomas</translation>
 <translation id="7926975587469166629">Alcunha do cartão</translation>
 <translation id="7929962904089429003">Abrir o menu</translation>

@@ -1876,6 +1876,7 @@
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Бақыланатын пайдаланушыларды әкімші өшірген.</translation>
 <translation id="2722540561488096675">Құрылғыңыз <ph name="TIME_LEFT" /> ішінде өшеді. Құрылғыны қайта қоспас бұрын, USB құрылғысын алып тастаңыз. Содан кейін <ph name="DEVICE_OS" /> жүйесін пайдалана беруіңізге болады.</translation>
+<translation id="2722547199758472013">Идентификатор: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">WebRTC журналдары</translation>
 <translation id="272488616838512378">Өлшем бірліктерін ауыстыру</translation>
 <translation id="2725200716980197196">Желілік байланыс қалпына келтірілді</translation>
@@ -3038,6 +3039,7 @@
 <translation id="3828029223314399057">Бетбелгілерді іздеу</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарын<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome мен ChromeOS Қосымша қызмет көрсету шарттарын<ph name="END_LINK2" /> және <ph name="BEGIN_LINK3" />Play Қызмет көрсету шарттарын<ph name="END_LINK3" /> оқып шықтым және оларға келісемін.</translation>
 <translation id="3829765597456725595">SMB ортақ каталогі</translation>
+<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" /> доменінде</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Әкімшіңіз зиянды болуы мүмкін 1 кеңейтімді қайта қосты.}other{Әкімшіңіз зиянды болуы мүмкін {NUM_EXTENSIONS} кеңейтімді қайта қосты.}}</translation>
 <translation id="3831436149286513437">Google Drive іздеу ұсыныстары</translation>
 <translation id="3834728400518755610">Микрофонның параметріне өзгеріс енгізілгендіктен, Linux жүйесін өшіру қажет. Жалғастыру үшін Linux жүйесін өшіріңіз.</translation>
@@ -5153,6 +5155,7 @@
 <translation id="5884474295213649357">Бұл қойынды USB құрылғысына қосылған.</translation>
 <translation id="5885314688092915589">Бұл профильді ұйымыңыз басқаратын болады</translation>
 <translation id="5886009770935151472">1-ші саусақ</translation>
+<translation id="5886112770923972514">Маңайдағы Fast Pair құрылғыларын қосу және жылдам реттеу</translation>
 <translation id="5886384907280980632">Қазір өшіру</translation>
 <translation id="5889282057229379085">Аралық CA сертификаттарының максималды саны: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Қалаған Wi-Fi желілері</translation>
@@ -7726,6 +7729,7 @@
 <translation id="8338952601723052325">Әзірлеуші веб-сайты</translation>
 <translation id="833986336429795709">Бұл сілтемені ашу үшін қолданбаны таңдаңыз</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> құрылғысына қатысты басқа әрекеттер</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Жақында көп хабарландыру жіберген <ph name="BEGIN_BOLD" />1 сайтты<ph name="END_BOLD" /> тексеріңіз}other{Жақында көп хабарландыру жіберген <ph name="BEGIN_BOLD" />{NUM_SITES} сайтты<ph name="END_BOLD" /> тексеріңіз}}</translation>
 <translation id="8342221978608739536">Қолданып көрмедім</translation>
 <translation id="8342861492835240085">Жинақ таңдау</translation>
 <translation id="8345848587667658367">Енді телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландырулар мен қолданбаларды көре аласыз</translation>
@@ -8444,7 +8448,7 @@
 <translation id="9037054491984310631">"<ph name="DEVICE" />" деп аталатын Bluetooth құрылғысына қосылды.</translation>
 <translation id="9037640663275993951">Құрылғыға рұқсат берілмеген.</translation>
 <translation id="9037818663270399707">Барлық желі трафигі үшін жеке байланыс жасалмайды.</translation>
-<translation id="9037965129289936994">Түпнұсқаны көрсету</translation>
+<translation id="9037965129289936994">Түпнұсқасын көрсету</translation>
 <translation id="9038489124413477075">Атаусыз қалта</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Сізде бір мүмкіндік қалды.}other{Сізде # мүмкіндік қалды.}}</translation>
 <translation id="9040473193163777637">ChromeOS-ке арналған ендірілген ChromeVox экранды оқу құралын іске қосқыңыз келе ме? Қосқыңыз келсе, екі дыбыс деңгейі пернесін бес секунд басып тұрыңыз.</translation>
@@ -8547,7 +8551,7 @@
 <translation id="9131487537093447019">Bluetooth құрылғыларына хабар жіберу және алу.</translation>
 <translation id="9134066738478820307">Сайттар қорғалған мазмұнды ойнату үшін идентификаторларды пайдалана алады.</translation>
 <translation id="913411432238655354">Қосылған кезде қолданбаларды қалпына келтіру</translation>
-<translation id="9137013805542155359">Түпнұсқаны көрсету</translation>
+<translation id="9137013805542155359">Түпнұсқасын көрсету</translation>
 <translation id="9137157311132182254">Таңдалған іздеу жүйесі</translation>
 <translation id="9137248913990643158">Қолданбаны пайдаланбас бұрын Chrome жүйесін іске қосып, оған кіріңіз.</translation>
 <translation id="9137916601698928395">Сілтемені <ph name="USER" /> ретінде ашу</translation>
@@ -8711,6 +8715,7 @@
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Қауіпсіз байланыс орнату…</translation>
 <translation id="996803490569799917">Ұнататын адамдарыңыз туралы естеліктерді және т.б. көру</translation>
+<translation id="997143476478634194">Сайттарға кірген кезде, оларға автоматты түрде осы параметр қолданылады. Сайттар әдетте шұғыл жаңалықтар немесе чат хабарламалары туралы хабарландырулар жібереді.</translation>
 <translation id="99731366405731005">Wi-Fi деректерін синхрондау үшін <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> функциясын қосыңыз. <ph name="LINK2_BEGIN" />Толығырақ<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Т&amp;ексеру</translation>
 </translationbundle>

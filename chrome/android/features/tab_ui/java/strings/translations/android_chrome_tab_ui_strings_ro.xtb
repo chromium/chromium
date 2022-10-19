@@ -84,6 +84,7 @@
 <translation id="753732157349120914">Comutator de file</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recenzie de pe Google}few{<ph name="REVIEWS_COUNT_MANY" /> recenzii de pe Google}other{<ph name="REVIEWS_COUNT_MANY" /> de recenzii de pe Google}}</translation>
 <translation id="7559245342362162951">Arată filele grupului în grilă pe ecran complet</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Trimite <ph name="TABS_COUNT_ONE" /> filă selectată}few{Trimite <ph name="TABS_COUNT_MANY" /> file selectate}other{Trimite <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
 <translation id="7792771145871471484">Examinează sugestiile.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Adaugă <ph name="TABS_COUNT_ONE" /> filă selectată la un grup}few{Adaugă <ph name="TABS_COUNT_MANY" /> file selectate la un grup}other{Adaugă <ph name="TABS_COUNT_MANY" /> de file selectate la un grup}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenzie}few{Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzii}other{Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> de recenzii}}</translation>

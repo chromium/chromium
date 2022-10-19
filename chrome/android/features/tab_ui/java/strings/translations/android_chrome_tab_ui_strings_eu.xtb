@@ -80,6 +80,7 @@
 <translation id="753732157349120914">Fitxa-aldatzailea</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-tik datorren <ph name="REVIEWS_COUNT_ONE" /> iritzi}other{Google-tik datozen <ph name="REVIEWS_COUNT_MANY" /> iritzi}}</translation>
 <translation id="7559245342362162951">Erakutsi taldearen fitxak pantaila osoko saretan</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Partekatu hautatutako <ph name="TABS_COUNT_ONE" /> fitxa}other{Partekatu hautatutako <ph name="TABS_COUNT_MANY" /> fitxak}}</translation>
 <translation id="7792771145871471484">Berrikusi iradokizunak.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Taldekatu hautatutako <ph name="TABS_COUNT_ONE" /> fitxa}other{Taldekatu hautatutako <ph name="TABS_COUNT_MANY" /> fitxak}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_ONE" />.}other{Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_MANY" />.}}</translation>

@@ -109,6 +109,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1687475363370981210">Tümünü Okundu Olarak İşaretle</translation>
 <translation id="1689333818294560261">Takma ad</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> yer işareti seçildi</translation>
+<translation id="1715515772563243997"><ph name="SITE" /> kaynağına güveniyorsanız kayıtlı bir şifre kullanarak oturum açabilirsiniz.</translation>
 <translation id="1740468249224277719">Yüklemek için iki kez dokunun.</translation>
 <translation id="1752547299766512813">Şifreleri Kaydet</translation>
 <translation id="1753905327828125965">En Çok Ziyaret Edilenler</translation>
@@ -151,6 +152,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="2149973817440762519">Yer İşaretini Düzenle</translation>
 <translation id="2155145621546387786">Chrome'u paylaşın</translation>
 <translation id="2175927920773552910">QR Kodu</translation>
+<translation id="2178545675770638239">Şifreyi seçin</translation>
 <translation id="2218443599109088993">Uzaklaştır</translation>
 <translation id="2230173723195178503">Web sayfası yüklendi</translation>
 <translation id="2239626343334228536">Göz atma verileri temizleniyor...</translation>
@@ -434,6 +436,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4502566650163919158">Şimdi Denetle</translation>
 <translation id="4505980578794259603">Son kontrol zamanı: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Oturum açma tanıtımını kapat</translation>
+<translation id="4514889972748124117">Güçlü Şifre Öner...</translation>
 <translation id="4526249700380860531">Kaydedilmiş şifreleri <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> adresinden görüntüleyin ve yönetin</translation>
 <translation id="452750746583162491">Senkronize edilmiş verilerinizi inceleyin</translation>
 <translation id="4536418791685807335">Tekrar oturum açmayı deneyin.</translation>
@@ -1015,6 +1018,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8917490105272468696">Evet, istiyorum</translation>
 <translation id="8928133177108699615">Masaüstü</translation>
 <translation id="8952559610785099500">Şifre Ekleyin</translation>
+<translation id="8953046091948372197">Şifreleriniz burada gösterilir</translation>
 <translation id="895541991026785598">Sorun Bildirin</translation>
 <translation id="8974714402877957201">1. iPad ayarlarını açın</translation>
 <translation id="8976382372951310360">Yardım</translation>
@@ -1048,6 +1052,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9200875785104711666"><ph name="TIME" /> gün önce</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Kilitlenme raporu gönderildi.</translation>
+<translation id="941747855997058526">Şifreyi seçin...</translation>
 <translation id="952704832371081537">İptal</translation>
 <translation id="953008885340860025">Chrome Oturumu Kapatıldı</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> kanalını takip ediyorsunuz</translation>

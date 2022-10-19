@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰ</translation>
 <translation id="1717494416764505390">ਮੇਲਬਾਕਸ 3</translation>
 <translation id="1718029547804390981">ਦਸਤਾਵੇਜ਼ ਵੱਡਾ ਹੋਣ ਕਰਕੇ ਐਨੋਟੇਸ਼ਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
+<translation id="1719434663396780149">ਕੀਮਤਾਂ ਘਟਣ ਸੰਬੰਧੀ ਸੁਚੇਤਨਾਵਾਂ ਚਾਲੂ ਹਨ। ਤੁਸੀਂ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ਵਿੱਚ ਜਾ ਕੇ ਇਸਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1720941539803966190">ਟਿਊਟੋਰੀਅਲ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1721424275792716183">* ਖੇਤਰ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="1725591448053514783">ਯੂ 6 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
@@ -977,6 +978,7 @@
 <translation id="3550112004925580947">ਖਾਤਰਦਾਰੀ ਉਦਯੋਗ</translation>
 <translation id="3552297013052089404">ਸਾਂਸ-ਸੈਰਿਫ ਫ਼ੌਂਟ</translation>
 <translation id="3558573058928565255">ਦਿਨ ਦਾ ਸਮਾਂ</translation>
+<translation id="3560824484345057728">ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਦੇਖੋ</translation>
 <translation id="3566021033012934673">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਨਿੱਜੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="3567778190852720481">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਖਾਤੇ ਨਾਲ ਦਰਜ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ (ਐਂਟਰਪ੍ਰਾਈਜ਼ ਖਾਤਾ ਯੋਗ ਨਹੀਂ ਹੈ)।</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1361,6 +1363,7 @@
 <translation id="4542971377163063093">ਟ੍ਰੇਅ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਅਯੋਗ ਬਣਾਉਣਾ ਅਜ਼ਮਾਓ।</translation>
+<translation id="4559134504959026834">ਇਹ ਸਾਈਟ <ph name="SET_OWNER" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਕੀਤੇ ਗਰੁੱਪ ਵਿੱਚ ਹੈ,  ਜੋ ਤੁਹਾਡੀ ਗਤੀਵਿਧੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">ਬਾਹਰੀ ਮਨੋਰੰਜਨ</translation>
 <translation id="4567686777917670400">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਸੈੱਟਅੱਪ ਨੂੰ ਬਦਲ ਸਕਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਦਾ ਪ੍ਰਬੰਧਨ Chromium ਤੋਂ ਬਾਹਰ ਵੀ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -2666,6 +2669,7 @@
 <translation id="7995512525968007366">ਨਿਰਦਿਸ਼ਟ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="7998269595945679889">'ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹੋ' ਬਟਨ, ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹਣ ਵਾਸਤੇ Enter ਦਬਾਓ</translation>
 <translation id="800218591365569300">ਮੈਮੋਰੀ ਖਾਲੀ ਕਰਨ ਲਈ ਦੂਜੀਆਂ ਟੈਬਾਂ ਜਾਂ ਪ੍ਰੋਗਰਾਮਾਂ ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="8002230960325005199">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਦੇਖੋ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="8009225694047762179">ਪਾਸਵਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -2769,6 +2773,7 @@
 <translation id="8270242299912238708">PDF ਦਸਤਾਵੇਜ਼</translation>
 <translation id="8275952078857499577">ਇਸ ਸਾਈਟ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>
 <translation id="8277900682056760511">ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸ਼ੀਟ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ</translation>
+<translation id="8279611986089885641">Chrome ਸੂਚਨਾਵਾਂ ਚਾਲੂ ਹੋਣੀਆਂ ਲਾਜ਼ਮੀ ਹਨ। ਤੁਸੀਂ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ਵਿੱਚ ਜਾ ਕੇ ਉਨ੍ਹਾਂ ਨੂੰ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8280630997017109758">ਟ੍ਰੇਅ 11</translation>
 <translation id="8281084378435768645">ਵੱਡੀ-ਫ਼ੋਟੋ</translation>
 <translation id="8281886186245836920">ਛੱਡੋ</translation>

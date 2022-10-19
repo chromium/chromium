@@ -3350,9 +3350,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
       Hinweis: Nutze unter Android stattdessen die Richtlinie <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="4261820385751181068">Sprache der Anmeldeseite</translation>
-<translation id="4261964161337162399">Häufigkeit, mit der Audiodaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
-
-      Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 10 Minuten.</translation>
 <translation id="4263788921751326798">Melden von Informationen zu Absturzberichten auf Geräten deaktivieren</translation>
 <translation id="4268586991084547853">Bessere Kompatibilität mit der Richtlinie „Microsoft IE/Edge Enterprise Mode Sitelists“.</translation>
 <translation id="4269798992490176617">Wenn diese Richtlinie aktiviert ist, kann <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> WebAuthn API-Anfragen aus einer Browsersitzung auf einem Remote-Host ausführen.

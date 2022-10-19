@@ -84,6 +84,7 @@
 <translation id="753732157349120914">Selettore di schede</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recensione da Google}other{<ph name="REVIEWS_COUNT_MANY" /> recensioni da Google}}</translation>
 <translation id="7559245342362162951">Mostra le schede del gruppo in una griglia a schermo intero</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Condividi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Condividi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="7792771145871471484">Controlla i suggerimenti.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Raggruppa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Raggruppa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recensione}other{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recensioni}}</translation>

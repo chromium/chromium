@@ -72,6 +72,7 @@
 <translation id="1067048845568873861">Creada</translation>
 <translation id="1067661089446014701">Para mayor seguridad, puedes cifrar las contraseñas en tu dispositivo antes de que se guarden en tu cuenta de Google.</translation>
 <translation id="1067922213147265141">Otros servicios de Google</translation>
+<translation id="1069104208554708737">Esta llave de acceso solo se guardará en este dispositivo</translation>
 <translation id="1069355737714877171">Retirar el perfil eSIM con nombre <ph name="PROFILE_NAME" /></translation>
 <translation id="1069814191880976658">Elige otra pantalla</translation>
 <translation id="1070377999570795893">Otro programa de tu ordenador ha añadido una extensión que puede cambiar el funcionamiento de Chrome.
@@ -347,6 +348,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1324106254079708331">Protege las cuentas personales de Google de cualquier persona que corra el riesgo de sufrir ataques dirigidos</translation>
 <translation id="1327272175893960498">Tickets de Kerberos</translation>
 <translation id="1327495825214193325">Para habilitar la depuración ADB, es necesario reiniciar este <ph name="DEVICE_TYPE" />. Para inhabilitarla, es necesario restablecer la configuración de fábrica.</translation>
+<translation id="1327527584824210101">Usa tu llave de acceso</translation>
 <translation id="1327794256477341646">Las funciones que necesiten la ubicación no se podrán utilizar</translation>
 <translation id="1331977651797684645">Es mi perfil</translation>
 <translation id="1333489022424033687">Es posible que algunas funciones de <ph name="ORIGIN" /> no estén disponibles si no borras los datos que otros sitios han almacenado en tu dispositivo</translation>
@@ -407,6 +409,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="139013308650923562">Permitir que se usen las fuentes instaladas en tu dispositivo</translation>
 <translation id="1390548061267426325">Abrir como pestaña normal</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> no tiene autorización para imprimir en <ph name="PRINTER_NAME" />. Ponte en contacto con tu administrador.</translation>
+<translation id="1392047138650695757">Diccionarios del usuario</translation>
 <translation id="1393283411312835250">Sol y nubes</translation>
 <translation id="1395730723686586365">Herramienta de actualización iniciada</translation>
 <translation id="1395832189806039783">Destacar elemento con el enfoque del teclado</translation>
@@ -1517,6 +1520,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2356070529366658676">Preguntar</translation>
 <translation id="2357330829548294574">Quitar a <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Los sitios pueden usar JavaScript</translation>
+<translation id="2358703245148663432">Un dispositivo diferente</translation>
 <translation id="2358777858338503863">Haz clic para permitirlo en <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Es posible que las aplicaciones Linux dejen de responder.</translation>
 <translation id="2359345697448000899">Para gestionar tus extensiones, haz clic en la opción Extensiones del menú Herramientas.</translation>
@@ -1877,6 +1881,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2711073837061989559">Pruebas</translation>
 <translation id="2712173769900027643">Solicitar permiso</translation>
+<translation id="2712207122921938368">Crea una llave de acceso en otro dispositivo</translation>
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
@@ -2389,6 +2394,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3182749001423093222">Revisión ortográfica</translation>
 <translation id="3183139917765991655">Importador de perfiles</translation>
 <translation id="3183143381919926261">Redes de datos móviles</translation>
+<translation id="3183613134231754987">Esta llave de acceso solo se guardará en Windows Hello. Seguirá en este dispositivo después de cerrar todas las ventanas de Incógnito.</translation>
 <translation id="3183944777708523606">Disposición del monitor</translation>
 <translation id="3184536091884214176">Configurar o gestionar impresoras CUPS. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Esta aplicación está bloqueada}other{Algunas aplicaciones están bloqueadas}}</translation>
@@ -2870,6 +2876,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3654045516529121250">Leer tu configuración de accesibilidad</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tiene acceso permanente a un archivo.}other{Tiene acceso permanente a # archivos.}}</translation>
 <translation id="3658871634334445293">Aceleración del TrackPoint</translation>
+<translation id="3659550105763988702">Usa tu llave de acceso de <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Has introducido un código de acceso incorrecto demasiadas veces. Vuelve a intentarlo más tarde.</translation>
 <translation id="3660234220361471169">No es de confianza</translation>
 <translation id="3664511988987167893">Icono de la extensión</translation>
@@ -3144,6 +3151,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> quiere: <ph name="FIRST_PERMISSION" /> y <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Seleccionar teclado</translation>
 <translation id="3900966090527141178">Exportar contraseñas</translation>
+<translation id="3902789559055749153">Elige cómo quieres crear una llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
 <translation id="3904326018476041253">Servicios de ubicación</translation>
 <translation id="3904849010307028014">En función de tu interacción con un sitio (por ejemplo, iniciar sesión de forma habitual con una cuenta), el sitio puede emitir un token de confianza a tu navegador. Después, si otros sitios que visites buscan y encuentran un token de confianza válido, es más probable que te traten como a una persona y no como a un bot.</translation>
@@ -3472,6 +3480,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4218081191298393750">Haz clic en el icono de altavoz para silenciar esta pestaña</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">No se ha podido activar.</translation>
+<translation id="4223845867739585293">Crea una clave de acceso</translation>
 <translation id="4225397296022057997">En todos los sitios</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensión no está permitida}other{Algunas extensiones no están permitidas}}</translation>
 <translation id="4231095370974836764">Instala aplicaciones y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -4114,6 +4123,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4838907349371614303">Contraseña actualizada</translation>
 <translation id="4838958829619609362">La selección no está en <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Gu&amp;ardar vídeo como...</translation>
+<translation id="4839910546484524995">Comprueba tu dispositivo</translation>
 <translation id="4840096453115567876">¿Salir del modo Incógnito de todas formas?</translation>
 <translation id="4841741146571978176">La máquina virtual requerida no existe. Prueba a configurar <ph name="VM_TYPE" /> para continuar</translation>
 <translation id="4842976633412754305">Esta página está intentando cargar scripts de fuentes no autorizadas.</translation>
@@ -5033,6 +5043,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pega&amp;r y acceder</translation>
 <translation id="5732392974455271431">Tu padre o tu madre pueden desbloquearlo</translation>
+<translation id="5733109311583381874">Añade tus propias palabras a los diccionarios del usuario para personalizar los candidatos de conversión.</translation>
 <translation id="5733866499231170760">ID no válido. El formato utilizado es incorrecto. Consulta las instrucciones que has recibido para asegurarte de que escribes el ID con el formato correcto. Si no puedes resolver este problema, deja el campo en blanco y continúa con la instalación.</translation>
 <translation id="5734362860645681824">Comunicaciones</translation>
 <translation id="5734697361979786483">Añadir sistema de archivos compartidos</translation>
@@ -5144,6 +5155,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="583431638776747">El sitio no estaba disponible</translation>
 <translation id="5834581999798853053">Unos <ph name="TIME" /> minutos</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: grabación de la cámara o del micrófono</translation>
+<translation id="5835625581856809102">Escanea este código QR con el dispositivo en el que quieras crear una llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Los sitios pueden solicitar permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="5836999627049108525">Idioma del que se va a traducir</translation>
 <translation id="583756221537636748">Funda</translation>
@@ -5384,6 +5396,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6059276912018042191">Pestañas de Chrome recientes</translation>
 <translation id="6059652578941944813">Jerarquía de certificados</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
+<translation id="6061408389284235459">Se ha enviado una notificación a <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Crear código QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que una persona con una voz parecida a la de <ph name="SUPERVISED_USER_NAME" />, o con una grabación de su voz, también pueda acceder a sus resultados personales. Para ahorrar batería, puedes modificar los ajustes del Asistente de <ph name="SUPERVISED_USER_NAME" /> para que se active "Hey Google" solo cuando este dispositivo esté conectado a una fuente de alimentación.</translation>
 <translation id="6064217302520318294">Bloqueo de pantalla</translation>
@@ -5512,6 +5525,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6178664161104547336">Seleccionar un certificado</translation>
 <translation id="6178682841350631965">Se han actualizado tus datos de inicio de sesión</translation>
 <translation id="6180510783007738939">Herramienta de línea</translation>
+<translation id="6180550893222597997">¿Qué llave de acceso quieres usar en <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Descarga bloqueada</translation>
 <translation id="6184099524311454384">Buscar pestañas</translation>
 <translation id="6185132558746749656">Ubicación del dispositivo</translation>
@@ -5947,6 +5961,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6597017209724497268">Ejemplos</translation>
 <translation id="6597331566371766302">Tu administrador ha bloqueado las siguientes extensiones:</translation>
+<translation id="6601262427770154296">Administrar diccionarios del usuario</translation>
 <translation id="6601612474695404578">Algunos sitios utilizan cookies de terceros para cargar sus páginas. Si un sitio web no funciona, permite las cookies y prueba de nuevo.</translation>
 <translation id="6602937173026466876">Acceder a tus impresoras</translation>
 <translation id="6602956230557165253">Utiliza las teclas de flecha hacia la izquierda y hacia la derecha para desplazarte.</translation>
@@ -6312,6 +6327,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6943060957016121200">Habilitar conexión compartida instantánea</translation>
 <translation id="6943176775188458830">Cancelar impresión</translation>
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
+<translation id="6944708469742828051">Esta llave de acceso solo se guardará en Windows Hello</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Se ha bloqueado la redirección bloqueada en esta página.</translation>
 <translation id="6947015141909171112">Estás viendo recetas basadas en tu reciente actividad de búsqueda de recetas.
@@ -6564,6 +6580,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7193051357671784796">Tu organización ha añadido esta aplicación. Reinicia la aplicación para terminar de instalarla.</translation>
 <translation id="7193374945610105795">No hay contraseñas guardadas de <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">Tu organización ha bloqueado este archivo porque está cifrado. Pídele al propietario que lo descifre.</translation>
+<translation id="7196272782924897510">¿Usar una llave de acceso de otro dispositivo?</translation>
 <translation id="7196913789568937443">Crear copia de seguridad en Google Drive. Cambia de dispositivo o restaura tus datos fácilmente en cualquier momento. La copia de seguridad incluye datos de las aplicaciones. Tus copias de seguridad se suben a Google y se cifran con la contraseña de tu cuenta de Google. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Disfruta de la Búsqueda de Google y las funciones inteligentes de Google siempre que navegues</translation>
 <translation id="719791532916917144">Acceso directo</translation>
@@ -7062,6 +7079,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7670483791111801022">Subtítulos</translation>
 <translation id="7671130400130574146">Utilizar bordes y barra de título</translation>
 <translation id="767127784612208024">Tocar para confirmar el borrado</translation>
+<translation id="7672504401554182757">Elige qué dispositivo tiene la llave de acceso de <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> en <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Desactivar todos los puertos redireccionados en Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicaciones</translation>
@@ -7172,6 +7190,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7766807826975222231">Realizar un recorrido</translation>
 <translation id="7766838926148951335">Aceptar permisos</translation>
 <translation id="7767554953520855281">Los detalles se ocultan mientras compartes tu pantalla</translation>
+<translation id="7767972280546034736">Crea una clave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="7768507955883790804">Los sitios usan esta opción cuando los visitas.</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> podrá ver los archivos de <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Cambiar</translation>
@@ -7661,6 +7680,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="820568752112382238">Sitios web más visitados</translation>
 <translation id="8206745257863499010">Música</translation>
 <translation id="8206859287963243715">Móvil</translation>
+<translation id="8207404892907560325">Elige una clave de acceso</translation>
 <translation id="8208216423136871611">No guardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="821119981794423735">Para importar contraseñas al gestor de contraseñas de Google para <ph name="USER_EMAIL" />, selecciona un archivo CSV</translation>
@@ -7834,6 +7854,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8376137163494131156">Envíanos tus comentarios sobre Google Cast</translation>
 <translation id="8376384591331888629">Incluir cookies de terceros en este sitio</translation>
 <translation id="8376451933628734023">Si esta aplicación web intenta hacerte creer que es otra aplicación, desinstálala.</translation>
+<translation id="8377625247046155446">Esta llave de acceso solo se guardará en este dispositivo. Seguirá en este dispositivo después de cerrar todas las ventanas de Incógnito.</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8379156816349755485">Al iniciar sesión, se almacenará un token de autenticación único que se usará en todas las futuras descargas (si son aptas).</translation>
 <translation id="8379878387931047019">Este dispositivo no es compatible con el tipo de llave de seguridad solicitado por el sitio web</translation>
@@ -8664,6 +8685,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
       <ph name="LIST_ITEM" />Ejecutar el Diagnóstico de conectividad de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Imagen en imagen</translation>
+<translation id="9166253503936244008">Escanea este código QR con el dispositivo que tenga la llave de acceso que quieras usar en <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Mostrar lista de lectura</translation>
 <translation id="9167450455589251456">No se admite el perfil</translation>
 <translation id="9168436347345867845">En otro momento</translation>

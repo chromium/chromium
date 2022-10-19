@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1057925581724305206">ফুল HD (1080p)</translation>
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />টি পৃষ্ঠা মুছুন</translation>
 <translation id="1113173431709655881">ক্যামেরা মোড</translation>
 <translation id="1153190633558910465">গ্রিড বন্ধ আছে</translation>
@@ -21,6 +22,7 @@
 <translation id="1588438908519853928">সাধারণ</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1627744224761163218">৪ x ৪</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">কিছুই রেকর্ড করা হয়নি</translation>
 <translation id="1838104802459806957">উপরের দিকে টিল্ট করুন</translation>
 <translation id="1843105061469674856">অতিরিক্ত পৃষ্ঠা স্ক্যান করুন</translation>
@@ -95,6 +97,7 @@
 <translation id="4705093842003735294">সম্পূর্ণ রেজোলিউশন</translation>
 <translation id="4890010094662541459">৩ x ৩</translation>
 <translation id="491895758387112773">মাল্টি-স্ট্রিম ভিডিও রেকর্ডিং</translation>
+<translation id="4984613436295737187">কোয়াড HD (1440p)</translation>
 <translation id="5034763830503483128">ফটো আকৃতির অনুপাত</translation>
 <translation id="5057360777601936059">আপনার ক্যামেরা বর্তমানে উপলভ্য নেই।
         ক্যামেরা ঠিকভাবে কানেক্ট করা আছে কিনা দেখুন।</translation>
@@ -103,6 +106,7 @@
 <translation id="5266635337630551423">উপরে-বাঁদিকের কোণার ডকুমেন্ট</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5320594929574852403">বাঁদিকে সরানো হচ্ছে</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">ডকুমেন্টের সমস্ত প্রান্ত ফ্রেমের মধ্যে রাখুন। ডকুমেন্ট ও ব্যাকগ্রাউন্ডের রং আলাদা হলে, স্ক্যানিং সবচেয়ে ভাল কাজ করে।</translation>
 <translation id="5662366948659129155"><ph name="COUNT" /> নম্বর পৃষ্ঠা স্ক্যান করা হচ্ছে</translation>
 <translation id="5671277269877808209">চৌকো</translation>

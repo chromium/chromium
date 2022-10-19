@@ -84,6 +84,7 @@
 <translation id="753732157349120914">Lapváltó</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> vélemény a Google-on}other{<ph name="REVIEWS_COUNT_MANY" /> vélemény a Google-on}}</translation>
 <translation id="7559245342362162951">A csoportban lévő lapok teljes képernyős rácsszerkezetben való megjelenítése</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kiválasztott lap megosztása}other{<ph name="TABS_COUNT_MANY" /> kiválasztott lap megosztása}}</translation>
 <translation id="7792771145871471484">Javaslatok áttekintése.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap csoportba helyezése}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap csoportba helyezése}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" />, <ph name="REVIEWS_COUNT_ONE" /> vélemény}other{Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" />, <ph name="REVIEWS_COUNT_MANY" /> vélemény}}</translation>

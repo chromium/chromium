@@ -91,6 +91,7 @@
 <translation id="1407069428457324124">Бараан загвар</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Огноо хооронд шилжихийн тулд суман товчнуудыг дарна уу.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, суулгасан апп</translation>
+<translation id="1415846719612499304">Сүлжээний жагсаалтыг харуулна уу. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг тайлна уу</translation>
 <translation id="1420408895951708260">Шөнийн гэрлийг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа саяхны зургууд болон медиаг харна уу</translation>
@@ -305,6 +306,7 @@
 <translation id="2678852583403169292">Ярихаар сонгох цэс</translation>
 <translation id="2689613560355655046">Дэлгэц 8</translation>
 <translation id="2695305337569143674">веб</translation>
+<translation id="2697697418792422688">Гарын тохиргоог харуулна уу. <ph name="KEYBOARD_NAME" />-г сонгосон байна.</translation>
 <translation id="2700493154570097719">Гараа тохируулах</translation>
 <translation id="2704781753052663061">Бусад Wi-Fi сүлжээнд нэгдэх</translation>
 <translation id="2705001408393684014">Микрофоныг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
@@ -772,6 +774,7 @@
 <translation id="5327248766486351172">Нэр</translation>
 <translation id="5329548388331921293">Холбогдож байна...</translation>
 <translation id="5331975486040154427">USB-C төхөөрөмж (ард талын портны зүүн тал)</translation>
+<translation id="533282197239610265">Дамжуулагч төхөөрөмжүүдийг харуулна уу</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Баруун)</translation>
 <translation id="5352250171825660495">Бараан загвар асаалттай байна</translation>
 <translation id="5356963482258194581">Бараан болон цайвар загварын хооронд сэлгэнэ үү. Дэлгэц дээр баруун талыг товшиж, Дэлгэцийн зураг &amp; стилийг сонгоно уу.</translation>
@@ -803,10 +806,12 @@
 <translation id="553675580533261935">Харилцан үйлдлээс гарч байна</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Диктафоныг асаах/унтраах</translation>
+<translation id="5558091555391176027">Ойролцоо хуваалцах онцлогийн өндөр харагдцыг асаана уу/унтраана уу</translation>
 <translation id="5560420195677022218"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа аппуудыг хараарай</translation>
 <translation id="556042886152191864">Товч</translation>
 <translation id="5571066253365925590">Bluetooth идэвхжсэн байна</translation>
 <translation id="557563299383177668">Дараагийн догол мөр</translation>
+<translation id="5577082622442191756">Bluetooth-г асаана уу/унтраана уу. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Phone Hub-г ашиглахын тулд утсан дээрээ Bluetooth-г идэвхжүүлсэн эсэхийг шалгана уу</translation>
 <translation id="5580000943347215299">Сан</translation>
 <translation id="558849140439112033">Зураг авах хэсгийг сонгохын тулд чирнэ үү</translation>
@@ -875,6 +880,7 @@
 <translation id="595202126637698455">Гүйцэтгэлийн ажиглалтыг идэвхжүүлсэн</translation>
 <translation id="5955304353782037793">аппликейшн</translation>
 <translation id="5958529069007801266">Хяналттай хэрэглэгч</translation>
+<translation id="5965524703725988602">Бараан загварыг асаана уу/унтраана уу. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Цонхыг бичихийн тулд enter дээр дарна уу</translation>
 <translation id="5977415296283489383">Чихэвч</translation>
 <translation id="5978382165065462689">Remote Assistance ашиглан өөрийн дэлгэцийн хяналтыг хуваалцах.</translation>
@@ -1117,6 +1123,7 @@
 <translation id="7378889811480108604">Батарей хэмнэгчийн горим унтраалттай байна</translation>
 <translation id="7382680553121047388">Асаах</translation>
 <translation id="7384028040782072252">Аппуудаа дахин эрэмбэлэхийн тулд хүссэн газраа баруун товшино уу</translation>
+<translation id="7386767620098596324">Сүлжээний холболтыг асаана уу/унтраана уу. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Та дараа нь үргэлж Тохиргооноос тохируулах боломжтой.</translation>
 <translation id="7405710164030118432">Энэ төхөөрөмжийн түгжээг тайлахын тулд Family Link-н эцэг эхийн нэвтрэх кодоо оруулна уу</translation>
 <translation id="7406608787870898861">Мобайл сүлжээгээ тохируулж дуусгана уу</translation>
@@ -1256,6 +1263,7 @@
 <translation id="8142441511840089262">2 товших</translation>
 <translation id="8142699993796781067">Хувийн сүлжээ</translation>
 <translation id="8144760705599030999">Бусад төхөөрөмжтэйгээ илүү хурдан хослуулахын тулд өөрийн <ph name="NAME" />-г <ph name="EMAIL" />-д хадгална уу</translation>
+<translation id="8149413265954228307">Bluetooth-н тохиргоог харуулна уу. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Хаахын тулд Ctrl + W дээр дарна уу.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Автоматаар гүйцээх</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Энэ тохиргоог таны администратор удирддаг.</translation>
@@ -1317,6 +1325,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> нь <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />-тай байна.</translation>
 <translation id="8477270416194247200">Цуцлахын тулд Alt+Search эсвэл Shift товчлуурыг дарна уу.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> болгож өөрчилсөн. Өөрчлөлтийг хадгалахын тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
+<translation id="8496402167048257517">Ойролцоо хуваалцах тохиргоог харуулна уу</translation>
 <translation id="85123341071060231">Таны Chromebook-н Bluetooth унтраалттай байна. Chromebook-нхээ түгжээг тайлахын тулд нууц үг оруулна уу.</translation>
 <translation id="8513108775083588393">Автомат эргэх</translation>
 <translation id="851458219935658693">Одоогийн дэлгэцээс цонхыг харуулах, радио товчлуурыг сонгосон</translation>

@@ -270,6 +270,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="2496180316473517155">Historial de navegació</translation>
 <translation id="2497852260688568942">L'administrador ha desactivat la sincronització</translation>
 <translation id="250020030759455918">Veuràs l'estat de l'inici de sessió a <ph name="SITE_NAME" />, les dades de navegació i les dades del lloc web a Chrome</translation>
+<translation id="2510106555128151389">S'està instal·lant <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK" />Sincronització i serveis de Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2523184218357549926">Envia a Google els URL de les pàgines que visites</translation>
@@ -892,7 +893,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5869789175361934029">Continua des d'un altre dispositiu</translation>
 <translation id="587735546353481577">Per seguir un lloc web, ves al lloc web, obre el menú de Chrome i toca Segueix.</translation>
 <translation id="5879072387416556377">Obtén suggeriments millors</translation>
-<translation id="5880748256563468367">Ves al feed</translation>
 <translation id="5884076754568147479">Per ajudar-te a dur a terme tasques, Google rebrà els URL i el contingut dels llocs web en què facis servir l'Assistent, així com la informació que enviïs amb l'Assistent</translation>
 <translation id="5906513782029855931">Saber els URL dels llocs web permet que l'Assistent de Google t'ajudi a completar tasques. Pots desactivar l'Assistent a la configuració de Chrome.</translation>
 <translation id="5916664084637901428">Activat</translation>
@@ -904,6 +904,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5956665950594638604">Obre Centre d'ajuda de Chrome en una pestanya nova</translation>
 <translation id="5957442310066583693">Per consultar els llocs web que més visites, toca el botó d'inici</translation>
 <translation id="5958275228015807058">Trobaràs els teus fitxers i les teves pàgines a Baixades</translation>
+<translation id="5958994127112619898">Simplifica la pàgina</translation>
 <translation id="5962718611393537961">Toca per replegar</translation>
 <translation id="5964869237734432770">Atura descripcions d'imatges</translation>
 <translation id="5966233851250124270">Chrome recordarà la teva elecció</translation>
@@ -1280,6 +1281,7 @@ Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-s
 <translation id="7887334752153342268">Duplica</translation>
 <translation id="789763218334337857">Com s'utilitza Chrome</translation>
 <translation id="7903184275147100332">Aquest procés pot tardar una estona</translation>
+<translation id="7914399737746719723">S'ha instal·lat l'aplicació</translation>
 <translation id="7919123827536834358">Tradueix automàticament aquests idiomes</translation>
 <translation id="7926975587469166629">Àlies de la targeta</translation>
 <translation id="7929962904089429003">Obre el menú</translation>

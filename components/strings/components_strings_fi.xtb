@@ -320,6 +320,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1717218214683051432">Liiketunnistimet</translation>
 <translation id="1717494416764505390">Postilaatikko 3</translation>
 <translation id="1718029547804390981">Tiedosto on liian suuri merkintöihin</translation>
+<translation id="1719434663396780149">Hinnanlaskuilmoitukset ovat päällä. Voit muuttaa tätä asetusta valitsemalla <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Sulje ohje</translation>
 <translation id="1721424275792716183">* Kenttä on pakollinen.</translation>
 <translation id="1725591448053514783">Kirjekuori 6</translation>
@@ -980,6 +981,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3550112004925580947">Matkailu ja vapaa-ajan palvelut</translation>
 <translation id="3552297013052089404">Sans Serif ‑fontti</translation>
 <translation id="3558573058928565255">Päiväsaika</translation>
+<translation id="3560824484345057728">Katso aiheeseen liittyviä sivustoja</translation>
 <translation id="3566021033012934673">Yhteytesi ei ole salattu</translation>
 <translation id="3567778190852720481">Liittyminen yritystilillä ei onnistu (yritystiliä ei tueta).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1365,6 +1367,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4542971377163063093">Lokero 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Poista laajennukset käytöstä.</translation>
+<translation id="4559134504959026834">Tämä sivusto kuuluu ryhmään, jonka <ph name="SET_OWNER" /> on määritellyt ja joka voi nähdä toimintasi</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Ulkoilu</translation>
 <translation id="4567686777917670400">Järjestelmänvalvoja voi muuttaa selaimen määrityksiä etäyhteydellä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromiumin ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -2671,6 +2674,7 @@ Lisätietoja:
 <translation id="7995512525968007366">Ei määritetty</translation>
 <translation id="7998269595945679889">Avaa incognito-välilehti ‑painike, paina Enter avataksesi uuden incognito-välilehden, niin voit selata yksityisesti</translation>
 <translation id="800218591365569300">Yritä vapauttaa muistia sulkemalla muita välilehtiä tai ohjelmia.</translation>
+<translation id="8002230960325005199">Näytä aiheeseen liittyvät sivustot uudella välilehdellä</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Selain</translation>
 <translation id="8009225694047762179">Salasanojen hallinta</translation>
@@ -2774,6 +2778,7 @@ Lisätietoja:
 <translation id="8270242299912238708">PDF-dokumentit</translation>
 <translation id="8275952078857499577">Älä ehdota tämän sivuston kääntämistä</translation>
 <translation id="8277900682056760511">Maksujenkäsittelytaulukko on avattu</translation>
+<translation id="8279611986089885641">Chrome-ilmoitusten on oltava päällä. Voit laittaa ne päälle valitsemalla <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Lokero 11</translation>
 <translation id="8281084378435768645">Suuri kuva</translation>
 <translation id="8281886186245836920">Ohita</translation>

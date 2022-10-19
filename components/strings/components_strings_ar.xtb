@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">مستشعرات الحركة</translation>
 <translation id="1717494416764505390">صندوق البريد الإلكتروني 3</translation>
 <translation id="1718029547804390981">حجم المستند كبير جدًا بحيث تتعذّر إضافة تعليق توضيحي إليه</translation>
+<translation id="1719434663396780149">ميزة "إشعارات بانخفاض الأسعار" مفعَّلة. يمكنك إيقافها من خلال <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">إغلاق البرنامج التعليمي</translation>
 <translation id="1721424275792716183">* هناك حقل مطلوب</translation>
 <translation id="1725591448053514783">‏ظرف You 6</translation>
@@ -978,6 +979,7 @@
 <translation id="3550112004925580947">مجال الاستضافة</translation>
 <translation id="3552297013052089404">‏خط Sans-serif</translation>
 <translation id="3558573058928565255">خلال النهار</translation>
+<translation id="3560824484345057728">عرض المواقع الإلكترونية ذات الصلة</translation>
 <translation id="3566021033012934673">الاتصال بهذا الموقع الإلكتروني ليس خاصًا</translation>
 <translation id="3567778190852720481">يتعذّر التسجيل باستخدام حساب العمل (حساب العمل غير مؤهَّل).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1363,6 +1365,7 @@
 <translation id="4542971377163063093">الدُرج 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">جرّب إيقاف الإضافات.</translation>
+<translation id="4559134504959026834">يندرج هذا الموقع الإلكتروني ضمن مجموعة حدّدها <ph name="SET_OWNER" /> ويمكنها الاطّلاع على نشاطك.</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">أنشطة في أماكن مفتوحة</translation>
 <translation id="4567686777917670400">‏يمكن لمشرفك تغيير إعدادات المتصفِّح عن بُعد. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -2666,6 +2669,7 @@
 <translation id="7995512525968007366">غير محدد</translation>
 <translation id="7998269595945679889">‏زر فتح علامة تبويب في وضع التصفُّح المتخفي. اضغط على المفتاح Enter لفتح علامة تبويب جديدة في وضع التصفُّح المتخفي للتصفُّح بخصوصية تامة.</translation>
 <translation id="800218591365569300">جرّب إغلاق علامات التبويب أو البرامج الأخرى لتفريغ مساحة من الذاكرة.</translation>
+<translation id="8002230960325005199">عرض المواقع الإلكترونية ذات الصلة في علامة تبويب جديدة</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
 <translation id="8009225694047762179">إدارة كلمات المرور</translation>
@@ -2770,6 +2774,7 @@
 <translation id="8270242299912238708">‏مستندات PDF</translation>
 <translation id="8275952078857499577">عدم اقتراح ترجمة لهذا الموقع الإلكتروني</translation>
 <translation id="8277900682056760511">جدول بيانات معالج الدفع مفتوح</translation>
+<translation id="8279611986089885641">‏يجب تفعيل ميزة إشعارات Chrome. يمكنك تفعيلها من خلال <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">الدُرج 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">التخطّي</translation>

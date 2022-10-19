@@ -91,6 +91,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utilize as teclas de seta para navegar entre datas.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, app instalada</translation>
+<translation id="1415846719612499304">Veja a lista de redes. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Desbloqueie o dispositivo para realizar a ação de notificação.</translation>
 <translation id="1420408895951708260">Ativar/desativar Luz noturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Veja as fotos e os conteúdos multimédia recentes do telemóvel no dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -305,6 +306,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2678852583403169292">Menu da funcionalidade Selecionar para falar</translation>
 <translation id="2689613560355655046">Espaço de trabalho 8</translation>
 <translation id="2695305337569143674">Web</translation>
+<translation id="2697697418792422688">Veja as definições do teclado. Seleção: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Definir o teclado</translation>
 <translation id="2704781753052663061">Estabelecer ligação a outras redes Wi-Fi</translation>
 <translation id="2705001408393684014">Ative/desative o microfone. <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5329548388331921293">A ligar…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira do lado esquerdo)</translation>
+<translation id="533282197239610265">Mostre os dispositivos de transmissão</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (direito)</translation>
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
 <translation id="5356963482258194581">Alterne entre o tema claro e escuro. Clique com o botão direito do rato no ambiente de trabalho e selecione Estilo e fundo de ecrã.</translation>
@@ -802,10 +805,12 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="553675580533261935">A sair da sessão…</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="554893713779400387">Ativar/desativar o ditado</translation>
+<translation id="5558091555391176027">Ative/desative a alta visibilidade da funcionalidade Partilhar na proximidade</translation>
 <translation id="5560420195677022218">Veja as apps do seu telemóvel no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5571066253365925590">Bluetooth ativado</translation>
 <translation id="557563299383177668">Parágrafo seguinte</translation>
+<translation id="5577082622442191756">Ative/desative o Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Verifique se o Bluetooth está ativado no seu telemóvel para utilizar o Phone Hub.</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
 <translation id="558849140439112033">Arraste para selecionar uma área a capturar.</translation>
@@ -874,6 +879,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="595202126637698455">Rastreio do desempenho ativado</translation>
 <translation id="5955304353782037793">aplicação</translation>
 <translation id="5958529069007801266">Utilizador supervisionado</translation>
+<translation id="5965524703725988602">Ative/desative o tema escuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Prima Enter para gravar a janela</translation>
 <translation id="5977415296283489383">Auscultador</translation>
 <translation id="5978382165065462689">A partilhar o controlo do seu ecrã através da Assistência remota.</translation>
@@ -1116,6 +1122,7 @@ Nova instalação</translation>
 <translation id="7378889811480108604">O modo de Poupança de bateria está desativado.</translation>
 <translation id="7382680553121047388">Ativado</translation>
 <translation id="7384028040782072252">Clique com o botão direito do rato em qualquer local para reordenar as suas apps</translation>
+<translation id="7386767620098596324">Ative/desative a ligação de rede. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Pode sempre configurar mais tarde a partir das Definições.</translation>
 <translation id="7405710164030118432">Para desbloquear este dispositivo, introduza o código de acesso parental do seu Family Link.</translation>
 <translation id="7406608787870898861">Conclua a configuração da sua rede móvel</translation>
@@ -1255,6 +1262,7 @@ Nova instalação</translation>
 <translation id="8142441511840089262">Clicar duas vezes</translation>
 <translation id="8142699993796781067">Rede privada</translation>
 <translation id="8144760705599030999">Guarde o dispositivo <ph name="NAME" /> em <ph name="EMAIL" /> para permitir uma sincronização mais rápida com os outros dispositivos</translation>
+<translation id="8149413265954228307">Veja as definições de Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Prima Ctrl + W para fechar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, preenchimento automático</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Esta definição é gerida pelo seu administrador.</translation>
@@ -1315,6 +1323,7 @@ Nova instalação</translation>
 <translation id="8473301994082929012">A <ph name="ORGANIZATION_NAME" /> colocou a funcionalidade <ph name="FEATURE_NAME" /> como <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prima Alt + Pesquisar ou Shift para cancelar.</translation>
 <translation id="8492573885090281069">O <ph name="DISPLAY_NAME" /> não suporta a resolução <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Mostre as definições da funcionalidade Partilhar na proximidade</translation>
 <translation id="85123341071060231">O Bluetooth do Chromebook está desativado. Para desbloquear, introduza a palavra-passe.</translation>
 <translation id="8513108775083588393">Rotação auto.</translation>
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>

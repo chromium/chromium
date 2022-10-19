@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">Датчики движения</translation>
 <translation id="1717494416764505390">Почтовый ящик 3</translation>
 <translation id="1718029547804390981">Недоступно, так как документ слишком большой</translation>
+<translation id="1719434663396780149">Оповещения о скидках включены. Чтобы отключить их, откройте <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Закрыть руководство</translation>
 <translation id="1721424275792716183">*Обязательное поле</translation>
 <translation id="1725591448053514783">Конверт You 6</translation>
@@ -978,6 +979,7 @@
 <translation id="3550112004925580947">Индустрия гостеприимства</translation>
 <translation id="3552297013052089404">Шрифт без засечек</translation>
 <translation id="3558573058928565255">До дня</translation>
+<translation id="3560824484345057728">Открыть список связанных сайтов</translation>
 <translation id="3566021033012934673">Подключение не защищено</translation>
 <translation id="3567778190852720481">Корпоративные аккаунты не допускаются к регистрации.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1155,7 +1157,7 @@
 <translation id="4040350669425716613">Колледжи и университеты</translation>
 <translation id="405399507749852140">Если на одном из сайтов цена снизится, вы получите уведомление.</translation>
 <translation id="4056223980640387499">Сепия</translation>
-<translation id="4063063121357725926">Разрешите Google находить скидки на товары, которые вы добавляете в корзину.</translation>
+<translation id="4063063121357725926">Разрешите Google находить скидки на товары, которые вы добавляете в корзину</translation>
 <translation id="4063924980214801036">Использовать разблокировку устройства для быстрого подтверждения карт</translation>
 <translation id="4067098466788473230">Гранты на образование и стипендии</translation>
 <translation id="4067947977115446013">Введите действительный адрес</translation>
@@ -1363,6 +1365,7 @@
 <translation id="4542971377163063093">Лоток 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Отключите расширения.</translation>
+<translation id="4559134504959026834">Этот сайт входит в группу <ph name="SET_OWNER" /> и может отслеживать ваши действия</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Мероприятия на открытом воздухе</translation>
 <translation id="4567686777917670400">Администратор может удаленно менять настройки браузера и управлять действиями вне браузера Chromium на этом устройстве. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -2669,6 +2672,7 @@
 <translation id="7995512525968007366">Не указано</translation>
 <translation id="7998269595945679889">Кнопка "Открыть вкладку инкогнито". Нажмите Ввод, чтобы открыть такую вкладку.</translation>
 <translation id="800218591365569300">Закройте другие вкладки и программы, чтобы освободить память.</translation>
+<translation id="8002230960325005199">Открыть список связанных сайтов в новой вкладке</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8009225694047762179">Управление паролями</translation>
@@ -2772,6 +2776,7 @@
 <translation id="8270242299912238708">PDF-файлы</translation>
 <translation id="8275952078857499577">Не предлагать переводить этот сайт</translation>
 <translation id="8277900682056760511">Лист с обработчиком платежа открыт</translation>
+<translation id="8279611986089885641">Необходимо включить уведомления в Chrome. Чтобы сделать это, откройте <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Лоток 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Пропустить</translation>

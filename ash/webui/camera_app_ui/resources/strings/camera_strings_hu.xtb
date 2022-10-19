@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />. oldal törlése</translation>
 <translation id="1113173431709655881">Kamera mód</translation>
 <translation id="1153190633558910465">Rács ki</translation>
@@ -21,6 +22,7 @@
 <translation id="1588438908519853928">Normál</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">A kamera semmit sem rögzített</translation>
 <translation id="1838104802459806957">Billentés felfelé</translation>
 <translation id="1843105061469674856">További oldal beolvasása</translation>
@@ -95,6 +97,7 @@
 <translation id="4705093842003735294">Teljes felbontás</translation>
 <translation id="4890010094662541459">3 × 3</translation>
 <translation id="491895758387112773">Multi-stream videó rögzítése</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Fotó méretaránya</translation>
 <translation id="5057360777601936059">A kamera jelenleg nem használható.
         Ellenőrizze, hogy a kamera megfelelően van-e csatlakoztatva.</translation>
@@ -103,6 +106,7 @@
 <translation id="5266635337630551423">Dokumentum bal felső sarka</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5320594929574852403">Mozgatás bal oldali irányba</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">A dokumentum összes szélének a kereten belül kell lennie. A beolvasás akkor működik a legjobban, ha a dokumentum és a háttér színei különbözőek.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />. oldal beolvasása</translation>
 <translation id="5671277269877808209">Négyzet</translation>

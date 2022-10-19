@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1220509181886849806">Хадгалсан нууц үгийг ашиглах уу?</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" />-н нууц үг.</translation>
 <translation id="1717486229951421299">Хүрэхэд гүйцээж бөглөх мандат үнэмлэхийн жагсаалтыг хагас өндрөөр нээлээ.</translation>
 <translation id="207576718733492531">Хүрэхэд гүйцээж бөглөх мандат үнэмлэхийн жагсаалт хаалттай байна.</translation>
 <translation id="2359808026110333948">Цааш</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Хүрэхэд гүйцээж бөглөх мандат үнэмлэхийн жагсаалтыг бүтэн өндрөөр нээлээ.</translation>
 <translation id="5591247451101092906">Хадгалсан нууц үг эсвэл passkey-г ашиглах уу?</translation>
 <translation id="5624120631404540903">Нууц үгийг удирдах</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" />-н passkey, дэлгэцийн түгжээгээ ашиглана уу.</translation>
 <translation id="804577341878669140">Дараах бүртгэлээр үргэлжлүүлэх</translation>
 </translationbundle>

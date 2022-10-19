@@ -91,6 +91,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1407069428457324124">Tmavý motiv</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Mezi daty se můžete pohybovat pomocí kláves se šipkami.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, nainstalovaná aplikace</translation>
+<translation id="1415846719612499304">Zobrazit seznam sítí. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Chcete-li provést akci s oznámením, odemkněte zařízení</translation>
 <translation id="1420408895951708260">Zapnout nebo vypnout noční režim. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> nejnovější fotky a média z telefonu</translation>
@@ -305,6 +306,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2678852583403169292">Nabídka Poslech vybraného textu</translation>
 <translation id="2689613560355655046">Plocha 8</translation>
 <translation id="2695305337569143674">web</translation>
+<translation id="2697697418792422688">Zobrazit nastavení klávesnice. Je vybrán řádek <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Nastavit klávesnici</translation>
 <translation id="2704781753052663061">Připojit se k dalším sítím Wi-Fi</translation>
 <translation id="2705001408393684014">Přepnout mikrofon. <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5327248766486351172">Jméno</translation>
 <translation id="5329548388331921293">Připojování…</translation>
 <translation id="5331975486040154427">Zařízení USB Type-C (levý zadní port)</translation>
+<translation id="533282197239610265">Zobrazit zařízení pro streamování obsahu</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (vpravo)</translation>
 <translation id="5352250171825660495">Tmavý motiv je zapnutý</translation>
 <translation id="5356963482258194581">Přepínejte mezi tmavým a světlým motivem. Klikněte pravým tlačítkem na plochu a vyberte Tapeta a styl.</translation>
@@ -802,10 +805,12 @@ Připojte zařízení k napájení.</translation>
 <translation id="553675580533261935">Ukončení návštěvy</translation>
 <translation id="5537725057119320332">Odeslat</translation>
 <translation id="554893713779400387">Přepnout diktování</translation>
+<translation id="5558091555391176027">Přepnout vysokou viditelnost pro sdílení nablízko</translation>
 <translation id="5560420195677022218">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> oznámení z telefonu</translation>
 <translation id="556042886152191864">Tlačítko</translation>
 <translation id="5571066253365925590">Rozhraní Bluetooth aktivováno</translation>
 <translation id="557563299383177668">Další odstavec</translation>
+<translation id="5577082622442191756">Přepnout Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Pokud chcete používat Telefonní centrum, zkontrolujte, zda je zapnutý Bluetooth</translation>
 <translation id="5580000943347215299">Knihovna</translation>
 <translation id="558849140439112033">Přetažením vyberte oblast, kterou chcete zachytit</translation>
@@ -874,6 +879,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="595202126637698455">Sledování výkonu aktivováno</translation>
 <translation id="5955304353782037793">aplik</translation>
 <translation id="5958529069007801266">Dozorovaný uživatel</translation>
+<translation id="5965524703725988602">Přepnout tmavý motiv. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Stisknutím klávesy Enter spustíte nahrávání okna</translation>
 <translation id="5977415296283489383">Sluchátka</translation>
 <translation id="5978382165065462689">Ovládání obrazovky je sdíleno prostřednictvím Vzdálené pomoci.</translation>
@@ -1116,6 +1122,7 @@ Nová instalace</translation>
 <translation id="7378889811480108604">Režim spořiče baterie je vypnutý</translation>
 <translation id="7382680553121047388">Zapnuto</translation>
 <translation id="7384028040782072252">Pokud chcete změnit pořadí aplikací, klikněte kamkoliv pravým tlačítkem</translation>
+<translation id="7386767620098596324">Přepnout připojení k síti. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Funkci také můžete nastavit později v Nastavení.</translation>
 <translation id="7405710164030118432">Chcete-li zařízení odemknout, zadejte svůj rodičovský přístupový kód služby Family Link</translation>
 <translation id="7406608787870898861">Dokončete nastavení mobilní sítě</translation>
@@ -1255,6 +1262,7 @@ Nová instalace</translation>
 <translation id="8142441511840089262">Dvojité kliknutí</translation>
 <translation id="8142699993796781067">Soukromá síť</translation>
 <translation id="8144760705599030999">Uložte si zařízení <ph name="NAME" /> do účtu <ph name="EMAIL" />, aby ho bylo možné rychleji spárovat s jinými zařízeními</translation>
+<translation id="8149413265954228307">Zobrazit nastavení Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Zavřete stisknutím kláves Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatické doplnění</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Toto nastavení spravuje administrátor.</translation>
@@ -1315,6 +1323,7 @@ Nová instalace</translation>
 <translation id="8473301994082929012">Organizace <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> funkci <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Vypnete jej stisknutím kombinace kláves Alt + Hledat nebo klávesy Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Zobrazit nastavení sdílení nablízko</translation>
 <translation id="85123341071060231">Bluetooth v Chromebooku je vypnuté. Pokud chcete odemknout Chromebook, zadejte heslo.</translation>
 <translation id="8513108775083588393">Autom. otáčení</translation>
 <translation id="851458219935658693">Zobrazit okna z aktuální plochy, je vybrán přepínač</translation>

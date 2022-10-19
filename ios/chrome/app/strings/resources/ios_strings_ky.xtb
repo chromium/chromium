@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">Баары окулган деп белгилөө</translation>
 <translation id="1689333818294560261">Ылакап ат</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> тандалды</translation>
+<translation id="1715515772563243997">Эгер <ph name="SITE" /> сайтына ишенсеңиз, кирүү үчүн сакталган сырсөзүңүздү колдоно бериңиз.</translation>
 <translation id="1740468249224277719">Орнотуу үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1752547299766512813">Сырсздрдү сакт</translation>
 <translation id="1753905327828125965">Көп көрүлгөн</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">Кыстарманы түзөтүү</translation>
 <translation id="2155145621546387786">Chrome'ду бөлүшүү</translation>
 <translation id="2175927920773552910">QR коду</translation>
+<translation id="2178545675770638239">Сырсөз тандаңыз</translation>
 <translation id="2218443599109088993">Кичирейтүү</translation>
 <translation id="2230173723195178503">Веб баракча жүктөлдү</translation>
 <translation id="2239626343334228536">Серептөө дайындары тазаланууда…</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">Азыр текшерүү</translation>
 <translation id="4505980578794259603">Акыркы жолу качан текшерилген: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Кирүүгө үндөгөн жарнама жабылсын</translation>
+<translation id="4514889972748124117">Татаал сырсөз сунушталсын...</translation>
 <translation id="4520798012560649652">Жашыруун режим жөнүндө кеңири маалымат</translation>
 <translation id="4526249700380860531">Сакталган сырсөздөрдү <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> дарегинен көрүп жана башкарыңыз</translation>
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
@@ -1016,6 +1019,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8917490105272468696">Ооба, мен макулмун</translation>
 <translation id="8928133177108699615">Иш такта</translation>
 <translation id="8952559610785099500">Сырсөз кошуу</translation>
+<translation id="8953046091948372197">Сырсөздөрүңүздү ушул жерден табасыз</translation>
 <translation id="895541991026785598">Маселе жөнндө кабрл</translation>
 <translation id="8974714402877957201">1. iPad жөндөөлөрүн ачыңыз</translation>
 <translation id="8976382372951310360">Жардам</translation>
@@ -1049,6 +1053,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="9200875785104711666"><ph name="TIME" /> күн мурун</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Ката тууралуу кабар жөнөтүлдү.</translation>
+<translation id="941747855997058526">Сырсөз тандалсын...</translation>
 <translation id="952704832371081537">Жокко чыгаруу</translation>
 <translation id="953008885340860025">Chrome тутумдан чыгып кетти</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> жаңылыктарына жазылдыңыз</translation>

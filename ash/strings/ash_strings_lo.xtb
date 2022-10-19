@@ -91,6 +91,7 @@
 <translation id="1407069428457324124">ຮູບແບບສີສັນມືດ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. ໃຊ້ປຸ່ມລູກສອນເພື່ອນຳທາງລະຫວ່າງວັນທີ.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ແອັບທີ່ຕິດຕັ້ງແລ້ວ</translation>
+<translation id="1415846719612499304">ສະແດງລາຍຊື່ເຄືອຂ່າຍ. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">ປົດລັອກອຸປະກອນເພື່ອເຮັດການດຳເນີນການແຈ້ງເຕືອນ</translation>
 <translation id="1420408895951708260">ປິດເປີດແສງກາງຄືນ. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ເບິ່ງຮູບພາບ ແລະ ມີເດຍຫຼ້າສຸດຂອງໂທລະສັບທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
@@ -305,6 +306,7 @@
 <translation id="2678852583403169292">ເມນູເລືອກເພື່ອເວົ້າ</translation>
 <translation id="2689613560355655046">ໂຕະ 8</translation>
 <translation id="2695305337569143674">ເວັບ</translation>
+<translation id="2697697418792422688">ສະແດງການຕັ້ງຄ່າແປ້ນພິມ. ເລືອກ <ph name="KEYBOARD_NAME" /> ແລ້ວ.</translation>
 <translation id="2700493154570097719">ຕັ້ງຄ່າແປ້ນພິມຂອງທ່ານ</translation>
 <translation id="2704781753052663061">ເຂົ້າຮ່ວມເຄືອຂ່າຍ Wi-Fi ອື່ນ</translation>
 <translation id="2705001408393684014">ເປີດໄມ. <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@
 <translation id="5327248766486351172">ຊື່</translation>
 <translation id="5329548388331921293">ກຳລັງເຊື່ອມຕໍ່...</translation>
 <translation id="5331975486040154427">ອຸ​ປະ​ກອນ USB-C (​ຜອດ​ດ້ານ​ຫຼັງເບື້ອງຊ້າຍ)</translation>
+<translation id="533282197239610265">ສະແດງອຸປະກອນ Chromecast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ຂວາ)</translation>
 <translation id="5352250171825660495">ຮູບແບບສີສັນມືດເປີດຢູ່</translation>
 <translation id="5356963482258194581">ສະຫຼັບລະຫວ່າງຮູບແບບສີສັນມືດ ແລະ ແຈ້ງ. ຄລິກຂວາຢູ່ເດັສທັອບແລ້ວເລືອກຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ.</translation>
@@ -802,10 +805,12 @@
 <translation id="553675580533261935">ກໍາລັງອອກຈາກເຊດຊັນ</translation>
 <translation id="5537725057119320332">ຄາສທ໌</translation>
 <translation id="554893713779400387">ເປີດປິດການຂຽນຕາມຄຳບອກ</translation>
+<translation id="5558091555391176027">ສະຫຼັບການເບິ່ງເຫັນລະດັບສູງຂອງການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="5560420195677022218">ເບິ່ງແອັບຂອງໂທລະສັບທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="556042886152191864">ປຸ່ມ</translation>
 <translation id="5571066253365925590">Bluetooth ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="557563299383177668">ຫຍໍ້ໜ້າຕໍ່ໄປ</translation>
+<translation id="5577082622442191756">ສະຫຼັບ Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ກວດເບິ່ງວ່າໄດ້ເປີດການນຳໃຊ້ Bluetooth ໃນໂທລະສັບຂອງທ່ານແລ້ວຈຶ່ງສາມາດໃຊ້ Phone Hub ໄດ້.</translation>
 <translation id="5580000943347215299">ຫ້ອງສະໝຸດ</translation>
 <translation id="558849140439112033">ລາກເພື່ອເລືອກພື້ນທີ່ເພື່ອຖ່າຍຮູບ</translation>
@@ -874,6 +879,7 @@
 <translation id="595202126637698455">ການຕິດຕາມການປະຕິບັດເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5955304353782037793">ແອັບ</translation>
 <translation id="5958529069007801266">ຜູ້ໃຊ້ທີ່ມີການຄວບຄຸມດູແລ</translation>
+<translation id="5965524703725988602">ສະຫຼັບຮູບແບບສີສັນມືດ. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">ກົດ enter ເພື່ອບັນທຶກໜ້າຈໍ</translation>
 <translation id="5977415296283489383">ຫູຟັງ</translation>
 <translation id="5978382165065462689">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
@@ -1116,6 +1122,7 @@
 <translation id="7378889811480108604">ໂໝດຕົວປະຢັດແບັດເຕີຣີປິດຢູ່</translation>
 <translation id="7382680553121047388">ເປີດ</translation>
 <translation id="7384028040782072252">ຄລິກຂວາໃສ່ບ່ອນໃດກໍໄດ້ເພື່ອຈັດຮຽງແອັບຂອງທ່ານຄືນໃໝ່</translation>
+<translation id="7386767620098596324">ສະຫຼັບການເຊື່ອມຕໍ່ເຄືອຂ່າຍ. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">ທ່ານສາມາດຕັ້ງຄ່າໄດ້ໃນພາຍຫຼັງໄດ້ສະເໝີຈາກການຕັ້ງຄ່າ.</translation>
 <translation id="7405710164030118432">ເພື່ອປົດລັອກອຸປະກອນ, ກະລຸນາປ້ອນລະຫັດການເຂົ້າເຖິງຂອງພໍ່ແມ່ສຳລັບ Family Link ຂອງທ່ານ</translation>
 <translation id="7406608787870898861">ສຳເລັດການຕັ້ງຄ່າເຄືອຂ່າຍມືຖືຂອງທ່ານ</translation>
@@ -1255,6 +1262,7 @@
 <translation id="8142441511840089262">ຄລິກສອງຄັ້ງ</translation>
 <translation id="8142699993796781067">ເຄືອ​ຂ່າຍ​ສ່ວນຕົວ</translation>
 <translation id="8144760705599030999">ບັນທຶກ <ph name="NAME" /> ຂອງທ່ານໄປໃສ່ <ph name="EMAIL" /> ເພື່ອຈັບຄູ່ຫາອຸປະກອນອື່ນຂອງທ່ານໄດ້ໄວຂຶ້ນ</translation>
+<translation id="8149413265954228307">ສະແດງການຕັ້ງຄ່າ Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">ກົດ Ctrl + W ເພື່ອປິດ.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ຕື່ມອັດຕະໂນມັດ</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
@@ -1315,6 +1323,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ມີ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">ກົດ Alt+ຊອກຫາ ຫຼື Shift ເພື່ອຍົກເລີກ.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" />. ຄວາມລະອຽດໄດ້ປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> ແລ້ວ. ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">ສະແດງການຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="85123341071060231">Bluetooth ຂອງ Chromebook ທ່ານປິດຢູ່. ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ໃສ່ລະຫັດຜ່ານກ່ອນ.</translation>
 <translation id="8513108775083588393">ໝຸນອັດຕະໂນມັດ</translation>
 <translation id="851458219935658693">ສະແດງໜ້າຈໍຈາກໂຕະປັດຈຸບັນ, ເລືອກປຸ່ມວິທະຍຸແລ້ວ</translation>

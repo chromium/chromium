@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">Хайлтын түүх</translation>
 <translation id="2497852260688568942">Таны админ синкийг идэвхгүй болгосон байна.</translation>
 <translation id="250020030759455918">Та Chrome-с өөрийн <ph name="SITE_NAME" />-н нэвтрэлтийн төлөв, интернэтээр үзсэн өгөгдөл болон сайтын өгөгдлийг харна</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" />-г суулгаж байна...</translation>
 <translation id="2513403576141822879">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргоог харахын тулд <ph name="BEGIN_LINK" />Синк болон Google-н үйлчилгээ<ph name="END_LINK" />-г харна уу</translation>
 <translation id="2517472476991765520">Шалгах</translation>
 <translation id="2523184218357549926">Таны зочилсон хуудасны URL-г Google-д илгээдэг</translation>
@@ -891,7 +892,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5869789175361934029">Өөр төхөөрөмжөөс үргэлжлүүлнэ үү</translation>
 <translation id="587735546353481577">Сайт дагахын тулд тухайн сайт руу очиж, Chrome цэсийг нээн, Дагахыг товшино уу.</translation>
 <translation id="5879072387416556377">Илүү сайн зөвлөмжүүд авах</translation>
-<translation id="5880748256563468367">Хангамж руу очих</translation>
 <translation id="5884076754568147479">Google танд ажлуудаа дуусгахад тань туслахын тулд таны Туслахаа ашиглах сайтуудын URL болон контентоос гадна Туслахаар илгээх мэдээллийг хүлээн авна</translation>
 <translation id="5906513782029855931">Сайтуудын URL-г мэдэж байх нь Google Туслахад таны ажлыг гүйцэтгэхэд туслах боломжийг олгоно. Та Туслахыг Chrome-н тохиргоонд унтраах боломжтой.</translation>
 <translation id="5916664084637901428">Асаах</translation>
@@ -903,6 +903,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5956665950594638604">Chrome тусламжийн төвийг шинэ табад нээх</translation>
 <translation id="5957442310066583693">Шилдэг сайтуудаа харахын тулд Нүүр хуудасны товчлуурыг товшино уу</translation>
 <translation id="5958275228015807058">Файл, хуудсаа Таталт хэсгээс хайна уу</translation>
+<translation id="5958994127112619898">Хуудсыг хялбаршуулах</translation>
 <translation id="5962718611393537961">Буулгахын тулд товших</translation>
 <translation id="5964869237734432770">Зургийн тайлбарыг зогсоох</translation>
 <translation id="5966233851250124270">Chrome таны сонголтыг санана</translation>
@@ -1279,6 +1280,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7887334752153342268">Хувилах</translation>
 <translation id="789763218334337857">Chrome-г хэрхэн ашиглах вэ</translation>
 <translation id="7903184275147100332">Үүнд нэг минут шаардаж магадгүй</translation>
+<translation id="7914399737746719723">Аппыг суулгасан</translation>
 <translation id="7919123827536834358">Эдгээр хэлийг автоматаар орчуулах</translation>
 <translation id="7926975587469166629">Картын хоч</translation>
 <translation id="7929962904089429003">Цэс нээх</translation>

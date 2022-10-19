@@ -109,6 +109,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1687475363370981210">Atzīmēt visu kā izlasītu</translation>
 <translation id="1689333818294560261">Apzīmējums</translation>
 <translation id="1700629756560807968">Atlasītas: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">Ja uzticaties vietnei <ph name="SITE" />, varat pierakstīties, izmantojot saglabātu paroli.</translation>
 <translation id="1740468249224277719">Divreiz pieskarieties, lai instalētu.</translation>
 <translation id="1752547299766512813">Sagl. paroles</translation>
 <translation id="1753905327828125965">Visapmeklētākais</translation>
@@ -151,6 +152,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2149973817440762519">Rediģēt grāmatzīmes</translation>
 <translation id="2155145621546387786">Koplietot Chrome</translation>
 <translation id="2175927920773552910">kvadrātkods</translation>
+<translation id="2178545675770638239">Paroles atlase</translation>
 <translation id="2218443599109088993">Tālināt</translation>
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
 <translation id="2239626343334228536">Notiek pārlūkošanas datu notīrīšana…</translation>
@@ -434,6 +436,8 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4502566650163919158">Pārbaudīt tūlīt</translation>
 <translation id="4505980578794259603">Pārbaude pēdējoreiz veikta: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Aizvērt pierakstīšanās piedāvājumu</translation>
+<translation id="4514889972748124117">Ieteikt drošu paroli…</translation>
+<translation id="4520798012560649652">Uzzināt vairāk par inkognito režīmu</translation>
 <translation id="4526249700380860531">Skatīt un pārvaldīt saglabātās paroles vietnē <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Pārskatīt sinhronizētos datus</translation>
 <translation id="4536418791685807335">Mēģiniet pierakstīties vēlreiz.</translation>
@@ -1015,6 +1019,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8917490105272468696">Jā, piekrītu</translation>
 <translation id="8928133177108699615">Vietne datoriem</translation>
 <translation id="8952559610785099500">Paroles pievienošana</translation>
+<translation id="8953046091948372197">Šeit varēsiet skatīt savas paroles</translation>
 <translation id="895541991026785598">Ziņot par problēmu</translation>
 <translation id="8974714402877957201">1. iPad planšetdatorā atveriet sadaļu Settings (Iestatījumi).</translation>
 <translation id="8976382372951310360">Palīdzība</translation>
@@ -1048,6 +1053,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9200875785104711666">Pirms <ph name="TIME" /> d.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Avārijas ziņojums nosūtīts.</translation>
+<translation id="941747855997058526">Atlasīt paroli…</translation>
 <translation id="952704832371081537">Atcelt</translation>
 <translation id="953008885340860025">Esat izrakstījies pārlūkā Chrome</translation>
 <translation id="959066944189734975">Jūs sekojat kanālam <ph name="CHANNEL_NAME" /></translation>

@@ -91,6 +91,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1407069428457324124">Tünd tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Tarixlər arasında keçid etmək üçün ox düymələrindən istifadə edin.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Quraşdırılmış Tətbiq</translation>
+<translation id="1415846719612499304">Şəbəkə siyahısını göstərin. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Bildiriş əməliyyatını icra etmək üçün cihazı kiliddən çıxarın</translation>
 <translation id="1420408895951708260">Gecə İşığını aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun son fotoları və mediasına baxın</translation>
@@ -305,6 +306,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2678852583403169292">Seç və danış menyusu</translation>
 <translation id="2689613560355655046">Masa 8</translation>
 <translation id="2695305337569143674">veb</translation>
+<translation id="2697697418792422688">Klaviatura ayarlarını göstərin. <ph name="KEYBOARD_NAME" /> seçilib.</translation>
 <translation id="2700493154570097719">Klaviaturanı ayarlayın</translation>
 <translation id="2704781753052663061">Digər Wi-Fi şəbəkələrinə qoşulun</translation>
 <translation id="2705001408393684014">Mikrofonu dəyişdirin. <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5327248766486351172">Ad</translation>
 <translation id="5329548388331921293">Qoşulur…</translation>
 <translation id="5331975486040154427">USB-C cihazı (arxa sol port)</translation>
+<translation id="533282197239610265">Yayım cihazlarını göstərin</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Sağ)</translation>
 <translation id="5352250171825660495">Tünd tema aktivdir</translation>
 <translation id="5356963482258194581">Tünd və açıq tema arasında keçid edin. Masaüstünə sağla klikləyin və Divar kağızı və üslub seçin.</translation>
@@ -802,10 +805,12 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="553675580533261935">Mövcud sessiya</translation>
 <translation id="5537725057119320332">Yayım</translation>
 <translation id="554893713779400387">İmlanı aktiv edin</translation>
+<translation id="5558091555391176027">Yaxındakılarla Paylaşmanın yüksək görünmə dərəcəsini dəyişdirin</translation>
 <translation id="5560420195677022218"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun tətbiqlərinə baxın</translation>
 <translation id="556042886152191864">Düymə</translation>
 <translation id="5571066253365925590">Bluetooth aktivdir</translation>
 <translation id="557563299383177668">Növbəti paraqraf</translation>
+<translation id="5577082622442191756">Bluetooth'u aktiv edin. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Telefon Mərkəzindən istifadə etmək üçün telefonunuzda Bluetooth'un aktiv olduğuna əmin olun</translation>
 <translation id="5580000943347215299">Kitabxana</translation>
 <translation id="558849140439112033">Çəkmək üçün sahə seçmək məqsədilə sürüşdürün</translation>
@@ -874,6 +879,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="595202126637698455">Fəaliyyət izləməsi aktiv edildi</translation>
 <translation id="5955304353782037793">tətbiq</translation>
 <translation id="5958529069007801266">Nəzarət olunan istifadəçi</translation>
+<translation id="5965524703725988602">Tünd temanı dəyişdirin. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Pəncərəni qeydə almaq üçün enter düyməsini basın</translation>
 <translation id="5977415296283489383">Qulaqlıq</translation>
 <translation id="5978382165065462689">Uzaq Yardım vasitəsilə ekranınızın kontrolunu paylaşır.</translation>
@@ -1116,6 +1122,7 @@ Yeni quraşdırma</translation>
 <translation id="7378889811480108604">Enerjiyə qənaət rejimi deaktivdir</translation>
 <translation id="7382680553121047388">Aktiv</translation>
 <translation id="7384028040782072252">Tətbiqləri yenidən sıralamaq üçün istənilən yerə sağ düymə ilə klikləyin</translation>
+<translation id="7386767620098596324">Şəbəkə bağlantısını aktiv edin. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">İstənilən vaxt Ayarlar bölməsində ayarlaya bilərsiniz.</translation>
 <translation id="7405710164030118432">Cihazı kiliddən çıxarmaq üçün Family Link ailə giriş kodunu daxil edin</translation>
 <translation id="7406608787870898861">Mobil şəbəkənizin ayarlanmasını bitirin</translation>
@@ -1255,6 +1262,7 @@ Yeni quraşdırma</translation>
 <translation id="8142441511840089262">2 dəfə klikləyin</translation>
 <translation id="8142699993796781067">Şəxsi şəbəkə</translation>
 <translation id="8144760705599030999">Digər cihazlarla sürətli birləşdirmək üçün <ph name="NAME" /> cihazınızı <ph name="EMAIL" /> hesabında yadda saxlayın</translation>
+<translation id="8149413265954228307">Bluetooth ayarlarını göstərin. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Bağlamaq üçün Ctrl + W düymələrinə basın.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Avto-tamamlama</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Bu ayar inzibatçınız tərəfindən idarə olunur.</translation>
@@ -1315,6 +1323,7 @@ Yeni quraşdırma</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_NAME" /> xüsusiyyətini <ph name="FEATURE_STATE" /> edib.</translation>
 <translation id="8477270416194247200">Ləğv etmək üçün Alt+Search və ya Shift düyməsini basın.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> əksetmə qabiliyyətini dəstəkləmir. Əksetmə qabiliyyəti <ph name="FALLBACK_RESOLUTION" /> olaraq dəyişildi. Dəyişiklikləri saxlamaq üçün "təsdiq edin" üzərinə klikləyin. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
+<translation id="8496402167048257517">Yaxındakılarla Paylaşma ayarlarını göstərin</translation>
 <translation id="85123341071060231">Chromebook’un Bluetooth’u deaktivdir. Chromebook'u kiliddən çıxarmaq üçün parolu daxil edin.</translation>
 <translation id="8513108775083588393">Avtodönüş</translation>
 <translation id="851458219935658693">Mövcud masadan pəncərələri göstərin, radio düyməsi seçilib</translation>

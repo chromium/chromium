@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ</translation>
 <translation id="2497852260688568942">ਸਿੰਕ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਦੁਆਰਾ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="250020030759455918">ਤੁਸੀਂ Chrome ਵਿੱਚ ਆਪਣੀ <ph name="SITE_NAME" /> ਸਾਈਨ-ਇਨ ਸਥਿਤੀ, ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਅਤੇ ਸਾਈਟ ਡਾਟਾ ਦੇਖੋਗੇ</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2513403576141822879">ਪਰਦੇਦਾਰੀ, ਸੁਰੱਖਿਆ ਅਤੇ ਡਾਟਾ ਇਕੱਤਰ ਕਰਨ ਸੰਬੰਧੀ ਹੋਰ ਸੈਟਿੰਗਾਂ ਲਈ, <ph name="BEGIN_LINK" />ਸਿੰਕ ਅਤੇ Google ਸੇਵਾਵਾਂ<ph name="END_LINK" /> ਦੇਖੋ</translation>
 <translation id="2517472476991765520">ਸਕੈਨ ਕਰੋ</translation>
 <translation id="2523184218357549926">Google ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਜਾਣ ਵਾਲੇ ਪੰਨਿਆਂ ਦੇ URL ਭੇਜਦੀ ਹੈ</translation>
@@ -892,7 +893,6 @@
 <translation id="5869789175361934029">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="587735546353481577">ਕਿਸੇ ਸਾਈਟ ਦਾ ਅਨੁਸਰਣ ਕਰਨ ਲਈ, ਸਾਈਟ 'ਤੇ ਜਾਓ, Chrome ਮੀਨੂ ਖੋਲ੍ਹੋ, ਅਤੇ 'ਅਨੁਸਰਣ ਕਰੋ' 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="5879072387416556377">ਬਿਹਤਰ ਸੁਝਾਅ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
-<translation id="5880748256563468367">ਫ਼ੀਡ 'ਤੇ ਜਾਓ</translation>
 <translation id="5884076754568147479">ਕਾਰਜ ਪੂਰੇ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਨ ਲਈ, Google ਨੂੰ ਉਹਨਾਂ ਸਾਈਟਾਂ ਦੇ URL ਅਤੇ ਸਮੱਗਰੀਆਂ ਮਿਲਣਗੀਆਂ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ Assistant ਨੂੰ ਵਰਤਦੇ ਹੋ, ਨਾਲ ਹੀ ਤੁਹਾਡੇ ਵੱਲੋਂ Assistant ਰਾਹੀਂ ਸਪੁਰਦ ਕੀਤੀ ਜਾਣਕਾਰੀ ਵੀ ਮਿਲੇਗੀ</translation>
 <translation id="5906513782029855931">ਸਾਈਟਾਂ ਦੇ URL ਬਾਰੇ ਜਾਣਕਾਰੀ ਹੋਣ 'ਤੇ, ਕਾਰਜਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਵਿੱਚ Google Assistant ਤੁਹਾਡੀ ਮਦਦ ਕਰਦੀ ਹੈ। ਤੁਸੀਂ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ Assistant ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
@@ -904,6 +904,7 @@
 <translation id="5956665950594638604">ਇੱਕ ਨਵੀਂ ਟੈਬ ਵਿੱਚ Chrome ਮਦਦ ਕੇਂਦਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="5957442310066583693">ਆਪਣੀਆਂ ਪ੍ਰਮੁੱਖ ਸਾਈਟਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਹੋਮ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="5958275228015807058">ਡਾਊਨਲੋਡਾਂ ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਪੰਨਿਆਂ ਨੂੰ ਲੱਭੋ</translation>
+<translation id="5958994127112619898">ਸਫ਼ੇ ਨੂੰ ਇਕਹਿਰਾ ਕਰੋ</translation>
 <translation id="5962718611393537961">ਸਮੇਟਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="5964869237734432770">ਚਿੱਤਰ ਦੇ ਵਰਣਨ ਬੰਦ ਕਰੋ</translation>
 <translation id="5966233851250124270">Chrome ਤੁਹਾਡੀ ਚੋਣ ਨੂੰ ਯਾਦ ਰੱਖੇਗਾ</translation>
@@ -1280,6 +1281,7 @@
 <translation id="7887334752153342268">ਡੁਪਲੀਕੇਟ</translation>
 <translation id="789763218334337857">Chrome ਨੂੰ ਵਰਤਣ ਦਾ ਤਰੀਕਾ</translation>
 <translation id="7903184275147100332">ਇਸ ਵਿੱਚ ਕੁਝ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ</translation>
+<translation id="7914399737746719723">ਐਪ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="7919123827536834358">ਇਹਨਾਂ ਭਾਸ਼ਾਵਾਂ ਦਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="7926975587469166629">ਕਾਰਡ ਦਾ ਉਪਨਾਮ</translation>
 <translation id="7929962904089429003">ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>

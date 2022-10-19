@@ -422,6 +422,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1397594434718759194">Na těchto zařízeních jste přihlášeni do Chromu a můžete je použít jako bezpečnostní klíče.</translation>
 <translation id="1398853756734560583">Maximalizovat</translation>
 <translation id="139911022479327130">Odemkněte telefon a potvrďte, že jste to skutečně vy</translation>
+<translation id="1401216725754314428">Další informace o souvisejících webech na nové kartě</translation>
 <translation id="1401308693935339022">Používat polohu. Povolte aplikacím a službám s oprávněním pro přístup k poloze využívat polohu tohoto zařízení. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.</translation>
 <translation id="1403222014593521787">K proxy se nelze připojit</translation>
 <translation id="1405779994569073824">Selhalo.</translation>
@@ -7683,6 +7684,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8206745257863499010">Melodie</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8207404892907560325">Vyberte přístupový klíč</translation>
+<translation id="8208188204689616705">Tyto weby jsou ve skupině definované vlastníkem <ph name="FPS_OWNER" />. Weby ve skupině mohou sledovat vaši aktivitu ve skupině.</translation>
 <translation id="8208216423136871611">Neukládat</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nové oznámení}few{# nová oznámení}many{# nového oznámení}other{# nových oznámení}}</translation>
 <translation id="821119981794423735">Pokud chcete importovat hesla do Správce hesel Google pro účet <ph name="USER_EMAIL" />, vyberte soubor CSV</translation>

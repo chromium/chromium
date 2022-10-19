@@ -320,6 +320,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1717218214683051432">Tipala gibanja</translation>
 <translation id="1717494416764505390">Nabiralnik 3</translation>
 <translation id="1718029547804390981">Dokument je prevelik, da bi mu dodali pripise</translation>
+<translation id="1719434663396780149">Opozorila o znižanju cen so vklopljena. To lahko spremenite tukaj: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Zapiranje vadnice</translation>
 <translation id="1721424275792716183">*Polje je obvezno</translation>
 <translation id="1725591448053514783">Kuverta 6</translation>
@@ -358,6 +359,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1803351196216024260">Lahko zahteva uporabo mikrofona.</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1807528111851433570">Začetni list</translation>
+<translation id="181000283860817563">Sledenje cenam na več spletnih mestih.</translation>
 <translation id="1812527064848182527">ležeče</translation>
 <translation id="1813414402673211292">Brisanje podatkov brskanja</translation>
 <translation id="182139138257690338">samodejni prenosi</translation>
@@ -979,6 +981,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3550112004925580947">Gostinstvo</translation>
 <translation id="3552297013052089404">Neserifna pisava</translation>
 <translation id="3558573058928565255">Dnevni čas</translation>
+<translation id="3560824484345057728">Ogled sorodnih spletnih mest</translation>
 <translation id="3566021033012934673">Vaša povezava ni zasebna</translation>
 <translation id="3567778190852720481">Z računom podjetja se ni mogoče včlaniti (račun podjetja ni ustrezen).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1367,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4542971377163063093">Pladenj 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Poskusite onemogočiti razširitve.</translation>
+<translation id="4559134504959026834">To spletno mesto je v skupini, ki jo definiral(-a) <ph name="SET_OWNER" />, ki si lahko ogleda vašo dejavnost</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Na prostem</translation>
 <translation id="4567686777917670400">Skrbnik lahko spremeni nastavitev brskalnika na daljavo. Dejavnost v tej napravi morda tudi upravljajo zunaj Chromiuma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -2670,6 +2674,7 @@ Dodatne podrobnosti:
 <translation id="7995512525968007366">Ni navedeno</translation>
 <translation id="7998269595945679889">Gumb za odpiranje anonimnega zavihka, pritisnite Enter, če želite odpreti nov anonimni zavihek za zasebno brskanje</translation>
 <translation id="800218591365569300">Poskusite zapreti druge zavihke ali programe, da boste tako sprostili pomnilnik.</translation>
+<translation id="8002230960325005199">Ogled sorodnih spletnih mest na novem zavihku</translation>
 <translation id="8003046808285812021">»<ph name="SEARCH_TERMS" />«</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
 <translation id="8009225694047762179">Upravljanje gesel</translation>
@@ -2773,6 +2778,7 @@ Dodatne podrobnosti:
 <translation id="8270242299912238708">Dokumenti PDF</translation>
 <translation id="8275952078857499577">Ne ponudi prevajanja tega spletnega mesta</translation>
 <translation id="8277900682056760511">List rutine za obravnavo plačil je odprt</translation>
+<translation id="8279611986089885641">Obvestila v Chromu morajo biti vklopljena. Vklopite jih lahko tukaj: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Pladenj 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Preskoči</translation>

@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Dzēst <ph name="PAGE_NUMBER" />. lapu</translation>
 <translation id="1113173431709655881">Kameras režīms</translation>
 <translation id="1153190633558910465">Režģis izslēgts</translation>
 <translation id="1175958423215084756">Konstatēta saite. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. lapa ir izdzēsta</translation>
 <translation id="1258009455399840361">Pagriezt par 90 grādiem pulksteņrādītāja kustības virzienā</translation>
 <translation id="1276998909102132017">Galerijas attēli</translation>
 <translation id="1300209025925956156">Dokumenta skenēšana</translation>
@@ -19,6 +22,7 @@
 <translation id="1588438908519853928">Parasts</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Nekas nav ierakstīts</translation>
 <translation id="1838104802459806957">Pavirzīt augšup</translation>
 <translation id="1843105061469674856">Skenēt papildu lapu</translation>
@@ -93,6 +97,7 @@
 <translation id="4705093842003735294">Pilna izšķirtspēja</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Straumēt video ierakstu vairākos kanālos</translation>
+<translation id="4984613436295737187">QHD (1440p)</translation>
 <translation id="5034763830503483128">Fotoattēla malu attiecība</translation>
 <translation id="5057360777601936059">Kamera šobrīd nav pieejama.
         Lūdzu, pārbaudiet, vai kamera ir pareizi pievienota.</translation>
@@ -101,6 +106,7 @@
 <translation id="5266635337630551423">Dokumenta augšējais kreisais stūris</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5320594929574852403">Pārvietojas pa kreisi</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Novietojiet visas dokumenta malas kadrā. Skenēšana darbojas vislabāk, ja dokuments un fons ir atšķirīgā krāsā.</translation>
 <translation id="5662366948659129155">Notiek <ph name="COUNT" />. lapas skenēšana</translation>
 <translation id="5671277269877808209">Kvadrāts</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1220509181886849806">Utiliser le mot de passe enregistré?</translation>
+<translation id="1580351948163139119">Mot de passe pour <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">La liste d'authentifiants à remplir au toucher est ouverte à la mi-hauteur.</translation>
 <translation id="207576718733492531">La liste d'authentifiants à remplir au toucher est fermée.</translation>
 <translation id="2359808026110333948">Continuer</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">La liste d'authentifiants à remplir au toucher est ouverte à la pleine hauteur.</translation>
 <translation id="5591247451101092906">Utiliser une clé d'accès ou un mot de passe enregistré?</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>
+<translation id="7736236483645733578">Clé d'accès pour <ph name="USERNAME" />, utilisez votre verrouillage d'écran.</translation>
 <translation id="804577341878669140">Continuer avec le compte</translation>
 </translationbundle>

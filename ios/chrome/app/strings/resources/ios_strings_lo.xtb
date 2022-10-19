@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">ໝາຍທັງໝົດວ່າອ່ານແລ້ວ</translation>
 <translation id="1689333818294560261">ຊື່ຫຼິ້ນ</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ຖືກ​ເລືອກ​ແລ້ວ</translation>
+<translation id="1715515772563243997">ຫາກທ່ານເຊື່ອຖື <ph name="SITE" />, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ເພື່ອເຂົ້າສູ່ລະບົບໄດ້.</translation>
 <translation id="1740468249224277719">ແຕະສອງຄັ້ງເພື່ອຕິດຕັ້ງ.</translation>
 <translation id="1752547299766512813">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="1753905327828125965">ເຂົ້າເບິ່ງ​ຫຼາຍ​ທີ່​ສຸດ</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">ແກ້​ໄຂບຸກມາກສ໌</translation>
 <translation id="2155145621546387786">ແບ່ງປັນ Chrome</translation>
 <translation id="2175927920773552910">ລະຫັດ QR</translation>
+<translation id="2178545675770638239">ເລືອກລະຫັດຜ່ານ</translation>
 <translation id="2218443599109088993">ຊູມອອກ</translation>
 <translation id="2230173723195178503">ໂຫຼດໜ້າເວັບແລ້ວ</translation>
 <translation id="2239626343334228536">ກຳລັງລຶບລ້າງຂໍ້ມູນທ່ອງເວັບ...</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">ກວດເບິ່ງດຽວນີ້</translation>
 <translation id="4505980578794259603">ກວດສອບຫຼ້າສຸດເມື່ອ <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">ປິດໂປຣໂມການເຂົ້າສູ່ລະບົບ</translation>
+<translation id="4514889972748124117">ແນະນຳລະຫັດຜ່ານທີ່ຄາດເດົາໄດ້ຍາກ...</translation>
 <translation id="4520798012560649652">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="4526249700380860531">ເບິ່ງ ແລະ​ຈັດ​ການ​ລະ​ຫັດ​ຜ່ານ​ໄດ້​ຢູ່​ທີ່ <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">ກວດເບິ່ງຂໍ້ມູນທີ່ຊິ້ງຂອງທ່ານ</translation>
@@ -1016,6 +1019,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8917490105272468696">ແມ່ນ, ຂ້ອຍເຂົ້າຮ່ວມ</translation>
 <translation id="8928133177108699615">ເດັສທັອບ</translation>
 <translation id="8952559610785099500">ເພີ່ມ​ລະ​ຫັດ​ຜ່ານ</translation>
+<translation id="8953046091948372197">ທ່ານຈະເຫັນລະຫັດຜ່ານຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="895541991026785598">ລາຍ​ງານ​ບັນ​ຫາ</translation>
 <translation id="8974714402877957201">1. ເປີດການຕັ້ງຄ່າ iPad</translation>
 <translation id="8976382372951310360">ຊ່ວຍເຫຼືອ</translation>
@@ -1049,6 +1053,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="9200875785104711666"><ph name="TIME" /> ມ ກ່ອນ</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">​ສົ່ງລາຍງານການຂັດຂ້ອງແລ້ວ.</translation>
+<translation id="941747855997058526">ເລືອກລະຫັດຜ່ານ...</translation>
 <translation id="952704832371081537">ຍົກເລີກ</translation>
 <translation id="953008885340860025">ອອກຈາກລະບົບ Chrome ແລ້ວ</translation>
 <translation id="959066944189734975">ທ່ານກຳລັງຕິດຕາມ <ph name="CHANNEL_NAME" /> ຢູ່</translation>

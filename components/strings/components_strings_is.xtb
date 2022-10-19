@@ -320,6 +320,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1717218214683051432">Hreyfiskynjarar</translation>
 <translation id="1717494416764505390">Pósthólf 3</translation>
 <translation id="1718029547804390981">Þetta skjal er of stórt til að hægt sé að skrifa skýringar í það</translation>
+<translation id="1719434663396780149">Kveikt er á verðlækkunartilkynningum. Þú getur breytt þessu í <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Loka leiðsögn</translation>
 <translation id="1721424275792716183">* Reiturinn má ekki vera auður</translation>
 <translation id="1725591448053514783">Umslag: You 6</translation>
@@ -979,6 +980,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3550112004925580947">Þjónustuiðnaður</translation>
 <translation id="3552297013052089404">Sans serif-letur</translation>
 <translation id="3558573058928565255">Dagur og tími</translation>
+<translation id="3560824484345057728">Sjá tengd vefsvæði</translation>
 <translation id="3566021033012934673">Tengingin þín er ekki örugg</translation>
 <translation id="3567778190852720481">Ekki er hægt að skrá með vinnureikningi (ekki er hægt að nota vinnureikninga).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4542971377163063093">Bakki 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Prófaðu að slökkva á viðbótunum þínum.</translation>
+<translation id="4559134504959026834"><ph name="SET_OWNER" /> skilgreindi hópinn sem þetta vefsvæði er í og getur séð virkni þína</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Útivist</translation>
 <translation id="4567686777917670400">Kerfisstjórinn þinn getur breytt uppsetningu vafrans með fjartengingu. Einnig er hægt er að hafa umsjón með aðgerðum í þessu tæki utan Chromium. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -2670,6 +2673,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7995512525968007366">Ekki tilgreint</translation>
 <translation id="7998269595945679889">Hnappurinn „Opna huliðsglugga“, ýttu á Enter til að opna nýjan huliðsglugga og fara huldu höfði</translation>
 <translation id="800218591365569300">Prófaðu að loka öðrum forritum til að losa um minni.</translation>
+<translation id="8002230960325005199">Sjá tengd vefsvæði á nýjum flipa</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
 <translation id="8004582292198964060">Vafri</translation>
 <translation id="8009225694047762179">Stjórna aðgangsorðum</translation>
@@ -2773,6 +2777,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8270242299912238708">PDF-skjöl</translation>
 <translation id="8275952078857499577">Ekki bjóða upp á að þýða þessa síðu</translation>
 <translation id="8277900682056760511">Greiðsluhjálparforrit er opið</translation>
+<translation id="8279611986089885641">Kveikja þarf á Chrome-tilkynningum. Þú getur kveikt á þeim í <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Bakki 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Sleppa</translation>

@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">Кыймыл сенсорлору</translation>
 <translation id="1717494416764505390">3-электрондук каттар кутусу</translation>
 <translation id="1718029547804390981">Документ өтө чоң, андыктан Аннотация режиминде түзөтүүгө болбойт.</translation>
+<translation id="1719434663396780149">Баанын төмөндөшү боюнча эскертүүлөр күйүк. Муну <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлүмүнөн өзгөртө аласыз.</translation>
 <translation id="1720941539803966190">Үйрөткүчтү жабуу</translation>
 <translation id="1721424275792716183">* Бул талаа милдеттүү түрдө толтурулушу керек</translation>
 <translation id="1725591448053514783">Конверт Сиз 6</translation>
@@ -978,6 +979,7 @@
 <translation id="3550112004925580947">Мейманкана индустриясы</translation>
 <translation id="3552297013052089404">Sans-serif ариби</translation>
 <translation id="3558573058928565255">Күндүз</translation>
+<translation id="3560824484345057728">Окшош сайттарды көрүү</translation>
 <translation id="3566021033012934673">Туташууңуз купуя эмес</translation>
 <translation id="3567778190852720481">Ишкана аккаунту жараксыз болгондуктан аны менен катталууга болбойт.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1363,6 +1365,7 @@
 <translation id="4542971377163063093">6-түпкүч</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Кеңейтүүлөрүңүздү өчүрүп көрүңүз.</translation>
+<translation id="4559134504959026834">Бул сайт <ph name="SET_OWNER" /> аныктаган топко кирип, ал аракеттериңизди көрүп турат</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Ачык абада</translation>
 <translation id="4567686777917670400">Администраторуңуз серепчини алыстан жөндөй алат. Бул түзмөктө аткарылган аракеттер Chromium'дан тышкары да башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -2669,6 +2672,7 @@
 <translation id="7995512525968007366">Белгиленген эмес</translation>
 <translation id="7998269595945679889">Жашыруун өтмөк баскычын басыңыз. Жаңы жашыруун өтмөктү ачып, интернетти коопсуз чабыттоо үчүн Enter баскычын басыңыз</translation>
 <translation id="800218591365569300">Эстутумду бошотуу үчүн башка өтмөктөрдү же программаларды жаап көрүңүз.</translation>
+<translation id="8002230960325005199">Окшош сайттарды жаңы өтмөктө көрүү</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Серепчи</translation>
 <translation id="8009225694047762179">Сырсөздөрдү башкаруу</translation>
@@ -2772,6 +2776,7 @@
 <translation id="8270242299912238708">PDF документтери</translation>
 <translation id="8275952078857499577">Бул сайтты которуу сунушталбасын</translation>
 <translation id="8277900682056760511">Төлөм иштетүүчү барак ачылды</translation>
+<translation id="8279611986089885641">Chrome билдирмелерин күйгүзүү керек. Аларды <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлүмүнөн күйгүзө аласыз.</translation>
 <translation id="8280630997017109758">11-түпкүч</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Өткөрүп жиберүү</translation>

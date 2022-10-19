@@ -72,6 +72,7 @@
 <translation id="1067048845568873861">Dibuat</translation>
 <translation id="1067661089446014701">Untuk keselamatan tambahan, anda boleh menyulitkan kata laluan pada peranti sebelum disimpan pada Google Account anda</translation>
 <translation id="1067922213147265141">Perkhidmatan Google yang lain</translation>
+<translation id="1069104208554708737">Kunci laluan ini hanya akan disimpan pada peranti ini</translation>
 <translation id="1069355737714877171">Alih keluar profil eSIM yang bernama <ph name="PROFILE_NAME" /></translation>
 <translation id="1069814191880976658">Pilih skrin lain</translation>
 <translation id="1070377999570795893">Program lain pada komputer anda telah menambahkan sambungan yang boleh mengubah cara Chrome berfungsi.
@@ -349,6 +350,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1324106254079708331">Melindungi Akaun Google peribadi sesiapa yang berisiko menghadapi serangan bertumpu</translation>
 <translation id="1327272175893960498">Tiket Kerberos</translation>
 <translation id="1327495825214193325">Untuk mendayakan penyahpepijatan ADB, <ph name="DEVICE_TYPE" /> perlu dimulakan semula. Tindakan melumpuhkan ADB memerlukan tetapan semula kepada tetapan kilang.</translation>
+<translation id="1327527584824210101">Gunakan kunci laluan anda</translation>
 <translation id="1327794256477341646">Ciri yang memerlukan lokasi anda tidak akan berfungsi</translation>
 <translation id="1331977651797684645">Ini saya.</translation>
 <translation id="1333489022424033687">Sesetengah ciri di <ph name="ORIGIN" /> mungkin tidak berfungsi sehingga anda mengosongkan data yang telah disimpan pada peranti anda oleh tapak lain itu</translation>
@@ -409,6 +411,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="139013308650923562">Dibenarkan untuk menggunakan fon yang dipasang pada peranti anda</translation>
 <translation id="1390548061267426325">Buka sebagai Tab Biasa</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> tidak diizinkan untuk mencetak ke <ph name="PRINTER_NAME" />. Sila hubungi pentadbir anda.</translation>
+<translation id="1392047138650695757">Kamus pengguna</translation>
 <translation id="1393283411312835250">Matahari dan awan</translation>
 <translation id="1395730723686586365">Pengemaskinian bermula</translation>
 <translation id="1395832189806039783">Serlahkan item dengan fokus papan kekunci</translation>
@@ -591,6 +594,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1552752544932680961">Uruskan sambungan</translation>
 <translation id="1553538517812678578">tidak terhad</translation>
 <translation id="1555130319947370107">Biru</translation>
+<translation id="1556127816860282890">Aktiviti latar dan beberapa kesan visual, seperti penatalan lancar, mungkin terhad</translation>
 <translation id="1556537182262721003">Tidak dapat menggerakkan direktori sambungan ke profil.</translation>
 <translation id="1558391695376153246">Tutup tab Inkognito</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
@@ -1531,6 +1535,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2356070529366658676">Tanya</translation>
 <translation id="2357330829548294574">Alih keluar <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Laman boleh menggunakan JavaScript</translation>
+<translation id="2358703245148663432">Peranti yang berbeza</translation>
 <translation id="2358777858338503863">Klik untuk membenarkan <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Apl Linux mungkin menjadi tidak responsif.</translation>
 <translation id="2359345697448000899">Uruskan sambungan anda dengan mengklik Sambungan dalam menu Alat.</translation>
@@ -1891,6 +1896,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="271033894570825754">Baharu</translation>
 <translation id="2711073837061989559">Percubaan</translation>
 <translation id="2712173769900027643">Minta kebenaran</translation>
+<translation id="2712207122921938368">Buat kunci laluan pada peranti lain</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2714393097308983682">Gedung Google Play</translation>
@@ -2403,6 +2409,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3182749001423093222">Semakan ejaan</translation>
 <translation id="3183139917765991655">Pengimport Profil</translation>
 <translation id="3183143381919926261">Rangkaian data mudah alih</translation>
+<translation id="3183613134231754987">Kunci laluan ini hanya akan disimpan dalam Windows Hello. Kunci ini akan kekal pada peranti ini selepas anda menutup semua tetingkap inkognito.</translation>
 <translation id="3183944777708523606">Susunan monitor</translation>
 <translation id="3184536091884214176">Sediakan atau urus pencetak CUPS. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Apl ini disekat}other{Sesetengah apl disekat}}</translation>
@@ -2884,6 +2891,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3654045516529121250">Baca tetapan kebolehaksesan anda</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Apl mempunyai akses tetap kepada satu fail.}other{Apl mempunyai akses tetap kepada # fail.}}</translation>
 <translation id="3658871634334445293">Pemecutan TrackPoint</translation>
+<translation id="3659550105763988702">Gunakan kunci laluan anda untuk <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Anda telah memasukkan kod akses yang salah terlalu banyak kali. Cuba sebentar lagi</translation>
 <translation id="3660234220361471169">Tidak Dipercayai</translation>
 <translation id="3664511988987167893">Ikon Sambungan</translation>
@@ -3158,6 +3166,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ingin: <ph name="FIRST_PERMISSION" /> dan <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Pilih papan kekunci</translation>
 <translation id="3900966090527141178">Eksport kata laluan</translation>
+<translation id="3902789559055749153">Pilih cara anda ingin membuat kunci laluan untuk <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Papan Kekunci Terbina Dalam</translation>
 <translation id="3904326018476041253">Perkhidmatan Lokasi</translation>
 <translation id="3904849010307028014">Berdasarkan interaksi anda dengan laman, seperti kerap log masuk ke akaun, laman tersebut boleh mengeluarkan token amanah kepada penyemak imbas anda. Kemudian, jika laman lain yang anda lawati menyemak dan menemukan token amanah yang sah, laman tersebut lebih berkemungkinan untuk melayan anda seperti orang dan bukannya bot.</translation>
@@ -3487,6 +3496,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4218081191298393750">Klik ikon pembesar suara untuk meredamkan tab ini</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Ralat berlaku semasa pengaktifan.</translation>
+<translation id="4223845867739585293">Buat kunci laluan</translation>
 <translation id="4225397296022057997">Di semua tapak</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Sambungan ini tidak dibenarkan}other{Sesetengah sambungan tidak dibenarkan}}</translation>
 <translation id="4231095370974836764">Pasang apl dan permainan daripada Google Play pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -4130,6 +4140,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4838907349371614303">Kata laluan dikemas kini</translation>
 <translation id="4838958829619609362">Pilihan tiada dalam <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Si&amp;mpan video sebagai...</translation>
+<translation id="4839910546484524995">Semak peranti anda</translation>
 <translation id="4840096453115567876">Keluar daripada mod Inkognito juga?</translation>
 <translation id="4841741146571978176">Mesin maya yang diperlukan tidak wujud. Sila cuba sediakan <ph name="VM_TYPE" /> untuk meneruskan</translation>
 <translation id="4842976633412754305">Halaman ini sedang cuba memuatkan skrip dari sumber yang tidak disahkan.</translation>
@@ -4147,6 +4158,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4852916668365817106">Warna tetikus</translation>
 <translation id="4853020600495124913">Buka dalam tetingkap &amp;baharu</translation>
 <translation id="4854317507773910281">Pilih akaun ibu/bapa untuk kelulusan</translation>
+<translation id="4854603338816296098">Alamat dialih keluar</translation>
 <translation id="485480310608090163">Lagi tetapan dan kebenaran</translation>
 <translation id="4858792381671956233">Anda telah bertanya kepada ibu bapa anda sama ada OK untuk melawat tapak ini</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -5049,6 +5061,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5729712731028706266">&amp;Lihat</translation>
 <translation id="5731247495086897348">Ta&amp;mpal dan Pergi</translation>
 <translation id="5732392974455271431">Ibu bapa anda boleh menyahsekatnya untuk anda</translation>
+<translation id="5733109311583381874">Tambahkan perkataan anda sendiri pada kamus pengguna untuk menyesuaikan calon penukaran.</translation>
 <translation id="5733866499231170760">ID Tidak Sah. Format yang anda masukkan tidak betul. Sila semak arahan yang anda terima untuk memastikan anda memasukkan ID dalam format yang betul. Jika anda tidak dapat menyelesaikan isu ini, sila biarkan medan kosong dan teruskan dengan pemasangan.</translation>
 <translation id="5734362860645681824">Komunikasi</translation>
 <translation id="5734697361979786483">Tambahkan perkongsian fail</translation>
@@ -5160,6 +5173,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="583431638776747">Laman tidak tersedia</translation>
 <translation id="5834581999798853053">Tinggal kira-kira <ph name="TIME" /> minit</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Kamera atau mikrofon sedang merakam</translation>
+<translation id="5835625581856809102">Imbas kod QR ini dengan peranti yang ingin dibuat kunci laluan untuk <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Laman boleh meminta untuk mengedit fail dan folder pada peranti anda</translation>
 <translation id="5836999627049108525">Bahasa Sumber</translation>
 <translation id="583756221537636748">Sarung</translation>
@@ -5400,6 +5414,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6059276912018042191">Tab Chrome baru-baru ini</translation>
 <translation id="6059652578941944813">Hierarki Sijil</translation>
 <translation id="6059925163896151826">Peranti USB</translation>
+<translation id="6061408389284235459">Pemberitahuan telah dihantar kepada <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Buat Kod QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" />Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian <ph name="SUPERVISED_USER_NAME" />. Untuk menjimatkan bateri, dalam tetapan Assistant <ph name="SUPERVISED_USER_NAME" />, anda boleh memilih untuk menghidupkan “Ok Google” hanya semasa peranti ini disambungkan kepada sumber kuasa.</translation>
 <translation id="6064217302520318294">Kunci skrin</translation>
@@ -5528,6 +5543,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6178664161104547336">Pilih sijil</translation>
 <translation id="6178682841350631965">Data log masuk anda telah dikemas kini</translation>
 <translation id="6180510783007738939">Alat Garisan</translation>
+<translation id="6180550893222597997">Manakah kunci laluan yang ingin digunakan untuk <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Muat turun disekat</translation>
 <translation id="6184099524311454384">Cari Tab</translation>
 <translation id="6185132558746749656">Lokasi Peranti</translation>
@@ -5963,6 +5979,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6596816719288285829">Alamat IP</translation>
 <translation id="6597017209724497268">Sampel</translation>
 <translation id="6597331566371766302">Sambungan berikut disekat oleh pentadbir anda:</translation>
+<translation id="6601262427770154296">Urus kamus pengguna</translation>
 <translation id="6601612474695404578">Sesetengah tapak menggunakan kuki pihak ketiga untuk memuatkan halaman tapak itu. Jika tapak tidak berfungsi, anda boleh cuba membenarkan kuki.</translation>
 <translation id="6602937173026466876">Akses pencetak anda</translation>
 <translation id="6602956230557165253">Gunakan kekunci anak panah kiri dan kanan untuk menavigasi.</translation>
@@ -6328,6 +6345,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6943060957016121200">Dayakan Penambatan Segera</translation>
 <translation id="6943176775188458830">Batalkan pencetakan</translation>
 <translation id="6943939122536910181">Diputuskan sambungan daripada <ph name="DEVICE" /></translation>
+<translation id="6944708469742828051">Kunci laluan ini hanya akan disimpan dalam Windows Hello</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="694592694773692225">Ubah hala disekat pada halaman ini.</translation>
 <translation id="6947015141909171112">Anda melihat resipi berdasarkan aktiviti Carian resipi anda baru-baru ini.
@@ -6580,6 +6598,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7193051357671784796">Apl ini ditambahkan oleh organisasi anda. Mulakan semula apl untuk menyelesaikan pemasangan.</translation>
 <translation id="7193374945610105795">Tiada kata laluan disimpan untuk <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">Organisasi anda menyekat fail ini kerana disulitkan. Minta pemilik menyahsulitkan fail ini.</translation>
+<translation id="7196272782924897510">Gunakan kunci laluan daripada peranti lain?</translation>
 <translation id="7196913789568937443">Buat sandaran ke Google Drive. Pulihkan data atau tukar peranti anda dengan mudah pada bila-bila masa. Sandaran anda merangkumi data apl. Sandaran anda dimuat naik ke Google dan disulitkan dengan menggunakan kata laluan Akaun Google anda. <ph name="BEGIN_LINK1" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Dapatkan Google Search dan ciri pintar Google setiap kali anda menyemak imbas</translation>
 <translation id="719791532916917144">Pintasan papan kekunci</translation>
@@ -7078,6 +7097,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7670483791111801022">Sari Kata</translation>
 <translation id="7671130400130574146">Gunakan bar dan sempadan tajuk sistem</translation>
 <translation id="767127784612208024">Sentuh untuk mengesahkan penetapan semula</translation>
+<translation id="7672504401554182757">Pilih peranti yang mempunyai kunci laluan untuk <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, dalam <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Nyahaktifkan semua port yang dikirim semula dalam Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apl</translation>
@@ -7188,6 +7208,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7766807826975222231">Buat lawatan</translation>
 <translation id="7766838926148951335">Terima kebenaran</translation>
 <translation id="7767554953520855281">Butiran disembunyikan semasa anda berkongsi skrin anda</translation>
+<translation id="7767972280546034736">Buat kunci laluan untuk <ph name="APP_NAME" /></translation>
 <translation id="7768507955883790804">Tapak mengikut tetapan ini secara automatik apabila anda melawatnya</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> akan dapat melihat fail dalam <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Tukar</translation>
@@ -7677,6 +7698,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="820568752112382238">Tapak yang paling kerap dilawati</translation>
 <translation id="8206745257863499010">Sayu</translation>
 <translation id="8206859287963243715">Selular</translation>
+<translation id="8207404892907560325">Pilih kunci laluan</translation>
 <translation id="8208216423136871611">Jangan simpan</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pemberitahuan baharu}other{# pemberitahuan baharu}}</translation>
 <translation id="821119981794423735">Untuk mengimport kata laluan pada Google Password Manager bagi <ph name="USER_EMAIL" />, pilih fail CSV</translation>
@@ -7851,6 +7873,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8376137163494131156">Beritahu kami perkara yang berlaku berkaitan Google Cast.</translation>
 <translation id="8376384591331888629">Termasuk kuki pihak ketiga pada tapak ini</translation>
 <translation id="8376451933628734023">Jika apl web ini cuba memperdaya anda agar menganggapnya apl lain, nyahpasang apl ini.</translation>
+<translation id="8377625247046155446">Kunci laluan ini hanya akan disimpan pada peranti ini. Kunci ini akan kekal pada peranti ini selepas anda menutup semua tetingkap inkognito.</translation>
 <translation id="8378714024927312812">Diurus oleh organisasi anda</translation>
 <translation id="8379156816349755485">Selepas log masuk, token pengesahan yang unik akan disimpan dan digunakan untuk semua muat turun yang layak pada masa akan datang.</translation>
 <translation id="8379878387931047019">Peranti ini tidak menyokong jenis kunci keselamatan yang diminta oleh laman web ini</translation>
@@ -8681,6 +8704,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
       <ph name="LIST_ITEM" />Jalankan Diagnostik Kesambungan
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Gambar dalam Gambar</translation>
+<translation id="9166253503936244008">Imbas kod QR ini dengan peranti yang mempunyai kunci laluan yang digunakan untuk <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Paparkan Senarai Bacaan</translation>
 <translation id="9167450455589251456">Profil tidak disokong</translation>
 <translation id="9168436347345867845">Lakukan kemudian</translation>

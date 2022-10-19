@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">ମୋସନ୍ ସେନ୍ସର୍</translation>
 <translation id="1717494416764505390">ମେଲବକ୍ସ 3</translation>
 <translation id="1718029547804390981">ଅଂଶୀଦାର ହେବା ପାଇଁ ଡକ୍ୟୁମେଣ୍ଟ ବହୁତ ବଡ଼ ଅଟେ</translation>
+<translation id="1719434663396780149">ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ ଚାଲୁ ଅଛି। ଆପଣ ଏହାକୁ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />ରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="1720941539803966190">ଟ୍ୟୁଟୋରିଆଲ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1721424275792716183">* ଫିଲ୍ଡ ଆବଶ୍ୟକ ଅଟେ</translation>
 <translation id="1725591448053514783">ଏନଭେଲପ ୟୁ 6</translation>
@@ -977,6 +978,7 @@
 <translation id="3550112004925580947">ହସ୍ପିଟାଲିଟି ଇଣ୍ଡଷ୍ଟ୍ରି</translation>
 <translation id="3552297013052089404">Sans-serif ଫଣ୍ଟ</translation>
 <translation id="3558573058928565255">ଦିନ ସମୟ</translation>
+<translation id="3560824484345057728">ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="3566021033012934673">ଆପଣଙ୍କର ସଂଯୋଗ ବ୍ୟକ୍ତିଗତ ନୁହେଁ</translation>
 <translation id="3567778190852720481">ଏଣ୍ଟରପ୍ରାଇଜ୍ ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ପଞ୍ଜିକରଣ କରାଯାଇପାରିବ ନାହିଁ (ଏଣ୍ଟରପ୍ରାଇଜ୍ ଆକାଉଣ୍ଟ ଯୋଗ୍ୟ ନୁହେଁ)।</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1361,6 +1363,7 @@
 <translation id="4542971377163063093">ଟ୍ରେ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ଆପଣଙ୍କର ଏକ୍ସଟେନ୍‍ସନ୍‍ଗୁଡ଼ିକୁ ଅକ୍ଷମ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4559134504959026834">ଏହି ସାଇଟ <ph name="SET_OWNER" />ଙ୍କ ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥିବା ଏକ ଗୋଷ୍ଠୀରେ ଅଛି, ଯାହା ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିପାରିବ</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">ଆଉଟଡୋର</translation>
 <translation id="4567686777917670400">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ସେଟଅପକୁ ରିମୋଟ୍ ଭାବରେ ବଦଳାଇପାରିବେ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପ Chromium ବାହାରେ ମଧ୍ୟ ପରିଚାଳନା କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -2667,6 +2670,7 @@
 <translation id="7995512525968007366">ନିର୍ଦ୍ଦିଷ୍ଟ ହୋଇନାହିଁ</translation>
 <translation id="7998269595945679889">"ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ" ବଟନ, ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ କରିବାକୁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="800218591365569300">ମେମୋରୀ ଖାଲି କରିବା ପାଇଁ ଅନ୍ୟାନ୍ୟ ଟାବ୍ ବା ପ୍ରୋଗ୍ରାମ୍‌ଗୁଡ଼ିକୁ ବନ୍ଦ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="8002230960325005199">ଏକ ନୂଆ ଟାବରେ ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
 <translation id="8009225694047762179">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ</translation>
@@ -2770,6 +2774,7 @@
 <translation id="8270242299912238708">PDF ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="8275952078857499577">ଏହି ସାଇଟର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8277900682056760511">ପେମେଣ୍ଟ ହ୍ୟାଣ୍ଡଲର୍ ସିଟ୍ ଖୋଲା ଅଛି</translation>
+<translation id="8279611986089885641">Chrome ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଚାଲୁ ହେବା ଆବଶ୍ୟକ। ଆପଣ ସେଗୁଡ଼ିକୁ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />ରେ ଚାଲୁ କରିପାରିବେ।</translation>
 <translation id="8280630997017109758">ଟ୍ରେ 11</translation>
 <translation id="8281084378435768645">ବଡ଼-ଫଟୋ</translation>
 <translation id="8281886186245836920">ଛାଡ଼ିଦିଅନ୍ତୁ</translation>

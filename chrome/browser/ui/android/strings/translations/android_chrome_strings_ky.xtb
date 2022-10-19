@@ -425,7 +425,7 @@
 <translation id="3265093782546847662"><ph name="DOMAIN" /> сайтынын бардык барактары</translation>
 <translation id="3265534588625245297">Жазылган сайттарды башкаруу</translation>
 <translation id="3269093882174072735">Сүрөттү жүктөө</translation>
-<translation id="3280562213547448728">Оозеки издөө</translation>
+<translation id="3280562213547448728">Айтып издөө</translation>
 <translation id="3282568296779691940">Chrome'го кириңиз</translation>
 <translation id="3284510035090979597">Керектүү учурда жардам алуу</translation>
 <translation id="3285080554353377245">Chrome'ду кантип колдонуу жөнүндө видеолор</translation>
@@ -892,7 +892,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5869789175361934029">Башка түзмөктөн улантуу</translation>
 <translation id="587735546353481577">Сайтка жазылуу үчүн ага өтүп, Google Chrome менюсун ачып, "Жазылууну" таптаңыз.</translation>
 <translation id="5879072387416556377">Жакшыраак сунуштарды алыңыз</translation>
-<translation id="5880748256563468367">Түрмөккө өтүү</translation>
 <translation id="5884076754568147479">Тапшырмаларды аткарууга жардам берүү үчүн Google Жардамчыны колдонгон сайттардын URL даректерин жана мазмунун, ошондой эле Жардамчы аркылуу тапшырган маалыматты алат</translation>
 <translation id="5906513782029855931">Сайттардын URL даректери Google Жардамчыга тапшырмаларды аткарууга жардам берет. Жардамчыны Chrome'дун жөндөөлөрүнөн өчүрсөңүз болот.</translation>
 <translation id="5916664084637901428">Күйүк</translation>
@@ -904,6 +903,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5956665950594638604">Chrome Жардам борборун жаңы өтмөктө ачуу</translation>
 <translation id="5957442310066583693">Мыкты сайттарды көрүү үчүн Башкы бет баскычын таптап коюңуз</translation>
 <translation id="5958275228015807058">Файлдар менен барактарды "Жүктөлүп алынгандар" папкасынан таап алыңыз</translation>
+<translation id="5958994127112619898">Барак жөнөкөйлөтүлсүн</translation>
 <translation id="5962718611393537961">Жыйыштыруу үчүн таптап коюңуз</translation>
 <translation id="5964869237734432770">Сүрөттөмөлөрдү албоо</translation>
 <translation id="5966233851250124270">Chrome тандооңузду эстеп калат</translation>

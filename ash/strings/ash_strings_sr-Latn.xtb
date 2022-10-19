@@ -91,6 +91,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Koristite tastere sa strelicama da biste se kretali između datuma.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, instalirana aplikacija</translation>
+<translation id="1415846719612499304">Pregledajte listu mreža. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Otključajte uređaj da biste dobili obaveštenje</translation>
 <translation id="1420408895951708260">Uključite ili isključite noćno svetlo. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Pregledajte nedavne slike i medijski sadržaj sa telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
@@ -305,6 +306,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2678852583403169292">Meni funkcije Izaberite za govor</translation>
 <translation id="2689613560355655046">Radna površina 8</translation>
 <translation id="2695305337569143674">veb</translation>
+<translation id="2697697418792422688">Pregledajte podešavanja tastature. Izabrali ste <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Podesite tastaturu</translation>
 <translation id="2704781753052663061">Pridruži se drugim WiFi mrežama</translation>
 <translation id="2705001408393684014">Uključite/isključite mikrofon. <ph name="STATE_TEXT" /></translation>
@@ -772,6 +774,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5327248766486351172">Naziv</translation>
 <translation id="5329548388331921293">Povezuje se...</translation>
 <translation id="5331975486040154427">Uređaj sa USB priključkom tipa C (levi zadnji port)</translation>
+<translation id="533282197239610265">Pregledajte uređaje za prebacivanje</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (desna)</translation>
 <translation id="5352250171825660495">Tamna tema je uključena</translation>
 <translation id="5356963482258194581">Prelazite sa tamne na svetlu temu i obrnuto. Kliknite desnim tasterom na radnu površinu i izaberite Pozadina i stil.</translation>
@@ -803,10 +806,12 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="553675580533261935">Napuštanje sesije</translation>
 <translation id="5537725057119320332">Prebacuj</translation>
 <translation id="554893713779400387">Uključi/isključi diktiranje</translation>
+<translation id="5558091555391176027">Uključite ili isključite veliku vidljivost Deljenja u blizini</translation>
 <translation id="5560420195677022218">Pregledajte aplikacije sa telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5571066253365925590">Bluetooth je omogućen</translation>
 <translation id="557563299383177668">Sledeći pasus</translation>
+<translation id="5577082622442191756">Uključite/isključite Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Uverite se da je Bluetooth omogućen na telefonu da biste koristili Phone Hub</translation>
 <translation id="5580000943347215299">Biblioteka</translation>
 <translation id="558849140439112033">Prevucite da biste izabrali oblast za snimanje</translation>
@@ -875,6 +880,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="595202126637698455">Praćenje učinka je omogućeno</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Korisnik pod nadzorom</translation>
+<translation id="5965524703725988602">Uključite/isključite tamnu temu. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Pritisnite Enter da biste snimili prozor</translation>
 <translation id="5977415296283489383">Slušalice</translation>
 <translation id="5978382165065462689">Delite kontrolu nad ekranom preko Daljinske pomoći.</translation>
@@ -1117,6 +1123,7 @@ Novo instaliranje</translation>
 <translation id="7378889811480108604">Režim uštede baterije je isključen</translation>
 <translation id="7382680553121047388">Uključi</translation>
 <translation id="7384028040782072252">Kliknite desnim tasterom bilo gde da biste promenili redosled aplikacija</translation>
+<translation id="7386767620098596324">Uključite/isključite mrežnu vezu. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Uvek možete da podesite kasnije u Podešavanjima.</translation>
 <translation id="7405710164030118432">Da biste otključali uređaj, unesite pristupni kôd roditelja za Family Link</translation>
 <translation id="7406608787870898861">Dovršite podešavanje mobilne mreže</translation>
@@ -1256,6 +1263,7 @@ Novo instaliranje</translation>
 <translation id="8142441511840089262">Dvostruki klik</translation>
 <translation id="8142699993796781067">Privatna mreža</translation>
 <translation id="8144760705599030999">Sačuvajte uređaj <ph name="NAME" /> na <ph name="EMAIL" /> radi bržeg uparivanja sa drugim uređajima</translation>
+<translation id="8149413265954228307">Pregledajte Bluetooth podešavanja. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Pritisnite Ctrl + W da biste zatvorili.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatsko dovršavanje</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ovim podešavanjem upravlja administrator.</translation>
@@ -1316,6 +1324,7 @@ Novo instaliranje</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + taster za pretragu ili Shift da biste otkazali.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Prikažite podešavanja Deljenja u blizini</translation>
 <translation id="85123341071060231">Bluetooth na Chromebook-u je isključen. Da biste otključali Chromebook, unesite lozinku.</translation>
 <translation id="8513108775083588393">Autom. rotir.</translation>
 <translation id="851458219935658693">Prikazujte prozore sa aktuelne radne površine, dugme za izbor je izabrano</translation>

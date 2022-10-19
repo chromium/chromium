@@ -320,6 +320,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1717218214683051432">Czujniki ruchu</translation>
 <translation id="1717494416764505390">Zestaw tac odbiorczych 3</translation>
 <translation id="1718029547804390981">Dokument jest za duży i nie można dodawać do niego adnotacji</translation>
+<translation id="1719434663396780149">Alerty o obniżkach cen są włączone. Aby to zmienić, otwórz <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Zamknij samouczek</translation>
 <translation id="1721424275792716183">* Pole jest wymagane</translation>
 <translation id="1725591448053514783">Koperta You 6</translation>
@@ -979,6 +980,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3550112004925580947">Branża turystyczna</translation>
 <translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
 <translation id="3558573058928565255">Dzień godzina</translation>
+<translation id="3560824484345057728">Pokaż powiązane witryny</translation>
 <translation id="3566021033012934673">Połączenie nie jest prywatne</translation>
 <translation id="3567778190852720481">Nie można zarejestrować się przy użyciu konta służbowego (konto służbowe nie spełnia warunków).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4542971377163063093">Taca 8</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Spróbuj wyłączyć rozszerzenia.</translation>
+<translation id="4559134504959026834">Ta witryna należy do zdefiniowanej przez firmę <ph name="SET_OWNER" /> grupy, która ma dostęp do danych o Twojej aktywności</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Rekreacja w plenerze</translation>
 <translation id="4567686777917670400">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -2670,6 +2673,7 @@ Dodatkowe informacje:
 <translation id="7995512525968007366">Nie określono</translation>
 <translation id="7998269595945679889">Przycisk Otwórz kartę incognito; naciśnij Enter, aby otworzyć nową kartę incognito i przeglądać prywatnie</translation>
 <translation id="800218591365569300">Zamknij inne karty lub programy, by zwolnić pamięć.</translation>
+<translation id="8002230960325005199">Pokaż powiązane witryny w nowej karcie</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
 <translation id="8009225694047762179">Zarządzaj hasłami</translation>
@@ -2773,6 +2777,7 @@ Dodatkowe informacje:
 <translation id="8270242299912238708">Dokumenty PDF</translation>
 <translation id="8275952078857499577">Nie proponuj tłumaczenia tej witryny</translation>
 <translation id="8277900682056760511">Arkusz modułu do obsługi płatności jest otwarty</translation>
+<translation id="8279611986089885641">Powiadomienia w Chrome muszą być włączone. Aby je włączyć, otwórz <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Taca 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Pomiń</translation>

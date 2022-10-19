@@ -13,6 +13,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
 <translation id="2118649612461486615">ஸ்டோர் தகவல்</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> தளத்தில் தற்போதைய விலை: <ph name="CURRENT_PRICE" /></translation>
+<translation id="22623456902492423">{TABS_COUNT,plural, =1{பக்கத்தைப் பிரி}other{பக்கங்களைப் பிரி}}</translation>
 <translation id="2277224997687551299">குழுவின் பெயரை மாற்று</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலைக் குழுவிலிருந்து அகற்றும்.}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களைக் குழுவிலிருந்து அகற்றும்.}}</translation>
 <translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -36,6 +37,7 @@
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவைச் சுருக்கும்.}}</translation>
 <translation id="3882834874697329510">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெற, அமைப்புகளில் அறிவிப்புகளை இயக்குங்கள்.</translation>
 <translation id="3940195383040445971">தாவல்களில் விலையைக் கண்காணித்தல்</translation>
+<translation id="3954615705217314756">{TABS_COUNT,plural, =1{பக்கத்தைக் குழுவாக்கு}other{பக்கங்களைக் குழுவாக்கு}}</translation>
 <translation id="3996880007329611795">அறிவிப்பைப் பெறுக</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="4212246570487010370">உலாவலைத் தொடர்க</translation>
@@ -44,6 +46,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> மதிப்புரை)}other{(<ph name="REVIEWS_COUNT_MANY" /> மதிப்புரைகள்)}}</translation>
 <translation id="4850886885716139402">காட்சி</translation>
 <translation id="4870911314065352661">அனைத்து உலாவிப் பக்கங்களையும் மூடவா?</translation>
+<translation id="4895402777090717310">{TABS_COUNT,plural, =1{பக்கத்தை மூடுக}other{பக்கங்களை மூடுக}}</translation>
 <translation id="492284538114688557">விலைச் சரிவு கண்டறியப்பட்டது</translation>
 <translation id="5007392906805964215">சரிபார்</translation>
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>
@@ -72,6 +75,7 @@
 <translation id="6615455863669487791">எனக்கு காண்பி</translation>
 <translation id="6840760312327750441">தாவல்களைக் குழுவாக்க தாவலைத் தொட்டுப் பிடித்திருக்கவும். பிறகு அதை மற்றொரு தாவலுக்கு இழுத்துச்சென்று விடவும்.</translation>
 <translation id="6856809498882026482">பல தேர்வுப் பயன்முறையை மறைக்கும்</translation>
+<translation id="7100731960740376323">{TABS_COUNT,plural, =1{பக்கத்தைப் பகிர்}other{பக்கங்களைப் பகிர்}}</translation>
 <translation id="7129458170538955174">இந்த ஸ்டோர் குறித்த தகவல்கள் பாதித் திரையில் காட்டப்பட்டுள்ளன</translation>
 <translation id="7151209024774799310">குழுவிலிருந்து தாவல்களை அகற்று</translation>
 <translation id="7204204600596740190">பல தேர்வுப் பயன்முறை</translation>

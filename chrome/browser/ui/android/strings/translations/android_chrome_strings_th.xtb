@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">ประวัติการเข้าชมที่เรียกดู</translation>
 <translation id="2497852260688568942">ผู้ดูแลระบบปิดใช้การซิงค์</translation>
 <translation id="250020030759455918">คุณจะเห็นสถานะการลงชื่อเข้าใช้ ข้อมูลการท่องเว็บ และข้อมูลเว็บไซต์ของ <ph name="SITE_NAME" /> ใน Chrome</translation>
+<translation id="2510106555128151389">กำลังติดตั้ง <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />การซิงค์และบริการต่างๆ ของ Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">สแกน</translation>
 <translation id="2523184218357549926">ส่ง URL ของหน้าที่คุณเข้าชมไปยัง Google</translation>
@@ -892,7 +893,6 @@
 <translation id="5869789175361934029">ดำเนินการต่อจากอุปกรณ์อื่น</translation>
 <translation id="587735546353481577">หากต้องการติดตามเว็บไซต์ ให้ไปที่เว็บไซต์นั้น เปิดเมนู Chrome แล้วแตะ "ติดตาม"</translation>
 <translation id="5879072387416556377">รับคำแนะนำที่ดีกว่า</translation>
-<translation id="5880748256563468367">ไปที่ฟีด</translation>
 <translation id="5884076754568147479">Google จะได้รับ URL และเนื้อหาของเว็บไซต์ต่างๆ ที่คุณใช้งาน Assistant ด้วย รวมถึงข้อมูลที่คุณส่งผ่าน Assistant เพื่อช่วยทำงานที่ต้องการให้เสร็จสิ้น</translation>
 <translation id="5906513782029855931">หากทราบ URL ของเว็บไซต์ Google Assistant จะช่วยทำงานที่ต้องการให้เสร็จสิ้นได้ คุณปิด Assistant ได้ในการตั้งค่า Chrome</translation>
 <translation id="5916664084637901428">เปิด</translation>
@@ -904,6 +904,7 @@
 <translation id="5956665950594638604">เปิดศูนย์ช่วยเหลือของ Chrome ในแท็บใหม่</translation>
 <translation id="5957442310066583693">หากต้องการดูเว็บไซต์ยอดนิยม ให้แตะปุ่มหน้าแรก</translation>
 <translation id="5958275228015807058">หาไฟล์และหน้าในโฟลเดอร์ดาวน์โหลด</translation>
+<translation id="5958994127112619898">ลดความซับซ้อนของหน้า</translation>
 <translation id="5962718611393537961">แตะเพื่อยุบ</translation>
 <translation id="5964869237734432770">หยุดรับคำอธิบายรูปภาพ</translation>
 <translation id="5966233851250124270">Chrome จะจดจำตัวเลือกของคุณ</translation>
@@ -1280,6 +1281,7 @@
 <translation id="7887334752153342268">ทำซ้ำ</translation>
 <translation id="789763218334337857">วิธีใช้ Chrome</translation>
 <translation id="7903184275147100332">การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
+<translation id="7914399737746719723">ติดตั้งแอปแล้ว</translation>
 <translation id="7919123827536834358">แปลภาษาเหล่านี้โดยอัตโนมัติ</translation>
 <translation id="7926975587469166629">ชื่อเล่นของบัตร</translation>
 <translation id="7929962904089429003">เปิดเมนู</translation>

@@ -91,6 +91,7 @@
 <translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />। ତାରିଖଗୁଡ଼ିକ ମଧ୍ୟରେ ନାଭିଗେଟ କରିବାକୁ ତୀର କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ଇନ୍‌ଷ୍ଟଲ୍ କରାଯାଇଥିବା ଆପ୍</translation>
+<translation id="1415846719612499304">ନେଟୱାର୍କ ତାଲିକା ଦେଖାନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="1419738280318246476">ବିଜ୍ଞପ୍ତି କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରିବାକୁ ଡିଭାଇସ୍‌କୁ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="1420408895951708260">ନାଇଟ୍ ଲାଇଟ୍‍କୁ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ଆପଣଙ୍କ ଫୋନରେ ଥିବା ବର୍ତ୍ତମାନର ଫଟୋ ଏବଂ ମିଡିଆଗୁଡ଼ିକୁ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />ରେ ଦେଖନ୍ତୁ</translation>
@@ -305,6 +306,7 @@
 <translation id="2678852583403169292">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍ ମେନୁ</translation>
 <translation id="2689613560355655046">ଡେସ୍କ 8</translation>
 <translation id="2695305337569143674">ୱେବ</translation>
+<translation id="2697697418792422688">କୀବୋର୍ଡ ସେଟିଂସ ଦେଖାନ୍ତୁ। <ph name="KEYBOARD_NAME" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="2700493154570097719">ନିଜର କୀ'ବୋର୍ଡକୁ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2704781753052663061">ଅନ୍ୟ ୱାଇ-ଫାଇ ନେଟ୍‍ୱାର୍କଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2705001408393684014">ମାଇକ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@
 <translation id="5327248766486351172">ନାମ</translation>
 <translation id="5329548388331921293">ସଂଯୋଗ ହେଉଛି...</translation>
 <translation id="5331975486040154427">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ)</translation>
+<translation id="533282197239610265">କାଷ୍ଟ ଡିଭାଇସଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ଡାହାଣ)</translation>
 <translation id="5352250171825660495">ଗାଢ଼ ଥିମ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="5356963482258194581">ଗାଢ଼ା ଏବଂ ହାଲୁକା ଥିମ ମଧ୍ୟରେ ସ୍ୱିଚ କରନ୍ତୁ। ଡେସ୍କଟପରେ ଡାହାଣ-କ୍ଲିକ କରି ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲକୁ ଚୟନ କରନ୍ତୁ।</translation>
@@ -802,10 +805,12 @@
 <translation id="553675580533261935">ସମୟ ଅବଧିରୁ ପ୍ରସ୍ଥାନ କରୁଛି</translation>
 <translation id="5537725057119320332">କାଷ୍ଟ</translation>
 <translation id="554893713779400387">ଶ୍ରୁତଲିଖନକୁ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
+<translation id="5558091555391176027">Nearby Shareର ଉଚ୍ଚ ଭିଜିବିଲିଟୀକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="5560420195677022218">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />ରେ ଆପଣଙ୍କ ଫୋନର ଆପ୍ସ ଦେଖନ୍ତୁ</translation>
 <translation id="556042886152191864">ବଟନ୍</translation>
 <translation id="5571066253365925590">ବ୍ଲୁଟୁଥ୍‌ ସକ୍ଷମ ଅଛି</translation>
 <translation id="557563299383177668">ପରବର୍ତ୍ତୀ ଅନୁଚ୍ଛେଦ</translation>
+<translation id="5577082622442191756">ବ୍ଲୁଟୁଥ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="5577281275355252094">ଫୋନ୍ ହବ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ଫୋନରେ ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଥିବା ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="5580000943347215299">ଲାଇବ୍ରେରୀ</translation>
 <translation id="558849140439112033">କ୍ୟାପଚର୍ କରିବାର କ୍ଷେତ୍ରକୁ ଚୟନ କରିବାକୁ ଡ୍ରାଗ୍ କରନ୍ତୁ</translation>
@@ -874,6 +879,7 @@
 <translation id="595202126637698455">କାର୍ଯ୍ୟଦକ୍ଷତା ଟ୍ରେସିଂ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="5955304353782037793">ଆପ୍</translation>
 <translation id="5958529069007801266">ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତା</translation>
+<translation id="5965524703725988602">ଡାର୍କ ଥିମ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="5976112937189445008">ୱିଣ୍ଡୋକୁ ରେକର୍ଡ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="5977415296283489383">ହେଡ୍‌ଫୋନ୍‌</translation>
 <translation id="5978382165065462689">ରିମୋଟ୍‍ ସହାୟତା ମାଧ୍ୟମରେ ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ର ନିୟନ୍ତ୍ରଣ ସେୟାର୍‌ ହେଉଛି।</translation>
@@ -1115,6 +1121,7 @@
 <translation id="7378889811480108604">ବ୍ୟାଟେରୀ ସେଭର୍ ମୋଡ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="7382680553121047388">ଚାଲୁ ଅଛି</translation>
 <translation id="7384028040782072252">ଆପଣଙ୍କ ଆପଗୁଡ଼ିକୁ ପୁଣି କ୍ରମରେ ରଖିବା ପାଇଁ ଯେ କୌଣସି ସ୍ଥାନରେ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ</translation>
+<translation id="7386767620098596324">ନେଟୱାର୍କ କନେକ୍ସନ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="7392563512730092880">ଆପଣ ସର୍ବଦା ସେଟିଂସରୁ ପରେ ସେଟ୍ ଅପ୍ କରିପାରିବେ।</translation>
 <translation id="7405710164030118432">ଡିଭାଇସ୍‍କୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣଙ୍କ Family Linkର ଅଭିଭାବକଙ୍କ ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
 <translation id="7406608787870898861">ଆପଣଙ୍କ ମୋବାଇଲ୍ ନେଟୱାର୍କ ସେଟ୍ ଅପ୍ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ</translation>
@@ -1254,6 +1261,7 @@
 <translation id="8142441511840089262">ଦୁଇଥର କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="8142699993796781067">ବ୍ୟକ୍ତିଗତ ନେଟୱାର୍କ</translation>
 <translation id="8144760705599030999">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହ ଶୀଘ୍ର ପେୟାର କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="NAME" />କୁ <ph name="EMAIL" />ରେ ସେଭ କରନ୍ତୁ</translation>
+<translation id="8149413265954228307">ବ୍ଲୁଟୁଥ ସେଟିଂସ ଦେଖାନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="8152092012181020186">ବନ୍ଦ କରିବାକୁ Ctrl + W ଦବାନ୍ତୁ।</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ସ୍ଵତଃ ଶେଷ ହେଉଥିବା</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
@@ -1314,6 +1322,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />ର <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ଅଛି।</translation>
 <translation id="8477270416194247200">Alt+Search ଦବାନ୍ତୁ କିମ୍ବା ବାତିଲ୍‌କୁ ଶିଫ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />କୁ ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନକୁ <ph name="FALLBACK_RESOLUTION" />ରେ ବଦଳା ଯାଇଥିଲା। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ରଖିବା ପାଇଁ ସୁନିଶ୍ଚିତ କରନ୍ତୁରେ କ୍ଲିକ୍ କରନ୍ତୁ। ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସ୍ <ph name="TIMEOUT_SECONDS" />ରେ ରିଷ୍ଟୋର୍ କରାଯିବ।</translation>
+<translation id="8496402167048257517">Nearby Share ସେଟିଂସ ଦେଖାନ୍ତୁ</translation>
 <translation id="85123341071060231">ଆପଣଙ୍କ Chromebookର ବ୍ଲୁଟୁଥ ବନ୍ଦ ଅଛି। ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ କରିବା ପାଇଁ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ।</translation>
 <translation id="8513108775083588393">ସ୍ୱତଃ-ଘୂର୍ଣ୍ଣନ</translation>
 <translation id="851458219935658693">ବର୍ତ୍ତମାନର ଡେସ୍କରୁ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ, ରେଡିଓ ବଟନକୁ ଚୟନ କରାଯାଇଛି</translation>

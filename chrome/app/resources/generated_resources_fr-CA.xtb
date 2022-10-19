@@ -418,6 +418,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1397594434718759194">Vous êtes connecté à Chrome sur ces appareils, vous pouvez donc les utiliser comme clés de sécurité.</translation>
 <translation id="1398853756734560583">Agrandir</translation>
 <translation id="139911022479327130">Déverrouillez votre téléphone et confirmez qu'il s'agit bien de vous</translation>
+<translation id="1401216725754314428">En savoir plus sur les sites connexes dans un nouvel onglet</translation>
 <translation id="1401308693935339022">Utiliser la localisation. Permettez aux services et aux applications d'utiliser la position de cet appareil s'ils disposent de l'autorisation d'accès nécessaire. Google peut collecter périodiquement des données de localisation et les utiliser de manière anonyme afin d'améliorer la précision et les services de localisation.</translation>
 <translation id="1403222014593521787">Échec de connexion au serveur mandataire</translation>
 <translation id="1405779994569073824">Planté.</translation>
@@ -7664,6 +7665,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="820568752112382238">Sites les plus visités</translation>
 <translation id="8206745257863499010">Mélodie</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
+<translation id="8208188204689616705">Ces sites font partie d'un groupe défini par <ph name="FPS_OWNER" />. Les sites d'un groupe peuvent voir votre activité dans le groupe.</translation>
 <translation id="8208216423136871611">Ne pas enregistrer</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nouvelle notification}one{# nouvelle notification}other{# nouvelles notifications}}</translation>
 <translation id="821119981794423735">Pour importer des mots de passe dans le gestionnaire de mots de passe de Google pour <ph name="USER_EMAIL" />, sélectionnez un fichier CSV</translation>

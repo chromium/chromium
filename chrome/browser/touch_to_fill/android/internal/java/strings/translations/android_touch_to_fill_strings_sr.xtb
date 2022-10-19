@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1220509181886849806">Користићете сачувану лозинку?</translation>
+<translation id="1580351948163139119">Лозинка за <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Листа акредитива који треба да се унесу на додир се отворила до половине екрана.</translation>
 <translation id="207576718733492531">Листа акредитива који треба да се унесу на додир је затворена.</translation>
 <translation id="2359808026110333948">Настави</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Листа акредитива који треба да се унесу на додир се отворила на целом екрану,</translation>
 <translation id="5591247451101092906">Желите да користите сачувану лозинку или приступни кôд?</translation>
 <translation id="5624120631404540903">Управљај лозинкама</translation>
+<translation id="7736236483645733578">Приступни кôд за <ph name="USERNAME" />, користите закључавање екрана.</translation>
 <translation id="804577341878669140">Наставите са налогом</translation>
 </translationbundle>

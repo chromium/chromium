@@ -91,6 +91,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utilisez les touches fléchées pour naviguer entre les dates.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, application installée</translation>
+<translation id="1415846719612499304">Afficher la liste des réseaux. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Déverrouillez l'appareil pour effectuer l'action de la notification</translation>
 <translation id="1420408895951708260">Activer ou désactiver le mode Éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Affichez les photos et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
@@ -305,6 +306,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2678852583403169292">Menu Sélectionner pour énoncer</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
 <translation id="2695305337569143674">Web</translation>
+<translation id="2697697418792422688">Afficher les paramètres du clavier. Langue sélectionnée : <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
 <translation id="2704781753052663061">Se connecter à d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014">Activer/Désactiver le microphone. <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5329548388331921293">Connexion en cours…</translation>
 <translation id="5331975486040154427">Appareil USB-C (port arrière-gauche)</translation>
+<translation id="533282197239610265">Afficher les appareils de diffusion</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droite)</translation>
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
 <translation id="5356963482258194581">Basculez entre les thèmes sombre et clair. Faites un clic droit sur le bureau et sélectionnez Fond d'écran et style.</translation>
@@ -802,10 +805,12 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="553675580533261935">Fermeture de la session</translation>
 <translation id="5537725057119320332">Diffuser</translation>
 <translation id="554893713779400387">Activer/désactiver la dictée</translation>
+<translation id="5558091555391176027">Activer/désactiver la haute visibilité du partage à proximité</translation>
 <translation id="5560420195677022218">Affichez les applications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5571066253365925590">Bluetooth activé</translation>
 <translation id="557563299383177668">Paragraphe suivant</translation>
+<translation id="5577082622442191756">Activer/désactiver le Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Pour utiliser Phone Hub, assurez-vous que le Bluetooth est activé</translation>
 <translation id="5580000943347215299">Bibliothèque</translation>
 <translation id="558849140439112033">Faites glisser le curseur pour sélectionner une région à capturer</translation>
@@ -874,6 +879,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
+<translation id="5965524703725988602">Activer/désactiver le thème sombre. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Appuyez sur Entrée pour enregistrer la fenêtre</translation>
 <translation id="5977415296283489383">Casque d'écoute</translation>
 <translation id="5978382165065462689">Partage du contrôle de votre écran au moyen de l’assistance à distance.</translation>
@@ -1116,6 +1122,7 @@ Nouvelle installation</translation>
 <translation id="7378889811480108604">Le mode Économiseur de pile est désactivé</translation>
 <translation id="7382680553121047388">Activé</translation>
 <translation id="7384028040782072252">Faites un clic droit n'importe où pour réorganiser vos applications</translation>
+<translation id="7386767620098596324">Activer/désactiver la connexion réseau. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Vous pouvez toujours effectuer la configuration plus tard dans le menu Paramètres.</translation>
 <translation id="7405710164030118432">Pour déverrouiller l'appareil, entrez votre code d'accès parental Family Link</translation>
 <translation id="7406608787870898861">Terminer la configuration de votre réseau cellulaire</translation>
@@ -1255,6 +1262,7 @@ Nouvelle installation</translation>
 <translation id="8142441511840089262">Double-clic</translation>
 <translation id="8142699993796781067">Réseau privé</translation>
 <translation id="8144760705599030999">Enregistrez votre <ph name="NAME" /> sous l'adresse <ph name="EMAIL" /> afin de l'associer plus rapidement à vos autres appareils</translation>
+<translation id="8149413265954228307">Afficher les paramètres Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Appuyez sur les touches Ctrl + W pour fermer.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, saisie semi-automatique</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> C'est votre administrateur qui gère ce paramètre.</translation>
@@ -1315,6 +1323,7 @@ Nouvelle installation</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> a <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Appuyez sur Alt + Recherche ou Majuscule pour le désactiver.</translation>
 <translation id="8492573885090281069">L'écran <ph name="DISPLAY_NAME" /> ne prend pas en charge la résolution de <ph name="SPECIFIED_RESOLUTION" />. La résolution a été changée à <ph name="FALLBACK_RESOLUTION" />. Cliquez sur Confirmer pour garder les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Afficher les paramètres de partage à proximité</translation>
 <translation id="85123341071060231">Le Bluetooth de votre Chromebook est désactivé. Pour déverrouiller votre Chromebook, entrez votre mot de passe.</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, bouton radio sélectionné</translation>

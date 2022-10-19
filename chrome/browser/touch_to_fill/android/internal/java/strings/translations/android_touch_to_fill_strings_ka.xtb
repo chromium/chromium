@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
 <translation id="1220509181886849806">გსურთ, გამოიყენოთ შენახული პაროლი?</translation>
+<translation id="1580351948163139119">პაროლი <ph name="USERNAME" />-ისთვის.</translation>
 <translation id="1717486229951421299">შეხებისას შესავსები ავტორიზაციის მონაცემების სია გახსნილია ნახევარ სიმაღლეზე.</translation>
 <translation id="207576718733492531">შეხებისას შესავსები ავტორიზაციის მონაცემების სია დახურულია.</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">შეხებისას შესავსები ავტორიზაციის მონაცემების სია გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="5591247451101092906">გსურთ შენახული პაროლის ან წვდომის გასაღების გამოყენება?</translation>
 <translation id="5624120631404540903">პაროლების მართვა</translation>
+<translation id="7736236483645733578">წვდომის გასაღები <ph name="USERNAME" />-ისთვის, გამოიყენეთ ეკრანის დაბლოკვის მეთოდი.</translation>
 <translation id="804577341878669140">ანგარიშით გაგრძელება</translation>
 </translationbundle>

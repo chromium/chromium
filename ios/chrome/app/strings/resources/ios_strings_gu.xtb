@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">તમામને વાંચેલ તરીકે ચિહ્નિત કરો</translation>
 <translation id="1689333818294560261">ઉપનામ</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> પસંદ કર્યાં</translation>
+<translation id="1715515772563243997">જો <ph name="SITE" /> તમારા માટે વિશ્વસનીય હોય, તો તમે સાઇન ઇન કરવા માટે સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="1740468249224277719">ઇન્સ્ટૉલ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1752547299766512813">પાસવર્ડ સાચવો</translation>
 <translation id="1753905327828125965">સૌથી વધુ જોવાયેલ</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="2155145621546387786">Chrome શેર કરો</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
+<translation id="2178545675770638239">પાસવર્ડ પસંદ કરો</translation>
 <translation id="2218443599109088993">નાનું કરો</translation>
 <translation id="2230173723195178503">વેબપેજ લોડ કર્યું</translation>
 <translation id="2239626343334228536">બ્રાઉઝિંગ ડેટા સાફ થઈ રહ્યો છે...</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">હમણાં ચેક કરો</translation>
 <translation id="4505980578794259603">છેલ્લે <ph name="TIME" /> તપાસ્યું.</translation>
 <translation id="4508750114462689118">સાઇન-ઇન પ્રોમો બંધ કરો</translation>
+<translation id="4514889972748124117">સશક્ત પાસવર્ડ સૂચવો...</translation>
 <translation id="4520798012560649652">છૂપા મોડ વિશે વધુ જાણો</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> પર સાચવેલા પાસવર્ડ જુઓ અને મેનેજ કરો</translation>
 <translation id="452750746583162491">તમારા સિંક કરેલા ડેટાનો રિવ્યૂ કરો</translation>
@@ -1016,6 +1019,7 @@
 <translation id="8917490105272468696">હા, હું સંમત છું</translation>
 <translation id="8928133177108699615">ડેસ્કટૉપ</translation>
 <translation id="8952559610785099500">પાસવર્ડ ઉમેરો</translation>
+<translation id="8953046091948372197">તમને તમારો પાસવર્ડ અહીં મળશે</translation>
 <translation id="895541991026785598">સમસ્યાની જાણ કરો</translation>
 <translation id="8974714402877957201">1. iPad સેટિંગ ખોલો</translation>
 <translation id="8976382372951310360">સહાય</translation>
@@ -1049,6 +1053,7 @@
 <translation id="9200875785104711666"><ph name="TIME" /> દિવસ પહેલાં</translation>
 <translation id="9203116392574189331">હેન્ડઓફ</translation>
 <translation id="9223358826628549784">ક્રૅશ રિપોર્ટ મોકલ્યો.</translation>
+<translation id="941747855997058526">પાસવર્ડ પસંદ કરો...</translation>
 <translation id="952704832371081537">રદ કરો</translation>
 <translation id="953008885340860025">Chromeમાંથી સાઇન આઉટ થયા</translation>
 <translation id="959066944189734975">તમે <ph name="CHANNEL_NAME" />ને ફૉલો કરી રહ્યાં છો</translation>

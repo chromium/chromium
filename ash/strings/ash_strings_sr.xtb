@@ -91,6 +91,7 @@
 <translation id="1407069428457324124">Тамна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Користите тастере са стрелицама да бисте се кретали између датума.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, инсталирана апликација</translation>
+<translation id="1415846719612499304">Прегледајте листу мрежа. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Откључајте уређај да бисте добили обавештење</translation>
 <translation id="1420408895951708260">Укључите или искључите ноћно светло. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Прегледајте недавне слике и медијски садржај са телефона на уређају <ph name="DEVICE_TYPE" /></translation>
@@ -305,6 +306,7 @@
 <translation id="2678852583403169292">Мени функције Изаберите за говор</translation>
 <translation id="2689613560355655046">Радна површина 8</translation>
 <translation id="2695305337569143674">веб</translation>
+<translation id="2697697418792422688">Прегледајте подешавања тастатуре. Изабрали сте <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Подесите тастатуру</translation>
 <translation id="2704781753052663061">Придружи се другим WiFi мрежама</translation>
 <translation id="2705001408393684014">Укључите/искључите микрофон. <ph name="STATE_TEXT" /></translation>
@@ -772,6 +774,7 @@
 <translation id="5327248766486351172">Назив</translation>
 <translation id="5329548388331921293">Повезује се...</translation>
 <translation id="5331975486040154427">Уређај са USB прикључком типа C (леви задњи порт)</translation>
+<translation id="533282197239610265">Прегледајте уређаје за пребацивање</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (десна)</translation>
 <translation id="5352250171825660495">Тамна тема је укључена</translation>
 <translation id="5356963482258194581">Прелазите са тамне на светлу тему и обрнуто. Кликните десним тастером на радну површину и изаберите Позадина и стил.</translation>
@@ -803,10 +806,12 @@
 <translation id="553675580533261935">Напуштање сесије</translation>
 <translation id="5537725057119320332">Пребацуј</translation>
 <translation id="554893713779400387">Укључи/искључи диктирање</translation>
+<translation id="5558091555391176027">Укључите или искључите велику видљивост Дељења у близини</translation>
 <translation id="5560420195677022218">Прегледајте апликације са телефона на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Дугме</translation>
 <translation id="5571066253365925590">Bluetooth је омогућен</translation>
 <translation id="557563299383177668">Следећи пасус</translation>
+<translation id="5577082622442191756">Укључите/искључите Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Уверите се да је Bluetooth омогућен на телефону да бисте користили Phone Hub</translation>
 <translation id="5580000943347215299">Библиотека</translation>
 <translation id="558849140439112033">Превуците да бисте изабрали област за снимање</translation>
@@ -875,6 +880,7 @@
 <translation id="595202126637698455">Праћење учинка је омогућено</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Корисник под надзором</translation>
+<translation id="5965524703725988602">Укључите/искључите тамну тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Притисните Enter да бисте снимили прозор</translation>
 <translation id="5977415296283489383">Слушалице</translation>
 <translation id="5978382165065462689">Делите контролу над екраном преко Даљинске помоћи.</translation>
@@ -1117,6 +1123,7 @@
 <translation id="7378889811480108604">Режим уштеде батерије је искључен</translation>
 <translation id="7382680553121047388">Укључи</translation>
 <translation id="7384028040782072252">Кликните десним тастером било где да бисте променили редослед апликација</translation>
+<translation id="7386767620098596324">Укључите/искључите мрежну везу. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Увек можете да подесите касније у Подешавањима.</translation>
 <translation id="7405710164030118432">Да бисте откључали уређај, унесите приступни кôд родитеља за Family Link</translation>
 <translation id="7406608787870898861">Довршите подешавање мобилне мреже</translation>
@@ -1256,6 +1263,7 @@
 <translation id="8142441511840089262">Двоструки клик</translation>
 <translation id="8142699993796781067">Приватна мрежа</translation>
 <translation id="8144760705599030999">Сачувајте уређај <ph name="NAME" /> на <ph name="EMAIL" /> ради бржег упаривања са другим уређајима</translation>
+<translation id="8149413265954228307">Прегледајте Bluetooth подешавања. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Притисните Ctrl + W да бисте затворили.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, аутоматско довршавање</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Овим подешавањем управља администратор.</translation>
@@ -1316,6 +1324,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притисните Alt + тастер за претрагу или Shift да бисте отказали.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не подржава резолуцију <ph name="SPECIFIED_RESOLUTION" />. Резолуција је промењена у <ph name="FALLBACK_RESOLUTION" />. Кликните на Потврди да бисте задржали промене. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Прикажите подешавања Дељења у близини</translation>
 <translation id="85123341071060231">Bluetooth на Chromebook-у је искључен. Да бисте откључали Chromebook, унесите лозинку.</translation>
 <translation id="8513108775083588393">Аутом. ротир.</translation>
 <translation id="851458219935658693">Приказујте прозоре са актуелне радне површине, дугме за избор је изабрано</translation>

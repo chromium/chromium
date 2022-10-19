@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">ເຊັນກວດຈັບການເຄື່ອນໄຫວ</translation>
 <translation id="1717494416764505390">ກ່ອງຈົດໝາຍ 3</translation>
 <translation id="1718029547804390981">ເອກະສານໃຫຍ່ເກີນທີ່ຈະຂຽນຄຳອະທິບາຍຄວາມເຫັນໄດ້</translation>
+<translation id="1719434663396780149">ເປີດໃຊ້ການແຈ້ງເຕືອນການຫຼຸດລາຄາແລ້ວ. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">ປິດສອນການນຳໃຊ້</translation>
 <translation id="1721424275792716183">* ຊ່ອງໃ່ສ່ຂໍ້ມູນທີ່ຕ້ອງຕື່ມຂໍ້ມູນ</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
@@ -979,6 +980,7 @@
 <translation id="3550112004925580947">ອຸດສາຫະກໍາບໍລິການ</translation>
 <translation id="3552297013052089404">ຟອນ Sans-serif</translation>
 <translation id="3558573058928565255">ຕອນກາງເວັນ</translation>
+<translation id="3560824484345057728">ເບິ່ງເວັບໄຊທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="3566021033012934673">ການເຊື່ອມຕໍ່ຂອງທ່ານບໍ່ເປັນສ່ວນຕົວ</translation>
 <translation id="3567778190852720481">ບໍ່ສາມາດລົງທະບຽນດ້ວຍບັນຊີວິສາຫະກິດໄດ້ (ບັນຊີວິສາຫະກິດບໍ່ມີສິດ).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@
 <translation id="4542971377163063093">ຖາດ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ລອງປິດໃຊ້ສ່ວນຂະຫຍາຍຂອງທ່ານ.</translation>
+<translation id="4559134504959026834">ເວັບໄຊນີ້ຢູ່ໃນກຸ່ມ, ທີ່ກຳນົດໂດຍ <ph name="SET_OWNER" />, ທີ່ສາມາດເຫັນການເຄື່ອນໄຫວຂອງທ່ານໄດ້</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">ກາງແຈ້ງ</translation>
 <translation id="4567686777917670400">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດປ່ຽນການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກໄດ້. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chromium ໄດ້ເຊັ່ນກັນ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
@@ -2670,6 +2673,7 @@
 <translation id="7995512525968007366">ບໍ່​ໄດ້ລະ​ບຸ</translation>
 <translation id="7998269595945679889">ປຸ່ມເປີດແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ, ກົດ Enter ເພື່ອເປີດແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ເພື່ອທ່ອງເວັບແບບສ່ວນຕົວ</translation>
 <translation id="800218591365569300">ລອງປິດແຖບ ຫຼື ໂປຣແກຣມອື່ນເພື່ອຂະຫຍາຍຄວາມຈຳ.</translation>
+<translation id="8002230960325005199">ເບິ່ງເວັບໄຊທີ່ກ່ຽວຂ້ອງໃນແຖບໃໝ່</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ບຣາວ​ເຊີ</translation>
 <translation id="8009225694047762179">ຈັດການລະຫັດຜ່ານ</translation>
@@ -2773,6 +2777,7 @@
 <translation id="8270242299912238708">ເອກະສານ PDF</translation>
 <translation id="8275952078857499577">ຢ່າສະເໜີແປເວັບໄຊນີ້</translation>
 <translation id="8277900682056760511">ແຜ່ນວຽກຂອງເຄື່ອງຈັດການການຈ່າຍເງິນເປີດຢູ່</translation>
+<translation id="8279611986089885641">ຕ້ອງເປີດການແຈ້ງເຕືອນ Chrome. ທ່ານສາມາດເປີດໃຊ້ພວກມັນໄດ້ໃນ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">ຖາດ 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">ຂ້າມ</translation>

@@ -422,6 +422,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1397594434718759194">Prijavljeni ste u Chrome na ovim uređajima, pa možete da ih koristite kao bezbednosne ključeve.</translation>
 <translation id="1398853756734560583">Uvećaj</translation>
 <translation id="139911022479327130">Otključajte telefon i potvrdite da ste to vi</translation>
+<translation id="1401216725754314428">Saznajte više o srodnim sajtovima na novoj kartici</translation>
 <translation id="1401308693935339022">Koristi lokaciju. Dozvolite aplikacijama i uslugama sa dozvolom za lokaciju da koriste lokaciju ovog uređaja. Google može povremeno da prikuplja podatke o lokaciji i da ih koristi na anoniman način za poboljšanje preciznosti lokacije i usluga zasnovanih na lokaciji.</translation>
 <translation id="1403222014593521787">Povezivanje sa proksijem nije uspelo</translation>
 <translation id="1405779994569073824">Kartica je otkazala.</translation>
@@ -7684,6 +7685,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8206745257863499010">Bluzi</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
 <translation id="8207404892907560325">Odaberite pristupni kôd</translation>
+<translation id="8208188204689616705">Ovi sajtovi su u grupi koju definiše <ph name="FPS_OWNER" />. Sajtovi u grupi mogu da vide vaše aktivnosti u grupi.</translation>
 <translation id="8208216423136871611">Ne čuvaj</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obaveštenje}one{# novo obaveštenje}few{# nova obaveštenja}other{# novih obaveštenja}}</translation>
 <translation id="821119981794423735">Da biste uvezli lozinke u Google menadžer lozinki za <ph name="USER_EMAIL" />, izaberite CSV fajl</translation>

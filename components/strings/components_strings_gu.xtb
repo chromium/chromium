@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">મોશન સેન્સર</translation>
 <translation id="1717494416764505390">મેઇલબૉક્સ 3</translation>
 <translation id="1718029547804390981">એનોટેટ કરવા માટે દસ્તાવેજ ઘણો મોટો છે</translation>
+<translation id="1719434663396780149">કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવવાની સુવિધા ચાલુ છે. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />માં જઈને તમે આમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="1720941539803966190">ટ્યૂટૉરિઅલ બંધ કરો</translation>
 <translation id="1721424275792716183">* ફીલ્ડ આવશ્યક છે</translation>
 <translation id="1725591448053514783">એન્વલપ યુ 6</translation>
@@ -979,6 +980,7 @@
 <translation id="3550112004925580947">આતિથ્યસત્કાર ઉદ્યોગ</translation>
 <translation id="3552297013052089404">Sans-Serif ફૉન્ટ</translation>
 <translation id="3558573058928565255">દિવસનો સમય</translation>
+<translation id="3560824484345057728">સંબંધિત સાઇટ જુઓ</translation>
 <translation id="3566021033012934673">તમારું કનેક્શન ખાનગી નથી</translation>
 <translation id="3567778190852720481">એન્ટરપ્રાઇઝ એકાઉન્ટ (એન્ટરપ્રાઇઝ એકાઉન્ટ યોગ્યતા ધરાવતું નથી) વડે નોંધણી કરી શકતા નથી.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@
 <translation id="4542971377163063093">ટ્રે 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">તમારા એક્સ્ટેન્શન્સને અક્ષમ કરવાનો પ્રયાસ કરો.</translation>
+<translation id="4559134504959026834">આ સાઇટ <ph name="SET_OWNER" /> દ્વારા નિર્ધારિત ગ્રૂપમાં છે, જે તમારી પ્રવૃત્તિ જોઈ શકે છે</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">આઉટડોર</translation>
 <translation id="4567686777917670400">તમારા વ્યવસ્થાપક તમારા બ્રાઉઝરનું સેટઅપ રિમોટલી બદલી શકે છે. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromiumની બહારથી પણ મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -2670,6 +2673,7 @@
 <translation id="7995512525968007366">નિર્દિષ્ટ કરાયેલ નથી</translation>
 <translation id="7998269595945679889">છૂપી ટૅબ બટન ખોલો, ખાનગી રીતે બ્રાઉઝ કરવા, નવી છૂપી ટૅબ ખોલવા માટે Enter દબાવો</translation>
 <translation id="800218591365569300">મેમરી ખાલી કરવા માટે અન્ય ટૅબ અથવા પ્રોગ્રામને બંધ કરવાનો પ્રયાસ કરો.</translation>
+<translation id="8002230960325005199">નવા ટૅબમાં સંબંધિત સાઇટ જુઓ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
 <translation id="8009225694047762179">બધા પાસવર્ડ મેનેજ કરો</translation>
@@ -2773,6 +2777,7 @@
 <translation id="8270242299912238708">PDF દસ્તાવેજો</translation>
 <translation id="8275952078857499577">આ સાઇટનો અનુવાદ કરવાનું ઑફર કરશો નહીં</translation>
 <translation id="8277900682056760511">ચુકવણી માટેની હૅન્ડલર શીટ ખુલ્લી છે</translation>
+<translation id="8279611986089885641">Chrome નોટિફિકેશન ચાલુ હોવા આવશ્યક છે. તમે <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />માં તેમને ચાલુ કરી શકો છો.</translation>
 <translation id="8280630997017109758">ટ્રે 11</translation>
 <translation id="8281084378435768645">મોટો-ફોટો</translation>
 <translation id="8281886186245836920">છોડો</translation>

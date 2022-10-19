@@ -91,6 +91,7 @@
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. തീയതികൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ഇൻസ്‌റ്റാൾ ചെയ്‌ത ആപ്പ്</translation>
+<translation id="1415846719612499304">നെറ്റ്‌വർക്ക് ലിസ്റ്റ് കാണിക്കുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">അറിയിപ്പ് പ്രവർത്തനം നിർവഹിക്കുന്നതിന് ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="1420408895951708260">നൈറ്റ് ലൈറ്റ് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിന്റെ പുതിയ ഫോട്ടോകളും മീഡിയയും കാണുക</translation>
@@ -305,6 +306,7 @@
 <translation id="2678852583403169292">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക മെനു</translation>
 <translation id="2689613560355655046">ഡെസ്ക് 8</translation>
 <translation id="2695305337569143674">വെബ്</translation>
+<translation id="2697697418792422688">കീബോർഡ് ക്രമീകരണം കാണിക്കുക. <ph name="KEYBOARD_NAME" /> തിരഞ്ഞെടുത്തു.</translation>
 <translation id="2700493154570097719">നിങ്ങളുടെ കീബോഡ് സജ്ജീകരിക്കുക</translation>
 <translation id="2704781753052663061">മറ്റ് വൈഫൈ നെറ്റ്‍വർക്കുകളിൽ ചേരുക</translation>
 <translation id="2705001408393684014">മൈക്ക് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@
 <translation id="5327248766486351172">പേര്</translation>
 <translation id="5329548388331921293">കണക്‌റ്റ് ചെയ്യുന്നു...</translation>
 <translation id="5331975486040154427">USB-C ഉപകരണം (പുറകിൽ ഇടതുവശത്തെ പോർട്ട്)</translation>
+<translation id="533282197239610265">കാസ്‌റ്റ് ഉപകരണങ്ങൾ കാണിക്കുക</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (വലത്)</translation>
 <translation id="5352250171825660495">ഡാർക്ക് തീം ഓണാണ്</translation>
 <translation id="5356963482258194581">ഡാർക്ക്, ലൈറ്റ് തീമുകൾ തമ്മിൽ മാറുക. ഡെസ്‌ക്ടോപ്പിൽ വലത് ക്ലിക്ക് ചെയ്ത ശേഷം വാൾപേപ്പറും സ്റ്റൈലും തിരഞ്ഞെടുക്കുക.</translation>
@@ -802,10 +805,12 @@
 <translation id="553675580533261935">സെഷനിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
 <translation id="5537725057119320332">കാസ്റ്റ്</translation>
 <translation id="554893713779400387">പറഞ്ഞ് കൊടുക്കൽ മാറ്റുക</translation>
+<translation id="5558091555391176027">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക</translation>
 <translation id="5560420195677022218"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ കാണുക</translation>
 <translation id="556042886152191864">ബട്ടൺ</translation>
 <translation id="5571066253365925590">Bluetooth പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="557563299383177668">അടുത്ത ഖണ്ഡിക</translation>
+<translation id="5577082622442191756">Bluetooth മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ഫോൺ ഹബ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ ഫോണിൽ Bluetooth പ്രവർത്തനക്ഷമമാക്കിയിട്ടുണ്ടോ എന്ന് പരിശോധിക്കുക</translation>
 <translation id="5580000943347215299">ലൈബ്രറി</translation>
 <translation id="558849140439112033">ക്യാപ്‌ചർ ചെയ്യുന്നതിന് ഒരു ഏരിയ തിരഞ്ഞെടുക്കാൻ വലിച്ചിടുക</translation>
@@ -874,6 +879,7 @@
 <translation id="595202126637698455">പ്രകടനം പിന്തുടരൽ പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5955304353782037793">ആപ്പ്</translation>
 <translation id="5958529069007801266">മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവ്</translation>
+<translation id="5965524703725988602">ഡാർക്ക് തീം മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">വിൻഡോ റെക്കോർഡ് ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="5977415296283489383">ഹെഡ്‌ഫോൺ</translation>
 <translation id="5978382165065462689">നിങ്ങളുടെ വിദൂര സഹായി മുഖേന സ്‌ക്രീനിന്റെ നിയന്ത്രണം പങ്കിടുക.</translation>
@@ -1116,6 +1122,7 @@
 <translation id="7378889811480108604">ബാറ്ററി ലാഭിക്കൽ മോഡ് ഓഫാണ്</translation>
 <translation id="7382680553121047388">ഓണാണ്</translation>
 <translation id="7384028040782072252">നിങ്ങളുടെ ആപ്പുകൾ പുനഃക്രമീകരിക്കാൻ എവിടെയെങ്കിലും വലത്-ക്ലിക്ക് ചെയ്യുക</translation>
+<translation id="7386767620098596324">നെറ്റ്‌വർക്ക് കണക്ഷൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">ക്രമീകരണത്തിൽ നിന്ന് നിങ്ങൾക്ക് പിന്നീട് എപ്പോൾ വേണമെങ്കിലും സജ്ജീകരിക്കാം.</translation>
 <translation id="7405710164030118432">ഉപകരണം അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
 <translation id="7406608787870898861">നിങ്ങളുടെ മൊബൈൽ നെറ്റ്‌വര്‍ക്ക് സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കുക</translation>
@@ -1255,6 +1262,7 @@
 <translation id="8142441511840089262">ഡബിൾ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8142699993796781067">സ്വകാര്യനെറ്റ്‌വര്‍ക്ക്</translation>
 <translation id="8144760705599030999">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളുമായി കൂടുതൽ വേഗത്തിൽ ജോടിയാക്കുന്നതിന് <ph name="EMAIL" /> എന്നതിൽ നിങ്ങളുടെ <ph name="NAME" /> സംരക്ഷിക്കുക</translation>
+<translation id="8149413265954228307">Bluetooth ക്രമീകരണം കാണിക്കുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">അടയ്‌ക്കാൻ Ctrl + W അമർത്തുക.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, സ്വയമേവ പൂർത്തിയാക്കുക</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്.</translation>
@@ -1315,6 +1323,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> എന്ന സ്ഥാപനം <ph name="FEATURE_NAME" /> എന്ന ഫീച്ചർ <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">റദ്ദാക്കാൻ Alt+തിരയൽ അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> സെക്കൻഡിൽ പുനഃസ്ഥാപിക്കും.</translation>
+<translation id="8496402167048257517">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക</translation>
 <translation id="85123341071060231">നിങ്ങളുടെ Chromebook-ന്റെ Bluetooth ഓഫാണ്. Chromebook അൺലോക്ക് ചെയ്യാൻ പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="8513108775083588393">സ്വയം തിരിയുക</translation>
 <translation id="851458219935658693">നിലവിലെ ഡെസ്‌കിൽ നിന്ന് വിൻഡോകൾ കാണിക്കുക, റേഡിയോ ബട്ടൺ തിരഞ്ഞെടുത്തു</translation>

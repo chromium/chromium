@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">‏כדי לבדוק אם שאר הסיסמאות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">‏כשההגדרה מופעלת, Chromium מפנה מקום בזיכרון שמוקצה לכרטיסיות לא פעילות. כך, לכרטיסיות הפעילות ולאפליקציות אחרות יש יותר משאבים מהמחשב ו-Chromium פועל מהר. כשחוזרים לכרטיסיות הלא פעילות, הן מופעלות מחדש באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">‏Chromium פועל מהר יותר בזכות מצב החיסכון בזיכרון</translation>
 <translation id="1315551408014407711">‏הגדרת הפרופיל החדש שלך ב-Chromium</translation>
 <translation id="1385859895174722837">‏Google Assistant ב-Chromium</translation>
@@ -251,6 +252,7 @@
 <translation id="6717134281241384636">‏לא ניתן להשתמש בפרופיל שלך משום שהוא מגיע מגרסה חדשה יותר של Chromium.
 
 ייתכן שחלק מהתכונות לא יהיו זמינות. יש לציין ספריית פרופיל אחרת או להשתמש בגרסה חדשה יותר של Chromium.</translation>
+<translation id="6730677189742196061">‏Chromium פועל מהר יותר בזכות מצב החיסכון בזיכרון</translation>
 <translation id="6734291798041940871">‏Chromium כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
 <translation id="673636774878526923">‏כדי לקבל גישה אל הפריטים שלך ב-Chromium בכל המכשירים, יש להיכנס לחשבון ולהפעיל את הסנכרון.</translation>
 <translation id="6774082503108938489">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להפעיל את <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

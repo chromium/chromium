@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">Բոլորը նշել որպես կարդացված</translation>
 <translation id="1689333818294560261">Կեղծանուն</translation>
 <translation id="1700629756560807968">Ընտրվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> էջանիշ</translation>
+<translation id="1715515772563243997">Եթե վստահում եք <ph name="SITE" /> կայքին, մուտք գործելու համար կարող եք օգտագործել պահված գաղտնաբառ։</translation>
 <translation id="1740468249224277719">Կրկնակի հպեք՝ տեղադրելու համար:</translation>
 <translation id="1752547299766512813">Պահել գաղտնաբառերը</translation>
 <translation id="1753905327828125965">Ամենահաճախ այցելվող</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
 <translation id="2155145621546387786">Կիսվել Chrome-ով</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
+<translation id="2178545675770638239">Ընտրեք գաղտնաբառ</translation>
 <translation id="2218443599109088993">Փոքրացնել</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
 <translation id="2239626343334228536">Այցելությունների պատմությունը ջնջվում է…</translation>
@@ -434,6 +436,8 @@
 <translation id="4502566650163919158">Ստուգել հիմա</translation>
 <translation id="4505980578794259603">Վերջին անգամ ստուգվել է <ph name="TIME" />։</translation>
 <translation id="4508750114462689118">Փակել մուտք գործելու առաջարկը</translation>
+<translation id="4514889972748124117">Ստեղծել հուսալի գաղտնաբառ…</translation>
+<translation id="4520798012560649652">Իմանալ ավելին ինկոգնիտո ռեժիմի մասին</translation>
 <translation id="4526249700380860531">Դիտեք և կառավարեք պահված գաղտնաբառերը <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> կայքում</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4536418791685807335">Փորձեք նորից մուտք գործել:</translation>
@@ -1015,6 +1019,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8917490105272468696">Եղավ</translation>
 <translation id="8928133177108699615">Համակարգչի ռեժիմ</translation>
 <translation id="8952559610785099500">Ավելացրեք գաղտնաբառ</translation>
+<translation id="8953046091948372197">Ձեր գաղտնաբառերը կգտնեք այստեղ</translation>
 <translation id="895541991026785598">Հաղորդել խնդրի մասին</translation>
 <translation id="8974714402877957201">1. Բացեք iPad-ի կարգավորումները։</translation>
 <translation id="8976382372951310360">Օգնություն</translation>
@@ -1048,6 +1053,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9200875785104711666"><ph name="TIME" /> օր առաջ</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Խափանման հաշվետվությունն ուղարկվեց:</translation>
+<translation id="941747855997058526">Ընտրել գաղտնաբառ…</translation>
 <translation id="952704832371081537">Չեղարկել</translation>
 <translation id="953008885340860025">Դուք դուրս եք գրվել Chrome-ից</translation>
 <translation id="959066944189734975">Դուք հետևում եք <ph name="CHANNEL_NAME" /> կայքին</translation>

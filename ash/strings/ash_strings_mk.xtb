@@ -91,6 +91,7 @@
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Користете ги копчињата со стрелки за движење помеѓу датумите.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, инсталирана апликација</translation>
+<translation id="1415846719612499304">Прикажете го списокот со мрежи. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Отклучете го уредот за да се изврши дејството од известувањето</translation>
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Прегледувајте ги неодамнешните фотографии и аудиовизуелни содржини од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
@@ -305,6 +306,7 @@
 <translation id="2678852583403169292">Мени за „Изберете за говор“</translation>
 <translation id="2689613560355655046">Работна површина 8</translation>
 <translation id="2695305337569143674">веб</translation>
+<translation id="2697697418792422688">Прикажете ги поставките за тастатура. Избрано е <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Поставете ја вашата тастатура</translation>
 <translation id="2704781753052663061">Поврзете се на други Wi-Fi мрежи</translation>
 <translation id="2705001408393684014">Вклучете/исклучете го микрофонот. <ph name="STATE_TEXT" /></translation>
@@ -777,6 +779,7 @@
 <translation id="5327248766486351172">Име</translation>
 <translation id="5329548388331921293">Се поврзува…</translation>
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
+<translation id="533282197239610265">Прикажете ги уредите со Cast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (десна)</translation>
 <translation id="5352250171825660495">Темната тема е вклучена</translation>
 <translation id="5356963482258194581">Сменете на темна и светла тема. Кликнете со десното копче на работната површина и изберете „Тапети и стил“.</translation>
@@ -808,10 +811,12 @@
 <translation id="553675580533261935">Излегува од сесијата</translation>
 <translation id="5537725057119320332">Емитувај</translation>
 <translation id="554893713779400387">Вклучи/исклучи диктат</translation>
+<translation id="5558091555391176027">Вклучете/исклучете голема видливост за „Споделување во близина“</translation>
 <translation id="5560420195677022218">Прегледувајте ги апликациите од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Копче</translation>
 <translation id="5571066253365925590">Bluetooth е овозможен</translation>
 <translation id="557563299383177668">Следен пасус</translation>
+<translation id="5577082622442191756">Вклучете/исклучете Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Проверете дали е овозможен Bluetooth на телефонот за да користите Phone Hub</translation>
 <translation id="5580000943347215299">Збирка</translation>
 <translation id="558849140439112033">Повлечете за да изберете област за сликање</translation>
@@ -881,6 +886,7 @@
 <translation id="595202126637698455">Овозможено е следење на изведбата</translation>
 <translation id="5955304353782037793">апликација</translation>
 <translation id="5958529069007801266">Надгледуван корисник</translation>
+<translation id="5965524703725988602">Вклучете/исклучете ја темната тема. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Притиснете Enter за да го снимите прозорецот</translation>
 <translation id="5977415296283489383">Слушалки</translation>
 <translation id="5978382165065462689">Споделување контрола на вашиот екран преку далечинска помош.</translation>
@@ -1126,6 +1132,7 @@
 <translation id="7378889811480108604">Режимот „Штедач на батерија“ е исклучен</translation>
 <translation id="7382680553121047388">Вклучи</translation>
 <translation id="7384028040782072252">Кликнете со десното копче каде било за да ги преуредите апликациите</translation>
+<translation id="7386767620098596324">Вклучете/исклучете мрежна врска. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Во секое време може да ја поставите подоцна од „Поставки“.</translation>
 <translation id="7405710164030118432">За да го отклучите уредот, внесете го кодот за пристап на родителот за Family Link</translation>
 <translation id="7406608787870898861">Завршете го поставувањето на мобилната мрежа</translation>
@@ -1266,6 +1273,7 @@
 <translation id="8142441511840089262">Двоен клик</translation>
 <translation id="8142699993796781067">Приватна мрежа</translation>
 <translation id="8144760705599030999">Зачувајте го уредот <ph name="NAME" /> на <ph name="EMAIL" /> за побрзо спарување со вашите други уреди</translation>
+<translation id="8149413265954228307">Прикажете ги поставките за Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Притиснете Ctrl + W за да затворите.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, автоматско довршување</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Администраторот управува со поставкава.</translation>
@@ -1326,6 +1334,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> има <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притиснете Alt+„Пребарување“ или Shift за да откажете.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" />. Резолуцијата се смени во <ph name="FALLBACK_RESOLUTION" />. Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Прикажете ги поставките за „Споделување во близина“</translation>
 <translation id="85123341071060231">Bluetooth на вашиот Chromebook е исклучен. За да го отклучите вашиот Chromebook, внесете лозинка.</translation>
 <translation id="8513108775083588393">Авт. ротирање</translation>
 <translation id="851458219935658693">Прикажувај прозорци од тековната работна површина, избрано е тркалезно копче</translation>

@@ -109,6 +109,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1687475363370981210">Označi vse kot prebrano</translation>
 <translation id="1689333818294560261">Vzdevek</translation>
 <translation id="1700629756560807968">Št. izbranih: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">Če zaupate spletnemu mestu <ph name="SITE" />, lahko za prijavo uporabite shranjeno geslo.</translation>
 <translation id="1740468249224277719">Dvakrat se dotaknite, če želite namestiti.</translation>
 <translation id="1752547299766512813">Shranjena gesla</translation>
 <translation id="1753905327828125965">Najpogosteje obiskane</translation>
@@ -151,6 +152,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2155145621546387786">Delite Chrome z drugimi</translation>
 <translation id="2175927920773552910">Koda QR</translation>
+<translation id="2178545675770638239">Izbira gesla</translation>
 <translation id="2218443599109088993">Pomanjšaj</translation>
 <translation id="2230173723195178503">Spletna stran je naložena</translation>
 <translation id="2239626343334228536">Brisanje podatkov brskanja …</translation>
@@ -434,6 +436,8 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4502566650163919158">Preveri</translation>
 <translation id="4505980578794259603">Nazadnje preverjeno: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Zapri predstavitev prijave</translation>
+<translation id="4514889972748124117">Predlagaj zapleteno geslo ...</translation>
+<translation id="4520798012560649652">Preberite več o anonimnem načinu</translation>
 <translation id="4526249700380860531">Dostopajte do shranjenih gesel in jih upravljajte na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
@@ -1015,6 +1019,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8917490105272468696">Da, sem za</translation>
 <translation id="8928133177108699615">Namizje</translation>
 <translation id="8952559610785099500">Dodajanje gesla</translation>
+<translation id="8953046091948372197">Tukaj bodo prikazana gesla</translation>
 <translation id="895541991026785598">Prijavite težavo</translation>
 <translation id="8974714402877957201">1. Odprite nastavitve za iPad.</translation>
 <translation id="8976382372951310360">Pomoč</translation>
@@ -1048,6 +1053,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9200875785104711666">pred <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Poročilo o zrušitvi poslano.</translation>
+<translation id="941747855997058526">Izbira gesla ...</translation>
 <translation id="952704832371081537">Preklic</translation>
 <translation id="953008885340860025">Chrome je odjavljen</translation>
 <translation id="959066944189734975">Spremljate kanal <ph name="CHANNEL_NAME" /></translation>

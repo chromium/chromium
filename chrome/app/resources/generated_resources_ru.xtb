@@ -1244,6 +1244,7 @@
 <translation id="2135787500304447609">Возобновить</translation>
 <translation id="2136372518715274136">Введите новый пароль</translation>
 <translation id="2136476978468204130">Неверная кодовая фраза</translation>
+<translation id="2137128126782078222">Запретить сайту <ph name="WEBSITE" /> отправлять уведомления</translation>
 <translation id="2137891579555018930">Ожидание разрешения…</translation>
 <translation id="2139919072249842737">Кнопка настройки</translation>
 <translation id="2140788884185208305">Заряд батареи</translation>
@@ -2479,6 +2480,7 @@
 <translation id="3281892622610078515">Файлы и программы, которые будут отправлены в карантин:</translation>
 <translation id="3282210178675490297">Отправка вкладки в приложение <ph name="APP_NAME" />…</translation>
 <translation id="3285322247471302225">Новая вкладка</translation>
+<translation id="3285500645985761267">Разрешить связанным сайтам отслеживать действия внутри группы</translation>
 <translation id="328571385944182268">Сохранить пароли?</translation>
 <translation id="3288047731229977326">Расширения, запущенные в режиме разработчика, могут причинить вред вашему компьютеру. Если вы не являетесь разработчиком, их следует отключить, чтобы обеспечить безопасность данных.</translation>
 <translation id="3289668031376215426">Автоподстановка заглавных</translation>
@@ -2753,6 +2755,7 @@
 <translation id="3541823293333232175">Назначено</translation>
 <translation id="3543393733900874979">Не удалось выполнить обновление (ошибка <ph name="ERROR_NUMBER" />).</translation>
 <translation id="3543597750097719865">Подпись ECDSA X9.62 с SHA-512</translation>
+<translation id="3544058026430919413">Компания может определить группу сайтов, которым разрешено использовать файлы cookie для передачи друг другу информации о действиях пользователя. В режиме инкогнито эта функция не работает.</translation>
 <translation id="3544879808695557954">Имя пользователя (необязательно)</translation>
 <translation id="354602065659584722">Вредоносное ПО удалено</translation>
 <translation id="3547954654003013442">Настройки прокси-сервера</translation>
@@ -2891,6 +2894,7 @@
 <translation id="3681548574519135185">Выделяющее кольцо</translation>
 <translation id="3683524264665795342">Запрос доступа к экрану от <ph name="APP_NAME" /></translation>
 <translation id="3685598397738512288">Настройки USB в Linux</translation>
+<translation id="3687598459967813435">Разрешить сайту <ph name="WEBSITE" /> отправлять уведомления</translation>
 <translation id="368789413795732264">Произошла ошибка при записи файла: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Запись данных в файлы и каталоги, открытые в приложении</translation>
 <translation id="3688526734140524629">Выбрать другой канал</translation>
@@ -4050,6 +4054,7 @@
 <translation id="4779766576531456629">Переименовать мобильную сеть eSIM</translation>
 <translation id="4780321648949301421">Сохранить страницу как...</translation>
 <translation id="4781443161433589743">Используется максимальная защита в Chrome.</translation>
+<translation id="4781584184731045253">Удалить данные и сбросить настройки разрешений</translation>
 <translation id="4782861709165039462">Все микрофоны отключены с помощью аппаратного переключателя устройства</translation>
 <translation id="4785719467058219317">Вы используете электронный ключ, который не зарегистрирован на этом сайте.</translation>
 <translation id="4785914069240823137">Отменить кадрирование</translation>
@@ -4730,6 +4735,7 @@
 <translation id="5449551289610225147">Неправильный пароль</translation>
 <translation id="5449588825071916739">Добавить все вкладки в закладки</translation>
 <translation id="5449716055534515760">Закрыть &amp;окно</translation>
+<translation id="545133051331995777">Нет подключения к сети</translation>
 <translation id="5452446625764825792">Теперь вы можете просматривать недавние фотографии, медиафайлы и приложения с телефона</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (доступен офлайн)</translation>
 <translation id="5454166040603940656">с помощью <ph name="PROVIDER" /></translation>
@@ -4773,6 +4779,7 @@
 <translation id="5487521232677179737">Удалить данные</translation>
 <translation id="5488093641312826914">Объект "<ph name="COPIED_ITEM_NAME" />" скопирован</translation>
 <translation id="5488508217173274228">Варианты шифрования при синхронизации</translation>
+<translation id="5489077378642700219">Запретить сайту <ph name="WEBSITE" /> отправлять уведомления и спросить ещё раз позже</translation>
 <translation id="5489435190927933437">Сохраненные пароли для домена <ph name="DOMAIN" /></translation>
 <translation id="5490721031479690399">Отключение устройства Bluetooth</translation>
 <translation id="5490798133083738649">Разрешить Linux доступ к микрофону</translation>
@@ -5110,6 +5117,7 @@
 <translation id="5805697420284793859">Менеджер окон</translation>
 <translation id="5806447147478173900">Объем хранилища, занятый указанными сайтами: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (по умолчанию)</translation>
+<translation id="5809835394668218762"><ph name="WEBSITE" />: другие действия</translation>
 <translation id="5810603387504252966">Параметр #borealis-enabled должен быть включен на странице chrome://flags</translation>
 <translation id="5810809306422959727">В аккаунте нельзя использовать родительский контроль</translation>
 <translation id="5811614940486072060">Этот файл скачивают редко. Возможно, он вредоносный.</translation>
@@ -5124,6 +5132,7 @@
 <translation id="5826395379250998812">Подключите устройство <ph name="DEVICE_TYPE" /> к телефону. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Полупрозрачный</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827591412833386477">Показывать сайты из одной группы</translation>
 <translation id="5827733057563115968">Подсказка следующего слова</translation>
 <translation id="5828545842856466741">Добавить профиль…</translation>
 <translation id="5828633471261496623">Печать...</translation>
@@ -5239,6 +5248,7 @@
 <translation id="5927232971138258197">Это расширение может читать и изменять данные <ph name="HOST" />.</translation>
 <translation id="592740088639760830">Остановить этот контейнер</translation>
 <translation id="592880897588170157">Скачивать файлы PDF, а не автоматически открывать их в Chrome</translation>
+<translation id="5928969282301718193">Настройка разрешений завершена</translation>
 <translation id="592919310198008711">При нажатии на расширение</translation>
 <translation id="5932209916647644605">Согласно действующим правилам (источник – <ph name="MANAGER" />) вам нужно немедленно обновить устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5932224571077948991">Сайт показывает навязчивую или вводящую в заблуждение рекламу</translation>
@@ -5412,6 +5422,7 @@
 <translation id="6087746524533454243">Ищете информацию о браузере? Перейдите на страницу</translation>
 <translation id="6087960857463881712">Модник</translation>
 <translation id="608912389580139775">Чтобы добавить эту страницу в свой список для чтения, нажмите на значок закладки.</translation>
+<translation id="6091116443517744502">проверьте подключение к интернету и повторите попытку</translation>
 <translation id="6091761513005122595">Ресурс подключен.</translation>
 <translation id="6093803049406781019">Удалить профиль</translation>
 <translation id="6093888419484831006">Отмена обновления...</translation>
@@ -6080,6 +6091,7 @@
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6737393581255281855">Удалить указанные данные?</translation>
 <translation id="6737663862851963468">Удалить билет Kerberos</translation>
+<translation id="6738180164164974883">Разрешить использование сторонних файлов cookie</translation>
 <translation id="6738430949033571771">Проверка аккаунта…</translation>
 <translation id="6739923123728562974">Показывать ярлык на рабочем столе</translation>
 <translation id="6740234557573873150">Скачивание файла "<ph name="FILE_NAME" />" приостановлено</translation>
@@ -6277,6 +6289,7 @@
 <translation id="691106080621596509">Будут удалены все данные и файлы cookie, сохраненные группой сайтов <ph name="SITE_GROUP_NAME" /> и установленным с этих сайтов приложением.</translation>
 <translation id="6911734910326569517">Объем потребляемой памяти</translation>
 <translation id="6912007319859991306">PIN-код SIM-карты</translation>
+<translation id="6912380255120084882">Используйте другое устройство</translation>
 <translation id="691289340230098384">Настройки субтитров</translation>
 <translation id="6914783257214138813">Ваши пароли будут видны всем, у кого есть доступ к файлу экспорта.</translation>
 <translation id="6916590542764765824">Управление расширениями</translation>
@@ -6587,6 +6600,7 @@
 <translation id="7222204278952406003">Chrome используется как браузер по умолчанию</translation>
 <translation id="7222232353993864120">Адрес электронной почты</translation>
 <translation id="7222235798733126207">Ограниченный обмен данными между сайтами</translation>
+<translation id="722408235435815623">{MEMBERS,plural, =1{1 сайт из группы <ph name="FPS_OWNER" />}one{{MEMBERS} сайт из группы <ph name="FPS_OWNER" />}few{{MEMBERS} сайта из группы <ph name="FPS_OWNER" />}many{{MEMBERS} сайтов из группы <ph name="FPS_OWNER" />}other{{MEMBERS} сайта из группы <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Использовать Windows Hello при заполнении паролей</translation>
 <translation id="7225179976675429563">Не указан тип сети</translation>
 <translation id="7227458944009118910">Указанные ниже приложения могут использоваться для обработки специальных ссылок. Другие приложения будут запрашивать разрешение.</translation>
@@ -7099,6 +7113,7 @@
 <translation id="7709152031285164251">Ошибка: <ph name="INTERRUPT_REASON" />.</translation>
 <translation id="7710568461918838723">&amp;Трансляция...</translation>
 <translation id="7711900714716399411">Подключите телефон к компьютеру с помощью USB-кабеля. Если телефон уже подключен, отсоедините кабель и подсоедините его снова.</translation>
+<translation id="7711968363685835633">Отключить персонализированные преобразования и подсказки, а также пользовательский словарь</translation>
 <translation id="7712739869553853093">Диалоговое окно предварительного просмотра при печати</translation>
 <translation id="7714307061282548371">Файлы cookie с сайта <ph name="DOMAIN" /> разрешены</translation>
 <translation id="7714464543167945231">Сертификат</translation>
@@ -7170,6 +7185,7 @@
 <translation id="7768770796815395237">Изменить</translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7769748505895274502">Свернуть список недавно закрытых страниц</translation>
+<translation id="7770072242481632881">Селектор на боковой панели</translation>
 <translation id="7770406201819593386">Запуск диагностики Chrome OS Flex</translation>
 <translation id="7770450735129978837">Нажатие правой кнопки мыши</translation>
 <translation id="7770612696274572992">Изображение скопировано с другого устройства</translation>
@@ -7806,6 +7822,7 @@
 <translation id="8353683614194668312">Разрешения:</translation>
 <translation id="8354034204605718473">PIN-код ребенка добавлен</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> (<ph name="COUNT" />)</translation>
+<translation id="8356409598322585307">Вы уже регистрировали это устройство.</translation>
 <translation id="8357388086258943206">Ошибка при установке Linux</translation>
 <translation id="8358685469073206162">Восстановить страницы?</translation>
 <translation id="8358912028636606457">Трансляция аудио из вкладки не поддерживается на этом устройстве</translation>

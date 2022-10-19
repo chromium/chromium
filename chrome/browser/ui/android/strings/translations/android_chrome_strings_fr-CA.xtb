@@ -270,6 +270,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2497852260688568942">La synchronisation est désactivée par votre administrateur</translation>
 <translation id="250020030759455918">Vous verrez votre état de connexion à <ph name="SITE_NAME" />, vos données de navigation et vos données de site dans Chrome</translation>
+<translation id="2510106555128151389">Installation de <ph name="WEBAPK_NAME" /> en cours…</translation>
 <translation id="2513403576141822879">Pour plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, voir <ph name="BEGIN_LINK" />Synchronisation et services Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>
@@ -892,7 +893,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5869789175361934029">Continuer à partir d'un autre appareil</translation>
 <translation id="587735546353481577">Pour suivre un site, accédez à ce dernier, ouvrez le menu Chrome et touchez Suivre.</translation>
 <translation id="5879072387416556377">Obtenir de meilleures suggestions</translation>
-<translation id="5880748256563468367">Accéder au flux</translation>
 <translation id="5884076754568147479">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites avec lesquels vous utilisez l'Assistant, ainsi que l'information que vous envoyez par l'intermédiaire de l'Assistant</translation>
 <translation id="5906513782029855931">Le fait de connaître les URL des sites permet à l'Assistant Google de vous aider à effectuer des tâches. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="5916664084637901428">Activé</translation>
@@ -904,6 +904,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5956665950594638604">Centre d'aide de Chrome : nouvel onglet</translation>
 <translation id="5957442310066583693">Pour consulter vos sites les plus fréquentés, touchez le bouton Accueil</translation>
 <translation id="5958275228015807058">Trouvez vos fichiers et vos pages dans Téléchargements</translation>
+<translation id="5958994127112619898">Simplifier la page</translation>
 <translation id="5962718611393537961">Toucher pour réduire</translation>
 <translation id="5964869237734432770">Arrêter les descriptions</translation>
 <translation id="5966233851250124270">Chrome se souviendra de votre choix</translation>
@@ -1280,6 +1281,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7887334752153342268">Dupliquer</translation>
 <translation id="789763218334337857">Comment utiliser Chrome</translation>
 <translation id="7903184275147100332">Cette opération peut prendre une minute</translation>
+<translation id="7914399737746719723">Application installée</translation>
 <translation id="7919123827536834358">Traduire automatiquement ces langues</translation>
 <translation id="7926975587469166629">Pseudo de la carte</translation>
 <translation id="7929962904089429003">Ouvrir le menu</translation>

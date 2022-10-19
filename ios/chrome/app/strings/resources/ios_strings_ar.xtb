@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">وضع العلامة كمقروءة على الكل</translation>
 <translation id="1689333818294560261">اللقب</translation>
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">إذا كنت تثق بالموقع الإلكتروني <ph name="SITE" />، يمكنك استخدام كلمة مرور محفوظة لتسجيل الدخول.</translation>
 <translation id="1740468249224277719">انقر مرّتين للتثبيت.</translation>
 <translation id="1752547299766512813">حفظ كلمات المرور</translation>
 <translation id="1753905327828125965">الأكثر زيارة</translation>
@@ -150,6 +151,7 @@
 <translation id="2149973817440762519">تعديل الإشارة</translation>
 <translation id="2155145621546387786">‏مشاركة رابط تطبيق Chrome</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
+<translation id="2178545675770638239">اختيار كلمة مرور</translation>
 <translation id="2218443599109088993">تصغير</translation>
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
 <translation id="2239626343334228536">جارٍ محو بيانات التصفُّح...</translation>
@@ -423,6 +425,7 @@
 <translation id="4502566650163919158">التحقّق الآن</translation>
 <translation id="4505980578794259603">تاريخ آخر عملية تحقُّق: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">إغلاق عرض ترويجي لتسجيل الدخول</translation>
+<translation id="4514889972748124117">اقتراح كلمة مرور قوية…</translation>
 <translation id="4526249700380860531">‏عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
 <translation id="4536418791685807335">حاول تسجيل الدخول مرة أخرى.</translation>
@@ -978,6 +981,7 @@
 <translation id="8917490105272468696">نعم، أنا موافق</translation>
 <translation id="8928133177108699615">الإصدار المخصّص لأجهزة الكمبيوتر</translation>
 <translation id="8952559610785099500">إضافة كلمة مرور</translation>
+<translation id="8953046091948372197">ستظهر كلمات المرور هنا.</translation>
 <translation id="895541991026785598">الإبلاغ عن مشكلة</translation>
 <translation id="8974714402877957201">‏1- فتح iPad Settings (إعدادات iPad)</translation>
 <translation id="8976382372951310360">مساعدة</translation>
@@ -1011,6 +1015,7 @@
 <translation id="9200875785104711666">قبل <ph name="TIME" /> يوم</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">تم إرسال تقرير الأعطال.</translation>
+<translation id="941747855997058526">اختيار كلمة مرور…</translation>
 <translation id="952704832371081537">إلغاء</translation>
 <translation id="959066944189734975">تتم حاليًا متابعة <ph name="CHANNEL_NAME" /></translation>
 <translation id="981498610235328462">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها.</translation>

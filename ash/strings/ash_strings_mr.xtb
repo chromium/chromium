@@ -91,6 +91,7 @@
 <translation id="1407069428457324124">गडद थीम</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. तारखांदरम्यान नेव्हिगेट करण्यासाठी अ‍ॅरो की वापरा.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप</translation>
+<translation id="1415846719612499304">नेटवर्क सूची दाखवा. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस अनलॉक करा</translation>
 <translation id="1420408895951708260">रात्रीचा प्रकाश टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पहा</translation>
@@ -305,6 +306,7 @@
 <translation id="2678852583403169292">बोलण्यासाठी निवडा मेनू</translation>
 <translation id="2689613560355655046">डेस्‍क ८</translation>
 <translation id="2695305337569143674">वेब</translation>
+<translation id="2697697418792422688">कीबोर्ड सेटिंग्ज दाखवा. <ph name="KEYBOARD_NAME" /> निवडला.</translation>
 <translation id="2700493154570097719">तुमचा कीबोर्ड सेट करा</translation>
 <translation id="2704781753052663061">इतर वाय-फाय नेटवर्कमध्ये सामील व्हा</translation>
 <translation id="2705001408393684014">माइक टॉगल करा. <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@
 <translation id="5327248766486351172">नाव</translation>
 <translation id="5329548388331921293">कनेक्ट करत आहे…</translation>
 <translation id="5331975486040154427">USB-C डिव्‍हाइस (डाव्या बाजूचे मागील पोर्ट)</translation>
+<translation id="533282197239610265">कास्‍ट डिव्‍हाइस दाखवा</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (उजवे)</translation>
 <translation id="5352250171825660495">गडद थीम सुरू आहे</translation>
 <translation id="5356963482258194581">गडद आणि फिकट थीमदरम्यान स्विच करा. डेस्कटॉपवर राइट-क्लिक करा आणि वॉलपेपर आणि स्टाइल निवडा.</translation>
@@ -802,10 +805,12 @@
 <translation id="553675580533261935">सेशनमधून बाहेर पडत आहे</translation>
 <translation id="5537725057119320332">कास्ट करा</translation>
 <translation id="554893713779400387">डिक्टेशन टॉगल करा</translation>
+<translation id="5558091555391176027">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा</translation>
 <translation id="5560420195677022218">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अ‍ॅप्स पहा</translation>
 <translation id="556042886152191864">बटण</translation>
 <translation id="5571066253365925590">ब्लूटूथ सक्षम</translation>
 <translation id="557563299383177668">पुढील परिच्छेद</translation>
+<translation id="5577082622442191756">ब्लूटूथ टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">फोन हब वापरण्यासाठी तुमच्या फोनवर ब्लूटूथ सुरू असल्याची खात्री करा</translation>
 <translation id="5580000943347215299">लायब्ररी</translation>
 <translation id="558849140439112033">कॅप्चर करायचे असलेले भाग निवडण्यासाठी ड्रॅग करा</translation>
@@ -874,6 +879,7 @@
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
 <translation id="5955304353782037793">अ‍ॅप</translation>
 <translation id="5958529069007801266">पर्यवेक्षित वापरकर्ता</translation>
+<translation id="5965524703725988602">गडद थीम टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">विंडो रेकॉर्ड करण्यासाठी एंटर दाबा</translation>
 <translation id="5977415296283489383">हेडफोन</translation>
 <translation id="5978382165065462689">दूरस्थ सहाय्याद्वारे आपल्या स्क्रीनचे नियंत्रण शेअर करत आहे.</translation>
@@ -1116,6 +1122,7 @@
 <translation id="7378889811480108604">बॅटरी सेव्हर मोड बंद आहे</translation>
 <translation id="7382680553121047388">सुरू आहे</translation>
 <translation id="7384028040782072252">तुमची ॲप्स पुन्हा क्रमाने लावण्यासाठी कुठेही राइट-क्लिक करा</translation>
+<translation id="7386767620098596324">नेटवर्क कनेक्शन टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">तुम्ही नंतर कधीही सेटिंग्जमधून सेट करू शकता.</translation>
 <translation id="7405710164030118432">डिव्हाइस अनलॉक करण्यासाठी, तुमचा Family Link पालक ॲक्सेस कोड एंटर करा</translation>
 <translation id="7406608787870898861">तुमचे मोबाइल नेटवर्क सेट करणे पूर्ण करा</translation>
@@ -1255,6 +1262,7 @@
 <translation id="8142441511840089262">डबल क्लिक करा</translation>
 <translation id="8142699993796781067">खाजगी नेटवर्क</translation>
 <translation id="8144760705599030999">तुमच्या इतर डिव्हाइसशी आणखी जलद पेअरिंग करण्यासाठी तुमचे <ph name="NAME" /> हे <ph name="EMAIL" /> वर सेव्ह करा</translation>
+<translation id="8149413265954228307">ब्लूटूथ सेटिंग्ज दाखवा. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">बंद करण्यासाठी Ctrl + W दाबा.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ऑटोकंप्लीट</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
@@ -1315,6 +1323,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> कडे <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> आहेत.</translation>
 <translation id="8477270416194247200">रद्द करण्यासाठी Alt+Search किंवा Shift दाबा.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ला सपोर्ट करत नाही. रेझोल्यूशन <ph name="FALLBACK_RESOLUTION" /> वर बदलले. बदल ठेवण्यासाठी खात्री करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
+<translation id="8496402167048257517">Nearby सह शेअरिंग सेटिंग्ज दाखवा</translation>
 <translation id="85123341071060231">तुमच्या Chromebook चे ब्लूटूथ बंद आहे. तुमचे Chromebook अनलॉक करण्यासाठी, पासवर्ड एंटर करा.</translation>
 <translation id="8513108775083588393">ऑटो-रोटेट</translation>
 <translation id="851458219935658693">सध्याच्या डेस्कवरील विंडो दाखवा, रेडिओ बटण निवडले</translation>

@@ -562,6 +562,7 @@
 <translation id="4780458943471935919">เลื่อนไปที่หน้าถัดไป</translation>
 <translation id="4784215347943747396">ควบคุมอุปกรณ์ด้วยสวิตช์เพียง 1 หรือ 2 ปุ่ม</translation>
 <translation id="4786285211967466855">ไม่มีส่วนหัวระดับ 1 ก่อนหน้า</translation>
+<translation id="4786591486270126089">เปลี่ยนเสียงอัตโนมัติโดยอิงตามภาษา</translation>
 <translation id="4787577491510559358">ประกาศการจัดรูปแบบของรายการปัจจุบัน</translation>
 <translation id="479989351350248267">ค้นหา</translation>
 <translation id="4804818685124855865">ตัดการเชื่อมต่อ</translation>
@@ -949,6 +950,7 @@
 <translation id="7492497529767769458">ไปที่ส่วนถัดไป เช่น ถาดสถานะและ Launcher</translation>
 <translation id="7505149250476994901">พูด "ตัวพิมพ์ใหญ่" ต่อจากตัวอักษร</translation>
 <translation id="7533226154149229506">สีเหลืองโกลเด้นร็อดอ่อน</translation>
+<translation id="7541021454094606506">ลบทั้งหมด</translation>
 <translation id="7543255924852002459">ทิ้งป้ายกำกับ</translation>
 <translation id="7552432549459840808">แป้นพิมพ์ลัดของ Chrome ที่มีประโยชน์</translation>
 <translation id="7553679324939294712">แทรก <ph name="INSERT_PHRASE" /> ก่อน <ph name="BEFORE_PHRASE" /></translation>

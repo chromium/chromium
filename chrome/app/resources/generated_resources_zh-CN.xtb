@@ -1112,6 +1112,7 @@
 <translation id="2034346955588403444">添加其他 Wi-Fi 网络</translation>
 <translation id="2035211704574173780">灰阶</translation>
 <translation id="203574396658008164">从锁定屏幕启用备注功能</translation>
+<translation id="2036514476578229158">你已请求访问此网站。你的家长可在 Family Link 内回复。</translation>
 <translation id="2037445849770872822">此 Google 帐号的监管功能已设置完毕。要设置更多家长控制，请选择“继续”。
 
 否则，请立即退出，以便在这台设备上反映对此帐号所做的更改。
@@ -1234,6 +1235,8 @@
 <translation id="2135787500304447609">继续(&amp;R)</translation>
 <translation id="2136372518715274136">输入新密码</translation>
 <translation id="2136476978468204130">您输入的密码不正确</translation>
+<translation id="2137128126782078222">不允许接收来自 <ph name="WEBSITE" /> 的通知</translation>
+<translation id="2137891579555018930">正在等待授权…</translation>
 <translation id="2139919072249842737">设置按钮</translation>
 <translation id="2140788884185208305">电池状况</translation>
 <translation id="2142328300403846845">以其他身份打开链接</translation>
@@ -2467,6 +2470,7 @@
 <translation id="3281892622610078515">要隔离的文件和程序：</translation>
 <translation id="3282210178675490297">正在与 <ph name="APP_NAME" /> 分享某个标签页</translation>
 <translation id="3285322247471302225">打开新的标签页(&amp;T)</translation>
+<translation id="3285500645985761267">允许相关网站查看您在该群组中的活动记录</translation>
 <translation id="328571385944182268">保存您的密码？</translation>
 <translation id="3288047731229977326">以开发者模式运行的扩展程序可能会损害您的计算机。如果您不是开发者，那么，为安全起见，应停用以开发者模式运行的扩展程序。</translation>
 <translation id="3289668031376215426">自动大写</translation>
@@ -2741,6 +2745,7 @@
 <translation id="3541823293333232175">已分配</translation>
 <translation id="3543393733900874979">更新失败（错误：<ph name="ERROR_NUMBER" />）</translation>
 <translation id="3543597750097719865">采用 SHA-512 算法的 X9.62 ECDSA 签名</translation>
+<translation id="3544058026430919413">公司可以定义一组网站，允许它们使用 Cookie 在该群组中分享您的活动记录。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="3544879808695557954">用户名（选填）</translation>
 <translation id="354602065659584722">有害软件已移除</translation>
 <translation id="3547954654003013442">代理设置</translation>
@@ -2879,6 +2884,7 @@
 <translation id="3681548574519135185">聚焦环</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> 屏幕共享请求</translation>
 <translation id="3685598397738512288">Linux USB 偏好设置</translation>
+<translation id="3687598459967813435">始终允许接收来自 <ph name="WEBSITE" /> 的通知</translation>
 <translation id="368789413795732264">尝试写入文件时发生错误：<ph name="ERROR_TEXT" />。</translation>
 <translation id="3688507211863392146">写入您在此应用中打开的文件和文件夹</translation>
 <translation id="3688526734140524629">变更版本</translation>
@@ -4035,6 +4041,7 @@
 <translation id="4779766576531456629">重命名 eSIM 卡移动网络</translation>
 <translation id="4780321648949301421">页面存储为...</translation>
 <translation id="4781443161433589743">您正在享受 Chrome 的最强安全保护</translation>
+<translation id="4781584184731045253">清除数据和权限</translation>
 <translation id="4782861709165039462">所有麦克风都已被设备硬件开关停用</translation>
 <translation id="4785719467058219317">您使用的安全密钥尚未在此网站注册</translation>
 <translation id="4785914069240823137">取消剪裁</translation>
@@ -4118,6 +4125,7 @@
 <translation id="4858913220355269194">足球</translation>
 <translation id="4862642413395066333">签名 OCSP 响应</translation>
 <translation id="4863769717153320198">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（默认）</translation>
+<translation id="486459320933704969">必须先征得家长或监护人的同意，然后你才能访问此网站</translation>
 <translation id="4864805589453749318">请选择让哪位家长授权您添加学校帐号。</translation>
 <translation id="486635084936119914">下载特定类型的文件后自动将其打开</translation>
 <translation id="4868281708609571334">训练 Google 助理识别<ph name="SUPERVISED_USER_NAME" />的语音</translation>
@@ -4714,6 +4722,7 @@
 <translation id="5449551289610225147">密码无效</translation>
 <translation id="5449588825071916739">为所有标签页添加书签</translation>
 <translation id="5449716055534515760">关闭窗口(&amp;D)</translation>
+<translation id="545133051331995777">未连接到网络</translation>
 <translation id="5452446625764825792">您现在可以查看手机中的近期照片、媒体和应用</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（可离线使用）</translation>
 <translation id="5454166040603940656">提供方：<ph name="PROVIDER" /></translation>
@@ -4757,6 +4766,7 @@
 <translation id="5487521232677179737">清除数据</translation>
 <translation id="5488093641312826914">已复制“<ph name="COPIED_ITEM_NAME" />”</translation>
 <translation id="5488508217173274228">同步加密选项</translation>
+<translation id="5489077378642700219">不允许接收来自 <ph name="WEBSITE" /> 的通知，但可过段时间再询问</translation>
 <translation id="5489435190927933437">已保存的用于登录 <ph name="DOMAIN" /> 的密码</translation>
 <translation id="5490721031479690399">断开蓝牙设备</translation>
 <translation id="5490798133083738649">允许 Linux 使用您的麦克风</translation>
@@ -5092,6 +5102,7 @@
 <translation id="5805697420284793859">窗口管理器</translation>
 <translation id="5806447147478173900">显示的网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（默认）</translation>
+<translation id="5809835394668218762">可对 <ph name="WEBSITE" /> 执行的更多操作</translation>
 <translation id="5810603387504252966">必须在 chrome://flags 中启用 #borealis-enabled</translation>
 <translation id="5810809306422959727">此帐号无法使用家长控制功能</translation>
 <translation id="5811614940486072060">此文件属于不常下载的内容，可能含有危险因素</translation>
@@ -5106,6 +5117,7 @@
 <translation id="5826395379250998812">请将您的 <ph name="DEVICE_TYPE" /> 连接到手机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">半透明</translation>
 <translation id="5827266244928330802">Safari</translation>
+<translation id="5827591412833386477">显示同一群组中的网站</translation>
 <translation id="5827733057563115968">下一字词预测</translation>
 <translation id="5828545842856466741">添加个人资料…</translation>
 <translation id="5828633471261496623">正在打印...</translation>
@@ -5221,6 +5233,7 @@
 <translation id="5927232971138258197">此扩展程序可以读取和更改 <ph name="HOST" /></translation>
 <translation id="592740088639760830">停止运行此容器</translation>
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
+<translation id="5928969282301718193">目前已全部完成</translation>
 <translation id="592919310198008711">当我点击此扩展程序时</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5932224571077948991">网站展示过侵扰性或误导性广告</translation>
@@ -5393,6 +5406,7 @@
 <translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
+<translation id="6091116443517744502">请检查互联网连接，然后重试</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
 <translation id="6093803049406781019">删除个人资料</translation>
 <translation id="6093888419484831006">正在取消更新...</translation>
@@ -6055,6 +6069,7 @@
 <translation id="6736243959894955139">地址</translation>
 <translation id="6737393581255281855">清除所显示网站的数据？</translation>
 <translation id="6737663862851963468">移除 Kerberos 票据</translation>
+<translation id="6738180164164974883">允许设置第三方 Cookie</translation>
 <translation id="6738430949033571771">正在验证帐号…</translation>
 <translation id="6739923123728562974">显示桌面快捷方式</translation>
 <translation id="6740234557573873150">“<ph name="FILE_NAME" />”已暂停</translation>
@@ -6252,6 +6267,7 @@
 <translation id="691106080621596509">此操作会清除 <ph name="SITE_GROUP_NAME" />、其下属所有网站及其安装的应用存储的所有数据和 Cookie</translation>
 <translation id="6911734910326569517">内存占用空间</translation>
 <translation id="6912007319859991306">移动网络 SIM 卡 PIN 码</translation>
+<translation id="6912380255120084882">尝试改用其他设备</translation>
 <translation id="691289340230098384">字幕偏好设置</translation>
 <translation id="6914783257214138813">所有能查看此导出文件的人员都能看到您的密码。</translation>
 <translation id="6916590542764765824">管理扩展程序</translation>
@@ -6562,6 +6578,7 @@
 <translation id="7222204278952406003">Chrome 是您的默认浏览器</translation>
 <translation id="7222232353993864120">电子邮件地址</translation>
 <translation id="7222235798733126207">受限的网站间共享</translation>
+<translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> 的群组中有 1 个网站}other{<ph name="FPS_OWNER" /> 的群组中有 {MEMBERS} 个网站}}</translation>
 <translation id="7225082563376899794">填充密码时使用 Windows Hello</translation>
 <translation id="7225179976675429563">缺少网络类型</translation>
 <translation id="7227458944009118910">下列应用也能处理协议链接。其他应用会请求授权。</translation>
@@ -7074,6 +7091,7 @@
 <translation id="7709152031285164251">失败 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">投放(&amp;C)…</translation>
 <translation id="7711900714716399411">请使用一根 USB 线将手机连接到计算机。如果您的手机已连接到计算机，请拔下 USB 线，然后再重新插上。</translation>
+<translation id="7711968363685835633">停用个性化转换功能、建议功能以及用户字典</translation>
 <translation id="7712739869553853093">“打印预览”对话框</translation>
 <translation id="7714307061282548371">已允许来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="7714464543167945231">证书</translation>
@@ -7145,6 +7163,7 @@
 <translation id="7768770796815395237">更改</translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7769748505895274502">收起“最近关闭的标签页”部分</translation>
+<translation id="7770072242481632881">侧边栏选择器</translation>
 <translation id="7770406201819593386">运行 ChromeOS Flex 诊断测试。</translation>
 <translation id="7770450735129978837">用鼠标右键点击</translation>
 <translation id="7770612696274572992">从其他设备复制的图片</translation>
@@ -7781,6 +7800,7 @@
 <translation id="8353683614194668312">该程序可以：</translation>
 <translation id="8354034204605718473">您孩子的 PIN 码已添加完毕</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /> 项</translation>
+<translation id="8356409598322585307">您已注册此设备。无需再次注册。</translation>
 <translation id="8357388086258943206">安装 Linux 时出错</translation>
 <translation id="8358685469073206162">要恢复页面吗？</translation>
 <translation id="8358912028636606457">此设备不支持投放标签页中的音频。</translation>
@@ -8711,6 +8731,7 @@
 <translation id="947329552760389097">检查元素(&amp;I)</translation>
 <translation id="947526284350604411">您的回答</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> 无法打开此文件夹内的文件，因为此文件夹含有系统文件</translation>
+<translation id="949314938206378263">你已请求访问此网站。你的家长可在 Family Link 内回复。</translation>
 <translation id="950307215746360464">设置指南</translation>
 <translation id="951991426597076286">拒绝</translation>
 <translation id="952471655966876828">已开启且正被使用时，设备会自动连接</translation>

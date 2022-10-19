@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">Позначити всі як прочитані</translation>
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="1700629756560807968">Вибрано <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">Якщо ви довіряєте сайту <ph name="SITE" />, то можете входити за допомогою збереженого пароля.</translation>
 <translation id="1740468249224277719">Торкніться двічі, щоб установити.</translation>
 <translation id="1752547299766512813">Зберігати паролі</translation>
 <translation id="1753905327828125965">Часто відвідувані</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">Редагувати закладку</translation>
 <translation id="2155145621546387786">Посилання на додаток Chrome</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2178545675770638239">Виберіть пароль</translation>
 <translation id="2218443599109088993">Віддалити</translation>
 <translation id="2230173723195178503">Веб-сторінку завантажено</translation>
 <translation id="2239626343334228536">Очищення даних веб-перегляду…</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">Перевірити</translation>
 <translation id="4505980578794259603">Остання перевірка: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Закрити заклик до входу</translation>
+<translation id="4514889972748124117">Запропонувати надійний пароль…</translation>
 <translation id="4520798012560649652">Докладніше про режим анонімного перегляду</translation>
 <translation id="4526249700380860531">Переглядайте збережені паролі та керуйте ними на сторінці <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Переглянути синхронізовані дані</translation>
@@ -1016,6 +1019,7 @@
 <translation id="8917490105272468696">Так</translation>
 <translation id="8928133177108699615">Режим робочого столу</translation>
 <translation id="8952559610785099500">Додати пароль</translation>
+<translation id="8953046091948372197">Тут відображатимуться ваші паролі</translation>
 <translation id="895541991026785598">Повідомити про проблему</translation>
 <translation id="8974714402877957201">1. Відкрийте Параметри на iPad</translation>
 <translation id="8976382372951310360">Довідка</translation>
@@ -1049,6 +1053,7 @@
 <translation id="9200875785104711666"><ph name="TIME" /> дн. тому</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Звіт про аварійне завершення роботи надіслано.</translation>
+<translation id="941747855997058526">Вибрати пароль…</translation>
 <translation id="952704832371081537">Скасувати</translation>
 <translation id="953008885340860025">Ви вийшли з облікового запису Chrome</translation>
 <translation id="959066944189734975">Ви підписалися на канал "<ph name="CHANNEL_NAME" />"</translation>

@@ -91,6 +91,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1407069428457324124">Tema fosc</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Fes servir les tecles de fletxa per navegar entre dates.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplicació instal·lada</translation>
+<translation id="1415846719612499304">Mostra la llista de xarxes. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Desbloqueja el dispositiu per dur a terme l'acció que indica la notificació</translation>
 <translation id="1420408895951708260">Activa o desactiva la funció Llum nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Consulta els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
@@ -305,6 +306,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2678852583403169292">Menú Escolta la selecció</translation>
 <translation id="2689613560355655046">Escriptori 8</translation>
 <translation id="2695305337569143674">web</translation>
+<translation id="2697697418792422688">Mostra la configuració del teclat. S'ha seleccionat <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Defineix el teu teclat</translation>
 <translation id="2704781753052663061">Uneix-te a altres xarxes Wi-Fi</translation>
 <translation id="2705001408393684014">Commuta el micròfon. <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5329548388331921293">S'està connectant...</translation>
 <translation id="5331975486040154427">Dispositiu USB-C (port posterior esquerre)</translation>
+<translation id="533282197239610265">Mostra els dispositius d'emissió</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (auricular dret)</translation>
 <translation id="5352250171825660495">El tema fosc està activat</translation>
 <translation id="5356963482258194581">Canvia entre els temes clar i fosc. Fes clic amb el botó dret a l'escriptori i selecciona Estil i fons de pantalla.</translation>
@@ -802,10 +805,12 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="553675580533261935">S'està tancant la sessió</translation>
 <translation id="5537725057119320332">Emet</translation>
 <translation id="554893713779400387">Activa o desactiva el dictat</translation>
+<translation id="5558091555391176027">Commuta la visibilitat alta de Compartició Nearby</translation>
 <translation id="5560420195677022218">Consulta les aplicacions del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Botó</translation>
 <translation id="5571066253365925590">S'ha activat el Bluetooth</translation>
 <translation id="557563299383177668">Paràgraf següent</translation>
+<translation id="5577082622442191756">Commuta el Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Comprova que el Bluetooth estigui activat al telèfon per utilitzar El meu telèfon</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
 <translation id="558849140439112033">Arrossega per seleccionar l'àrea que vols capturar</translation>
@@ -874,6 +879,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
 <translation id="5955304353782037793">aplicació</translation>
 <translation id="5958529069007801266">Usuari supervisat</translation>
+<translation id="5965524703725988602">Commuta el tema fosc. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Prem Retorn per gravar la finestra</translation>
 <translation id="5977415296283489383">Auricular</translation>
 <translation id="5978382165065462689">Es comparteix el control de la pantalla mitjançant l'Assistència remota.</translation>
@@ -1113,6 +1119,7 @@ Instal·lació nova</translation>
 <translation id="7378889811480108604">El mode d'estalvi de bateria està desactivat</translation>
 <translation id="7382680553121047388">Activat</translation>
 <translation id="7384028040782072252">Fes clic amb el botó dret en qualsevol lloc per tornar a ordenar les aplicacions</translation>
+<translation id="7386767620098596324">Commuta la connexió a la xarxa. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Pots ajustar aquesta funció més endavant des de Configuració.</translation>
 <translation id="7405710164030118432">Introdueix el codi d'accés parental de Family Link per desbloquejar el dispositiu</translation>
 <translation id="7406608787870898861">Acaba de configurar la xarxa mòbil</translation>
@@ -1252,6 +1259,7 @@ Instal·lació nova</translation>
 <translation id="8142441511840089262">Fes doble clic</translation>
 <translation id="8142699993796781067">Xarxa privada</translation>
 <translation id="8144760705599030999">Desa el dispositiu <ph name="NAME" /> a <ph name="EMAIL" /> perquè es vinculi ràpidament als teus altres dispositius</translation>
+<translation id="8149413265954228307">Mostra la configuració del Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Prem Ctrl+W per tancar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, compleció automàtica</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />. El teu administrador gestiona aquesta opció de configuració.</translation>
@@ -1312,6 +1320,7 @@ Instal·lació nova</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> té la funció <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prem Alt+Cerca o Maj per cancel·lar.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" />. La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" />. Fes clic a Confirma per conservar els canvis. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Mostra la configuració de Compartició Nearby</translation>
 <translation id="85123341071060231">El Bluetooth del Chromebook està desactivat. Per desbloquejar el Chromebook, introdueix la contrasenya.</translation>
 <translation id="8513108775083588393">Rotació autom.</translation>
 <translation id="851458219935658693">Mostra les finestres de l'escriptori actual amb el botó d'opció seleccionat</translation>

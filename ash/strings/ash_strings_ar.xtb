@@ -337,6 +337,7 @@
 <translation id="2865888419503095837">معلومات الشبكة</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878884018241093801">ليست هناك عناصر تم استخدامها مؤخرًا</translation>
+<translation id="2885950158625301909">مزيد من المعلومات</translation>
 <translation id="2891209721153296020">"إلغاء الاختيار"</translation>
 <translation id="2894949423239620203">قد يؤثّر استخدام الكابل في أداء الجهاز</translation>
 <translation id="2914580577416829331">لقطات الشاشة</translation>
@@ -1044,6 +1045,7 @@
 <translation id="6961121602502368900">لا تتوفّر ميزة "كتم صوت الهاتف" على الملف الشخصي للعمل.</translation>
 <translation id="6961840794482373852">‏تم تغيير اختصارات لوحة المفاتيح "Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Page Up، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه للأعلى".</translation>
 <translation id="696267987219125751">ميزة "تكبير تلقائي" غير مفعّلة.</translation>
+<translation id="6964690557625666701">‏جميع العناصر المثبَّتة في وضع Shelf Party الآن.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6972754398087986839">البدء</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1349,6 +1351,8 @@
 <translation id="8724318433625452070">تصوير الشاشة بأكملها</translation>
 <translation id="8734991477317290293">قد تحاول لوحة المفاتيح سرقة ضغطات المفاتيح.</translation>
 <translation id="8735678380411481005">لون الإضاءة الخلفية للوحة المفاتيح</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">يجب تفعيل خيار الوصول إلى الكاميرا للسماح للتطبيقات وصفحات الويب التي لديها إذن وصول إلى الكاميرا باستخدام الكاميرات المتصلة بهذا الجهاز.</translation>
 <translation id="8755498163081687682">إثبات هويتك: يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
 <translation id="875593634123171288">‏عرض إعدادات الشبكة الظاهرية الخاصة (VPN)</translation>

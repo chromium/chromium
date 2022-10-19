@@ -396,6 +396,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{ללא}=1{אתר אחד}two{שני אתרים}many{# אתרים}other{# אתרים}}</translation>
 <translation id="1924727005275031552">חדשה</translation>
 <translation id="1927439593081478069">‏לחצן להרצת בדיקת אבטחה ב-Chrome, לוחצים על Enter כדי להריץ בדיקת אבטחה בהגדרות של Chrome</translation>
+<translation id="1935995810530254458">אעתיק בכל זאת</translation>
 <translation id="1939175642807587452">האתר יכול לבקש הרשאה לשלוח התראות</translation>
 <translation id="1943994668912612445">עיצוב</translation>
 <translation id="1945968466830820669">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chromium, מומלץ לשנות את הסיסמה עכשיו.</translation>
@@ -449,6 +450,7 @@
 <translation id="2085876078937250610">שמירה…</translation>
 <translation id="2088086323192747268">‏הלחצן 'ניהול הסנכרון', יש להקיש על Enter כדי לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="2091887806945687916">צליל</translation>
+<translation id="2093982008204312032">‏Google Chrome מנסה לכבות את Windows Hello כדי למלא סיסמאות.</translation>
 <translation id="2094505752054353250">אי התאמה בדומיינים</translation>
 <translation id="2099652385553570808">3 סיכות הידוק בצד שמאל</translation>
 <translation id="2101225219012730419">גרסה:</translation>
@@ -1147,6 +1149,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{‏מסמך ה-PDF מכיל דף אחד ({COUNT})}two{‏מסמך ה-PDF מכיל {COUNT} דפים}many{‏מסמך ה-PDF מכיל {COUNT} דפים}other{‏מסמך ה-PDF מכיל {COUNT} דפים}}</translation>
 <translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">שליחת הטופס הזה מתבצעת דרך חיבור שאינו מאובטח, לכן המידע שלך יהיה גלוי לאחרים.</translation>
+<translation id="4024923292610332139">‏לכבות את TouchID כדי למלא סיסמאות</translation>
 <translation id="4025913568718019429">‏הלחצן לניהול הגדרות הפרטיות ב-Google, מקישים על Enter כדי להיכנס להגדרות הפרטיות בחשבון Google</translation>
 <translation id="4030383055268325496">&amp;ביטול הוספה</translation>
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
@@ -1265,6 +1268,7 @@
 <translation id="42981349822642051">הרחבה</translation>
 <translation id="4300675098767811073">ניקובים מרובים בצד ימין</translation>
 <translation id="4302514097724775343">יש להקיש על הדינוזאור כדי לשחק</translation>
+<translation id="4304049446746819918">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקובץ הזה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}many{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">לא ניתן לגשת לקובץ</translation>
 <translation id="4306529830550717874">לשמור את הכתובת?</translation>
 <translation id="4306812610847412719">לוח</translation>
@@ -1645,6 +1649,7 @@ Del</translation>
 <translation id="5254043433801397071">אופטימיזציה של תוכן ההדפסה</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">אני בכל זאת רוצה לצלם</translation>
+<translation id="5257739419779698609">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקובץ הזה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקבצים האלה אל <ph name="DESTINATION_NAME" />}many{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">כריכה בקצה העליון</translation>
 <translation id="5269225904387178860">4 ניקובים בחלק התחתון</translation>
 <translation id="5269999699920406580">רק הבעלים יכול להגדיר תכונות שחלות על כל המערכת: <ph name="OWNER_EMAIL" /></translation>
@@ -1708,6 +1713,7 @@ Del</translation>
 <translation id="5412236728747081950">‏יוצגו לך מודעות רלוונטיות יותר באתר על סמך תחומי העניין שלך מ-Chrome</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">מערים 4</translation>
+<translation id="5414511064953050917">אעביר בכל זאת</translation>
 <translation id="5421136146218899937">ניקוי נתוני גלישה...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{אין אתרים חסומים}=1{אתר אחד נחסם}two{# אתרים נחסמו}many{# אתרים נחסמו}other{# אתרים נחסמו}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> רוצה לשלוח לך הודעות</translation>
@@ -2330,6 +2336,7 @@ Del</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">לבנדר</translation>
 <translation id="7156870133441232244">‏יש לשדרג את השרת ל-TLS 1.2 ואילך.</translation>
+<translation id="7163295244162773898">{0,plural, =1{להעתיק את הקובץ הסודי?}two{להעתיק את הקבצים הסודיים?}many{להעתיק את הקבצים הסודיים?}other{להעתיק את הקבצים הסודיים?}}</translation>
 <translation id="717330890047184534">‏מזהה GAIA:</translation>
 <translation id="7174545416324379297">משולבת</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}two{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -2937,6 +2944,7 @@ Del</translation>
 <translation id="8763986294015493060">סגירת כל החלונות הפרטיים שפתוחים כרגע</translation>
 <translation id="8766943070169463815">גיליון האימות של פרטי הכניסה לתשלום המאובטח פתוח</translation>
 <translation id="8767765348545497220">סגירה של בועת העזרה</translation>
+<translation id="877348612833018844">{0,plural, =1{להעביר את הקובץ הסודי?}two{להעביר את הקבצים הסודיים?}many{להעביר את הקבצים הסודיים?}other{להעביר את הקבצים הסודיים?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">אופנועים</translation>
 <translation id="8790007591277257123">&amp;ביצוע מחדש של מחיקה</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1220509181886849806">Použít uložené heslo?</translation>
+<translation id="1580351948163139119">Heslo uživatele <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Seznam identifikačních údajů k vyplnění při klepnutí je otevřený na polovinu výšky.</translation>
 <translation id="207576718733492531">Seznam identifikačních údajů k vyplnění při klepnutí je zavřený.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Seznam identifikačních údajů k vyplnění při klepnutí je otevřený na celou výšku.</translation>
 <translation id="5591247451101092906">Použít uložené heslo nebo přístupový klíč?</translation>
 <translation id="5624120631404540903">Spravovat hesla</translation>
+<translation id="7736236483645733578">Přístupový klíč pro uživatele <ph name="USERNAME" />, použijte zámek obrazovky.</translation>
 <translation id="804577341878669140">Pokračovat s účtem</translation>
 </translationbundle>

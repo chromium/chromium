@@ -422,6 +422,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1397594434718759194">Prihlásili ste sa do Chromu v týchto zariadeniach, takže ich môžete používať ako bezpečnostné kľúče.</translation>
 <translation id="1398853756734560583">Maximalizovať</translation>
 <translation id="139911022479327130">Odomknite telefón a potvrďte, že ste to vy</translation>
+<translation id="1401216725754314428">Ďalšie informácie o súvisiacich weboch na novej karte</translation>
 <translation id="1401308693935339022">Používanie polohy. Povoľte aplikáciám a službám s povoleným prístupom k polohe používať polohu tohto zariadenia. Google môže pravidelne zhromažďovať údaje o polohe a anonymne pomocou nich zlepšovať presnosť a služby na základe polohy.</translation>
 <translation id="1403222014593521787">K proxy serveru sa nepodarilo pripojiť</translation>
 <translation id="1405779994569073824">Karta zlyhala.</translation>
@@ -7687,6 +7688,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8206745257863499010">Bluesový</translation>
 <translation id="8206859287963243715">Mobilné</translation>
 <translation id="8207404892907560325">Výber prístupového kľúča</translation>
+<translation id="8208188204689616705">Tieto weby sú v skupine definovanej vlastníkom <ph name="FPS_OWNER" />. Webom v skupine sa zobrazuje vaša aktivita v nej.</translation>
 <translation id="8208216423136871611">Neuložiť</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nové upozornenie}few{# nové upozornenia}many{# new notifications}other{# nových upozornení}}</translation>
 <translation id="821119981794423735">Ak chcete importovať heslá do Správcu hesiel Google pre účet <ph name="USER_EMAIL" />, vyberte súbor CSV</translation>

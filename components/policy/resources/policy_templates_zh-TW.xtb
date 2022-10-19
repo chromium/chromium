@@ -3303,9 +3303,6 @@
 
       注意：對於 Android 裝置，請改用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="4261820385751181068">裝置登入畫面語言代碼</translation>
-<translation id="4261964161337162399">系統取樣和收集音訊資料的頻率。下限值是 1 分鐘。
-
-      如果未設定，系統會套用 10 分鐘的預設頻率。</translation>
 <translation id="4263788921751326798">停用裝置當機報告資訊回報功能</translation>
 <translation id="4268586991084547853">與 Microsoft IE/Edge 企業模式網站清單的相容性更高。</translation>
 <translation id="4269798992490176617">如果設為啟用，<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />可能會執行遠端主機上瀏覽工作階段傳送的 WebAuthn API 要求。

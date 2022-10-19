@@ -109,6 +109,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1687475363370981210">Markera alla som lästa</translation>
 <translation id="1689333818294560261">Kortnamn</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valda</translation>
+<translation id="1715515772563243997">Om du litar på <ph name="SITE" /> kan du använda ett sparat lösenord när du loggar in.</translation>
 <translation id="1740468249224277719">Tryck snabbt två gånger här om du vill installera.</translation>
 <translation id="1752547299766512813">Spara lösenord</translation>
 <translation id="1753905327828125965">Mest besökta</translation>
@@ -151,6 +152,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2155145621546387786">Dela Chrome</translation>
 <translation id="2175927920773552910">QR-kod</translation>
+<translation id="2178545675770638239">Välj lösenord</translation>
 <translation id="2218443599109088993">Zooma ut</translation>
 <translation id="2230173723195178503">Webbsidan har lästs in</translation>
 <translation id="2239626343334228536">Tar bort webbinformation …</translation>
@@ -434,6 +436,8 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4502566650163919158">Kontrollera nu</translation>
 <translation id="4505980578794259603">Kontrollerades senast <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Stäng inloggningskampanj</translation>
+<translation id="4514889972748124117">Föreslå ett starkt lösenord …</translation>
+<translation id="4520798012560649652">Läs mer om inkognitoläget</translation>
 <translation id="4526249700380860531">Visa och hantera sparade lösenord på <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Granska din synkroniserade data</translation>
 <translation id="4536418791685807335">Försök att logga in igen.</translation>
@@ -1015,6 +1019,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8917490105272468696">Ja</translation>
 <translation id="8928133177108699615">Dator</translation>
 <translation id="8952559610785099500">Lägg till lösenord</translation>
+<translation id="8953046091948372197">Du hittar dina lösenord här</translation>
 <translation id="895541991026785598">Rapportera ett problem</translation>
 <translation id="8974714402877957201">1. Öppna iPad-inställningarna</translation>
 <translation id="8976382372951310360">Hjälp</translation>
@@ -1048,6 +1053,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9200875785104711666"><ph name="TIME" /> d sedan</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Felrapporten har skickats.</translation>
+<translation id="941747855997058526">Välj lösenord …</translation>
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="953008885340860025">Utloggad från Chrome</translation>
 <translation id="959066944189734975">Du följer <ph name="CHANNEL_NAME" /></translation>

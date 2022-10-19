@@ -270,6 +270,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2496180316473517155">Historie procházení</translation>
 <translation id="2497852260688568942">Synchronizace je administrátorem zakázána.</translation>
 <translation id="250020030759455918">Uvidíte stav přihlášení, údaje o prohlížení a data webu <ph name="SITE_NAME" /> v Chromu</translation>
+<translation id="2510106555128151389">Probíhá instalace aplikace <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat naleznete v části <ph name="BEGIN_LINK" />Synchronizace a služby Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Naskenovat</translation>
 <translation id="2523184218357549926">Odesílá do Googlu adresy URL stránek, které navštěvujete</translation>
@@ -892,7 +893,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5869789175361934029">Pokračujte z jiného zařízení</translation>
 <translation id="587735546353481577">Pokud nějaký web chcete sledovat, přejděte na něj, otevřené nabídku Chrome a klepněte na Sledovat.</translation>
 <translation id="5879072387416556377">Získejte lepší návrhy</translation>
-<translation id="5880748256563468367">Přejít na informační kanál</translation>
 <translation id="5884076754568147479">Abyste mohli provádět akce, Google bude dostávat adresy URL a obsah webů, ve kterých používáte Asistenta, a informace, které prostřednictvím Asistenta odesíláte</translation>
 <translation id="5906513782029855931">Když bude Asistent Google znát adresy URL webů, bude vám moci pomáhat s plněním úkolů. Asistenta můžete vypnout v nastavení Chromu.</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
@@ -904,6 +904,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5956665950594638604">Otevřít centrum nápovědy Chrome na nové kartě</translation>
 <translation id="5957442310066583693">Chcete-li zobrazit své top weby, klepněte na tlačítko domovské stránky</translation>
 <translation id="5958275228015807058">Najděte stažené soubory a stránky</translation>
+<translation id="5958994127112619898">Zjednodušit stránku</translation>
 <translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
 <translation id="5966233851250124270">Chrome si váš výběr zapamatuje</translation>
@@ -1280,6 +1281,7 @@ Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjisti
 <translation id="7887334752153342268">Duplikovat</translation>
 <translation id="789763218334337857">Práce s prohlížečem Chrome</translation>
 <translation id="7903184275147100332">Může to chvíli trvat</translation>
+<translation id="7914399737746719723">Aplikace byla nainstalována</translation>
 <translation id="7919123827536834358">Tyto jazyky překládat automaticky</translation>
 <translation id="7926975587469166629">Přezdívka karty</translation>
 <translation id="7929962904089429003">Otevřít nabídku</translation>

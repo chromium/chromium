@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">ब्राउझिंग इतिहास</translation>
 <translation id="2497852260688568942">तुमच्या ॲडमिनिस्ट्रेटरने सिंक अक्षम केले आहे</translation>
 <translation id="250020030759455918">तुम्हाला Chrome मध्ये तुमची <ph name="SITE_NAME" /> साइन-इन स्थिती, ब्राउझिंग डेटा आणि साइट डेटा दिसेल</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> इंस्टॉल करत आहे…</translation>
 <translation id="2513403576141822879">गोपनीयता, सुरक्षितता आणि डेटा संकलनाशी संबंधित अधिक सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक आणि Google सेवा<ph name="END_LINK" /> पहा</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2523184218357549926">तुम्ही भेट दिलेल्या पेजच्या URL Google ला पाठवते</translation>
@@ -892,7 +893,6 @@
 <translation id="5869789175361934029">दुसर्‍या डिव्हाइसवरून पुढे सुरू ठेवा</translation>
 <translation id="587735546353481577">साइटला फॉलो करण्यासाठी, साइटवर जा, Chrome मेनू उघडा आणि फॉलो करा वर टॅप करा.</translation>
 <translation id="5879072387416556377">आणखी चांगल्या सूचना मिळवा</translation>
-<translation id="5880748256563468367">फीडवर जा</translation>
 <translation id="5884076754568147479">टास्क पूर्ण करण्यात तुम्हाला मदत व्हावी म्हणून Google ला तुम्ही Assistant वापरून सबमिट करता त्या माहितीच्या समावेशासह तुम्ही Assistant वापरता त्या साइटचा आशय आणि URL मिळतील</translation>
 <translation id="5906513782029855931">साइटच्या URLs बद्दल जाणून घेतल्याने, टास्क पूर्ण करण्यात Google Assistant ला तुम्हाला मदत करता येते. तुम्ही Chrome सेटिंग्जमध्ये Assistant बंद करू शकता.</translation>
 <translation id="5916664084637901428">सुरू</translation>
@@ -904,6 +904,7 @@
 <translation id="5956665950594638604">नवीन टॅबमध्ये Chrome मदत केंद्र उघडा</translation>
 <translation id="5957442310066583693">तुमच्या टॉप साइट पाहण्यासाठी, होम बटणावर टॅप करा</translation>
 <translation id="5958275228015807058">तुमच्या फाइल आणि पेज डाउनलोडमध्ये शोधा</translation>
+<translation id="5958994127112619898">पृष्‍ठ सरलीकृत करा</translation>
 <translation id="5962718611393537961">संकुचित करण्‍यासाठी टॅप करा</translation>
 <translation id="5964869237734432770">इमेजची वर्णने थांबवा</translation>
 <translation id="5966233851250124270">Chrome तुमची निवड लक्षात ठेवेल</translation>
@@ -1280,6 +1281,7 @@
 <translation id="7887334752153342268">डुप्लिकेट</translation>
 <translation id="789763218334337857">Chrome कसे वापरावे</translation>
 <translation id="7903184275147100332">यासाठी एक मिनिट लागू शकतो</translation>
+<translation id="7914399737746719723">अ‍ॅप इंस्टॉल केले</translation>
 <translation id="7919123827536834358">या भाषांचे आपोआप भाषांतर करा</translation>
 <translation id="7926975587469166629">कार्डावरील टोपणनाव</translation>
 <translation id="7929962904089429003">मेनू उघडा</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1220509181886849806">സംരക്ഷിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കണോ?</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" /> എന്നതിനുള്ള പാസ്‌വേഡ്.</translation>
 <translation id="1717486229951421299">ടച്ച് ചെയ്യുമ്പോൾ പൂരിപ്പിക്കേണ്ട ക്രെഡൻഷ്യലുകളുടെ ലിസ്റ്റ് പകുതി ഉയരത്തിൽ തുറന്നിരിക്കുന്നു.</translation>
 <translation id="207576718733492531">ടച്ച് ചെയ്യുമ്പോൾ പൂരിപ്പിക്കേണ്ട ക്രെഡൻഷ്യലുകളുടെ ലിസ്റ്റ് അടച്ചിരിക്കുന്നു.</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">ടച്ച് ചെയ്യുമ്പോൾ പൂരിപ്പിക്കേണ്ട ക്രെഡൻഷ്യലുകളുടെ ലിസ്റ്റ് പൂർണ്ണ ഉയരത്തിൽ തുറന്നിരിക്കുന്നു.</translation>
 <translation id="5591247451101092906">സംരക്ഷിച്ച പാസ്‌വേഡോ പാസ്‌കീയോ ഉപയോഗിക്കണോ?</translation>
 <translation id="5624120631404540903">പാസ്‌വേഡുകൾ നിയന്ത്രിക്കുക</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" /> എന്നതിനുള്ള പാസ്‌കീ, നിങ്ങളുടെ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുക.</translation>
 <translation id="804577341878669140">അക്കൗണ്ടിൽ തുടരുക</translation>
 </translationbundle>

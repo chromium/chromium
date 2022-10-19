@@ -91,6 +91,7 @@
 <translation id="1407069428457324124">ਗੂੜ੍ਹਾ ਥੀਮ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />। ਤਾਰੀਖਾਂ ਵਿਚਾਲੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ਸਥਾਪਤ ਕੀਤੀ ਐਪ</translation>
+<translation id="1415846719612499304">ਨੈੱਟਵਰਕ ਸੂਚੀ ਨੂੰ ਦਿਖਾਓ। <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">ਸੂਚਨਾ 'ਤੇ ਕਾਰਵਾਈ ਕਰਨ ਲਈ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="1420408895951708260">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਮੀਡੀਆ ਦੇਖੋ</translation>
@@ -305,6 +306,7 @@
 <translation id="2678852583403169292">ਚੁਣੋ ਅਤੇ ਸੁਣੋ ਮੀਨੂ</translation>
 <translation id="2689613560355655046">ਡੈਸਕ 8</translation>
 <translation id="2695305337569143674">ਵੈੱਬ</translation>
+<translation id="2697697418792422688">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ ਨੂੰ ਦਿਖਾਓ। <ph name="KEYBOARD_NAME" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="2700493154570097719">ਆਪਣਾ ਕੀ-ਬੋਰਡ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="2704781753052663061">ਦੂਜੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="2705001408393684014">ਮਾਈਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
@@ -772,6 +774,7 @@
 <translation id="5327248766486351172">ਨਾਮ</translation>
 <translation id="5329548388331921293">ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="5331975486040154427">USB-C ਡੀਵਾਈਸ (ਖੱਬੇ ਪਾਸੇ ਪਿੱਛੇ ਦਾ ਪੋਰਟ)</translation>
+<translation id="533282197239610265">ਕਾਸਟ ਡੀਵਾਈਸਾਂ ਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ਸੱਜੇ ਪਾਸੇ)</translation>
 <translation id="5352250171825660495">ਗੂੜ੍ਹਾ ਥੀਮ ਚਾਲੂ ਹੈ</translation>
 <translation id="5356963482258194581">ਗੂੜ੍ਹੇ ਅਤੇ ਹਲਕੇ ਥੀਮ ਵਿਚਕਾਰ ਸਵਿੱਚ ਕਰੋ। ਡੈਸਕਟਾਪ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਕੇ 'ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ' ਚੁਣੋ।</translation>
@@ -803,10 +806,12 @@
 <translation id="553675580533261935">ਸੈਸ਼ਨ ਤੋਂ ਬਾਹਰ ਜਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5537725057119320332">ਕਾਸਟ ਕਰੋ</translation>
 <translation id="554893713779400387">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
+<translation id="5558091555391176027">'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਉੱਚ ਦਿਖਣਯੋਗਤਾ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="5560420195677022218">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਦੇਖੋ</translation>
 <translation id="556042886152191864">ਬਟਨ</translation>
 <translation id="5571066253365925590">ਬਲੂਟੁੱਥ ਸਮਰਥਿਤ</translation>
 <translation id="557563299383177668">ਅਗਲਾ ਪੈਰਾ</translation>
+<translation id="5577082622442191756">ਬਲੂਟੁੱਥ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ਜਾਂਚ ਕਰੋ ਕਿ ਫ਼ੋਨ ਹੱਬ ਵਰਤਣ ਲਈ ਤੁਹਾਡੇ ਫ਼ੋਨ 'ਤੇ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ</translation>
 <translation id="5580000943347215299">ਲਾਇਬ੍ਰੇਰੀ</translation>
 <translation id="558849140439112033">ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਸੇ ਖੇਤਰ ਨੂੰ ਚੁਣਨ ਵਾਸਤੇ ਘਸੀਟੋ</translation>
@@ -875,6 +880,7 @@
 <translation id="595202126637698455">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਸਮਰਥਿਤ</translation>
 <translation id="5955304353782037793">ਐਪ</translation>
 <translation id="5958529069007801266">ਨਿਗਰਾਨੀ ਕੀਤੇ ਵਰਤੋਂਕਾਰ</translation>
+<translation id="5965524703725988602">ਗੂੜ੍ਹੇ ਥੀਮ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">ਵਿੰਡੋ ਨੂੰ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="5977415296283489383">ਹੈਡਫੋਨ</translation>
 <translation id="5978382165065462689">ਰਿਮੋਟ ਸਹਾਇਤਾ ਰਾਹੀਂ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦਾ ਨਿਯੰਤਰਣ ਸ਼ੇਅਰ ਕਰ ਰਿਹਾ ਹੈ।</translation>
@@ -1117,6 +1123,7 @@
 <translation id="7378889811480108604">ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਬੰਦ ਹੈ</translation>
 <translation id="7382680553121047388">ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7384028040782072252">ਆਪਣੀਆਂ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਕ੍ਰਮਬੱਧ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="7386767620098596324">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਤੋਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7405710164030118432">ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਆਪਣਾ Family Link ਮਾਂ-ਪਿਓ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="7406608787870898861">ਆਪਣੇ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਦਾ ਸੈੱਟਅੱਪ ਪੂਰਾ ਕਰੋ</translation>
@@ -1256,6 +1263,7 @@
 <translation id="8142441511840089262">ਡਬਲ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="8142699993796781067">ਨਿੱਜੀ ਨੈੱਟਵਰਕ</translation>
 <translation id="8144760705599030999">ਤੁਹਾਡੇ ਦੂਜੇ ਡੀਵਾਈਸਾਂ ਨਾਲ ਤੇਜ਼ ਜੋੜਾਬੰਦੀ ਲਈ <ph name="NAME" /> ਨੂੰ <ph name="EMAIL" /> 'ਤੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="8149413265954228307">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ ਨੂੰ ਦਿਖਾਓ। <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">ਬੰਦ ਕਰਨ ਲਈ Ctrl + W ਦਬਾਓ।</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ਸਵੈ-ਮੁਕੰਮਲ</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ।</translation>
@@ -1316,6 +1324,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ਕੋਲ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ਹੈ।</translation>
 <translation id="8477270416194247200">ਰੱਦ ਕਰਨ ਲਈ Alt+Search ਜਾਂ Shift ਦਬਾਓ।</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ <ph name="FALLBACK_RESOLUTION" /> ਵਿੱਚ ਬਦਲਿਆ ਗਿਆ ਸੀ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="8496402167048257517">'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਸੈਟਿੰਗਾਂ ਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="85123341071060231">ਤੁਹਾਡੀ Chromebook ਦਾ ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ। ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="8513108775083588393">ਸਵੈ-ਘੁੰਮਾਓ</translation>
 <translation id="851458219935658693">ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਉਹ ਵਿੰਡੋ ਦਿਖਾਓ ਜਿਸ ਵਿੱਚ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਚੁਣਿਆ ਹੋਵੇ</translation>

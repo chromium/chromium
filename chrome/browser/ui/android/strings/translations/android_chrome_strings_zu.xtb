@@ -270,6 +270,7 @@ Uma usula umlando wakho wokubhrawuza — konke noma okwesayithi elithile — fut
 <translation id="2496180316473517155">Umlando wokuphequlula</translation>
 <translation id="2497852260688568942">Ukuvumelanisa kukhutshazwe umlawuli wakho.</translation>
 <translation id="250020030759455918">Uzobona isimo sakho sokungena ngemvume se-<ph name="SITE_NAME" />, idatha yokuphequlula, nedatha yesayithi ku-Chrome</translation>
+<translation id="2510106555128151389">Ifaka i-<ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Ukuze uthole ezinye izilungiselelo ezihambisana nobumfihlo, ukuvikelwa nokuqoqwa kwedatha, bona <ph name="BEGIN_LINK" />amasevisi okuvumelanisa nawe-Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Skena</translation>
 <translation id="2523184218357549926">Ithumela ama-URL amakhasi owavakashelayo ku-Google</translation>
@@ -892,7 +893,6 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5869789175361934029">Qhubeka kusuka kwenye idivayisi</translation>
 <translation id="587735546353481577">Ukulandela isayithi, iya kusayithi, uvule imenyu ye-Chrome, bese uthepha okuthi Landela.</translation>
 <translation id="5879072387416556377">Thola iziphakamiso ezingcono</translation>
-<translation id="5880748256563468367">Iya esiphakelini</translation>
 <translation id="5884076754568147479">Ukukusiza uqedele imisebenzi, i-Google izothola ama-URL nokuqukethwe kwamasayithi osebenzisa kuwo umsizi, kanye nolwazi oluthumela ngomsizi</translation>
 <translation id="5906513782029855931">Ukwazi ama-URL wamasayithi kuvumela i-Google Assistant ukuthi ikusize uqedele imisebenzi. Ungavala i-Assistant kumasethingi we-Chrome.</translation>
 <translation id="5916664084637901428">Vuliwe</translation>
@@ -904,6 +904,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5956665950594638604">Vula isikhungo sosizo se-Chrome kuthebhu entsha</translation>
 <translation id="5957442310066583693">Ukuze ubone amasayithi akho aphezulu, thepha inkinobho Yasekhaya</translation>
 <translation id="5958275228015807058">Thola amafayela akho namakhasi kokulandiwe</translation>
+<translation id="5958994127112619898">Yenza kalula ikhasi</translation>
 <translation id="5962718611393537961">Thepha ukuze ugoqe</translation>
 <translation id="5964869237734432770">Misa izincazelo zesithombe</translation>
 <translation id="5966233851250124270">I-Chrome izokhumbula ukukhetha kwakho</translation>
@@ -1280,6 +1281,7 @@ Amathokheni okuthemba athuthukisa ubumfihlo kuwebhu futhi awakwazi ukusetshenzis
 <translation id="7887334752153342268">Impinda</translation>
 <translation id="789763218334337857">Indlela yokusebenzisa i-Chrome</translation>
 <translation id="7903184275147100332">Lokhu kungathatha iminithi</translation>
+<translation id="7914399737746719723">I-App ifakiwe</translation>
 <translation id="7919123827536834358">Humusha lezi zilimi ngokuzenzekelayo</translation>
 <translation id="7926975587469166629">Igama lesidlaliso lekhadi</translation>
 <translation id="7929962904089429003">Vula imenyu</translation>

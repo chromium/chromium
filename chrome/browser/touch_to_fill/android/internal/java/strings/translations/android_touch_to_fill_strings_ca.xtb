@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1220509181886849806">Vols utilitzar la contrasenya desada?</translation>
+<translation id="1580351948163139119">Contrasenya per a <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">La llista de credencials que s'emplenaran amb un toc s'ha obert a mitja alçada.</translation>
 <translation id="207576718733492531">La llista de credencials que s'emplenaran amb un toc està tancada.</translation>
 <translation id="2359808026110333948">Continua</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">La llista de credencials que s'emplenaran amb un toc s'ha obert a alçada completa.</translation>
 <translation id="5591247451101092906">Vols utilitzar la contrasenya o la clau d'accés desades?</translation>
 <translation id="5624120631404540903">Gestiona les contrasenyes</translation>
+<translation id="7736236483645733578">Clau d'accés per a <ph name="USERNAME" />; utilitza el bloqueig de pantalla.</translation>
 <translation id="804577341878669140">Continua amb el compte</translation>
 </translationbundle>

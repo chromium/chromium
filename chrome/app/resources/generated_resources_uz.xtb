@@ -1897,6 +1897,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Nazorat qilinadigan profilni administrator o‘chirib qo‘ygan.</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" /> dan keyin qurilma oʻchadi. USBni qurilmani ishga tushirishdan oldin chiqaring. Keyin <ph name="DEVICE_OS" /> tizimidan foydalana olasiz.</translation>
+<translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">WebRTC jurnallari</translation>
 <translation id="272488616838512378">Birliklar konvertori</translation>
 <translation id="2725200716980197196">Tarmoq aloqasi tiklandi</translation>
@@ -2515,6 +2516,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3308852433423051161">Google Assistent yuklanmoqda...</translation>
 <translation id="3309330461362844500">Sertifikat profili identifikatori</translation>
 <translation id="3311445899360743395">Bu ilovaga aloqador maʼlumotlar ushbu qurilmadan tozalanadi.</translation>
+<translation id="3312470654018965389">Linux konteyneri sozlanmoqda</translation>
 <translation id="3312883087018430408">Muayyan sayt yoki Chrome qismini qidirish uchun manzillar qatorida buyruqni kiritib, keyin oldindan belgilangan tezkor tugmani bosing. Masalan, faqat Bukmarklardan qidirish uchun “@bookmarks” deb kiritib, keyin Tab yoki Boʻsh joy tugmasini bosing.</translation>
 <translation id="3313622045786997898">Sertifikat imzosi qiymati</translation>
 <translation id="3313950410573257029">Aloqani tekshirish</translation>
@@ -3073,6 +3075,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3828029223314399057">Xatcho‘plardan qidirish</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome va ChromeOS qoʻshimcha xizmat shartlari<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />Play xizmat shartlari<ph name="END_LINK3" />bilan tanishdim va roziman.</translation>
 <translation id="3829765597456725595">Fayllarni Samba (SMB) orqali ulashish</translation>
+<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" /></translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{1 ta ehtimoliy zararli kengaytma administrator tomonidan qayta yoqildi}other{{NUM_EXTENSIONS} ta ehtimoliy zararli kengaytma administrator tomonidan qayta yoqildi}}</translation>
 <translation id="3831436149286513437">Google Drive qidiruv tavsiyalari</translation>
 <translation id="3834728400518755610">Mikrofon sozlamasi oʻzgarishi uchun Linuxni qaytadan ishga tushirish kerak. Davom etish uchun Linux ishini yakunlang.</translation>
@@ -5213,6 +5216,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5884474295213649357">Bu sahiva USB qurilmaga ulangan.</translation>
 <translation id="5885314688092915589">Bu profil tashkilotingiz boshqaruvida</translation>
 <translation id="5886009770935151472">Barmoq izi 1</translation>
+<translation id="5886112770923972514">Yaqin-atrofdagi qurilmalarga ulaning va Tezkor ulanishni sozlang</translation>
 <translation id="5886384907280980632">Oʻchirish</translation>
 <translation id="5889282057229379085">SM o‘rtachalarining maksimal miqdori: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Afzal Wi-Fi tarmoqlar</translation>
@@ -7817,6 +7821,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8338952601723052325">Dasturchi sayti</translation>
 <translation id="833986336429795709">Havolani ochish uchun ilova tanlang</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> uchun boshqa amallar</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Yaqinda juda koʻp bildirishnomalar yuborgan <ph name="BEGIN_BOLD" />1 ta saytni<ph name="END_BOLD" /> tekshiring}other{Yaqinda juda koʻp bildirishnomalar yuborgan <ph name="BEGIN_BOLD" />{NUM_SITES} ta<ph name="END_BOLD" /> saytni tekshiring}}</translation>
 <translation id="8342221978608739536">Sinab koʻrmadim</translation>
 <translation id="8342861492835240085">To‘plamni tanlang</translation>
 <translation id="8345848587667658367">Endi siz telefoningizdagi oxirgi rasmlar, multimedia, bildirishnomalar va ilovalarni koʻra olasiz</translation>
@@ -8815,6 +8820,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Xavfsiz aloqa o‘rnatilmoqda...</translation>
 <translation id="996803490569799917">Sevimli insonlaringizdan xotiralar va boshqa axborotlarni koʻrish</translation>
+<translation id="997143476478634194">Saytlarga tashrif vaqtida bu sozlama avtomatik tatbiq qilinadi. Odatda, saytlar muhim yangiliklar yoki chat xabarlari haqida sizga bildirish uchun bildirishnomalar yuboradi.</translation>
 <translation id="99731366405731005">Wi-Fi Sync ishlatish uchun <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> funksiyasini yoqing <ph name="LINK2_BEGIN" />Batafsil<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Kodini ko‘rish</translation>
 </translationbundle>

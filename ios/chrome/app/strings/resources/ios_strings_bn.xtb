@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">সমস্ত পঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="1689333818294560261">বিশেষ নাম</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি নির্বাচিত</translation>
+<translation id="1715515772563243997"><ph name="SITE" />-এর উপর ভরসা থাকলে, আপনি সেভ করা পাসওয়ার্ড সাইন-ইন করার জন্য ব্যবহার করতে পারেন।</translation>
 <translation id="1740468249224277719">ইনস্টল করতে দুবার আলতো চাপুন।</translation>
 <translation id="1752547299766512813">পাসওয়ার্ডগুলি সেভ করুন</translation>
 <translation id="1753905327828125965">সর্বাধিক দেখা</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="2155145621546387786">Chrome শেয়ার করুন</translation>
 <translation id="2175927920773552910">QR কোড</translation>
+<translation id="2178545675770638239">পাসওয়ার্ড বেছে নিন</translation>
 <translation id="2218443599109088993">ছোট করে দেখুন</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
 <translation id="2239626343334228536">ব্রাউজিং ডেটা মোছা হচ্ছে…</translation>
@@ -434,6 +436,8 @@
 <translation id="4502566650163919158">এখনই চেক করুন</translation>
 <translation id="4505980578794259603"><ph name="TIME" /> শেষবার চেক করা হয়েছে।</translation>
 <translation id="4508750114462689118">সাইন-ইন প্রোমো বন্ধ করুন</translation>
+<translation id="4514889972748124117">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন...</translation>
+<translation id="4520798012560649652">'ছদ্মবেশী' মোড সম্পর্কে আরও জানুন</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> এ গিয়ে সংরক্ষণ করা পাসওয়ার্ডগুলি দেখুন ও পরিচালনা করুন</translation>
 <translation id="452750746583162491">আপনার সিঙ্ক করা ডেটা পর্যালোচনা করুন</translation>
 <translation id="4536418791685807335">আবার সাইন ইন করার চেষ্টা করুন।</translation>
@@ -1016,6 +1020,7 @@
 <translation id="8917490105272468696">হ্যাঁ, আমি রাজি</translation>
 <translation id="8928133177108699615">ডেস্কটপ</translation>
 <translation id="8952559610785099500">পাসওয়ার্ড যোগ করুন</translation>
+<translation id="8953046091948372197">আপনি নিজের পাসওয়ার্ড এখানে খুঁজে পাবেন</translation>
 <translation id="895541991026785598">কোনও সমস্যা অভিযোগ করুন</translation>
 <translation id="8974714402877957201">১. iPad সেটিংস খুলুন</translation>
 <translation id="8976382372951310360">সহায়তা</translation>
@@ -1049,6 +1054,7 @@
 <translation id="9200875785104711666"><ph name="TIME" /> দিন আগে</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">ক্র্যাশ রিপোর্ট পাঠানো হয়েছে৷</translation>
+<translation id="941747855997058526">পাসওয়ার্ড বেছে নিন...</translation>
 <translation id="952704832371081537">বাতিল করুন</translation>
 <translation id="953008885340860025">Chrome থেকে সাইন-আউট হয়ে গেছেন</translation>
 <translation id="959066944189734975">আপনি <ph name="CHANNEL_NAME" /> ফলো করছেন</translation>

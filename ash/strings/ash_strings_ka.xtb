@@ -91,6 +91,7 @@
 <translation id="1407069428457324124">მუქი თემა</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. თარიღებს შორის ნავიგაციისთვის გამოიყენეთ ისრებიანი კლავიშები.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, დაინსტალირებული აპი</translation>
+<translation id="1415846719612499304">ქსელების სიის ჩვენება. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">შეტყობინების ქმედების შესასრულებლად განბლოკეთ მოწყობილობა</translation>
 <translation id="1420408895951708260">ღამის განათების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ნახეთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები და მედიაფაილები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
@@ -305,6 +306,7 @@
 <translation id="2678852583403169292">წარმოსათქმელად მონიშვნის მენიუ</translation>
 <translation id="2689613560355655046">სამუშაო მაგიდა 8</translation>
 <translation id="2695305337569143674">ვები</translation>
+<translation id="2697697418792422688">კლავიატურის პარამეტრების ჩვენება. არჩეულია <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">დააყენეთ კლავიატურა</translation>
 <translation id="2704781753052663061">სხვა Wi-Fi ქსელებში გაწევრიანება</translation>
 <translation id="2705001408393684014">მიკროფონის გადართვა. <ph name="STATE_TEXT" /></translation>
@@ -776,6 +778,7 @@
 <translation id="5327248766486351172">სახელი</translation>
 <translation id="5329548388331921293">მიმდინარეობს დაკავშირება...</translation>
 <translation id="5331975486040154427">USB-C მოწყობილობა (მარცხენა უკანა პორტი)</translation>
+<translation id="533282197239610265">გადაცემის მოწყობილობების ჩვენება</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (მარჯვენა)</translation>
 <translation id="5352250171825660495">მუქი თემა ჩართულია</translation>
 <translation id="5356963482258194581">გადაერთეთ მუქ და ღია თემებს შორის. მარჯვენა ღილაკით დააწკაპუნეთ დესკტოპზე, შემდეგ კი აირჩიეთ „ფონი და სტილი“.</translation>
@@ -807,10 +810,12 @@
 <translation id="553675580533261935">მიმდინარეობს სესიიდან გამოსვლა</translation>
 <translation id="5537725057119320332">მაუწყებლობა</translation>
 <translation id="554893713779400387">კარნახის გადართვა</translation>
+<translation id="5558091555391176027">მახლობლად გაზიარების მაღალი ხილვადობის გადართვა</translation>
 <translation id="5560420195677022218">ნახეთ თქვენი ტელეფონის აპები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="556042886152191864">ღილაკი</translation>
 <translation id="5571066253365925590">Bluetooth ჩართულია</translation>
 <translation id="557563299383177668">შემდეგი აბზაცი</translation>
+<translation id="5577082622442191756">Bluetooth-ის გადართვა. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ტელეფონის ცენტრის გამოსაყენებლად შეამოწმეთ, რომ თქვენს ტელეფონზე ჩართულია Bluetooth</translation>
 <translation id="5580000943347215299">ბიბლიოთეკა</translation>
 <translation id="558849140439112033">ჩავლებით გადაიტანეთ, აღსაბეჭდი არე რომ აირჩიოთ</translation>
@@ -880,6 +885,7 @@
 <translation id="595202126637698455">ეფექტურობის ტრასირება ჩართულია</translation>
 <translation id="5955304353782037793">პროგრამა</translation>
 <translation id="5958529069007801266">კონტროლის ქვეშ მყოფი მომხმარებელი</translation>
+<translation id="5965524703725988602">მუქი თემის გადართვა. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">ფანჯრის ჩასაწერად დააჭირეთ Enter-ს</translation>
 <translation id="5977415296283489383">ყურსასმენი</translation>
 <translation id="5978382165065462689">დისტანციური დამხმარეს მეშვეობით თვენი ეკრანის გაზიარების მართვა.</translation>
@@ -1125,6 +1131,7 @@
 <translation id="7378889811480108604">ბატარეის დამზოგის რეჟიმი გამორთულია</translation>
 <translation id="7382680553121047388">ჩართვა</translation>
 <translation id="7384028040782072252">აპების გადასალაგებლად დააწკაპუნეთ მარჯვენა ღილაკით ნებისმიერ ადგილას</translation>
+<translation id="7386767620098596324">ქსელის კავშირის გადართვა. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">დაყენება მოგვიანებითაც შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="7405710164030118432">მოწყობილობის განსაბლოკად შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის</translation>
 <translation id="7406608787870898861">დაასრულეთ მობილური ქსელის დაყენება</translation>
@@ -1265,6 +1272,7 @@
 <translation id="8142441511840089262">ორმაგი დაწკაპუნება</translation>
 <translation id="8142699993796781067">პირადი ქსელი</translation>
 <translation id="8144760705599030999">თქვენს სხვა მოწყობილობებთან უფრო სწრაფად დაწყვილებისთვის შეინახეთ <ph name="NAME" /> <ph name="EMAIL" />-ში</translation>
+<translation id="8149413265954228307">Bluetooth-ის პარამეტრების ჩვენება. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">დასახურად დააჭირეთ კლავიშთა კომბინაციას: Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ავტომატური დასრულება</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
@@ -1325,6 +1333,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ს აქვს <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">გასაუქმებლად დააჭირეთ Shift კლავიშს ან კომბინაციას: Alt+Search.</translation>
 <translation id="8492573885090281069"><ph name="SPECIFIED_RESOLUTION" /> არ არის მხარდაჭერილი <ph name="DISPLAY_NAME" />-ის მიერ. გარჩევადობა შეიცვალა <ph name="FALLBACK_RESOLUTION" />-ზე. დააწკაპუნეთ ცვლილებების შენარჩუნების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩა <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">მახლობლად გაზიარების პარამეტრების ჩვენება</translation>
 <translation id="85123341071060231">თქვენი Chromebook-ის Bluetooth გამორთულია. თქვენი Chromebook-ის განსაბლოკად შეიყვანეთ პაროლი.</translation>
 <translation id="8513108775083588393">ავტომატური შეტრიალება</translation>
 <translation id="851458219935658693">ამჟამინდელი სამუშაო მაგიდის ფანჯრების ჩვენება, არჩეულია არჩევანის ღილაკი</translation>

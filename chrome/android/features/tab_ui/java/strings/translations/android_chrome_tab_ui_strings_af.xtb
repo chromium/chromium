@@ -84,6 +84,7 @@
 <translation id="753732157349120914">Oortjiewisselaar</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> resensie van Google af}other{<ph name="REVIEWS_COUNT_MANY" /> resensies van Google af}}</translation>
 <translation id="7559245342362162951">Wys groep se oortjies in volskermrooster</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Deel <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Deel <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
 <translation id="7792771145871471484">Gaan die voorstelle na.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Groepeer <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Groepeer <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> gradering, <ph name="REVIEWS_COUNT_ONE" /> resensie}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> gradering, <ph name="REVIEWS_COUNT_MANY" /> resensies}}</translation>

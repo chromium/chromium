@@ -270,6 +270,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2496180316473517155">Istorija pregledanja</translation>
 <translation id="2497852260688568942">Administrator je onemogućio sinhronizaciju</translation>
 <translation id="250020030759455918">U Chrome-u ćete videti da li ste prijavljeni, podatke pregledanja i podatke o sajtu za <ph name="SITE_NAME" /></translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> se instalira...</translation>
 <translation id="2513403576141822879">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljku <ph name="BEGIN_LINK" />Sinhronizacija i Google usluge<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2523184218357549926">URL-ovi stranica koje posećujete se šalju Google-u</translation>
@@ -892,7 +893,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5869789175361934029">Nastavite sa drugog uređaja</translation>
 <translation id="587735546353481577">Da biste pratili sajt, idite na njega, otvorite Chrome meni i dodirnite Prati.</translation>
 <translation id="5879072387416556377">Dobijajte bolje predloge</translation>
-<translation id="5880748256563468367">Idi na fid</translation>
 <translation id="5884076754568147479">Da bi vam pomogao u obavljanju zadataka, Google će dobijati URL-ove i sadržaj sajtova na kojima koristite Pomoćnik, kao i informacije koje pošaljete preko Pomoćnika</translation>
 <translation id="5906513782029855931">Kada Google pomoćnik zna URL-ove sajtova, može da vam pomogne da dovršite zadatke. Pomoćnik možete da isključite u podešavanjima Chrome-a.</translation>
 <translation id="5916664084637901428">Uključeno</translation>
@@ -904,6 +904,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5956665950594638604">Otvaranje Chrome centra za pomoć na novoj kartici</translation>
 <translation id="5957442310066583693">Da biste videli sajtove koje najčešće posećujete, dodirnite dugme Početak</translation>
 <translation id="5958275228015807058">Pronađite datoteke i stranice u Preuzimanjima</translation>
+<translation id="5958994127112619898">Pojednostavi stranicu</translation>
 <translation id="5962718611393537961">Dodirnite da biste skupili</translation>
 <translation id="5964869237734432770">Zaustavi opise slika</translation>
 <translation id="5966233851250124270">Chrome će zapamtiti izbor</translation>
@@ -1280,6 +1281,7 @@ Pouzdani tokeni poboljšavaju privatnost na vebu i ne mogu da se koriste za otkr
 <translation id="7887334752153342268">Napravi duplikat</translation>
 <translation id="789763218334337857">Kako da koristite Chrome</translation>
 <translation id="7903184275147100332">Ovo će možda malo potrajati</translation>
+<translation id="7914399737746719723">Aplikacija je instalirana</translation>
 <translation id="7919123827536834358">Automatski prevodi ove jezike</translation>
 <translation id="7926975587469166629">Nadimak kartice</translation>
 <translation id="7929962904089429003">Otvorite meni</translation>

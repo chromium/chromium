@@ -110,6 +110,7 @@
 <translation id="3227137524299004712">Micròfon</translation>
 <translation id="3248611290851046188">Aquest lloc web defineix interessos que altres llocs web poden utilitzar per mostrar-te anuncis. També obté els teus interessos de Chrome per mostrar-te anuncis més rellevants.</translation>
 <translation id="3277252321222022663">Permet que els llocs web accedeixin als sensors (opció recomanada)</translation>
+<translation id="3285500645985761267">Permet que els llocs web relacionats vegin la teva activitat al grup</translation>
 <translation id="3295602654194328831">Amaga la informació</translation>
 <translation id="3328801116991980348">Informació del lloc web</translation>
 <translation id="3333961966071413176">Tots els contactes</translation>
@@ -117,6 +118,7 @@
 <translation id="3386292677130313581">Pregunta abans de permetre que els llocs web sàpiguen la teva ubicació (opció recomanada)</translation>
 <translation id="3521663503435878242">Llocs web a <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Impedeix que els llocs web creïn un mapa en 3D del teu entorn o que facin un seguiment de la posició de la càmera</translation>
+<translation id="3544058026430919413">Una empresa pot definir un grup de llocs web que poden utilitzar galetes per compartir la teva activitat al grup. Aquesta opció està desactivada en mode d'incògnit.</translation>
 <translation id="3551268116566418498">Vols sortir del mode d'incògnit?</translation>
 <translation id="3586500876634962664">Ús de la càmera i el micròfon</translation>
 <translation id="358794129225322306">Permet que un lloc web baixi diversos fitxers automàticament.</translation>
@@ -157,8 +159,10 @@
 <translation id="4402755511846832236">Bloqueja els llocs web perquè no sàpiguen quan estàs utilitzant aquest dispositiu de manera activa</translation>
 <translation id="4428065317363009941">Personalització d'anuncis</translation>
 <translation id="4434045419905280838">Finestres emergents i redireccions</translation>
+<translation id="4440642537584213025">Desplega <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="445467742685312942">Permet que els llocs web reprodueixin contingut protegit</translation>
 <translation id="4468959413250150279">Silencia el so d'un lloc web concret.</translation>
+<translation id="4475912480633855319">{COOKIES,plural, =1{# galeta}other{# galetes}}</translation>
 <translation id="4479647676395637221">Pregunta abans de permetre que els llocs web utilitzin la càmera (opció recomanada)</translation>
 <translation id="4505788138578415521">L'URL s'ha ampliat</translation>
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>

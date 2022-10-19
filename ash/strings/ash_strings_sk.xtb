@@ -91,6 +91,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1407069428457324124">Tmavý motív</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Klávesmi so šípkami prechádzajte medzi dátumami.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, nainštalovaná aplikácia</translation>
+<translation id="1415846719612499304">Zobraziť zoznam sietí. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Ak chcete vykonať akciu s upozornením, odomknite zariadenie</translation>
 <translation id="1420408895951708260">Prepnúť nočný režim. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Zobrazte si v zariadení <ph name="DEVICE_TYPE" /> najnovšie fotky a médiá zo svojho telefónu</translation>
@@ -305,6 +306,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2678852583403169292">Ponuka počúvania vybraného textu</translation>
 <translation id="2689613560355655046">8. plocha</translation>
 <translation id="2695305337569143674">web</translation>
+<translation id="2697697418792422688">Zobraziť nastavenia klávesnice. Je vybraná klávesnica <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Nastavenie klávesnice</translation>
 <translation id="2704781753052663061">Pripojiť sa k iným sieťam Wi-Fi</translation>
 <translation id="2705001408393684014">Prepnúť mikrofón. <ph name="STATE_TEXT" /></translation>
@@ -771,6 +773,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5327248766486351172">Názov</translation>
 <translation id="5329548388331921293">Pripája sa…</translation>
 <translation id="5331975486040154427">Zariadenie USB-C (port vľavo vzadu)</translation>
+<translation id="533282197239610265">Zobraziť zariadenia na prenos</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (pravé)</translation>
 <translation id="5352250171825660495">Tmavý motív je zapnutý</translation>
 <translation id="5356963482258194581">Prepínajte medzi tmavým a svetlým motívom. Pravým tlačidlom kliknite na pracovnú plochu a vyberte Tapety a štýl.</translation>
@@ -802,10 +805,12 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="553675580533261935">Ukončuje sa relácia</translation>
 <translation id="5537725057119320332">Prenášať</translation>
 <translation id="554893713779400387">Prepnúť diktovanie</translation>
+<translation id="5558091555391176027">Prepnúť vysokú viditeľnosť Zdieľania nablízku</translation>
 <translation id="5560420195677022218">Zobrazujte si upozornenia svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Tlačidlo</translation>
 <translation id="5571066253365925590">Rozhranie Bluetooth je povolené</translation>
 <translation id="557563299383177668">Ďalší odsek</translation>
+<translation id="5577082622442191756">Prepnúť Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Ak chcete použiť Telefónne centrum, skontrolujte, či je v telefóne zapnuté rozhranie Bluetooth</translation>
 <translation id="5580000943347215299">Knižnica</translation>
 <translation id="558849140439112033">Presunutím vyberte oblasť, ktorú chcete nasnímať</translation>
@@ -874,6 +879,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="595202126637698455">Sledovanie výkonnosti je povolené</translation>
 <translation id="5955304353782037793">aplikácia</translation>
 <translation id="5958529069007801266">Kontrolovaný používateľ</translation>
+<translation id="5965524703725988602">Prepnúť tmavý motív. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Okno nahráte stlačením klávesa Enter</translation>
 <translation id="5977415296283489383">Slúchadlo</translation>
 <translation id="5978382165065462689">Ovládanie obrazovky sa zdieľa prostredníctvom Vzdialenej pomoci.</translation>
@@ -1116,6 +1122,7 @@ Nová inštalácia</translation>
 <translation id="7378889811480108604">Režim šetriča batérie je vypnutý</translation>
 <translation id="7382680553121047388">Zapnuté</translation>
 <translation id="7384028040782072252">Kliknite pravým tlačidlom na ľubovoľné miesto a zmeňte poradie aplikácií</translation>
+<translation id="7386767620098596324">Prepnúť pripojenie k sieti. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Túto funkciu môžete kedykoľvek nastaviť neskôr v sekcii Nastavenia.</translation>
 <translation id="7405710164030118432">Ak chcete toto zariadenie odomknúť, zadajte prístupový kód rodiča Family Link</translation>
 <translation id="7406608787870898861">Dokončite nastavovanie mobilnej siete</translation>
@@ -1255,6 +1262,7 @@ Nová inštalácia</translation>
 <translation id="8142441511840089262">Dvojité kliknutie</translation>
 <translation id="8142699993796781067">Súkromná sieť</translation>
 <translation id="8144760705599030999">Uložte zariadenie <ph name="NAME" /> do účtu <ph name="EMAIL" />, aby ste ho mohli rýchlejšie párovať so svojimi ďalšími zariadeniami</translation>
+<translation id="8149413265954228307">Zobraziť nastavenia Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Zavriete stlačením kombinácie klávesov Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatické dopĺňanie</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Toto nastavenie ovláda váš správca.</translation>
@@ -1315,6 +1323,7 @@ Nová inštalácia</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> má <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Ak to chcete zrušiť, stlačte klávesy Alt+Hľadať alebo Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nepodporuje rozlíšenie <ph name="SPECIFIED_RESOLUTION" />. Preto bolo zmenené na <ph name="FALLBACK_RESOLUTION" />. Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Zobraziť nastavenia Zdieľania nablízku</translation>
 <translation id="85123341071060231">V Chromebooku je vypnuté rozhranie Bluetooth. Ak chcete Chromebook odomknúť, zadajte heslo.</translation>
 <translation id="8513108775083588393">Aut. otáčanie</translation>
 <translation id="851458219935658693">Prepínač je prepnutý na možnosť zobrazenia okien z aktuálnej plochy</translation>

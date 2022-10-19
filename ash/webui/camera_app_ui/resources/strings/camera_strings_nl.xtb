@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1076394037877376434">Pagina <ph name="PAGE_NUMBER" /> verwijderen</translation>
 <translation id="1113173431709655881">Cameramodus</translation>
 <translation id="1153190633558910465">Raster uit</translation>
 <translation id="1175958423215084756">Link gevonden. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Pagina <ph name="PAGE_NUMBER" /> verwijderd</translation>
 <translation id="1258009455399840361">90 graden rechtsom draaien</translation>
 <translation id="1276998909102132017">Galerij-afbeeldingen</translation>
 <translation id="1300209025925956156">Je document scannen</translation>

@@ -321,6 +321,7 @@
 <translation id="1717218214683051432">मोशन सेंसर</translation>
 <translation id="1717494416764505390">मेलबॉक्स 3</translation>
 <translation id="1718029547804390981">एनोटेट करने के लिए दस्तावेज़ बहुत बड़ा है</translation>
+<translation id="1719434663396780149">कीमत में कमी से जुड़ी सूचनाएं पाने की सुविधा चालू है. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> पर जाकर, इसे बंद किया जा सकता है.</translation>
 <translation id="1720941539803966190">ट्यूटोरियल बंद करें</translation>
 <translation id="1721424275792716183">* फ़ील्ड ज़रूरी है</translation>
 <translation id="1725591448053514783">यू 6 साइज़ का लिफ़ाफ़ा</translation>
@@ -979,6 +980,7 @@
 <translation id="3550112004925580947">हॉस्पिटैलिटी इंडस्ट्री</translation>
 <translation id="3552297013052089404">Sans-serif फ़ॉन्ट</translation>
 <translation id="3558573058928565255">दिन के समय</translation>
+<translation id="3560824484345057728">मिलती-जुलती साइटें देखें</translation>
 <translation id="3566021033012934673">आपका कनेक्शन निजी नहीं है</translation>
 <translation id="3567778190852720481">एंटरप्राइज़ खाते के साथ नाम दर्ज नहीं किया जा सकता (एंटरप्राइज़ खाते से डिवाइस को जोड़ने की मंज़ूरी नहीं दी गई है).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@
 <translation id="4542971377163063093">ट्रे 6</translation>
 <translation id="455113658016510503">ए9</translation>
 <translation id="4558551763791394412">अपने एक्सटेंशन अक्षम करके देखें.</translation>
+<translation id="4559134504959026834">यह साइट, <ph name="SET_OWNER" />  के तय किए गए ग्रुप में है. यह आपकी गतिविधि देख सकती है</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">आउटडोर गतिविधियां</translation>
 <translation id="4567686777917670400">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेट अप बदल सकता है. इस डिवाइस की गतिविधि को Chromium के बाहर भी मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -2670,6 +2673,7 @@
 <translation id="7995512525968007366">बताया नहीं गया है</translation>
 <translation id="7998269595945679889">गुप्त टैब वाला बटन खोलें और एक नया गुप्त टैब खोलकर निजी तौर पर ब्राउज़ करने के लिए, Enter दबाएं</translation>
 <translation id="800218591365569300">जगह खाली करने के लिए दूसरे टैब या प्रोग्राम बंद करके देखें.</translation>
+<translation id="8002230960325005199">मिलती-जुलती साइटें नए टैब में देखें</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="8009225694047762179">पासवर्ड संभालें</translation>
@@ -2773,6 +2777,7 @@
 <translation id="8270242299912238708">PDF दस्तावेज़</translation>
 <translation id="8275952078857499577">इस साइट का अनुवाद करने की सुविधा न दें</translation>
 <translation id="8277900682056760511">पैसे चुकाने की हैंडलर शीट खुली है</translation>
+<translation id="8279611986089885641">Chrome पर सूचनाएं पाने की सुविधा चालू होनी चाहिए. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> में जाकर, इसे चालू किया जा सकता है.</translation>
 <translation id="8280630997017109758">ट्रे 11</translation>
 <translation id="8281084378435768645">बड़े आकार वाली फ़ोटो</translation>
 <translation id="8281886186245836920">अभी नहीं</translation>

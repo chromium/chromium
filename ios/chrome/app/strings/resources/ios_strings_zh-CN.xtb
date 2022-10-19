@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">全部标为已读</translation>
 <translation id="1689333818294560261">昵称</translation>
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
+<translation id="1715515772563243997">如果您信任 <ph name="SITE" />，则可使用已保存的密码登录。</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
 <translation id="1752547299766512813">保存密码</translation>
 <translation id="1753905327828125965">常去网站</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2155145621546387786">共享 Chrome</translation>
 <translation id="2175927920773552910">二维码</translation>
+<translation id="2178545675770638239">选择密码</translation>
 <translation id="2218443599109088993">缩小</translation>
 <translation id="2230173723195178503">已加载网页</translation>
 <translation id="2239626343334228536">正在清除浏览数据…</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">立即检查</translation>
 <translation id="4505980578794259603">上次检查时间：<ph name="TIME" />。</translation>
 <translation id="4508750114462689118">关闭登录推广元素</translation>
+<translation id="4514889972748124117">建议一个安全系数高的密码…</translation>
 <translation id="4526249700380860531">通过 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 查看和管理已保存的密码</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4536418791685807335">请尝试重新登录。</translation>
@@ -1015,6 +1018,7 @@
 <translation id="8917490105272468696">我同意</translation>
 <translation id="8928133177108699615">桌面版</translation>
 <translation id="8952559610785099500">添加密码</translation>
+<translation id="8953046091948372197">您的密码会显示在此处</translation>
 <translation id="895541991026785598">报告问题</translation>
 <translation id="8974714402877957201">1. 打开 iPad 设置</translation>
 <translation id="8976382372951310360">帮助</translation>
@@ -1048,6 +1052,7 @@
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">已发送崩溃报告。</translation>
+<translation id="941747855997058526">选择密码…</translation>
 <translation id="952704832371081537">取消</translation>
 <translation id="953008885340860025">已退出 Chrome</translation>
 <translation id="959066944189734975">您已关注“<ph name="CHANNEL_NAME" />”</translation>

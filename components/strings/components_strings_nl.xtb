@@ -320,6 +320,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1717218214683051432">Bewegingssensoren</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1718029547804390981">Document is te groot om aantekeningen te maken</translation>
+<translation id="1719434663396780149">Meldingen over prijsdalingen staan aan. Je kunt dit wijzigen in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Tutorial sluiten</translation>
 <translation id="1721424275792716183">* Verplicht veld</translation>
 <translation id="1725591448053514783">Envelop You 6</translation>
@@ -975,6 +976,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3550112004925580947">Horecasector</translation>
 <translation id="3552297013052089404">Sans-serif-lettertype</translation>
 <translation id="3558573058928565255">Tijd van de dag</translation>
+<translation id="3560824484345057728">Gerelateerde sites bekijken</translation>
 <translation id="3566021033012934673">Je verbinding is niet privé</translation>
 <translation id="3567778190852720481">Kan niet inschrijven met werkaccount (werkaccount komt niet in aanmerking).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1359,6 +1361,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4542971377163063093">Lade 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Probeer je extensies uit te zetten.</translation>
+<translation id="4559134504959026834">Deze site maakt deel uit van een groep die is gedefinieerd door <ph name="SET_OWNER" /> en die je activiteit kan bekijken</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Buitenactiviteiten</translation>
 <translation id="4567686777917670400">Je beheerder kan je browserinstellingen op afstand wijzigen. Activiteit op dit apparaat kan ook buiten Chromium worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -2664,6 +2667,7 @@ Aanvullende informatie:
 <translation id="7995512525968007366">Niet opgegeven</translation>
 <translation id="7998269595945679889">Knop Incognitotabblad openen. Druk op Enter om een nieuw incognitotabblad te openen om privé te browsen.</translation>
 <translation id="800218591365569300">Probeer andere tabbladen en programma's te sluiten om geheugen vrij te maken.</translation>
+<translation id="8002230960325005199">Bekijk gerelateerde sites op een nieuw tabblad</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009225694047762179">Wachtwoorden beheren</translation>
@@ -2767,6 +2771,7 @@ Aanvullende informatie:
 <translation id="8270242299912238708">Pdf-documenten</translation>
 <translation id="8275952078857499577">Niet aanbieden om deze site te vertalen</translation>
 <translation id="8277900682056760511">Blad voor betalingshandler is geopend</translation>
+<translation id="8279611986089885641">Chrome-meldingen moeten aanstaan. Je kunt ze aanzetten in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Lade 11</translation>
 <translation id="8281084378435768645">Grote foto</translation>
 <translation id="8281886186245836920">Overslaan</translation>

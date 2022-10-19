@@ -596,6 +596,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1552752544932680961">Manage extension</translation>
 <translation id="1553538517812678578">unlimited</translation>
 <translation id="1555130319947370107">Blue</translation>
+<translation id="1556127816860282890">Background activity and some visual effects, like smooth scrolling, may be limited</translation>
 <translation id="1556537182262721003">Could not move extension directory into profile.</translation>
 <translation id="1558391695376153246">Close Incognito tabs</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -2533,6 +2534,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3308852433423051161">Loading Google Assistant...</translation>
 <translation id="3309330461362844500">Certificate profile ID</translation>
 <translation id="3311445899360743395">Data associated with this app may be removed from this device.</translation>
+<translation id="3312470654018965389">Configuring the Linux container</translation>
 <translation id="3312883087018430408">To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut. For example, to search only Bookmarks, type '@bookmarks', then press Tab or Space.</translation>
 <translation id="3313622045786997898">Certificate Signature Value</translation>
 <translation id="3313950410573257029">Check connection</translation>
@@ -4161,6 +4163,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4852916668365817106">Mouse colour</translation>
 <translation id="4853020600495124913">Open in &amp;new window</translation>
 <translation id="4854317507773910281">Choose parent account for approval</translation>
+<translation id="4854603338816296098">Address removed</translation>
 <translation id="485480310608090163">More settings and permissions</translation>
 <translation id="4858792381671956233">You asked your parents if it's OK to visit this site</translation>
 <translation id="4858913220355269194">Footy</translation>

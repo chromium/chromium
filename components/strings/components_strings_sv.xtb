@@ -320,6 +320,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1717218214683051432">Rörelsesensorer</translation>
 <translation id="1717494416764505390">Postfack 3</translation>
 <translation id="1718029547804390981">Det går inte att annotera det här dokumentet eftersom det är för stort</translation>
+<translation id="1719434663396780149">Aviseringar för sänkt pris är aktiverade. Du kan ändra det i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Stäng självstudierna</translation>
 <translation id="1721424275792716183">* Fältet är obligatoriskt</translation>
 <translation id="1725591448053514783">You 6-kuvert</translation>
@@ -979,6 +980,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3550112004925580947">Hotellbranschen</translation>
 <translation id="3552297013052089404">Sans serif-teckensnitt</translation>
 <translation id="3558573058928565255">dagtid</translation>
+<translation id="3560824484345057728">Se relaterade webbplatser</translation>
 <translation id="3566021033012934673">Anslutningen är inte privat</translation>
 <translation id="3567778190852720481">Det går inte att registrera sig med ett jobbkonto (jobbkonton är inte behöriga).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4542971377163063093">Fack 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Testa att inaktivera tilläggen.</translation>
+<translation id="4559134504959026834">Den här webbplatsen ingår i en grupp definierad av <ph name="SET_OWNER" />, som kan se din aktivitet</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Utomhusaktiviteter</translation>
 <translation id="4567686777917670400">Administratören kan ändra webbläsarinställningarna på distans. Aktivitet på den här enheten kan hanteras även utanför Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -2670,6 +2673,7 @@ Mer information.
 <translation id="7995512525968007366">Inte specificerad</translation>
 <translation id="7998269595945679889">Knappen Öppna en inkognitoflik. Tryck på Retur om du vill öppna en ny inkognitoflik och surfa privat</translation>
 <translation id="800218591365569300">Testa att stänga andra flikar eller program för att frigöra minne.</translation>
+<translation id="8002230960325005199">Se relaterade webbplatser på en ny flik</translation>
 <translation id="8003046808285812021">”<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
 <translation id="8009225694047762179">Hantera Lösenord</translation>
@@ -2773,6 +2777,7 @@ Mer information.
 <translation id="8270242299912238708">PDF-dokument</translation>
 <translation id="8275952078857499577">Erbjud inte att översätta denna webbplats</translation>
 <translation id="8277900682056760511">Arbetsbladet för betalningshantering har öppnats</translation>
+<translation id="8279611986089885641">Chrome-aviseringar måste vara aktiverade. Du kan aktivera dem i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Fack 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Hoppa över</translation>

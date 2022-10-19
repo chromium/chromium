@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1220509181886849806">Да се користи зачуваната лозинка?</translation>
+<translation id="1580351948163139119">Лозинка за <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Списокот со акредитиви што се пополнуваат со допир е отворен на половина екран.</translation>
 <translation id="207576718733492531">Списокот со акредитиви што се пополнуваат со допир е затворен.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Списокот со акредитиви што се пополнуваат со допир е отворен на цел екран.</translation>
 <translation id="5591247451101092906">Да се користи зачуваната лозинка или криптографски клуч?</translation>
 <translation id="5624120631404540903">Управувај со лозинки</translation>
+<translation id="7736236483645733578">Криптографски клуч за <ph name="USERNAME" />, користете го заклучениот екран.</translation>
 <translation id="804577341878669140">Продолжете со сметката</translation>
 </translationbundle>
