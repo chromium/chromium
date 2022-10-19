@@ -4,8 +4,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <div id=log>
-<script>
+<script type="module">
 'use strict';
+
+import {fedcm_test, set_fedcm_cookie} from './support/fedcm-helper.sub.js';
 
 const host = get_host_info();
 const remoteBaseURL =
@@ -24,7 +26,7 @@ async function createIframeAndWaitForMessage(test, iframeUrl, setPermissionPolic
     return message.data;
 }
 
-promise_test(async t => {
+fedcm_test(async t => {
   const message = await createIframeAndWaitForMessage(
       t, remoteBaseURL + "support/fedcm-iframe.html",
       /*setPermissionPolicy=*/false);
@@ -32,15 +34,15 @@ promise_test(async t => {
   assert_equals(message.errorType, "NotAllowedError");
 }, "FedCM disabled in cross origin iframe without permissions policy");
 
-promise_test(async t => {
+fedcm_test(async t => {
   const message = await createIframeAndWaitForMessage(
       t, remoteBaseURL + "support/fedcm-iframe-level2.html",
       /*setPermissionPolicy=*/true);
   assert_equals(message.result, "Pass");
-  assert_equals(message.token, "a_token");
+  assert_equals(message.token, "token");
 }, "FedCM enabled in 2 level deep nested iframe. FedCM should be enabled regardless of iframe nesting depth");
 
-promise_test(async t => {
+fedcm_test(async t => {
   const message = await createIframeAndWaitForMessage(
       t, remoteBaseURL + "support/fedcm-iframe-level2.html",
       /*setPermissionPolicy=*/false);
@@ -48,9 +50,9 @@ promise_test(async t => {
   assert_equals(message.errorType, "NotAllowedError");
 }, "FedCM disabled in 2 level deep nested iframe where middle iframe does not have permission policy");
 
-promise_test(async t => {
+fedcm_test(async t => {
   const message = await createIframeAndWaitForMessage(
-      t, remoteBaseURL + "support/fedcm-iframe-level2-no-permission.html",
+      t, remoteBaseURL + "support/fedcm-iframe-level2.html?permission=0",
       /*setPermissionPolicy=*/true);
   assert_equals(message.result, "Fail");
   assert_equals(message.errorType, "NotAllowedError");

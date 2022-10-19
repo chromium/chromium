@@ -11,7 +11,7 @@ export function set_fedcm_cookie() {
 // Returns FedCM CredentialRequestOptions for which navigator.credentials.get()
 // succeeds.
 export function default_request_options() {
-  const manifest_origin = 'https://{{host}}:{{ports[https][0]}}';
+  const manifest_origin = 'https://{{hosts[][]}}:{{ports[https][0]}}';
   return {
     identity: {
       providers: [{
@@ -21,4 +21,12 @@ export function default_request_options() {
       }]
     }
   };
+}
+
+// Test wrapper which does FedCM-specific setup.
+export function fedcm_test(test_func) {
+  promise_test(async t => {
+    await set_fedcm_cookie();
+    await test_func(t);
+  });
 }

@@ -11,9 +11,12 @@ const remoteBaseURL =
     window.location.pathname.replace(/\/[^\/]*$/, '/');
 
 window.onload = async () => {
+  const urlParams = new URLSearchParams(window.location.search);
   var iframe = document.createElement("iframe");
   iframe.src = remoteBaseURL + "fedcm-iframe.html";
-  iframe.allow = "identity-credentials-get";
+  if (urlParams.get("permission") != '0') {
+    iframe.allow = "identity-credentials-get";
+  }
   document.body.appendChild(iframe);
 };
 

@@ -7,17 +7,9 @@
 <body>
 
 <script type="module">
-import {default_request_options, set_fedcm_cookie} from './support/fedcm-helper.sub.js';
+import {default_request_options, fedcm_test, set_fedcm_cookie} from './support/fedcm-helper.sub.js';
 
 const url_prefix = 'https://{{host}}:{{ports[https][0]}}/credential-management/support/fedcm/';
-
-// Test wrapper which does FedCM-specific setup.
-function fedcm_test(test_func) {
-  promise_test(async t => {
-    await set_fedcm_cookie();
-    await test_func(t);
-  });
-}
 
 fedcm_test(async t => {
   const cred = await navigator.credentials.get(default_request_options());

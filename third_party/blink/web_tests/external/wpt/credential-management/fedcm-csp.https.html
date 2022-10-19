@@ -7,10 +7,9 @@
 <body>
 
 <script type="module">
-import {default_request_options, set_fedcm_cookie} from './support/fedcm-helper.sub.js';
+import {default_request_options, fedcm_test, set_fedcm_cookie} from './support/fedcm-helper.sub.js';
 
-promise_test(async t => {
-  await set_fedcm_cookie();
+fedcm_test(async t => {
   const cred = navigator.credentials.get(default_request_options());
   return promise_rejects_dom(t, "NetworkError", cred);
 }, "Provider configURL should honor Content-Security-Policy.");
