@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_UNRAR_SRC_UNRAR_WRAPPER_H_
-#define THIRD_PARTY_UNRAR_SRC_UNRAR_WRAPPER_H_
+#ifndef THIRD_PARTY_UNRAR_GOOGLE_UNRAR_WRAPPER_H_
+#define THIRD_PARTY_UNRAR_GOOGLE_UNRAR_WRAPPER_H_
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -69,4 +69,4 @@ class RarReader {
 
 }  // namespace third_party_unrar
 
-#endif  // THIRD_PARTY_UNRAR_SRC_UNRAR_WRAPPER_H_
+#endif  // THIRD_PARTY_UNRAR_GOOGLE_UNRAR_WRAPPER_H_
