@@ -45,9 +45,6 @@ class AsanUnpoisonScope {
 
 #if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>
-#else
-#define __lsan_register_root_region(addr, size) ((void)(addr), (void)(size))
-#define __lsan_unregister_root_region(addr, size) ((void)(addr), (void)(size))
 #endif
 
 #if defined(MEMORY_SANITIZER)
