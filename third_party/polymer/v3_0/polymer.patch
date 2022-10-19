@@ -36,6 +36,25 @@ index de150da342ee9..609d1af1eb7b3 100644
  
    const observedAttributesGetter = findObservedAttributesGetter(legacyElementBase);
  
+diff --git a/components-chromium/polymer/lib/mixins/element-mixin.js b/components-chromium/polymer/lib/mixins/element-mixin.js
+index cba8953ab51bb..b56e007ce99d3 100644
+--- a/components-chromium/polymer/lib/mixins/element-mixin.js
++++ b/components-chromium/polymer/lib/mixins/element-mixin.js
+@@ -739,13 +739,13 @@ export const ElementMixin = dedupingMixin(base => {
+         if (dom) {
+           if (!n.shadowRoot) {
+             n.attachShadow({mode: 'open', shadyUpgradeFragment: dom});
+-            n.shadowRoot.appendChild(dom);
+             // When `adoptedStyleSheets` is supported a stylesheet is made
+             // available on the element constructor.
+             if (this.constructor._styleSheet) {
+               n.shadowRoot.adoptedStyleSheets = [this.constructor._styleSheet];
+             }
+           }
++          n.shadowRoot.appendChild(dom);
+           if (syncInitialRender && window.ShadyDOM) {
+             window.ShadyDOM.flushInitial(n.shadowRoot);
+           }
 diff --git a/components-chromium/polymer/lib/mixins/template-stamp.js b/components-chromium/polymer/lib/mixins/template-stamp.js
 index 19938efe0b622..0537e0b3b9884 100644
 --- a/components-chromium/polymer/lib/mixins/template-stamp.js

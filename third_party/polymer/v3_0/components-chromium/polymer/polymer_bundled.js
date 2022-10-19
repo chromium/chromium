@@ -8070,13 +8070,13 @@ const ElementMixin = dedupingMixin(base => {
         if (dom) {
           if (!n.shadowRoot) {
             n.attachShadow({mode: 'open', shadyUpgradeFragment: dom});
-            n.shadowRoot.appendChild(dom);
             // When `adoptedStyleSheets` is supported a stylesheet is made
             // available on the element constructor.
             if (this.constructor._styleSheet) {
               n.shadowRoot.adoptedStyleSheets = [this.constructor._styleSheet];
             }
           }
+          n.shadowRoot.appendChild(dom);
           return n.shadowRoot;
         }
         return null;

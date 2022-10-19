@@ -41,6 +41,9 @@ Local Modifications:
 - Note that the Polymer 3 bundle does not include dir-mixin.js which is
   responsible for polyfylling :dir() CSS rules, because it causes a performance
   regression (and it is unnecessary), see crbug.com/899603 for more context.
+- Applied workaround for explicit calls to attachShadow() at
+  https://github.com/Polymer/polymer/issues/5574#issuecomment-649854825 since
+  that issue has not yet been fixed in the upstream repository.
 - Several modifications were introduced in v3.5.0 to save size, by pruning out
   codepaths related to
   1) ShadyDOM support (not needed by Chromium since native ShadowDOM is used).
