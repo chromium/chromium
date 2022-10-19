@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(SavePageAsWebBundleFencedFrameBrowserTest,
       "<title>Hello</title>\n"
       "</head>"
       "<body><h1>hello world</h1>\n"
-      "<fencedframe></fencedframe></body></html>",
+      "<fencedframe mode=\"default\"></fencedframe></body></html>",
       std::string(reinterpret_cast<const char*>(data->data()), data->size()));
 }
 

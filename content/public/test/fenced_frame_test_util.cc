@@ -22,6 +22,7 @@ namespace {
 
 constexpr char kAddFencedFrameScript[] = R"({
     const fenced_frame = document.createElement('fencedframe');
+    fenced_frame.mode = $1;
     document.body.appendChild(fenced_frame);
   })";
 
@@ -32,6 +33,15 @@ constexpr char kAddAndNavigateFencedFrameScript[] = R"({
   })";
 
 constexpr char kNavigateFrameScript[] = R"({location.href = $1;})";
+
+std::string ModeToString(blink::mojom::FencedFrameMode mode) {
+  switch (mode) {
+    case blink::mojom::FencedFrameMode::kDefault:
+      return "default";
+    case blink::mojom::FencedFrameMode::kOpaqueAds:
+      return "opaque-ads";
+  }
+}
 
 }  // namespace
 
@@ -56,7 +66,8 @@ FencedFrameTestHelper::~FencedFrameTestHelper() = default;
 RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
     RenderFrameHost* fenced_frame_parent,
     const GURL& url,
-    net::Error expected_error_code) {
+    net::Error expected_error_code,
+    blink::mojom::FencedFrameMode mode) {
   TRACE_EVENT("test", "FencedFrameTestHelper::CreateAndGetFencedFrame",
               "fenced_frame_parent", fenced_frame_parent, "url", url);
   RenderFrameHostImpl* fenced_frame_parent_rfh =
@@ -67,7 +78,7 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
         fenced_frame_parent_rfh->GetFencedFrames().size();
 
     EXPECT_TRUE(ExecJs(fenced_frame_parent_rfh,
-                       JsReplace(kAddFencedFrameScript),
+                       JsReplace(kAddFencedFrameScript, ModeToString(mode)),
                        EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
     std::vector<FencedFrame*> fenced_frames =
@@ -84,7 +95,7 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
     fenced_frame_rfh = fenced_frame->GetInnerRoot();
   } else {
     EXPECT_TRUE(ExecJs(fenced_frame_parent_rfh,
-                       JsReplace(kAddFencedFrameScript),
+                       JsReplace(kAddFencedFrameScript, ModeToString(mode)),
                        EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
     fenced_frame_rfh = static_cast<RenderFrameHostImpl*>(
         fenced_frame_parent_rfh

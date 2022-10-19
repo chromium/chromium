@@ -13,7 +13,6 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24,6 +23,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -1337,14 +1338,12 @@ class AttributionSrcFencedFrameBrowserTest
   AttributionSrcFencedFrameBrowserTest() {
     switch (GetParam()) {
       case blink::features::FencedFramesImplementationType::kMPArch:
-        fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
+        fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>(
+            test::FencedFrameTestHelper::FencedFrameType::kMPArch);
         break;
       case blink::features::FencedFramesImplementationType::kShadowDOM:
-        feature_list_.InitWithFeaturesAndParameters(
-            {{blink::features::kFencedFrames,
-              {{"implementation_type", "shadow_dom"}}},
-             {features::kPrivacySandboxAdsAPIsOverride, {}}},
-            /*disabled_features=*/{});
+        fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>(
+            test::FencedFrameTestHelper::FencedFrameType::kShadowDOM);
         break;
     }
   }
@@ -1353,9 +1352,6 @@ class AttributionSrcFencedFrameBrowserTest
 
  protected:
   std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_helper_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1364,8 +1360,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         blink::features::FencedFramesImplementationType::kShadowDOM,
         blink::features::FencedFramesImplementationType::kMPArch));
-
-// TODO(crbug.com/1329240): Add test for opaque-ads mode fenced frames.
 
 IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
                        DefaultMode_SourceNotRegistered) {
@@ -1377,23 +1371,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
 
   RenderFrameHost* parent = web_contents()->GetPrimaryMainFrame();
 
-  RenderFrameHost* fenced_frame_host;
-  if (fenced_frame_helper_) {
-    fenced_frame_host =
-        fenced_frame_helper_->CreateFencedFrame(parent, fenced_frame_url);
-  } else {
-    EXPECT_TRUE(ExecJs(parent, R"(
-      var fenced_frame = document.createElement('fencedframe');
-      document.body.appendChild(fenced_frame);
-    )"));
-
-    fenced_frame_host = ChildFrameAt(parent, 0);
-
-    TestFrameNavigationObserver observer(fenced_frame_host);
-    EXPECT_TRUE(
-        ExecJs(parent, JsReplace("fenced_frame.src = $1;", fenced_frame_url)));
-    observer.Wait();
-  }
+  RenderFrameHost* fenced_frame_host =
+      fenced_frame_helper_->CreateFencedFrame(parent, fenced_frame_url);
 
   ASSERT_NE(fenced_frame_host, nullptr);
   EXPECT_TRUE(fenced_frame_host->IsFencedFrameRoot());
@@ -1409,6 +1388,46 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
   // If a data host were registered, it would arrive in the browser process
   // before the navigation finished.
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+}
+
+IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
+                       OpaqueAdsMode_SourceRegistered) {
+  GURL main_url = https_server()->GetURL("b.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fenced_frame_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+
+  RenderFrameHost* parent = web_contents()->GetPrimaryMainFrame();
+
+  RenderFrameHost* fenced_frame_host = fenced_frame_helper_->CreateFencedFrame(
+      parent, fenced_frame_url, net::OK,
+      blink::mojom::FencedFrameMode::kOpaqueAds);
+
+  ASSERT_NE(fenced_frame_host, nullptr);
+  EXPECT_TRUE(fenced_frame_host->IsFencedFrameRoot());
+
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  EXPECT_TRUE(ExecJs(
+      fenced_frame_host,
+      JsReplace(
+          "createAttributionSrcImg($1);",
+          https_server()->GetURL("c.test", "/register_source_headers.html"))));
+
+  if (!data_host)
+    loop.Run();
+
+  data_host->WaitForSourceData(/*num_source_data=*/1);
+  EXPECT_EQ(data_host->source_data().size(), 1u);
 }
 
 }  // namespace content
