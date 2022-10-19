@@ -123,19 +123,26 @@ void AutofillField::set_server_predictions(
   experimental_server_predictions_.clear();
 
   for (auto& prediction : predictions) {
-    if (prediction.source() == FieldPrediction::SOURCE_UNSPECIFIED)
-      // A prediction with `SOURCE_UNSPECIFIED` is one of two things:
-      //   1. No prediction for default, a.k.a. `NO_SERVER_DATA`. The absence of
-      //      a prediction may not be creditable to a particular prediction
-      //      source.
-      //   2. An experiment that is missing from the `PredictionSource` enum.
-      //      Protobuf corrects unknown values to 0 when parsing.
-      // Neither case is actionable.
-      continue;
-    if (IsDefaultPrediction(prediction)) {
-      server_predictions_.push_back(std::move(prediction));
+    if (prediction.has_source()) {
+      if (prediction.source() == FieldPrediction::SOURCE_UNSPECIFIED)
+        // A prediction with `SOURCE_UNSPECIFIED` is one of two things:
+        //   1. No prediction for default, a.k.a. `NO_SERVER_DATA`. The absence
+        //      of a prediction may not be creditable to a particular prediction
+        //      source.
+        //   2. An experiment that is missing from the `PredictionSource` enum.
+        //      Protobuf corrects unknown values to 0 when parsing.
+        // Neither case is actionable.
+        continue;
+      if (IsDefaultPrediction(prediction)) {
+        server_predictions_.push_back(std::move(prediction));
+      } else {
+        experimental_server_predictions_.push_back(std::move(prediction));
+      }
     } else {
-      experimental_server_predictions_.push_back(std::move(prediction));
+      // TODO(crbug.com/1376045): captured tests store old autofill api response
+      // recordings without `source` field. We need to maintain the old behavior
+      // until these recordings will be migrated.
+      server_predictions_.push_back(std::move(prediction));
     }
   }
 
