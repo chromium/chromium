@@ -626,14 +626,10 @@ class ProductivityLauncherTabletTest : public AppListBubbleAndTabletTestBase {
 INSTANTIATE_TEST_SUITE_P(TabletMode, ProductivityLauncherTest, testing::Bool());
 
 // Used to test app_list behavior with a populated apps_grid.
-class PopulatedAppListTestBase : public AshTestBase {
+class PopulatedAppListTest : public AshTestBase {
  public:
-  explicit PopulatedAppListTestBase(bool productivity_launcher_enabled)
-      : productivity_launcher_enabled_(productivity_launcher_enabled) {
-    scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
-                                              productivity_launcher_enabled);
-  }
-  ~PopulatedAppListTestBase() override = default;
+  PopulatedAppListTest() = default;
+  ~PopulatedAppListTest() override = default;
 
   void SetUp() override {
     AppListConfigProvider::Get().ResetForTesting();
@@ -646,10 +642,8 @@ class PopulatedAppListTestBase : public AshTestBase {
     search_model_ = std::make_unique<SearchModel>();
     Shell::Get()->app_list_controller()->SetActiveModel(
         /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
-    // With productivity launcher, fullscreen launcher is used only in tablet
-    // mode, so enable tablet mode.
-    if (productivity_launcher_enabled_)
-      EnableTabletMode(true);
+    // Fullscreen launcher is used only in tablet mode, so enable tablet mode.
+    EnableTabletMode(true);
   }
 
  protected:
@@ -720,8 +714,6 @@ class PopulatedAppListTestBase : public AshTestBase {
     folder_view()->folder_header_view()->ItemNameChanged();
   }
 
-  const bool productivity_launcher_enabled_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
@@ -729,34 +721,16 @@ class PopulatedAppListTestBase : public AshTestBase {
   PagedAppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
 };
 
-// Parameterized by whether productivity launcher is enabled - when the feature
-// is enabled, the test run in tablet mode by default.
-class PopulatedAppListTest : public PopulatedAppListTestBase,
-                             public testing::WithParamInterface<bool> {
- public:
-  PopulatedAppListTest()
-      : PopulatedAppListTestBase(/*productivity_launcher_enabled=*/GetParam()) {
-  }
-  ~PopulatedAppListTest() override = default;
-
-  bool IsProductivityLauncherEnabled() const { return GetParam(); }
-};
-
-// Instantiated by whether productivity launcher is enabled.
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         PopulatedAppListTest,
-                         testing::Bool());
-
 // Subclass of PopulatedAppListTest which enables the virtual keyboard.
-class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTestBase {
+class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTest {
  public:
-  PopulatedAppListWithVKEnabledTest() : PopulatedAppListTestBase(false) {}
+  PopulatedAppListWithVKEnabledTest() = default;
   ~PopulatedAppListWithVKEnabledTest() override = default;
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);
-    PopulatedAppListTestBase::SetUp();
+    PopulatedAppListTest::SetUp();
   }
 };
 
@@ -2200,7 +2174,7 @@ TEST_P(AppListBubbleAndTabletTest,
 
 // Tests that mouse app list item drag is cancelled when mouse capture is lost
 // (e.g. on screen rotation).
-TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
+TEST_F(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
   InitializeAppsGrid();
   PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
 
@@ -2231,7 +2205,7 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
 
 // Tests that app list item drag gets canceled if the dragged app list item gets
 // deleted.
-TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
+TEST_F(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
   InitializeAppsGrid();
   PopulateApps(4);
 
@@ -2266,7 +2240,7 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
 
 // Tests that app list item drag in folder gets canceled if the dragged app list
 // item gets deleted.
-TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
+TEST_F(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
   InitializeAppsGrid();
   PopulateApps(2);
   AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
@@ -2311,7 +2285,7 @@ TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
 
 // Tests that app list item drag from folder to root apps grid gets canceled if
 // the dragged app list item gets deleted.
-TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
+TEST_F(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   InitializeAppsGrid();
   PopulateApps(2);
   AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
@@ -2368,7 +2342,7 @@ TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   helper->DismissAndRunLoop();
 }
 
-TEST_P(PopulatedAppListTest,
+TEST_F(PopulatedAppListTest,
        CancelFolderItemReparentDragOnDragItemAndFolderDeletion) {
   InitializeAppsGrid();
   PopulateApps(2);
@@ -2431,7 +2405,7 @@ TEST_P(PopulatedAppListTest,
 
 // Tests that apps grid item layers are not destroyed immediately after item
 // drag ends.
-TEST_P(PopulatedAppListTest,
+TEST_F(PopulatedAppListTest,
        ItemLayersNotDestroyedDuringBoundsAnimationAfterDrag) {
   InitializeAppsGrid();
   const int kItemCount = 5;
@@ -2483,7 +2457,7 @@ TEST_P(PopulatedAppListTest,
 
 // Tests that apps grid item drag operation can continue normally after display
 // rotation (and app list config change).
-TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
+TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
   // Set the display dimensions so rotation also changes the app list config.
   UpdateDisplay("1200x600");
 
@@ -2524,7 +2498,7 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
 // Tests screen rotation during apps grid item drag where the drag item ends up
 // in page-scroll area. Tests that the apps grid page scrolls without a crash,
 // and that releasing drag does not change the item position in the model.
-TEST_P(PopulatedAppListTest,
+TEST_F(PopulatedAppListTest,
        ScreenRotationDuringAppsGridItemDragWithPageScroll) {
   // Set the display dimensions so rotation also changes the app list config.
   UpdateDisplay("1200x600");
@@ -2575,7 +2549,7 @@ TEST_P(PopulatedAppListTest,
 
 // Tests screen rotation while app list folder item is in progress, and the item
 // remains in the folder bounds during the drag.
-TEST_P(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
+TEST_F(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   // Set the display dimensions so rotation also changes the app list config.
   UpdateDisplay("1200x600");
 
@@ -2622,7 +2596,7 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
 // Tests that app list folder item reparenting drag (where a folder item is
 // dragged outside the folder bounds, and dropped within the apps grid) can
 // continue normally after screen rotation.
-TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
+TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
@@ -2737,7 +2711,7 @@ TEST_P(ProductivityLauncherTest, AppsGridItemReparentToFolderDrag) {
 
 // Tests that an item can be removed just after creating a folder that contains
 // that item. See https://crbug.com/1083942
-TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
+TEST_F(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   InitializeAppsGrid();
   const int kItemCount = 6;
   PopulateApps(kItemCount);
@@ -2809,7 +2783,7 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 }
 
-TEST_P(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
+TEST_F(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
   InitializeAppsGrid();
   const int kItemCount = 5;
   PopulateApps(kItemCount);
@@ -2884,38 +2858,26 @@ TEST_F(PopulatedAppListWithVKEnabledTest,
   InitializeAppsGrid();
   PopulateApps(2);
   gfx::Point between_apps = GetItemRectOnCurrentPageAt(0, 0).right_center();
+  views::View::ConvertPointToScreen(apps_grid_view_, &between_apps);
   gfx::Point empty_space = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
-
-  ui::GestureEvent tap_between(between_apps.x(), between_apps.y(), 0,
-                               base::TimeTicks(),
-                               ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  ui::GestureEvent tap_outside(empty_space.x(), empty_space.y(), 0,
-                               base::TimeTicks(),
-                               ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  views::View::ConvertPointToScreen(apps_grid_view_, &empty_space);
 
   // Manually show the virtual keyboard.
   auto* const keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(true /* locked */);
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
-  // Touch the apps_grid outside of any apps
-  apps_grid_view_->OnGestureEvent(&tap_outside);
-  // Expect that the event is ignored here and allowed to propogate to app_list
-  EXPECT_FALSE(tap_outside.handled());
-  // Hit the app_list with the same event
-  app_list_view_->OnGestureEvent(&tap_outside);
-  // Expect that the event is handled and the keyboard is closed.
-  EXPECT_TRUE(tap_outside.handled());
+  // Touch the apps_grid outside of any apps. Expect that the keyboard is
+  // closed.
+  GetEventGenerator()->GestureTapAt(empty_space);
   EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
 
   // Reshow the VKeyboard
   keyboard_controller->ShowKeyboard(true);
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
-  // Touch the apps_grid between two apps
-  apps_grid_view_->OnGestureEvent(&tap_between);
-  // Expect the event to be handled in the grid, and the keyboard to be closed.
-  EXPECT_TRUE(tap_between.handled());
+  // Touch the apps_grid between two apps. Expect that the keyboard is closed.
+  GetEventGenerator()->GestureTapAt(between_apps);
   EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
 }
 
@@ -3529,7 +3491,7 @@ TEST_P(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
 
 // Tests that the touch selection menu created when tapping an open folder's
 // folder name view be interacted with.
-TEST_P(PopulatedAppListTest, TouchSelectionMenu) {
+TEST_F(PopulatedAppListTest, TouchSelectionMenu) {
   InitializeAppsGrid();
 
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(4);
