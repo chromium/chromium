@@ -38,6 +38,13 @@ VideoColorSpace::VideoColorSpace(const gfx::ColorSpace& color_space) {
       primaries_ =
           V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kSmpte170M);
       break;
+    case gfx::ColorSpace::PrimaryID::BT2020:
+      primaries_ = V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kBt2020);
+      break;
+    case gfx::ColorSpace::PrimaryID::P3:
+      primaries_ =
+          V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kSmpte432);
+      break;
     default:
       // Other values map to unspecified for now.
       break;
@@ -55,6 +62,18 @@ VideoColorSpace::VideoColorSpace(const gfx::ColorSpace& color_space) {
     case gfx::ColorSpace::TransferID::SRGB:
       transfer_ = V8VideoTransferCharacteristics(
           V8VideoTransferCharacteristics::Enum::kIec6196621);
+      break;
+    case gfx::ColorSpace::TransferID::LINEAR:
+      transfer_ = V8VideoTransferCharacteristics(
+          V8VideoTransferCharacteristics::Enum::kLinear);
+      break;
+    case gfx::ColorSpace::TransferID::PQ:
+      transfer_ = V8VideoTransferCharacteristics(
+          V8VideoTransferCharacteristics::Enum::kPq);
+      break;
+    case gfx::ColorSpace::TransferID::HLG:
+      transfer_ = V8VideoTransferCharacteristics(
+          V8VideoTransferCharacteristics::Enum::kHlg);
       break;
     default:
       // Other values map to unspecified for now.
@@ -77,6 +96,10 @@ VideoColorSpace::VideoColorSpace(const gfx::ColorSpace& color_space) {
     case gfx::ColorSpace::MatrixID::SMPTE170M:
       matrix_ = V8VideoMatrixCoefficients(
           V8VideoMatrixCoefficients::Enum::kSmpte170M);
+      break;
+    case gfx::ColorSpace::MatrixID::BT2020_NCL:
+      matrix_ = V8VideoMatrixCoefficients(
+          V8VideoMatrixCoefficients::Enum::kBt2020Ncl);
       break;
     default:
       // Other values map to unspecified for now.
@@ -109,6 +132,13 @@ VideoColorSpace::VideoColorSpace(const media::VideoColorSpace& color_space) {
       primaries_ =
           V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kSmpte170M);
       break;
+    case media::VideoColorSpace::PrimaryID::BT2020:
+      primaries_ = V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kBt2020);
+      break;
+    case media::VideoColorSpace::PrimaryID::SMPTEST432_1:
+      primaries_ =
+          V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kSmpte432);
+      break;
     default:
       // Other values map to unspecified for now.
       break;
@@ -126,6 +156,18 @@ VideoColorSpace::VideoColorSpace(const media::VideoColorSpace& color_space) {
     case media::VideoColorSpace::TransferID::IEC61966_2_1:
       transfer_ = V8VideoTransferCharacteristics(
           V8VideoTransferCharacteristics::Enum::kIec6196621);
+      break;
+    case media::VideoColorSpace::TransferID::LINEAR:
+      transfer_ = V8VideoTransferCharacteristics(
+          V8VideoTransferCharacteristics::Enum::kLinear);
+      break;
+    case media::VideoColorSpace::TransferID::SMPTEST2084:
+      transfer_ = V8VideoTransferCharacteristics(
+          V8VideoTransferCharacteristics::Enum::kPq);
+      break;
+    case media::VideoColorSpace::TransferID::ARIB_STD_B67:
+      transfer_ = V8VideoTransferCharacteristics(
+          V8VideoTransferCharacteristics::Enum::kHlg);
       break;
     default:
       // Other values map to unspecified for now.
@@ -148,6 +190,10 @@ VideoColorSpace::VideoColorSpace(const media::VideoColorSpace& color_space) {
     case media::VideoColorSpace::MatrixID::SMPTE170M:
       matrix_ = V8VideoMatrixCoefficients(
           V8VideoMatrixCoefficients::Enum::kSmpte170M);
+      break;
+    case media::VideoColorSpace::MatrixID::BT2020_NCL:
+      matrix_ = V8VideoMatrixCoefficients(
+          V8VideoMatrixCoefficients::Enum::kBt2020Ncl);
       break;
     default:
       // Other values map to unspecified for now.
@@ -181,6 +227,12 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
       case V8VideoColorPrimaries::Enum::kSmpte170M:
         primaries = gfx::ColorSpace::PrimaryID::SMPTE170M;
         break;
+      case V8VideoColorPrimaries::Enum::kBt2020:
+        primaries = gfx::ColorSpace::PrimaryID::BT2020;
+        break;
+      case V8VideoColorPrimaries::Enum::kSmpte432:
+        primaries = gfx::ColorSpace::PrimaryID::P3;
+        break;
     }
   }
 
@@ -195,6 +247,15 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
         break;
       case V8VideoTransferCharacteristics::Enum::kIec6196621:
         transfer = gfx::ColorSpace::TransferID::SRGB;
+        break;
+      case V8VideoTransferCharacteristics::Enum::kLinear:
+        transfer = gfx::ColorSpace::TransferID::LINEAR;
+        break;
+      case V8VideoTransferCharacteristics::Enum::kPq:
+        transfer = gfx::ColorSpace::TransferID::PQ;
+        break;
+      case V8VideoTransferCharacteristics::Enum::kHlg:
+        transfer = gfx::ColorSpace::TransferID::HLG;
         break;
     }
   }
@@ -213,6 +274,9 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
         break;
       case V8VideoMatrixCoefficients::Enum::kSmpte170M:
         matrix = gfx::ColorSpace::MatrixID::SMPTE170M;
+        break;
+      case V8VideoMatrixCoefficients::Enum::kBt2020Ncl:
+        matrix = gfx::ColorSpace::MatrixID::BT2020_NCL;
         break;
     }
   }
@@ -240,6 +304,12 @@ media::VideoColorSpace VideoColorSpace::ToMediaColorSpace() const {
       case V8VideoColorPrimaries::Enum::kSmpte170M:
         primaries = media::VideoColorSpace::PrimaryID::SMPTE170M;
         break;
+      case V8VideoColorPrimaries::Enum::kBt2020:
+        primaries = media::VideoColorSpace::PrimaryID::BT2020;
+        break;
+      case V8VideoColorPrimaries::Enum::kSmpte432:
+        primaries = media::VideoColorSpace::PrimaryID::SMPTEST432_1;
+        break;
     }
   }
 
@@ -255,6 +325,15 @@ media::VideoColorSpace VideoColorSpace::ToMediaColorSpace() const {
         break;
       case V8VideoTransferCharacteristics::Enum::kIec6196621:
         transfer = media::VideoColorSpace::TransferID::IEC61966_2_1;
+        break;
+      case V8VideoTransferCharacteristics::Enum::kLinear:
+        transfer = media::VideoColorSpace::TransferID::LINEAR;
+        break;
+      case V8VideoTransferCharacteristics::Enum::kPq:
+        transfer = media::VideoColorSpace::TransferID::SMPTEST2084;
+        break;
+      case V8VideoTransferCharacteristics::Enum::kHlg:
+        transfer = media::VideoColorSpace::TransferID::ARIB_STD_B67;
         break;
     }
   }
@@ -274,6 +353,9 @@ media::VideoColorSpace VideoColorSpace::ToMediaColorSpace() const {
         break;
       case V8VideoMatrixCoefficients::Enum::kSmpte170M:
         matrix = media::VideoColorSpace::MatrixID::SMPTE170M;
+        break;
+      case V8VideoMatrixCoefficients::Enum::kBt2020Ncl:
+        matrix = media::VideoColorSpace::MatrixID::BT2020_NCL;
         break;
     }
   }
