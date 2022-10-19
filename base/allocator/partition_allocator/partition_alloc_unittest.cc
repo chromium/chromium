@@ -3878,7 +3878,9 @@ class UnretainedDanglingRawPtrTest : public PartitionAllocTest {
 
 INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
                          UnretainedDanglingRawPtrTest,
-                         testing::Values(false, true));
+                         testing::Values(BucketDistribution::kDefault,
+                                         BucketDistribution::kCoarser,
+                                         BucketDistribution::kDenser));
 
 TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrNoReport) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
