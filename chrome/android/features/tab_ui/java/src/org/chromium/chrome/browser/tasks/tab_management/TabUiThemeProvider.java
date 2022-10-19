@@ -159,18 +159,10 @@ public class TabUiThemeProvider {
      * icon background.
      *
      * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
      * @return The {@link ColorInt} for select all icon background.
      */
-    public static @ColorInt int getSelectionActionIconBackgroundColor(
-            Context context, boolean isIncognito) {
-        if (isIncognito) {
-            return context.getColor(
-                    R.color.incognito_tab_selection_editor_selection_action_bg_color);
-        }
-        @ColorInt
-        int colorInt = MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
-        return colorInt;
+    public static @ColorInt int getSelectionActionIconBackgroundColor(Context context) {
+        return MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
     }
 
     /**
@@ -178,16 +170,10 @@ public class TabUiThemeProvider {
      * {@link TabSelectionEditorSelectionAction}.
      *
      * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
      * @return The {@link ColorInt} for "check" drawable.
      */
-    public static @ColorInt int getSelectionActionIconCheckedDrawableColor(
-            Context context, boolean isIncognito) {
-        if (isIncognito) {
-            return context.getColor(R.color.incognito_tab_selection_editor_selection_action_check);
-        }
-        return MaterialColors.getColor(
-                context, org.chromium.chrome.R.attr.colorOnSurfaceInverse, TAG);
+    public static @ColorInt int getSelectionActionIconCheckedDrawableColor(Context context) {
+        return MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorOnPrimary, TAG);
     }
 
     /**

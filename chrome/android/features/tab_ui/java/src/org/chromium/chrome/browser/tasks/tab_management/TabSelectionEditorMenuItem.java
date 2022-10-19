@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.Callback;
@@ -37,6 +38,7 @@ public class TabSelectionEditorMenuItem {
     private boolean mShowText;
     private boolean mShowIcon;
     private boolean mEnabled;
+    private boolean mShouldDismissMenu;
     private boolean mActionViewShowing;
     private ColorStateList mIconTint;
 
@@ -155,10 +157,17 @@ public class TabSelectionEditorMenuItem {
         // A null colorStateList is used with TabSelectionEditorActionProperties.SKIP_ICON_TINT
         // = true to signal that a custom tint is used. Ignore null so that this custom tint is
         // not overridden.
-        if (colorStateList == null) return;
+        if (colorStateList == null) {
+            mIconTint = null;
+            mListItem.model.set(TabSelectionEditorActionProperties.ICON_TINT, null);
+            return;
+        }
 
         // mListItem uses the default icon tint whenever shown. Cache the tint to restore it when
         // the action view shown state is toggled.
+        mListItem.model.set(TabSelectionEditorActionProperties.ICON_TINT,
+                AppCompatResources.getColorStateList(
+                        mContext, R.color.default_icon_color_secondary_tint_list));
         mIconTint = colorStateList;
         if (mActionView != null && mActionViewShowing) {
             TextViewCompat.setCompoundDrawableTintList(mActionView, colorStateList);
@@ -180,8 +189,20 @@ public class TabSelectionEditorMenuItem {
         }
     }
 
+    public void setShouldDismissMenu(boolean shouldDismissMenu) {
+        mShouldDismissMenu = shouldDismissMenu;
+    }
+
+    public boolean shouldDismissMenu() {
+        return mShouldDismissMenu;
+    }
+
     public void setOnSelectionStateChange(Callback<List<Integer>> callback) {
         mOnSelectionStateChange = callback;
+    }
+
+    public void setOnShownInMenu(Runnable runnable) {
+        mListItem.model.set(TabSelectionEditorActionProperties.ON_SHOWN_IN_MENU, runnable);
     }
 
     /**

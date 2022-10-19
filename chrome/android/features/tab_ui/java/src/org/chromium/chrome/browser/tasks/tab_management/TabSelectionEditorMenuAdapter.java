@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -104,9 +103,15 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
         } else if (key == TabSelectionEditorActionProperties.ON_CLICK_LISTENER) {
             menuItem.setOnClickListener(
                     actionModel.get(TabSelectionEditorActionProperties.ON_CLICK_LISTENER));
+        } else if (key == TabSelectionEditorActionProperties.SHOULD_DISMISS_MENU) {
+            menuItem.setShouldDismissMenu(
+                    actionModel.get(TabSelectionEditorActionProperties.SHOULD_DISMISS_MENU));
         } else if (key == TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE) {
             menuItem.setOnSelectionStateChange(
                     actionModel.get(TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE));
+        } else if (key == TabSelectionEditorActionProperties.ON_SHOWN_IN_MENU) {
+            menuItem.setOnShownInMenu(
+                    actionModel.get(TabSelectionEditorActionProperties.ON_SHOWN_IN_MENU));
         }
     }
 
@@ -140,10 +145,6 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
                     view.getResources().getDimensionPixelOffset(R.dimen.menu_padding_start),
                     textView.getPaddingTop(), textView.getPaddingEnd(),
                     textView.getPaddingBottom());
-            // Use default color for menu icon.
-            ApiCompatibilityUtils.setImageTintList(startIcon,
-                    AppCompatResources.getColorStateList(
-                            view.getContext(), R.color.default_icon_color_secondary_tint_list));
             startIcon.setVisibility(View.VISIBLE);
             endIcon.setVisibility(View.GONE);
         } else if (propertyKey == TabSelectionEditorActionProperties.ENABLED) {
@@ -151,6 +152,11 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
             textView.setEnabled(model.get(TabSelectionEditorActionProperties.ENABLED));
             startIcon.setEnabled(model.get(TabSelectionEditorActionProperties.ENABLED));
             endIcon.setEnabled(model.get(TabSelectionEditorActionProperties.ENABLED));
+        } else if (propertyKey == TabSelectionEditorActionProperties.ICON_TINT) {
+            ColorStateList colorStateList = model.get(TabSelectionEditorActionProperties.ICON_TINT);
+            if (colorStateList != null) {
+                ApiCompatibilityUtils.setImageTintList(startIcon, colorStateList);
+            }
         }
     }
 }

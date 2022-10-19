@@ -156,8 +156,11 @@ public abstract class TabSelectionEditorAction {
                                 ColorStateList.valueOf(Color.TRANSPARENT))
                         .with(TabSelectionEditorActionProperties.SKIP_ICON_TINT, false)
                         .with(TabSelectionEditorActionProperties.ON_CLICK_LISTENER, this::perform)
+                        .with(TabSelectionEditorActionProperties.SHOULD_DISMISS_MENU, true)
                         .with(TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE,
                                 this::onSelectionStateChange)
+                        .with(TabSelectionEditorActionProperties.ON_SHOWN_IN_MENU,
+                                this::onShownInMenu)
                         .build();
 
         if (contentDescriptionResourceId == null) return;
@@ -190,6 +193,8 @@ public abstract class TabSelectionEditorAction {
     public boolean shouldNotifyObserversOfAction() {
         return true;
     }
+
+    public void onShownInMenu() {}
 
     /**
      * @return Whether the TabSelectionEditor supports applying the actions to related tabs.

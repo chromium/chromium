@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.IntDef;
@@ -65,12 +66,18 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         mActionState = ActionState.UNKNOWN;
         getPropertyModel().set(TabSelectionEditorActionProperties.ICON_TINT, null);
         getPropertyModel().set(TabSelectionEditorActionProperties.SKIP_ICON_TINT, true);
+        getPropertyModel().set(TabSelectionEditorActionProperties.SHOULD_DISMISS_MENU, false);
         updateState(ActionState.SELECT_ALL, isIncognito);
     }
 
     @Override
     public boolean shouldNotifyObserversOfAction() {
         return false;
+    }
+
+    @Override
+    public void onShownInMenu() {
+        updateDrawable();
     }
 
     @Override
@@ -109,29 +116,42 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         if (mActionState == ActionState.SELECT_ALL) {
             getPropertyModel().set(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
                     R.string.tab_selection_editor_select_all);
-            layers.getDrawable(BACKGROUND)
-                    .setLevel(
-                            mContext.getResources().getInteger(R.integer.list_item_level_default));
-            layers.getDrawable(BACKGROUND)
-                    .setTint(TabUiThemeProvider.getSelectionActionIconBackgroundColor(
-                            mContext, isIncognito));
-
-            layers.getDrawable(CHECKMARK).setAlpha(0);
-            layers.getDrawable(CHECKMARK).setTint(Color.TRANSPARENT);
+            updateDrawable();
         } else if (mActionState == ActionState.DESELECT_ALL) {
             getPropertyModel().set(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
                     R.string.tab_selection_editor_deselect_all);
+            updateDrawable();
+        } else {
+            assert false : "Invalid selection state";
+        }
+    }
+
+    private void updateDrawable() {
+        LayerDrawable layers =
+                (LayerDrawable) getPropertyModel().get(TabSelectionEditorActionProperties.ICON);
+        if (mActionState == ActionState.SELECT_ALL) {
+            layers.getDrawable(BACKGROUND)
+                    .setLevel(
+                            mContext.getResources().getInteger(R.integer.list_item_level_default));
+
+            layers.setDrawable(CHECKMARK,
+                    AnimatedVectorDrawableCompat.create(
+                            mContext, R.drawable.ic_check_googblue_20dp_animated));
+            layers.getDrawable(CHECKMARK).setAlpha(0);
+            layers.getDrawable(CHECKMARK).setTint(Color.TRANSPARENT);
+            getPropertyModel().set(TabSelectionEditorActionProperties.ICON, layers);
+        } else if (mActionState == ActionState.DESELECT_ALL) {
             layers.getDrawable(BACKGROUND)
                     .setLevel(
                             mContext.getResources().getInteger(R.integer.list_item_level_selected));
-            layers.getDrawable(BACKGROUND)
-                    .setTint(TabUiThemeProvider.getSelectionActionIconBackgroundColor(
-                            mContext, isIncognito));
 
+            layers.setDrawable(CHECKMARK,
+                    AnimatedVectorDrawableCompat.create(
+                            mContext, R.drawable.ic_check_googblue_20dp_animated));
             layers.getDrawable(CHECKMARK).setAlpha(255);
             layers.getDrawable(CHECKMARK).setTint(
-                    TabUiThemeProvider.getSelectionActionIconCheckedDrawableColor(
-                            mContext, isIncognito));
+                    TabUiThemeProvider.getSelectionActionIconCheckedDrawableColor(mContext));
+            getPropertyModel().set(TabSelectionEditorActionProperties.ICON, layers);
             ((AnimatedVectorDrawableCompat) layers.getDrawable(CHECKMARK)).start();
         } else {
             assert false : "Invalid selection state";
@@ -141,9 +161,13 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
     private static Drawable buildDrawable(Context context) {
         Drawable[] drawables = new Drawable[2];
 
-        drawables[BACKGROUND] = ResourcesCompat.getDrawable(context.getResources(),
+        Drawable selectionListIcon = ResourcesCompat.getDrawable(context.getResources(),
                 R.drawable.tab_grid_selection_list_icon, context.getTheme());
-
+        drawables[BACKGROUND] = new InsetDrawable(selectionListIcon,
+                (int) context.getResources().getDimension(
+                        R.dimen.tab_selection_editor_selection_action_inset));
+        drawables[BACKGROUND].setTint(
+                TabUiThemeProvider.getSelectionActionIconBackgroundColor(context));
         drawables[CHECKMARK] = AnimatedVectorDrawableCompat.create(
                 context, R.drawable.ic_check_googblue_20dp_animated);
         return new LayerDrawable(drawables);

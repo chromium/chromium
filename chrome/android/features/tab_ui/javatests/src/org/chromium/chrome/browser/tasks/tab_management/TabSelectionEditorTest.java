@@ -1171,6 +1171,38 @@ public class TabSelectionEditorTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void testToolbarMenuItem_SelectAllMenu() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<TabSelectionEditorAction> actions = new ArrayList<>();
+            actions.add(TabSelectionEditorSelectionAction.createAction(
+                    sActivityTestRule.getActivity(), ShowMode.MENU_ONLY, ButtonType.TEXT,
+                    IconPosition.START, /*isIncognito=*/false));
+            actions.add(TabSelectionEditorCloseAction.createAction(sActivityTestRule.getActivity(),
+                    ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START));
+
+            mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
+            mTabSelectionEditorController.show(tabs);
+        });
+        mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+
+        mRobot.actionRobot.clickToolbarMenuButton();
+        mRobot.resultRobot.verifyToolbarMenuItemState("Select all", /*enabled=*/true)
+                .verifyToolbarMenuItemState("Close tabs", /*enabled=*/false);
+        mRobot.actionRobot.clickToolbarMenuItem("Select all");
+        mRobot.resultRobot.verifyToolbarMenuItemState("Deselect all", /*enabled=*/true)
+                .verifyToolbarMenuItemState("Close tabs", /*enabled=*/true);
+        mRobot.actionRobot.clickToolbarMenuItem("Deselect all");
+        mRobot.resultRobot.verifyToolbarMenuItemState("Select all", /*enabled=*/true);
+        Espresso.pressBack();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testToolbarActionViewAndMenuItemContentDescription() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
