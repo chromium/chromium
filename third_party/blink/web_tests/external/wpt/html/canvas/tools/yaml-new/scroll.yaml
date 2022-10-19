@@ -2,8 +2,6 @@
   desc: scrollPathIntoView() works
   canvasType:
     ['HTMLCanvas']
-  testing:
-  - 2d.scrollPathIntoView.basic
   code: |
     var div = document.createElement('div');
     div.style.cssText = 'width: 200vw; height: 200vh';
@@ -22,8 +20,6 @@
   desc: scrollPathIntoView() works in vertical-lr writing mode
   canvasType:
     ['HTMLCanvas']
-  testing:
-  - 2d.scrollPathIntoView.basic
   code: |
     document.documentElement.style.cssText = 'writing-mode: vertical-lr';
     var div = document.createElement('div');
@@ -43,8 +39,6 @@
   desc: scrollPathIntoView() works in vertical-rl writing mode
   canvasType:
     ['HTMLCanvas']
-  testing:
-  - 2d.scrollPathIntoView.basic
   code: |
     document.documentElement.style.cssText = 'writing-mode: vertical-rl';
     var div = document.createElement('div');
@@ -66,8 +60,6 @@
   desc: scrollPathIntoView() with path argument works
   canvasType:
     ['HTMLCanvas']
-  testing:
-  - 2d.scrollPathIntoView.basic
   code: |
     var div = document.createElement('div');
     div.style.cssText = 'width: 200vw; height: 200vh';

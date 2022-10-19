@@ -1,7 +1,4 @@
 - name: 2d.drawImage.3arg
-  testing:
-  - 2d.drawImage.defaultsource
-  - 2d.drawImage.defaultdest
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -20,8 +17,6 @@
   expected: green
 
 - name: 2d.drawImage.5arg
-  testing:
-  - 2d.drawImage.defaultsource
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -41,8 +36,6 @@
   expected: green
 
 - name: 2d.drawImage.9arg.basic
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['HTMLCanvas']
   images:
   - green.png
@@ -57,8 +50,6 @@
   expected: green
 
 - name: 2d.drawImage.9arg.sourcepos
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['HTMLCanvas']
   images:
   - rgrg-256x256.png
@@ -73,8 +64,6 @@
   expected: green
 
 - name: 2d.drawImage.9arg.sourcesize
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['HTMLCanvas']
   images:
   - rgrg-256x256.png
@@ -96,8 +85,6 @@
   expected: green
 
 - name: 2d.drawImage.9arg.destpos
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -117,8 +104,6 @@
   expected: green
 
 - name: 2d.drawImage.9arg.destsize
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -138,8 +123,6 @@
   expected: green
 
 - name: 2d.drawImage.canvas
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['HTMLCanvas']
   code: |
     var canvas2 = document.createElement('canvas');
@@ -166,8 +149,6 @@
   expected: green
 
 - name: 2d.drawImage.self.1
-  testing:
-  - 2d.drawImage.self
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 50, 50);
@@ -182,8 +163,6 @@
   expected: green
 
 - name: 2d.drawImage.self.2
-  testing:
-  - 2d.drawImage.self
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 1, 100, 49);
@@ -200,16 +179,12 @@
   expected: green
 
 - name: 2d.drawImage.null
-  testing:
-  - 2d.drawImage.IDL
   code: |
     @assert throws TypeError ctx.drawImage(null, 0, 0);
 
 - name: 2d.drawImage.wrongtype
   desc: Incorrect image types in drawImage do not match any defined overloads, so
     WebIDL throws a TypeError
-  testing:
-  - 2d.drawImage.IDL
   code: |
     @assert throws TypeError ctx.drawImage(undefined, 0, 0);
     @assert throws TypeError ctx.drawImage(0, 0, 0);
@@ -219,15 +194,11 @@
   desc: Incorrect image types in drawImage do not match any defined overloads, so
     WebIDL throws a TypeError
   notes: &bindings Defined in "Web IDL" (draft)
-  testing:
-  - 2d.drawImage.IDL
   canvasType: ['HTMLCanvas']
   code: |
     @assert throws TypeError ctx.drawImage(document.createElement('p'), 0, 0);
 
 - name: 2d.drawImage.floatsource
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['HTMLCanvas']
   images:
   - green.png
@@ -238,8 +209,6 @@
 
 - name: 2d.drawImage.zerosource
   desc: drawImage with zero-sized source rectangle draws nothing without exception
-  testing:
-  - 2d.drawImage.zerosource
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -254,8 +223,6 @@
 
 - name: 2d.drawImage.zerosource.image
   desc: drawImage with zero-sized source rectangle from image draws nothing without exception
-  testing:
-  - 2d.drawImage.zerosource
   canvasType: ['HTMLCanvas']
   images:
   - red-zerowidth.svg
@@ -272,8 +239,6 @@
 
 - name: 2d.drawImage.negativesource
   desc: Negative source width/height represents the correct rectangle
-  testing:
-  - 2d.drawImage.direction
   canvasType: ['HTMLCanvas']
   mozilla: {throws: !!null ''}
   images:
@@ -297,8 +262,6 @@
 
 - name: 2d.drawImage.negativedest
   desc: Negative destination width/height represents the correct rectangle
-  testing:
-  - 2d.drawImage.direction
   canvasType: ['HTMLCanvas']
   mozilla: {throws: !!null ''}
   images:
@@ -322,8 +285,6 @@
 
 - name: 2d.drawImage.negativedir
   desc: Negative dimensions do not affect the direction of the image
-  testing:
-  - 2d.drawImage.direction
   canvasType: ['HTMLCanvas']
   mozilla: {throws: !!null ''}
   images:
@@ -347,8 +308,6 @@
 
 - name: 2d.drawImage.outsidesource
   DISABLED: fix this to match the current spec (transparent black outside source)
-  testing:
-  - 2d.drawImage.outsidesource
   canvasType: ['HTMLCanvas']
   mozilla: {throws: !!null ''}
   images:
@@ -370,8 +329,6 @@
   expected: green
 
 - name: 2d.drawImage.incomplete.nosrc
-  testing:
-  - 2d.drawImage.incomplete.image
   canvasType: ['HTMLCanvas']
   mozilla: {throws: !!null ''}
   code: |
@@ -383,8 +340,6 @@
   expected: green
 
 - name: 2d.drawImage.incomplete.immediate
-  testing:
-  - 2d.drawImage.incomplete.image
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -402,8 +357,6 @@
   expected: green
 
 - name: 2d.drawImage.incomplete.reload
-  testing:
-  - 2d.drawImage.incomplete.image
   canvasType: ['HTMLCanvas']
   images:
   - yellow.png
@@ -423,8 +376,6 @@
   expected: green
 
 - name: 2d.drawImage.incomplete.emptysrc
-  testing:
-  - 2d.drawImage.incomplete.image
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -439,8 +390,6 @@
   expected: green
 
 - name: 2d.drawImage.incomplete.removedsrc
-  testing:
-  - 2d.drawImage.incomplete.image
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -455,8 +404,6 @@
   expected: green
 
 - name: 2d.drawImage.broken
-  testing:
-  - 2d.drawImage.incomplete.image
   canvasType: ['HTMLCanvas']
   images:
   - broken.png
@@ -468,8 +415,6 @@
   expected: green
 
 - name: 2d.drawImage.nonexistent
-  testing:
-  - 2d.drawImage.incomplete.image
   canvasType: ['HTMLCanvas']
   images:
   - not-found-at-all.png
@@ -479,8 +424,6 @@
 
 - name: 2d.drawImage.zerocanvas
   desc: drawImage with zero-sized canvas as the source shoud throw exception
-  testing:
-  - 2d.drawImage.zerocanvas
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 0;
@@ -497,8 +440,6 @@
 
 - name: 2d.drawImage.svg
   desc: drawImage() of an SVG image
-  testing:
-  - 2d.drawImage.svg
   canvasType: ['HTMLCanvas']
   images:
   - green.svg
@@ -509,8 +450,6 @@
 
 - name: 2d.drawImage.animated.gif
   desc: drawImage() of an animated GIF draws the first frame
-  testing:
-  - 2d.drawImage.animated.image
   canvasType: ['HTMLCanvas']
   images:
   - anim-gr.gif
@@ -524,8 +463,6 @@
 
 - name: 2d.drawImage.animated.apng
   desc: drawImage() of an APNG with no poster frame draws the first frame
-  testing:
-  - 2d.drawImage.animated.image
   canvasType: ['HTMLCanvas']
   images:
   - anim-gr.png
@@ -539,8 +476,6 @@
 
 - name: 2d.drawImage.animated.poster
   desc: drawImage() of an APNG draws the poster frame
-  testing:
-  - 2d.drawImage.animated.image
   canvasType: ['HTMLCanvas']
   images:
   - anim-poster-gr.png
@@ -550,8 +485,6 @@
   expected: green
 
 - name: 2d.drawImage.path
-  testing:
-  - 2d.drawImage.unaffect
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -564,8 +497,6 @@
   expected: green
 
 - name: 2d.drawImage.transform
-  testing:
-  - 2d.drawImage.subject
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -580,8 +511,6 @@
 # TODO: drawImage shadows
 
 - name: 2d.drawImage.alpha
-  testing:
-  - 2d.drawImage.subject
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -594,8 +523,6 @@
   expected: green
 
 - name: 2d.drawImage.clip
-  testing:
-  - 2d.drawImage.subject
   images:
   - red.png
   code: |
@@ -608,8 +535,6 @@
   expected: green
 
 - name: 2d.drawImage.composite
-  testing:
-  - 2d.drawImage.subject
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -637,8 +562,6 @@
 
 - name: 2d.drawImage.nonfinite
   desc: drawImage() with Infinity/NaN is ignored
-  testing:
-  - 2d.nonfinite
   canvasType: ['HTMLCanvas']
   images:
   - red.png
@@ -653,9 +576,6 @@
   expected: green
 
 - name: 2d.drawImage.3arg
-  testing:
-  - 2d.drawImage.defaultsource
-  - 2d.drawImage.defaultdest
   canvasType: ['OffscreenCanvas']
   timeout: long
   images:
@@ -697,8 +617,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.5arg
-  testing:
-  - 2d.drawImage.defaultsource
   images:
   - red.png
   - green.png
@@ -741,8 +659,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.9arg.basic
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['OffscreenCanvas']
   images:
   - green.png
@@ -770,8 +686,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.9arg.sourcepos
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['OffscreenCanvas']
   images:
   - rgrg-256x256.png
@@ -799,8 +713,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.9arg.sourcesize
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['OffscreenCanvas']
   images:
   - rgrg-256x256.png
@@ -835,8 +747,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.9arg.destpos
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['OffscreenCanvas']
   images:
   - red.png
@@ -880,8 +790,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.9arg.destsize
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['OffscreenCanvas']
   images:
   - red.png
@@ -925,8 +833,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.canvas
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['OffscreenCanvas']
   timeout: long
   code: |
@@ -942,8 +848,6 @@
     @assert pixel 99,49 ==~ 0,255,0,255;
 
 - name: 2d.drawImage.zerocanvas
-  testing:
-  - 2d.drawImage.zerocanvas
   canvasType: ['OffscreenCanvas']
   timeout: long
   code: |
@@ -959,8 +863,6 @@
     @assert throws INVALID_STATE_ERR ctx.drawImage(offscreenCanvas2, 0, 0);
 
 - name: 2d.drawImage.floatsource
-  testing:
-  - 2d.drawImage.paint
   canvasType: ['OffscreenCanvas']
   timeout: long
   code: |
@@ -982,8 +884,6 @@
 
 - name: 2d.drawImage.zerosource
   desc: drawImage with zero-sized source rectangle draws nothing without exception
-  testing:
-  - 2d.drawImage.zerosource
   canvasType: ['OffscreenCanvas']
   timeout: long
   images:
@@ -1011,8 +911,6 @@
 
 - name: 2d.drawImage.zerosource.image
   desc: drawImage with zero-sized source rectangle from image draws nothing without exception
-  testing:
-  - 2d.drawImage.zerosource
   canvasType: ['OffscreenCanvas']
   images:
   - red-zerowidth.svg
@@ -1042,8 +940,6 @@
 
 - name: 2d.drawImage.negativesource
   desc: Negative source width/height represents the correct rectangle
-  testing:
-  - 2d.drawImage.direction
   canvasType: ['OffscreenCanvas']
   mozilla: {throws: !!null ''}
   images:
@@ -1080,8 +976,6 @@
 
 - name: 2d.drawImage.negativedest
   desc: Negative destination width/height represents the correct rectangle
-  testing:
-  - 2d.drawImage.direction
   canvasType: ['OffscreenCanvas']
   mozilla: {throws: !!null ''}
   timeout: long
@@ -1118,8 +1012,6 @@
 
 - name: 2d.drawImage.negativedir
   desc: Negative dimensions do not affect the direction of the image
-  testing:
-  - 2d.drawImage.direction
   canvasType: ['OffscreenCanvas']
   mozilla: {throws: !!null ''}
   timeout: long
@@ -1156,8 +1048,6 @@
 
 - name: 2d.drawImage.outsidesource
   DISABLED: fix this to match the current spec (transparent black outside source)
-  testing:
-  - 2d.drawImage.outsidesource
   canvasType: ['OffscreenCanvas']
   code: |
     var promise1 = new Promise(function(resolve, reject) {
@@ -1198,8 +1088,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.broken
-  testing:
-  - 2d.drawImage.incomplete.image
   canvasType: ['OffscreenCanvas']
   timeout: long
   code: |
@@ -1223,8 +1111,6 @@
 
 - name: 2d.drawImage.svg
   desc: drawImage() of an SVG image
-  testing:
-  - 2d.drawImage.svg
   canvasType: ['OffscreenCanvas']
   timeout: long
   code: |
@@ -1246,8 +1132,6 @@
 
 - name: 2d.drawImage.animated.poster
   desc: drawImage() of an APNG draws the poster frame
-  testing:
-  - 2d.drawImage.animated.image
   canvasType: ['OffscreenCanvas']
   images:
   - anim-poster-gr.png
@@ -1270,8 +1154,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.path
-  testing:
-  - 2d.drawImage.unaffect
   canvasType: ['OffscreenCanvas']
   timeout: long
   code: |
@@ -1295,8 +1177,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.transform
-  testing:
-  - 2d.drawImage.subject
   canvasType: ['OffscreenCanvas']
   images:
   - red.png
@@ -1322,8 +1202,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.alpha
-  testing:
-  - 2d.drawImage.subject
   canvasType: ['OffscreenCanvas']
   images:
   - red.png
@@ -1349,8 +1227,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.clip
-  testing:
-  - 2d.drawImage.subject
   canvasType: ['OffscreenCanvas']
   images:
   - red.png
@@ -1377,8 +1253,6 @@
     }).then(t_pass, t_fail);
 
 - name: 2d.drawImage.composite
-  testing:
-  - 2d.drawImage.subject
   canvasType: ['OffscreenCanvas']
   images:
   - red.png
@@ -1432,8 +1306,6 @@
 
 - name: 2d.drawImage.nonfinite
   desc: drawImage() with Infinity/NaN is ignored
-  testing:
-  - 2d.nonfinite
   canvasType: ['OffscreenCanvas']
   images:
   - red.png

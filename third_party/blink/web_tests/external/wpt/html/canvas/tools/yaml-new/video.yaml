@@ -2,8 +2,6 @@
   desc: Verify test doesn't crash with invalid video.
   canvasType:
     ['HTMLCanvas']
-  testing:
-  - 2d.video.invalid
   code: |
     var v = document.createElement('video');
     v.play();

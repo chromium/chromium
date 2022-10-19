@@ -17,9 +17,7 @@
         ("trailingjunk", "100#!?", 100),
     ]
     def gen(name, string, exp, code):
-        testing = ["size.nonnegativeinteger"]
         if exp is None:
-            testing.append("size.error")
             code += "@assert canvas.width === 300;\n@assert canvas.height === 150;\n"
             expected = "size 300 150"
         else:
@@ -36,17 +34,16 @@
         if exp == 0:
             expected = None # can't generate zero-sized PNGs for the expected image
 
-        return code, testing, expected
+        return code, expected
 
     for name, string, exp in cases:
         code = ""
-        code, testing, expected = gen(name, string, exp, code)
+        code, expected = gen(name, string, exp, code)
         # We need to replace \r with &#xD; because \r\n gets converted to \n in the HTML parser.
         htmlString = string.replace('\r', '&#xD;')
         tests.append( {
             "name": "size.attributes.parse.%s" % name,
             "desc": "Parsing of non-negative integers",
-            "testing": testing,
             "canvas": 'width="%s" height="%s"' % (htmlString, htmlString),
             "code": code,
             "expected": expected
@@ -54,11 +51,10 @@
 
     for name, string, exp in cases:
         code = "canvas.setAttribute('width', %r);\ncanvas.setAttribute('height', %r);\n" % (string, string)
-        code, testing, expected = gen(name, string, exp, code)
+        code, expected = gen(name, string, exp, code)
         tests.append( {
             "name": "size.attributes.setAttribute.%s" % name,
             "desc": "Parsing of non-negative integers in setAttribute",
-            "testing": testing,
             "canvas": 'width="50" height="50"',
             "code": code,
             "expected": expected
@@ -86,7 +82,6 @@
         tests.append( {
             'name': '2d.state.saverestore.%s' % key,
             'desc': 'save()/restore() works for %s' % key,
-            'testing': [ '2d.state.%s' % key ],
             'code':
     """// Test that restore() undoes any modifications
     var old = ctx.%(key)s;
@@ -109,7 +104,6 @@
     tests.append( {
         'name': 'initial.reset.2dstate',
         'desc': 'Resetting the canvas state resets 2D state variables',
-        'testing': [ 'initial.reset' ],
         'code':
     """canvas.width = 100;
     var default_val;
@@ -187,7 +181,6 @@
             expected = calc_output(src, dest, FA_code, FB_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
-                'testing': [ '2d.composite.%s' % op ],
                 'code': """
     ctx.fillStyle = 'rgba%s';
     ctx.fillRect(0, 0, 100, 50);
@@ -208,7 +201,6 @@
             expected = calc_output(src, dest, FA_code, FB_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
-                'testing': [ '2d.composite.%s' % op ],
                 'images': [ 'yellow75.png' ],
                 'code': """
     ctx.fillStyle = 'rgba%s';
@@ -229,7 +221,6 @@
             expected = calc_output(src, dest, FA_code, FB_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
-                'testing': [ '2d.composite.%s' % op ],
                 'images': [ 'yellow75.png' ],
                 'code': """
     var canvas2 = document.createElement('canvas');
@@ -258,7 +249,6 @@
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'desc': 'fill() draws pixels not covered by the source object as (0,0,0,0), and does not leave the pixels unchanged.',
-                'testing': [ '2d.composite.%s' % op ],
                 'code': """
     ctx.fillStyle = 'rgba%s';
     ctx.fillRect(0, 0, 100, 50);
@@ -282,7 +272,6 @@
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'desc': 'drawImage() draws pixels not covered by the source object as (0,0,0,0), and does not leave the pixels unchanged.',
-                'testing': [ '2d.composite.%s' % op ],
                 'images': [ 'yellow.png' ],
                 'code': """
     ctx.fillStyle = 'rgba%s';
@@ -306,7 +295,6 @@
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'desc': 'drawImage() of a canvas with no context draws pixels as (0,0,0,0), and does not leave the pixels unchanged.',
-                'testing': [ '2d.composite.%s' % op ],
                 'code': """
     ctx.fillStyle = 'rgba%s';
     ctx.fillRect(0, 0, 100, 50);
@@ -329,7 +317,6 @@
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'desc': 'Pattern fill() draws pixels not covered by the source object as (0,0,0,0), and does not leave the pixels unchanged.',
-                'testing': [ '2d.composite.%s' % op ],
                 'images': [ 'yellow.png' ],
                 'code': """
     ctx.fillStyle = 'rgba%s';
@@ -350,7 +337,6 @@
         tests.append( {
             'name': '2d.composite.clip.%s' % (op),
             'desc': 'fill() does not affect pixels outside the clip region.',
-            'testing': [ '2d.composite.%s' % op ],
             'code': """
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -457,7 +443,6 @@
         # TODO: test strokeStyle, shadowColor in the same way
         test = {
             'name': '2d.fillStyle.parse.%s' % name,
-            'testing': [ '2d.colors.parse' ],
             'notes': notes,
             'code': """
     ctx.fillStyle = '#f00';
@@ -527,7 +512,6 @@
     ]:
         test = {
             'name': '2d.fillStyle.parse.invalid.%s' % name,
-            'testing': [ '2d.colors.parse' ],
             'code': """
     ctx.fillStyle = '#0f0';
     try { ctx.fillStyle = '%s'; } catch (e) { } // this shouldn't throw, but it shouldn't matter here if it does
@@ -545,7 +529,6 @@
     ]:
         test = {
             'name': '2d.fillStyle.parse.%s' % name,
-            'testing': [ '2d.colors.parse' ],
             'code': """
     ctx.fillStyle = '#f00';
     ctx.fillStyle = '%s';
