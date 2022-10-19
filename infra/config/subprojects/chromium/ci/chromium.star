@@ -14,7 +14,8 @@ ci.defaults.set(
     builder_group = "chromium",
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     main_console_view = "main",
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
@@ -71,9 +72,7 @@ ci.builder(
     cores = 8,
     execution_timeout = 4 * time.hour,
     tree_closing = True,
-    goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -117,9 +116,7 @@ ci.builder(
         },
     },
     tree_closing = True,
-    goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -164,10 +161,8 @@ ci.builder(
         },
     },
     tree_closing = False,  # Set this to true when builder is finalized?
-    goma_backend = None,
     sheriff_rotations = args.ignore_default(None),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -202,9 +197,7 @@ ci.builder(
     # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
     # needs longer time to complete.
     execution_timeout = 7 * time.hour,
-    goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     sheriff_rotations = args.ignore_default(None),
 )
 
@@ -241,6 +234,8 @@ ci.builder(
         ),
     ],
     cores = 32,
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
     # TODO: Change this back down to something reasonable once these builders
     # have populated their cached by getting through the compile step
     execution_timeout = 10 * time.hour,
@@ -276,6 +271,8 @@ ci.builder(
         ),
     ),
     cores = 32,
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -331,9 +328,7 @@ ci.builder(
         },
     },
     tree_closing = True,
-    goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -379,9 +374,7 @@ ci.builder(
     # TODO(crbug.com/1363272): Enable tree_closing/sheriff when stable.
     tree_closing = False,
     sheriff_rotations = args.ignore_default(None),
-    goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -410,9 +403,7 @@ ci.builder(
     # Bump to 32 if needed.
     cores = 8,
     tree_closing = True,
-    goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -452,9 +443,6 @@ ci.builder(
         },
     },
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -483,9 +471,6 @@ ci.builder(
     ),
     cores = 32,
     execution_timeout = 7 * time.hour,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     sheriff_rotations = args.ignore_default(None),
 )
 
@@ -513,9 +498,6 @@ ci.builder(
     cores = 4,
     os = os.MAC_DEFAULT,
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -553,9 +535,6 @@ ci.builder(
         },
     },
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -581,9 +560,6 @@ ci.builder(
     cores = 12,
     os = os.MAC_DEFAULT,
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -621,9 +597,6 @@ ci.builder(
         },
     },
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -653,9 +626,6 @@ ci.builder(
     # Keep in sync with mac-official in try/chromium.star.
     execution_timeout = 7 * time.hour,
     os = os.MAC_ANY,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -666,9 +636,6 @@ ci.builder(
     ),
     cores = 32,
     os = os.WINDOWS_DEFAULT,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -705,9 +672,6 @@ ci.builder(
         },
     },
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -733,6 +697,8 @@ ci.builder(
         short_name = "64",
     ),
     cores = 32,
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     os = os.WINDOWS_DEFAULT,
@@ -760,9 +726,6 @@ ci.builder(
     ),
     cores = 32,
     os = os.WINDOWS_DEFAULT,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -799,9 +762,6 @@ ci.builder(
         },
     },
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -812,6 +772,8 @@ ci.builder(
         short_name = "32",
     ),
     cores = 32,
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     os = os.WINDOWS_DEFAULT,
