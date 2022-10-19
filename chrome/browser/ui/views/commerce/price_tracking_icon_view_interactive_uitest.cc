@@ -10,9 +10,13 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -49,7 +53,7 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
     test_features_.InitWithFeatures(
         {commerce::kShoppingList,
          feature_engagement::kIPHPriceTrackingInSidePanelFeature},
-        {});
+        {features::kUnifiedSidePanel});
   }
 
   PriceTrackingIconViewInteractiveTest(
@@ -72,7 +76,6 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
     mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
         MockShoppingListUiTabHelper::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
-    EXPECT_CALL(*mock_tab_helper_, GetProductImage);
     const gfx::Image image = mock_tab_helper_->GetValidProductImage();
     ON_CALL(*mock_tab_helper_, GetProductImage)
         .WillByDefault(
@@ -297,12 +300,6 @@ class PriceTrackingBubbleInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
                        TrackPriceOnFUEBubble) {
-  BrowserFeaturePromoController* const promo_controller =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetFeaturePromoController();
-  EXPECT_TRUE(
-      user_education::test::WaitForFeatureEngagementReady(promo_controller));
-
   // Show PriceTackingIconView.
   auto* icon_view = GetChip();
   icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
@@ -335,10 +332,80 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
   EXPECT_TRUE(GetBookmarkStar()->GetActive());
+}
 
-  // Verify IPH is showing after accepting the FUE bubble.
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       TriggerSidePanelIPH) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble, false);
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
+  auto* promo_controller = BrowserView::GetBrowserViewForBrowser(browser())
+                               ->GetFeaturePromoController();
+  EXPECT_TRUE(
+      user_education::test::WaitForFeatureEngagementReady(promo_controller));
+
+  // Show PriceTackingIconView.
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  // Click PriceTackingIconView and show the PriceTrackingBubble.
+  ClickPriceTrackingIconView();
+  auto* bubble =
+      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
+  EXPECT_TRUE(bubble);
+  EXPECT_EQ(bubble->GetTypeForTesting(),
+            PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
+
+  // Click the Accept(Track price) bubble.
+  bubble->Accept();
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
+
+  // Verify IPH is showing and pref is properly set up to force show bookmark
+  // tab in side panel.
   EXPECT_TRUE(promo_controller->IsPromoActive(
       feature_engagement::kIPHPriceTrackingInSidePanelFeature));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       NotTriggerSidePanelIPH) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble, false);
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
+  auto* promo_controller = BrowserView::GetBrowserViewForBrowser(browser())
+                               ->GetFeaturePromoController();
+  EXPECT_TRUE(
+      user_education::test::WaitForFeatureEngagementReady(promo_controller));
+
+  // Trigger IPH now so it won't be triggred later.
+  EXPECT_TRUE(
+      promo_controller->feature_engagement_tracker()->ShouldTriggerHelpUI(
+          feature_engagement::kIPHPriceTrackingInSidePanelFeature));
+  EXPECT_FALSE(
+      promo_controller->feature_engagement_tracker()->WouldTriggerHelpUI(
+          feature_engagement::kIPHPriceTrackingInSidePanelFeature));
+
+  // Show PriceTackingIconView.
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  // Click PriceTackingIconView and show the PriceTrackingBubble.
+  ClickPriceTrackingIconView();
+  auto* bubble =
+      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
+  EXPECT_TRUE(bubble);
+  EXPECT_EQ(bubble->GetTypeForTesting(),
+            PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
+
+  // Click the Accept(Track price) bubble.
+  bubble->Accept();
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
+
+  // Verify IPH is not showing and pref is not set up to force show bookmark tab
+  // in side panel.
+  EXPECT_FALSE(promo_controller->IsPromoActive(
+      feature_engagement::kIPHPriceTrackingInSidePanelFeature));
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
@@ -494,4 +561,105 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "Commerce.PriceTracking.EditedBookmarkFolderFromOmniboxBubble"),
             1);
+}
+
+class PriceTrackingIconViewUnifiedSidePanelInteractiveTest
+    : public PriceTrackingBubbleInteractiveTest {
+ public:
+  PriceTrackingIconViewUnifiedSidePanelInteractiveTest() {
+    test_features_.InitWithFeatures(
+        {commerce::kShoppingList,
+         feature_engagement::kIPHPriceTrackingInSidePanelFeature,
+         features::kUnifiedSidePanel},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList test_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
+                       TriggerSidePanelIPH) {
+  SidePanelCoordinator* coordinator =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->side_panel_coordinator();
+  DCHECK(coordinator);
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble, false);
+  auto* promo_controller = BrowserView::GetBrowserViewForBrowser(browser())
+                               ->GetFeaturePromoController();
+  EXPECT_TRUE(
+      user_education::test::WaitForFeatureEngagementReady(promo_controller));
+
+  // Show PriceTackingIconView.
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  // Click PriceTackingIconView and show the PriceTrackingBubble.
+  ClickPriceTrackingIconView();
+  auto* bubble =
+      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
+  EXPECT_TRUE(bubble);
+  EXPECT_EQ(bubble->GetTypeForTesting(),
+            PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
+
+  // Click the Accept(Track price) bubble.
+  bubble->Accept();
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
+
+  // Verify IPH is showing and side panel registry is properly set up to force
+  // show bookmark tab in side panel.
+  EXPECT_TRUE(promo_controller->IsPromoActive(
+      feature_engagement::kIPHPriceTrackingInSidePanelFeature));
+  SidePanelRegistry* registry = coordinator->GetGlobalSidePanelRegistry();
+  EXPECT_TRUE(registry->active_entry().has_value());
+  EXPECT_EQ(registry->active_entry().value()->key().id(),
+            SidePanelEntry::Id::kBookmarks);
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
+                       NotTriggerSidePanelIPH) {
+  SidePanelCoordinator* coordinator =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->side_panel_coordinator();
+  DCHECK(coordinator);
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble, false);
+  auto* promo_controller = BrowserView::GetBrowserViewForBrowser(browser())
+                               ->GetFeaturePromoController();
+  EXPECT_TRUE(
+      user_education::test::WaitForFeatureEngagementReady(promo_controller));
+
+  // Trigger IPH now so it won't be triggred later.
+  EXPECT_TRUE(
+      promo_controller->feature_engagement_tracker()->ShouldTriggerHelpUI(
+          feature_engagement::kIPHPriceTrackingInSidePanelFeature));
+  EXPECT_FALSE(
+      promo_controller->feature_engagement_tracker()->WouldTriggerHelpUI(
+          feature_engagement::kIPHPriceTrackingInSidePanelFeature));
+
+  // Show PriceTackingIconView.
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  // Click PriceTackingIconView and show the PriceTrackingBubble.
+  ClickPriceTrackingIconView();
+  auto* bubble =
+      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
+  EXPECT_TRUE(bubble);
+  EXPECT_EQ(bubble->GetTypeForTesting(),
+            PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
+
+  // Click the Accept(Track price) bubble.
+  bubble->Accept();
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
+
+  // Verify IPH is not showing and side panel registry is not set up to force
+  // show bookmark tab in side panel.
+  EXPECT_FALSE(promo_controller->IsPromoActive(
+      feature_engagement::kIPHPriceTrackingInSidePanelFeature));
+  SidePanelRegistry* registry = coordinator->GetGlobalSidePanelRegistry();
+  EXPECT_FALSE(registry->active_entry().has_value());
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
 }

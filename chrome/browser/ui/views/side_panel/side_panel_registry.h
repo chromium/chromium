@@ -49,6 +49,8 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   // Deregisters the entry for the given SidePanelEntry::Key. Returns true if
   // successful and false if there is no entry registered for the |key|.
   bool Deregister(const SidePanelEntry::Key& key);
+  // Set the active entry in the side panel to be |entry|.
+  void SetActiveEntry(SidePanelEntry* entry);
 
   absl::optional<SidePanelEntry*> active_entry() { return active_entry_; }
   std::vector<std::unique_ptr<SidePanelEntry>>& entries() { return entries_; }

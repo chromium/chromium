@@ -62,7 +62,10 @@ export class SidePanelAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
     const lastActiveTab = window.localStorage[LOCAL_STORAGE_TAB_ID_KEY];
-    if (loadTimeData.getBoolean('hasUnseenReadingListEntries')) {
+    if (loadTimeData.getBoolean('shouldShowBookmark')) {
+      window.localStorage[LOCAL_STORAGE_TAB_ID_KEY] = 'bookmarks';
+      this.selectedTab_ = Object.keys(this.tabs_).indexOf('bookmarks');
+    } else if (loadTimeData.getBoolean('hasUnseenReadingListEntries')) {
       window.localStorage[LOCAL_STORAGE_TAB_ID_KEY] = 'readingList';
     } else if (lastActiveTab) {
       this.selectedTab_ = Object.keys(this.tabs_).indexOf(lastActiveTab) || 0;
