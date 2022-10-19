@@ -65,7 +65,6 @@ group("unit_test_data") {
     "file_manager/foreground/js/ui/banners:js_test_type_check",
     "image_loader:js_test_type_check",
   ]
-  data_deps = [ "image_loader:copy_from_filesapp" ]
 }
 
 preprocess_folder = "$target_gen_dir/preprocessed"
@@ -119,17 +118,6 @@ preprocess_if_expr("preprocess_generated") {
   ]
 }
 
-preprocess_if_expr("preprocess_generated_image_loader") {
-  in_folder = target_gen_dir
-  out_folder = preprocess_folder
-  out_manifest =
-      "$target_gen_dir/manifest_preprocess_generated_image_loader.json"
-
-  in_files = image_loader_generated_js_files
-
-  deps = [ "//ui/file_manager/image_loader:copy_from_filesapp" ]
-}
-
 ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
@@ -142,7 +130,6 @@ ts_library("build_ts") {
     ":copy_ts",
     ":generate_definitions",
     ":preprocess_generated",
-    ":preprocess_generated_image_loader",
     ":preprocess_static",
     ":preprocess_static_image_loader",
     "//ash/webui/common/resources:generate_definitions",
@@ -150,9 +137,8 @@ ts_library("build_ts") {
 
   deps = [ "//ui/webui/resources:library" ]
 
-  in_files =
-      static_js_files + generated_js_files + ts_files + ts_generated_templates +
-      image_loader_static_js_files + image_loader_generated_js_files
+  in_files = static_js_files + generated_js_files + ts_files +
+             ts_generated_templates + image_loader_static_js_files
 
   definitions = [
     "$preprocess_folder/file_manager/externs/file_manager_private.js",
@@ -263,8 +249,6 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/main.rollup.js",
       "file_manager/foreground/js/metadata_dispatcher.rollup.js",
       "file_manager/foreground/js/shared.rollup.js",
-
-      "image_loader/lru_cache.js",
 
       "file_manager/common/js/file_types_data.js",
     ]

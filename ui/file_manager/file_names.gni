@@ -299,10 +299,6 @@ foreach(_t, ts_templates) {
   ts_generated_templates += [ _t + ".ts" ]
 }
 
-# Generated files are built from the repository and the final JS files is only
-# available in the "gen/" folder.
-image_loader_generated_js_files = [ "image_loader/lru_cache.js" ]
-
 generated_js_files = [
   # Common:
   "file_manager/common/js/file_types_data.js",

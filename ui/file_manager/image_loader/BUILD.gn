@@ -42,17 +42,6 @@ js_unittest("cache_unittest") {
   ]
 }
 
-# TODO(b/199451464): Remove this and dependencies.
-copy("copy_from_filesapp") {
-  sources = [ "../file_manager/common/js/lru_cache.js" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-js_library("lru_cache") {
-  sources = [ "$root_gen_dir/ui/file_manager/image_loader/lru_cache.js" ]
-  extra_deps = [ ":copy_from_filesapp" ]
-}
-
 js_library("image_loader") {
   deps = [
     ":cache",
@@ -71,7 +60,6 @@ js_unittest("image_loader_unittest") {
     ":load_image_request",
     "//chrome/test/data/webui:chai_assert",
   ]
-  extra_deps = [ ":copy_from_filesapp" ]
 }
 
 js_library("image_loader_util") {
@@ -91,7 +79,7 @@ js_library("load_image_request") {
 js_library("image_loader_client") {
   deps = [
     ":load_image_request",
-    ":lru_cache",
+    "//ui/file_manager/file_manager/common/js:lru_cache",
   ]
   externs_list = [
     "$externs_path/chrome.js",
@@ -190,7 +178,6 @@ group("js_modules") {
     ":image_orientation",
     ":image_request_task",
     ":load_image_request",
-    ":lru_cache",
     ":piex_loader",
     ":scheduler",
   ]
@@ -222,7 +209,6 @@ files_webui_bundle("build") {
   deps = [
     ":background",
     "//ui/file_manager:preprocess_generated",
-    "//ui/file_manager:preprocess_generated_image_loader",
     "//ui/file_manager:preprocess_static",
     "//ui/file_manager:preprocess_static_image_loader",
     "//ui/webui/resources:preprocess",

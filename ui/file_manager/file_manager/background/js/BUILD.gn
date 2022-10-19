@@ -67,6 +67,7 @@ js_type_check("closure_compile_jsmodules") {
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "hide_warnings_for=third_party/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                   ]
 }
 
@@ -474,5 +475,6 @@ js_test_type_check("js_test_type_check") {
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "hide_warnings_for=third_party/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                   ]
 }

@@ -32,7 +32,6 @@
   "web_accessible_resources": [
     "image_loader_client.js",
     "image_orientation.js",
-    "load_image_request.js",
-    "lru_cache.js"
+    "load_image_request.js"
   ]
 }

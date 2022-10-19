@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {LRUCache} from 'chrome://file-manager/common/js/lru_cache.js';
+
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
-import {LRUCache} from './lru_cache.js';
 
 /**
  * Client used to connect to the remote ImageLoader extension. Client class runs
