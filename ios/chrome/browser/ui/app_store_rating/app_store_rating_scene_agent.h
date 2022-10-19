@@ -9,11 +9,17 @@
 
 #import "ios/chrome/browser/ui/main/observing_scene_state_agent.h"
 
+class PromosManager;
+
 // A scene agent that requests engaged users are presented the
 // App Store Rating promo based on the SceneActivationLevel changes.
 @interface AppStoreRatingSceneAgent : ObservingSceneAgent
 
-- (instancetype)init;
+// Initializes an AppStoreRatingSceneAgent instance with given PromosManager.
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager;
+
+// Unavailable. Use initWithPromosManager:.
+- (instancetype)init NS_UNAVAILABLE;
 
 // Determines whether the user meets the criteria to be
 // considered engaged.

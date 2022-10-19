@@ -46,13 +46,17 @@ NSString* const kActiveDaysInPastWeek = @"ActiveDaysInPastWeek";
 // Provider Extension.
 @property(nonatomic, assign, readonly, getter=isCPEEnabled) BOOL CPEEnabled;
 
+// The PromosManager is used to register promos.
+@property(nonatomic, assign) PromosManager* promosManager;
+
 @end
 
 @implementation AppStoreRatingSceneAgent
 
-- (instancetype)init {
-  self = [super init];
-
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager {
+  if (self = [super init]) {
+    _promosManager = promosManager;
+  }
   return self;
 }
 
@@ -118,7 +122,9 @@ NSString* const kActiveDaysInPastWeek = @"ActiveDaysInPastWeek";
 // Calls the PromosManager to request iOS displays the
 // App Store Rating prompt to the user.
 - (void)requestPromoDisplay {
-  GetApplicationContext()->GetPromosManager()->RegisterPromoForSingleDisplay(
+  if (!_promosManager)
+    return;
+  _promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::AppStoreRating);
 }
 
