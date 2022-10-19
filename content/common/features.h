@@ -12,6 +12,13 @@ namespace content {
 
 // Please keep features in alphabetical order.
 
+#if BUILDFLAG(IS_ANDROID)
+// Unifies RenderWidgetHostViewAndroid with the other platforms in their usage
+// of OnShowWithPageVisibility. Disabling will revert the refactor and use the
+// direct ShowInternal path.
+BASE_DECLARE_FEATURE(kOnShowWithPageVisibility);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When enabled, queues navigations instead of cancelling the previous
 // navigation if the previous navigation is already waiting for commit.
 // See https://crbug.com/838348 and https://crbug.com/1220337.

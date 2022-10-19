@@ -64,6 +64,7 @@
 #include "content/browser/renderer_host/ui_events_helper.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "content/public/android/content_jni_headers/RenderWidgetHostViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
@@ -208,6 +209,16 @@ std::string CompressAndSaveBitmap(const std::string& dir,
   return screenshot_path.value();
 }
 
+blink::mojom::RecordContentToVisibleTimeRequestPtr
+TakeContentToVisibleTimeRequest(RenderWidgetHostImpl* host) {
+  // The trigger can be null in unit tests.
+  auto* visible_time_request_trigger = host->GetVisibleTimeRequestTrigger();
+  auto content_to_visible_start_state =
+      visible_time_request_trigger ? visible_time_request_trigger->TakeRequest()
+                                   : nullptr;
+  return content_to_visible_start_state;
+}
+
 }  // namespace
 
 RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
@@ -262,7 +273,8 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
   if (is_showing_) {
     delegated_frame_host_->WasShown(
         local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-        GetCompositorViewportPixelSize(), host()->delegate()->IsFullscreen());
+        GetCompositorViewportPixelSize(), host()->delegate()->IsFullscreen(),
+        TakeContentToVisibleTimeRequest(host()));
   }
 
   // Let the page-level input event router know about our frame sink ID
@@ -745,10 +757,20 @@ bool RenderWidgetHostViewAndroid::IsSurfaceAvailableForCopy() {
 }
 
 void RenderWidgetHostViewAndroid::ShowWithVisibility(
-    PageVisibilityState /*page_visibility*/) {
-  if (is_showing_)
+    PageVisibilityState page_visibility) {
+  // We can transition from `PageVisibilityState::kHiddenButPainting` to
+  // `PageVisibilityState::kVisible` while `is_showing_`. We only want to
+  // support updating visibility requests for this transition. So for the non
+  // `features::kOnShowWithPageVisibility` path, still exit early based on
+  // `is_showing_` to prevent non-request work from being re-ran.
+  if (base::FeatureList::IsEnabled(kOnShowWithPageVisibility) &&
+      page_visibility_ == page_visibility) {
     return;
+  } else if (is_showing_) {
+    return;
+  }
 
+  page_visibility_ = page_visibility;
   is_showing_ = true;
   ShowInternal();
 }
@@ -757,6 +779,7 @@ void RenderWidgetHostViewAndroid::Hide() {
   if (!is_showing_)
     return;
 
+  page_visibility_ = PageVisibilityState::kHidden;
   is_showing_ = false;
   HideInternal();
 }
@@ -1551,93 +1574,12 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
   if (!show)
     return;
 
-  if (!host() || !host()->is_hidden())
-    return;
-
-  // Whether evicted or not, we stop batching for rotation in order to get
-  // content ready for the new orientation.
-  bool rotation_override = in_rotation_;
-  base::AutoReset<bool> in_rotation(&in_rotation_, false);
-
-  view_.GetLayer()->SetHideLayerAndSubtree(false);
-
-  if (overscroll_controller_)
-    overscroll_controller_->Enable();
-
-  if ((delegated_frame_host_ &&
-       delegated_frame_host_->IsPrimarySurfaceEvicted()) ||
-      !local_surface_id_allocator_.HasValidLocalSurfaceId()) {
-    ui::WindowAndroidCompositor* compositor =
-        view_.GetWindowAndroid() ? view_.GetWindowAndroid()->GetCompositor()
-                                 : nullptr;
-    SynchronizeVisualProperties(
-        compositor && compositor->IsDrawingFirstVisibleFrame()
-            ? cc::DeadlinePolicy::UseSpecifiedDeadline(
-                  ui::DelegatedFrameHostAndroid::FirstFrameTimeoutFrames())
-            : cc::DeadlinePolicy::UseDefaultDeadline(),
-        absl::nullopt);
-    // If we navigated while hidden, we need to update the fallback surface only
-    // after we've completed navigation, and embedded the new surface. The
-    // |delegated_frame_host_| is always valid when |navigation_while_hidden_|
-    // is set to true.
-    if (navigation_while_hidden_) {
-      navigation_while_hidden_ = false;
-      delegated_frame_host_->DidNavigate();
-    }
-  } else if (rotation_override && is_surface_sync_throttling_) {
-    // If a rotation occurred while this was not visible, we need to allocate a
-    // new viz::LocalSurfaceId and send the current visual properties to the
-    // Renderer. Otherwise there will be no content at all to display.
-    //
-    // The rotation process will complete after this first surface is displayed.
-    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                absl::nullopt);
-  }
-
-  auto* visible_time_request_trigger = host()->GetVisibleTimeRequestTrigger();
-  // The trigger can be null in unit tests.
-  auto content_to_visible_start_state =
-      visible_time_request_trigger ? visible_time_request_trigger->TakeRequest()
-                                   : nullptr;
-
-  // Only when page is restored from back-forward cache, record content to
-  // visible time and for this case no need to check for saved frames to
-  // record ContentToVisibleTime.
-  bool show_reason_bfcache_restore =
-      content_to_visible_start_state
-          ? content_to_visible_start_state->show_reason_bfcache_restore
-          : false;
-  host()->WasShown(show_reason_bfcache_restore
-                       ? std::move(content_to_visible_start_state)
-                       : blink::mojom::RecordContentToVisibleTimeRequestPtr());
-
-  if (delegated_frame_host_) {
-    delegated_frame_host_->WasShown(
-        local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-        GetCompositorViewportPixelSize(), host()->delegate()->IsFullscreen());
-  }
-
-  if (view_.parent() && view_.GetWindowAndroid()) {
-    StartObservingRootWindow();
-    if (sync_compositor_)
-      sync_compositor_->RequestOneBeginFrame();
-  }
-
-  if (rotation_override) {
-    // It's possible that several rotations were all enqueued while this view
-    // has hidden. We skip those and update to just the final state.
-    size_t skipped_rotations = rotation_metrics_.size() - 1;
-    if (skipped_rotations) {
-      rotation_metrics_.erase(rotation_metrics_.begin(),
-                              rotation_metrics_.begin() + skipped_rotations);
-    }
-    // If a rotation occurred while we were hidden, we do not want to include
-    // all of that idle time in the rotation metrics. However we do want to have
-    // the "RotationBegin" tracing event. So end the tracing event, before
-    // setting the starting time of the rotation.
-    EndRotationBatching();
-    rotation_metrics_.begin()->first = base::TimeTicks::Now();
-    BeginRotationEmbed();
+  if (base::FeatureList::IsEnabled(kOnShowWithPageVisibility)) {
+    OnShowWithPageVisibility(page_visibility_);
+  } else {
+    if (!host() || !host()->is_hidden())
+      return;
+    NotifyHostAndDelegateOnWasShown(TakeContentToVisibleTimeRequest(host()));
   }
 }
 
@@ -2658,27 +2600,112 @@ void RenderWidgetHostViewAndroid::SetDisplayFeatureForTesting(
 }
 
 void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
-  // ShowWithVisibility calls ShowInternal instead of
-  // RenderWidgetHostViewBase::OnShowWithPageVisibility so nothing should
-  // call this.
-  NOTREACHED();
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  // Whether evicted or not, we stop batching for rotation in order to get
+  // content ready for the new orientation.
+  bool rotation_override = in_rotation_;
+  base::AutoReset<bool> in_rotation(&in_rotation_, false);
+
+  view_.GetLayer()->SetHideLayerAndSubtree(false);
+
+  if (overscroll_controller_)
+    overscroll_controller_->Enable();
+
+  if ((delegated_frame_host_ &&
+       delegated_frame_host_->IsPrimarySurfaceEvicted()) ||
+      !local_surface_id_allocator_.HasValidLocalSurfaceId()) {
+    ui::WindowAndroidCompositor* compositor =
+        view_.GetWindowAndroid() ? view_.GetWindowAndroid()->GetCompositor()
+                                 : nullptr;
+    SynchronizeVisualProperties(
+        compositor && compositor->IsDrawingFirstVisibleFrame()
+            ? cc::DeadlinePolicy::UseSpecifiedDeadline(
+                  ui::DelegatedFrameHostAndroid::FirstFrameTimeoutFrames())
+            : cc::DeadlinePolicy::UseDefaultDeadline(),
+        absl::nullopt);
+    // If we navigated while hidden, we need to update the fallback surface only
+    // after we've completed navigation, and embedded the new surface. The
+    // |delegated_frame_host_| is always valid when |navigation_while_hidden_|
+    // is set to true.
+    if (navigation_while_hidden_) {
+      navigation_while_hidden_ = false;
+      delegated_frame_host_->DidNavigate();
+    }
+  } else if (rotation_override && is_surface_sync_throttling_) {
+    // If a rotation occurred while this was not visible, we need to allocate a
+    // new viz::LocalSurfaceId and send the current visual properties to the
+    // Renderer. Otherwise there will be no content at all to display.
+    //
+    // The rotation process will complete after this first surface is displayed.
+    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                absl::nullopt);
+  }
+
+  // Whenever the page is restored, via back-forward cache, or tab changes,
+  // record content to visible time.
+  bool show_reason_bfcache_restore =
+      visible_time_request ? visible_time_request->show_reason_bfcache_restore
+                           : false;
+  bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
+  if (show_reason_bfcache_restore) {
+    host()->WasShown(visible_time_request.Clone());
+  } else {
+    host()->WasShown(has_saved_frame
+                         ? blink::mojom::RecordContentToVisibleTimeRequestPtr()
+                         : visible_time_request.Clone());
+  }
+
+  if (delegated_frame_host_) {
+    delegated_frame_host_->WasShown(
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
+        GetCompositorViewportPixelSize(), host()->delegate()->IsFullscreen(),
+        has_saved_frame ? std::move(visible_time_request)
+                        : blink::mojom::RecordContentToVisibleTimeRequestPtr());
+  }
+
+  if (view_.parent() && view_.GetWindowAndroid()) {
+    StartObservingRootWindow();
+    if (sync_compositor_)
+      sync_compositor_->RequestOneBeginFrame();
+  }
+
+  if (rotation_override) {
+    // It's possible that several rotations were all enqueued while this view
+    // has hidden. We skip those and update to just the final state.
+    size_t skipped_rotations = rotation_metrics_.size() - 1;
+    if (skipped_rotations) {
+      rotation_metrics_.erase(rotation_metrics_.begin(),
+                              rotation_metrics_.begin() + skipped_rotations);
+    }
+    // If a rotation occurred while we were hidden, we do not want to include
+    // all of that idle time in the rotation metrics. However we do want to have
+    // the "RotationBegin" tracing event. So end the tracing event, before
+    // setting the starting time of the rotation.
+    EndRotationBatching();
+    rotation_metrics_.begin()->first = base::TimeTicks::Now();
+    BeginRotationEmbed();
+  }
 }
 
 void RenderWidgetHostViewAndroid::RequestPresentationTimeFromHostOrDelegate(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
-  // ShowWithVisibility calls ShowInternal instead of
-  // RenderWidgetHostViewBase::OnShowWithPageVisibility so nothing should
-  // call this.
-  NOTREACHED();
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
+  // No need to check for saved frames for the case of bfcache restore.
+  if (visible_time_request->show_reason_bfcache_restore || !has_saved_frame)
+    host()->RequestPresentationTimeForNextFrame(visible_time_request.Clone());
+
+  // If the frame for the renderer is already available, then the
+  // tab-switching time is the presentation time for the browser-compositor.
+  if (has_saved_frame) {
+    delegated_frame_host_->RequestPresentationTimeForNextFrame(
+        std::move(visible_time_request));
+  }
 }
 
 void RenderWidgetHostViewAndroid::
     CancelPresentationTimeRequestForHostAndDelegate() {
-  // ShowWithVisibility calls ShowInternal instead of
-  // RenderWidgetHostViewBase::OnShowWithPageVisibility so nothing should
-  // call this.
-  NOTREACHED();
+  host()->CancelPresentationTimeRequest();
+  delegated_frame_host_->CancelPresentationTimeRequest();
 }
 
 void RenderWidgetHostViewAndroid::HandleSwipeToMoveCursorGestureAck(

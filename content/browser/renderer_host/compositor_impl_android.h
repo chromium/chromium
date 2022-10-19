@@ -192,6 +192,8 @@ class CONTENT_EXPORT CompositorImpl
   void OnUpdateOverlayTransform() override;
   std::unique_ptr<ui::CompositorLock> GetCompositorLock(
       base::TimeDelta timeout) override;
+  void PostRequestPresentationTimeForNextFrame(
+      PresentationTimeCallback callback) override;
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
