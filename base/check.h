@@ -106,13 +106,17 @@ class BASE_EXPORT CheckError {
 #if defined(OFFICIAL_BUILD) && defined(NDEBUG) && \
     !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
+[[noreturn]] ALWAYS_INLINE void CheckFailure() {
+  IMMEDIATE_CRASH();
+}
+
 // Discard log strings to reduce code bloat.
 //
 // This is not calling BreakDebugger since this is called frequently, and
 // calling an out-of-line function instead of a noreturn inline macro prevents
 // compiler optimizations.
 #define CHECK(condition) \
-  UNLIKELY(!(condition)) ? IMMEDIATE_CRASH() : EAT_CHECK_STREAM_PARAMS()
+  UNLIKELY(!(condition)) ? logging::CheckFailure() : EAT_CHECK_STREAM_PARAMS()
 
 #define CHECK_WILL_STREAM() false
 
