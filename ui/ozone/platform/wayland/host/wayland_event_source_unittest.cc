@@ -148,12 +148,45 @@ TEST_P(WaylandEventSourceTest, DeleteBeforeTouchFrame) {
 
   Sync();
 
-  // Removint the target during touch event sequece should not cause crash.
+  // Removing the target during touch event sequence should not cause crash.
   window1.reset();
 
   wl_touch_send_frame(touch_res);
   EXPECT_CALL(delegate, DispatchEvent(_)).Times(0);
 
+  Sync();
+}
+
+// Verify WaylandEventSource ignores release events for mouse buttons that
+// aren't pressed. Regression test for crbug.com/1376393.
+TEST_P(WaylandEventSourceTest, IgnoreReleaseWithoutPress) {
+  MockPlatformWindowDelegate delegate;
+  wl_seat_send_capabilities(server_.seat()->resource(),
+                            WL_SEAT_CAPABILITY_POINTER);
+
+  auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                               kDefaultBounds, &delegate);
+  Sync();
+
+  ASSERT_TRUE(server_.seat()->pointer());
+
+  uint32_t serial = 0;
+  uint32_t tstamp = 0;
+  wl_resource* surface_res =
+      server_
+          .GetObject<wl::MockSurface>(window1->root_surface()->get_surface_id())
+          ->resource();
+  wl_resource* pointer_res = server_.seat()->pointer()->resource();
+
+  wl_pointer_send_enter(pointer_res, serial++, surface_res, 0, 0);
+  wl_pointer_send_frame(pointer_res);
+  EXPECT_CALL(delegate, DispatchEvent(_)).Times(1);
+  Sync();
+
+  wl_pointer_send_button(pointer_res, serial++, tstamp++, BTN_LEFT,
+                         WL_POINTER_BUTTON_STATE_RELEASED);
+  wl_pointer_send_frame(pointer_res);
+  EXPECT_CALL(delegate, DispatchEvent(_)).Times(0);
   Sync();
 }
 
