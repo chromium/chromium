@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
 namespace blink {
@@ -35,6 +36,8 @@ void ManifestFetcher::Start(LocalDOMWindow& window,
                                  : network::mojom::CredentialsMode::kOmit);
 
   ResourceLoaderOptions resource_loader_options(window.GetCurrentWorld());
+  resource_loader_options.initiator_info.name =
+      fetch_initiator_type_names::kLink;
   resource_loader_options.data_buffering_policy = kDoNotBufferData;
 
   loader_ = MakeGarbageCollected<ThreadableLoader>(
