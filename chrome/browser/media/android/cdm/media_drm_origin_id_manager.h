@@ -75,15 +75,13 @@ class MediaDrmOriginIdManager : public KeyedService {
   // MediaDrmOriginIdManagerFactory.
   explicit MediaDrmOriginIdManager(PrefService* pref_service);
 
-  // Asynchronously call StartProvisioning().
-  void StartProvisioningAsync();
-
-  // Pre-provision one origin ID, calling OriginIdProvisioned() when done.
-  void StartProvisioning();
+  // Asynchronously call StartProvisioning() on a sequence using different
+  // priorities, depending on |run_in_background|.
+  void StartProvisioningAsync(bool run_in_background);
 
   // Called when provisioning of |origin_id| is done. The provisioning of
-  // |origin_id| was successful if |success| is true.
-  void OriginIdProvisioned(bool success, const MediaDrmOriginId& origin_id);
+  // |origin_id| was successful if |origin_id| is not nullopt.
+  void OriginIdProvisioned(const MediaDrmOriginId& origin_id);
 
   // If called, record the current number of pre-provisioned origin IDs to UMA.
   void RecordCountOfPreprovisionedOriginIds();
