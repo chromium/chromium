@@ -28,12 +28,12 @@ import java.util.Map;
  * {@link android.content.SharedPreferences}, which is available in Java immediately.
  *
  * To cache a flag from ChromeFeatureList:
- * - Set its default value by adding an entry to {@link #sDefaults}.
- * - Add it to the list passed to {@link ChromeCachedFlags#cacheNativeFlags(List)}.
- * - Call {@link #isEnabled(String)} to query whether the cached flag is enabled.
+ * - Create a static CachedFlag object in {@link ChromeFeatureList} "sMyFlag"
+ * - Add it to the list passed to {@code ChromeCachedFlags#cacheNativeFlags()}.
+ * - Call {@code ChromeFeatureList.sMyFlag.isEnabled()} to query whether the cached flag is enabled.
  *   Consider this the source of truth for whether the flag is turned on in the current session.
- * - When querying whether a cached feature is enabled from native, a @CalledByNative method can be
- *   exposed in this file to allow feature_utilities.cc to retrieve the cached value.
+ * - When querying whether a cached feature is enabled from native, call IsJavaDrivenFeatureEnabled
+ *   in cached_feature_flags.h.
  *
  * For cached flags that are queried before native is initialized, when a new experiment
  * configuration is received the metrics reporting system will record metrics as if the
@@ -144,23 +144,6 @@ public class CachedFeatureFlags {
     private static CachedFlagsSafeMode sSafeMode = new CachedFlagsSafeMode();
 
     private static String sReachedCodeProfilerTrialGroup;
-
-    /**
-     * Checks if a cached feature flag is enabled.
-     *
-     * Requires that the feature be registered in {@link #sDefaults}.
-     *
-     * @param featureName the feature name from ChromeFeatureList.
-     * @return whether the cached feature should be considered enabled.
-     */
-    public static boolean isEnabled(String featureName) {
-        // All cached feature flags should have a default value.
-        if (!sDefaults.containsKey(featureName)) {
-            throw new IllegalArgumentException(
-                    "Feature " + featureName + " has no default in CachedFeatureFlags.");
-        }
-        return isEnabled(featureName, sDefaults.get(featureName));
-    }
 
     /**
      * Rules from highest to lowest priority:

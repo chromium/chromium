@@ -179,8 +179,7 @@ public class ReturnToChromeUtilUnitTest {
     public void testShouldShowTabSwitcherWithSegmentationReturnTime() {
         final SegmentId showStartId =
                 SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2;
-        Assert.assertTrue(
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_RETURN_TIME));
+        Assert.assertTrue(ChromeFeatureList.sStartSurfaceReturnTime.isEnabled());
 
         // Verifies that when the preference key isn't stored, return
         // TAB_SWITCHER_ON_RETURN_MS.getDefaultValue() as default value, i.e., 8 hours.

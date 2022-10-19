@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedFeatures;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -161,7 +160,7 @@ public final class ReturnToChromeUtil {
      */
     public static boolean shouldShowTabSwitcher(final long lastBackgroundedTimeMillis) {
         long tabSwitcherAfterMillis = TAB_SWITCHER_ON_RETURN_MS.getValue();
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_RETURN_TIME)
+        if (ChromeFeatureList.sStartSurfaceReturnTime.isEnabled()
                 && TAB_SWITCHER_ON_RETURN_MS.getValue() != 0) {
             tabSwitcherAfterMillis = getReturnTimeFromSegmentation();
         }
