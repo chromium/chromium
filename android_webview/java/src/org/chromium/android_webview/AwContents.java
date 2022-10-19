@@ -1129,7 +1129,8 @@ public class AwContents implements SmartClipProvider {
             mAwDarkMode = new AwDarkMode(context);
             mStylusWritingController = new StylusWritingController(context);
 
-            setNewAwContents(AwContentsJni.get().init(mBrowserContext.getNativePointer()));
+            setNewAwContents(
+                    AwContentsJni.get().init(mBrowserContext.getNativeBrowserContextPointer()));
 
             onContainerViewChanged();
         }

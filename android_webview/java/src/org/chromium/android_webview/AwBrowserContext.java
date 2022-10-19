@@ -16,6 +16,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentViewStatics;
 
 import java.util.Set;
@@ -29,7 +30,7 @@ import java.util.Set;
  * AwBrowserContext instance, so at this point the class mostly exists for conceptual clarity.
  */
 @JNINamespace("android_webview")
-public class AwBrowserContext {
+public class AwBrowserContext implements BrowserContextHandle {
     private static final String CHROMIUM_PREFS_NAME = "WebViewProfilePrefsDefault";
 
     private static final String TAG = "AwBrowserContext";
@@ -145,7 +146,8 @@ public class AwBrowserContext {
         ContentViewStatics.setWebKitSharedTimersSuspended(false);
     }
 
-    public long getNativePointer() {
+    @Override
+    public long getNativeBrowserContextPointer() {
         return mNativeAwBrowserContext;
     }
 

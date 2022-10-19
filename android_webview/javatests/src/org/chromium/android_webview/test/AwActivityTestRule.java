@@ -216,8 +216,10 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         }
         if (mBrowserContext != null) {
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> mBrowserContext.setNativePointer(
-                            AwBrowserContext.getDefault().getNativePointer()));
+                    ()
+                            -> mBrowserContext.setNativePointer(
+                                    AwBrowserContext.getDefault()
+                                            .getNativeBrowserContextPointer()));
         }
     }
 
