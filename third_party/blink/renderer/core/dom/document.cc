@@ -309,6 +309,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_element_factory.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/timing/render_blocking_metrics_reporter.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
@@ -7211,7 +7212,10 @@ void Document::BeginLifecycleUpdatesIfRenderingReady() {
     return;
   if (!HaveRenderBlockingResourcesLoaded())
     return;
-  rendering_has_begun_ = true;
+  if (!rendering_has_begun_) {
+    RenderBlockingMetricsReporter::From(*this).RenderBlockingResourcesLoaded();
+    rendering_has_begun_ = true;
+  }
   // TODO(japhet): If IsActive() is true, View() should always be non-null.
   // Speculative fix for https://crbug.com/1171891
   if (auto* view = View()) {

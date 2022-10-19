@@ -182,6 +182,25 @@ void MetricIntegrationTest::ExpectUKMPageLoadMetricNear(StringPiece metric_name,
   EXPECT_NEAR(*recorded, expected_value, epsilon);
 }
 
+void MetricIntegrationTest::ExpectUniqueUMAWithinRange(StringPiece metric_name,
+                                                       double expected_value,
+                                                       double below,
+                                                       double above) {
+  EXPECT_EQ(histogram_tester_->GetAllSamples(metric_name).size(), 1u)
+      << "There should be one sample for " << metric_name.data();
+
+  auto bucket_min = histogram_tester().GetAllSamples(metric_name)[0].min;
+
+  EXPECT_GE(bucket_min, expected_value - below)
+      << "The sample for " << metric_name.data()
+      << " is smaller than the expected range of " << below << " from "
+      << expected_value;
+  EXPECT_LE(bucket_min, expected_value + above)
+      << "The sample for " << metric_name.data()
+      << " is larger than the expected range of " << above << " from "
+      << expected_value;
+}
+
 void MetricIntegrationTest::ExpectUniqueUMAPageLoadMetricNear(
     StringPiece metric_name,
     double expected_value) {
@@ -196,6 +215,11 @@ void MetricIntegrationTest::ExpectUniqueUMAPageLoadMetricNear(
       histogram_tester_->GetBucketCount(metric_name, expected_value - 1.0) == 1)
       << "The sample for " << metric_name.data()
       << " is not near the expected value!";
+}
+
+void MetricIntegrationTest::ExpectUniqueUMA(StringPiece metric_name) {
+  EXPECT_EQ(histogram_tester_->GetAllSamples(metric_name).size(), 1u)
+      << "There should be one sample for " << metric_name.data();
 }
 
 void MetricIntegrationTest::ExpectMetricInLastUKMUpdateTraceEventNear(
