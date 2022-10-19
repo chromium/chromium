@@ -160,14 +160,14 @@ ScriptPromise Serial::requestPort(ScriptState* script_state,
     }
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   request_port_promises_.insert(resolver);
 
   EnsureServiceConnection();
-  service_->RequestPort(
-      std::move(filters),
-      WTF::BindOnce(&Serial::OnRequestPort, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  service_->RequestPort(std::move(filters),
+                        resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                            &Serial::OnRequestPort, WrapPersistent(this))));
 
   return resolver->Promise();
 }
@@ -249,8 +249,14 @@ void Serial::OnServiceConnectionError() {
   HeapHashSet<Member<ScriptPromiseResolver>> request_port_promises;
   request_port_promises_.swap(request_port_promises);
   for (ScriptPromiseResolver* resolver : request_port_promises) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotFoundError, kNoPortSelected));
+    ScriptState* resolver_script_state = resolver->GetScriptState();
+    if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                       resolver_script_state)) {
+      continue;
+    }
+    ScriptState::Scope script_state_scope(resolver_script_state);
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,
+                                     kNoPortSelected);
   }
 }
 
@@ -283,8 +289,8 @@ void Serial::OnRequestPort(ScriptPromiseResolver* resolver,
   request_port_promises_.erase(resolver);
 
   if (!port_info) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotFoundError, kNoPortSelected));
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,
+                                     kNoPortSelected);
     return;
   }
 
