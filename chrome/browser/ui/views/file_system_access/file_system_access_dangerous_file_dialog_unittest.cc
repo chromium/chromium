@@ -13,6 +13,7 @@
 
 using DangerousFileResult =
     content::FileSystemAccessPermissionContext::SensitiveEntryResult;
+
 using FileSystemAccessDangerousFileDialogTest = BrowserWithTestWindowTest;
 
 namespace {

@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/file_system_access/file_system_access_dangerous_file_dialog.h"
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
@@ -19,6 +19,7 @@ using DangerousFileResult =
     content::FileSystemAccessPermissionContext::SensitiveEntryResult;
 
 std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
+    Browser* const browser,
     const url::Origin& origin,
     const base::FilePath& path,
     base::OnceCallback<
@@ -32,9 +33,9 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
   auto cancel_callbacks = base::SplitOnceCallback(base::BindOnce(
       std::move(split_callback.second), DangerousFileResult::kAbort));
 
-  std::u16string formatted_origin =
-      url_formatter::FormatOriginForSecurityDisplay(
-          origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  std::u16string origin_or_short_name =
+      file_system_access_ui_helper::GetFormattedOriginOrAppShortName(browser,
+                                                                     origin);
 
   ui::DialogModel::Builder dialog_builder;
   dialog_builder
@@ -43,7 +44,7 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
           file_system_access_ui_helper::GetPathForDisplay(path)))
       .AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
           IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TEXT,
-          ui::DialogModelLabel::CreateEmphasizedText(formatted_origin)))
+          ui::DialogModelLabel::CreateEmphasizedText(origin_or_short_name)))
       .AddOkButton(
           std::move(accept_callback),
           l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_SAVE))
@@ -64,9 +65,11 @@ void ShowFileSystemAccessDangerousFileDialog(
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback,
     content::WebContents* web_contents) {
-  constrained_window::ShowWebModal(CreateFileSystemAccessDangerousFileDialog(
-                                       origin, path, std::move(callback)),
-                                   web_contents);
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
+  constrained_window::ShowWebModal(
+      CreateFileSystemAccessDangerousFileDialog(browser, origin, path,
+                                                std::move(callback)),
+      web_contents);
 }
 
 std::unique_ptr<ui::DialogModel>
@@ -76,6 +79,6 @@ CreateFileSystemAccessDangerousFileDialogForTesting(  // IN-TEST
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback) {
-  return CreateFileSystemAccessDangerousFileDialog(origin, path,
-                                                   std::move(callback));
+  return CreateFileSystemAccessDangerousFileDialog(/*browser=*/nullptr, origin,
+                                                   path, std::move(callback));
 }

@@ -7,7 +7,8 @@
 
 #include <memory>
 #include <string>
-#include "chrome/browser/ui/browser.h"
+
+class Browser;
 
 namespace base {
 class FilePath;
@@ -44,6 +45,11 @@ std::unique_ptr<views::View> CreateOriginPathLabel(Browser* browser,
 // Returns a human-readable string for use in UI surfaces.
 // Shows the drive letter of a path if it is the root of a file system.
 std::u16string GetPathForDisplay(const base::FilePath& path);
+
+// Returns app's short name for Isolated Web Apps or the formatted origin for
+// all others.
+std::u16string GetFormattedOriginOrAppShortName(Browser* browser,
+                                                const url::Origin& origin);
 
 }  // namespace file_system_access_ui_helper
 

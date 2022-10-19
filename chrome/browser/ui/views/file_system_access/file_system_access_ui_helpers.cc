@@ -7,27 +7,12 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/url_formatter/elide_url.h"
-#include "storage/common/file_system/file_system_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/style/typography.h"
-
-namespace {
-
-// Returns app's short name for Isolated Web Apps or the origin for all the
-// others.
-std::u16string GetFormattedOriginOrAppShortName(Browser* browser,
-                                                const url::Origin& origin) {
-  bool is_isolated_web_app = browser && browser->app_controller() &&
-                             browser->app_controller()->IsIsolatedWebApp();
-  return is_isolated_web_app
-             ? browser->app_controller()->GetAppShortName()
-             : url_formatter::FormatOriginForSecurityDisplay(
-                   origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-}
-}  // namespace
 
 namespace file_system_access_ui_helper {
 
@@ -106,6 +91,16 @@ std::u16string GetPathForDisplay(const base::FilePath& path) {
     return path.LossyDisplayName();
 
   return path.BaseName().LossyDisplayName();
+}
+
+std::u16string GetFormattedOriginOrAppShortName(Browser* browser,
+                                                const url::Origin& origin) {
+  bool is_isolated_web_app = browser && browser->app_controller() &&
+                             browser->app_controller()->IsIsolatedWebApp();
+  return is_isolated_web_app
+             ? browser->app_controller()->GetAppShortName()
+             : url_formatter::FormatOriginForSecurityDisplay(
+                   origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 
 }  // namespace file_system_access_ui_helper

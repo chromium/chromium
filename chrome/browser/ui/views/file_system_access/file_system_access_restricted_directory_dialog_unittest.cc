@@ -11,9 +11,10 @@
 #include "ui/base/test/test_dialog_model_host.h"
 #include "url/origin.h"
 
+using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 using SensitiveEntryResult =
     content::FileSystemAccessPermissionContext::SensitiveEntryResult;
-using HandleType = content::FileSystemAccessPermissionContext::HandleType;
+
 using FileSystemAccessRestrictedDirectoryDialogTest = BrowserWithTestWindowTest;
 
 namespace {

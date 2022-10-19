@@ -16,7 +16,7 @@ class FileSystemAccessRestrictedDirectoryDialogTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     ShowFileSystemAccessRestrictedDirectoryDialog(
         url::Origin::Create(GURL("https://example.com")),
-        base::FilePath(FILE_PATH_LITERAL("bar.swf")),
+        base::FilePath(FILE_PATH_LITERAL("/Documents")),
         content::FileSystemAccessPermissionContext::HandleType::kDirectory,
         base::DoNothing(),
         browser()->tab_strip_model()->GetActiveWebContents());

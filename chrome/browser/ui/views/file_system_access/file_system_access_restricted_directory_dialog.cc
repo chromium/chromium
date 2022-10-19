@@ -5,9 +5,10 @@
 #include "chrome/browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog.h"
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
@@ -20,6 +21,7 @@ using SensitiveEntryResult =
 
 std::unique_ptr<ui::DialogModel>
 CreateFileSystemAccessRestrictedDirectoryDialog(
+    Browser* const browser,
     const url::Origin& origin,
     const base::FilePath& path,
     HandleType handle_type,
@@ -32,9 +34,9 @@ CreateFileSystemAccessRestrictedDirectoryDialog(
   auto cancel_callbacks = base::SplitOnceCallback(base::BindOnce(
       std::move(split_callback.second), SensitiveEntryResult::kAbort));
 
-  std::u16string formatted_origin =
-      url_formatter::FormatOriginForSecurityDisplay(
-          origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  std::u16string origin_or_short_name =
+      file_system_access_ui_helper::GetFormattedOriginOrAppShortName(browser,
+                                                                     origin);
 
   ui::DialogModel::Builder dialog_builder;
   dialog_builder
@@ -46,7 +48,7 @@ CreateFileSystemAccessRestrictedDirectoryDialog(
           handle_type == HandleType::kDirectory
               ? IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TEXT
               : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_TEXT,
-          ui::DialogModelLabel::CreateEmphasizedText(formatted_origin)))
+          ui::DialogModelLabel::CreateEmphasizedText(origin_or_short_name)))
       .AddOkButton(std::move(accept_callback),
                    l10n_util::GetStringUTF16(
                        handle_type == HandleType::kDirectory
@@ -65,9 +67,10 @@ void ShowFileSystemAccessRestrictedDirectoryDialog(
     HandleType handle_type,
     base::OnceCallback<void(SensitiveEntryResult)> callback,
     content::WebContents* web_contents) {
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
   constrained_window::ShowWebModal(
-      CreateFileSystemAccessRestrictedDirectoryDialog(origin, path, handle_type,
-                                                      std::move(callback)),
+      CreateFileSystemAccessRestrictedDirectoryDialog(
+          browser, origin, path, handle_type, std::move(callback)),
       web_contents);
 }
 
@@ -78,5 +81,5 @@ CreateFileSystemAccessRestrictedDirectoryDialogForTesting(  // IN-TEST
     HandleType handle_type,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
   return CreateFileSystemAccessRestrictedDirectoryDialog(
-      origin, path, handle_type, std::move(callback));
+      /*browser=*/nullptr, origin, path, handle_type, std::move(callback));
 }
