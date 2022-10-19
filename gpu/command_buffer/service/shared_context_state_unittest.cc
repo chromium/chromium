@@ -44,51 +44,56 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
 
   // For easier substring/extension matching
   gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
-  gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+  auto* display = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+  ASSERT_TRUE(display);
+  {
+    StrictMock<gl::MockGLInterface> gl_interface;
+    gl::MockGLInterface::SetGLInterface(&gl_interface);
 
-  StrictMock<gl::MockGLInterface> gl_interface;
-  gl::MockGLInterface::SetGLInterface(&gl_interface);
+    InSequence sequence;
 
-  InSequence sequence;
+    auto surface = base::MakeRefCounted<gl::GLSurfaceStub>();
+    auto context = base::MakeRefCounted<gl::GLContextStub>();
+    const char gl_version[] = "2.1";
+    context->SetGLVersionString(gl_version);
+    const char gl_extensions[] = "GL_KHR_robustness";
+    context->SetExtensionsString(gl_extensions);
 
-  auto surface = base::MakeRefCounted<gl::GLSurfaceStub>();
-  auto context = base::MakeRefCounted<gl::GLContextStub>();
-  const char gl_version[] = "2.1";
-  context->SetGLVersionString(gl_version);
-  const char gl_extensions[] = "GL_KHR_robustness";
-  context->SetExtensionsString(gl_extensions);
+    context->MakeCurrent(surface.get());
 
-  context->MakeCurrent(surface.get());
+    GpuFeatureInfo gpu_feature_info;
+    GpuDriverBugWorkarounds workarounds;
+    auto feature_info =
+        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, gpu_feature_info);
+    gles2::TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
+        &gl_interface, gl_extensions, "", gl_version, context_type);
+    feature_info->Initialize(gpu::CONTEXT_TYPE_OPENGLES2,
+                             false /* passthrough */,
+                             gles2::DisallowedFeatures());
 
-  GpuFeatureInfo gpu_feature_info;
-  GpuDriverBugWorkarounds workarounds;
-  auto feature_info =
-      base::MakeRefCounted<gles2::FeatureInfo>(workarounds, gpu_feature_info);
-  gles2::TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
-      &gl_interface, gl_extensions, "", gl_version, context_type);
-  feature_info->Initialize(gpu::CONTEXT_TYPE_OPENGLES2, false /* passthrough */,
-                           gles2::DisallowedFeatures());
+    // Setup expectations for SharedContextState::InitializeGL().
+    EXPECT_CALL(gl_interface, GetIntegerv(GL_MAX_VERTEX_ATTRIBS, _))
+        .WillOnce(SetArgPointee<1>(8u))
+        .RetiresOnSaturation();
+    EXPECT_CALL(gl_interface,
+                GetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, _))
+        .WillOnce(SetArgPointee<1>(8u))
+        .RetiresOnSaturation();
+    ContextStateTestHelpers::SetupInitState(&gl_interface, feature_info.get(),
+                                            gfx::Size(1, 1));
 
-  // Setup expectations for SharedContextState::InitializeGL().
-  EXPECT_CALL(gl_interface, GetIntegerv(GL_MAX_VERTEX_ATTRIBS, _))
-      .WillOnce(SetArgPointee<1>(8u))
-      .RetiresOnSaturation();
-  EXPECT_CALL(gl_interface, GetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, _))
-      .WillOnce(SetArgPointee<1>(8u))
-      .RetiresOnSaturation();
-  ContextStateTestHelpers::SetupInitState(&gl_interface, feature_info.get(),
-                                          gfx::Size(1, 1));
+    EXPECT_CALL(gl_interface, GetGraphicsResetStatusARB())
+        .WillOnce(Return(GL_GUILTY_CONTEXT_RESET_ARB));
 
-  EXPECT_CALL(gl_interface, GetGraphicsResetStatusARB())
-      .WillOnce(Return(GL_GUILTY_CONTEXT_RESET_ARB));
+    auto shared_context_state = base::MakeRefCounted<SharedContextState>(
+        new gl::GLShareGroup(), surface, context,
+        false /* use_virtualized_gl_contexts */, base::DoNothing());
 
-  auto shared_context_state = base::MakeRefCounted<SharedContextState>(
-      new gl::GLShareGroup(), surface, context,
-      false /* use_virtualized_gl_contexts */, base::DoNothing());
-
-  bool result =
-      shared_context_state->InitializeGL(GpuPreferences(), feature_info);
-  EXPECT_FALSE(result);
+    bool result =
+        shared_context_state->InitializeGL(GpuPreferences(), feature_info);
+    EXPECT_FALSE(result);
+  }
+  gl::GLSurfaceTestSupport::ShutdownGL(display);
 }
 
 }  // namespace gpu
