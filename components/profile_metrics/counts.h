@@ -9,24 +9,12 @@
 
 namespace profile_metrics {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ProfileColorsUniqueness {
-  kSingleProfile = 0,
-  kUnique = 1,
-  kUniqueExceptForRepeatedDefault = 2,
-  kRepeated = 3,
-  kMaxValue = kRepeated,
-};
-
 struct Counts {
   base::HistogramBase::Sample total = 0;
   base::HistogramBase::Sample signedin = 0;
   base::HistogramBase::Sample supervised = 0;
   base::HistogramBase::Sample active = 0;
   base::HistogramBase::Sample unused = 0;
-  ProfileColorsUniqueness colors_uniqueness =
-      ProfileColorsUniqueness::kRepeated;
 };
 
 // Logs metrics related to |counts|.

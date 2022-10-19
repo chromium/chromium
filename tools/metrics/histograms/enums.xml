@@ -82144,13 +82144,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Signed Out: Old avatar"/>
 </enum>
 
-<enum name="ProfileColorsUniqueness">
-  <int value="0" label="Single profile"/>
-  <int value="1" label="Unique colors (with default theme at most once)"/>
-  <int value="2" label="Unique colors (with default theme repeated)"/>
-  <int value="3" label="Repeated colors"/>
-</enum>
-
 <enum name="ProfileCreateResult">
   <obsolete>
     Removed M90.

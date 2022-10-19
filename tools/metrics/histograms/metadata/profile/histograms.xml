@@ -115,17 +115,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.ColorsUniqueness" enum="ProfileColorsUniqueness"
-    expires_after="2022-10-16">
-  <owner>jkrcal@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records how profile colors are unique on all profiles of the installation.
-    Recorded every 24 hours (or at the soonest moment after that when Chrome is
-    started again).
-  </summary>
-</histogram>
-
 <histogram name="Profile.CookiesSize" units="MB" expires_after="2022-06-26">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
@@ -147,9 +136,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.DeleteProfileContext" enum="ProfileDeleteContext"
-    expires_after="2022-10-16">
-  <owner>jkrcal@chromium.org</owner>
+    expires_after="2023-10-16">
+  <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
   <summary>
     This histogram tracks the context of profile deletion whenever a profile is
     scheduled for deletion (from user action in the UI). Only recorded if the

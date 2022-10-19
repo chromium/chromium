@@ -21,8 +21,6 @@ void LogProfileMetricsCounts(const Counts& counts) {
                              counts.signedin);
     UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfActiveProfiles", counts.active);
     UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfUnusedProfiles", counts.unused);
-    UMA_HISTOGRAM_ENUMERATION("Profile.ColorsUniqueness",
-                              counts.colors_uniqueness);
   }
 }
 
