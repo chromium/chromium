@@ -31,13 +31,13 @@ const char kAccountCapabilityBooleanValueKey[] = "booleanValue";
 absl::optional<AccountInfo> AccountInfoFromUserInfo(
     const base::Value::Dict& user_info) {
   // Both |gaia_id| and |email| are required value in the JSON reply, so
-  // return empty result if any is missing.
+  // return empty result if any is missing or is empty.
   const std::string* gaia_id_value = user_info.FindString(kGaiaIdKey);
-  if (!gaia_id_value)
+  if (!gaia_id_value || gaia_id_value->empty())
     return absl::nullopt;
 
   const std::string* email_value = user_info.FindString(kEmailKey);
-  if (!email_value)
+  if (!email_value || email_value->empty())
     return absl::nullopt;
 
   AccountInfo account_info;

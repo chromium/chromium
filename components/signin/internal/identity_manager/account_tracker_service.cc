@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 
 #include <stddef.h>
+#include <sstream>
 #include <string>
 
 #include "base/bind.h"
@@ -17,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -162,14 +164,13 @@ void GetString(const base::Value::Dict& dict,
 
 std::string AccountsToString(
     const std::map<CoreAccountId, AccountInfo>& accounts) {
-  std::string result = "[";
+  std::stringstream result;
+  result << "[";
   for (const auto& entry : accounts) {
-    result += "{" + entry.first.ToString() + ": {" +
-              entry.second.account_id.ToString() + "," + entry.second.email +
-              "," + entry.second.gaia + "}";
+    result << "{" << entry.first.ToString() << ": (" << entry.second << ")}";
   }
-  result += ']';
-  return result;
+  result << ']';
+  return result.str();
 }
 
 }  // namespace
@@ -317,16 +318,23 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
   absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(user_info);
   if (maybe_account_info) {
-    // Should we DCHECK that the account stored in |accounts_| has the same
-    // value for |gaia_id| and |email| as the value loaded from |user_info|?
-    // DCHECK(account_info.gaia.empty()
-    //     || account_info.gaia == maybe_account_info.value().gaia);
-    // DCHECK(account_info.email.empty()
-    //     || account_info.email == maybe_account_info.value().email);
-    maybe_account_info.value().account_id = account_id;
-    account_info.UpdateWith(maybe_account_info.value());
+    DCHECK(!maybe_account_info->gaia.empty());
+    DCHECK(!maybe_account_info->email.empty());
+    maybe_account_info->account_id = PickAccountIdForAccount(
+        maybe_account_info->gaia, maybe_account_info->email);
+
+    if (maybe_account_info->account_id == account_info.account_id) {
+      account_info.UpdateWith(maybe_account_info.value());
+    } else {
+      DLOG(ERROR) << "Cannot set account info from user info as account ids "
+                     "do not match: existing_account_info = {"
+                  << account_info << "} new_account_info = {"
+                  << maybe_account_info.value() << "}";
+    }
   }
 
+  // TODO(msarda): Should account update notification be sent if the account was
+  // not updated (e.g. |maybe_account_info|==nullopt)?
   if (!account_info.gaia.empty())
     NotifyAccountUpdated(account_info);
   SaveToPrefs(account_info);

@@ -88,18 +88,20 @@ TEST_F(AccountInfoUtilTest, FromUserInfo) {
 }
 
 // Tests that AccountInfoFromUserInfo returns an AccountInfo with empty or
-// default values if no fields are set in the user_info.
+// default values if no fields are set in the user_info except for email or
+// gaia id.
 TEST_F(AccountInfoUtilTest, FromUserInfo_EmptyValues) {
   absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(CreateUserInfoWithValues(
-          /*email=*/"", /*gaia=*/"", /*hosted_domain=*/"", /*full_name=*/"",
+          /*email=*/"user@example.com", /*gaia=*/"gaia_id_user_example_com",
+          /*hosted_domain=*/"", /*full_name=*/"",
           /*given_name=*/"", /*locale=*/"", /*picture_url=*/""));
 
   ASSERT_TRUE(maybe_account_info.has_value());
 
   AccountInfo& account_info = maybe_account_info.value();
-  ASSERT_EQ(account_info.email, std::string());
-  ASSERT_EQ(account_info.gaia, std::string());
+  ASSERT_EQ(account_info.email, "user@example.com");
+  ASSERT_EQ(account_info.gaia, "gaia_id_user_example_com");
   ASSERT_EQ(account_info.hosted_domain, kNoHostedDomainFound);
   ASSERT_EQ(account_info.full_name, std::string());
   ASSERT_EQ(account_info.given_name, std::string());
@@ -154,12 +156,38 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_NoEmail) {
   EXPECT_FALSE(maybe_account_info.has_value());
 }
 
+// Tests that if AccountInfoFromUserInfo fails if the value passed has empty
+// string as value for |email|.
+TEST_F(AccountInfoUtilTest, FromUserInfo_EmptyEmail) {
+  absl::optional<AccountInfo> maybe_account_info =
+      AccountInfoFromUserInfo(CreateUserInfoWithValues(
+          /*email=*/"", /*gaia=*/"gaia_id_user_example_com",
+          /*hosted_domain=*/"example.com", /*full_name=*/"full name",
+          /*given_name=*/"given name", /*locale=*/"locale",
+          /*picture_url=*/"https://example.com/picture/user"));
+
+  EXPECT_FALSE(maybe_account_info.has_value());
+}
+
 // Tests that if AccountInfoFromUserInfo fails if the value passed has no
 // value for |gaia|.
 TEST_F(AccountInfoUtilTest, FromUserInfo_NoGaiaId) {
   absl::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(CreateUserInfoWithValues(
           /*email=*/"user@example.com", /*gaia=*/nullptr,
+          /*hosted_domain=*/"example.com", /*full_name=*/"full name",
+          /*given_name=*/"given name", /*locale=*/"locale",
+          /*picture_url=*/"https://example.com/picture/user"));
+
+  EXPECT_FALSE(maybe_account_info.has_value());
+}
+
+// Tests that if AccountInfoFromUserInfo fails if the value passed has empty
+// string as value for |gaia|.
+TEST_F(AccountInfoUtilTest, FromUserInfo_EmptyGaiaId) {
+  absl::optional<AccountInfo> maybe_account_info =
+      AccountInfoFromUserInfo(CreateUserInfoWithValues(
+          /*email=*/"user@example.com", /*gaia=*/"",
           /*hosted_domain=*/"example.com", /*full_name=*/"full name",
           /*given_name=*/"given name", /*locale=*/"locale",
           /*picture_url=*/"https://example.com/picture/user"));
