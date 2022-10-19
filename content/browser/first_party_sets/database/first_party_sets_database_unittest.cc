@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -37,7 +38,7 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 // Version number of the database.
-const int kCurrentVersionNumber = 2;
+const int kCurrentVersionNumber = 3;
 
 static const size_t kTableCount = 7u;
 
@@ -110,9 +111,9 @@ class FirstPartySetsDatabaseTest : public testing::Test {
     return size;
   }
 
-  size_t CountPolicyModificationsEntries(sql::Database* db) {
+  size_t CountPolicyConfigurationsEntries(sql::Database* db) {
     size_t size = 0;
-    EXPECT_TRUE(sql::test::CountTableRows(db, "policy_modifications", &size));
+    EXPECT_TRUE(sql::test::CountTableRows(db, "policy_configurations", &size));
     return size;
   }
 
@@ -155,7 +156,7 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   // Create a db handle to the existing db file to verify schemas.
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
-  // [public_sets], [browser_context_sets_version], [policy_modifications],
+  // [public_sets], [browser_context_sets_version], [policy_configurations],
   // [manual_sets], [browser_context_sites_to_clear],
   // [browser_contexts_cleared], and [meta].
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
@@ -174,12 +175,12 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   // `browser_context_id`, `cleared_at_run`.
   EXPECT_EQ(2u, sql::test::CountTableColumns(&db, "browser_contexts_cleared"));
   // `browser_context_id`, `site`, `primary_site`.
-  EXPECT_EQ(3u, sql::test::CountTableColumns(&db, "policy_modifications"));
+  EXPECT_EQ(3u, sql::test::CountTableColumns(&db, "policy_configurations"));
   EXPECT_EQ(0u, CountPublicSetsEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextSetsVersionEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
-  EXPECT_EQ(0u, CountPolicyModificationsEntries(&db));
+  EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
   EXPECT_EQ(0u, CountManualSetsEntries(&db));
 }
 
@@ -201,7 +202,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
   EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
   EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
-  EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
+  EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
   EXPECT_EQ(2u, CountManualSetsEntries(&db));
 
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
@@ -230,7 +231,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooOld) {
   EXPECT_EQ(0u, CountBrowserContextSetsVersionEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
-  EXPECT_EQ(0u, CountPolicyModificationsEntries(&db));
+  EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
   EXPECT_EQ(0u, CountManualSetsEntries(&db));
 
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
@@ -259,7 +260,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooNew) {
   EXPECT_EQ(0u, CountBrowserContextSetsVersionEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextsClearedEntries(&db));
-  EXPECT_EQ(0u, CountPolicyModificationsEntries(&db));
+  EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
   EXPECT_EQ(0u, CountManualSetsEntries(&db));
 
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
@@ -333,7 +334,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(2u, CountPublicSetsEntries(&db));
-  EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
+  EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
 
   // ============ Verify persisting public sets
   static constexpr char kSelectPublicSetsSql[] =
@@ -365,7 +366,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
 
   // ============ Verify persisting context config
   const char kSelectConfigSql[] =
-      "SELECT browser_context_id,site,primary_site FROM policy_modifications";
+      "SELECT browser_context_id,site,primary_site FROM policy_configurations";
   sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
   EXPECT_TRUE(s_config.Step());
   EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
@@ -407,7 +408,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
     ASSERT_TRUE(db.Open(db_path()));
     ASSERT_EQ(kTableCount, sql::test::CountSQLTables(&db));
     ASSERT_EQ(2u, CountPublicSetsEntries(&db));
-    ASSERT_EQ(2u, CountPolicyModificationsEntries(&db));
+    ASSERT_EQ(2u, CountPolicyConfigurationsEntries(&db));
 
     // Verify data in the public_sets table.
     static constexpr char kSelectPublicSetsSql[] =
@@ -425,9 +426,10 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
     ASSERT_EQ("https://bbb.test", s_public_sets.ColumnString(2));
     ASSERT_EQ(0, s_public_sets.ColumnInt(3));
 
-    // Verify data in the policy_modifications table.
+    // Verify data in the policy_configurations table.
     const char kSelectConfigSql[] =
-        "SELECT browser_context_id,site,primary_site FROM policy_modifications";
+        "SELECT browser_context_id,site,primary_site FROM "
+        "policy_configurations";
     sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
     EXPECT_TRUE(s_config.Step());
     EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
@@ -505,7 +507,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(4u, CountPublicSetsEntries(&db));
-  EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
+  EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
 
   // ============ Verify persisting public sets
   static constexpr char kSelectPublicSetsSql[] =
@@ -538,7 +540,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   // ============ Verify the new context config overwrote the pre-existing
   // data.
   const char kSelectConfigSql[] =
-      "SELECT browser_context_id,site,primary_site FROM policy_modifications "
+      "SELECT browser_context_id,site,primary_site FROM policy_configurations "
       "WHERE browser_context_id=?";
   sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
   s_config.BindString(0, browser_context_id);
@@ -871,12 +873,12 @@ TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters) {
   EXPECT_EQ(res.second, cache_filter);
 }
 
-TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications_NoPreExistingDB) {
+TEST_F(FirstPartySetsDatabaseTest, FetchPolicyConfigurations_NoPreExistingDB) {
   OpenDatabase();
-  EXPECT_TRUE(db()->FetchPolicyModifications("b").empty());
+  EXPECT_TRUE(db()->FetchPolicyConfigurations("b").empty());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
+TEST_F(FirstPartySetsDatabaseTest, FetchPolicyConfigurations) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
                                                GetCurrentVersionSqlFilePath()));
 
@@ -885,7 +887,7 @@ TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
     sql::Database db;
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-    EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
+    EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
   }
   net::FirstPartySetsContextConfig res({
       {net::SchemefulSite(GURL("https://member1.test")),
@@ -895,7 +897,7 @@ TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
       {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
   });
   OpenDatabase();
-  EXPECT_EQ(db()->FetchPolicyModifications("b2"), res);
+  EXPECT_EQ(db()->FetchPolicyConfigurations("b2"), res);
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPreExistingDB) {
@@ -1007,7 +1009,78 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
       db()->PersistSets(browser_context_id, version, global_sets, config));
 
   EXPECT_EQ(db()->GetGlobalSets(browser_context_id), global_sets);
-  EXPECT_EQ(db()->FetchPolicyModifications(browser_context_id), config);
+  EXPECT_EQ(db()->FetchPolicyConfigurations(browser_context_id), config);
+}
+
+class FirstPartySetsDatabaseMigrationsTest : public FirstPartySetsDatabaseTest {
+ public:
+  FirstPartySetsDatabaseMigrationsTest() = default;
+
+  void MigrateDatabase() {
+    FirstPartySetsDatabase db(db_path());
+    // Trigger the lazy-initialization.
+    std::ignore = db.FetchPolicyConfigurations("b");
+  }
+
+  static int VersionFromDatabase(sql::Database* db) {
+    // Get version.
+    sql::Statement s(
+        db->GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
+    if (!s.Step())
+      return 0;
+    return s.ColumnInt(0);
+  }
+};
+
+TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateEmptyToCurrent) {
+  {
+    FirstPartySetsDatabase db(db_path());
+    // Trigger the lazy-initialization.
+    std::ignore = db.FetchPolicyConfigurations("b");
+  }
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Check that expected tables are present.
+    EXPECT_TRUE(db.DoesTableExist("policy_configurations"));
+    EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
+  }
+}
+
+TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion2ToCurrent) {
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v2.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    ASSERT_EQ(2, VersionFromDatabase(&db));
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Check that expected tables are present.
+    EXPECT_TRUE(db.DoesTableExist("policy_configurations"));
+
+    // Verify that data is preserved across the migration.
+    EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
+  }
 }
 
 }  // namespace content

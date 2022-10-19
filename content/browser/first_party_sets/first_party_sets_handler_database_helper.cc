@@ -79,7 +79,7 @@ FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
   DCHECK(!browser_context_id.empty());
   base::flat_set<net::SchemefulSite> diff =
       ComputeSetsDiff(db_->GetGlobalSets(browser_context_id),
-                      db_->FetchPolicyModifications(browser_context_id),
+                      db_->FetchPolicyConfigurations(browser_context_id),
                       current_sets, current_config);
 
   if (!db_->InsertSitesToClear(browser_context_id, diff)) {

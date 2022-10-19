@@ -77,7 +77,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // Stores the overall First-Party Sets for the given `browser_context_id` into
   // database in one transaction.
   // TODO(crbug.com/1219656): Currently only stores public sets. We should also
-  // store policy modifications and manual set in this method.
+  // store policy configurations and manual set in this method.
   [[nodiscard]] bool PersistSets(
       const std::string& browser_context_id,
       const base::Version& public_sets_version,
@@ -111,9 +111,9 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
                           net::FirstPartySetsCacheFilter>
   GetSitesToClearFilters(const std::string& browser_context_id);
 
-  // Gets the previously-stored policy modifications for the
+  // Gets the previously-stored policy configurations for the
   // `browser_context_id`.
-  [[nodiscard]] net::FirstPartySetsContextConfig FetchPolicyModifications(
+  [[nodiscard]] net::FirstPartySetsContextConfig FetchPolicyConfigurations(
       const std::string& browser_context_id);
 
   // Check whether the `browser_context_id`  has performed clearing.
@@ -138,10 +138,10 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
       const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
           manual_sets);
 
-  // Stores the policy modifications into policy_modifications table, and
-  // returns true on success. Note that inserting new modifications will
+  // Stores the policy configurations into policy_configurations table, and
+  // returns true on success. Note that inserting new configurations will
   // wipe out the pre-existing ones for the given `browser_context_id`.
-  [[nodiscard]] bool InsertPolicyModifications(
+  [[nodiscard]] bool InsertPolicyConfigurations(
       const std::string& browser_context_id,
       const net::FirstPartySetsContextConfig& config);
 
@@ -173,6 +173,13 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
 
   // Helper function to implement internals of `LazyInit()`.
   [[nodiscard]] InitStatus InitializeTables()
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Upgrades `db_` to the latest schema, and updates the version stored in
+  // `meta_table_` accordingly. Returns false on failure.
+  [[nodiscard]] bool UpgradeSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool MigrateToVersion3()
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Increase the `run_count` stored in the meta table by 1. Should only be
