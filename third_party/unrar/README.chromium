@@ -35,4 +35,4 @@ Notable changes from upstream:
 - Changes to support building in -std=c++20 mode.
 - Cherry-picked https://github.com/aawc/unrar/pull/35
 
-All these changes are included in one patch file (chromium_changes.v6.0.3.patch)
+All these changes are included in one patch file (chromium_changes.patch)
