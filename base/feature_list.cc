@@ -109,16 +109,6 @@ struct FeatureEntry {
   }
 };
 
-// Some characters are not allowed to appear in feature names or the associated
-// field trial names, as they are used as special characters for command-line
-// serialization. This function checks that the strings are ASCII (since they
-// are used in command-line API functions that require ASCII) and whether there
-// are any reserved characters present, returning true if the string is valid.
-// Only called in DCHECKs.
-bool IsValidFeatureOrFieldTrialName(StringPiece name) {
-  return IsStringASCII(name) && name.find_first_of(",<*") == std::string::npos;
-}
-
 // Splits |text| into two parts by the |separator| where the first part will be
 // returned updated in |first| and the second part will be returned as |second|.
 // This function returns false if there is more than one |separator| in |first|.
@@ -399,6 +389,11 @@ bool FeatureList::IsEnabled(const Feature& feature) {
     return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
   }
   return g_feature_list_instance->IsFeatureEnabled(feature);
+}
+
+// static
+bool FeatureList::IsValidFeatureOrFieldTrialName(StringPiece name) {
+  return IsStringASCII(name) && name.find_first_of(",<*") == std::string::npos;
 }
 
 // static

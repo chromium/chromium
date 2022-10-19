@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
 #include "entropy_provider.h"
@@ -23,6 +24,13 @@ void LogInvalidReason(InvalidStudyReason reason) {
   base::UmaHistogramEnumeration("Variations.InvalidStudyReason", reason);
 }
 
+// TODO(crbug/946593): Use base::FeatureList::IsValidFeatureOrFieldTrialName
+// once WebRTC trials with "," in group names are removed.
+bool IsValidExperimentName(const std::string& name) {
+  return base::IsStringASCII(name) &&
+         name.find_first_of("<*") == std::string::npos;
+}
+
 // Validates the sanity of |study| and computes the total probability and
 // whether all assignments are to a single group.
 bool ValidateStudyAndComputeTotalProbability(
@@ -32,6 +40,12 @@ bool ValidateStudyAndComputeTotalProbability(
   if (study.name().empty()) {
     LogInvalidReason(InvalidStudyReason::kBlankStudyName);
     DVLOG(1) << "study with missing study name";
+    return false;
+  }
+
+  if (!base::FeatureList::IsValidFeatureOrFieldTrialName(study.name())) {
+    LogInvalidReason(InvalidStudyReason::kInvalidStudyName);
+    DVLOG(1) << study.name() << " is an invalid experiment name";
     return false;
   }
 
@@ -73,6 +87,12 @@ bool ValidateStudyAndComputeTotalProbability(
         DVLOG(1) << study.name() << " is missing an experiment name";
         return false;
       }
+      if (!IsValidExperimentName(experiment.name())) {
+        LogInvalidReason(InvalidStudyReason::kInvalidExperimentName);
+        DVLOG(1) << study.name() << " has a invalid experiment name "
+                 << experiment.name();
+        return false;
+      }
       if (!experiment_names.insert(experiment.name()).second) {
         LogInvalidReason(InvalidStudyReason::kRepeatedExperimentName);
         DVLOG(1) << study.name() << " has a repeated experiment name "
@@ -90,6 +110,43 @@ bool ValidateStudyAndComputeTotalProbability(
                << study.default_experiment_name() << ") in its experiment list";
       // The default group was not found in the list of groups. This study is
       // not valid.
+      return false;
+    }
+  }
+
+  for (const auto& experiment : study.experiment()) {
+    if (!experiment.has_feature_association())
+      continue;
+    for (const auto& feature :
+         experiment.feature_association().enable_feature()) {
+      if (!base::FeatureList::IsValidFeatureOrFieldTrialName(feature)) {
+        LogInvalidReason(InvalidStudyReason::kInvalidFeatureName);
+        DVLOG(1) << study.name() << " has a feature experiment name "
+                 << feature;
+        return false;
+      }
+    }
+    for (const auto& feature :
+         experiment.feature_association().disable_feature()) {
+      if (!base::FeatureList::IsValidFeatureOrFieldTrialName(feature)) {
+        LogInvalidReason(InvalidStudyReason::kInvalidFeatureName);
+        DVLOG(1) << study.name() << " has a feature experiment name "
+                 << feature;
+        return false;
+      }
+    }
+    if (!base::FeatureList::IsValidFeatureOrFieldTrialName(
+            experiment.feature_association().forcing_feature_on())) {
+      LogInvalidReason(InvalidStudyReason::kInvalidFeatureName);
+      DVLOG(1) << study.name() << " has a feature experiment name "
+               << experiment.feature_association().forcing_feature_on();
+      return false;
+    }
+    if (!base::FeatureList::IsValidFeatureOrFieldTrialName(
+            experiment.feature_association().forcing_feature_off())) {
+      LogInvalidReason(InvalidStudyReason::kInvalidFeatureName);
+      DVLOG(1) << study.name() << " has a feature experiment name "
+               << experiment.feature_association().forcing_feature_off();
       return false;
     }
   }

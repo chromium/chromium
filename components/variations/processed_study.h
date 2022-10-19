@@ -28,7 +28,10 @@ enum class InvalidStudyReason {
   kBlankStudyName = 8,
   kExperimentProbabilityOverflow = 9,
   kTriggerAndNonTriggerExperimentId = 10,
-  kMaxValue = kTriggerAndNonTriggerExperimentId,
+  kInvalidStudyName = 11,
+  kInvalidExperimentName = 12,
+  kInvalidFeatureName = 13,
+  kMaxValue = kInvalidFeatureName,
 };
 
 class Study;

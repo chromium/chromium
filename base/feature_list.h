@@ -384,6 +384,14 @@ class BASE_EXPORT FeatureList {
   // struct, which is checked in builds with DCHECKs enabled.
   static bool IsEnabled(const Feature& feature);
 
+  // Some characters are not allowed to appear in feature names or the
+  // associated field trial names, as they are used as special characters for
+  // command-line serialization. This function checks that the strings are ASCII
+  // (since they are used in command-line API functions that require ASCII) and
+  // whether there are any reserved characters present, returning true if the
+  // string is valid.
+  static bool IsValidFeatureOrFieldTrialName(StringPiece name);
+
   // If the given |feature| is overridden, returns its enabled state; otherwise,
   // returns an empty optional. Must only be called after the singleton instance
   // has been registered via SetInstance(). Additionally, a feature with a given

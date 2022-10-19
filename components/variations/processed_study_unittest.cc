@@ -73,6 +73,89 @@ TEST(ProcessedStudyTest, InitValidStudy) {
   histogram_tester.ExpectTotalCount(kInvalidStudyReasonHistogram, 0);
 }
 
+TEST(ProcessedStudyTest, InitInvalidStudyName) {
+  base::HistogramTester histogram_tester;
+
+  Study study = CreateValidStudy();
+  study.set_name("Not,Valid");
+
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  histogram_tester.ExpectUniqueSample(kInvalidStudyReasonHistogram,
+                                      InvalidStudyReason::kInvalidStudyName, 1);
+}
+
+TEST(ProcessedStudyTest, InitInvalidExperimentName) {
+  base::HistogramTester histogram_tester;
+
+  Study study = CreateValidStudy();
+  study.mutable_experiment(0)->set_name("Not<Valid");
+
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  histogram_tester.ExpectUniqueSample(
+      kInvalidStudyReasonHistogram, InvalidStudyReason::kInvalidExperimentName,
+      1);
+}
+
+TEST(ProcessedStudyTest, InitInvalidEnableFeatureName) {
+  base::HistogramTester histogram_tester;
+
+  Study study = CreateValidStudy();
+  study.mutable_experiment(0)
+      ->mutable_feature_association()
+      ->add_enable_feature("Not,Valid");
+
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  histogram_tester.ExpectUniqueSample(
+      kInvalidStudyReasonHistogram, InvalidStudyReason::kInvalidFeatureName, 1);
+}
+
+TEST(ProcessedStudyTest, InitInvalidDisableFeatureName) {
+  base::HistogramTester histogram_tester;
+
+  Study study = CreateValidStudy();
+  study.mutable_experiment(0)
+      ->mutable_feature_association()
+      ->add_disable_feature("Not\252Valid");
+
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  histogram_tester.ExpectUniqueSample(
+      kInvalidStudyReasonHistogram, InvalidStudyReason::kInvalidFeatureName, 1);
+}
+
+TEST(ProcessedStudyTest, InitInvalidForcingFeatureOnName) {
+  base::HistogramTester histogram_tester;
+
+  Study study = CreateValidStudy();
+  auto* experiment = study.add_experiment();
+  experiment->set_name("Forced");
+  experiment->mutable_feature_association()->set_forcing_feature_on(
+      "Not*Valid");
+
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  histogram_tester.ExpectUniqueSample(
+      kInvalidStudyReasonHistogram, InvalidStudyReason::kInvalidFeatureName, 1);
+}
+
+TEST(ProcessedStudyTest, InitInvalidForcingFeatureOffName) {
+  base::HistogramTester histogram_tester;
+
+  Study study = CreateValidStudy();
+  auto* experiment = study.add_experiment();
+  experiment->set_name("Forced");
+  experiment->mutable_feature_association()->set_forcing_feature_off(
+      "Not,Valid");
+
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  histogram_tester.ExpectUniqueSample(
+      kInvalidStudyReasonHistogram, InvalidStudyReason::kInvalidFeatureName, 1);
+}
+
 // Verifies that a study with an invalid min version filter is invalid.
 TEST(ProcessedStudyTest, InitInvalidMinVersion) {
   base::HistogramTester histogram_tester;
