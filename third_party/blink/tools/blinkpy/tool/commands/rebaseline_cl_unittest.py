@@ -172,8 +172,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             "status": "FAIL"
         }, {
             "name":
-            "invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fmissing.html",
-            "testId": "ninja://:blink_web_tests/one/missing.html",
+            "invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_wpt_tests%2Fone%2Fmissing.html",
+            "testId": "ninja://:blink_wpt_tests/one/missing.html",
             "resultId": "1",
             "variant": {
                 "def": {
@@ -185,8 +185,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             "status": "FAIL"
         }, {
             "name":
-            "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html",
-            "testId": "ninja://:blink_web_tests/one/crash.html",
+            "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:high_dpi_blink_web_tests%2Fone%2Fcrash.html",
+            "testId": "ninja://:high_dpi_blink_web_tests/one/crash.html",
             "resultId": "3",
             "variant": {
                 "def": {
@@ -200,10 +200,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.test_artifacts_list = {
             "tests/one/missing.html/results/1": [{
                 "name":
-                "invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fmissing.html/results/1",
+                "invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_wpt_tests%2Fone%2Fmissing.html/results/1",
                 "artifactId": "actual_image",
                 "fetchUrl":
-                "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fmissing.html/results/artifacts/actual_image?token=1",
+                "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-1/tests/ninja:%2F%2F:blink_wpt_tests%2Fone%2Fmissing.html/results/artifacts/actual_image?token=1",
                 "contentType": "image/png",
             }],
             "tests/two/image-fail.html/results/2": [{
@@ -216,10 +216,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             }],
             "tests/one/crash.html/results/3": [{
                 "name":
-                "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html/results/3",
+                "invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:high_dpi_blink_web_tests%2Fone%2Fcrash.html/results/3",
                 "artifactId": "actual_text",
                 "fetchUrl":
-                "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:blink_web_tests%2Fone%2Fcrash.html/results/artifacts/actual_text?token=3",
+                "https://results.usercontent.cr.dev/invocations/task-chromium-swarm.appspot.com-2/tests/ninja:%2F%2F:high_dpi_blink_web_tests%2Fone%2Fcrash.html/results/artifacts/actual_text?token=3",
                 "contentType": "text",
             }]
         }

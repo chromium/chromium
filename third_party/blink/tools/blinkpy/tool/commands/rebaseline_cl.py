@@ -421,11 +421,13 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             return []
 
         failed_tests = web_test_results.failed_unexpected_resultdb()
-        failed_test_names = [
-            r['testId'][len('ninja://:blink_web_tests') + 1:]
-            for r in failed_tests
-        ]
-
+        failed_test_names = []
+        for result in failed_tests:
+            match = re.match('ninja://.*blink_(web|wpt)_tests/',
+                             result['testId'])
+            if match:
+                test_name = result['testId'][match.end():]
+                failed_test_names.append(test_name)
         return failed_test_names
 
     def _tests_to_rebaseline(self, build, web_test_results):
