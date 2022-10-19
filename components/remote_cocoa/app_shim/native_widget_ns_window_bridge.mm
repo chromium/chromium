@@ -450,7 +450,7 @@ void NativeWidgetNSWindowBridge::InitWindow(
   // Validate the window's initial state, otherwise the bridge's initial
   // tracking state will be incorrect.
   DCHECK(![window_ isVisible]);
-  DCHECK_EQ(0u, [window_ styleMask] & NSWindowStyleMaskFullScreen);
+  DCHECK(!IsFullscreen());
 
   // Include "regular" windows without the standard frame in the window cycle.
   // These use NSWindowStyleMaskBorderless so do not get it by default.
@@ -860,6 +860,11 @@ void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
 
 bool NativeWidgetNSWindowBridge::HasWindowRestorationData() {
   return !pending_restoration_data_.empty();
+}
+
+bool NativeWidgetNSWindowBridge::IsFullscreen() {
+  return ([window_ styleMask] & NSWindowStyleMaskFullScreen) ==
+         NSWindowStyleMaskFullScreen;
 }
 
 bool NativeWidgetNSWindowBridge::RunMoveLoop(const gfx::Vector2d& drag_offset) {
@@ -1280,9 +1285,10 @@ void NativeWidgetNSWindowBridge::FullscreenControllerToggleFullscreen() {
   }
 
   bool is_key_window = [window_ isKeyWindow];
+  bool was_fullscreen = IsFullscreen();
   [window_ toggleFullScreen:nil];
   // Ensure the transitioning window maintains focus (crbug.com/1338659).
-  if (is_key_window)
+  if (!was_fullscreen && is_key_window)
     [window_ makeKeyAndOrderFront:nil];
 }
 
