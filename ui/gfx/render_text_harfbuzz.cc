@@ -580,7 +580,7 @@ class HarfBuzzLineBreaker {
           size_t cutoff_pos = GetCutoffPos(remaining_segment);
           SkScalar width = run.GetGlyphWidthForCharRange(
               Range(remaining_segment.char_range.start(), cutoff_pos));
-          if (width > 0) {
+          if (remaining_segment.char_range.start() != cutoff_pos) {
             internal::LineSegment cut_segment;
             cut_segment.run = remaining_segment.run;
             cut_segment.char_range =
@@ -690,7 +690,8 @@ class HarfBuzzLineBreaker {
     // need to put at least one character in the line. Note that, we should
     // not separate surrogate pair or combining characters.
     // See RenderTextHarfBuzzTest.Multiline_MinWidth for an example.
-    if (width == 0 && available_width_ == max_width_) {
+    if (width == 0 && available_width_ == max_width_ &&
+        end_pos < segment.char_range.end()) {
       end_pos = std::min(segment.char_range.end(),
                          FindValidBoundaryAfter(text_, end_pos + 1));
     }
