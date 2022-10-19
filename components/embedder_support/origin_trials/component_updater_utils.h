@@ -19,6 +19,11 @@ namespace embedder_support {
 void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
                                                  base::Value manifest);
 
+// Append the stored Origin Trial configuration overrides to the current process
+// command line, if the command line does not already contain these values. This
+// should be done early during browser startup.
+void SetupOriginTrialsCommandLine(PrefService* local_state);
+
 }  // namespace embedder_support
 
 #endif  // COMPONENTS_EMBEDDER_SUPPORT_ORIGIN_TRIALS_COMPONENT_UPDATER_UTILS_H_

@@ -31,7 +31,6 @@
 class BrowserProcessImpl;
 class ChromeBrowserMainExtraParts;
 class StartupData;
-class PrefService;
 class Profile;
 class StartupBrowserCreator;
 class ShutdownWatcherHelper;
@@ -133,10 +132,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 
   // Record time from process startup to present time in an UMA histogram.
   void RecordBrowserStartupTime();
-
-  // Reads origin trial policy data from local state and configures command line
-  // for child processes.
-  void SetupOriginTrialsCommandLine(PrefService* local_state);
 
   // Calling during PreEarlyInitialization() to complete the remaining tasks
   // after the local state is loaded. Return value is an exit status,

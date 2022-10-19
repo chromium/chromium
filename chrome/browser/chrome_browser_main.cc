@@ -125,7 +125,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/embedder_support/origin_trials/pref_names.h"
+#include "components/embedder_support/origin_trials/component_updater_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/google/core/common/google_util.h"
@@ -664,73 +664,6 @@ void ChromeBrowserMainParts::RecordBrowserStartupTime() {
       base::TimeTicks::Now(), is_first_run);
 }
 
-void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
-    PrefService* local_state) {
-  // TODO(crbug.com/1211739): Temporary workaround to prevent an overly large
-  // config from crashing by exceeding command-line length limits. Set the limit
-  // to 1KB, which is far less than the known limits:
-  //  - Linux: kZygoteMaxMessageLength = 12288;
-  // This will still allow for critical updates to the public key or disabled
-  // features, but the disabled token list will be ignored.
-  const size_t kMaxAppendLength = 1024;
-  size_t appended_length = 0;
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(embedder_support::kOriginTrialPublicKey)) {
-    std::string new_public_key =
-        local_state->GetString(embedder_support::prefs::kOriginTrialPublicKey);
-    if (!new_public_key.empty()) {
-      command_line->AppendSwitchASCII(
-          embedder_support::kOriginTrialPublicKey,
-          local_state->GetString(
-              embedder_support::prefs::kOriginTrialPublicKey));
-
-      // Public key is 32 bytes
-      appended_length += 32;
-    }
-  }
-  if (!command_line->HasSwitch(
-          embedder_support::kOriginTrialDisabledFeatures)) {
-    const base::Value::List& override_disabled_feature_list =
-        local_state->GetList(
-            embedder_support::prefs::kOriginTrialDisabledFeatures);
-    std::vector<base::StringPiece> disabled_features;
-    for (const auto& item : override_disabled_feature_list) {
-      if (item.is_string())
-        disabled_features.push_back(item.GetString());
-    }
-    if (!disabled_features.empty()) {
-      const std::string override_disabled_features =
-          base::JoinString(disabled_features, "|");
-      command_line->AppendSwitchASCII(
-          embedder_support::kOriginTrialDisabledFeatures,
-          override_disabled_features);
-      appended_length += override_disabled_features.length();
-    }
-  }
-  if (!command_line->HasSwitch(embedder_support::kOriginTrialDisabledTokens)) {
-    const base::Value::List& disabled_token_list = local_state->GetList(
-        embedder_support::prefs::kOriginTrialDisabledTokens);
-    std::vector<base::StringPiece> disabled_tokens;
-    for (const auto& item : disabled_token_list) {
-      if (item.is_string())
-        disabled_tokens.push_back(item.GetString());
-    }
-    if (!disabled_tokens.empty()) {
-      const std::string disabled_token_switch =
-          base::JoinString(disabled_tokens, "|");
-      // Do not append the disabled token list if will exceed a reasonable
-      // length. See above.
-      if (appended_length + disabled_token_switch.length() <=
-          kMaxAppendLength) {
-        command_line->AppendSwitchASCII(
-            embedder_support::kOriginTrialDisabledTokens,
-            disabled_token_switch);
-      }
-    }
-  }
-}
-
 // -----------------------------------------------------------------------------
 // TODO(viettrungluu): move more/rest of BrowserMain() into BrowserMainParts.
 
@@ -923,7 +856,8 @@ int ChromeBrowserMainParts::OnLocalStateLoaded(
   if (apply_first_run_result != content::RESULT_CODE_NORMAL_EXIT)
     return apply_first_run_result;
 
-  SetupOriginTrialsCommandLine(browser_process_->local_state());
+  embedder_support::SetupOriginTrialsCommandLine(
+      browser_process_->local_state());
 
   metrics::EnableExpiryChecker(chrome_metrics::kExpiredHistogramsHashes,
                                chrome_metrics::kNumExpiredHistograms);

@@ -32,6 +32,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/embedder_support/origin_trials/origin_trial_prefs.h"
+#include "components/embedder_support/origin_trials/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -62,6 +63,10 @@ bool g_signature_verification_enabled = true;
 // These prefs go in the JsonPrefStore, and will persist across runs. Other
 // prefs go in the InMemoryPrefStore, and will be lost when the process ends.
 const char* const kPersistentPrefsAllowlist[] = {
+    // Origin Trial config overrides.
+    embedder_support::prefs::kOriginTrialPublicKey,
+    embedder_support::prefs::kOriginTrialDisabledFeatures,
+    embedder_support::prefs::kOriginTrialDisabledTokens,
     // Randomly-generated GUID which pseudonymously identifies uploaded metrics.
     metrics::prefs::kMetricsClientID,
     // Random seed value for variation's entropy providers. Used to assign

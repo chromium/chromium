@@ -7,12 +7,15 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/installer_policies/origin_trials_component_installer.h"
 #include "components/embedder_support/origin_trials/origin_trial_prefs.h"
 #include "components/embedder_support/origin_trials/pref_names.h"
+#include "components/embedder_support/switches.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -325,6 +328,57 @@ TEST_F(OriginTrialsComponentInstallerTest,
   LoadUpdates(std::move(manifest));
 
   CheckDisabledTokensPrefs(kNewDisabledTokens);
+}
+
+TEST_F(OriginTrialsComponentInstallerTest, ParametersAddedToCommandLine) {
+  local_state()->SetString(embedder_support::prefs::kOriginTrialPublicKey,
+                           kNewPublicKey);
+
+  AddDisabledFeaturesToPrefs(kNewDisabledFeatures);
+  AddDisabledTokensToPrefs(kNewDisabledTokens);
+
+  embedder_support::SetupOriginTrialsCommandLine(local_state());
+  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+
+  ASSERT_TRUE(cmdline->HasSwitch(embedder_support::kOriginTrialPublicKey));
+  ASSERT_TRUE(
+      cmdline->HasSwitch(embedder_support::kOriginTrialDisabledFeatures));
+  ASSERT_TRUE(cmdline->HasSwitch(embedder_support::kOriginTrialDisabledTokens));
+  EXPECT_EQ(kNewPublicKey, cmdline->GetSwitchValueASCII(
+                               embedder_support::kOriginTrialPublicKey));
+  EXPECT_EQ(base::StrCat({kNewDisabledFeature1, "|", kNewDisabledFeature2}),
+            cmdline->GetSwitchValueASCII(
+                embedder_support::kOriginTrialDisabledFeatures));
+  EXPECT_EQ(base::StrCat({kNewDisabledToken1, "|", kNewDisabledToken2}),
+            cmdline->GetSwitchValueASCII(
+                embedder_support::kOriginTrialDisabledTokens));
+}
+
+TEST_F(OriginTrialsComponentInstallerTest, DoesNotOverwriteExistingValues) {
+  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  cmdline->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
+                             kExistingPublicKey);
+  cmdline->AppendSwitchASCII(embedder_support::kOriginTrialDisabledTokens,
+                             kExistingDisabledToken);
+  cmdline->AppendSwitchASCII(embedder_support::kOriginTrialDisabledFeatures,
+                             kExistingDisabledFeature);
+
+  local_state()->SetString(embedder_support::prefs::kOriginTrialPublicKey,
+                           kNewPublicKey);
+  AddDisabledFeaturesToPrefs(kNewDisabledFeatures);
+  AddDisabledTokensToPrefs(kNewDisabledTokens);
+
+  embedder_support::SetupOriginTrialsCommandLine(local_state());
+
+  // The existing values should not be overwritten
+  EXPECT_EQ(kExistingPublicKey, cmdline->GetSwitchValueASCII(
+                                    embedder_support::kOriginTrialPublicKey));
+  EXPECT_EQ(kExistingDisabledFeature,
+            cmdline->GetSwitchValueASCII(
+                embedder_support::kOriginTrialDisabledFeatures));
+  EXPECT_EQ(kExistingDisabledToken,
+            cmdline->GetSwitchValueASCII(
+                embedder_support::kOriginTrialDisabledTokens));
 }
 
 }  // namespace component_updater
