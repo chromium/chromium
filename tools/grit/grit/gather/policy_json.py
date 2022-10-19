@@ -19,6 +19,19 @@ from xml.dom import minidom
 from xml.parsers.expat import ExpatError
 
 
+def JsonToUtf8Encoding(data, ignore_dicts=False):
+  if six.PY2 and isinstance(data, unicode):
+    return data.encode('utf-8')
+  if isinstance(data, list):
+    return [JsonToUtf8Encoding(item, False) for item in data]
+  if isinstance(data, dict):
+    return {
+        JsonToUtf8Encoding(key): JsonToUtf8Encoding(value)
+        for key, value in data.items()
+    }
+  return data
+
+
 class PolicyJson(skeleton_gatherer.SkeletonGatherer):
   '''Collects and translates the following strings from policy_templates.json:
     - captions, descriptions, labels and Android app support details of policies
@@ -293,7 +306,7 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
     if util.IsExtraVerbose():
       print(self.text_)
 
-    self.data = eval(self.text_)
+    self.data = json.loads(self.text_, object_hook=JsonToUtf8Encoding)
 
     self._AddNontranslateableChunk('{\n')
     self._AddNontranslateableChunk("  \"policy_definitions\": [\n")

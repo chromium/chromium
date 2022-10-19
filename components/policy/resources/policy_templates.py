@@ -27,9 +27,14 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--dest', dest='dest')
   args = parser.parse_args()
+  if args.dest:
+    path = os.path.join(args.dest)
+  else:
+    path = POLICY_TEMPLATES_PATH
 
-  with open(os.path.join(args.dest), 'w+', encoding='utf-8') as dest:
-    json.dump(GetPolicyTemplates(), dest, indent=2, sort_keys=True)
+  policy_templates = GetPolicyTemplates()
+  with open(path, 'w+', encoding='utf-8') as dest:
+    json.dump(policy_templates, dest, indent=2, sort_keys=True)
 
 
 if '__main__' == __name__:

@@ -15,6 +15,7 @@ if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 import grit.extern.tclib
+import json
 import tempfile
 import unittest
 
@@ -39,49 +40,48 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
     schema_key_description = "Number of users"
     schema_key_description_translation = "Anzahl der Nutzer"
 
-    policy_json = """
-        {
-          "policy_definitions": [
+    policy_templates = {
+        'policy_definitions': [
             {
-              'name': 'MainPolicy',
-              'type': 'main',
-              'owners': ['foo@bar.com'],
-              'schema': {
-                'properties': {
-                  'default_launch_container': {
-                    'enum': [
-                      'tab',
-                      'window',
-                    ],
-                    'type': 'string',
-                  },
-                  'users_number': {
-                    'description': '''%s''',
-                    'type': 'integer',
-                  },
+                'name': 'MainPolicy',
+                'type': 'main',
+                'owners': ['foo@bar.com'],
+                'schema': {
+                    'properties': {
+                        'default_launch_container': {
+                            'enum': [
+                                'tab',
+                                'window',
+                            ],
+                            'type': 'string',
+                        },
+                        'users_number': {
+                            'description': schema_key_description,
+                            'type': 'integer',
+                        },
+                    },
+                    'type': 'object',
                 },
-                'type': 'object',
-              },
-              'supported_on': ['chrome_os:29-'],
-              'features': {
-                'can_be_recommended': True,
-                'dynamic_refresh': True,
-              },
-              'example_value': True,
-              'caption': '''%s''',
-              'tags': [],
-              'desc': '''This policy does stuff.'''
+                'supported_on': ['chrome_os:29-'],
+                'features': {
+                    'can_be_recommended': True,
+                    'dynamic_refresh': True,
+                },
+                'example_value': True,
+                'caption': caption,
+                'tags': [],
+                'desc': 'This policy does stuff.'
             },
-          ],
-          "policy_atomic_group_definitions": [],
-          "placeholders": [],
-          "messages": {
+        ],
+        'policy_atomic_group_definitions': [],
+        'placeholders': [],
+        'messages': {
             'message_string_id': {
-              'desc': '''The description is removed from the grit output''',
-              'text': '''%s'''
+                'desc': 'The description is removed from the grit output',
+                'text': message
             }
-          }
-        }""" % (schema_key_description, caption, message)
+        }
+    }
 
     # Create translations. The translation IDs are hashed from the English text.
     caption_id = grit.extern.tclib.GenerateMessageId(caption);
@@ -105,7 +105,7 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
 
     json_file_path = os.path.join(tmp_dir_name, 'test.json')
     with open(json_file_path, 'w') as f:
-      f.write(policy_json.strip())
+      json.dump(policy_templates, f)
 
     xtb_file_path = os.path.join(tmp_dir_name, 'test.xtb')
     with open(xtb_file_path, 'w') as f:

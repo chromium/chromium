@@ -4,14 +4,10 @@
 templates and will be translated for each locale.
 For the mapping 'lang' to policy_templates filename see crbug.com/806577.
 
-This file is used to generate the translations of the policy definitions.
-IDD_POLICY_SOURCE_FILE must be generated manually by running
-`policy_templates.py` without any arguments.
-
-This file is not used in the Chromium build process and must be kept in sync with
-policy_templates.build.grd. The only difference is IDD_POLICY_SOURCE_FILE which
-here is generated manually while in policy_templates.build.grd it is generated
-during the build process.
+This file is used in the Chromium build process and must be kept in sync with
+policy_templates.grd. The only difference is IDD_POLICY_SOURCE_FILE which here
+is generated during the build process while in policy_templates.grd must be
+generated manually.
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
@@ -59,7 +55,7 @@ during the build process.
     <structures fallback_to_english="true">
       <!-- List of policies and placeholder texts. This item should precede any
       message definitions. -->
-      <structure name="IDD_POLICY_SOURCE_FILE" file="policy_templates.json" type="policy_template_metafile" encoding="utf-8" />
+      <structure name="IDD_POLICY_SOURCE_FILE" file="${root_gen_dir}/chrome/app/policy/policy_templates.json" type="policy_template_metafile" encoding="utf-8" />
     </structures>
   </release>
 </grit>

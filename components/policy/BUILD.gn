@@ -186,7 +186,7 @@ action("full_runtime_code_generate") {
   ]
 }
 
-policy_templates_grd_file = "resources/policy_templates.grd"
+policy_templates_grd_file = "resources/policy_templates.build.grd"
 
 # Generates a single policy_templates.json with a real JSON format.
 action("generate_policy_templates") {
@@ -201,10 +201,15 @@ action("generate_policy_templates") {
 
 # Translates policy_templates.json into various languages.
 grit("translate_policy_templates") {
+  deps = [ ":generate_policy_templates" ]
   source = policy_templates_grd_file
-  inputs = [ "resources/policy_templates.json" ]
+  inputs = [ policy_templates_generated_json_path ]
   output_dir = "$root_gen_dir/chrome"
   outputs = policy_templates_translation_outputs
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, "resources"),
+  ]
 }
 
 # Generate the various templates and docs (admx, doc, json, etc.)

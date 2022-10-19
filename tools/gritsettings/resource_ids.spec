@@ -731,7 +731,14 @@
   "components/omnibox/resources/omnibox_pedal_synonyms.grd": {
     "messages": [3600],
   },
+  # components/policy/resources/policy_templates.grd and
+  # components/policy/resources/policy_templates.build.grd must share the same
+  # id because they are based on the same structure, however they are used in
+  # different pipelines.
   "components/policy/resources/policy_templates.grd": {
+    "structures": [3640],
+  },
+  "components/policy/resources/policy_templates.build.grd": {
     "structures": [3640],
   },
   "components/resources/components_resources.grd": {
