@@ -120,6 +120,7 @@ ci.builder(
         category = "afl",
         short_name = "afl",
     ),
+    cores = 16,
     executable = "recipe:chromium_afl",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
