@@ -801,6 +801,30 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void mergeListOfTabsToGroup_BackGroup() {
+        Tab newTab0 = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, Tab.INVALID_TAB_ID);
+        addTabToTabModel(-1, newTab0);
+        Tab newTab1 = prepareTab(NEW_TAB_ID_1, NEW_TAB_ID_1, Tab.INVALID_TAB_ID);
+        addTabToTabModel(-1, newTab1);
+        Tab newTab2 = prepareTab(NEW_TAB_ID_2, NEW_TAB_ID_1, Tab.INVALID_TAB_ID);
+        addTabToTabModel(-1, newTab2);
+        List<Tab> expectedTabModel = new ArrayList<>(
+                Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6, newTab1, newTab2, newTab0));
+        List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(newTab1, newTab2, newTab0));
+
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, newTab1, false, false);
+
+        verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab1, newTab1.getId());
+        verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab2, newTab1.getId());
+        verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab0, newTab1.getId());
+        verify(mTabModel).moveTab(newTab0.getId(), 9);
+        // Skip newTab1
+        verify(mTabGroupModelFilterObserver).didMoveWithinGroup(newTab2, 8, 8);
+        verify(mTabGroupModelFilterObserver).didMergeTabToGroup(newTab0, newTab1.getId());
+        assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
+    }
+
+    @Test
     public void merge_OtherGroupsLastShownIdUnchanged() {
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =
