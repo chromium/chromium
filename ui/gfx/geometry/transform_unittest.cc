@@ -2074,7 +2074,7 @@ TEST(XFormTest, verifyIsInvertible) {
   A.ApplyPerspectiveDepth(1.0);
   EXPECT_TRUE(A.IsInvertible());
 
-  // A "pure" perspective matrix derived by similar triangles, with m44() set
+  // A "pure" perspective matrix derived by similar triangles, with rc(3, 3) set
   // to zero (i.e. camera positioned at the origin), is not invertible.
   A.MakeIdentity();
   A.ApplyPerspectiveDepth(1.0);
@@ -2086,15 +2086,21 @@ TEST(XFormTest, verifyIsInvertible) {
   A.MakeIdentity();
   A.ApplyPerspectiveDepth(1.0);
   A.set_rc(3, 3, 0.f);
-  A.Scale3d(6.0, 7.0, 8.0);
-  A.RotateAboutXAxis(10.0);
-  A.RotateAboutYAxis(20.0);
-  A.RotateAboutZAxis(30.0);
-  A.Translate3d(6.0, 7.0, 8.0);
-#if !defined(ARCH_CPU_ARM_FAMILY)
-  // TODO(enne): Make this pass on ARM, https://crbug.com/662558
   EXPECT_FALSE(A.IsInvertible());
-#endif
+  A.Scale3d(6.0, 7.0, 8.0);
+  EXPECT_FALSE(A.IsInvertible());
+  A.RotateAboutXAxis(10.0);
+  EXPECT_FALSE(A.IsInvertible());
+  A.RotateAboutYAxis(20.0);
+  EXPECT_FALSE(A.IsInvertible());
+  A.RotateAboutZAxis(30.0);
+  EXPECT_FALSE(A.IsInvertible());
+  A.Translate3d(6.0, 7.0, 8.0);
+  if (A.IsInvertible()) {
+    // Due to some computation errors, now A may become invertible with a tiny
+    // determinant.
+    EXPECT_NEAR(A.Determinant(), 0.0, 1e-12);
+  }
 
   // A degenerate matrix of all zeros is not invertible.
   A.MakeIdentity();
@@ -2353,13 +2359,15 @@ TEST(XFormTest, verifyIsApproximatelyIdentityOrTranslation) {
 }
 
 TEST(XFormTest, verifyIsScaleOrTranslation) {
-  Transform A;
+  EXPECT_TRUE(Transform().IsScaleOrTranslation());
+  EXPECT_TRUE(Transform::MakeScale(2, 3).IsScaleOrTranslation());
+  EXPECT_TRUE(Transform::MakeTranslation(4, 5).IsScaleOrTranslation());
+  EXPECT_TRUE((Transform::MakeTranslation(4, 5) * Transform::MakeScale(2, 3))
+                  .IsScaleOrTranslation());
 
+  Transform A;
   InitializeTestMatrix(&A);
   EXPECT_FALSE(A.IsScaleOrTranslation());
-
-  A.MakeIdentity();
-  EXPECT_TRUE(A.IsScaleOrTranslation());
 
   // Modifying any non-scale or non-translation components should cause
   // IsScaleOrTranslation() to return false. (0, 0), (1, 1), (2, 2), (0, 3),
@@ -2368,6 +2376,7 @@ TEST(XFormTest, verifyIsScaleOrTranslation) {
 
   // Note carefully - expecting true here.
   A.MakeIdentity();
+  EXPECT_TRUE(A.IsScaleOrTranslation());
   A.set_rc(0, 0, 2.f);
   EXPECT_TRUE(A.IsScaleOrTranslation());
 
@@ -2439,17 +2448,18 @@ TEST(XFormTest, verifyIsScaleOrTranslation) {
 
 TEST(XFormTest, Scale) {
   Transform t;
-  EXPECT_TRUE(t.IsScale());
   EXPECT_TRUE(t.IsScale2d());
   EXPECT_EQ(Vector2dF(1, 1), t.To2dScale());
 
   t.Scale(2.5f, 3.75f);
-  EXPECT_TRUE(t.IsScale());
+  EXPECT_TRUE(t.IsScale2d());
+  EXPECT_EQ(Vector2dF(2.5f, 3.75f), t.To2dScale());
+
+  t.EnsureFullMatrixForTesting();
   EXPECT_TRUE(t.IsScale2d());
   EXPECT_EQ(Vector2dF(2.5f, 3.75f), t.To2dScale());
 
   t.Scale3d(3, 4, 5);
-  EXPECT_TRUE(t.IsScale());
   EXPECT_FALSE(t.IsScale2d());
   EXPECT_EQ(Vector2dF(7.5f, 15.f), t.To2dScale());
 
@@ -2457,9 +2467,7 @@ TEST(XFormTest, Scale) {
     for (int col = 0; col < 4; col++) {
       t.MakeIdentity();
       t.set_rc(row, col, 100);
-      bool is_scale = row == col && (row == 0 || row == 1 || row == 2);
       bool is_scale_2d = row == col && (row == 0 || row == 1);
-      EXPECT_EQ(is_scale, t.IsScale()) << " row=" << row << " col=" << col;
       EXPECT_EQ(is_scale_2d, t.IsScale2d()) << " row=" << row << " col=" << col;
     }
   }

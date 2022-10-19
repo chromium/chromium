@@ -5,238 +5,181 @@
 #ifndef UI_GFX_GEOMETRY_MATRIX44_H_
 #define UI_GFX_GEOMETRY_MATRIX44_H_
 
-#include <atomic>
-#include <cstring>
-
-#include "build/build_config.h"
-#include "third_party/skia/include/core/SkMatrix.h"
+#include "base/check_op.h"
+#include "ui/gfx/geometry/double4.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
-
-#if BUILDFLAG(IS_MAC)
-struct CATransform3D;
-#endif
 
 namespace gfx {
 
 // This is the underlying data structure of Transform. Don't use this type
 // directly.
+//
+// Throughout this class, we will be speaking in column vector convention.
+// i.e. Applying a transform T to vector V is T * V.
+// The components of the matrix and the vector look like:
+//    \  col
+// r   \     0        1        2        3
+// o  0 | scale_x  skew_xy  skew_xz  trans_x |   | x |
+// w  1 | skew_yx  scale_y  skew_yz  trans_y | * | y |
+//    2 | skew_zx  skew_zy  scale_z  trans_z |   | z |
+//    3 | persp_x  persp_y  persp_z  persp_w |   | w |
+//
+// Note that the names are just for remembering and don't have the exact
+// meanings when other components exist.
+//
+// The components correspond to the DOMMatrix mij (i,j = 1..4) components:
+//   i = col + 1
+//   j = row + 1
 class GEOMETRY_SKIA_EXPORT Matrix44 {
  public:
-  enum Uninitialized_Constructor { kUninitialized_Constructor };
+  enum UninitializedTag { kUninitialized };
 
-  explicit Matrix44(Uninitialized_Constructor) {}
+  explicit Matrix44(UninitializedTag) {}
 
   constexpr Matrix44()
-      : fMat{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}},
-        fTypeMask(kIdentity_Mask) {}
+      : matrix_{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}} {}
 
-  // The parameters are in row-major order.
-  Matrix44(double col1row1,
-           double col2row1,
-           double col3row1,
-           double col4row1,
-           double col1row2,
-           double col2row2,
-           double col3row2,
-           double col4row2,
-           double col1row3,
-           double col2row3,
-           double col3row3,
-           double col4row3,
-           double col1row4,
-           double col2row4,
-           double col3row4,
-           double col4row4)
-      // fMat is indexed by [col][row] (i.e. col-major).
-      : fMat{{col1row1, col1row2, col1row3, col1row4},
-             {col2row1, col2row2, col2row3, col2row4},
-             {col3row1, col3row2, col3row3, col3row4},
-             {col4row1, col4row2, col4row3, col4row4}} {
-    recomputeTypeMask();
+  // The parameters are in col-major order.
+  Matrix44(double r0c0,
+           double r1c0,
+           double r2c0,
+           double r3c0,
+           double r0c1,
+           double r1c1,
+           double r2c1,
+           double r3c1,
+           double r0c2,
+           double r1c2,
+           double r2c2,
+           double r3c2,
+           double r0c3,
+           double r1c3,
+           double r2c3,
+           double r3c3)
+      // matrix_ is indexed by [col][row] (i.e. col-major).
+      : matrix_{{r0c0, r1c0, r2c0, r3c0},
+                {r0c1, r1c1, r2c1, r3c1},
+                {r0c2, r1c2, r2c2, r3c2},
+                {r0c3, r1c3, r2c3, r3c3}} {}
+
+  bool operator==(const Matrix44& other) const {
+    return AllTrue(Col(0) == other.Col(0)) && AllTrue(Col(1) == other.Col(1)) &&
+           AllTrue(Col(2) == other.Col(2)) && AllTrue(Col(3) == other.Col(3));
   }
-
-  Matrix44(const Matrix44& a, const Matrix44& b) { this->setConcat(a, b); }
-
-  bool operator==(const Matrix44& other) const;
   bool operator!=(const Matrix44& other) const { return !(other == *this); }
 
-  using TypeMask = uint8_t;
-  enum : TypeMask {
-    kIdentity_Mask = 0,
-    kTranslate_Mask = 1 << 0,    //!< set if the matrix has translation
-    kScale_Mask = 1 << 1,        //!< set if the matrix has any scale != 1
-    kAffine_Mask = 1 << 2,       //!< set if the matrix skews or rotates
-    kPerspective_Mask = 1 << 3,  //!< set if the matrix is in perspective
-  };
+  // Returns true if the matrix is identity.
+  bool IsIdentity() const { return *this == Matrix44(); }
 
-  /**
-   *  Returns a bitfield describing the transformations the matrix may
-   *  perform. The bitfield is computed conservatively, so it may include
-   *  false positives. For example, when kPerspective_Mask is true, all
-   *  other bits may be set to true even in the case of a pure perspective
-   *  transform.
-   */
-  inline TypeMask getType() const { return fTypeMask; }
-
-  /**
-   *  Return true if the matrix is identity.
-   */
-  inline bool isIdentity() const { return kIdentity_Mask == this->getType(); }
-
-  /**
-   *  Return true if the matrix contains translate or is identity.
-   */
-  inline bool isTranslate() const {
-    return !(this->getType() & ~kTranslate_Mask);
+  // Returns true if the matrix contains translate or is identity.
+  bool IsIdentityOrTranslation() const {
+    return AllTrue(Col(0) == Double4{1, 0, 0, 0}) &&
+           AllTrue(Col(1) == Double4{0, 1, 0, 0}) &&
+           AllTrue(Col(2) == Double4{0, 0, 1, 0}) && matrix_[3][3] == 1;
   }
 
-  /**
-   *  Return true if the matrix only contains scale or translate or is identity.
-   */
-  inline bool isScaleTranslate() const {
-    return !(this->getType() & ~(kScale_Mask | kTranslate_Mask));
+  // Returns true if the matrix only contains scale or translate or is identity.
+  bool IsScaleOrTranslation() const {
+    return AllTrue(Double4{matrix_[0][1], matrix_[0][2], matrix_[0][3],
+                           matrix_[1][0]} == Double4{0, 0, 0, 0}) &&
+           AllTrue(Double4{matrix_[1][2], matrix_[1][3], matrix_[2][0],
+                           matrix_[2][1]} == Double4{0, 0, 0, 0}) &&
+           matrix_[2][3] == 0 && matrix_[3][3] == 1;
   }
 
-  /**
-   *  Returns true if the matrix only contains scale or is identity.
-   */
-  inline bool isScale() const { return !(this->getType() & ~kScale_Mask); }
-
-  inline bool hasPerspective() const {
-    return SkToBool(this->getType() & kPerspective_Mask);
+  // Returns true if the matrix only contains scale or is identity.
+  bool IsScale() const {
+    return IsScaleOrTranslation() && AllTrue(Col(3) == Double4{0, 0, 0, 1});
   }
 
-  void setIdentity();
-
-  /**
-   *  get a value from the matrix. The row,col parameters work as follows:
-   *  (0, 0)  scale-x
-   *  (0, 3)  translate-x
-   *  (3, 0)  perspective-x
-   */
-  inline double rc(int row, int col) const {
-    SkASSERT((unsigned)row <= 3);
-    SkASSERT((unsigned)col <= 3);
-    return fMat[col][row];
+  bool IsFlat() const {
+    return AllTrue(Col(2) == Double4{0, 0, 1, 0}) &&
+           AllTrue(Double4{matrix_[0][2], matrix_[1][2], 0, matrix_[3][2]} ==
+                   Double4{0, 0, 0, 0});
   }
 
-  /**
-   *  set a value in the matrix. The row,col parameters work as follows:
-   *  (0, 0)  scale-x
-   *  (0, 3)  translate-x
-   *  (3, 0)  perspective-x
-   */
-  inline void setRC(int row, int col, double value) {
-    SkASSERT((unsigned)row <= 3);
-    SkASSERT((unsigned)col <= 3);
-    fMat[col][row] = value;
-    this->recomputeTypeMask();
+  bool HasPerspective() const {
+    return !AllTrue(Double4{matrix_[0][3], matrix_[1][3], matrix_[2][3],
+                            matrix_[3][3]} == Double4{0, 0, 0, 1});
   }
 
-  /** These methods allow one to efficiently read matrix entries into an
-   *  array. The given array must have room for exactly 16 entries. Whenever
-   *  possible, they will try to use memcpy rather than an entry-by-entry
-   *  copy.
-   *
-   *  Col major indicates that consecutive elements of columns will be stored
-   *  contiguously in memory.  Row major indicates that consecutive elements
-   *  of rows will be stored contiguously in memory.
-   */
-  void getColMajor(float[]) const;
-  void getRowMajor(float[]) const;
+  // Gets a value at |row|, |col| from the matrix.
+  double rc(int row, int col) const {
+    DCHECK_LE(static_cast<unsigned>(row), 3u);
+    DCHECK_LE(static_cast<unsigned>(col), 3u);
+    return matrix_[col][row];
+  }
 
-  /** These methods allow one to efficiently set all matrix entries from an
-   *  array. The given array must have room for exactly 16 entries. Whenever
-   *  possible, they will try to use memcpy rather than an entry-by-entry
-   *  copy.
-   *
-   *  Col major indicates that input memory will be treated as if consecutive
-   *  elements of columns are stored contiguously in memory.  Row major
-   *  indicates that input memory will be treated as if consecutive elements
-   *  of rows are stored contiguously in memory.
-   */
-  void setColMajor(const float[]);
-  void setRowMajor(const float[]);
+  // Set a value in the matrix at |row|, |col|.
+  void set_rc(int row, int col, double value) {
+    DCHECK_LE(static_cast<unsigned>(row), 3u);
+    DCHECK_LE(static_cast<unsigned>(col), 3u);
+    matrix_[col][row] = value;
+  }
 
-#if BUILDFLAG(IS_MAC)
-  CATransform3D ToCATransform3D() const;
-#endif
+  void GetColMajor(double[16]) const;
+  void GetColMajorF(float[16]) const;
 
-  Matrix44& setTranslate(double dx, double dy, double dz);
-  Matrix44& preTranslate(double dx, double dy, double dz);
-  Matrix44& postTranslate(double dx, double dy, double dz);
+  // this = this * translation.
+  void PreTranslate(double dx, double dy, double dz);
+  // this = translation * this.
+  void PostTranslate(double dx, double dy, double dz);
 
-  Matrix44& setScale(double sx, double sy, double sz);
-  Matrix44& preScale(double sx, double sy, double sz);
-  Matrix44& postScale(double sx, double sy, double sz);
+  // this = this * scale.
+  void PreScale(double sx, double sy, double sz);
+  // this = scale * this.
+  void PostScale(double sx, double sy, double sz);
 
-  // Sets this matrix to rotate about the specified unit-length axis vector,
+  // Rotates this matrix about the specified unit-length axis vector,
   // by an angle specified by its sin() and cos(). This does not attempt to
   // verify that axis(x, y, z).length() == 1 or that the sin, cos values are
-  // correct.
-  void setRotateUnitSinCos(double x,
-                           double y,
-                           double z,
-                           double sin_angle,
-                           double cos_angle);
+  // correct. this = this * rotation.
+  void RotateUnitSinCos(double x,
+                        double y,
+                        double z,
+                        double sin_angle,
+                        double cos_angle);
 
   // Special case for x, y or z axis of the above function.
-  void setRotateAboutXAxisSinCos(double sin_angle, double cos_angle);
-  void setRotateAboutYAxisSinCos(double sin_angle, double cos_angle);
-  void setRotateAboutZAxisSinCos(double sin_angle, double cos_angle);
+  void RotateAboutXAxisSinCos(double sin_angle, double cos_angle);
+  void RotateAboutYAxisSinCos(double sin_angle, double cos_angle);
+  void RotateAboutZAxisSinCos(double sin_angle, double cos_angle);
 
-  void setConcat(const Matrix44& a, const Matrix44& b);
-  inline void preConcat(const Matrix44& m) { this->setConcat(*this, m); }
-  inline void postConcat(const Matrix44& m) { this->setConcat(m, *this); }
+  // this = this * skew.
+  void Skew(double tan_skew_x, double tan_skew_y);
 
-  friend Matrix44 operator*(const Matrix44& a, const Matrix44& b) {
-    return Matrix44(a, b);
-  }
+  // this = this * perspective.
+  void ApplyPerspectiveDepth(double perspective);
 
-  /** If this is invertible, return that in inverse and return true. If it is
-      not invertible, return false and leave the inverse parameter in an
-      unspecified state.
-   */
-  bool invert(Matrix44* inverse) const;
+  // this = this * m.
+  void PreConcat(const Matrix44& m) { SetConcat(*this, m); }
+  // this = m * this.
+  void PostConcat(const Matrix44& m) { SetConcat(m, *this); }
 
-  /** Transpose this matrix in place. */
-  void transpose();
+  // Returns true and set |inverse| to the inverted matrix if this matrix
+  // is invertible. Otherwise return false and leave the |inverse| parameter
+  // unchanged.
+  bool GetInverse(Matrix44& inverse) const;
 
-  /** Apply the matrix to the src vector, returning the new vector in dst.
-      It is legal for src and dst to point to the same memory.
-   */
-  void mapScalars(const double src[4], double dst[4]) const;
-  inline void mapScalars(double vec[4]) const { this->mapScalars(vec, vec); }
+  bool IsInvertible() const;
+  double Determinant() const;
 
-  double determinant() const;
+  // Transposes this matrix in place.
+  void Transpose();
+
+  // Applies the matrix to the vector in place.
+  void MapScalars(double vec[4]) const;
 
   void FlattenTo2d();
 
  private:
-  /* This is indexed by [col][row]. */
-  double fMat[4][4];
-  TypeMask fTypeMask;
+  void SetConcat(const Matrix44& a, const Matrix44& b);
 
-  static constexpr int kAllPublic_Masks = 0xF;
+  ALWAYS_INLINE Double4 Col(int i) const { return LoadDouble4(matrix_[i]); }
+  ALWAYS_INLINE void SetCol(int i, Double4 v) { StoreDouble4(v, matrix_[i]); }
 
-  double transX() const { return fMat[3][0]; }
-  double transY() const { return fMat[3][1]; }
-  double transZ() const { return fMat[3][2]; }
-
-  double scaleX() const { return fMat[0][0]; }
-  double scaleY() const { return fMat[1][1]; }
-  double scaleZ() const { return fMat[2][2]; }
-
-  double perspX() const { return fMat[0][3]; }
-  double perspY() const { return fMat[1][3]; }
-  double perspZ() const { return fMat[2][3]; }
-
-  void recomputeTypeMask();
-
-  inline void setTypeMask(TypeMask mask) {
-    SkASSERT(0 == (~kAllPublic_Masks & mask));
-    fTypeMask = mask;
-  }
+  // This is indexed by [col][row].
+  double matrix_[4][4];
 };
 
 }  // namespace gfx

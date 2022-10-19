@@ -7,267 +7,73 @@
 #include <type_traits>
 #include <utility>
 
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_MAC)
-#include <QuartzCore/CATransform3D.h>
-#endif
-
 namespace gfx {
 
-// Copying Matrix44 byte-wise is performance-critical to Blink. This class is
-// contained in several Transform classes, which are copied multiple times
-// during the rendering life cycle. See crbug.com/938563 for reference.
-#if defined(SK_BUILD_FOR_WIN) || defined(SK_BUILD_FOR_MAC)
-// std::is_trivially_copyable is not supported for some older clang versions,
-// which (at least as of this patch) are in use for Chromecast.
-static_assert(std::is_trivially_copyable<Matrix44>::value,
-              "Matrix44 must be trivially copyable");
-#endif
+namespace {
 
-static inline bool eq4(const double* a, const double* b) {
-  return (a[0] == b[0]) & (a[1] == b[1]) & (a[2] == b[2]) & (a[3] == b[3]);
+ALWAYS_INLINE Double4 SwapHighLow(Double4 v) {
+  return Double4{v[2], v[3], v[0], v[1]};
 }
 
-bool Matrix44::operator==(const Matrix44& other) const {
-  if (this == &other) {
-    return true;
-  }
-
-  if (this->isIdentity() && other.isIdentity()) {
-    return true;
-  }
-
-  const double* a = &fMat[0][0];
-  const double* b = &other.fMat[0][0];
-
-#if 0
-    for (int i = 0; i < 16; ++i) {
-        if (a[i] != b[i]) {
-            return false;
-        }
-    }
-    return true;
-#else
-  // to reduce branch instructions, we compare 4 at a time.
-  // see bench/Matrix44Bench.cpp for test.
-  if (!eq4(&a[0], &b[0])) {
-    return false;
-  }
-  if (!eq4(&a[4], &b[4])) {
-    return false;
-  }
-  if (!eq4(&a[8], &b[8])) {
-    return false;
-  }
-  return eq4(&a[12], &b[12]);
-#endif
+ALWAYS_INLINE Double4 SwapInPairs(Double4 v) {
+  return Double4{v[1], v[0], v[3], v[2]};
 }
 
-///////////////////////////////////////////////////////////////////////////////
-void Matrix44::recomputeTypeMask() {
-  if (0 != perspX() || 0 != perspY() || 0 != perspZ() || 1 != fMat[3][3]) {
-    fTypeMask =
-        kTranslate_Mask | kScale_Mask | kAffine_Mask | kPerspective_Mask;
+}  // anonymous namespace
+
+void Matrix44::GetColMajor(double dst[16]) const {
+  const double* src = &matrix_[0][0];
+  std::copy(src, src + 16, dst);
+}
+
+void Matrix44::GetColMajorF(float dst[16]) const {
+  const double* src = &matrix_[0][0];
+  std::copy(src, src + 16, dst);
+}
+
+void Matrix44::PreTranslate(double dx, double dy, double dz) {
+  if (AllTrue(Double4{dx, dy, dz, 0} == Double4{0, 0, 0, 0}))
     return;
-  }
 
-  TypeMask mask = kIdentity_Mask;
-  if (0 != transX() || 0 != transY() || 0 != transZ()) {
-    mask |= kTranslate_Mask;
-  }
-
-  if (1 != scaleX() || 1 != scaleY() || 1 != scaleZ()) {
-    mask |= kScale_Mask;
-  }
-
-  if (0 != fMat[1][0] || 0 != fMat[0][1] || 0 != fMat[0][2] ||
-      0 != fMat[2][0] || 0 != fMat[1][2] || 0 != fMat[2][1]) {
-    mask |= kAffine_Mask;
-  }
-  fTypeMask = mask;
+  SetCol(3, Col(0) * dx + Col(1) * dy + Col(2) * dz + Col(3));
 }
 
-///////////////////////////////////////////////////////////////////////////////
+void Matrix44::PostTranslate(double dx, double dy, double dz) {
+  Double4 t{dx, dy, dz, 0};
+  if (AllTrue(t == Double4{0, 0, 0, 0}))
+    return;
 
-void Matrix44::getColMajor(float dst[]) const {
-  const double* src = &fMat[0][0];
-  for (int i = 0; i < 16; ++i) {
-    dst[i] = src[i];
-  }
-}
-
-void Matrix44::getRowMajor(float dst[]) const {
-  const double* src = &fMat[0][0];
-  for (int i = 0; i < 4; ++i) {
-    dst[0] = float(src[0]);
-    dst[4] = float(src[1]);
-    dst[8] = float(src[2]);
-    dst[12] = float(src[3]);
-    src += 4;
-    dst += 1;
-  }
-}
-
-void Matrix44::setColMajor(const float src[]) {
-  double* dst = &fMat[0][0];
-  for (int i = 0; i < 16; ++i) {
-    dst[i] = src[i];
-  }
-
-  this->recomputeTypeMask();
-}
-
-void Matrix44::setRowMajor(const float src[]) {
-  double* dst = &fMat[0][0];
-  for (int i = 0; i < 4; ++i) {
-    dst[0] = src[0];
-    dst[4] = src[1];
-    dst[8] = src[2];
-    dst[12] = src[3];
-    src += 4;
-    dst += 1;
-  }
-  this->recomputeTypeMask();
-}
-
-#if BUILDFLAG(IS_MAC)
-CATransform3D Matrix44::ToCATransform3D() const {
-  CATransform3D result;
-  const double* src = &fMat[0][0];
-  auto* dst = &result.m11;
-  for (int i = 0; i < 16; ++i)
-    dst[i] = src[i];
-  return result;
-}
-#endif  // BUILDFLAG(IS_MAC)
-
-///////////////////////////////////////////////////////////////////////////////
-
-void Matrix44::setIdentity() {
-  fMat[0][0] = 1;
-  fMat[0][1] = 0;
-  fMat[0][2] = 0;
-  fMat[0][3] = 0;
-  fMat[1][0] = 0;
-  fMat[1][1] = 1;
-  fMat[1][2] = 0;
-  fMat[1][3] = 0;
-  fMat[2][0] = 0;
-  fMat[2][1] = 0;
-  fMat[2][2] = 1;
-  fMat[2][3] = 0;
-  fMat[3][0] = 0;
-  fMat[3][1] = 0;
-  fMat[3][2] = 0;
-  fMat[3][3] = 1;
-  this->setTypeMask(kIdentity_Mask);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-Matrix44& Matrix44::setTranslate(double dx, double dy, double dz) {
-  this->setIdentity();
-
-  if (!dx && !dy && !dz) {
-    return *this;
-  }
-
-  fMat[3][0] = dx;
-  fMat[3][1] = dy;
-  fMat[3][2] = dz;
-  this->setTypeMask(kTranslate_Mask);
-  return *this;
-}
-
-Matrix44& Matrix44::preTranslate(double dx, double dy, double dz) {
-  if (!dx && !dy && !dz) {
-    return *this;
-  }
-
-  for (int i = 0; i < 4; ++i) {
-    fMat[3][i] =
-        fMat[0][i] * dx + fMat[1][i] * dy + fMat[2][i] * dz + fMat[3][i];
-  }
-  this->recomputeTypeMask();
-  return *this;
-}
-
-Matrix44& Matrix44::postTranslate(double dx, double dy, double dz) {
-  if (!dx && !dy && !dz) {
-    return *this;
-  }
-
-  if (this->getType() & kPerspective_Mask) {
-    for (int i = 0; i < 4; ++i) {
-      fMat[i][0] += fMat[i][3] * dx;
-      fMat[i][1] += fMat[i][3] * dy;
-      fMat[i][2] += fMat[i][3] * dz;
-    }
+  if (HasPerspective()) {
+    for (int i = 0; i < 4; ++i)
+      SetCol(i, Col(i) + t * matrix_[i][3]);
   } else {
-    fMat[3][0] += dx;
-    fMat[3][1] += dy;
-    fMat[3][2] += dz;
-    this->recomputeTypeMask();
+    SetCol(3, Col(3) + t);
   }
-  return *this;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+void Matrix44::PreScale(double sx, double sy, double sz) {
+  if (AllTrue(Double4{sx, sy, sz, 1} == Double4{1, 1, 1, 1}))
+    return;
 
-Matrix44& Matrix44::setScale(double sx, double sy, double sz) {
-  this->setIdentity();
-
-  if (1 == sx && 1 == sy && 1 == sz) {
-    return *this;
-  }
-
-  fMat[0][0] = sx;
-  fMat[1][1] = sy;
-  fMat[2][2] = sz;
-  this->setTypeMask(kScale_Mask);
-  return *this;
+  SetCol(0, Col(0) * sx);
+  SetCol(1, Col(1) * sy);
+  SetCol(2, Col(2) * sz);
 }
 
-Matrix44& Matrix44::preScale(double sx, double sy, double sz) {
-  if (1 == sx && 1 == sy && 1 == sz) {
-    return *this;
-  }
+void Matrix44::PostScale(double sx, double sy, double sz) {
+  if (AllTrue(Double4{sx, sy, sz, 1} == Double4{1, 1, 1, 1}))
+    return;
 
-  // The implementation matrix * pureScale can be shortcut
-  // by knowing that pureScale components effectively scale
-  // the columns of the original matrix.
-  for (int i = 0; i < 4; i++) {
-    fMat[0][i] *= sx;
-    fMat[1][i] *= sy;
-    fMat[2][i] *= sz;
-  }
-  this->recomputeTypeMask();
-  return *this;
+  Double4 s{sx, sy, sz, 1};
+  for (int i = 0; i < 4; i++)
+    SetCol(i, Col(i) * s);
 }
 
-Matrix44& Matrix44::postScale(double sx, double sy, double sz) {
-  if (1 == sx && 1 == sy && 1 == sz) {
-    return *this;
-  }
-
-  for (int i = 0; i < 4; i++) {
-    fMat[i][0] *= sx;
-    fMat[i][1] *= sy;
-    fMat[i][2] *= sz;
-  }
-  this->recomputeTypeMask();
-  return *this;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void Matrix44::setRotateUnitSinCos(double x,
-                                   double y,
-                                   double z,
-                                   double sin_angle,
-                                   double cos_angle) {
-  // Use double precision for intermediate results.
+void Matrix44::RotateUnitSinCos(double x,
+                                double y,
+                                double z,
+                                double sin_angle,
+                                double cos_angle) {
   double c = cos_angle;
   double s = sin_angle;
   double C = 1 - c;
@@ -281,449 +87,204 @@ void Matrix44::setRotateUnitSinCos(double x,
   double yzC = y * zC;
   double zxC = z * xC;
 
-  fMat[0][0] = x * xC + c;
-  fMat[0][1] = xyC + zs;
-  fMat[0][2] = zxC - ys;
-  fMat[0][3] = 0;
-  fMat[1][0] = xyC - zs;
-  fMat[1][1] = y * yC + c;
-  fMat[1][2] = yzC + xs;
-  fMat[1][3] = 0;
-  fMat[2][0] = zxC + ys;
-  fMat[2][1] = yzC - xs;
-  fMat[2][2] = z * zC + c;
-  fMat[2][3] = 0;
-  fMat[3][0] = 0;
-  fMat[3][1] = 0;
-  fMat[3][2] = 0;
-  fMat[3][3] = 1;
-
-  this->recomputeTypeMask();
+  PreConcat(Matrix44(x * xC + c, xyC + zs, zxC - ys, 0,  // col 0
+                     xyC - zs, y * yC + c, yzC + xs, 0,  // col 1
+                     zxC + ys, yzC - xs, z * zC + c, 0,  // col 2
+                     0, 0, 0, 1));                       // col 3
 }
 
-void Matrix44::setRotateAboutXAxisSinCos(double sin_angle, double cos_angle) {
-  fMat[0][0] = 1;
-  fMat[0][1] = 0;
-  fMat[0][2] = 0;
-  fMat[0][3] = 0;
-  fMat[1][0] = 0;
-  fMat[1][1] = cos_angle;
-  fMat[1][2] = sin_angle;
-  fMat[1][3] = 0;
-  fMat[2][0] = 0;
-  fMat[2][1] = -sin_angle;
-  fMat[2][2] = cos_angle;
-  fMat[2][3] = 0;
-  fMat[3][0] = 0;
-  fMat[3][1] = 0;
-  fMat[3][2] = 0;
-  fMat[3][3] = 1;
-
-  this->recomputeTypeMask();
+void Matrix44::RotateAboutXAxisSinCos(double sin_angle, double cos_angle) {
+  Double4 c1 = Col(1);
+  Double4 c2 = Col(2);
+  SetCol(1, c1 * cos_angle + c2 * sin_angle);
+  SetCol(2, c2 * cos_angle - c1 * sin_angle);
 }
 
-void Matrix44::setRotateAboutYAxisSinCos(double sin_angle, double cos_angle) {
-  fMat[0][0] = cos_angle;
-  fMat[0][1] = 0;
-  fMat[0][2] = -sin_angle;
-  fMat[0][3] = 0;
-  fMat[1][0] = 0;
-  fMat[1][1] = 1;
-  fMat[1][2] = 0;
-  fMat[1][3] = 0;
-  fMat[2][0] = sin_angle;
-  fMat[2][1] = 0;
-  fMat[2][2] = cos_angle;
-  fMat[2][3] = 0;
-  fMat[3][0] = 0;
-  fMat[3][1] = 0;
-  fMat[3][2] = 0;
-  fMat[3][3] = 1;
-
-  this->recomputeTypeMask();
+void Matrix44::RotateAboutYAxisSinCos(double sin_angle, double cos_angle) {
+  Double4 c0 = Col(0);
+  Double4 c2 = Col(2);
+  SetCol(0, c0 * cos_angle - c2 * sin_angle);
+  SetCol(2, c2 * cos_angle + c0 * sin_angle);
 }
 
-void Matrix44::setRotateAboutZAxisSinCos(double sin_angle, double cos_angle) {
-  fMat[0][0] = cos_angle;
-  fMat[0][1] = sin_angle;
-  fMat[0][2] = 0;
-  fMat[0][3] = 0;
-  fMat[1][0] = -sin_angle;
-  fMat[1][1] = cos_angle;
-  fMat[1][2] = 0;
-  fMat[1][3] = 0;
-  fMat[2][0] = 0;
-  fMat[2][1] = 0;
-  fMat[2][2] = 1;
-  fMat[2][3] = 0;
-  fMat[3][0] = 0;
-  fMat[3][1] = 0;
-  fMat[3][2] = 0;
-  fMat[3][3] = 1;
-
-  this->recomputeTypeMask();
+void Matrix44::RotateAboutZAxisSinCos(double sin_angle, double cos_angle) {
+  Double4 c0 = Col(0);
+  Double4 c1 = Col(1);
+  SetCol(0, c0 * cos_angle + c1 * sin_angle);
+  SetCol(1, c1 * cos_angle - c0 * sin_angle);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-static bool bits_isonly(int value, int mask) {
-  return 0 == (value & ~mask);
+void Matrix44::Skew(double tan_skew_x, double tan_skew_y) {
+  Double4 c0 = Col(0);
+  Double4 c1 = Col(1);
+  SetCol(0, c0 + c1 * tan_skew_y);
+  SetCol(1, c1 + c0 * tan_skew_x);
 }
 
-void Matrix44::setConcat(const Matrix44& a, const Matrix44& b) {
-  const Matrix44::TypeMask a_mask = a.getType();
-  const Matrix44::TypeMask b_mask = b.getType();
-
-  if (kIdentity_Mask == a_mask) {
-    *this = b;
-    return;
-  }
-  if (kIdentity_Mask == b_mask) {
-    *this = a;
-    return;
-  }
-
-  bool useStorage = (this == &a || this == &b);
-  double storage[16];
-  double* result = useStorage ? storage : &fMat[0][0];
-
-  // Both matrices are at most scale+translate
-  if (bits_isonly(a_mask | b_mask, kScale_Mask | kTranslate_Mask)) {
-    result[0] = a.fMat[0][0] * b.fMat[0][0];
-    result[1] = result[2] = result[3] = result[4] = 0;
-    result[5] = a.fMat[1][1] * b.fMat[1][1];
-    result[6] = result[7] = result[8] = result[9] = 0;
-    result[10] = a.fMat[2][2] * b.fMat[2][2];
-    result[11] = 0;
-    result[12] = a.fMat[0][0] * b.fMat[3][0] + a.fMat[3][0];
-    result[13] = a.fMat[1][1] * b.fMat[3][1] + a.fMat[3][1];
-    result[14] = a.fMat[2][2] * b.fMat[3][2] + a.fMat[3][2];
-    result[15] = 1;
-  } else {
-    for (int j = 0; j < 4; j++) {
-      for (int i = 0; i < 4; i++) {
-        double value = 0;
-        for (int k = 0; k < 4; k++) {
-          value += a.fMat[k][i] * b.fMat[j][k];
-        }
-        *result++ = value;
-      }
-    }
-  }
-
-  if (useStorage) {
-    memcpy(fMat, storage, sizeof(storage));
-  }
-  this->recomputeTypeMask();
+void Matrix44::ApplyPerspectiveDepth(double perspective) {
+  DCHECK_NE(perspective, 0.0);
+  SetCol(2, Col(2) + Col(3) * (-1.0 / perspective));
 }
 
-///////////////////////////////////////////////////////////////////////////////
+void Matrix44::SetConcat(const Matrix44& a, const Matrix44& b) {
+  auto c0 = a.Col(0);
+  auto c1 = a.Col(1);
+  auto c2 = a.Col(2);
+  auto c3 = a.Col(3);
 
-double Matrix44::determinant() const {
-  if (this->isIdentity()) {
-    return 1;
-  }
-  if (this->isScaleTranslate()) {
-    return fMat[0][0] * fMat[1][1] * fMat[2][2] * fMat[3][3];
-  }
+  auto mc0 = b.Col(0);
+  auto mc1 = b.Col(1);
+  auto mc2 = b.Col(2);
+  auto mc3 = b.Col(3);
 
-  double a00 = fMat[0][0];
-  double a01 = fMat[0][1];
-  double a02 = fMat[0][2];
-  double a03 = fMat[0][3];
-  double a10 = fMat[1][0];
-  double a11 = fMat[1][1];
-  double a12 = fMat[1][2];
-  double a13 = fMat[1][3];
-  double a20 = fMat[2][0];
-  double a21 = fMat[2][1];
-  double a22 = fMat[2][2];
-  double a23 = fMat[2][3];
-  double a30 = fMat[3][0];
-  double a31 = fMat[3][1];
-  double a32 = fMat[3][2];
-  double a33 = fMat[3][3];
-
-  double b00 = a00 * a11 - a01 * a10;
-  double b01 = a00 * a12 - a02 * a10;
-  double b02 = a00 * a13 - a03 * a10;
-  double b03 = a01 * a12 - a02 * a11;
-  double b04 = a01 * a13 - a03 * a11;
-  double b05 = a02 * a13 - a03 * a12;
-  double b06 = a20 * a31 - a21 * a30;
-  double b07 = a20 * a32 - a22 * a30;
-  double b08 = a20 * a33 - a23 * a30;
-  double b09 = a21 * a32 - a22 * a31;
-  double b10 = a21 * a33 - a23 * a31;
-  double b11 = a22 * a33 - a23 * a32;
-
-  // Calculate the determinant
-  return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+  SetCol(0, c0 * mc0[0] + c1 * mc0[1] + c2 * mc0[2] + c3 * mc0[3]);
+  SetCol(1, c0 * mc1[0] + c1 * mc1[1] + c2 * mc1[2] + c3 * mc1[3]);
+  SetCol(2, c0 * mc2[0] + c1 * mc2[1] + c2 * mc2[2] + c3 * mc2[3]);
+  SetCol(3, c0 * mc3[0] + c1 * mc3[1] + c2 * mc3[2] + c3 * mc3[3]);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// This is based on
+// https://github.com/niswegmann/small-matrix-inverse/blob/master/invert4x4_llvm.h,
+// which is based on Intel AP-928 "Streaming SIMD Extensions - Inverse of 4x4
+// Matrix": https://drive.google.com/file/d/0B9rh9tVI0J5mX1RUam5nZm85OFE/view.
+bool Matrix44::GetInverse(Matrix44& result) const {
+  Double4 c0 = Col(0);
+  Double4 c1 = Col(1);
+  Double4 c2 = Col(2);
+  Double4 c3 = Col(3);
 
-static bool is_matrix_finite(const Matrix44& matrix) {
-  double accumulator = 0;
-  for (int row = 0; row < 4; ++row) {
-    for (int col = 0; col < 4; ++col) {
-      accumulator *= matrix.rc(row, col);
-    }
-  }
-  return accumulator == 0;
-}
+  // Note that r1 and r3 have components 2/3 and 0/1 swapped.
+  Double4 r0 = {c0[0], c1[0], c2[0], c3[0]};
+  Double4 r1 = {c2[1], c3[1], c0[1], c1[1]};
+  Double4 r2 = {c0[2], c1[2], c2[2], c3[2]};
+  Double4 r3 = {c2[3], c3[3], c0[3], c1[3]};
 
-bool Matrix44::invert(Matrix44* storage) const {
-  if (this->isIdentity()) {
-    if (storage) {
-      storage->setIdentity();
-    }
-    return true;
-  }
+  Double4 t = SwapInPairs(r2 * r3);
+  c0 = r1 * t;
+  c1 = r0 * t;
 
-  if (this->isTranslate()) {
-    if (storage) {
-      storage->setTranslate(-fMat[3][0], -fMat[3][1], -fMat[3][2]);
-    }
-    return true;
-  }
+  t = SwapHighLow(t);
+  c0 = r1 * t - c0;
+  c1 = SwapHighLow(r0 * t - c1);
 
-  Matrix44 tmp;
-  // Use storage if it's available and distinct from this matrix.
-  Matrix44* inverse = (storage && storage != this) ? storage : &tmp;
-  if (this->isScaleTranslate()) {
-    if (0 == fMat[0][0] * fMat[1][1] * fMat[2][2]) {
-      return false;
-    }
+  t = SwapInPairs(r1 * r2);
+  c0 += r3 * t;
+  c3 = r0 * t;
 
-    double invXScale = 1 / fMat[0][0];
-    double invYScale = 1 / fMat[1][1];
-    double invZScale = 1 / fMat[2][2];
+  t = SwapHighLow(t);
+  c0 -= r3 * t;
+  c3 = SwapHighLow(r0 * t - c3);
 
-    inverse->fMat[0][0] = invXScale;
-    inverse->fMat[0][1] = 0;
-    inverse->fMat[0][2] = 0;
-    inverse->fMat[0][3] = 0;
+  t = SwapInPairs(SwapHighLow(r1) * r3);
+  r2 = SwapHighLow(r2);
+  c0 += r2 * t;
+  c2 = r0 * t;
 
-    inverse->fMat[1][0] = 0;
-    inverse->fMat[1][1] = invYScale;
-    inverse->fMat[1][2] = 0;
-    inverse->fMat[1][3] = 0;
+  t = SwapHighLow(t);
+  c0 -= r2 * t;
 
-    inverse->fMat[2][0] = 0;
-    inverse->fMat[2][1] = 0;
-    inverse->fMat[2][2] = invZScale;
-    inverse->fMat[2][3] = 0;
-
-    inverse->fMat[3][0] = -fMat[3][0] * invXScale;
-    inverse->fMat[3][1] = -fMat[3][1] * invYScale;
-    inverse->fMat[3][2] = -fMat[3][2] * invZScale;
-    inverse->fMat[3][3] = 1;
-
-    inverse->setTypeMask(this->getType());
-
-    if (!is_matrix_finite(*inverse)) {
-      return false;
-    }
-    if (storage && inverse != storage) {
-      *storage = *inverse;
-    }
-    return true;
-  }
-
-  double a00 = fMat[0][0];
-  double a01 = fMat[0][1];
-  double a02 = fMat[0][2];
-  double a03 = fMat[0][3];
-  double a10 = fMat[1][0];
-  double a11 = fMat[1][1];
-  double a12 = fMat[1][2];
-  double a13 = fMat[1][3];
-  double a20 = fMat[2][0];
-  double a21 = fMat[2][1];
-  double a22 = fMat[2][2];
-  double a23 = fMat[2][3];
-  double a30 = fMat[3][0];
-  double a31 = fMat[3][1];
-  double a32 = fMat[3][2];
-  double a33 = fMat[3][3];
-
-  if (!(this->getType() & kPerspective_Mask)) {
-    // If we know the matrix has no perspective, then the perspective
-    // component is (0, 0, 0, 1). We can use this information to save a lot
-    // of arithmetic that would otherwise be spent to compute the inverse
-    // of a general matrix.
-
-    SkASSERT(a03 == 0);
-    SkASSERT(a13 == 0);
-    SkASSERT(a23 == 0);
-    SkASSERT(a33 == 1);
-
-    double b00 = a00 * a11 - a01 * a10;
-    double b01 = a00 * a12 - a02 * a10;
-    double b03 = a01 * a12 - a02 * a11;
-    double b06 = a20 * a31 - a21 * a30;
-    double b07 = a20 * a32 - a22 * a30;
-    double b08 = a20;
-    double b09 = a21 * a32 - a22 * a31;
-    double b10 = a21;
-    double b11 = a22;
-
-    // Calculate the determinant
-    double det = b00 * b11 - b01 * b10 + b03 * b08;
-
-    double invdet = sk_ieee_double_divide(1.0, det);
-    // If det is zero, we want to return false. However, we also want to return
-    // false if 1/det overflows to infinity (i.e. det is denormalized). Both of
-    // these are handled by checking that 1/det is finite.
-    if (!sk_float_isfinite(sk_double_to_float(invdet))) {
-      return false;
-    }
-
-    b00 *= invdet;
-    b01 *= invdet;
-    b03 *= invdet;
-    b06 *= invdet;
-    b07 *= invdet;
-    b08 *= invdet;
-    b09 *= invdet;
-    b10 *= invdet;
-    b11 *= invdet;
-
-    inverse->fMat[0][0] = a11 * b11 - a12 * b10;
-    inverse->fMat[0][1] = a02 * b10 - a01 * b11;
-    inverse->fMat[0][2] = b03;
-    inverse->fMat[0][3] = 0;
-    inverse->fMat[1][0] = a12 * b08 - a10 * b11;
-    inverse->fMat[1][1] = a00 * b11 - a02 * b08;
-    inverse->fMat[1][2] = -b01;
-    inverse->fMat[1][3] = 0;
-    inverse->fMat[2][0] = a10 * b10 - a11 * b08;
-    inverse->fMat[2][1] = a01 * b08 - a00 * b10;
-    inverse->fMat[2][2] = b00;
-    inverse->fMat[2][3] = 0;
-    inverse->fMat[3][0] = a11 * b07 - a10 * b09 - a12 * b06;
-    inverse->fMat[3][1] = a00 * b09 - a01 * b07 + a02 * b06;
-    inverse->fMat[3][2] = a31 * b01 - a30 * b03 - a32 * b00;
-    inverse->fMat[3][3] = 1;
-
-    inverse->setTypeMask(this->getType());
-    if (!is_matrix_finite(*inverse)) {
-      return false;
-    }
-    if (storage && inverse != storage) {
-      *storage = *inverse;
-    }
-    return true;
-  }
-
-  double b00 = a00 * a11 - a01 * a10;
-  double b01 = a00 * a12 - a02 * a10;
-  double b02 = a00 * a13 - a03 * a10;
-  double b03 = a01 * a12 - a02 * a11;
-  double b04 = a01 * a13 - a03 * a11;
-  double b05 = a02 * a13 - a03 * a12;
-  double b06 = a20 * a31 - a21 * a30;
-  double b07 = a20 * a32 - a22 * a30;
-  double b08 = a20 * a33 - a23 * a30;
-  double b09 = a21 * a32 - a22 * a31;
-  double b10 = a21 * a33 - a23 * a31;
-  double b11 = a22 * a33 - a23 * a32;
-
-  // Calculate the determinant
-  double det =
-      b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
-
-  double invdet = sk_ieee_double_divide(1.0, det);
-  // If det is zero, we want to return false. However, we also want to return
-  // false if 1/det overflows to infinity (i.e. det is denormalized). Both of
-  // these are handled by checking that 1/det is finite.
-  if (!sk_float_isfinite(sk_double_to_float(invdet))) {
+  double det = Sum(r0 * c0);
+  if (!std::isnormal(static_cast<float>(det)))
     return false;
-  }
 
-  b00 *= invdet;
-  b01 *= invdet;
-  b02 *= invdet;
-  b03 *= invdet;
-  b04 *= invdet;
-  b05 *= invdet;
-  b06 *= invdet;
-  b07 *= invdet;
-  b08 *= invdet;
-  b09 *= invdet;
-  b10 *= invdet;
-  b11 *= invdet;
+  c2 = SwapHighLow(r0 * t - c2);
 
-  inverse->fMat[0][0] = a11 * b11 - a12 * b10 + a13 * b09;
-  inverse->fMat[0][1] = a02 * b10 - a01 * b11 - a03 * b09;
-  inverse->fMat[0][2] = a31 * b05 - a32 * b04 + a33 * b03;
-  inverse->fMat[0][3] = a22 * b04 - a21 * b05 - a23 * b03;
-  inverse->fMat[1][0] = a12 * b08 - a10 * b11 - a13 * b07;
-  inverse->fMat[1][1] = a00 * b11 - a02 * b08 + a03 * b07;
-  inverse->fMat[1][2] = a32 * b02 - a30 * b05 - a33 * b01;
-  inverse->fMat[1][3] = a20 * b05 - a22 * b02 + a23 * b01;
-  inverse->fMat[2][0] = a10 * b10 - a11 * b08 + a13 * b06;
-  inverse->fMat[2][1] = a01 * b08 - a00 * b10 - a03 * b06;
-  inverse->fMat[2][2] = a30 * b04 - a31 * b02 + a33 * b00;
-  inverse->fMat[2][3] = a21 * b02 - a20 * b04 - a23 * b00;
-  inverse->fMat[3][0] = a11 * b07 - a10 * b09 - a12 * b06;
-  inverse->fMat[3][1] = a00 * b09 - a01 * b07 + a02 * b06;
-  inverse->fMat[3][2] = a31 * b01 - a30 * b03 - a32 * b00;
-  inverse->fMat[3][3] = a20 * b03 - a21 * b01 + a22 * b00;
-  inverse->setTypeMask(this->getType());
-  if (!is_matrix_finite(*inverse)) {
-    return false;
-  }
-  if (storage && inverse != storage) {
-    *storage = *inverse;
-  }
+  t = SwapInPairs(r0 * r1);
+  c2 = r3 * t + c2;
+  c3 = r2 * t - c3;
+
+  t = SwapHighLow(t);
+  c2 = r3 * t - c2;
+  c3 -= r2 * t;
+
+  t = SwapInPairs(r0 * r3);
+  c1 -= r2 * t;
+  c2 = r1 * t + c2;
+
+  t = SwapHighLow(t);
+  c1 = r2 * t + c1;
+  c2 -= r1 * t;
+
+  t = SwapInPairs(r0 * r2);
+  c1 = r3 * t + c1;
+  c3 -= r1 * t;
+
+  t = SwapHighLow(t);
+  c1 -= r3 * t;
+  c3 = r1 * t + c3;
+
+  det = 1.0 / det;
+  c0 *= det;
+  c1 *= det;
+  c2 *= det;
+  c3 *= det;
+
+  result.SetCol(0, c0);
+  result.SetCol(1, c1);
+  result.SetCol(2, c2);
+  result.SetCol(3, c3);
   return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-void Matrix44::transpose() {
-  if (!this->isIdentity()) {
-    using std::swap;
-    swap(fMat[0][1], fMat[1][0]);
-    swap(fMat[0][2], fMat[2][0]);
-    swap(fMat[0][3], fMat[3][0]);
-    swap(fMat[1][2], fMat[2][1]);
-    swap(fMat[1][3], fMat[3][1]);
-    swap(fMat[2][3], fMat[3][2]);
-    this->recomputeTypeMask();
-  }
+bool Matrix44::IsInvertible() const {
+  return std::isnormal(static_cast<float>(Determinant()));
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// This is a simplified version of GetInverse().
+double Matrix44::Determinant() const {
+  Double4 c0 = Col(0);
+  Double4 c1 = Col(1);
+  Double4 c2 = Col(2);
+  Double4 c3 = Col(3);
 
-void Matrix44::mapScalars(const double src[4], double dst[4]) const {
-  double storage[4];
-  double* result = (src == dst) ? storage : dst;
+  // Note that r1 and r3 have components 2/3 and 0/1 swapped.
+  Double4 r0 = {c0[0], c1[0], c2[0], c3[0]};
+  Double4 r1 = {c2[1], c3[1], c0[1], c1[1]};
+  Double4 r2 = {c0[2], c1[2], c2[2], c3[2]};
+  Double4 r3 = {c2[3], c3[3], c0[3], c1[3]};
 
-  for (int i = 0; i < 4; i++) {
-    double value = 0;
-    for (int j = 0; j < 4; j++) {
-      value += fMat[j][i] * src[j];
-    }
-    result[i] = value;
-  }
+  Double4 t = SwapInPairs(r2 * r3);
+  c0 = r1 * t;
+  t = SwapHighLow(t);
+  c0 = r1 * t - c0;
+  t = SwapInPairs(r1 * r2);
+  c0 += r3 * t;
+  t = SwapHighLow(t);
+  c0 -= r3 * t;
+  t = SwapInPairs(SwapHighLow(r1) * r3);
+  r2 = SwapHighLow(r2);
+  c0 += r2 * t;
+  t = SwapHighLow(t);
+  c0 -= r2 * t;
 
-  if (storage == result) {
-    memcpy(dst, storage, sizeof(storage));
-  }
+  return Sum(r0 * c0);
+}
+
+void Matrix44::Transpose() {
+  using std::swap;
+  swap(matrix_[0][1], matrix_[1][0]);
+  swap(matrix_[0][2], matrix_[2][0]);
+  swap(matrix_[0][3], matrix_[3][0]);
+  swap(matrix_[1][2], matrix_[2][1]);
+  swap(matrix_[1][3], matrix_[3][1]);
+  swap(matrix_[2][3], matrix_[3][2]);
+}
+
+void Matrix44::MapScalars(double vec[4]) const {
+  Double4 v = LoadDouble4(vec);
+  Double4 r0{matrix_[0][0], matrix_[1][0], matrix_[2][0], matrix_[3][0]};
+  Double4 r1{matrix_[0][1], matrix_[1][1], matrix_[2][1], matrix_[3][1]};
+  Double4 r2{matrix_[0][2], matrix_[1][2], matrix_[2][2], matrix_[3][2]};
+  Double4 r3{matrix_[0][3], matrix_[1][3], matrix_[2][3], matrix_[3][3]};
+  StoreDouble4(Double4{Sum(r0 * v), Sum(r1 * v), Sum(r2 * v), Sum(r3 * v)},
+               vec);
 }
 
 void Matrix44::FlattenTo2d() {
-  fMat[0][2] = 0;
-  fMat[1][2] = 0;
-  fMat[2][0] = 0;
-  fMat[2][1] = 0;
-  fMat[2][2] = 1;
-  fMat[2][3] = 0;
-  fMat[3][2] = 0;
-  recomputeTypeMask();
+  matrix_[0][2] = 0;
+  matrix_[1][2] = 0;
+  matrix_[3][2] = 0;
+  SetCol(2, Double4{0, 0, 1, 0});
 }
 
 }  // namespace gfx

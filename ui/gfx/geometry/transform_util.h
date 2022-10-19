@@ -6,6 +6,8 @@
 #define UI_GFX_GEOMETRY_TRANSFORM_UTIL_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+// TODO(crbug.com/1359528): Remove dependency to Skia.
+#include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/point.h"

@@ -5,6 +5,8 @@
 #ifndef UI_GFX_GEOMETRY_TRANSFORM_OPERATION_H_
 #define UI_GFX_GEOMETRY_TRANSFORM_OPERATION_H_
 
+// TODO(crbug.com/1359528): Remove dependency to Skia.
+#include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/transform.h"
 

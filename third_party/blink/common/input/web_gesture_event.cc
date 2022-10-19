@@ -344,17 +344,14 @@ WebGestureEvent::CoalesceScrollAndPinch(
   }
   combined_scroll_pinch.PostConcat(GetTransformForEvent(new_event));
 
-  float combined_scale = SkScalarToFloat(combined_scroll_pinch.rc(0, 0));
-  float combined_scroll_pinch_x =
-      SkScalarToFloat(combined_scroll_pinch.rc(0, 3));
-  float combined_scroll_pinch_y =
-      SkScalarToFloat(combined_scroll_pinch.rc(1, 3));
+  float combined_scale = combined_scroll_pinch.To2dScale().x();
+  gfx::Vector2dF combined_translation = combined_scroll_pinch.To2dTranslation();
   scroll_event->data.scroll_update.delta_x =
-      (combined_scroll_pinch_x + pinch_event->PositionInWidget().x()) /
+      (combined_translation.x() + pinch_event->PositionInWidget().x()) /
           combined_scale -
       pinch_event->PositionInWidget().x();
   scroll_event->data.scroll_update.delta_y =
-      (combined_scroll_pinch_y + pinch_event->PositionInWidget().y()) /
+      (combined_translation.y() + pinch_event->PositionInWidget().y()) /
           combined_scale -
       pinch_event->PositionInWidget().y();
   pinch_event->data.pinch_update.scale = combined_scale;

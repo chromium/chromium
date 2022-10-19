@@ -137,6 +137,8 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Gets a value at |row|, |col| from the matrix.
   double rc(int row, int col) const {
+    DCHECK_LE(static_cast<unsigned>(row), 3u);
+    DCHECK_LE(static_cast<unsigned>(col), 3u);
     if (LIKELY(!matrix_)) {
       float m[4][4] = {{axis_2d_.scale().x(), 0, 0, axis_2d_.translation().x()},
                        {0, axis_2d_.scale().y(), 0, axis_2d_.translation().y()},
@@ -149,7 +151,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Set a value in the matrix at |row|, |col|.
   void set_rc(int row, int col, double v) {
-    EnsureFullMatrix().setRC(row, col, v);
+    DCHECK_LE(static_cast<unsigned>(row), 3u);
+    DCHECK_LE(static_cast<unsigned>(col), 3u);
+    EnsureFullMatrix().set_rc(row, col, v);
   }
 
   // TODO(crbug.com/1359528): Add ColMajor()/GetColMajor() with double parameter
@@ -232,19 +236,21 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // This function modifies a mutable variable in |matrix_|.
   bool IsIdentity() const {
     return LIKELY(!matrix_) ? axis_2d_ == AxisTransform2d()
-                            : matrix_->isIdentity();
+                            : matrix_->IsIdentity();
   }
 
   // Returns true if the matrix is either identity or pure translation.
   bool IsIdentityOrTranslation() const {
     return LIKELY(!matrix_) ? axis_2d_.scale() == Vector2dF(1, 1)
-                            : matrix_->isTranslate();
+                            : matrix_->IsIdentityOrTranslation();
   }
 
   // Returns true if the matrix is either the identity or a 2d translation.
+  // TODO(crbug.com/1359528): Rename "2D" to "2d".
   bool IsIdentityOr2DTranslation() const {
-    return LIKELY(!matrix_) ? axis_2d_.scale() == Vector2dF(1, 1)
-                            : matrix_->isTranslate() && matrix_->rc(2, 3) == 0;
+    return LIKELY(!matrix_)
+               ? axis_2d_.scale() == Vector2dF(1, 1)
+               : matrix_->IsIdentityOrTranslation() && matrix_->rc(2, 3) == 0;
   }
 
   // Returns true if the matrix is either identity or pure translation,
@@ -257,7 +263,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
     if (LIKELY(!matrix_))
       return axis_2d_.scale().x() > 0.0 && axis_2d_.scale().y() > 0.0;
 
-    if (!matrix_->isScaleTranslate())
+    if (!matrix_->IsScaleOrTranslation())
       return false;
     return matrix_->rc(0, 0) > 0.0 && matrix_->rc(1, 1) > 0.0 &&
            matrix_->rc(2, 2) > 0.0;
@@ -269,21 +275,17 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // fit in an integer.
   bool IsIdentityOrIntegerTranslation() const;
 
-  // Returns true if the matrix has only scaling components.
-  bool IsScale() const {
-    return LIKELY(!matrix_) ? axis_2d_.translation().IsZero()
-                            : matrix_->isScale();
-  }
-
-  // Returns true if the matrix has only x and y scaling components.
+  // Returns true if the matrix has only x and y scaling components, including
+  // identity.
   bool IsScale2d() const {
     return LIKELY(!matrix_) ? axis_2d_.translation().IsZero()
-                            : matrix_->isScale() && matrix_->rc(2, 2) == 1;
+                            : matrix_->IsScale() && matrix_->rc(2, 2) == 1;
   }
 
-  // Returns true if the matrix is has only scaling and translation components.
+  // Returns true if the matrix is has only scaling and translation components,
+  // including identity.
   bool IsScaleOrTranslation() const {
-    return LIKELY(!matrix_) || matrix_->isScaleTranslate();
+    return LIKELY(!matrix_) || matrix_->IsScaleOrTranslation();
   }
 
   // Returns true if axis-aligned 2d rects will remain axis-aligned after being
@@ -299,13 +301,12 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns true if the matrix has any perspective component that would
   // change the w-component of a homogeneous point.
   bool HasPerspective() const {
-    return UNLIKELY(matrix_) && matrix_->hasPerspective();
+    return UNLIKELY(matrix_) && matrix_->HasPerspective();
   }
 
   // Returns true if this transform is non-singular.
   bool IsInvertible() const {
-    return LIKELY(!matrix_) ? axis_2d_.IsInvertible()
-                            : matrix_->invert(nullptr);
+    return LIKELY(!matrix_) ? axis_2d_.IsInvertible() : matrix_->IsInvertible();
   }
 
   // Returns true if a layer with a forward-facing normal of (0, 0, 1) would
