@@ -26,7 +26,10 @@ mojom("mojo_bindings") {
         "aggregatable_report_request_storage_id.h",
       ]
       traits_sources = [ "aggregation_service_internals_mojom_traits.cc" ]
-      traits_deps = [ "//content/common:mojo_bindings" ]
+      traits_deps = [
+        "//components/services/storage",
+        "//content/common:mojo_bindings",
+      ]
     },
   ]
 
