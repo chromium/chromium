@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/task/thread_pool.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/hats/hats_config.h"
@@ -23,13 +24,19 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/network/network_state.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "net/base/escape.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -50,6 +57,40 @@ constexpr base::TimeDelta kHatsThreshold = base::Days(90);
 
 // The threshold for a Googler is less.
 constexpr base::TimeDelta kHatsGooglerThreshold = base::Days(30);
+
+// TODO(jackshira): Migrate this to a manager class.
+// Delimiters used to join the separate device info elements into a single
+// string to be used as site context.
+const char kDeviceInfoStopKeyword[] = "&";
+const char kDeviceInfoKeyValueDelimiter[] = "=";
+const char kDefaultProfileLocale[] = "en-US";
+
+// TODO(jackshira): Migrate this to a manager class.
+enum class DeviceInfoKey : unsigned int {
+  BROWSER = 0,
+  PLATFORM,
+  FIRMWARE,
+  LOCALE,
+};
+
+// TODO(jackshira): Migrate this to a manager class.
+// Maps the given DeviceInfoKey |key| enum to the corresponding string value
+// that can be used as a key when creating a URL parameter.
+const std::string KeyEnumToString(DeviceInfoKey key) {
+  switch (key) {
+    case DeviceInfoKey::BROWSER:
+      return "browser";
+    case DeviceInfoKey::PLATFORM:
+      return "platform";
+    case DeviceInfoKey::FIRMWARE:
+      return "firmware";
+    case DeviceInfoKey::LOCALE:
+      return "locale";
+    default:
+      NOTREACHED();
+      return std::string();
+  }
+}
 
 // Returns true if the given |profile| interacted with HaTS by either
 // dismissing the notification or taking the survey within a given
@@ -204,8 +245,18 @@ void HatsNotificationController::Click(
 
   UpdateLastInteractionTime();
 
-  hats_dialog_ =
-      HatsDialog::CreateAndShow(hats_config_, product_specific_data_);
+  std::string user_locale =
+      profile_->GetPrefs()->GetString(language::prefs::kApplicationLocale);
+  language::ConvertToActualUILocale(&user_locale);
+  if (!user_locale.length())
+    user_locale = kDefaultProfileLocale;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&GetFormattedSiteContext, user_locale,
+                     product_specific_data_),
+      base::BindOnce(&HatsNotificationController::ShowDialog,
+                     weak_pointer_factory_.GetWeakPtr()));
 
   state_ = HatsState::kNotificationClicked;
 
@@ -214,6 +265,18 @@ void HatsNotificationController::Click(
   notification_.reset(nullptr);
   NotificationDisplayService::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kNotificationId);
+}
+
+void HatsNotificationController::ShowDialog(const std::string& site_context) {
+  if (profile_ != ProfileManager::GetActiveUserProfile()) {
+    DVLOG(1) << "Different user detected, not showing dialog";
+    return;
+  }
+
+  hats_dialog_ =
+      std::make_unique<HatsDialog>(HatsFinchHelper::GetTriggerID(hats_config_),
+                                   profile_, hats_config_.histogram_name);
+  hats_dialog_->Show(site_context);
 }
 
 // message_center::NotificationDelegate override:
@@ -261,6 +324,48 @@ void HatsNotificationController::OnPortalDetectionCompleted(
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, kNotificationId);
   }
+}
+
+// TODO(jackshira): Migrate this to a manager class.
+// static
+std::string HatsNotificationController::GetFormattedSiteContext(
+    const std::string& user_locale,
+    const base::flat_map<std::string, std::string>& product_specific_data) {
+  base::flat_map<std::string, std::string> context;
+
+  context[KeyEnumToString(DeviceInfoKey::BROWSER)] =
+      version_info::GetVersionNumber();
+
+  context[KeyEnumToString(DeviceInfoKey::PLATFORM)] =
+      chromeos::version_loader::GetVersion(
+          chromeos::version_loader::VERSION_FULL);
+
+  context[KeyEnumToString(DeviceInfoKey::FIRMWARE)] =
+      chromeos::version_loader::GetFirmware();
+
+  context[KeyEnumToString(DeviceInfoKey::LOCALE)] = user_locale;
+
+  for (const auto& pair : context) {
+    if (product_specific_data.contains(pair.first)) {
+      LOG(WARNING) << "Product specific data contains reserved key "
+                   << pair.first << ". Value will be overwritten.";
+    }
+  }
+  context.insert(product_specific_data.begin(), product_specific_data.end());
+
+  std::stringstream stream;
+  bool first_iteration = true;
+  for (const auto& pair : context) {
+    if (!first_iteration)
+      stream << kDeviceInfoStopKeyword;
+
+    stream << net::EscapeQueryParamValue(pair.first, /*use_plus=*/false)
+           << kDeviceInfoKeyValueDelimiter
+           << net::EscapeQueryParamValue(pair.second, /*use_plus=*/false);
+
+    first_iteration = false;
+  }
+  return stream.str();
 }
 
 void HatsNotificationController::UpdateLastInteractionTime() {

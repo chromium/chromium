@@ -54,78 +54,7 @@ const char kClientSmileySelected[] = "smiley-selected-";
 constexpr char kCrOSHaTSURL[] =
     "https://storage.googleapis.com/chromeos-hats-web-stable/index.html";
 
-// Delimiters used to join the separate device info elements into a single
-// string to be used as site context.
-const char kDeviceInfoStopKeyword[] = "&";
-const char kDeviceInfoKeyValueDelimiter[] = "=";
-const char kDefaultProfileLocale[] = "en-US";
-
-enum class DeviceInfoKey : unsigned int {
-  BROWSER = 0,
-  PLATFORM,
-  FIRMWARE,
-  LOCALE,
-};
-
-// Maps the given DeviceInfoKey |key| enum to the corresponding string value
-// that can be used as a key when creating a URL parameter.
-const std::string KeyEnumToString(DeviceInfoKey key) {
-  switch (key) {
-    case DeviceInfoKey::BROWSER:
-      return "browser";
-    case DeviceInfoKey::PLATFORM:
-      return "platform";
-    case DeviceInfoKey::FIRMWARE:
-      return "firmware";
-    case DeviceInfoKey::LOCALE:
-      return "locale";
-    default:
-      NOTREACHED();
-      return std::string();
-  }
-}
-
 }  // namespace
-
-// static
-std::string HatsDialog::GetFormattedSiteContext(
-    const std::string& user_locale,
-    const base::flat_map<std::string, std::string>& product_specific_data) {
-  base::flat_map<std::string, std::string> context;
-
-  context[KeyEnumToString(DeviceInfoKey::BROWSER)] =
-      version_info::GetVersionNumber();
-
-  context[KeyEnumToString(DeviceInfoKey::PLATFORM)] =
-      version_loader::GetVersion(version_loader::VERSION_FULL);
-
-  context[KeyEnumToString(DeviceInfoKey::FIRMWARE)] =
-      version_loader::GetFirmware();
-
-  context[KeyEnumToString(DeviceInfoKey::LOCALE)] = user_locale;
-
-  for (const auto& pair : context) {
-    if (product_specific_data.contains(pair.first)) {
-      LOG(WARNING) << "Product specific data contains reserved key "
-                   << pair.first << ". Value will be overwritten.";
-    }
-  }
-  context.insert(product_specific_data.begin(), product_specific_data.end());
-
-  std::stringstream stream;
-  bool first_iteration = true;
-  for (const auto& pair : context) {
-    if (!first_iteration)
-      stream << kDeviceInfoStopKeyword;
-
-    stream << net::EscapeQueryParamValue(pair.first, /*use_plus=*/false)
-           << kDeviceInfoKeyValueDelimiter
-           << net::EscapeQueryParamValue(pair.second, /*use_plus=*/false);
-
-    first_iteration = false;
-  }
-  return stream.str();
-}
 
 // static
 bool HatsDialog::HandleClientTriggeredAction(
@@ -159,35 +88,6 @@ bool HatsDialog::HandleClientTriggeredAction(
   return false;
 }
 
-// static
-std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
-    const HatsConfig& hats_config,
-    const base::flat_map<std::string, std::string>& product_specific_data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  std::string user_locale =
-      profile->GetPrefs()->GetString(language::prefs::kApplicationLocale);
-  language::ConvertToActualUILocale(&user_locale);
-  if (!user_locale.length())
-    user_locale = kDefaultProfileLocale;
-
-  std::unique_ptr<HatsDialog> hats_dialog(
-      new HatsDialog(HatsFinchHelper::GetTriggerID(hats_config), profile,
-                     hats_config.histogram_name));
-
-  // Raw pointer is used here since the dialog is owned by the hats
-  // notification controller which lives until the end of the user session. The
-  // dialog will always be closed before that time instant.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetFormattedSiteContext, user_locale,
-                     product_specific_data),
-      base::BindOnce(&HatsDialog::Show, base::Unretained(hats_dialog.get())));
-
-  return hats_dialog;
-}
-
 void HatsDialog::Show(const std::string& site_context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -195,7 +95,7 @@ void HatsDialog::Show(const std::string& site_context) {
   url_ = std::string(kCrOSHaTSURL) + "?" + site_context +
          "&trigger=" + trigger_id_;
 
-  chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(), this);
+  chrome::ShowWebDialog(nullptr, user_profile_, this);
 }
 
 HatsDialog::HatsDialog(const std::string& trigger_id,

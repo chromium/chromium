@@ -9,7 +9,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace message_center {
@@ -23,6 +22,7 @@ namespace ash {
 struct HatsConfig;
 class HatsDialog;
 
+// TODO(jackshira): Extract non-notification specific code into a manager class.
 // Happiness tracking survey (HaTS) notification controller is responsible for
 // managing the HaTS notification that is displayed to the user.
 // This class lives on the UI thread.
@@ -51,6 +51,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
 
  private:
   friend class HatsNotificationControllerTest;
+  FRIEND_TEST_ALL_PREFIXES(HatsNotificationControllerTest,
+                           GetFormattedSiteContext);
   FRIEND_TEST_ALL_PREFIXES(HatsNotificationControllerTest,
                            NewDevice_ShouldNotShowNotification);
   FRIEND_TEST_ALL_PREFIXES(HatsNotificationControllerTest,
@@ -90,7 +92,18 @@ class HatsNotificationController : public message_center::NotificationDelegate,
       const NetworkState* network,
       const NetworkPortalDetector::CaptivePortalStatus status) override;
 
+  // Must be run on a blocking thread pool.
+  // Gathers the browser version info, firmware info and platform info and
+  // returns them in a single encoded string, in the format
+  // "<key>=<value>&<key>=<value>&<key>=<value>" where the keys and values are
+  // url-escaped. Any key-value pairs in |product_specific_data| are also
+  // encoded and appended to the string, unless the keys collide with existing
+  // device info keys.
+  static std::string GetFormattedSiteContext(
+      const std::string& user_locale,
+      const base::flat_map<std::string, std::string>& product_specific_data);
   void UpdateLastInteractionTime();
+  void ShowDialog(const std::string& site_context);
 
   Profile* const profile_;
   const HatsConfig& hats_config_;
