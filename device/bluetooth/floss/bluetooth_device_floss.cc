@@ -569,6 +569,7 @@ void BluetoothDeviceFloss::OnConnectToServiceError(
 
 void BluetoothDeviceFloss::InitializeDeviceProperties(
     base::OnceClosure callback) {
+  property_reads_triggered_ = true;
   pending_callback_on_init_props_ = std::move(callback);
   // This must be incremented when adding more properties below
   // and followed up with a TriggerInitDevicePropertiesCallback()

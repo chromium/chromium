@@ -121,6 +121,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   BluetoothPairingFloss* pairing() const { return pairing_.get(); }
 
   void InitializeDeviceProperties(base::OnceClosure callback);
+  bool HasReadProperties() const { return property_reads_triggered_; }
 
   // FlossGattClientObserver overrides
   void GattClientConnectionState(GattStatus status,
@@ -201,6 +202,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // Are all services resolved? Only true if full discovery is completed. See
   // |IsGattServicesDiscoveryComplete| for more info.
   bool svc_resolved_ = false;
+
+  // Have we triggered initial property reads?
+  bool property_reads_triggered_ = false;
 
   // Specific uuid to search for after gatt connection is established. If this
   // is not set, then we do full discovery.

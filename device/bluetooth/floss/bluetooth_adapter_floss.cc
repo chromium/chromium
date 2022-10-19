@@ -67,6 +67,14 @@ BluetoothDeviceFloss::ConnectErrorCode BtifStatusToConnectErrorCode(
   }
 }
 
+bool DeviceHasReadProperties(device::BluetoothDevice* device) {
+  if (device) {
+    return static_cast<BluetoothDeviceFloss*>(device)->HasReadProperties();
+  }
+
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -598,17 +606,26 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
   BLUETOOTH_LOG(EVENT) << __func__ << device_found;
 
   auto device_floss = CreateBluetoothDeviceFloss(device_found);
+  BluetoothDeviceFloss* new_device_ptr = nullptr;
 
   std::string canonical_address =
       device::CanonicalizeBluetoothAddress(device_floss->GetAddress());
-  if (!base::Contains(devices_, canonical_address)) {
-    // Take copy of pointer before moving ownership.
-    BluetoothDeviceFloss* device_ptr = device_floss.get();
-    devices_.emplace(canonical_address, std::move(device_floss));
 
-    device_ptr->InitializeDeviceProperties(
+  // Devices are newly found if they aren't in the devices_ map or they were
+  // added via ScanResult (which doesn't trigger property reads).
+  if (!base::Contains(devices_, canonical_address)) {
+    new_device_ptr = device_floss.get();
+    devices_.emplace(canonical_address, std::move(device_floss));
+  } else if (!DeviceHasReadProperties(devices_[canonical_address].get())) {
+    new_device_ptr =
+        static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
+  }
+
+  // Trigger property reads for new devices.
+  if (new_device_ptr) {
+    new_device_ptr->InitializeDeviceProperties(
         base::BindOnce(&BluetoothAdapterFloss::OnInitializeDeviceProperties,
-                       weak_ptr_factory_.GetWeakPtr(), device_ptr));
+                       weak_ptr_factory_.GetWeakPtr(), new_device_ptr));
 
     // TODO(b/204708206): Convert "Paired" and "Connected" property into a
     // property framework.
