@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_TYPED_NAVIGATION_UPGRADE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_TYPED_NAVIGATION_UPGRADE_TAB_HELPER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ios/web/public/web_state_observer.h"
