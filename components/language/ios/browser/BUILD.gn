@@ -9,6 +9,8 @@ source_set("browser") {
     "ios_language_detection_tab_helper.mm",
     "ios_language_detection_tab_helper_observer_bridge.h",
     "ios_language_detection_tab_helper_observer_bridge.mm",
+    "string_clipping_util.cc",
+    "string_clipping_util.h",
   ]
 
   deps = [
@@ -23,7 +25,10 @@ source_set("browser") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "ios_language_detection_tab_helper_observer_bridge_unittest.mm" ]
+  sources = [
+    "ios_language_detection_tab_helper_observer_bridge_unittest.mm",
+    "string_clipping_util_unittest.cc",
+  ]
   deps = [
     ":browser",
     "//components/translate/core/common",

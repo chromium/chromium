@@ -1,15 +1,15 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/translate/ios/browser/string_clipping_util.h"
+#include "components/language/ios/browser/string_clipping_util.h"
 
 #include <stddef.h>
 
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace translate {
+namespace language {
 namespace {
 
 // Tests that a regular sentence is clipped correctly.
@@ -45,4 +45,4 @@ TEST(StringByClippingLastWordTest, ClipLongTextContentNoSpace) {
 }
 
 }  // namespace
-}  // namespace translate
+}  // namespace language
