@@ -1151,6 +1151,8 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
         system::kSerialNumberKeyForTest, "test");
     fake_statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
                                                   "2000-01");
+    fake_statistics_provider_.SetVpdStatus(
+        system::StatisticsProvider::VpdStatus::kValid);
   }
 
   static AutoEnrollmentController* auto_enrollment_controller() {

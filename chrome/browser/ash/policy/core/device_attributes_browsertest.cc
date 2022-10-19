@@ -51,7 +51,12 @@ constexpr char kFakeDeviceID[] = "fake device ID";
 
 class DeviceAttributesTest : public DevicePolicyCrosBrowserTest {
  public:
-  DeviceAttributesTest() { device_state_.set_skip_initial_policy_setup(true); }
+  DeviceAttributesTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+    fake_statistics_provider_.SetVpdStatus(
+        chromeos::system::StatisticsProvider::VpdStatus::kValid);
+  }
+
   ~DeviceAttributesTest() override = default;
 
  protected:

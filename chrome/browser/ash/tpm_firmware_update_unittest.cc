@@ -129,6 +129,8 @@ class TPMFirmwareUpdateModesTest : public TPMFirmwareUpdateTest {
   TPMFirmwareUpdateModesTest() {
     callback_ = base::BindOnce(&TPMFirmwareUpdateModesTest::RecordResponse,
                                base::Unretained(this));
+    statistics_provider_.SetVpdStatus(
+        system::StatisticsProvider::VpdStatus::kValid);
   }
 
   void RecordResponse(const std::set<Mode>& modes) {
@@ -154,6 +156,14 @@ TEST_F(TPMFirmwareUpdateModesTest, FeatureDisabled) {
 
 TEST_F(TPMFirmwareUpdateModesTest, FRERequired) {
   statistics_provider_.SetMachineStatistic(system::kCheckEnrollmentKey, "1");
+  GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
+  EXPECT_TRUE(callback_received_);
+  EXPECT_TRUE(callback_modes_.empty());
+}
+
+TEST_F(TPMFirmwareUpdateModesTest, FRERequiredDueToInvalidVPDStatus) {
+  statistics_provider_.SetVpdStatus(
+      system::StatisticsProvider::VpdStatus::kInvalid);
   GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
   EXPECT_TRUE(callback_received_);
   EXPECT_TRUE(callback_modes_.empty());

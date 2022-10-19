@@ -256,6 +256,7 @@ void EmbeddedPolicyTestServerMixin::ConfigureFakeStatisticsForZeroTouch(
                                 test::kTestSerialNumber);
   provider->SetMachineStatistic(system::kHardwareClassKey,
                                 test::kTestHardwareClass);
+  provider->SetVpdStatus(system::StatisticsProvider::VpdStatus::kValid);
 }
 
 }  // namespace ash

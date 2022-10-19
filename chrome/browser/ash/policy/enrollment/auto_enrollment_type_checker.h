@@ -28,12 +28,12 @@ class AutoEnrollmentTypeChecker {
     // FRE check is disabled via command line.
     kDisabled = 0,
     // The device was setup (has kActivateDateKey) but doesn't have the
-    // kCheckEnrollmentKey entry in VPD, or the VPD is corrupted.
+    // kCheckEnrollmentKey entry in VPD.
     kRequired = 1,
-    // The device doesn't have kActivateDateKey, nor kCheckEnrollmentKey entry
-    // while the serial number has been successfully read from VPD.
+    // The device doesn't have kActivateDateKey, nor kCheckEnrollmentKey entry.
     kNotRequired = 2,
-    // FRE check explicitly required by the flag in VPD.
+    // FRE check explicitly required by the flag in VPD or due to invalid VPD
+    // state.
     kExplicitlyRequired = 3,
     // FRE check to be skipped, explicitly stated by the flag in VPD.
     kExplicitlyNotRequired = 4
@@ -42,8 +42,7 @@ class AutoEnrollmentTypeChecker {
   // Type of auto enrollment or state determination check.
   enum class CheckType {
     kNone = 0,
-    // Forced Re-Enrollment check implicitly required because the device is new
-    // or lost VPD state.
+    // Forced Re-Enrollment check implicitly required because the device is new.
     kForcedReEnrollmentImplicitlyRequired = 1,
     // Forced Re-Enrollment check explicitly required because the device was
     // previously enterprise-enrolled.

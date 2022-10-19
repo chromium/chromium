@@ -82,8 +82,8 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   void SetupFREEnabledButNotRequired() {
     SetupFREEnabled();
 
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+    fake_statistics_provider_.SetVpdStatus(
+        ash::system::StatisticsProvider::VpdStatus::kValid);
     fake_statistics_provider_.ClearMachineStatistic(
         ash::system::kActivateDateKey);
 
@@ -95,8 +95,8 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   void SetupFREEnabledAndRequired() {
     SetupFREEnabled();
 
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+    fake_statistics_provider_.SetVpdStatus(
+        ash::system::StatisticsProvider::VpdStatus::kValid);
     fake_statistics_provider_.SetMachineStatistic(ash::system::kActivateDateKey,
                                                   kActivateDateValue);
 
@@ -291,35 +291,69 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        FRENotRequiredAccordingToVPDWhenVPDCanBeReadButDeviceIsNotOwned) {
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
-  // Not setting |kActivateDateKey| statistic to indicate a lack of ownership.
+  {
+    fake_statistics_provider_.SetVpdStatus(
+        ash::system::StatisticsProvider::VpdStatus::kValid);
+    // Not setting |kActivateDateKey| statistic to indicate a lack of ownership.
 
-  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-                &fake_statistics_provider_),
-            AutoEnrollmentTypeChecker::FRERequirement::kNotRequired);
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &fake_statistics_provider_),
+              AutoEnrollmentTypeChecker::FRERequirement::kNotRequired);
+  }
+
+  {
+    fake_statistics_provider_.SetVpdStatus(
+        ash::system::StatisticsProvider::VpdStatus::kRoInvalid);
+    // Not setting |kActivateDateKey| statistic to indicate a lack of ownership.
+
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &fake_statistics_provider_),
+              AutoEnrollmentTypeChecker::FRERequirement::kNotRequired);
+  }
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        FRERequiredAccordingToVPDWhenVPDIsBroken) {
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, "");
+  {
+    fake_statistics_provider_.SetVpdStatus(
+        ash::system::StatisticsProvider::VpdStatus::kRwInvalid);
 
-  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-                &fake_statistics_provider_),
-            AutoEnrollmentTypeChecker::FRERequirement::kRequired);
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &fake_statistics_provider_),
+              AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+  }
+
+  {
+    fake_statistics_provider_.SetVpdStatus(
+        ash::system::StatisticsProvider::VpdStatus::kInvalid);
+
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &fake_statistics_provider_),
+              AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+  }
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        FRERequiredAccordingToVPDWhenDeviceIsOwned) {
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kActivateDateKey,
                                                 kActivateDateValue);
 
-  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-                &fake_statistics_provider_),
-            AutoEnrollmentTypeChecker::FRERequirement::kRequired);
+  {
+    fake_statistics_provider_.SetVpdStatus(
+        ash::system::StatisticsProvider::VpdStatus::kValid);
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &fake_statistics_provider_),
+              AutoEnrollmentTypeChecker::FRERequirement::kRequired);
+  }
+
+  {
+    fake_statistics_provider_.SetVpdStatus(
+        ash::system::StatisticsProvider::VpdStatus::kRoInvalid);
+
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &fake_statistics_provider_),
+              AutoEnrollmentTypeChecker::FRERequirement::kRequired);
+  }
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
@@ -386,6 +420,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
        AutoEnrollmentCheckNotRequiredWhenNoEnrollmentModulusSwitchPresent) {
   SetupFREEnabled();
   SetupInitialEnrollmentEnabledButNotRequired();
+  fake_statistics_provider_.SetVpdStatus(
+      ash::system::StatisticsProvider::VpdStatus::kValid);
 
   command_line_.GetProcessCommandLine()->RemoveSwitch(
       ash::switches::kEnterpriseEnrollmentInitialModulus);
@@ -431,6 +467,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   // initial enrollment.
   SetupInitialEnrollmentEnabledAndRequired();
 
+  fake_statistics_provider_.SetVpdStatus(
+      ash::system::StatisticsProvider::VpdStatus::kValid);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kActivateDateKey,
                                                 kActivateDateValue);
 

@@ -215,6 +215,8 @@ class CustomizationVPDTest : public InProcessBrowserTest,
         statistics_provider_.get());
     statistics_provider_->SetMachineStatistic("initial_locale", GetParam());
     statistics_provider_->SetMachineStatistic("keyboard_layout", "");
+    statistics_provider_->SetVpdStatus(
+        system::StatisticsProvider::VpdStatus::kValid);
   }
 
  private:

@@ -130,22 +130,33 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
     LOG(WARNING) << "Forcing auto enrollment check.";
     return FRERequirement::kExplicitlyRequired;
   }
-  // Assume that the presence of the machine serial number means that VPD has
-  // been read successfully. Don't trust a missing ActivateDate if VPD could not
-  // be read successfully.
-  bool vpd_read_successfully =
-      !statistics_provider->GetEnterpriseMachineID().empty();
-  if (vpd_read_successfully && !statistics_provider->GetMachineStatistic(
-                                   ash::system::kActivateDateKey, nullptr)) {
-    // The device has never been activated (enterprise enrolled or
-    // consumer-owned) so doing a FRE check is not necessary.
-    return FRERequirement::kNotRequired;
+
+  // The FRE flag is not found. If VPD is in valid state, do not require FRE
+  // check if the device was never owned. If VPD is broken, continue with FRE
+  // check.
+  switch (statistics_provider->GetVpdStatus()) {
+    case ash::system::StatisticsProvider::VpdStatus::kRoInvalid:
+      LOG(WARNING) << "RO_VPD is borken, but RW_VPD is valid. "
+                      "Proceeding with ownership check.";
+      [[fallthrough]];
+    case ash::system::StatisticsProvider::VpdStatus::kValid:
+      if (!statistics_provider->GetMachineStatistic(
+              ash::system::kActivateDateKey, nullptr)) {
+        // The device has never been activated (enterprise enrolled or
+        // consumer-owned) so doing a FRE check is not necessary.
+        return FRERequirement::kNotRequired;
+      }
+      return FRERequirement::kRequired;
+    case ash::system::StatisticsProvider::VpdStatus::kRwInvalid:
+    case ash::system::StatisticsProvider::VpdStatus::kInvalid:
+      // VPD is in invalid state and FRE flag cannot be assessed. Force FRE
+      // check to prevent enrollment escapes.
+      LOG(ERROR) << "VPD could not be read, forcing auto-enrollment check.";
+      return FRERequirement::kExplicitlyRequired;
+    case ash::system::StatisticsProvider::VpdStatus::kUnknown:
+      NOTREACHED() << "VPD status is unknown";
+      return FRERequirement::kRequired;
   }
-  if (!vpd_read_successfully) {
-    LOG(ERROR) << "VPD could not be read, skipping explicitly required auto "
-                  "enrollment check.";
-  }
-  return FRERequirement::kRequired;
 }
 
 // static

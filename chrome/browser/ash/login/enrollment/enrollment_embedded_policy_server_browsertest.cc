@@ -240,6 +240,8 @@ class AutoEnrollmentWithStatistics : public AutoEnrollmentEmbeddedPolicyServer {
     // "serial_number" or "Product_S/N" could be read from it.
     fake_statistics_provider_.SetMachineStatistic(
         system::kSerialNumberKeyForTest, test::kTestSerialNumber);
+    fake_statistics_provider_.SetVpdStatus(
+        system::StatisticsProvider::VpdStatus::kValid);
   }
 
   AutoEnrollmentWithStatistics(const AutoEnrollmentWithStatistics&) = delete;
@@ -262,6 +264,8 @@ class AutoEnrollmentWithStatistics : public AutoEnrollmentEmbeddedPolicyServer {
   void SetVPDCorrupted() {
     fake_statistics_provider_.ClearMachineStatistic(
         system::kSerialNumberKeyForTest);
+    fake_statistics_provider_.SetVpdStatus(
+        system::StatisticsProvider::VpdStatus::kInvalid);
   }
 
  private:
