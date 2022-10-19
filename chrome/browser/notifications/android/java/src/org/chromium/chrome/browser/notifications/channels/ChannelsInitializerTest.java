@@ -342,7 +342,7 @@ public class ChannelsInitializerTest {
         assertThat(channel.getName().toString(),
                 is(mContext.getString(
                         org.chromium.chrome.R.string.notification_category_price_drop)));
-        assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_LOW));
+        assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_DEFAULT));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
 
