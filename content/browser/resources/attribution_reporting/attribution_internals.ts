@@ -53,7 +53,7 @@ class ValueColumn<T, V> implements Column<T> {
   }
 
   renderHeader(th: HTMLElement) {
-    th.innerText = `${this.header}`;
+    th.innerText = this.header;
   }
 }
 
@@ -83,24 +83,31 @@ class CodeColumn<T> extends ValueColumn<T, string> {
   }
 }
 
-class StructuredColumn<T> extends ValueColumn<T, Record<string, string>> {
-  constructor(header: string, getValue: (p: T) => Record<string, string>) {
-    super(header, getValue);
+function renderDL<T>(td: HTMLElement, row: T, cols: Array<Column<T>>) {
+  const dl = td.ownerDocument.createElement('dl');
+
+  cols.forEach(col => {
+    const dt = td.ownerDocument.createElement('dt');
+    col.renderHeader(dt);
+    dl.appendChild(dt);
+
+    const dd = td.ownerDocument.createElement('dd');
+    col.render(dd, row);
+    dl.appendChild(dd);
+  });
+
+  td.appendChild(dl);
+}
+
+class LogMetadataColumn implements Column<Log> {
+  compare = null;
+
+  renderHeader(th: HTMLElement) {
+    th.innerText = 'Metadata';
   }
 
-  override render(td: HTMLElement, row: T) {
-    const dl = td.ownerDocument.createElement('dl');
-    for (const [key, value] of Object.entries(this.getValue(row))) {
-      const dt = td.ownerDocument.createElement('dt');
-      dt.innerText = key;
-      const dd = td.ownerDocument.createElement('dd');
-      dd.innerText = value;
-
-      dl.appendChild(dt);
-      dl.appendChild(dd);
-    }
-
-    td.appendChild(dl);
+  render(td: HTMLElement, row: Log) {
+    row.renderMetadata(td);
   }
 }
 
@@ -673,145 +680,160 @@ class AggregatableAttributionReportTableModel extends ReportTableModel {
   }
 }
 
+abstract class Log {
+  readonly timestamp: Date;
+  readonly reportTo: string;
 
-enum LogType {
-  FAILED_SOURCE_REGISTRATION = 'FailedSourceRegistration',
-  CLEARED_DEBUG_KEY = 'ClearedDebugKey',
+  constructor(mojo: {time: number, reportingOrigin: Origin}) {
+    this.timestamp = new Date(mojo.time);
+    this.reportTo = originToText(mojo.reportingOrigin);
+  }
+
+  abstract description(): string;
+
+  abstract renderMetadata(td: HTMLElement): void;
 }
-interface Log {
-  timestamp: Date;
-  type: LogType;
-  metadata: Record<string, string>;
-}
 
-class ClearedDebugKeyLog implements Log {
-  public readonly type: LogType = LogType.CLEARED_DEBUG_KEY;
+const CLEARED_DEBUG_KEY_COLS: Array<Column<ClearedDebugKeyLog>> = [
+  new ValueColumn<ClearedDebugKeyLog, string>(
+      'Cleared Debug Key', e => e.clearedDebugKey),
+  new ValueColumn<ClearedDebugKeyLog, string>('From', e => e.clearedFrom),
+  new ValueColumn<ClearedDebugKeyLog, string>('Report To', e => e.reportTo),
+  // TODO(anthonygarant): Investigate reducing the amount of UI space for this.
+  new ValueColumn<ClearedDebugKeyLog, string>(
+      'Reason',
+      () => 'Debug cookie, `ar_debug=1; SameSite=None; Secure; HttpOnly`' +
+          ', is missing for the reporting origin'),
+];
 
-  private readonly timestamp_: Date;
-  private readonly metadata_: Record<string, string>;
+class ClearedDebugKeyLog extends Log {
+  readonly clearedFrom: string;
+  readonly clearedDebugKey: string;
 
   constructor(mojo: ClearedDebugKey) {
-    this.timestamp_ = new Date(mojo.time);
-    let clearedFrom;
+    super(mojo);
+
+    this.clearedDebugKey = `${mojo.clearedDebugKey.value}`;
+
     switch (mojo.clearedFrom) {
       case (ClearedDebugKey_Type.kSource):
-        clearedFrom = 'Source';
+        this.clearedFrom = 'Source';
         break;
       case (ClearedDebugKey_Type.kTrigger):
-        clearedFrom = 'Trigger';
+        this.clearedFrom = 'Trigger';
         break;
       default:
-        clearedFrom = 'Unknown type';
+        this.clearedFrom = 'Unknown type';
         break;
     }
-    // TODO(anthonygarant): Investigate reducing the amount of space the log
-    // takes.
-    this.metadata_ = {
-      'Cleared Debug Key': `${mojo.clearedDebugKey.value}`,
-      'From': clearedFrom,
-      'Report To': originToText(mojo.reportingOrigin),
-      'Reason': 'Debug cookie, `ar_debug=1; SameSite=None; Secure; HttpOnly`' +
-          ', is missing for the reporting origin',
-    };
   }
 
-  get timestamp(): Date {
-    return this.timestamp_;
+  description(): string {
+    return 'Cleared Debug Key';
   }
-  get metadata(): Record<string, string> {
-    return this.metadata_;
+
+  renderMetadata(td: HTMLElement) {
+    renderDL(td, this, CLEARED_DEBUG_KEY_COLS);
   }
 }
 
-class FailedSourceRegistrationLog implements Log {
-  public readonly type: LogType = LogType.FAILED_SOURCE_REGISTRATION;
+const FAILED_SOURCE_REGISTRATION_COLS:
+    Array<Column<FailedSourceRegistrationLog>> = [
+      new ValueColumn<FailedSourceRegistrationLog, string>(
+          'Failure Reason', e => e.failureReason),
+      new ValueColumn<FailedSourceRegistrationLog, string>(
+          'Report To', e => e.reportTo),
+      new CodeColumn<FailedSourceRegistrationLog>(
+          'Attribution-Reporting-Register-Source Header', e => e.headerValue),
+    ];
 
-  private readonly timestamp_: Date;
-  private readonly metadata_: Record<string, string>;
+class FailedSourceRegistrationLog extends Log {
+  readonly failureReason: string;
+  readonly headerValue: string;
 
   constructor(mojo: FailedSourceRegistration) {
-    let failureReason;
+    super(mojo);
+
     switch (mojo.error) {
       case SourceRegistrationError.kInvalidJson:
-        failureReason = 'invalid JSON';
+        this.failureReason = 'invalid JSON';
         break;
       case SourceRegistrationError.kRootWrongType:
-        failureReason = 'root JSON value has wrong type (must be a dictionary)';
+        this.failureReason =
+            'root JSON value has wrong type (must be a dictionary)';
         break;
       case SourceRegistrationError.kDestinationMissing:
-        failureReason = 'destination missing';
+        this.failureReason = 'destination missing';
         break;
       case SourceRegistrationError.kDestinationWrongType:
-        failureReason = 'destination has wrong type (must be a string)';
+        this.failureReason = 'destination has wrong type (must be a string)';
         break;
       case SourceRegistrationError.kDestinationUntrustworthy:
-        failureReason = 'destination not potentially trustworthy';
+        this.failureReason = 'destination not potentially trustworthy';
         break;
       case SourceRegistrationError.kDestinationMismatched:
-        failureReason =
+        this.failureReason =
             'destination differs from that of previous source in redirect chain';
         break;
       case SourceRegistrationError.kFilterDataWrongType:
-        failureReason = 'filter_data has wrong type (must be a dictionary)';
+        this.failureReason =
+            'filter_data has wrong type (must be a dictionary)';
         break;
       case SourceRegistrationError.kFilterDataTooManyKeys:
-        failureReason = 'filter_data has too many keys';
+        this.failureReason = 'filter_data has too many keys';
         break;
       case SourceRegistrationError.kFilterDataHasSourceTypeKey:
-        failureReason = 'filter_data must not have a source_type key';
+        this.failureReason = 'filter_data must not have a source_type key';
         break;
       case SourceRegistrationError.kFilterDataKeyTooLong:
-        failureReason = 'filter_data key too long';
+        this.failureReason = 'filter_data key too long';
         break;
       case SourceRegistrationError.kFilterDataListWrongType:
-        failureReason = 'filter_data value has wrong type (must be a list)';
+        this.failureReason =
+            'filter_data value has wrong type (must be a list)';
         break;
       case SourceRegistrationError.kFilterDataListTooLong:
-        failureReason = 'filter_data list too long';
+        this.failureReason = 'filter_data list too long';
         break;
       case SourceRegistrationError.kFilterDataValueWrongType:
-        failureReason =
+        this.failureReason =
             'filter_data list value has wrong type (must be a string)';
         break;
       case SourceRegistrationError.kFilterDataValueTooLong:
-        failureReason = 'filter_data list value too long';
+        this.failureReason = 'filter_data list value too long';
         break;
       case SourceRegistrationError.kAggregationKeysWrongType:
-        failureReason =
+        this.failureReason =
             'aggregation_keys has wrong type (must be a dictionary)';
         break;
       case SourceRegistrationError.kAggregationKeysTooManyKeys:
-        failureReason = 'aggregation_keys has too many keys';
+        this.failureReason = 'aggregation_keys has too many keys';
         break;
       case SourceRegistrationError.kAggregationKeysKeyTooLong:
-        failureReason = 'aggregation_keys key too long';
+        this.failureReason = 'aggregation_keys key too long';
         break;
       case SourceRegistrationError.kAggregationKeysValueWrongType:
-        failureReason =
+        this.failureReason =
             'aggregation_keys value has wrong type (must be a string)';
         break;
       case SourceRegistrationError.kAggregationKeysValueWrongFormat:
-        failureReason =
+        this.failureReason =
             'aggregation_keys value must be a base-16 integer starting with 0x';
         break;
       default:
-        failureReason = 'unknown error';
+        this.failureReason = 'unknown error';
         break;
     }
 
-    this.timestamp_ = new Date(mojo.time);
-    this.metadata_ = {
-      'Failure Reason': failureReason,
-      'Report To': originToText(mojo.reportingOrigin),
-      'Attribution-Reporting-Register-Source Header': mojo.headerValue,
-    };
+    this.headerValue = mojo.headerValue;
   }
 
-  get timestamp(): Date {
-    return this.timestamp_;
+  description(): string {
+    return 'Failed Source Registration';
   }
-  get metadata(): Record<string, string> {
-    return this.metadata_;
+
+  renderMetadata(td: HTMLElement) {
+    renderDL(td, this, FAILED_SOURCE_REGISTRATION_COLS);
   }
 }
 
@@ -823,8 +845,8 @@ class LogTableModel extends TableModel<Log> {
 
     this.cols = [
       new DateColumn<Log>('Timestamp', (e) => e.timestamp),
-      new ValueColumn<Log, string>('Type', (e) => e.type),
-      new StructuredColumn<Log>('Metadata', (e) => e.metadata),
+      new ValueColumn<Log, string>('Type', (e) => e.description()),
+      new LogMetadataColumn(),
     ];
 
     this.emptyRowText = 'No logs.';
