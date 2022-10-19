@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -116,4 +117,17 @@ test("libphonenumber_unittests") {
     "//testing/gtest",
     "//third_party/icu",
   ]
+}
+
+fuzzer_test("libphonenumber_fuzzer") {
+  sources = [ "libphonenumber_fuzzer.cc" ]
+  deps = [
+    ":libphonenumber",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+fuzzer_test("charntorune_fuzzer") {
+  sources = [ "charntorune_fuzzer.cc" ]
+  deps = [ ":libphonenumber" ]
 }
