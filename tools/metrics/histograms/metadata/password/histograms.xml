@@ -3280,6 +3280,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.WellKnownChangePasswordResult"
+    enum="WellKnownChangePasswordResult" expires_after="2023-04-20">
+  <owner>kolos@chromium.org</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    The type of change password URL opened after requesting, for example,
+    https://example.com/.well-known/change-password. The metric is emitted when
+    the appropriate throttle handles such URLs.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.{Location}.AuthenticationResult"
     enum="BooleanSuccess" expires_after="2023-02-12">
   <owner>vsemeniuk@google.com</owner>
