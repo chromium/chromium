@@ -40,6 +40,7 @@
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/history_clusters/core/config.h"
@@ -414,13 +415,17 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
         auto match = ShortcutToACMatch(*shortcut_match.shortcut,
                                        shortcut_match.relevance, input,
                                        fixed_up_input, term_string);
-
-        // Set the `suggestion_group_id` to guarantee ordering last.
-        match.suggestion_group_id = omnibox::GROUP_HISTORY_CLUSTER;
-        // Insert a corresponding omnibox::GroupConfig with default values
-        // in the suggestion groups map; otherwise the group ID will get
-        // dropped.
-        suggestion_groups_map_[omnibox::GROUP_HISTORY_CLUSTER];
+    // Guard this as `history_clusters::GetConfig()` doesn't exist on iOS.
+    // Though this code will never run on iOS regardless.
+#if !BUILDFLAG(IS_IOS)
+        if (!history_clusters::GetConfig()
+                 .omnibox_history_cluster_provider_free_ranking) {
+          match.suggestion_group_id = omnibox::GROUP_HISTORY_CLUSTER;
+          // Insert a corresponding omnibox::GroupConfig with default values in
+          // the suggestion groups map; otherwise the group ID will get dropped.
+          suggestion_groups_map_[omnibox::GROUP_HISTORY_CLUSTER];
+        }
+#endif  // !BUILDFLAG(IS_IOS)
 
         return match;
       });
