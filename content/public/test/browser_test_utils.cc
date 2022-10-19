@@ -4320,49 +4320,58 @@ bool HistoryGoForward(WebContents* wc) {
   return WaitForLoadStop(wc);
 }
 
-CreateAndLoadWebContentsObserver::CreateAndLoadWebContentsObserver()
+CreateAndLoadWebContentsObserver::CreateAndLoadWebContentsObserver(
+    int num_expected_contents)
     : creation_subscription_(
           RegisterWebContentsCreationCallback(base::BindRepeating(
               &CreateAndLoadWebContentsObserver::OnWebContentsCreated,
-              base::Unretained(this)))) {}
+              base::Unretained(this)))),
+      num_expected_contents_(num_expected_contents) {
+  EXPECT_GE(num_expected_contents, 1);
+}
 
 CreateAndLoadWebContentsObserver::~CreateAndLoadWebContentsObserver() = default;
 
 void CreateAndLoadWebContentsObserver::OnWebContentsCreated(
     WebContents* web_contents) {
+  ++num_new_contents_seen_;
+  if (num_new_contents_seen_ < num_expected_contents_) {
+    return;
+  }
+
   // If there is already a WebContents, then this will fail the test later.
-  if (web_contents_) {
-    failed_ = true;
-    // If we're called before Wait(), then `quit_closure_` has not been set.  If
-    // we're called after, then we'll clear this the first time through and it
-    // won't be set again.
-    DCHECK(!quit_closure_);
+  if (num_new_contents_seen_ > num_expected_contents_) {
+    ADD_FAILURE() << "Unexpected WebContents creation";
+    // If we're called before Wait(), then `contents_creation_quit_closure_`
+    // has not been set. If we're called after, then we'll clear this when
+    // we see the creation of the expected contents and it won't be set again.
+    EXPECT_FALSE(contents_creation_quit_closure_);
     return;
   }
 
   web_contents_ = web_contents;
   load_stop_observer_.emplace(web_contents_);
 
-  if (quit_closure_)
-    std::move(quit_closure_).Run();
+  if (contents_creation_quit_closure_)
+    std::move(contents_creation_quit_closure_).Run();
 }
 
 WebContents* CreateAndLoadWebContentsObserver::Wait() {
   // Wait for a new WebContents if we haven't gotten one yet.
   if (!load_stop_observer_) {
     base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
+    contents_creation_quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
 
   load_stop_observer_->Wait();
 
-  // Do this after waiting for load to complete, since exactly one WebContents
-  // should be created before Wait() returns.  If a second one is created while
-  // the first is loading, then it's still broken.
+  // Do this after waiting for load to complete, since only the specified number
+  // of WebContents should be created before Wait() returns. If an additional
+  // one is created while the expected contents is loading, then we still fail
+  // the test.
+  EXPECT_EQ(num_expected_contents_, num_new_contents_seen_);
   creation_subscription_ = base::CallbackListSubscription();
-
-  EXPECT_FALSE(failed_);
 
   return web_contents_;
 }

@@ -2337,15 +2337,16 @@ class DidFinishNavigationObserver : public WebContentsObserver {
 // CreateAndLoadWebContentsObserver observer;
 // ...Do something that creates one WebContents and causes it to navigate...
 // observer.Wait();
-//
-// This is not intended to be used if multiple WebContents might be created
-// before Wait() completes.  The behavior is undefined in this case, but it will
-// fail the test if it happens to notice.
 class CreateAndLoadWebContentsObserver {
  public:
-  CreateAndLoadWebContentsObserver();
+  // Used to wait for the given number of WebContents to be created. The load of
+  // the last expected WebContents is awaited.
+  explicit CreateAndLoadWebContentsObserver(int num_expected_contents = 1);
   ~CreateAndLoadWebContentsObserver();
 
+  // Wait for the last expected WebContents to finish loading. The test will
+  // fail if an additional WebContents creation is observed before `Wait()`
+  // completes.
   WebContents* Wait();
 
  private:
@@ -2359,8 +2360,10 @@ class CreateAndLoadWebContentsObserver {
   base::CallbackListSubscription creation_subscription_;
 
   raw_ptr<WebContents> web_contents_ = nullptr;
-  base::OnceClosure quit_closure_;
-  bool failed_ = false;
+  base::OnceClosure contents_creation_quit_closure_;
+
+  const int num_expected_contents_;
+  int num_new_contents_seen_ = 0;
 };
 
 [[nodiscard]] base::CallbackListSubscription

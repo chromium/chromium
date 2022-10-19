@@ -27,10 +27,6 @@
 #include "components/zoom/test/zoom_test_utils.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/host_zoom_map.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
@@ -194,10 +190,8 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
   // method will create a listener and reply to the extension before returning
   // to avoid leaking an API function while waiting for a reply.
   void OpenPopupViaAPI(bool will_reply) {
-    // Setup the notification observer to wait for the popup to finish loading.
-    content::WindowedNotificationObserver frame_observer(
-        content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-        content::NotificationService::AllSources());
+    // Setup the observer to wait for the popup to finish loading.
+    content::CreateAndLoadWebContentsObserver frame_observer;
     std::unique_ptr<ExtensionTestMessageListener> listener;
     if (!will_reply)
       listener = std::make_unique<ExtensionTestMessageListener>("ready");
@@ -215,16 +209,11 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
   // with `id`.
   content::WebContents* OpenPopupViaToolbar(const std::string& id) {
     EXPECT_FALSE(id.empty());
-    content::WindowedNotificationObserver popup_observer(
-        content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver popup_observer;
     ExtensionActionTestHelper::Create(browser())->Press(id);
-    popup_observer.Wait();
+    content::WebContents* popup = popup_observer.Wait();
     EnsurePopupActive();
-    const auto& source =
-        static_cast<const content::Source<content::WebContents>&>(
-            popup_observer.source());
-    return source.ptr();
+    return popup;
   }
 
   // Close the popup window directly.
@@ -283,9 +272,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   Browser* new_browser = nullptr;
   {
-    content::WindowedNotificationObserver frame_observer(
-        content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver frame_observer;
     // Open a new window.
     new_browser = chrome::FindBrowserWithWebContents(browser()->OpenURL(
         content::OpenURLParams(GURL("about:blank"), content::Referrer(),
@@ -302,9 +289,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
 
   ResultCatcher catcher;
   {
-    content::WindowedNotificationObserver frame_observer(
-        content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver frame_observer;
     // Show second popup in new window.
     listener.Reply("show another");
     frame_observer.Wait();
@@ -316,9 +301,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
 
 // Tests opening a popup in an incognito window.
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopupIncognito) {
-  content::WindowedNotificationObserver frame_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  // The creation of the incognito window is the first WebContents.
+  content::CreateAndLoadWebContentsObserver frame_observer(
+      /*num_expected_contents=*/2);
   ASSERT_TRUE(RunExtensionTest(
       "browser_action/open_popup",
       {.extension_url = "open_popup_succeeds.html", .open_in_incognito = true},
@@ -550,9 +535,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveViewsTest,
   ASSERT_TRUE(extension) << message_;
 
   // Open an extension popup by clicking the browser action button.
-  content::WindowedNotificationObserver frame_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  // This creates two WebContents: the popup and the DevTools window.
+  content::CreateAndLoadWebContentsObserver frame_observer(
+      /*num_expected_contents=*/2);
   ExtensionActionTestHelper::Create(browser())->InspectPopup(extension->id());
   frame_observer.Wait();
   EXPECT_TRUE(ExtensionActionTestHelper::Create(browser())->HasPopup());
