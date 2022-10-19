@@ -52,7 +52,6 @@ The dialog provides two properties that can be set directly from HTML.
 
       #contentContainer {
         height: var(--oobe-modal-dialog-content-height);
-        @apply --oobe-default-font;
         padding-bottom:
             var(--oobe-modal-dialog-content-slot-padding-bottom, 12px);
         padding-inline-end:
@@ -71,7 +70,7 @@ The dialog provides two properties that can be set directly from HTML.
         </slot>
       </div>
       <!-- Content to be shown -->
-      <div id="contentContainer" slot="body"
+      <div id="contentContainer" class="oobe-default-font" slot="body"
           class="flex-grow layout vertical not-resizable">
         <slot name="content">
           <template is="dom-if" if="[[contentKey]]">

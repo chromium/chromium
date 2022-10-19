@@ -66,9 +66,13 @@ found in the LICENSE file.
       /* Please check whether |multidevice_setup/ui_page.html| needs to be */
       /* updated when below css rules are changed. */
       :host {
+        color: var(--oobe-text-color);
+        font-family: var(--oobe-default-font-family);
+        font-size: var(--oobe-default-font-size);
+        font-weight: var(--oobe-default-font-weight);
+        line-height: var(--oobe-default-line-height);
         height: var(--oobe-adaptive-dialog-height);
         width: var(--oobe-adaptive-dialog-width);
-        @apply --oobe-default-font;
       }
 
       :host-context([orientation=horizontal]) {
@@ -105,7 +109,10 @@ found in the LICENSE file.
 
       #oobe-title ::slotted(h1) {
         color: var(--oobe-header-text-color);
-        @apply --oobe-header-font;
+        font-family: var(--oobe-header-font-family);
+        font-size: var(--oobe-header-font-size);
+        font-weight: var(--oobe-header-font-weight);
+        line-height: var(--oobe-header-line-height);
         margin: 0;
         text-align: var(--oobe-text-alignment);
       }

@@ -57,9 +57,13 @@ found in the LICENSE file.
   <template>
     <style include="oobe-dialog-host-styles cr-shared-style">
       :host {
+        color: var(--oobe-text-color);
+        font-family: var(--oobe-default-font-family);
+        font-size: var(--oobe-default-font-size);
+        font-weight: var(--oobe-default-font-weight);
         height: var(--oobe-adaptive-dialog-height);
+        line-height: var(--oobe-default-line-height);
         width: var(--oobe-adaptive-dialog-width);
-        @apply --oobe-default-font;
         --oobe-adaptive-dialog-content-width: calc(
             var(--oobe-adaptive-dialog-width) -
             2 * var(--oobe-adaptive-dialog-content-padding));

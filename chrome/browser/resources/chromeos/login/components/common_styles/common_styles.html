@@ -11,22 +11,12 @@ found in the LICENSE file.
 <dom-module id="oobe-common-styles">
   <template>
     <style include="oobe-flex-layout-styles">
-
-      :host {
-        --oobe-default-font: {
-            color: var(--oobe-text-color);
-            font-family: var(--oobe-default-font-family);
-            font-size: var(--oobe-default-font-size);
-            font-weight: var(--oobe-default-font-weight);
-            line-height: var(--oobe-default-line-height);
-        };
-
-        --oobe-header-font: {
-            font-family: var(--oobe-header-font-family);
-            font-size: var(--oobe-header-font-size);
-            font-weight: var(--oobe-header-font-weight);
-            line-height: var(--oobe-header-line-height);
-        };
+      :host .oobe-default-font {
+        color: var(--oobe-text-color);
+        font-family: var(--oobe-default-font-family);
+        font-size: var(--oobe-default-font-size);
+        font-weight: var(--oobe-default-font-weight);
+        line-height: var(--oobe-default-line-height);
       }
 
       /* Classes can-scroll is-scrolled scrolled-to-bottom are set by

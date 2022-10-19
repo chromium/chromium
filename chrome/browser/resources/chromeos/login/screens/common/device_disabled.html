@@ -28,8 +28,6 @@ first, and prevents such error.
   <template>
     <style include="oobe-dialog-host-styles">
       #message {
-        @apply --oobe-default-font;
-        color: var(--oobe-text-color);
         overflow: auto;
         text-overflow: clip;
         white-space: pre-wrap;
@@ -48,7 +46,7 @@ first, and prevents such error.
         [[disabledText_(locale, serial_, enrollmentDomain_)]]
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <div id="message">[[message_]]</div>
+        <div id="message" class="oobe-default-font">[[message_]]</div>
         <img src="/images/device-disabled.svg"
             class="oobe-illustration flex" aria-hidden="true">
       </div>
