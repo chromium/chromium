@@ -3811,6 +3811,26 @@
             ]
         }
     ],
+    "DesktopPartialTranslate": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "DesktopPartialTranslateTextSelectionMaxCharacters": "500"
+                    },
+                    "enable_features": [
+                        "DesktopPartialTranslate"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopReadingListAddFromDialog": [
         {
             "platforms": [
