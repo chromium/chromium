@@ -278,7 +278,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
           // The displayName won't change, so just use the first
           // exception.
           assert(exceptionList.length > 0);
-          this.pageTitle =
+          this.pageTitle = exceptionList[0].isolatedWebAppName ??
               this.originRepresentation(exceptionList[0].displayName);
         });
   }

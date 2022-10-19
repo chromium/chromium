@@ -1400,6 +1400,12 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     raw_site_exception.Set(site_settings::kIncognito,
                            profile_->IsOffTheRecord());
     raw_site_exception.Set(site_settings::kOrigin, origin);
+    absl::optional<std::string> isolated_web_app_name =
+        site_settings::GetIsolatedWebAppName(profile_, origin_url);
+    if (isolated_web_app_name.has_value()) {
+      raw_site_exception.Set(site_settings::kIsolatedWebAppName,
+                             isolated_web_app_name.value());
+    }
     raw_site_exception.Set(site_settings::kDisplayName, display_name);
     raw_site_exception.Set(site_settings::kSetting, content_setting_string);
     raw_site_exception.Set(site_settings::kSource, source_string);

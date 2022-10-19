@@ -81,6 +81,7 @@ export interface RawSiteException {
   isEmbargoed: boolean;
   origin: string;
   displayName: string;
+  isolatedWebAppName?: string;
   type: string;
   setting: ContentSetting;
   source: SiteSettingSource;
