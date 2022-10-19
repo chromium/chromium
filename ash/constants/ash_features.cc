@@ -1991,6 +1991,12 @@ BASE_FEATURE(kUseAuthFactors,
              "UseAuthFactors",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, WebAuthN uses auth session based authentication
+// instead of legacy CheckKey.
+BASE_FEATURE(kUseAuthsessionForWebAuthN,
+             "UseAuthsessionForWebAuthN",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the login shelf view is placed in its own widget instead of
 // sharing the shelf widget with other components.
 BASE_FEATURE(kUseLoginShelfWidget,
@@ -3034,6 +3040,10 @@ bool IsUploadOfficeToCloudEnabled() {
 
 bool IsUseAuthFactorsEnabled() {
   return base::FeatureList::IsEnabled(kUseAuthFactors);
+}
+
+bool IsUseAuthsessionForWebAuthNEnabled() {
+  return base::FeatureList::IsEnabled(kUseAuthsessionForWebAuthN);
 }
 
 bool IsUseLoginShelfWidgetEnabled() {
