@@ -1369,4 +1369,31 @@ TYPED_TEST(VariationsSeedProcessorTest,
             internal::kFeatureConflictGroupName);
 }
 
+TYPED_TEST(VariationsSeedProcessorTest, OutOfBoundsLayer) {
+  VariationsSeed seed;
+  // Define an invalid layer with out of bounds slots.
+  Layer* layer = seed.add_layers();
+  layer->set_id(42);
+  layer->set_num_slots(8000);
+  Layer::LayerMember* member = layer->add_members();
+  member->set_id(82);
+  Layer::LayerMember::SlotRange* slot = member->add_slots();
+  slot->set_start(0);
+  slot->set_end(0x7fffffff);
+
+  // Add a study that uses it with remainder entropy.
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  LayerMemberReference* layer_membership = study->mutable_layer();
+  layer_membership->set_layer_id(42);
+  layer_membership->set_layer_member_id(82);
+  AddExperiment("A", 1, study);
+  study->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
+  AddExperiment("B", 1, study);
+
+  // Layer should be rejected and not crash or timeout.
+  this->CreateTrialsFromSeed(seed);
+}
+
 }  // namespace variations

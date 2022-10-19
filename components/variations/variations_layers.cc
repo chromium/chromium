@@ -23,7 +23,8 @@ enum class InvalidLayerReason {
   kNoMembers = 2,
   kInvalidEntropyMode = 3,
   kSlotsDoNotDivideLowEntropyDomain = 4,
-  kMaxValue = kSlotsDoNotDivideLowEntropyDomain,
+  kInvalidSlotBounds = 5,
+  kMaxValue = kInvalidSlotBounds,
 };
 
 void LogInvalidLayerReason(InvalidLayerReason reason) {
@@ -139,6 +140,21 @@ NormalizedMurmurHashEntropyProvider ComputeRemainderEntropy(
   return NormalizedMurmurHashEntropyProvider(remainder.value, remainder.range);
 }
 
+bool ValidSlotBounds(const Layer& layer_proto) {
+  for (const auto& member : layer_proto.members()) {
+    for (const auto& range : member.slots()) {
+      // start and end are both unsigned (uint32_t) so no need to check that
+      // they are non-negative.
+      if (range.end() >= layer_proto.num_slots())
+        return false;
+      if (range.start() > range.end()) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 VariationsLayers::VariationsLayers(const VariationsSeed& seed,
@@ -172,6 +188,11 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
   if (layer_proto.entropy_mode() != Layer::LOW &&
       layer_proto.entropy_mode() != Layer::DEFAULT) {
     LogInvalidLayerReason(InvalidLayerReason::kInvalidEntropyMode);
+    return;
+  }
+
+  if (!ValidSlotBounds(layer_proto)) {
+    LogInvalidLayerReason(InvalidLayerReason::kInvalidSlotBounds);
     return;
   }
 
