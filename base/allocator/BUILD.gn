@@ -17,6 +17,12 @@ buildflag_header("buildflags") {
           enable_partition_alloc_as_malloc_support,
       "Partition alloc as malloc requires enable_partition_alloc_as_malloc_support=true")
 
+  # MTECheckedPtr is exclusive against BRP (asserted at declaration).
+  # MTECheckedPtr requires 64-bit pointers (not available in NaCl).
+  # Also, MTECheckedPtr is useless for NaCl builds, which don't enable
+  # PartitionAlloc-Everywhere.
+  _use_mte_checked_ptr = use_mte_checked_ptr && !is_nacl
+
   flags = [
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
@@ -26,9 +32,8 @@ buildflag_header("buildflags") {
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
     "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$use_backup_ref_ptr",
 
-    # Not to be used by itself - use in combination with
-    # defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-    "USE_MTE_CHECKED_PTR=$use_mte_checked_ptr",
+    # Not to be used directly - see `partition_alloc_config.h`.
+    "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
 
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
   ]

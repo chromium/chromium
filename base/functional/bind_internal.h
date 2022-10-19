@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_internal.h"
@@ -120,7 +121,7 @@ class UnretainedWrapper {
   }
 
  private:
-#if defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // When `MTECheckedPtr` is enabled as the backing implementation of
   // `raw_ptr`, there are too many different types that immediately
   // cause Chrome to crash. Some of these are inutterable as forward
@@ -131,7 +132,7 @@ class UnretainedWrapper {
   // As a compromise, we decay the wrapper to use `T*` only (rather
   // than `raw_ptr`) when `raw_ptr` is `MTECheckedPtr`.
   using ImplType = T*;
-#else   // defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#else
   // `Unretained()` arguments often dangle by design (common design patterns
   // consists of managing objects lifetime inside the callbacks themselves using
   // stateful information), so disable direct dangling pointer detection of
@@ -143,7 +144,7 @@ class UnretainedWrapper {
   using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
                                       raw_ptr<T, DisableDanglingPtrDetection>,
                                       T*>;
-#endif  // defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   ImplType ptr_;
 };
 
@@ -168,7 +169,7 @@ class UnretainedRefWrapper {
   T& ref_;
 };
 
-#if !defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#if !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 // Implementation of UnretainedRefWrapper for `T` where raw_ref<T> is supported.
 template <typename T>
 class UnretainedRefWrapper<T, true> {
@@ -205,7 +206,7 @@ class UnretainedRefWrapper<raw_ref<T, I>, b> {
  private:
   const raw_ref<T, I> ref_;
 };
-#endif  // !defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#endif
 
 template <typename T>
 class RetainedRefWrapper {

@@ -28,30 +28,21 @@
 #include "base/trace_event/base_tracing_forward.h"
 #endif  // BUILDFLAG(PA_USE_BASE_TRACING)
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR) || defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#if BUILDFLAG(USE_BACKUP_REF_PTR) || \
+    defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
 // allocator/partition_allocator/ to be built.
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) || defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) ||
+        // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
-#if BUILDFLAG(USE_MTE_CHECKED_PTR) && \
-    defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/partition_tag_types.h"
 #include "base/allocator/partition_allocator/tagging.h"
-
-// The key flag to enable MTECheckedPtr is
-// BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT). It has to be combined with macros
-// (not known in .gn(i) files), leading to creation of
-// PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS in the PA library.
-// On the other hand, it also has to be combined with some GN variables not
-// know by the PA library, leading to BUILDFLAG(USE_MTE_CHECKED_PTR).
-// This macro combines all of this together.
-#define RAW_PTR_USE_MTE_CHECKED_PTR
-#endif  // BUILDFLAG(USE_MTE_CHECKED_PTR) && \
-    // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_handle_types.h"
@@ -174,7 +165,7 @@ struct RawPtrNoOpImpl {
   static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
 };
 
-#if defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 constexpr int kValidAddressBits = 48;
 constexpr uintptr_t kAddressMask = (1ull << kValidAddressBits) - 1;
@@ -373,7 +364,7 @@ struct MTECheckedPtrImpl {
   }
 };
 
-#endif  // defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -885,7 +876,7 @@ struct RawPtrTypeToImpl<RawPtrMayDangle> {
   using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/true>;
 #elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   using Impl = internal::AsanBackupRefPtrImpl;
-#elif defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#elif defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   using Impl = internal::MTECheckedPtrImpl<
       internal::MTECheckedPtrImplPartitionAllocSupport>;
 #else
@@ -899,7 +890,7 @@ struct RawPtrTypeToImpl<RawPtrBanDanglingIfSupported> {
   using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/false>;
 #elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   using Impl = internal::AsanBackupRefPtrImpl;
-#elif defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#elif defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   using Impl = internal::MTECheckedPtrImpl<
       internal::MTECheckedPtrImplPartitionAllocSupport>;
 #else
@@ -1474,7 +1465,7 @@ using DanglingUntriaged = DisableDanglingPtrDetection;
 // When `MTECheckedPtr` is in play, we need to augment this
 // implementation setting with another layer that allows the `raw_ptr`
 // to degrade into the no-op version.
-#if defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 // Direct pass-through to no-op implementation.
 using DegradeToNoOpWhenMTE = base::RawPtrNoOp;
@@ -1498,7 +1489,7 @@ using DanglingUntriagedDegradeToNoOpWhenMTE = DanglingUntriaged;
 using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE =
     DisableDanglingPtrDetection;
 
-#endif  // defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 namespace std {
 

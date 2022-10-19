@@ -62,11 +62,11 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
   // not CHECKing appropriately.
   static constexpr bool need_clear_after_move =
       std::is_same_v<Impl, internal::RawPtrNoOpImpl> ||
-#if defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
       std::is_same_v<Impl,
                      internal::MTECheckedPtrImpl<
                          internal::MTECheckedPtrImplPartitionAllocSupport>> ||
-#endif  // defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
       std::is_same_v<Impl, internal::AsanBackupRefPtrImpl>;
 
  public:

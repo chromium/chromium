@@ -394,8 +394,6 @@ buildflag_header("partition_alloc_buildflags") {
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
 
-    # Not to be used directly - instead use
-    # defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
     "ENABLE_MTE_CHECKED_PTR_SUPPORT=$_enable_mte_checked_ptr_support",
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
