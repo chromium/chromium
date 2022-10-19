@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -847,8 +848,7 @@ TEST_F(TabContainerTest, UnderlineBoundsTabVisibilityChange) {
   // Add tabs to a single group until the last one is not visible.
   tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
   do {
-    AddTab(0);
-    AddTabToGroup(0, group);
+    AddTab(0, group);
     tab_container_->CompleteAnimationAndLayout();
   } while (tab_container_->GetTabAtModelIndex(tab_container_->GetTabCount() - 1)
                ->GetVisible());
@@ -867,8 +867,40 @@ TEST_F(TabContainerTest, UnderlineBoundsTabVisibilityChange) {
   // Use the abridged version of the method to ensure TabContainer::Layout is
   // called exactly once.
   SetTabContainerWidthSingleLayout(300);
-  EXPECT_NE(tab_container_->bounds(), initial_bounds);
-  EXPECT_NE(tab_container_->bounds(), shrunk_bounds);
+  EXPECT_NE(underline->bounds(), initial_bounds);
+  EXPECT_NE(underline->bounds(), shrunk_bounds);
+}
+
+TEST_F(TabContainerTest, UnderlineBoundsCollapsedGroupHeaderVisibilityChange) {
+  // Validates that group underlines are updated correctly in a single Layout
+  // call when the visibility of the group header changes, even if the group is
+  // collapsed. See crbug.com/1374614
+
+  // This test is only valid with scrolling off, since it pertains to tab
+  // visibility stuff that scrolling doesn't do.
+  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kScrollableTabStrip));
+
+  SetTabContainerWidth(200);
+  // Create a tab group with one tab and collapse it.
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTab(0, absl::nullopt, TabActive::kActive);
+  AddTab(1, group);
+  tab_strip_controller_->ToggleTabGroupCollapsedState(
+      group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+  // Add tabs until the group header is not visible.
+  do {
+    AddTab(0);
+    tab_container_->CompleteAnimationAndLayout();
+  } while (ListGroupViews()[0]->header()->GetVisible());
+
+  const TabGroupUnderline* underline = ListGroupViews()[0]->underline();
+  const gfx::Rect initial_bounds = underline->bounds();
+
+  // Expand the TabContainer and verify that the underline bounds changed.
+  // Use the abridged version of the method to ensure TabContainer::Layout is
+  // called exactly once.
+  SetTabContainerWidthSingleLayout(300);
+  EXPECT_NE(underline->bounds(), initial_bounds);
 }
 
 TEST_F(TabContainerTest, GroupHighlightBasics) {

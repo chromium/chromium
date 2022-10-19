@@ -685,6 +685,12 @@ void TabContainerImpl::SetTabSlotVisibility() {
     absl::optional<tab_groups::TabGroupId> current_group = tab->group();
     if (current_group != last_tab_group && last_tab_group.has_value()) {
       TabGroupViews* group_view = group_views_.at(last_tab_group.value()).get();
+
+      // If we change the visibility of a group header, we must recalculate that
+      // group's underline bounds.
+      if (last_tab_visible != group_view->header()->GetVisible())
+        visibility_changed_groups.insert(last_tab_group.value());
+
       group_view->header()->SetVisible(last_tab_visible);
       // Hide underlines if they would underline an invisible tab, but don't
       // show underlines if they're hidden during a header drag session.
