@@ -401,10 +401,15 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
         if (BackPressManager.isEnabled()) {
             backPressManager.addHandler(this, Type.START_SURFACE_MEDIATOR);
-            notifyBackPressStateChanged();
+            if (mPropertyModel != null) {
+                mPropertyModel.addObserver((source, key) -> {
+                    if (key == IS_INCOGNITO) notifyBackPressStateChanged();
+                });
+            }
             mController.getHandleBackPressChangedSupplier().addObserver(
                     (v) -> notifyBackPressStateChanged());
             mController.isDialogVisibleSupplier().addObserver((v) -> notifyBackPressStateChanged());
+            notifyBackPressStateChanged();
         }
     }
 
