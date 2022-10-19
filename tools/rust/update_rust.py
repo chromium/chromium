@@ -30,12 +30,12 @@ sys.path.append(
 RUST_REVISION = '20220914'
 RUST_SUB_REVISION = 1
 
-# Trunk on 2022-08-26.
+# Trunk on 2022-10-15.
 #
 # The revision specified below should typically be the same as the
 # `crubit_revision` specified in the //DEPS file.  More details and roll
 # instructions can be found in tools/rust/README.md.
-CRUBIT_REVISION = '2c34caee7c3b4c2dfbcb0e935efcbc05ebc0f61d'
+CRUBIT_REVISION = 'f5cbdf4b54b0e6b9f63a4464a2c901c82e0f0209'
 CRUBIT_SUB_REVISION = 1
 
 # If not None, use a Rust package built with an older LLVM version than

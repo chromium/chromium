@@ -7,7 +7,7 @@
 
 int AddViaCc(int x, int y);
 
-struct CcPodStruct {
+struct CcPodStruct final {
   int value;
 };
 

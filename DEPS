@@ -206,11 +206,11 @@ vars = {
   # qemu on linux-arm64 machines.
   'checkout_fuchsia_for_arm64_host': False,
 
-  # Revision of Crubit (trunk on 2022-08-26).  This should typically be the
+  # Revision of Crubit (trunk on 2022-10-15).  This should typically be the
   # same as the revision specified in CRUBIT_REVISION in
   # tools/rust/update_rust.py.  More details and roll instructions can be
   # found in tools/rust/README.md.
-  'crubit_revision': '2c34caee7c3b4c2dfbcb0e935efcbc05ebc0f61d',
+  'crubit_revision': 'f5cbdf4b54b0e6b9f63a4464a2c901c82e0f0209',
 
   # By default, download the fuchsia sdk from the public sdk directory.
   'fuchsia_sdk_cipd_prefix': 'fuchsia/sdk/gn/',
