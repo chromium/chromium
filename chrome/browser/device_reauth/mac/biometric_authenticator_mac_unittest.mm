@@ -39,6 +39,8 @@ class BiometricAuthenticatorMacTest : public testing::Test {
 
   MockAuthResultCallback& result_callback() { return result_callback_; }
 
+  void ResetAuthenticator() { authenticator_.reset(); }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -144,27 +146,4 @@ TEST_F(BiometricAuthenticatorMacTest, CancelPendngAuthentication) {
   // there will be a cancelation in the meantime.
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->Cancel(BiometricAuthRequester::kPasswordsInSettings);
-}
-
-// If triggering new authentication cancels the old one.
-TEST_F(BiometricAuthenticatorMacTest, TriggerAuthenticationWhenOtherIsPending) {
-  // First authentication could have been succesful but it won't be resolved to
-  // simulate that there is a new one coming in the meantime.
-  touch_id_enviroment()->SimulateTouchIdPromptSuccess();
-  touch_id_enviroment()->DoNotResolveNextPrompt();
-  MockAuthResultCallback canceled_callback;
-  authenticator()->AuthenticateWithMessage(
-      BiometricAuthRequester::kPasswordsInSettings,
-      /*message=*/u"Chrome is trying to show passwords.",
-      canceled_callback.Get());
-
-  // The new authentication should cancel the old one and resolve itself
-  // succesfully.
-  touch_id_enviroment()->SimulateTouchIdPromptSuccess();
-  EXPECT_CALL(canceled_callback, Run(/*success=*/false));
-  EXPECT_CALL(result_callback(), Run(/*success=*/true));
-  authenticator()->AuthenticateWithMessage(
-      BiometricAuthRequester::kPasswordsInSettings,
-      /*message=*/u"Chrome is trying to show passwords.",
-      result_callback().Get());
 }
