@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -263,7 +263,7 @@ public class BrandingControllerUnitTest {
             Context context = ContextUtils.getApplicationContext();
             mBrandingController = new BrandingController(
                     new ContextThemeWrapper(context, R.style.Theme_Chromium_Activity),
-                    context.getPackageName());
+                    context.getPackageName(), "appName", null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.
             mToolbarBrandingDelegate = mock(ToolbarBrandingDelegate.class);

@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
@@ -182,7 +183,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             if (TextUtils.isEmpty(packageName)) {
                 packageName = CustomTabIntentDataProvider.getReferrerPackageName(activity);
             }
-            mBrandingController = new BrandingController(activity, packageName);
+            String appName = activity.getResources().getString(R.string.app_name);
+            mBrandingController = new BrandingController(
+                    activity, packageName, appName, new ChromePureJavaExceptionReporter());
         }
         mTabController = tabController;
     }

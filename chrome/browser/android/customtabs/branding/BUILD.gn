@@ -1,0 +1,58 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingChecker.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingController.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingDecision.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/SharedPreferencesBrandingTimeStorage.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingDelegate.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/crash/android:java",
+    "//content/public/android:content_main_dex_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  resources_package = "org.chromium.chrome"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/custom_tabs_toast_branding_layout.xml" ]
+
+  deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingCheckerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingControllerUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

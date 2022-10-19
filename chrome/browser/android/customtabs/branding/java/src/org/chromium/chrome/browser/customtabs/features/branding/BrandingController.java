@@ -19,10 +19,10 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
+import org.chromium.components.crash.PureJavaExceptionReporter;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.Toast;
 
@@ -71,6 +71,7 @@ public class BrandingController {
             new OneshotSupplierImpl<>();
     private final BrandingChecker mBrandingChecker;
     private final Context mContext;
+    private final String mAppName;
 
     private ToolbarBrandingDelegate mToolbarBrandingDelegate;
     private @Nullable Toast mToast;
@@ -78,13 +79,21 @@ public class BrandingController {
     private boolean mIsBrandingShowing;
     private boolean mIsDestroyed;
 
+    @Nullable
+    private PureJavaExceptionReporter mExceptionReporter;
+
     /**
      * Branding controller responsible for showing branding.
      * @param context Context used to fetch package information for embedded app.
      * @param packageName The package name for the embedded app.
+     * @param appName The appName shown on the branding toast.
+     * @param exceptionReporter Optional reporter that reports wrong state quitely.
      */
-    public BrandingController(Context context, String packageName) {
+    public BrandingController(Context context, String packageName, String appName,
+            @Nullable PureJavaExceptionReporter exceptionReporter) {
         mContext = context;
+        mAppName = appName;
+        mExceptionReporter = exceptionReporter;
         mBrandingDecision.onAvailable(
                 mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
 
@@ -169,9 +178,8 @@ public class BrandingController {
             return;
         }
 
-        String appName = mContext.getResources().getString(R.string.app_name);
-        String toastText =
-                mContext.getResources().getString(R.string.twa_running_in_chrome_template, appName);
+        String toastText = mContext.getResources().getString(
+                R.string.twa_running_in_chrome_template, mAppName);
         TextView runInChromeTextView = (TextView) LayoutInflater.from(mContext).inflate(
                 R.layout.custom_tabs_toast_branding_layout, null, false);
         runInChromeTextView.setText(toastText);
@@ -190,9 +198,11 @@ public class BrandingController {
         }
     }
 
-    private static void reportErrorMessage(String message) {
+    private void reportErrorMessage(String message) {
         Log.e(TAG, message);
-        ChromePureJavaExceptionReporter.reportJavaException(new Throwable(message));
+        if (mExceptionReporter != null) {
+            mExceptionReporter.createAndUploadReport(new Throwable(message));
+        }
     }
 
     @BrandingDecision
