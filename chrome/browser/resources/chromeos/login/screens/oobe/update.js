@@ -6,7 +6,25 @@
  * @fileoverview Polymer element for displaying material design Update screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '../../components/oobe_cr_lottie.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
+import '../../components/oobe_carousel.js';
+import '../../components/oobe_slide.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 const USER_ACTION_ACCEPT_UPDATE_OVER_CELLUAR = 'update-accept-cellular';
 const USER_ACTION_REJECT_UPDATE_OVER_CELLUAR = 'update-reject-cellular';
@@ -56,9 +74,8 @@ const UpdateUIState = {
  * @implements {OobeI18nBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
  */
-const UpdateBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-    Polymer.Element);
+const UpdateBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @typedef {{
@@ -68,15 +85,15 @@ const UpdateBase = Polymer.mixinBehaviors(
  */
 UpdateBase.$;
 
-/**
- * @polymer
- */
+/** @polymer */
 class Update extends UpdateBase {
   static get is() {
     return 'update-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -117,6 +134,7 @@ class Update extends UpdateBase {
        */
       updateStatusMessagePercent: {
         type: String,
+        value: '',
       },
 
       /**
@@ -124,6 +142,7 @@ class Update extends UpdateBase {
        */
       updateStatusMessageTimeLeft: {
         type: String,
+        value: '',
       },
 
       /**
@@ -163,12 +182,6 @@ class Update extends UpdateBase {
 
   static get observers() {
     return ['playAnimation_(uiStep)'];
-  }
-
-  constructor() {
-    super();
-    this.updateStatusMessagePercent = '';
-    this.updateStatusMessageTimeLeft = '';
   }
 
   defaultUIStep() {

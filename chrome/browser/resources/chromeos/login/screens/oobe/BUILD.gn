@@ -13,7 +13,6 @@ group("polymer3_elements") {
     ":enterprise_enrollment_module",
     ":packaged_license_module",
     ":quick_start_module",
-    ":update_module",
     ":welcome_dialog_module",
     ":welcome_module",
   ]
@@ -35,7 +34,7 @@ js_type_check("closure_compile") {
     ":oobe_network",
     ":packaged_license.m",
     ":quick_start.m",
-    ":update.m",
+    ":update",
     ":welcome.m",
     ":welcome_dialog.m",
   ]
@@ -170,8 +169,8 @@ js_library("packaged_license.m") {
   extra_deps = [ ":packaged_license_module" ]
 }
 
-js_library("update.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/update.m.js" ]
+js_library("update") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/update.js" ]
   deps = [
     "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior.m",
@@ -182,7 +181,7 @@ js_library("update.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":update_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("welcome.m") {
@@ -250,15 +249,6 @@ polymer_modulizer("packaged_license") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("update") {
-  js_file = "update.js"
-  html_file = "update.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("welcome") {
   js_file = "welcome.js"
   html_file = "welcome.html"
@@ -285,5 +275,6 @@ html_to_js("web_components") {
     "enable_debugging.js",
     "hid_detection.js",
     "oobe_network.js",
+    "update.js",
   ]
 }

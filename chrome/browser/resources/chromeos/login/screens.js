@@ -62,7 +62,7 @@ import './screens/oobe/hid_detection.js';
 import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.m.js';
 import './screens/oobe/quick_start.m.js';
-import './screens/oobe/update.m.js';
+import './screens/oobe/update.js';
 import './screens/oobe/welcome.m.js';
 
 /**
