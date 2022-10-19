@@ -3790,7 +3790,7 @@
   {
     "name": "force-password-initial-sync-when-decryption-fails",
     "owners": [ "derinel@google.com", "mamir" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 111
   },
   {
     "name": "force-show-update-menu-badge",
@@ -5505,7 +5505,7 @@
   {
     "name": "password-view-page-in-settings",
     "owners": ["mamir", "derinel@google.com"],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "pcie-billboard-notification",
@@ -6311,7 +6311,7 @@
   {
     "name": "skip-undecryptable-passwords",
     "owners": [ "derinel@google.com", "mamir" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 111
   },
   {
     "name": "smart-lock-sign-in-removed",
