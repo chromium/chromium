@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -42,6 +44,25 @@ const char16_t kMenuItem1[] = u"Menu item";
 const char16_t kMenuItem2[] = u"Menu item 2";
 constexpr int kMenuID1 = 1;
 constexpr int kMenuID2 = 2;
+
+class DefaultActionTestView : public View {
+ public:
+  DefaultActionTestView() = default;
+  ~DefaultActionTestView() override = default;
+
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
+    EXPECT_EQ(ax::mojom::Action::kDoDefault, action_data.action);
+    EXPECT_FALSE(activated_);
+    activated_ = true;
+    return true;
+  }
+
+  bool activated() const { return activated_; }
+
+ private:
+  bool activated_ = false;
+};
+
 }  // namespace
 
 class InteractionTestUtilViewsTest : public ViewsTestBase {
@@ -251,6 +272,64 @@ TEST_F(InteractionTestUtilViewsTest, SelectMenuItem_Touch) {
       test_util_->SelectMenuItem(
           views::ElementTrackerViews::GetInstance()->GetElementForView(
               menu_item_),
+          ui::test::InteractionTestUtil::InputType::kTouch));
+}
+
+TEST_F(InteractionTestUtilViewsTest, DoDefault_DontCare) {
+  auto* const view =
+      contents_->AddChildView(std::make_unique<DefaultActionTestView>());
+  widget_->LayoutRootViewIfNecessary();
+  test_util_->DoDefaultAction(
+      views::ElementTrackerViews::GetInstance()->GetElementForView(view, true));
+  EXPECT_TRUE(view->activated());
+}
+
+TEST_F(InteractionTestUtilViewsTest, DoDefault_Keyboard) {
+  // A button can be used for this because we are simulating keyboard select,
+  // which buttons respond to.
+  UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
+  auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
+      Button::PressedCallback(pressed.Get()), u"Button"));
+  widget_->LayoutRootViewIfNecessary();
+  EXPECT_CALL_IN_SCOPE(
+      pressed, Run,
+      test_util_->DoDefaultAction(
+          views::ElementTrackerViews::GetInstance()->GetElementForView(button,
+                                                                       true),
+          ui::test::InteractionTestUtil::InputType::kKeyboard));
+}
+
+TEST_F(InteractionTestUtilViewsTest, DoDefault_Mouse) {
+  // A button can be used for this because we are simulating mouse select,
+  // which buttons respond to.
+  UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
+  // Add a spacer view to make sure we're actually trying to send events in the
+  // appropriate coordinate space.
+  contents_->AddChildView(
+      std::make_unique<LabelButton>(Button::PressedCallback(), u"Spacer"));
+  auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
+      Button::PressedCallback(pressed.Get()), u"Button"));
+  widget_->LayoutRootViewIfNecessary();
+  EXPECT_CALL_IN_SCOPE(
+      pressed, Run,
+      test_util_->DoDefaultAction(
+          views::ElementTrackerViews::GetInstance()->GetElementForView(button,
+                                                                       true),
+          ui::test::InteractionTestUtil::InputType::kMouse));
+}
+
+TEST_F(InteractionTestUtilViewsTest, DoDefault_Touch) {
+  // A button can be used for this because we are simulating touch select,
+  // which buttons respond to.
+  UNCALLED_MOCK_CALLBACK(Button::PressedCallback::Callback, pressed);
+  auto* const button = contents_->AddChildView(std::make_unique<LabelButton>(
+      Button::PressedCallback(pressed.Get()), u"Button"));
+  widget_->LayoutRootViewIfNecessary();
+  EXPECT_CALL_IN_SCOPE(
+      pressed, Run,
+      test_util_->DoDefaultAction(
+          views::ElementTrackerViews::GetInstance()->GetElementForView(button,
+                                                                       true),
           ui::test::InteractionTestUtil::InputType::kTouch));
 }
 

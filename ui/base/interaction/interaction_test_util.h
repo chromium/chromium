@@ -78,16 +78,22 @@ class InteractionTestUtil {
     // Tries to press `element` as if it is a button. Returns false if `element`
     // is an unsupported type or if `input_type` is not supported.
     [[nodiscard]] virtual bool PressButton(TrackedElement* element,
-                                           InputType input_type) = 0;
+                                           InputType input_type);
 
     // Tries to select `element` as if it is a menu item. Returns false if
     // `element` is an unsupported type or if `input_type` is not supported.
     [[nodiscard]] virtual bool SelectMenuItem(TrackedElement* element,
-                                              InputType input_type) = 0;
+                                              InputType input_type);
+
+    // Triggers the default action of the target element, which is typically
+    // whatever happens when the user clicks/taps it. If `element` is a button
+    // or menu item, prefer PressButton() or SelectMenuItem() instead.
+    [[nodiscard]] virtual bool DoDefaultAction(TrackedElement* element,
+                                               InputType input_type);
   };
 
   InteractionTestUtil();
-  ~InteractionTestUtil();
+  virtual ~InteractionTestUtil();
   InteractionTestUtil(const InteractionTestUtil&) = delete;
   void operator=(const InteractionTestUtil&) = delete;
 
@@ -108,6 +114,12 @@ class InteractionTestUtil {
   // `element` is not a menu item or if `input_type` is not supported.
   void SelectMenuItem(TrackedElement* element,
                       InputType input_type = InputType::kDontCare);
+
+  // Simulate the default action for `element` - typically whatever happens when
+  // the user clicks or taps on it. Will fail if `input_type` is not supported.
+  // Prefer PressButton() for buttons and SelectMenuItem() for menu items.
+  void DoDefaultAction(TrackedElement* element,
+                       InputType input_type = InputType::kDontCare);
 
  private:
   // The list of known simulators.

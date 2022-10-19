@@ -5,6 +5,8 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 
 #include "build/build_config.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/events/base_event_utils.h"
@@ -18,6 +20,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
 namespace views::test {
@@ -28,6 +31,17 @@ InteractionTestUtilSimulatorViews::~InteractionTestUtilSimulatorViews() =
     default;
 
 namespace {
+
+gfx::Point GetCenter(views::View* view) {
+  return view->GetLocalBounds().CenterPoint();
+}
+
+template <class T>
+void SendDefaultAction(T* target) {
+  ui::AXActionData action;
+  action.action = ax::mojom::Action::kDoDefault;
+  CHECK(target->HandleAccessibleAction(action));
+}
 
 // Sends a mouse click to the specified `target`.
 // Views are EventHandlers but Widgets are not despite having the same API for
@@ -97,8 +111,15 @@ bool InteractionTestUtilSimulatorViews::SelectMenuItem(
   if (!menu_item)
     return false;
 
+#if BUILDFLAG(IS_MAC)
+  // Keyboard input isn't reliable on Mac for submenus, so unless the test
+  // specifically calls for keyboard input, prefer mouse.
+  if (input_type == ui::test::InteractionTestUtil::InputType::kDontCare)
+    input_type = ui::test::InteractionTestUtil::InputType::kMouse;
+#endif  // BUILDFLAG(IS_MAC)
+
   auto* const host = menu_item->GetWidget()->GetRootView();
-  gfx::Point point = menu_item->GetLocalBounds().CenterPoint();
+  gfx::Point point = GetCenter(menu_item);
   View::ConvertPointToTarget(menu_item, host, &point);
 
   switch (input_type) {
@@ -126,17 +147,42 @@ bool InteractionTestUtilSimulatorViews::SelectMenuItem(
   return true;
 }
 
+bool InteractionTestUtilSimulatorViews::DoDefaultAction(
+    ui::TrackedElement* element,
+    InputType input_type) {
+  if (!element->IsA<TrackedElementViews>())
+    return false;
+  DoDefaultAction(element->AsA<TrackedElementViews>()->view(), input_type);
+  return true;
+}
+
+void InteractionTestUtilSimulatorViews::DoDefaultAction(View* view,
+                                                        InputType input_type) {
+  switch (input_type) {
+    case ui::test::InteractionTestUtil::InputType::kDontCare:
+      SendDefaultAction(view);
+      break;
+    case ui::test::InteractionTestUtil::InputType::kMouse:
+      SendMouseClick(view, GetCenter(view));
+      break;
+    case ui::test::InteractionTestUtil::InputType::kTouch:
+      SendTapGesture(view, GetCenter(view));
+      break;
+    case ui::test::InteractionTestUtil::InputType::kKeyboard:
+      SendKeyPress(view, ui::VKEY_SPACE);
+      break;
+  }
+}
+
 // static
 void InteractionTestUtilSimulatorViews::PressButton(Button* button,
                                                     InputType input_type) {
-  const gfx::Point point = button->GetLocalBounds().CenterPoint();
-
   switch (input_type) {
     case ui::test::InteractionTestUtil::InputType::kMouse:
-      SendMouseClick(button, point);
+      SendMouseClick(button, GetCenter(button));
       break;
     case ui::test::InteractionTestUtil::InputType::kTouch:
-      SendTapGesture(button, point);
+      SendTapGesture(button, GetCenter(button));
       break;
     case ui::test::InteractionTestUtil::InputType::kKeyboard:
     case ui::test::InteractionTestUtil::InputType::kDontCare:
@@ -144,5 +190,7 @@ void InteractionTestUtilSimulatorViews::PressButton(Button* button,
       break;
   }
 }
+
+// static
 
 }  // namespace views::test

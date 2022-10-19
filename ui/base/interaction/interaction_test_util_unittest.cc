@@ -25,6 +25,8 @@ class MockInteractionSimulator : public InteractionTestUtil::Simulator {
                bool(TrackedElement* element, InputType input_type));
   MOCK_METHOD2(SelectMenuItem,
                bool(TrackedElement* element, InputType input_type));
+  MOCK_METHOD2(DoDefaultAction,
+               bool(TrackedElement* element, InputType input_type));
 };
 
 }  // namespace
@@ -49,6 +51,17 @@ TEST(InteractionTestUtilTest, SelectMenuItem) {
                                     InteractionTestUtil::InputType::kDontCare))
       .WillOnce(testing::Return(true));
   util.SelectMenuItem(&element);
+}
+
+TEST(InteractionTestUtilTest, DoDefaultAction) {
+  TestElement element(kTestElementIdentifier, kTestElementContext);
+  InteractionTestUtil util;
+  auto* const mock = util.AddSimulator(
+      std::make_unique<testing::NiceMock<MockInteractionSimulator>>());
+  EXPECT_CALL(*mock, DoDefaultAction(&element,
+                                     InteractionTestUtil::InputType::kDontCare))
+      .WillOnce(testing::Return(true));
+  util.DoDefaultAction(&element);
 }
 
 }  // namespace ui::test

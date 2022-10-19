@@ -14,12 +14,6 @@ namespace ui::test {
 InteractionTestUtilSimulatorMac::InteractionTestUtilSimulatorMac() = default;
 InteractionTestUtilSimulatorMac::~InteractionTestUtilSimulatorMac() = default;
 
-bool InteractionTestUtilSimulatorMac::PressButton(ui::TrackedElement* element,
-                                                  InputType input_type) {
-  // Currently, we do not support Mac native buttons in our UI.
-  return false;
-}
-
 bool InteractionTestUtilSimulatorMac::SelectMenuItem(
     ui::TrackedElement* element,
     InputType input_type) {

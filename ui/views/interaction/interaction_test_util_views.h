@@ -14,6 +14,7 @@ class TrackedElement;
 
 namespace views {
 class Button;
+class View;
 }
 
 namespace views::test {
@@ -30,11 +31,17 @@ class InteractionTestUtilSimulatorViews
   bool PressButton(ui::TrackedElement* element, InputType input_type) override;
   bool SelectMenuItem(ui::TrackedElement* element,
                       InputType input_type) override;
+  bool DoDefaultAction(ui::TrackedElement* element,
+                       InputType input_type) override;
 
   // Convenience method for tests that need to simulate a button press and have
   // direct access to the button.
   static void PressButton(Button* button,
                           InputType input_type = InputType::kDontCare);
+
+  // As above, but for non-button Views.
+  static void DoDefaultAction(View* view,
+                              InputType input_type = InputType::kDontCare);
 };
 
 }  // namespace views::test

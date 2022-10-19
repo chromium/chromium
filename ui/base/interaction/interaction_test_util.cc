@@ -6,6 +6,20 @@
 
 namespace ui::test {
 
+bool InteractionTestUtil::Simulator::PressButton(TrackedElement*, InputType) {
+  return false;
+}
+
+bool InteractionTestUtil::Simulator::SelectMenuItem(TrackedElement*,
+                                                    InputType) {
+  return false;
+}
+
+bool InteractionTestUtil::Simulator::DoDefaultAction(TrackedElement*,
+                                                     InputType) {
+  return false;
+}
+
 InteractionTestUtil::InteractionTestUtil() = default;
 InteractionTestUtil::~InteractionTestUtil() = default;
 
@@ -25,6 +39,18 @@ void InteractionTestUtil::SelectMenuItem(TrackedElement* element,
                                          InputType input_type) {
   for (const auto& simulator : simulators_) {
     if (simulator->SelectMenuItem(element, input_type))
+      return;
+  }
+
+  // If a test has requested an invalid operation on an element, then this is
+  // an error.
+  NOTREACHED();
+}
+
+void InteractionTestUtil::DoDefaultAction(TrackedElement* element,
+                                          InputType input_type) {
+  for (const auto& simulator : simulators_) {
+    if (simulator->DoDefaultAction(element, input_type))
       return;
   }
 
