@@ -137,6 +137,10 @@
   [self stopWithCompletion:nil];
 }
 
+- (void)dealloc {
+  self.historyTableViewController.historyService = nullptr;
+}
+
 // This method should always execute the `completionHandler`.
 - (void)stopWithCompletion:(ProceduralBlock)completionHandler {
   [self.sharingCoordinator stop];
@@ -168,6 +172,7 @@
                                                        completion:completion];
   self.historyNavigationController = nil;
   self.historyClearBrowsingDataCoordinator = nil;
+  self.historyTableViewController.historyService = nullptr;
   _browsingHistoryDriver = nullptr;
   _browsingHistoryService = nullptr;
   _browsingHistoryDriverDelegate = nullptr;
