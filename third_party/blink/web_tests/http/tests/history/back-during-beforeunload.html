@@ -1,4 +1,3 @@
-<body>
 <script>
 if (window.testRunner) {
     testRunner.dumpAsText();
@@ -12,10 +11,13 @@ window.onbeforeunload = function() {
         testRunner.notifyDone();
 };
 
-setTimeout(function() {
-    history.pushState("", "", "#");
-    location = "we-wont-actually-go-here.html";
-}, 1);
+scheduleTimeout = function() {
+    setTimeout(function() {
+        history.pushState("", "", "#");
+        location = "we-wont-actually-go-here.html";
+    }, 1);
+};
 </script>
+<body onload="scheduleTimeout();">
 Ensure we ignore back/forward navigations during beforeunload.
 </body>
