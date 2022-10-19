@@ -1035,6 +1035,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_AUTOCLICK" desc="The label and title used in the accessibility menu of the system tray to toggle on/off automatic mouse clicks.">
         Automatic clicks
       </message>
+      <message name="IDS_ASH_AUTOCLICK_MENU" desc="The name of the automatic clicks menu.">
+        Automatic clicks menu
+      </message>
       <message name="IDS_ASH_AUTOCLICK_OPTION_LEFT_CLICK" desc="The tooltip text for a menu option for the automatic clicks menu that results in the next automatic click being a left-click.">
         Left click
       </message>

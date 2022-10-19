@@ -70,6 +70,7 @@ class ASH_EXPORT AutoclickMenuBubbleController
 
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
+  std::u16string GetAccessibleNameForBubble() override;
 
   // LocaleChangeObserver:
   void OnLocaleChanged() override;

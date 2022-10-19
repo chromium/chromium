@@ -509,7 +509,7 @@ void TrayBubbleView::OnMouseExited(const ui::MouseEvent& event) {
 void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (delegate_ && CanActivate()) {
     node_data->role = ax::mojom::Role::kWindow;
-    node_data->SetName(delegate_->GetAccessibleNameForBubble());
+    node_data->SetNameChecked(delegate_->GetAccessibleNameForBubble());
   }
 }
 
