@@ -29,8 +29,8 @@ struct NET_EXPORT SSLContextConfig {
   uint16_t version_min = kDefaultSSLVersionMin;
   uint16_t version_max = kDefaultSSLVersionMax;
 
-  // Presorted list of cipher suites which should be explicitly prevented from
-  // being used in addition to those disabled by the net built-in policy.
+  // A list of cipher suites which should be explicitly prevented from being
+  // used in addition to those disabled by the net built-in policy.
   //
   // Though cipher suites are sent in TLS as "uint8_t CipherSuite[2]", in
   // big-endian form, they should be declared in host byte order, with the

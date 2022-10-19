@@ -996,11 +996,9 @@ void SSLServerContextImpl::Init() {
     CHECK(SSL_CTX_set_strict_cipher_list(ssl_ctx_.get(),
                                          SSL_CIPHER_get_name(cipher)));
   } else {
-    // See SSLServerConfig::disabled_cipher_suites for description of the suites
-    // disabled by default. Note that !SHA256 and !SHA384 only remove
-    // HMAC-SHA256 and HMAC-SHA384 cipher suites, not GCM cipher suites with
-    // SHA256 or SHA384 as the handshake hash.
-    std::string command("DEFAULT:!AESGCM+AES256:!aPSK");
+    // Use BoringSSL defaults, but disable 3DES and HMAC-SHA1 ciphers in ECDSA.
+    // These are the remaining CBC-mode ECDSA ciphers.
+    std::string command("ALL:!aPSK:!ECDSA+SHA1:!3DES");
 
     // SSLPrivateKey only supports ECDHE-based ciphers because it lacks decrypt.
     if (ssl_server_config_.require_ecdhe || (!pkey_ && private_key_))
