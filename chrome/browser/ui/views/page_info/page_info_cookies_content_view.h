@@ -9,14 +9,20 @@
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "components/page_info/page_info_ui.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
+
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kPageInfoCookiesSubpageLoaded);
 
 // The view that is used as a content view of the Cookies subpage in page info.
 // It contains information about cookies (short description, how many sites
 // are allowed).
 class PageInfoCookiesContentView : public views::View, public PageInfoUI {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieDialogButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookiesPage);
+
   explicit PageInfoCookiesContentView(PageInfo* presenter);
 
   ~PageInfoCookiesContentView() override;

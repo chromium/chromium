@@ -23,6 +23,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/page_info/core/features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -47,7 +48,13 @@ constexpr std::array<const char*, 7> kSiteDataTypes{
 
 class CollectedCookiesViewsTest : public InProcessBrowserTest {
  public:
-  CollectedCookiesViewsTest() = default;
+  CollectedCookiesViewsTest() {
+    // TODO(crbug.com/1344787): Clean up when PageSpecificSiteDataDialog is
+    // launched. Disable features for the new version of "Cookies in use"
+    // dialog. These tests are for the current version of the dialog only.
+    feature_list_.InitWithFeatures({}, {page_info::kPageSpecificSiteDataDialog,
+                                        page_info::kPageInfoCookiesSubpage});
+  }
 
   CollectedCookiesViewsTest(const CollectedCookiesViewsTest&) = delete;
   CollectedCookiesViewsTest& operator=(const CollectedCookiesViewsTest&) =
@@ -92,6 +99,7 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
 
  private:
   raw_ptr<CollectedCookiesViews> cookies_dialog_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, CloseDialog) {
@@ -146,7 +154,12 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, CloseDialogAndReopen) {
 
 class CollectedCookiesViewsMetricsTest : public InProcessBrowserTest {
  public:
-  CollectedCookiesViewsMetricsTest() = default;
+  CollectedCookiesViewsMetricsTest() {
+    // Disable features for the new version of "Cookies in use" dialog. These
+    // tests are for the current version of the dialog only.
+    feature_list_.InitWithFeatures({}, {page_info::kPageSpecificSiteDataDialog,
+                                        page_info::kPageInfoCookiesSubpage});
+  }
 
   CollectedCookiesViewsMetricsTest(const CollectedCookiesViewsMetricsTest&) =
       delete;
@@ -236,6 +249,8 @@ class CollectedCookiesViewsMetricsTest : public InProcessBrowserTest {
         content::ExecuteScriptAndExtractBool(web_contents, script, &data));
     return data;
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, OpenDialog) {

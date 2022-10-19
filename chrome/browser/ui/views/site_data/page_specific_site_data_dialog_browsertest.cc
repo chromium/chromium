@@ -61,8 +61,11 @@ class PageSpecificSiteDataDialogBrowserTest
     if (GetParam()) {
       enabled_features.emplace_back(page_info::kPageSpecificSiteDataDialog,
                                     base::FieldTrialParams());
+      enabled_features.emplace_back(page_info::kPageInfoCookiesSubpage,
+                                    base::FieldTrialParams());
     } else {
       disabled_features.emplace_back(page_info::kPageSpecificSiteDataDialog);
+      disabled_features.emplace_back(page_info::kPageInfoCookiesSubpage);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,

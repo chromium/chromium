@@ -9,7 +9,9 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/collected_cookies_views.h"
+#include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
@@ -61,7 +63,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   PageSpecificSiteDataDialogInteractiveUiTest() {
     feature_list_.InitWithFeatures(
         {page_info::kPageSpecificSiteDataDialog,
-         net::features::kPartitionedCookies,
+         page_info::kPageInfoCookiesSubpage, net::features::kPartitionedCookies,
          net::features::kPartitionedCookiesBypassOriginTrial},
         {});
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -112,7 +114,8 @@ class PageSpecificSiteDataDialogInteractiveUiTest
         .SetMustRemainVisible(false)
         .SetStartCallback(base::BindLambdaForTesting(
             [&](ui::InteractionSequence*, ui::TrackedElement* element) {
-              test_util_.PressButton(element);
+              test_util_.PressButton(
+                  element, ui::test::InteractionTestUtil::InputType::kMouse);
             }))
         .Build();
   }
@@ -189,6 +192,11 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
               kWebUIInteractionTestUtilTestId))
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kPageInfoCookiesSubpageLoaded)
+                       .SetElementID(PageInfoCookiesContentView::kCookiesPage))
+          .AddStep(Click(PageInfoCookiesContentView::kCookieDialogButton))
           // Verify the dialog was opened.
           .AddStep(
               ui::InteractionSequence::StepBuilder()
@@ -302,6 +310,11 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
               kWebUIInteractionTestUtilTestId))
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kPageInfoCookiesSubpageLoaded)
+                       .SetElementID(PageInfoCookiesContentView::kCookiesPage))
+          .AddStep(Click(PageInfoCookiesContentView::kCookieDialogButton))
           // Verify the dialog was opened.
           .AddStep(
               ui::InteractionSequence::StepBuilder()
@@ -437,6 +450,11 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
               kWebUIInteractionTestUtilTestId))
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kPageInfoCookiesSubpageLoaded)
+                       .SetElementID(PageInfoCookiesContentView::kCookiesPage))
+          .AddStep(Click(PageInfoCookiesContentView::kCookieDialogButton))
           // Verify the dialog was opened.
           .AddStep(
               ui::InteractionSequence::StepBuilder()
@@ -547,6 +565,11 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
               kWebUIInteractionTestUtilTestId))
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kPageInfoCookiesSubpageLoaded)
+                       .SetElementID(PageInfoCookiesContentView::kCookiesPage))
+          .AddStep(Click(PageInfoCookiesContentView::kCookieDialogButton))
           // Verify the dialog was opened.
           .AddStep(
               ui::InteractionSequence::StepBuilder()

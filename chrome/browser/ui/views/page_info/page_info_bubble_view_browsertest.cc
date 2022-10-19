@@ -168,7 +168,15 @@ void AddHintForTesting(Browser* browser,
 
 class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
-  PageInfoBubbleViewBrowserTest() = default;
+  PageInfoBubbleViewBrowserTest() {
+    // TODO(crbug.com/1344787): Clean up when PageSpecificSiteDataDialog is
+    // launched. Disable features for the new version of "Cookies in use"
+    // dialog. The new UI is covered by
+    // PageInfoBubbleViewBrowserTestCookiesSubpage.
+    feature_list_.InitWithFeatures({}, {page_info::kPageSpecificSiteDataDialog,
+                                        page_info::kPageInfoCookiesSubpage});
+  }
+
   PageInfoBubbleViewBrowserTest(const PageInfoBubbleViewBrowserTest& test) =
       delete;
   PageInfoBubbleViewBrowserTest& operator=(
@@ -284,6 +292,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
  private:
   std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ShowBubble) {
@@ -1071,6 +1080,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
   PageInfoBubbleViewBrowserTestCookiesSubpage() {
     feature_list_.InitWithFeatures(
         {page_info::kPageInfoCookiesSubpage,
+         page_info::kPageSpecificSiteDataDialog,
          privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
         {});
   }

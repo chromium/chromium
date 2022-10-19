@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/webui_interaction_test_util.h"
+#include "components/page_info/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -32,7 +33,14 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIInteractionTestUtilTestId);
 
 class CollectedCookiesViewInteractiveUiTest : public InProcessBrowserTest {
  public:
-  CollectedCookiesViewInteractiveUiTest() = default;
+  CollectedCookiesViewInteractiveUiTest() {
+    // TODO(crbug.com/1344787): Clean up when PageSpecificSiteDataDialog is
+    // launched. Disable features for the new version of "Cookies in use"
+    // dialog. These tests are for the current version of the dialog only.
+    feature_list_.InitWithFeatures({}, {page_info::kPageSpecificSiteDataDialog,
+                                        page_info::kPageInfoCookiesSubpage});
+  }
+
   ~CollectedCookiesViewInteractiveUiTest() override = default;
   CollectedCookiesViewInteractiveUiTest(
       const CollectedCookiesViewInteractiveUiTest&) = delete;
@@ -76,6 +84,7 @@ class CollectedCookiesViewInteractiveUiTest : public InProcessBrowserTest {
   }
 
   ui::test::InteractionTestUtil test_util_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewInteractiveUiTest,
