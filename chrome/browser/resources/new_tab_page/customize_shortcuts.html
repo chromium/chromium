@@ -13,7 +13,7 @@
   }
 
   .option-image {
-    border: 1px solid var(--color-new-tab-page-border);
+    border: 1px solid var(--color-new-tab-page-dialog-border);
     border-radius: 4px;
     box-sizing: border-box;
     cursor: pointer;
@@ -28,12 +28,12 @@
 
   .selected .option-image {
     background-color: var(--color-new-tab-page-selected-background);
-    border-color: var(--color-new-tab-page-selected-border);
+    border-color: var(--color-new-tab-page-dialog-border-selected);
   }
 
   .option-mini {
-    background-color: var(--color-new-tab-page-background-override);
-    border: 1px solid var(--color-new-tab-page-border);
+    background-color: var(--color-new-tab-page-dialog-background);
+    border: 1px solid var(--color-new-tab-page-dialog-border);
     border-radius: 4px;
     box-sizing: border-box;
     height: 144px;
@@ -66,13 +66,14 @@
   }
 
   .selected ntp-mini-page {
-    --ntp-mini-page-shortcut-color: var(--color-new-tab-page-selected-border);
+    --ntp-mini-page-shortcut-color:
+        var(--color-new-tab-page-dialog-border-selected);
   }
 
   .option-icon {
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background: 96px 96px var(--color-new-tab-page-border);
+    background: 96px 96px var(--color-new-tab-page-dialog-border);
     height: 96px;
     left: 16px;
     position: absolute;
@@ -98,7 +99,7 @@
 
   @media (prefers-color-scheme: dark) {
     .selected .option-icon {
-      background-color: var(--color-new-tab-page-selected-border);
+      background-color: var(--color-new-tab-page-dialog-border-selected);
     }
   }
 
@@ -134,16 +135,16 @@
   }
 
   .option-description {
-    color: var(--color-new-tab-page-secondary-foreground);
+    color: var(--color-new-tab-page-dialog-secondary-foreground);
   }
 
   .selected #hideDescription {
-    color: var(--color-new-tab-page-selected-border);
+    color: var(--color-new-tab-page-dialog-border-selected);
   }
 
   #hide {
     align-items: center;
-    border: 1px solid var(--color-new-tab-page-border);
+    border: 1px solid var(--color-new-tab-page-dialog-border);
     border-radius: 4px;
     box-sizing: border-box;
     display: flex;
@@ -155,8 +156,8 @@
 
   #hide.selected {
     background-color: var(--color-new-tab-page-selected-background);
-    border-color: var(--color-new-tab-page-selected-border);
-    color: var(--color-new-tab-page-selected-border);
+    border-color: var(--color-new-tab-page-dialog-border-selected);
+    color: var(--color-new-tab-page-dialog-border-selected);
   }
 
   #hideIcon {
@@ -165,7 +166,7 @@
   }
 
   .selected #hideIcon {
-    background-color: var(--color-new-tab-page-selected-border);
+    background-color: var(--color-new-tab-page-dialog-border-selected);
   }
 
   #hideTitleContainer {
@@ -181,7 +182,7 @@
   }
 
   .selected-circle {
-    background: var(--color-new-tab-page-background-override) no-repeat center;
+    background: var(--color-new-tab-page--dialog-background) no-repeat center;
     border-radius: 50%;
     display: none;
     height: 22px;

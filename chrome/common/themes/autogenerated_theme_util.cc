@@ -6,25 +6,42 @@
 
 #include "ui/gfx/color_utils.h"
 
+SkColor GetContrastingColor(SkColor color, float luminosity_change) {
+  color_utils::HSL hsl;
+  SkColorToHSL(color, &hsl);
+
+  // If luminosity is 0, it means `color` is black. Use white for black
+  // backgrounds.
+  if (hsl.l == 0)
+    return SK_ColorWHITE;
+
+  // Decrease luminosity, unless color is already dark.
+  if (hsl.l > 0.15)
+    luminosity_change *= -1;
+
+  hsl.l *= 1 + luminosity_change;
+
+  return (hsl.l >= 0.0f && hsl.l <= 1.0f) ? HSLToSkColor(hsl, 255) : color;
+}
+
 // Decreases the lightness of the given color.
 SkColor DarkenColor(SkColor color, float change) {
   color_utils::HSL hsl;
   SkColorToHSL(color, &hsl);
   hsl.l -= change;
-  if (hsl.l >= 0.0f)
-    return HSLToSkColor(hsl, 255);
-  return color;
+
+  return (hsl.l >= 0.0f) ? HSLToSkColor(hsl, 255) : color;
 }
 
-// Increases the lightness of |source| until it reaches |contrast_ratio| with
-// |base| or reaches |white_contrast| with white. This avoids decreasing
+// Increases the lightness of `source` until it reaches `contrast_ratio` with
+// `base` or reaches `white_contrast` with white. This avoids decreasing
 // saturation, as the alternative contrast-guaranteeing functions in color_utils
 // would do.
 SkColor LightenUntilContrast(SkColor source,
                              SkColor base,
                              float contrast_ratio,
                              float white_contrast) {
-  const float kBaseLuminance = color_utils::GetRelativeLuminance(base);
+  const float base_luminance = color_utils::GetRelativeLuminance(base);
   constexpr float kWhiteLuminance = 1.0f;
 
   color_utils::HSL hsl;
@@ -36,7 +53,7 @@ SkColor LightenUntilContrast(SkColor source,
   while (max_l - min_l > 0.01) {
     hsl.l = min_l + (max_l - min_l) / 2;
     float luminance = color_utils::GetRelativeLuminance(HSLToSkColor(hsl, 255));
-    if (color_utils::GetContrastRatio(kBaseLuminance, luminance) >=
+    if (color_utils::GetContrastRatio(base_luminance, luminance) >=
             contrast_ratio ||
         (color_utils::GetContrastRatio(kWhiteLuminance, luminance) <
          white_contrast)) {

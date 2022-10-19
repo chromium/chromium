@@ -1203,34 +1203,3 @@ TEST_F(BrowserThemePackTest, TestLogoAndShortcutColors) {
   EXPECT_FALSE(white_theme->GetColor(TP::COLOR_NTP_LOGO, &color));
   EXPECT_FALSE(white_theme->GetColor(TP::COLOR_NTP_SHORTCUT, &color));
 }
-
-namespace internal {
-
-// Defined in browser_theme_pack.cc
-SkColor GetContrastingColorForBackground(SkColor bg_color, float change);
-
-TEST(BrowserThemePackInternalTest, TestGetContrastingColor) {
-  const float change = 0.2f;
-
-  // White color for black background.
-  EXPECT_EQ(SK_ColorWHITE,
-            GetContrastingColorForBackground(SK_ColorBLACK, change));
-
-  // Lighter color for too dark colors.
-  SkColor dark_background = SkColorSetARGB(255, 50, 0, 50);
-  EXPECT_LT(color_utils::GetRelativeLuminance(dark_background),
-            color_utils::GetRelativeLuminance(
-                GetContrastingColorForBackground(dark_background, change)));
-
-  // Darker color for light backgrounds.
-  EXPECT_GT(color_utils::GetRelativeLuminance(SK_ColorWHITE),
-            color_utils::GetRelativeLuminance(
-                GetContrastingColorForBackground(SK_ColorWHITE, change)));
-
-  SkColor light_background = SkColorSetARGB(255, 100, 0, 100);
-  EXPECT_GT(color_utils::GetRelativeLuminance(light_background),
-            color_utils::GetRelativeLuminance(
-                GetContrastingColorForBackground(light_background, change)));
-}
-
-}  // namespace internal

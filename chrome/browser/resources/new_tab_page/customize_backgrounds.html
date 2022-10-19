@@ -32,7 +32,7 @@
   }
 
   .label {
-    color: var(--color-new-tab-page-primary-foreground);
+    color: var(--color-new-tab-page-dialog-foreground);
     margin-bottom: 4px;
     margin-top: 12px;
     min-height: 30px;
@@ -55,7 +55,7 @@
   }
 
   .selected-circle {
-    background-color: var(--color-new-tab-page-background-override);
+    background-color: var(--color-new-tab-page-dialog-background);
     border-radius: 50%;
     box-shadow: 0 3px 6px 1px rgba(0, 0, 0, .16),
         0 1px 2px 1px rgba(0, 0, 0, .23);
@@ -77,7 +77,7 @@
     -webkit-mask-image: url(icons/check_circle.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 28px;
-    background-color: var(--color-new-tab-page-selected-border);
+    background-color: var(--color-new-tab-page-dialog-border-selected);
     display: none;
     height: 28px;
     left: initial;
@@ -98,8 +98,8 @@
 
   #noBackground .image,
   #uploadFromDevice .image {
-    background: var(--color-new-tab-page-background-override);
-    border: 1px solid var(--color-new-tab-page-border);
+    background: var(--color-new-tab-page-dialog-background);
+    border: 1px solid var(--color-new-tab-page-dialog-border);
   }
 
   #uploadFromDevice {
@@ -138,7 +138,7 @@
     -webkit-mask-image: url(chrome://resources/images/business.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--color-new-tab-page-primary-foreground);
+    background-color: var(--color-new-tab-page-dialog-foreground);
     height: 48px;
     margin: auto;
     width: 48px;

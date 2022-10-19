@@ -2,7 +2,7 @@
   :host {
     --ntp-realbox-border-radius: calc(0.5 * var(--ntp-realbox-height));
     --ntp-realbox-height: 44px;
-    --ntp-realbox-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+    --ntp-realbox-shadow: 0 1px 6px 0 var(--color-realbox-shadow);
     border-radius: var(--ntp-realbox-border-radius);
     box-shadow: var(--ntp-realbox-shadow);
     font-size: 16px;
@@ -10,7 +10,7 @@
   }
 
   :host([is-dark]) {
-    --ntp-realbox-shadow: 0 2px 6px 0 rgba(23, 23, 23, 0.32);
+    --ntp-realbox-shadow: 0 2px 6px 0 var(--color-realbox-shadow);
   }
 
   @media (forced-colors: active) {
