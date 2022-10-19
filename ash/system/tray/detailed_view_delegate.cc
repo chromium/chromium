@@ -89,10 +89,6 @@ void DetailedViewDelegate::CloseBubble() {
   tray_controller_->CloseBubble();
 }
 
-absl::optional<SkColor> DetailedViewDelegate::GetBackgroundColor() {
-  return absl::nullopt;
-}
-
 bool DetailedViewDelegate::IsOverflowIndicatorEnabled() const {
   return false;
 }

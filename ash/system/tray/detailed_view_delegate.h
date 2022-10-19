@@ -48,9 +48,6 @@ class ASH_EXPORT DetailedViewDelegate {
   // Close the bubble that contains the detailed view.
   virtual void CloseBubble();
 
-  // Get the background color of the detailed view.
-  virtual absl::optional<SkColor> GetBackgroundColor();
-
   // Return true if overflow indicator of ScrollView is enabled.
   virtual bool IsOverflowIndicatorEnabled() const;
 

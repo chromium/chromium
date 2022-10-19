@@ -287,8 +287,6 @@ TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
     : delegate_(delegate) {
   box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  SetBackground(views::CreateSolidBackground(
-      delegate_->GetBackgroundColor().value_or(SK_ColorTRANSPARENT)));
 
   if (features::IsQsRevampEnabled())
     IgnoreSeparator();
@@ -360,7 +358,9 @@ void TrayDetailedView::CreateScrollableList() {
   scroller_->SetDrawOverflowIndicator(delegate_->IsOverflowIndicatorEnabled());
   scroll_content_ = scroller_->SetContents(std::move(scroll_content));
   // TODO(varkha): Make the sticky rows work with EnableViewPortLayer().
-  scroller_->SetBackgroundColor(delegate_->GetBackgroundColor());
+
+  // Override the default theme-based color to remove the background.
+  scroller_->SetBackgroundColor(absl::nullopt);
 
   box_layout_->SetFlexForView(scroller_, 1);
 }
