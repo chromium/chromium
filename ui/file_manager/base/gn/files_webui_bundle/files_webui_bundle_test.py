@@ -447,6 +447,44 @@ alert('hello from external_element_dep');''')
         os.path.normpath(os.path.join(relpath_bar, 'another_element.js')),
         depfile_d)
 
+  def testExternalPathsOrderMatters(self):
+    self._write_file_to_src_dir('ui.js', '''
+  import '//resources/test/a.js';
+  ''')
+    self._write_file_to_src_dir(
+        'ui.html', '''
+  <script type="module" src="ui.js"></script>
+  ''')
+    resources_path_aaa = os.path.join('gen', 'aaa', 'resources')
+    a_js_in_resources_aaa = os.path.join(resources_path_aaa, 'test', 'a.js')
+    self._write_file_to_dir(a_js_in_resources_aaa, '''
+alert('hello from aaa');''')
+
+    resources_path_bbb = os.path.join('gen', 'bbb', 'resources', 'test')
+    a_js_in_resources_bbb = os.path.join(resources_path_bbb, 'a.js')
+    self._write_file_to_dir(a_js_in_resources_bbb, '''
+alert('hello from bbb');''')
+
+    args = [
+        '--host',
+        'fake-host',
+        '--js_module_in_files',
+        'ui.js',
+        '--js_out_files',
+        'ui.rollup.js',
+        '--external_paths',
+        # //resources mapping here will shadow the //resources/test/ mapping.
+        '//resources/|%s' % resources_path_aaa,
+        '//resources/test/|%s' % resources_path_bbb,
+    ]
+    self._run_optimize(args)
+
+    ui_rollup_js = self._read_out_file('ui.rollup.js')
+    self.assertIn('hello from aaa', ui_rollup_js)
+
+    depfile_d = self._read_out_file('depfile.d')
+    self.assertIn(os.path.normpath('../gen/aaa/resources/test/a.js'), depfile_d)
+
 
 if __name__ == '__main__':
   unittest.main()

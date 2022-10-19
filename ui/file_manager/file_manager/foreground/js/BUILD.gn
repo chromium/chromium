@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/files_webui_bundle/files_webui_bundle.gni")
 import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [
@@ -1385,7 +1385,7 @@ image_loader_path =
     rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
                 root_build_dir)
 
-optimize_webui("build") {
+files_webui_bundle("build") {
   visibility += [ "//ui/file_manager:build_grd" ]
   host = "file_manager"
 
@@ -1415,7 +1415,7 @@ optimize_webui("build") {
   ]
 }
 
-optimize_webui("build_worker") {
+files_webui_bundle("build_worker") {
   visibility += [ "//ui/file_manager:build_grd" ]
   host = "file_manager"
 

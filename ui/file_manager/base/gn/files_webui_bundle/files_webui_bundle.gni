@@ -5,6 +5,10 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
+# Note: Do not use this build task outside the Files app.
+
+assert(is_chromeos_ash, "ChromeOS build only")
+
 template("files_webui_bundle") {
   node(target_name) {
     script =
@@ -51,29 +55,35 @@ template("files_webui_bundle") {
         rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/",
                     root_build_dir)
 
+    ash_resources_path =
+        rebase_path("$root_gen_dir/ash/webui/common/resources/preprocessed/",
+                    root_build_dir)
+
+    mwc_path = rebase_path(
+            "//third_party/material_web_components/components-chromium/node_modules/",
+            root_build_dir)
+
     external_paths = []
-    if (is_chromeos_ash) {
-      ash_resources_path =
-          rebase_path("$root_gen_dir/ash/webui/common/resources/preprocessed/",
-                      root_build_dir)
-      external_paths += [
-        "chrome://resources/ash/common/|$ash_resources_path",
-        "//resources/ash/common/|$ash_resources_path",
-      ]
+
+    # Add invoker.external_paths first to make sure user-passed mappings
+    # has higher priority.
+    if (defined(invoker.external_paths)) {
+      external_paths += invoker.external_paths
     }
 
     external_paths += [
+      "chrome://resources/ash/common/|$ash_resources_path",
+      "chrome://resources/mwc/|$mwc_path",
       "chrome://resources/polymer/v3_0/|$polymer_path",
       "chrome://resources/|$resources_path",
 
       # Scheme relative versions to work with chrome-untrusted://
+      "//resources/ash/common|$ash_resources_path",
+      "//resources/mwc/|$mwc_path",
       "//resources/polymer/v3_0/|$polymer_path",
       "//resources/|$resources_path",
     ]
 
-    if (defined(invoker.external_paths)) {
-      external_paths += invoker.external_paths
-    }
     args += [ "--external_paths" ] + external_paths
 
     inputs +=

@@ -3,12 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/file_manager/base/gn/files_webui_bundle/files_webui_bundle.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
@@ -126,7 +126,7 @@ if (!optimize_webui) {
   }
 }
 
-optimize_webui("build") {
+files_webui_bundle("build") {
   host = "file-manager"
   input = rebase_path(preprocess_folder, root_build_dir)
 
