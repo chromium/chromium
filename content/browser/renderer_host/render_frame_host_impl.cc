@@ -12605,8 +12605,8 @@ void RenderFrameHostImpl::DidCommitNavigation(
   ScopedCommitStateResetter commit_state_resetter(this);
   RenderProcessHost* process = GetProcess();
 
-  TRACE_EVENT2("navigation", "RenderFrameHostImpl::DidCommitProvisionalLoad",
-               "rfh", this, "params", params);
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::DidCommitProvisionalLoad",
+              ChromeTrackEvent::kRenderFrameHost, this, "params", params);
 
   // If we're waiting for a cross-site beforeunload completion callback from
   // this renderer and we receive a Navigate message from the main frame, then
