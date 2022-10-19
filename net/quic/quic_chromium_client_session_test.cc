@@ -2069,9 +2069,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
   socket_data_.reset();
   int packet_num = 1;
   int peer_packet_num = 1;
-  quic::QuicConnectionId next_cid =
-      quic::QuicUtils::CreateReplacementConnectionId(
-          quic::QuicUtils::CreateRandomConnectionId(&random_));
+  quic::QuicConnectionId next_cid = quic::QuicUtils::CreateRandomConnectionId(
+      quiche::QuicheRandom::GetInstance());
   uint64_t next_cid_sequence_number = 1u;
   if (VersionUsesHttp3(version_.transport_version)) {
     quic_data.AddWrite(SYNCHRONOUS,
@@ -2116,7 +2115,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
           ASYNC, client_maker_.MakeRetireConnectionIdPacket(
                      packet_num++, /*include_version=*/false,
                      /*sequence_number=*/next_cid_sequence_number - 1));
-      next_cid = quic::QuicUtils::CreateReplacementConnectionId(next_cid);
+      next_cid = quic::QuicUtils::CreateRandomConnectionId(
+          quiche::QuicheRandom::GetInstance());
       ++next_cid_sequence_number;
       quic_data2.AddRead(
           ASYNC, server_maker_.MakeNewConnectionIdPacket(
