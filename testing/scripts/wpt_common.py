@@ -262,8 +262,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             self.wptreport = self.fs.join(self.fs.dirname(self.wpt_output),
                                           report)
         if self.options.isolated_script_test_launcher_retry_limit is None:
-            retries = 0 if self._has_explicit_tests else 3
-            self.options.isolated_script_test_launcher_retry_limit = retries
+            self.options.isolated_script_test_launcher_retry_limit = (
+                self._default_retry_limit)
+
+    @property
+    def _default_retry_limit(self) -> int:
+        return 0 if self._has_explicit_tests else 3
 
     @property
     def wpt_output(self):

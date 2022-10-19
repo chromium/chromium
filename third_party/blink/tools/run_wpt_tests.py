@@ -112,6 +112,12 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             force=True)
 
     @property
+    def _default_retry_limit(self) -> int:
+        if self.options.use_upstream_wpt:
+            return 0
+        return super()._default_retry_limit
+
+    @property
     def wpt_binary(self):
         if self.options.use_upstream_wpt:
             return os.path.join(self._upstream_dir, "wpt")
