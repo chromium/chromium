@@ -301,10 +301,8 @@ PictureLayerTiling* PictureLayerTilingSet::AddTiling(
 }
 
 int PictureLayerTilingSet::NumHighResTilings() const {
-  return std::count_if(tilings_.begin(), tilings_.end(),
-                       [](const std::unique_ptr<PictureLayerTiling>& tiling) {
-                         return tiling->resolution() == HIGH_RESOLUTION;
-                       });
+  return base::ranges::count(tilings_, HIGH_RESOLUTION,
+                             &PictureLayerTiling::resolution);
 }
 
 PictureLayerTiling* PictureLayerTilingSet::FindTilingWithScaleKey(

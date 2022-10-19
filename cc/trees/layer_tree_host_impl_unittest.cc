@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <utility>
@@ -15,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15748,11 +15748,7 @@ TEST_F(LayerTreeHostImplCountingLostSurfaces, TwiceLostSurface) {
 
 size_t CountRenderPassesWithId(const viz::CompositorRenderPassList& list,
                                viz::CompositorRenderPassId id) {
-  return std::count_if(
-      list.begin(), list.end(),
-      [id](const std::unique_ptr<viz::CompositorRenderPass>& p) {
-        return p->id == id;
-      });
+  return base::ranges::count(list, id, &viz::CompositorRenderPass::id);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, RemoveUnreferencedRenderPass) {
