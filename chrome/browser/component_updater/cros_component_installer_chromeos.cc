@@ -26,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
@@ -296,6 +297,8 @@ DemoAppInstallerPolicy::GetInstallerAttributes() const {
       prefs->GetString(prefs::kDemoModeStoreId);
   demo_app_installer_attributes["demo_country"] =
       prefs->GetString(prefs::kDemoModeCountry);
+  demo_app_installer_attributes["is_cloud_gaming_device"] =
+      chromeos::features::IsCloudGamingDeviceEnabled() ? "true" : "false";
   return demo_app_installer_attributes;
 }
 
