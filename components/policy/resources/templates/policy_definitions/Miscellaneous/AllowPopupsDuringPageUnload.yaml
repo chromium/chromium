@@ -15,6 +15,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow pages to show pop-ups during unloading
+  value: true
+- caption: Prevent pages from showing pop-ups during unloading
+  value: false
 owners:
 - avi@chromium.org
 schema:

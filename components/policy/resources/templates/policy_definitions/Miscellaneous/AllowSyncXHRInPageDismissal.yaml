@@ -17,6 +17,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow pages to send synchronous XHR requests during page dismissal
+  value: true
+- caption: Do not allow pages to send synchronous XHR requests during page dismissal
+  value: false
 owners:
 - kdillon@chromium.org, panicker@chromium.org
 - kdillon@chromium.org

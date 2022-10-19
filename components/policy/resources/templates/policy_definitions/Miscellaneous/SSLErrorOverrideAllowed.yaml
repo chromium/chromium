@@ -9,6 +9,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Allow users to click through SSL warning pages
+  value: true
+- caption: Prevent users from clicking through SSL warning pages
+  value: false
 owners:
 - agl@chromium.org
 schema:

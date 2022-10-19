@@ -10,6 +10,11 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+items:
+- caption: Enable creation of supervised users
+  value: true
+- caption: Disable creation of supervised users
+  value: false
 owners:
 - file://components/policy/resources/OWNERS
 - rsorokin@chromium.org

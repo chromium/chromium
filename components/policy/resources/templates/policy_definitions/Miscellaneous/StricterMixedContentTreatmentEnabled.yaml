@@ -11,13 +11,18 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+items:
+- caption: Enable autoupgrades to HTTPS for audio and video, and show 'Not Secure' warning for images.
+  value: true
+- caption: Disable autoupgrades to HTTPS for audio and video, and show no warning for images.
+  value: false
 owners:
 - carlosil@chromium.org
 - estark@chromium.org
 schema:
   type: boolean
 supported_on:
-- chrome.*:80-
-- chrome_os:80-
+- chrome.*:80-84
+- chrome_os:80-84
 tags: []
 type: main

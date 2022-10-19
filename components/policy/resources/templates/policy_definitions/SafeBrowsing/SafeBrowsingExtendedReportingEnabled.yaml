@@ -19,8 +19,8 @@ items:
 - caption: Enable reporting of system information and page content to help improve
     Safe Browsing
   value: true
-- caption: Disable reporting of system information and page content to help improve
-    Safe Browsing
+- caption: Disable reporting of system information and page content which are used
+    to help improve Safe Browsing
   value: false
 - caption: Allow the user to decide
   value: null
