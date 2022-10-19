@@ -4839,7 +4839,7 @@
   {
     "name": "ntp-drive-module",
     "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "ntp-dummy-modules",
@@ -4849,7 +4849,7 @@
   {
     "name": "ntp-middle-slot-promo-dismissal",
     "owners": [ "pauladedeji", "tiborg" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "ntp-modules-drag-and-drop",
@@ -4859,7 +4859,7 @@
   {
     "name": "ntp-modules-first-run-experience",
     "owners": [ "mahmadi", "pauladedeji", "tiborg" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "ntp-modules-redesigned",
@@ -4919,7 +4919,7 @@
   {
     "name": "ntp-recipe-tasks-module",
     "owners": [ "rtatum", "tiborg" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "ntp-safe-browsing-module",
