@@ -129,12 +129,6 @@ class OptimizationGuideKeyedService
   }
 
  private:
-  // BookmarkBridge is a friend class since it is a consumer of the
-  // CanApplyOptimizationOnDemand API.
-#if BUILDFLAG(IS_ANDROID)
-  friend class BookmarkBridge;
-#endif
-
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
   friend class OptimizationGuideKeyedServiceBrowserTest;

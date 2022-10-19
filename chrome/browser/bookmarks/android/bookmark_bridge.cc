@@ -30,8 +30,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -46,10 +44,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/proto/price_tracking.pb.h"
-#include "components/commerce/core/shopping_service.h"
 #include "components/dom_distiller/core/url_utils.h"
-#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
@@ -126,7 +121,6 @@ BookmarkBridge::BookmarkBridge(JNIEnv* env,
   bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(profile_);
   managed_bookmark_service_ =
       ManagedBookmarkServiceFactory::GetForProfile(profile_);
-  opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
 
   // Registers the notifications we are interested.
   bookmark_model_->AddObserver(this);
@@ -1369,87 +1363,6 @@ void BookmarkBridge::ReorderChildren(
 void BookmarkBridge::OnProfileWillBeDestroyed(Profile* profile) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   DestroyJavaObject();
-}
-
-void BookmarkBridge::GetUpdatedProductPrices(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobjectArray>& gurls,
-    const JavaParamRef<jobject>& callback) {
-  std::vector<GURL> urls;
-  for (int i = 0; i < env->GetArrayLength(gurls.obj()); i++) {
-    urls.push_back(*url::GURLAndroid::ToNativeGURL(
-        env, ScopedJavaLocalRef<jobject>(
-                 env, env->GetObjectArrayElement(gurls.obj(), i))));
-  }
-
-  CHECK(opt_guide_);
-
-  opt_guide_->CanApplyOptimizationOnDemand(
-      urls, {optimization_guide::proto::OptimizationType::PRICE_TRACKING},
-      optimization_guide::proto::RequestContext::CONTEXT_BOOKMARKS,
-      base::BindRepeating(&BookmarkBridge::OnProductPriceUpdated,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          ScopedJavaGlobalRef<jobject>(callback)));
-}
-
-void BookmarkBridge::OnProductPriceUpdated(
-    ScopedJavaGlobalRef<jobject> callback,
-    const GURL& url,
-    const base::flat_map<
-        optimization_guide::proto::OptimizationType,
-        optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions) {
-  JNIEnv* env = AttachCurrentThread();
-
-  if (!decisions.contains(
-          optimization_guide::proto::OptimizationType::PRICE_TRACKING)) {
-    return;
-  }
-
-  auto iter = decisions.find(
-      optimization_guide::proto::OptimizationType::PRICE_TRACKING);
-
-  if (iter == decisions.cend())
-    return;
-
-  optimization_guide::OptimizationGuideDecisionWithMetadata decision =
-      iter->second;
-
-  // Only fire the callback for price tracking info if successful.
-  if (decision.decision !=
-      optimization_guide::OptimizationGuideDecision::kTrue) {
-    return;
-  }
-
-  if (decision.metadata.any_metadata().has_value()) {
-    absl::optional<commerce::PriceTrackingData> parsed_any =
-        optimization_guide::ParsedAnyMetadata<commerce::PriceTrackingData>(
-            decision.metadata.any_metadata().value());
-
-    if (!parsed_any.has_value())
-      return;
-
-    commerce::PriceTrackingData price_tracking_data = parsed_any.value();
-
-    bool has_price = price_tracking_data.IsInitialized() &&
-                     price_tracking_data.has_buyable_product() &&
-                     price_tracking_data.buyable_product().has_current_price();
-
-    if (has_price) {
-      commerce::ProductPrice price =
-          price_tracking_data.buyable_product().current_price();
-
-      int size = price.ByteSize();
-      std::vector<uint8_t> data;
-      data.resize(size);
-      price.SerializeToArray(data.data(), size);
-
-      Java_BookmarkBridge_onProductPriceUpdated(
-          env, weak_java_ref_.get(env),
-          url::GURLAndroid::FromNativeGURL(env, url),
-          base::android::ToJavaByteArray(env, data.data(), size), callback);
-    }
-  }
 }
 
 void BookmarkBridge::DestroyJavaObject() {

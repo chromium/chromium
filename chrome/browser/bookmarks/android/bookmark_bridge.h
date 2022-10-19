@@ -23,7 +23,6 @@
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/android/gurl_android.h"
 
@@ -33,7 +32,6 @@ class ManagedBookmarkService;
 class ScopedGroupBookmarkActions;
 }  // namespace bookmarks
 
-class OptimizationGuideKeyedService;
 class Profile;
 
 // The delegate to fetch bookmarks information for the Android native
@@ -288,20 +286,6 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   // ProfileObserver override
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  void GetUpdatedProductPrices(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobjectArray>& gurls,
-      const base::android::JavaParamRef<jobject>& callback);
-
-  void OnProductPriceUpdated(
-      base::android::ScopedJavaGlobalRef<jobject> callback,
-      const GURL& url,
-      const base::flat_map<
-          optimization_guide::proto::OptimizationType,
-          optimization_guide::OptimizationGuideDecisionWithMetadata>&
-          decisions);
-
  private:
   ~BookmarkBridge() override;
 
@@ -388,9 +372,6 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   // Observes the profile destruction and creation.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
-
-  // A means of accessing metadata about bookmarks.
-  raw_ptr<OptimizationGuideKeyedService> opt_guide_;
 
   // Weak pointers for creating callbacks that won't call into a destroyed
   // object.
