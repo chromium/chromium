@@ -57,6 +57,7 @@
 #include "content/public/browser/navigation_type.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -3765,7 +3766,7 @@ class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
         {});
   }
 
-  int MaxNumOfRunningPrerenders() const { return 3; }
+  int MaxNumOfRunningPrerenders() const { return 4; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -3831,7 +3832,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   std::vector<GURL> prerender_urls;
-  for (int i = 0; i < MaxNumOfRunningPrerenders(); i++) {
+  for (int i = 0; i < 3; i++) {
     prerender_urls.push_back(
         GetUrl("/empty.html?prerender" + base::NumberToString(i)));
   }
@@ -3859,7 +3860,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // Make sure if the activation succeeds and other prerender hosts are
   // destroyed.
   std::vector<std::unique_ptr<test::PrerenderHostObserver>> prerender_observers;
-  for (int i = 0; i < MaxNumOfRunningPrerenders(); i++) {
+  for (int i = 0; i < 3; i++) {
     prerender_observers.push_back(std::make_unique<test::PrerenderHostObserver>(
         *web_contents(), GetHostForUrl(prerender_urls[i])));
   }
@@ -4065,8 +4066,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   }
 }
 
-// Test that if the 4 URLs are specified in the speculation rule while only 3
-// prerenders are allowed, the 4th prerender should be cancelled.
+// Test that if the 5 URLs are specified in the speculation rule while only 4
+// prerenders are allowed, the 5th prerender should be cancelled.
 IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
                        ExceedTheRequestNumberLimit) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
@@ -4077,7 +4078,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
   std::vector<GURL> prerender_urls;
 
-  ASSERT_EQ(MaxNumOfRunningPrerenders(), 3);
+  ASSERT_EQ(MaxNumOfRunningPrerenders(), 4);
   for (int i = 0; i < MaxNumOfRunningPrerenders() + 1; i++) {
     prerender_urls.push_back(embedded_test_server()->GetURL(
         "/empty.html?prerender" + base::NumberToString(i)));
@@ -4087,17 +4088,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
-  // Insert 4 URLs into the speculation rules at the same time.
+  // Insert 5 URLs into the speculation rules at the same time.
   AddMultiplePrerenderAsync(prerender_urls);
 
   // Stop the first prerendering initial navigation.
   response.WaitForRequest();
 
   // Wait for the last prerender request will be triggered.
-  registry_observer.WaitForTrigger(prerender_urls[3]);
+  registry_observer.WaitForTrigger(prerender_urls.back());
 
-  // The forth prerender is destroyed since the number of prerender requests
-  // from speculation rules exceeds its limit of 3.
+  // The last prerender is destroyed since the number of prerender requests
+  // from speculation rules exceeds its limit of 4.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
@@ -4360,10 +4361,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
     EXPECT_EQ(ukm_entries.size(), 2u);
 
-    // TODO(crbug.com/1355151): Cancel other pending hosts right after the
-    // activation request arrival so that the cancelled host that was pending
-    // records PreloadingTriggeringOutcome::kTriggeredButPending instead of
-    // kRunning.
     std::vector<UkmEntry> expected_entries = {
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
@@ -4376,7 +4373,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
-            PreloadingTriggeringOutcome::kRunning,
+            PreloadingTriggeringOutcome::kTriggeredButPending,
             PreloadingFailureReason::kUnspecified,
             /*accurate=*/false),
     };
@@ -4442,6 +4439,114 @@ IN_PROC_BROWSER_TEST_F(
             PreloadingTriggeringOutcome::kSuccess,
             PreloadingFailureReason::kUnspecified,
             /*accurate=*/true),
+        attempt_ukm_entry_builder().BuildEntry(
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
+            PreloadingHoldbackStatus::kAllowed,
+            PreloadingTriggeringOutcome::kRunning,
+            PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+        attempt_ukm_entry_builder().BuildEntry(
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
+            PreloadingHoldbackStatus::kAllowed,
+            PreloadingTriggeringOutcome::kTriggeredButPending,
+            PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+    };
+
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
+}
+
+// Test that all the prerender hosts except the one to be activated are
+// cancelled regardless of their status right after the PrerenderHostRegistry
+// receives the activation request.
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       CancelAllPrerenderUponActivationRequestArrival) {
+  net::test_server::ControllableHttpResponse response3(
+      embedded_test_server(), "/empty.html?prerender3");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+
+  ASSERT_EQ(MaxNumOfRunningPrerenders(), 4);
+  std::vector<GURL> prerender_urls;
+  for (int i = 1; i <= MaxNumOfRunningPrerenders(); i++) {
+    prerender_urls.push_back(embedded_test_server()->GetURL(
+        "/empty.html?prerender" + base::NumberToString(i)));
+  }
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+
+  // Insert 4 URLs into the speculation rules at the same time.
+  AddMultiplePrerenderAsync(prerender_urls);
+  registry_observer.WaitForTrigger(prerender_urls[3]);
+
+  // Stop the third prerendering initial navigation.
+  response3.WaitForRequest();
+
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               prerender_urls[0]);
+  test::PrerenderHostObserver prerender1_observer(
+      *web_contents(), GetHostForUrl(prerender_urls[0]));
+
+  // Defer the activation of the first prerender.
+  TestActivationManager primary_page_manager(shell()->web_contents(),
+                                             prerender_urls[0]);
+  ASSERT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     JsReplace("location = $1", prerender_urls[0])));
+
+  ASSERT_TRUE(primary_page_manager.WaitForBeforeChecks());
+  NavigationRequest* request =
+      web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
+  ASSERT_EQ(request->GetURL(), prerender_urls[0]);
+
+  // Confirm that all the other prerender hosts are successfully cancelled.
+  for (auto& url : prerender_urls) {
+    if (url == prerender_urls[0])
+      continue;
+    EXPECT_EQ(GetHostForUrl(url), RenderFrameHost::kNoFrameTreeNodeId);
+  }
+
+  // Resume the activation.
+  primary_page_manager.ResumeActivation();
+  prerender1_observer.WaitForActivation();
+
+  // When the PrerenderHostRegistry received the activation request, the status
+  // of each prerender host is:
+  // 1. Ready for activation,
+  // 2. Ready for activation,
+  // 3. Running,
+  // 4. Pending.
+  // We activated the first prerender, so all the other prerender hosts should
+  // be cancelled with each corresponding status.
+  {
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 4u);
+
+    std::vector<UkmEntry> expected_entries = {
+        attempt_ukm_entry_builder().BuildEntry(
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
+            PreloadingHoldbackStatus::kAllowed,
+            PreloadingTriggeringOutcome::kSuccess,
+            PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_ukm_entry_builder().BuildEntry(
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
+            PreloadingHoldbackStatus::kAllowed,
+            PreloadingTriggeringOutcome::kReady,
+            PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,

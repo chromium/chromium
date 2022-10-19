@@ -3859,13 +3859,13 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   NavigatePrimaryPage(kPrerenderingUrl);
   base::Value::Dict result =
       WaitForNotification("Page.prerenderAttemptCompleted", true);
-  EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
+  EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
 
   // TODO(crbug/1332386): Verifies that multiple activations can be received
   // properly when crbug/1350676 is ready. kPrerenderingUrl2 should be canceled
   // as navigating to kPrerenderingUrl2.
   result = WaitForNotification("Page.prerenderAttemptCompleted", true);
-  EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
+  EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
 }
 
 IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,

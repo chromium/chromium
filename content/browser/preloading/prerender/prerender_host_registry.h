@@ -97,21 +97,21 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // Applies CancelHost for all existing PrerenderHost.
   void CancelAllHosts(PrerenderHost::FinalStatus final_status);
 
-  // For activators.
-  // Finds the host to activate for a navigation for the given
+  // For activators. Finds the host to activate for a navigation for the given
   // NavigationRequest. Returns the root frame tree node id of the prerendered
   // page, which can be used as the id of the host. This doesn't reserve the
-  // host so it can be destroyed or activated by another navigation. See also
+  // host so it can be destroyed or activated by another navigation. This also
+  // cancels all the prerender hosts except the one to be activated. See also
   // comments on ReserveHostToActivate().
   int FindPotentialHostToActivate(NavigationRequest& navigation_request);
 
-  // For activators.
-  // Reserves the host to activate for a navigation for the given
-  // NavigationRequest. Returns the root frame tree node id of the prerendered
-  // page, which can be used as the id of the host. Returns
+  // For activators. Reserves the host to activate for a navigation for the
+  // given NavigationRequest. Returns the root frame tree node id of the
+  // prerendered page, which can be used as the id of the host. Returns
   // RenderFrameHost::kNoFrameTreeNodeId if it's not found or not ready for
   // activation yet. The caller is responsible for calling
-  // OnActivationFinished() with the id to release the reserved host.
+  // OnActivationFinished() with the id to release the reserved host. This also
+  // cancels all the prerender hosts except the one to be activated.
   //
   // TODO(https://crbug.com/1198815): Consider returning the ownership of the
   // reserved host and letting NavigationRequest own it instead of

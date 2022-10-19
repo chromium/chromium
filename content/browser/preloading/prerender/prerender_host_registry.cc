@@ -622,7 +622,7 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
 
   // Find an available host for the navigation URL.
   PrerenderHost* host = nullptr;
-  for (const auto& [_, it_prerender_host] :
+  for (const auto& [host_id, it_prerender_host] :
        prerender_host_by_frame_tree_node_id_) {
     if (it_prerender_host->IsUrlMatch(navigation_request.GetURL())) {
       host = it_prerender_host.get();
@@ -632,7 +632,6 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   if (!host)
     return RenderFrameHost::kNoFrameTreeNodeId;
 
-  // Cancel the host if the host is still pending.
   if (!host->GetInitialNavigationId().has_value()) {
     DCHECK(base::FeatureList::IsEnabled(
         blink::features::kPrerender2SequentialPrerendering));
@@ -652,6 +651,18 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   if (!host->IsFramePolicyCompatibleWithPrimaryFrameTree()) {
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
+
+  // Cancel all the other prerender hosts because we no longer need the other
+  // hosts after we determine the host to be activated.
+  std::vector<int> cancelled_prerenders;
+  for (const auto& [host_id, _] : prerender_host_by_frame_tree_node_id_) {
+    if (host_id != host->frame_tree_node_id()) {
+      cancelled_prerenders.push_back(host_id);
+    }
+  }
+  CancelHosts(cancelled_prerenders,
+              PrerenderHost::FinalStatus::kTriggerDestroyed);
+  pending_prerenders_.clear();
 
   return host->frame_tree_node_id();
 }
