@@ -928,9 +928,11 @@ directory. The script will be given the arguments plus
 
     # Map the isolate arguments back to our output / input arguments.
     if args.output_json:
-        logging.info('Running with isolated arguments')
-        assert args.positional
+        if not args.positional:
+            logging.warning('No input JSON arguments passed. Quitting early.')
+            return
 
+        logging.info('Running with isolated arguments')
         # TODO(tansell): Once removed everywhere, these lines can be removed.
         # For now we just check nobody is supply arguments we didn't expect.
         if args.results_json_override_with_build_property:
