@@ -41,6 +41,7 @@
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "chrome/browser/net/cert_verifier_configuration.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/features.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -474,8 +475,7 @@ void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  should_install |=
-      base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
+  should_install |= GetChromeCertVerifierServiceParams()->use_chrome_root_store;
 
 // Even if we aren't using Chrome Root Store for cert verification, we may be
 // trialing it. Check if the trial is enabled.

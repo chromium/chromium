@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/cert_verifier_configuration.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
@@ -63,7 +64,7 @@ bool TrialComparisonCertVerifierController::MaybeAllowedForProfile(
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // If the Chrome Root Store is enabled as part of the default verifier, the
   // trial does not make sense.
-  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed))
+  if (GetChromeCertVerifierServiceParams()->use_chrome_root_store)
     return false;
 #endif
 
