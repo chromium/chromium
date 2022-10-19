@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const isServiceWorker = ('ServiceWorkerGlobalScope' in self);
+
 var pass = chrome.test.callbackPass;
 var dataURL = 'data:text/plain,redirected1';
 
@@ -24,7 +26,7 @@ function assertRedirectSucceeds(url, redirectURL, callback) {
       passCallback(response);
     }).catch((e) => {
       if (callback) callback();
-      chrome.test.fail();
+      chrome.test.fail(e);
     });
   });
 }
@@ -44,6 +46,25 @@ function assertRedirectFails(url, callback) {
   });
 }
 
+const nonServiceWorkerTests = [
+  // TODO(crbug.com/1375880): These tests cause the browser to crash when run
+  // with a service worker-based extension.
+  'subresourceRedirectToDataUrlOnHeadersReceived',
+  'subresourceRedirectToDataUrlOnBeforeRequest',
+  'subresourceRedirectToDataUrlWithServerRedirect',
+  // TODO(crbug.com/1376106): These two tests hang.
+  'subresourceRedirectHasSameRequestIdOnHeadersReceived',
+  'subresourceRedirectHasSameRequestIdOnBeforeRequest'
+];
+
+function getFilteredTests(tests) {
+  if (!isServiceWorker)
+    return tests;
+  return tests.filter(function(op) {
+    return !nonServiceWorkerTests.includes(op.name);
+  });
+}
+
 const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
@@ -56,7 +77,7 @@ loadScript.then(async function() {
       onHeadersReceivedExtraInfoSpec.push('extraHeaders');
   }
 
-  runTests([
+  runTests(getFilteredTests([
     function subresourceRedirectToDataUrlOnHeadersReceived() {
       var url = getServerURL('echo');
       var listener = function(details) {
@@ -231,5 +252,5 @@ loadScript.then(async function() {
             onBeforeRequestListener);
       });
     },
-  ]);
+  ]));
 })});
