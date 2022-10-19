@@ -6778,8 +6778,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   }
 }
 
+// TODO(https://crbug.com/1269640): This flakes badly on debug & sanitizer
+// builds on almost all platforms, and on Mac and Android.
 IN_PROC_BROWSER_TEST_F(SitePerProcessUserActivationHitTestBrowserTest,
-                       RenderWidgetUserActivationStateTest) {
+                       DISABLED_RenderWidgetUserActivationStateTest) {
   GURL main_url(embedded_test_server()->GetURL(
       "foo.com", "/frame_tree/page_with_positioned_frame.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
