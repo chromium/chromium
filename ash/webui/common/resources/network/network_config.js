@@ -460,6 +460,7 @@ Polymer({
     'updateIsConfigured_(configProperties_.typeConfig.wifi.*)',
     'updateIsConfigured_(configProperties_.typeConfig.vpn.*, vpnType_,' +
         'ipsecAuthType_)',
+    'updateIsConfigured_(ipAddressInput_)',
     'updateIsConfigured_(selectedUserCertHash_)',
   ],
 
