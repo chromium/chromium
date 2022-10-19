@@ -111,7 +111,8 @@ def action_cell(action, data, html_class):
 def flakiness_dashbord_link(test_name, suite_name, bucket):
   # Assume the bucket will be like "foo-bar-baz", we will take "foo"
   # as the test_project.
-  test_project = bucket.split('-')[0]
+  # Fallback to "chromium" if bucket is not passed, e.g. local_output=True
+  test_project = bucket.split('-')[0] if bucket else 'chromium'
   query = '%s/%s' % (suite_name, test_name)
   url_args = urlencode([('t', 'TESTS'), ('q', query), ('tp', test_project)])
   return 'https://ci.chromium.org/ui/search?%s' % url_args
