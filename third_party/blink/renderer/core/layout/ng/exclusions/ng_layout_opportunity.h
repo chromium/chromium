@@ -62,6 +62,11 @@ struct CORE_EXPORT NGLayoutOpportunity final {
         rect.BlockStartOffset() + block_delta, line_block_size);
   }
 
+  bool operator==(const NGLayoutOpportunity& other) const;
+  bool operator!=(const NGLayoutOpportunity& other) const {
+    return !operator==(other);
+  }
+
  private:
   LayoutUnit ComputeLineLeftOffset(const NGConstraintSpace&,
                                    LayoutUnit line_block_size,
@@ -70,6 +75,9 @@ struct CORE_EXPORT NGLayoutOpportunity final {
                                     LayoutUnit line_block_size,
                                     LayoutUnit block_delta) const;
 };
+
+CORE_EXPORT std::ostream& operator<<(std::ostream& os,
+                                     const NGLayoutOpportunity& opportunity);
 
 }  // namespace blink
 

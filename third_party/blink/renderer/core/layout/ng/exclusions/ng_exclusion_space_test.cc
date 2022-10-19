@@ -4,15 +4,80 @@
 
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
 
 namespace {
 
+using ::testing::ElementsAre;
+
 #define TEST_OPPORTUNITY(opp, expected_start_offset, expected_end_offset) \
   EXPECT_EQ(expected_start_offset, opp.rect.start_offset);                \
   EXPECT_EQ(expected_end_offset, opp.rect.end_offset)
+
+struct ExclusionSpaceForTesting {
+  explicit ExclusionSpaceForTesting(float available_inline_size)
+      : available_inline_size(available_inline_size) {}
+
+  NGExclusionSpace exclusion_space;
+  LayoutUnit available_inline_size;
+
+  LayoutUnit InitialLetterClearanceOffset() const {
+    return exclusion_space.InitialLetterClearanceOffset();
+  }
+
+  void Add(const NGExclusion* exclusion) { exclusion_space.Add(exclusion); }
+
+  void AddForFloat(float inline_start,
+                   float block_start,
+                   float inline_end,
+                   float block_end,
+                   EFloat float_type = EFloat::kLeft) {
+    exclusion_space.Add(NGExclusion::Create(
+        NGBfcRect(
+            NGBfcOffset(LayoutUnit(inline_start), LayoutUnit(block_start)),
+            NGBfcOffset(LayoutUnit(inline_end), LayoutUnit(block_end))),
+        EFloat::kLeft));
+  }
+
+  void AddForInitialLetterBox(float inline_start,
+                              float block_start,
+                              float inline_end,
+                              float block_end,
+                              EFloat float_type = EFloat::kLeft) {
+    exclusion_space.Add(NGExclusion::CreateForInitialLetterBox(
+        NGBfcRect(
+            NGBfcOffset(LayoutUnit(inline_start), LayoutUnit(block_start)),
+            NGBfcOffset(LayoutUnit(inline_end), LayoutUnit(block_end))),
+        EFloat::kLeft));
+  }
+
+  LayoutOpportunityVector AllLayoutOpportunities(float inline_offset,
+                                                 float block_offset) const {
+    return exclusion_space.AllLayoutOpportunities(
+        NGBfcOffset(LayoutUnit(inline_offset), LayoutUnit(block_offset)),
+        available_inline_size);
+  }
+
+  NGLayoutOpportunity FindLayoutOpportunity(float inline_offset,
+                                            float block_offset,
+                                            float minimal_inline_size) {
+    return exclusion_space.FindLayoutOpportunity(
+        NGBfcOffset(LayoutUnit(inline_offset), LayoutUnit(block_offset)),
+        available_inline_size, LayoutUnit(minimal_inline_size));
+  }
+};
+
+NGLayoutOpportunity LayoutOpportunity(float inline_start,
+                                      float block_start,
+                                      float inline_end,
+                                      float block_end = LayoutUnit::Max()) {
+  return NGLayoutOpportunity(
+      NGBfcRect(NGBfcOffset(LayoutUnit(inline_start), LayoutUnit(block_start)),
+                NGBfcOffset(LayoutUnit(inline_end), LayoutUnit(block_end))));
+}
 
 // Tests that an empty exclusion space returns exactly one layout opportunity
 // each one, and sized appropriately given the area.
@@ -280,6 +345,439 @@ TEST(NGExclusionSpaceTest, InsertBetweenShelves) {
                    NGBfcOffset(LayoutUnit(60), LayoutUnit::Max()));
   TEST_OPPORTUNITY(opportunites[2], NGBfcOffset(LayoutUnit(30), LayoutUnit(35)),
                    NGBfcOffset(LayoutUnit(60), LayoutUnit::Max()));
+}
+
+TEST(NGExclusionSpaceTest, InitialLetterBasic) {
+  constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
+  ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
+
+  // <!doctype html>
+  //  <style>
+  //  body { font-size: 20px; }
+  //  .drop::first-letter { initial-letter: 3; }
+  //  .sample {
+  //      border: solid green 1px;
+  //      margin-bottom: 5px;
+  //      width: 300px;
+  //  }
+  //
+  //  *::first-letter {
+  //      color: red;
+  //      background: yellow;
+  //  }
+  //
+  //  </style>
+  //  <<div class="sample drop">
+  //  Drop<br>line1<br>line2<br>line3<br>line4<br>line5<br>
+  //  </div>
+  exclusion_space.AddForInitialLetterBox(9, 9, 73, 73);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
+              ElementsAre(LayoutOpportunity(73, 32, 309),
+                          LayoutOpportunity(9, 73, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
+              ElementsAre(LayoutOpportunity(73, 55, 309),
+                          LayoutOpportunity(9, 73, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
+              ElementsAre(LayoutOpportunity(9, 78, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
+              ElementsAre(LayoutOpportunity(9, 101, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
+              ElementsAre(LayoutOpportunity(9, 124, 309)));
+
+  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+}
+
+TEST(NGExclusionSpaceTest, InitialLetterDirectionRight) {
+  constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
+  ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
+
+  // <!doctype html>
+  //  <style>
+  //  body { font-size: 20px; }
+  //  .drop::first-letter { initial-letter: 3; }
+  //  .sample {
+  //      border: solid green 1px;
+  //      margin-bottom: 5px;
+  //      width: 300px;
+  //  }
+  //
+  //  *::first-letter {
+  //      color: red;
+  //      background: yellow;
+  //  }
+  //
+  //  </style>
+  //  <<div dir="rtl" class="sample drop">
+  // <float id="float1"></float>
+  //  <float id="float2" style="float:right; width:100px"></float>
+  //  Drop<br>line1<br>line2<br>line3<br>line4<br>line5<br>
+  //  </div>
+  exclusion_space.AddForFloat(9, 9, 59, 59);
+
+  EXPECT_THAT(exclusion_space.FindLayoutOpportunity(9, 9, 100),
+              LayoutOpportunity(59, 9, 309));
+  exclusion_space.AddForFloat(209, 9, 309, 59, EFloat::kRight);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 9),
+              ElementsAre(LayoutOpportunity(309, 9, 309),
+                          LayoutOpportunity(9, 59, 309)));
+  exclusion_space.AddForInitialLetterBox(117, 9, 182, 73, EFloat::kRight);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
+              ElementsAre(LayoutOpportunity(309, 32, 309),
+                          LayoutOpportunity(182, 59, 309),
+                          LayoutOpportunity(9, 73, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
+              ElementsAre(LayoutOpportunity(309, 55, 309),
+                          LayoutOpportunity(182, 59, 309),
+                          LayoutOpportunity(9, 73, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
+              ElementsAre(LayoutOpportunity(9, 78, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
+              ElementsAre(LayoutOpportunity(9, 101, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
+              ElementsAre(LayoutOpportunity(9, 124, 309)));
+
+  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+}
+
+TEST(NGExclusionSpaceTest, InitialLetterFloatLeft1) {
+  constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
+  ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
+
+  // <!doctype html>
+  //  <style>
+  //  body { font-size: 20px; }
+  //  .drop::first-letter { initial-letter: 3; }
+  //  .sample {
+  //      border: solid green 1px;
+  //      margin-bottom: 5px;
+  //      width: 300px;
+  //  }
+  //
+  //  *::first-letter {
+  //      color: red;
+  //      background: yellow;
+  //  }
+  //
+  //  float {
+  //    float: left;
+  //    width: 50px;
+  //    height: 50px;
+  //  }
+  //
+  //  </style>
+  //  <<div class="sample drop">
+  //  <float id="float1"></float>
+  //  Drop<br>line1<br>line2<br>line3<br>line4<br>line5<br>
+  //  </div>
+  exclusion_space.AddForFloat(9, 59, 59, 59);
+  exclusion_space.AddForInitialLetterBox(59, 9, 73, 73);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
+              ElementsAre(LayoutOpportunity(73, 32, 309),
+                          LayoutOpportunity(73, 59, 309),
+                          LayoutOpportunity(9, 73, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
+              ElementsAre(LayoutOpportunity(73, 55, 309),
+                          LayoutOpportunity(73, 59, 309),
+                          LayoutOpportunity(9, 73, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
+              ElementsAre(LayoutOpportunity(9, 78, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
+              ElementsAre(LayoutOpportunity(9, 101, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
+              ElementsAre(LayoutOpportunity(9, 124, 309)));
+
+  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+}
+
+TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2) {
+  constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
+  ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
+
+  // <!doctype html>
+  //  <style>
+  //  body { font-size: 20px; }
+  //  .drop::first-letter { initial-letter: 3; }
+  //  .sample {
+  //      border: solid green 1px;
+  //      margin-bottom: 5px;
+  //      width: 300px;
+  //  }
+  //
+  //  *::first-letter {
+  //      color: red;
+  //      background: yellow;
+  //  }
+  //
+  //  float {
+  //    float: left;
+  //    width: 50px;
+  //    height: 50px;
+  //  }
+  //
+  //  </style>
+  //  <<div class="sample drop">
+  //  <float id="float1"></float>
+  //  <float id="float2" style="width:100px"></float>
+  //  Drop<br>line1<br>line2<br>line3<br>line4<br>line5<br>
+  //  </div>
+  exclusion_space.AddForFloat(9, 59, 59, 59);
+  exclusion_space.AddForFloat(59, 59, 159, 59);
+  exclusion_space.AddForInitialLetterBox(159, 9, 223, 73);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
+              ElementsAre(LayoutOpportunity(223, 32, 309),
+                          LayoutOpportunity(223, 59, 309),
+                          LayoutOpportunity(9, 73, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
+              ElementsAre(LayoutOpportunity(223, 55, 309),
+                          LayoutOpportunity(223, 59, 309),
+                          LayoutOpportunity(9, 73, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
+              ElementsAre(LayoutOpportunity(9, 78, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
+              ElementsAre(LayoutOpportunity(9, 101, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
+              ElementsAre(LayoutOpportunity(9, 124, 309)));
+
+  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+}
+
+TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2ClearLeft) {
+  constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
+  ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
+
+  // <!doctype html>
+  //  <style>
+  //  body { font-size: 20px; }
+  //  .drop::first-letter { initial-letter: 3; }
+  //  .sample {
+  //      border: solid green 1px;
+  //      margin-bottom: 5px;
+  //      width: 300px;
+  //  }
+  //
+  //  *::first-letter {
+  //      color: red;
+  //      background: yellow;
+  //  }
+  //
+  //  float {
+  //    float: left;
+  //    width: 50px;
+  //    height: 50px;
+  //  }
+  //
+  //  </style>
+  //  <<div class="sample drop">
+  //  <float id="float1"></float>
+  //  <float id="float2" style="clear:left; width:100px"></float>
+  //  Drop<br>line1<br>line2<br>line3<br>line4<br>line5<br>
+  //  </div>
+  exclusion_space.AddForFloat(9, 59, 59, 59);
+  exclusion_space.AddForFloat(9, 59, 109, 109);
+  exclusion_space.AddForInitialLetterBox(109, 9, 223, 73);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
+              ElementsAre(LayoutOpportunity(223, 32, 309),
+                          LayoutOpportunity(109, 73, 309),
+                          LayoutOpportunity(9, 109, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
+              ElementsAre(LayoutOpportunity(223, 55, 309),
+                          LayoutOpportunity(109, 73, 309),
+                          LayoutOpportunity(9, 109, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
+              ElementsAre(LayoutOpportunity(109, 78, 309),
+                          LayoutOpportunity(9, 109, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
+              ElementsAre(LayoutOpportunity(109, 101, 309),
+                          LayoutOpportunity(9, 109, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
+              ElementsAre(LayoutOpportunity(9, 124, 309)));
+
+  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+}
+
+TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAndRight) {
+  constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
+  ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
+
+  // <!doctype html>
+  //  <style>
+  //  body { font-size: 20px; }
+  //  .drop::first-letter { initial-letter: 3; }
+  //  .sample {
+  //      border: solid green 1px;
+  //      margin-bottom: 5px;
+  //      width: 300px;
+  //  }
+  //
+  //  *::first-letter {
+  //      color: red;
+  //      background: yellow;
+  //  }
+  //
+  //  float {
+  //    float: left;
+  //    width: 50px;
+  //    height: 50px;
+  //  }
+  //
+  //  </style>
+  //  <<div class="sample drop">
+  //  <float id="float1"></float>
+  //  <float id="float2" style="float:right"></float>
+  //  Drop<br>line1<br>line2<br>line3<br>line4<br>line5<br>
+  //  </div>
+  exclusion_space.AddForFloat(9, 59, 59, 59);
+
+  EXPECT_THAT(exclusion_space.FindLayoutOpportunity(9, 9, 100),
+              LayoutOpportunity(9, 9, 309, 59));
+
+  exclusion_space.AddForFloat(9, 59, 109, 109, EFloat::kRight);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 9),
+              ElementsAre(LayoutOpportunity(9, 9, 309, 59),
+                          LayoutOpportunity(109, 9, 309),
+                          LayoutOpportunity(9, 109, 309)));
+  exclusion_space.AddForInitialLetterBox(59, 9, 123, 73);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
+              ElementsAre(LayoutOpportunity(123, 32, 309),
+                          LayoutOpportunity(109, 73, 309),
+                          LayoutOpportunity(9, 109, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
+              ElementsAre(LayoutOpportunity(123, 55, 309),
+                          LayoutOpportunity(109, 73, 309),
+                          LayoutOpportunity(9, 109, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
+              ElementsAre(LayoutOpportunity(109, 78, 309),
+                          LayoutOpportunity(9, 109, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
+              ElementsAre(LayoutOpportunity(109, 101, 309),
+                          LayoutOpportunity(9, 109, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
+              ElementsAre(LayoutOpportunity(9, 124, 309)));
+
+  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+}
+
+TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAfterBreak) {
+  constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
+  ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
+
+  // <!doctype html>
+  //  <style>
+  //  body { font-size: 20px; }
+  //  .drop::first-letter { initial-letter: 3; }
+  //  .sample {
+  //      border: solid green 1px;
+  //      margin-bottom: 5px;
+  //      width: 300px;
+  //  }
+  //
+  //  *::first-letter {
+  //      color: red;
+  //      background: yellow;
+  //  }
+  //
+  //  float {
+  //    float: left;
+  //    width: 50px;
+  //    height: 50px;
+  //  }
+  //
+  //  </style>
+  //  <<div class="sample drop">
+  //  Drop<br>line1<br>
+  //  <float id="float1"></float>line2<br>line3<br>line4<br>line5<br></div>
+  //  </div>
+  exclusion_space.AddForInitialLetterBox(9, 9, 223, 73);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
+              ElementsAre(LayoutOpportunity(223, 32, 309),
+                          LayoutOpportunity(9, 73, 309)));
+
+  EXPECT_THAT(exclusion_space.FindLayoutOpportunity(9, 73, 50),
+              LayoutOpportunity(9, 73, 309));
+  exclusion_space.AddForFloat(9, 73, 59, 123);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
+              ElementsAre(LayoutOpportunity(223, 55, 309),
+                          LayoutOpportunity(59, 73, 309),
+                          LayoutOpportunity(9, 123, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
+              ElementsAre(LayoutOpportunity(59, 78, 309),
+                          LayoutOpportunity(9, 123, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
+              ElementsAre(LayoutOpportunity(59, 101, 309),
+                          LayoutOpportunity(9, 123, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
+              ElementsAre(LayoutOpportunity(9, 124, 309)));
+
+  EXPECT_EQ(LayoutUnit(73), exclusion_space.InitialLetterClearanceOffset());
+}
+
+TEST(NGExclusionSpaceTest, InitialLetterFloatRight2) {
+  constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
+  ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
+
+  // <!doctype html>
+  //  <style>
+  //  body { font-size: 20px; }
+  //  .drop::first-letter { initial-letter: 3; }
+  //  .sample {
+  //      border: solid green 1px;
+  //      margin-bottom: 5px;
+  //      width: 300px;
+  //  }
+  //
+  //  *::first-letter {
+  //      color: red;
+  //      background: yellow;
+  //  }
+  //
+  //  float {
+  //    float: left;
+  //    width: 50px;
+  //    height: 50px;
+  //  }
+  //
+  //  </style>
+  //  <<div class="sample drop">
+  //  <float id="float1" style="float:right"></float>
+  //  <float id="float2" style="float:right; width: 200px;"></float>
+  //  Drop<br>line1<br>line2<br>line3<br>line4<br>line5<br></div>
+  //  </div>
+  exclusion_space.AddForFloat(259, 9, 309, 59, EFloat::kRight);
+  EXPECT_THAT(exclusion_space.FindLayoutOpportunity(9, 9, 200),
+              LayoutOpportunity(9, 59, 309));
+
+  exclusion_space.AddForFloat(59, 9, 259, 59, EFloat::kRight);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 9),
+              ElementsAre(LayoutOpportunity(309, 9, 309),
+                          LayoutOpportunity(9, 59, 309)));
+
+  exclusion_space.AddForInitialLetterBox(9, 59, 73, 123);
+
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 82),
+              ElementsAre(LayoutOpportunity(73, 82, 309),
+                          LayoutOpportunity(9, 123, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 105),
+              ElementsAre(LayoutOpportunity(73, 105, 309),
+                          LayoutOpportunity(9, 123, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 128),
+              ElementsAre(LayoutOpportunity(9, 128, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 151),
+              ElementsAre(LayoutOpportunity(9, 151, 309)));
+  EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 174),
+              ElementsAre(LayoutOpportunity(9, 174, 309)));
+
+  EXPECT_EQ(LayoutUnit(123), exclusion_space.InitialLetterClearanceOffset());
 }
 
 TEST(NGExclusionSpaceTest, ZeroInlineSizeOpportunity) {

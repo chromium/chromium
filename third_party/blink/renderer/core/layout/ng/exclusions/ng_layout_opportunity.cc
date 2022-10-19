@@ -162,4 +162,15 @@ LayoutUnit NGLayoutOpportunity::ComputeLineRightOffset(
   return std::max(line_right, rect.LineStartOffset());
 }
 
+bool NGLayoutOpportunity::operator==(const NGLayoutOpportunity& other) const {
+  return rect == other.rect && shape_exclusions == other.shape_exclusions;
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         const NGLayoutOpportunity& opportunity) {
+  if (opportunity.HasShapeExclusions())
+    return ostream << "ShapeExclusion@";
+  return ostream << opportunity.rect;
+}
+
 }  // namespace blink

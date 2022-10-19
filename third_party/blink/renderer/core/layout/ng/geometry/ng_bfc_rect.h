@@ -46,9 +46,13 @@ struct CORE_EXPORT NGBfcRect {
 
   bool operator!=(const NGBfcRect& other) const { return !(*this == other); }
 
+  String ToString() const;
+
   NGBfcOffset start_offset;
   NGBfcOffset end_offset;
 };
+
+CORE_EXPORT std::ostream& operator<<(std::ostream& os, const NGBfcRect& rect);
 
 }  // namespace blink
 

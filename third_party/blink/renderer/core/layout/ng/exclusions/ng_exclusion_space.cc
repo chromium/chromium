@@ -171,6 +171,10 @@ NGExclusionSpaceInternal::NGExclusionSpaceInternal(
       left_clear_offset_(other.left_clear_offset_),
       right_clear_offset_(other.right_clear_offset_),
       last_float_block_start_(other.last_float_block_start_),
+      initial_letter_left_clear_offset_(
+          other.initial_letter_left_clear_offset_),
+      initial_letter_right_clear_offset_(
+          other.initial_letter_right_clear_offset_),
       track_shape_exclusions_(other.track_shape_exclusions_),
       has_break_before_left_float_(other.has_break_before_left_float_),
       has_break_before_right_float_(other.has_break_before_right_float_),
@@ -189,6 +193,8 @@ NGExclusionSpaceInternal& NGExclusionSpaceInternal::operator=(
   left_clear_offset_ = other.left_clear_offset_;
   right_clear_offset_ = other.right_clear_offset_;
   last_float_block_start_ = other.last_float_block_start_;
+  initial_letter_left_clear_offset_ = other.initial_letter_left_clear_offset_;
+  initial_letter_right_clear_offset_ = other.initial_letter_right_clear_offset_;
   track_shape_exclusions_ = other.track_shape_exclusions_;
   has_break_before_left_float_ = other.has_break_before_left_float_;
   has_break_before_right_float_ = other.has_break_before_right_float_;
@@ -241,14 +247,59 @@ void NGExclusionSpaceInternal::Add(const NGExclusion* exclusion) {
   // We can safely mutate the exclusion here as an exclusion will never be
   // reused if this invariant doesn't hold.
   const_cast<NGExclusion*>(exclusion)->is_past_other_exclusions =
-      exclusion_block_offset >= left_clear_offset_ &&
-      exclusion_block_offset >= right_clear_offset_;
+      exclusion_block_offset >=
+      std::max({left_clear_offset_, exclusion_block_offset, right_clear_offset_,
+                exclusion_block_offset, initial_letter_left_clear_offset_,
+                exclusion_block_offset, initial_letter_right_clear_offset_});
+
+  // Update the members used for clearance calculations.
+  LayoutUnit clear_offset = exclusion->rect.BlockEndOffset();
+  if (UNLIKELY(exclusion->IsForInitialLetterBox())) {
+    if (exclusion->type == EFloat::kLeft) {
+      initial_letter_left_clear_offset_ =
+          std::max(initial_letter_left_clear_offset_, clear_offset);
+    } else if (exclusion->type == EFloat::kRight) {
+      initial_letter_right_clear_offset_ =
+          std::max(initial_letter_right_clear_offset_, clear_offset);
+    }
+
+    if (!already_exists) {
+      // Perform a copy-on-write if the number of exclusions has gone out of
+      // sync.
+      const auto& source_exclusions = *exclusions_;
+      exclusions_ = MakeGarbageCollected<NGExclusionPtrArray>();
+      exclusions_->resize(num_exclusions_ + 1);
+      const auto* const source_end =
+          source_exclusions.begin() + num_exclusions_;
+      // Initial-letters are special in that they can be inserted "before"
+      // other floats. Ensure we insert |exclusion| in the correct place
+      // (ascent order by block-start).
+      auto* destination = exclusions_->begin();
+      for (auto* it = source_exclusions.begin(); it != source_end; ++it) {
+        if (exclusion->rect.BlockStartOffset() <
+            (*it)->rect.BlockStartOffset()) {
+          *destination = exclusion;
+          destination = std::copy(it, source_end, destination + 1);
+          break;
+        }
+        *destination++ = *it;
+      }
+      if (destination != exclusions_->end())
+        *destination++ = exclusion;
+      DCHECK_EQ(destination, exclusions_->end());
+    }
+    num_exclusions_++;
+
+    if (exclusions_->at(num_exclusions_ - 1) != exclusion)
+      derived_geometry_ = nullptr;
+    if (derived_geometry_)
+      derived_geometry_->Add(*exclusion);
+    return;
+  }
 
   last_float_block_start_ =
       std::max(last_float_block_start_, exclusion_block_offset);
 
-  // Update the members used for clearance calculations.
-  LayoutUnit clear_offset = exclusion->rect.BlockEndOffset();
   if (exclusion->type == EFloat::kLeft)
     left_clear_offset_ = std::max(left_clear_offset_, clear_offset);
   else if (exclusion->type == EFloat::kRight)

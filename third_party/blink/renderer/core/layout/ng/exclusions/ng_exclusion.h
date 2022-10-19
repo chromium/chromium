@@ -34,18 +34,30 @@ struct CORE_EXPORT NGExclusionShapeData final
   const NGBoxStrut shape_insets;
 };
 
-// Struct that represents an exclusion. This currently is just a float but
-// we've named it an exclusion to potentially support other types in the future.
+// Struct that represents an exclusion for float and initial letter box.
 struct CORE_EXPORT NGExclusion final : public GarbageCollected<NGExclusion> {
+  enum Kind {
+    kFloat,
+    kInitialLetterBox,
+  };
+
   NGExclusion(const NGBfcRect& rect,
               const EFloat type,
+              const Kind kind,
               const NGExclusionShapeData* shape_data)
-      : rect(rect), type(type), shape_data(std::move(shape_data)) {}
+      : rect(rect), type(type), kind(kind), shape_data(std::move(shape_data)) {}
 
   static const NGExclusion* Create(const NGBfcRect& rect,
                                    const EFloat type,
                                    NGExclusionShapeData* shape_data = nullptr) {
-    return MakeGarbageCollected<NGExclusion>(rect, type, std::move(shape_data));
+    return MakeGarbageCollected<NGExclusion>(rect, type, kFloat,
+                                             std::move(shape_data));
+  }
+
+  static const NGExclusion* CreateForInitialLetterBox(const NGBfcRect& rect,
+                                                      const EFloat type) {
+    return MakeGarbageCollected<NGExclusion>(rect, type, kInitialLetterBox,
+                                             nullptr);
   }
 
   const NGExclusion* CopyWithOffset(const NGBfcDelta& offset_delta) const {
@@ -57,15 +69,18 @@ struct CORE_EXPORT NGExclusion final : public GarbageCollected<NGExclusion> {
     new_rect.end_offset += offset_delta;
 
     return MakeGarbageCollected<NGExclusion>(
-        new_rect, type,
+        new_rect, type, kind,
         shape_data ? MakeGarbageCollected<NGExclusionShapeData>(*shape_data)
                    : nullptr);
   }
+
+  bool IsForInitialLetterBox() const { return kind == kInitialLetterBox; }
 
   void Trace(Visitor* visitor) const { visitor->Trace(shape_data); }
 
   const NGBfcRect rect;
   const EFloat type;
+  const Kind kind;
   bool is_past_other_exclusions = false;
   const Member<const NGExclusionShapeData> shape_data;
 
@@ -74,6 +89,9 @@ struct CORE_EXPORT NGExclusion final : public GarbageCollected<NGExclusion> {
 };
 
 using NGExclusionPtrArray = HeapVector<Member<const NGExclusion>>;
+
+std::ostream& operator<<(std::ostream& os, const NGExclusion& exclusion);
+std::ostream& operator<<(std::ostream& os, const NGExclusion* exclusion);
 
 }  // namespace blink
 
