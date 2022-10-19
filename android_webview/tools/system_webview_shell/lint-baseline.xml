@@ -35,28 +35,6 @@
     </issue>
 
     <issue
-        id="PrivateApi"
-        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
-        errorLine1="            Class&lt;?> activityThreadClazz = Class.forName(&quot;android.app.ActivityThread&quot;);"
-        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="459"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="PrivateApi"
-        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
-        errorLine1="                mSystemPropertiesClass = Class.forName(&quot;android.os.SystemProperties&quot;);"
-        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/base/android/java/src/org/chromium/base/TraceEvent.java"
-            line="99"
-            column="42"/>
-    </issue>
-
-    <issue
         id="RequiresFeature"
         message="`getInstance` should only be called if the feature `TRACING_CONTROLLER_BASIC_USAGE` is present; to check call `androidx.webkit.WebViewFeature#isFeatureSupported`"
         errorLine1="            TracingController tracingController = TracingController.getInstance();"
@@ -156,17 +134,6 @@
     </issue>
 
     <issue
-        id="UnsupportedChromeOsCameraSystemFeature"
-        message="You should look for any camera available on the device, not just the rear"
-        errorLine1="        return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/base/android/java/src/org/chromium/base/SysUtils.java"
-            line="159"
-            column="16"/>
-    </issue>
-
-    <issue
         id="QueryPermissionsNeeded"
         message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details"
         errorLine1="            return pm.queryIntentActivities(intent, flags);"
@@ -176,7 +143,7 @@
             line="63"
             column="23"/>
     </issue>
-    
+
     <issue
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`"

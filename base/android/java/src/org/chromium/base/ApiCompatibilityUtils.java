@@ -451,6 +451,7 @@ public class ApiCompatibilityUtils {
     }
 
     // Access this via ContextUtils.getProcessName().
+    @SuppressWarnings("PrivateApi")
     static String getProcessName() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return ApisP.getProcessName();
