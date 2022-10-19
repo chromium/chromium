@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
@@ -22,7 +23,7 @@ namespace {
 
 // Helper for ImportJwkRsaFailures. Restores the JWK JSON
 // dictionary to a good state
-base::Value::Dict BuildTestJwk() {
+base::Value::Dict BuildTestJwkPublicKey() {
   base::Value::Dict jwk;
   jwk.Set("kty", "RSA");
   jwk.Set("alg", "RS256");
@@ -35,6 +36,33 @@ base::Value::Dict BuildTestJwk() {
       "e7PUJHYW1PW6ENTP0ibeiNOfFvs");
   jwk.Set("e", "AQAB");
   return jwk;
+}
+
+base::Value::Dict BuildTestJwkPrivateKey() {
+  base::Value::Dict jwk;
+  jwk.Set("kty", "RSA");
+  jwk.Set("d",
+          "ZmJJJ3PBfirgPEOb844fI_1_zXn3A09X9fkk-65xeTNo3JeigTPpuB54FC_"
+          "GXUmqiXLVx5gynO6cwl9wjxVKYQ");
+  jwk.Set("dp", "DOUuUiDhtjpnCuIjcGRWhQYok8NeUO5XV1Uwx1-DxtU");
+  jwk.Set("dq", "mKOBL1e74J8OuGtW1kc2-s4VEP5Eeiwe__TAeBm-roE");
+  jwk.Set("e", "AQAB");
+  jwk.Set("n",
+          "tFJAFt_UiJsHlRavDgOxOnYKTHkV-"
+          "cF1aTDtkzNg6WYt9geaPbAvFnR3FVO0BFsl8tzPzMOTkI_kbOfCfAw3FQ");
+  jwk.Set("p", "7kMQn01JVhyHM7B85hLUuNBDsXiboMc4Di81qmxX7r0");
+  jwk.Set("q", "wb7rEiGxG4CrybVYns9voNQM2NPCuCEgWPLA_vCkuzk");
+  jwk.Set("qi", "6rrPQ4YaOLNGtG7TrLXUR_FSWpOFSUveHTHbFQU6iNU");
+  return jwk;
+}
+
+void SwapDictMembers(base::Value::Dict& d, const char* a, const char* b) {
+  auto va = d.Extract(a);
+  auto vb = d.Extract(b);
+  CHECK(va);
+  CHECK(vb);
+  d.Set(a, std::move(*vb));
+  d.Set(b, std::move(*va));
 }
 
 blink::WebCryptoAlgorithm RS256Algorithm() {
@@ -53,6 +81,14 @@ blink::WebCryptoKey ImportJwkRS256OrDie(const std::string& jwk) {
   return key;
 }
 
+blink::WebCryptoKey ImportJwkRS256OrDie(const base::Value::Dict& jwk) {
+  blink::WebCryptoKey key;
+  Status status = ImportKeyJwkFromDict(jwk, RS256Algorithm(), false,
+                                       blink::kWebCryptoKeyUsageSign, &key);
+  CHECK(status.IsSuccess()) << StatusToString(status);
+  return key;
+}
+
 Status ImportJwkRS256MustFail(const std::string& jwk) {
   std::vector<uint8_t> jwk_bytes(jwk.begin(), jwk.end());
   blink::WebCryptoKey key;
@@ -61,6 +97,12 @@ Status ImportJwkRS256MustFail(const std::string& jwk) {
                 true, blink::kWebCryptoKeyUsageSign, &key);
   CHECK(!status.IsSuccess());
   return status;
+}
+
+Status ImportJwkRS256MustFail(const base::Value::Dict& jwk) {
+  blink::WebCryptoKey key;
+  return ImportKeyJwkFromDict(jwk, RS256Algorithm(), false,
+                              blink::kWebCryptoKeyUsageSign, &key);
 }
 
 std::vector<uint8_t> ExportPkcs8OrDie(blink::WebCryptoKey key) {
@@ -712,7 +754,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaPublicKeyBadUsage_JWK) {
       blink::kWebCryptoKeyUsageEncrypt | blink::kWebCryptoKeyUsageDecrypt,
   };
 
-  base::Value::Dict jwk = BuildTestJwk();
+  base::Value::Dict jwk = BuildTestJwkPublicKey();
   jwk.Remove("use");
 
   for (auto usage : kBadUsages) {
@@ -921,8 +963,9 @@ TEST_F(WebCryptoRsaSsaTest, ImportJwkRsaFailures) {
   // section 6.3.
 
   // Baseline pass.
-  EXPECT_EQ(Status::Success(), ImportKeyJwkFromDict(BuildTestJwk(), algorithm,
-                                                    false, usages, &key));
+  EXPECT_EQ(Status::Success(),
+            ImportKeyJwkFromDict(BuildTestJwkPublicKey(), algorithm, false,
+                                 usages, &key));
   EXPECT_EQ(algorithm.Id(), key.Algorithm().Id());
   EXPECT_FALSE(key.Extractable());
   EXPECT_EQ(blink::kWebCryptoKeyUsageVerify, key.Usages());
@@ -932,7 +975,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportJwkRsaFailures) {
 
   // Fail if either "n" or "e" is not present or malformed.
   for (auto* const param : {"n", "e"}) {
-    base::Value::Dict jwk = BuildTestJwk();
+    base::Value::Dict jwk = BuildTestJwkPublicKey();
 
     // Fail on missing parameter.
     jwk.Remove(param);
@@ -969,6 +1012,85 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaJwkBadUsageAndData) {
                 true,
                 blink::kWebCryptoKeyUsageVerify | blink::kWebCryptoKeyUsageSign,
                 &key));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportValidJwkPrivateKey) {
+  ImportJwkRS256OrDie(BuildTestJwkPrivateKey());
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_SwapPQ) {
+  auto key = BuildTestJwkPrivateKey();
+  SwapDictMembers(key, "p", "q");
+  EXPECT_EQ(StatusToString(ImportJwkRS256MustFail(key)), "OperationError");
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_SwapPQDPDQ) {
+  auto key = BuildTestJwkPrivateKey();
+  SwapDictMembers(key, "p", "q");
+  SwapDictMembers(key, "dp", "dq");
+  EXPECT_EQ(StatusToString(ImportJwkRS256MustFail(key)), "OperationError");
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_MissingMostOptionals) {
+  auto key = BuildTestJwkPrivateKey();
+  for (const auto* param : {"q", "dp", "dq", "qi"})
+    key.Remove(param);
+  EXPECT_EQ(StatusToString(ImportJwkRS256MustFail(key)),
+            "DataError: The required JWK member \"q\" was missing");
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_MissingAllOptionals) {
+  // This is a deliberate spec divergence: while JWK allows keys that are
+  // missing all these attributes (because they are all optional), Chromium
+  // doesn't. That's because without those attributes, we wouldn't be able to
+  // serialize these keys as PKCS#8 keys anyway, which would break a bunch
+  // of assumptions throughout our implementation.
+  //
+  // See: https://crbug.com/374927
+  auto key = BuildTestJwkPrivateKey();
+  for (const auto* param : {"p", "q", "dp", "dq", "qi"})
+    key.Remove(param);
+  EXPECT_EQ(StatusToString(ImportJwkRS256MustFail(key)),
+            "DataError: The required JWK member \"p\" was missing");
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_LeadingZeroesOnE) {
+  auto key = BuildTestJwkPrivateKey();
+  key.Set("e", "AAEAAQ");  // 00 01 00 01
+  EXPECT_EQ("DataError: The JWK \"e\" member contained a leading zero.",
+            StatusToString(ImportJwkRS256MustFail(key)));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_Base64PaddingInD) {
+  auto key = BuildTestJwkPrivateKey();
+  auto d = *key.FindString("d");
+  key.Set("d", d + "==");
+  EXPECT_EQ(
+      "DataError: The JWK member \"d\" could not be base64url decoded or"
+      " contained padding",
+      StatusToString(ImportJwkRS256MustFail(key)));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_Base64UrlInN) {
+  auto key = BuildTestJwkPrivateKey();
+  auto n = *key.FindString("n");
+  ASSERT_TRUE(base::ReplaceChars(n, "_", "/", &n));
+  key.Set("n", n);
+  EXPECT_EQ(
+      "DataError: The JWK member \"n\" could not be base64url decoded or"
+      " contained padding",
+      StatusToString(ImportJwkRS256MustFail(key)));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_Base64UrlInDQ) {
+  auto key = BuildTestJwkPrivateKey();
+  auto dq = *key.FindString("dq");
+  ASSERT_TRUE(base::ReplaceChars(dq, "-", "+", &dq));
+  key.Set("dq", dq);
+  EXPECT_EQ(
+      "DataError: The JWK member \"dq\" could not be base64url decoded or"
+      " contained padding",
+      StatusToString(ImportJwkRS256MustFail(key)));
 }
 
 // Imports invalid JWK/SPKI/PKCS8 data and verifies that it fails as expected.
