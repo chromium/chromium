@@ -74,6 +74,7 @@ component("partition_alloc") {
     "partition_alloc.cc",
     "partition_alloc.h",
     "partition_alloc_base/atomic_ref_count.h",
+    "partition_alloc_base/augmentations/compiler_specific.h",
     "partition_alloc_base/bit_cast.h",
     "partition_alloc_base/bits.h",
     "partition_alloc_base/check.cc",
