@@ -245,7 +245,7 @@ def GetAccessibilityModesFromFile(fullpath):
   for line in open(fullpath).readlines():
     if not inside:
       # Look for the block of code that defines the AXMode enum.
-      m = re.search('^enum AXMode {$', line)
+      m = re.search('^enum AxMode {$', line)
       if m:
         inside = True
       continue
