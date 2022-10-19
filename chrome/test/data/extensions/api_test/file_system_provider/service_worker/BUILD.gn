@@ -24,6 +24,8 @@ js_library("service_worker") {
     "configure/test.js",
     "copy_entry/sw.js",
     "copy_entry/test.js",
+    "create_directory/sw.js",
+    "create_directory/test.js",
     "create_file/sw.js",
     "create_file/test.js",
     "delete_entry/sw.js",

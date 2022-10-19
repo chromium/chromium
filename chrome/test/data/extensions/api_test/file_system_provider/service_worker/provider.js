@@ -253,6 +253,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onCloseFileRequested', true);
     this.setHandlerEnabled('onConfigureRequested', true);
     this.setHandlerEnabled('onCopyEntryRequested', true);
+    this.setHandlerEnabled('onCreateDirectoryRequested', true);
     this.setHandlerEnabled('onCreateFileRequested', true);
     this.setHandlerEnabled('onDeleteEntryRequested', true);
     this.setHandlerEnabled('onGetMetadataRequested', true);
@@ -275,7 +276,7 @@ export class TestFileSystemProvider {
   setHandlerEnabled(handlerName, enabled) {
     if (!(handlerName in this)) {
       throw new Error(
-        `${this.constructor.name} does not implement ${handlerName}`);
+          `${this.constructor.name} does not implement ${handlerName}`);
     }
     if (!(handlerName in this.handlers)) {
       this.handlers[handlerName] = this[handlerName].bind(this);
@@ -584,6 +585,57 @@ export class TestFileSystemProvider {
     const {dirPath, fileName} = splitPath(options.targetPath);
     dest.name = fileName;
     this.findEntryByPath(dirPath).children[dest.name] = dest;
+
+    onSuccess();
+  }
+
+  /**
+   * FSP: implementation of creating a directory within the same file system.
+   *
+   * @param {!chrome.fileSystemProvider.CreateDirectoryRequestedOptions} options
+   *  Options.
+   * @param {function()} onSuccess Success callback
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *  callback with an error code.
+   */
+  onCreateDirectoryRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    if (options.directoryPath === '/' || options.recursive) {
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
+
+    if (this.findEntryByPath(options.directoryPath)) {
+      onError(chrome.fileSystemProvider.ProviderError.EXISTS);
+      return;
+    }
+
+    // Check new directory path is valid.
+    const dirPathSplit = splitPath(options.directoryPath);
+    const parentDir = this.findEntryByPath(dirPathSplit.dirPath);
+    const dirName = dirPathSplit.fileName;
+    if (!parentDir) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      return;
+    }
+    if (!parentDir.metadata.isDirectory) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_A_DIRECTORY);
+      return;
+    }
+
+    // Add new directory.
+    const emptyDirMetadata = {
+      isDirectory: true,
+      name: dirName,
+      modificationTime: new Date(2014, 4, 28, 10, 39, 15),
+    }
+
+    const entry = new Entry(dirName, emptyDirMetadata, null, null);
+    parentDir.children[dirName] = entry;
 
     onSuccess();
   }
