@@ -31,6 +31,7 @@ import {
   getVideoTrackSettings,
   Metadata,
   NoChunkError,
+  NoFrameError,
   PreviewVideo,
   Resolution,
   VideoType,
@@ -432,23 +433,30 @@ export class Video extends ModeBase {
         state.State.ENABLE_GIF_RECORDING,
         this.recordingType === RecordType.GIF);
     if (this.recordingType === RecordType.GIF) {
-      const gifName = (new Filenamer()).newVideoName(VideoType.GIF);
       state.set(state.State.RECORDING, true);
       this.gifRecordTime.start({resume: false});
 
-      const gifSaver = await this.captureGif();
-
-      state.set(state.State.RECORDING, false);
-      this.gifRecordTime.stop({pause: false});
-
-      // TODO(b/191950622): Close capture stream before onGifCaptureDone()
-      // opening preview page when multi-stream recording enabled.
-      return [this.handler.onGifCaptureDone({
-        name: gifName,
-        gifSaver,
-        resolution: this.captureResolution,
-        duration: this.gifRecordTime.inMilliseconds(),
-      })];
+      try {
+        const gifSaver = await this.captureGif();
+        const gifName = (new Filenamer()).newVideoName(VideoType.GIF);
+        // TODO(b/191950622): Close capture stream before onGifCaptureDone()
+        // opening preview page when multi-stream recording enabled.
+        return [this.handler.onGifCaptureDone({
+          name: gifName,
+          gifSaver,
+          resolution: this.captureResolution,
+          duration: this.gifRecordTime.inMilliseconds(),
+        })];
+      } catch (e) {
+        if (e instanceof NoFrameError) {
+          toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
+          return [Promise.resolve()];
+        }
+        throw e;
+      } finally {
+        state.set(state.State.RECORDING, false);
+        this.gifRecordTime.stop({pause: false});
+      }
     } else {
       this.recordTime.start({resume: false});
       let videoSaver: VideoSaver|null = null;
@@ -494,6 +502,9 @@ export class Video extends ModeBase {
   }
 
   override stop(): void {
+    if (!state.get(state.State.RECORDING)) {
+      return;
+    }
     if (this.recordingType === RecordType.GIF) {
       state.set(state.State.RECORDING, false);
     } else {
@@ -528,20 +539,17 @@ export class Video extends ModeBase {
     const canvas = new OffscreenCanvas(width, height);
     const context = assertInstanceof(
         canvas.getContext('2d'), OffscreenCanvasRenderingContext2D);
-
-    await new Promise<void>((resolve) => {
+    const frames = await new Promise<number>((resolve) => {
       let encodedFrames = 0;
-      let start = 0.0;
-      function updateCanvas(now: number) {
-        if (start === 0.0) {
-          start = now;
-        }
+      let writtenFrames = 0;
+      function updateCanvas() {
         if (!state.get(state.State.RECORDING)) {
-          resolve();
+          resolve(writtenFrames);
           return;
         }
         encodedFrames++;
         if (encodedFrames % GRAB_GIF_FRAME_RATIO === 0) {
+          writtenFrames++;
           context.drawImage(video, 0, 0, width, height);
           gifSaver.write(context.getImageData(0, 0, width, height).data);
         }
@@ -549,6 +557,9 @@ export class Video extends ModeBase {
       }
       video.requestVideoFrameCallback(updateCanvas);
     });
+    if (frames === 0) {
+      throw new NoFrameError();
+    }
     return gifSaver;
   }
 

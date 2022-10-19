@@ -440,6 +440,16 @@ export class NoChunkError extends Error {
 }
 
 /**
+ * Throws when the GIF recording is ended with no frame captured.
+ */
+export class NoFrameError extends Error {
+  constructor(message = 'No frames captured during GIF recording') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+/**
  * Throws when the portrait mode fails to detect a human face.
  */
 export class PortraitModeProcessError extends Error {
