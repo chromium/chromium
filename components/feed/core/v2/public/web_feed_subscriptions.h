@@ -24,6 +24,8 @@ class WebFeedSubscriptions {
     WebFeedMetadata web_feed_metadata;
     // Number of subscriptions the user has after the Follow operation.
     int subscription_count = 0;
+    // The change reason from the request.
+    feedwire::webfeed::WebFeedChangeReason change_reason;
   };
   // Follow a web feed given information about a web page. Calls `callback` when
   // complete. The callback parameter reports whether the url is now considered

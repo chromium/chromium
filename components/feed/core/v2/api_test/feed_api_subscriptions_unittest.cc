@@ -224,6 +224,9 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow", 1, 1);
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended", 0, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.NewFollow.ChangeReason",
+      WebFeedChangeReason::WEB_PAGE_MENU, 1);
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedAbortOnClearAll) {
