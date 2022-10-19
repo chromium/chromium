@@ -412,6 +412,7 @@ void BluetoothDeviceFloss::UpgradeToFullDiscovery() {
 
   // Clear previous search uuid.
   search_uuid.reset();
+  svc_resolved_ = false;
 
   FlossDBusManager::Get()->GetGattClient()->DiscoverAllServices(
       base::DoNothing(), address_);

@@ -18,7 +18,7 @@
 namespace floss {
 
 // Authentication requirements for GATT.
-enum class AuthRequired {
+enum class DEVICE_BLUETOOTH_EXPORT AuthRequired {
   kNoAuth = 0,  // No authentication required.
   kNoMitm,      // Encrypted but not authenticated.
   kReqMitm,     // Encrypted and authenticated.
@@ -28,14 +28,14 @@ enum class AuthRequired {
   kSignedReqMitm,
 };
 
-enum class WriteType {
+enum class DEVICE_BLUETOOTH_EXPORT WriteType {
   kInvalid = 0,
   kWriteNoResponse,
   kWrite,
   kWritePrepare,
 };
 
-enum class LePhy {
+enum class DEVICE_BLUETOOTH_EXPORT LePhy {
   kInvalid = 0,
   kPhy1m = 1,
   kPhy2m = 2,
@@ -44,7 +44,7 @@ enum class LePhy {
 
 // Status for many GATT apis. Due to complexity here, only kSuccess should be
 // used for comparisons.
-enum class GattStatus {
+enum class DEVICE_BLUETOOTH_EXPORT GattStatus {
   kSuccess = 0,
   kInvalidHandle,
   kReadNotPermitted,
@@ -92,7 +92,7 @@ enum class GattStatus {
   kOutOfRange = 0xFF,
 };
 
-struct GattDescriptor {
+struct DEVICE_BLUETOOTH_EXPORT GattDescriptor {
   device::BluetoothUUID uuid;
   int32_t instance_id;
   int32_t permissions;
@@ -101,7 +101,7 @@ struct GattDescriptor {
   ~GattDescriptor();
 };
 
-struct GattCharacteristic {
+struct DEVICE_BLUETOOTH_EXPORT GattCharacteristic {
   device::BluetoothUUID uuid;
   int32_t instance_id;
   int32_t properties;
@@ -115,7 +115,7 @@ struct GattCharacteristic {
   ~GattCharacteristic();
 };
 
-struct GattService {
+struct DEVICE_BLUETOOTH_EXPORT GattService {
   device::BluetoothUUID uuid;
   int32_t instance_id;
   int32_t service_type;
@@ -131,7 +131,8 @@ struct GattService {
 //
 // This also doubles as an observer class for the GATT client since it will
 // really only filter out calls that aren't for this client.
-class FlossGattClientObserver : public base::CheckedObserver {
+class DEVICE_BLUETOOTH_EXPORT FlossGattClientObserver
+    : public base::CheckedObserver {
  public:
   FlossGattClientObserver(const FlossGattClientObserver&) = delete;
   FlossGattClientObserver& operator=(const FlossGattClientObserver&) = delete;
@@ -318,6 +319,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
             const int adapter_index) override;
 
  protected:
+  friend class BluetoothGattFlossTest;
+
   // FlossGattClientObserver overrides
   void GattClientRegistered(GattStatus status, int32_t client_id) override;
   void GattClientConnectionState(GattStatus status,

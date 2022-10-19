@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/floss/bluetooth_gatt_service_floss.h"
 #include "device/bluetooth/floss/floss_gatt_client.h"
@@ -19,7 +20,7 @@ namespace floss {
 class BluetoothAdapterFloss;
 class BluetoothDeviceFloss;
 
-class BluetoothRemoteGattServiceFloss
+class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceFloss
     : public BluetoothGattServiceFloss,
       public device::BluetoothRemoteGattService {
  public:

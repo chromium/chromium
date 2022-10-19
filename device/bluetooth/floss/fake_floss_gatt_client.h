@@ -16,6 +16,13 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossGattClient : public FlossGattClient {
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index) override;
+
+  void Connect(ResponseCallback<Void> callback,
+               const std::string& remote_device,
+               const BluetoothTransport& transport) override;
+
+ private:
+  base::WeakPtrFactory<FakeFlossGattClient> weak_ptr_factory_{this};
 };
 
 }  // namespace floss

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/floss/floss_gatt_client.h"
@@ -20,7 +21,7 @@ class BluetoothRemoteGattCharacteristicFloss;
 class BluetoothRemoteGattServiceFloss;
 struct GattDescriptor;
 
-class BluetoothRemoteGattDescriptorFloss
+class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorFloss
     : public device::BluetoothRemoteGattDescriptor,
       public FlossGattClientObserver {
  public:
