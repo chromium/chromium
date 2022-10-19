@@ -496,6 +496,11 @@ base::Value::Dict GetExceptionForPage(
   exception.Set(kSource, provider_name);
   exception.Set(kIncognito, incognito);
   exception.Set(kIsEmbargoed, is_embargoed);
+  absl::optional<std::string> isolated_web_app_name =
+      GetIsolatedWebAppName(profile, GURL(pattern.ToString()));
+  if (isolated_web_app_name.has_value()) {
+    exception.Set(kIsolatedWebAppName, isolated_web_app_name.value());
+  }
   return exception;
 }
 

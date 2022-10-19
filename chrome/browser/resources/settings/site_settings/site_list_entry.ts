@@ -132,7 +132,8 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
 
     return this.model.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED ||
-        !(this.readOnlyList || !!this.model.embeddingOrigin);
+        !(this.readOnlyList || !!this.model.embeddingOrigin ||
+          !!this.model.isolatedWebAppName);
   }
 
   private shouldHideActionMenu_(): boolean {
@@ -142,7 +143,8 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
 
     return this.model.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED ||
-        this.readOnlyList || !!this.model.embeddingOrigin;
+        this.readOnlyList || !!this.model.embeddingOrigin ||
+        !!this.model.isolatedWebAppName;
   }
 
   /**
@@ -163,6 +165,9 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    * or the website whose third parties are also affected.
    */
   private computeDisplayName_(): string {
+    if (this.model.isolatedWebAppName) {
+      return this.model.isolatedWebAppName;
+    }
     if (this.model.embeddingOrigin &&
         this.model.category === ContentSettingsTypes.COOKIES &&
         this.model.origin.trim() === SITE_EXCEPTION_WILDCARD) {

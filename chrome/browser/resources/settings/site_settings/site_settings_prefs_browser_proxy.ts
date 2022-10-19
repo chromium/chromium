@@ -98,6 +98,7 @@ export interface SiteException {
   isEmbargoed: boolean;
   origin: string;
   displayName: string;
+  isolatedWebAppName?: string;
   setting: ContentSetting;
   enforcement: chrome.settingsPrivate.Enforcement|null;
   controlledBy: chrome.settingsPrivate.ControlledBy;

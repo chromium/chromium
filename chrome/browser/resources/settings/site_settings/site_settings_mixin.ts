@@ -155,6 +155,7 @@ export const SiteSettingsMixin = dedupingMixin(
             isEmbargoed: exception.isEmbargoed,
             origin: origin,
             displayName: exception.displayName,
+            isolatedWebAppName: exception.isolatedWebAppName,
             setting: exception.setting,
             enforcement: enforcement,
             controlledBy: controlledBy,

@@ -87,6 +87,11 @@ let prefsChromeExtension: SiteSettingsPref;
 let prefsEmbargo: SiteSettingsPref;
 
 /**
+ * An example pref with Isolated Web App having notification.
+ */
+let prefsIsolatedWebApp: SiteSettingsPref;
+
+/**
  * Creates all the test |SiteSettingsPref|s that are needed for the tests in
  * this file. They are populated after test setup in order to access the
  * |settings| constants required.
@@ -261,6 +266,25 @@ function populateTestExceptions() {
           setting: ContentSetting.BLOCK,
           isEmbargoed: true,
         })]),
+  ]);
+
+  const iwaOrigin = 'isolated-app://helloworldhelloworldhelloworldhe';
+  const nonIwaOrigin = 'https://bar.com';
+  prefsIsolatedWebApp = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.NOTIFICATIONS,
+        [
+          createRawSiteException(iwaOrigin, {
+            embeddingOrigin: '',
+            setting: ContentSetting.ALLOW,
+            displayName: iwaOrigin,
+            isolatedWebAppName: 'IWA',
+          }),
+          createRawSiteException(nonIwaOrigin, {
+            embeddingOrigin: '',
+            displayName: nonIwaOrigin,
+          }),
+        ]),
   ]);
 }
 
@@ -893,6 +917,43 @@ suite('SiteList', function() {
           secondItem.shadowRoot!.querySelector<HTMLElement>(
                                     '#resetSite')!.hidden);
     });
+  });
+
+  test('Isolated Web Apps', async function() {
+    setUpCategory(
+        ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW,
+        prefsIsolatedWebApp);
+    await browserProxy.whenCalled('getExceptionList');
+
+    // Required for firstItem to be found below.
+    flush();
+
+    // Validate that IWAs cannot be edited.
+    const entries = testElement.shadowRoot!.querySelectorAll('site-list-entry');
+    const firstItem = entries[0]!;
+    assertTrue(firstItem.$.actionMenuButton.hidden);
+    assertFalse(
+        firstItem.shadowRoot!.querySelector<HTMLElement>('#resetSite')!.hidden);
+
+    // Validate that IWA displays app name and not origin.
+    assertEquals(
+        firstItem.shadowRoot!.querySelector<HTMLElement>(
+                                 '.url-directionality')!.textContent!.trim(),
+        prefsIsolatedWebApp!.exceptions!.notifications[0]!.isolatedWebAppName);
+
+    // Validate that non-IWAs can be edited.
+    const secondItem = entries[1]!;
+    assertFalse(secondItem.$.actionMenuButton.hidden);
+    assertTrue(secondItem.shadowRoot!.querySelector<HTMLElement>(
+                                         '#resetSite')!.hidden);
+
+    // Validate that non-IWA displays the displayName (in most cases same as
+    // the origin).
+    assertEquals(
+        secondItem.shadowRoot!
+            .querySelector<HTMLElement>(
+                '.url-directionality')!.textContent!.trim(),
+        prefsIsolatedWebApp!.exceptions!.notifications[1]!.displayName);
   });
 
   test('Mixed schemes (present and absent)', function() {
