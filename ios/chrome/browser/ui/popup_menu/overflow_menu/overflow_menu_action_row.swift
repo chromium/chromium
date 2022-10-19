@@ -13,6 +13,8 @@ struct OverflowMenuActionRow: View {
 
   /// The size of the symbols.
   static let symbolSize: CGFloat = 18
+  static let symbolImageFrameLength: CGFloat = 30
+  static let symbolImagePadding: CGFloat = -4
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
@@ -26,19 +28,22 @@ struct OverflowMenuActionRow: View {
         HStack {
           Text(action.name).lineLimit(1)
           Spacer()
-          imageBuilder()
-            // Without explicitly removing the image from accessibility,
-            // VoiceOver will occasionally read out icons it thinks it can
-            // recognize.
-            .accessibilityHidden(true)
+          imageBuilder().frame(
+            width: OverflowMenuActionRow.symbolImageFrameLength,
+            height: OverflowMenuActionRow.symbolImageFrameLength, alignment: .center
+          )
+          // Without explicitly removing the image from accessibility,
+          // VoiceOver will occasionally read out icons it thinks it can
+          // recognize.
+          .accessibilityHidden(true)
         }
         .contentShape(Rectangle())
       }
-    )
-    .accessibilityIdentifier(action.accessibilityIdentifier)
-    .disabled(!action.enabled || action.enterpriseDisabled)
-    .accentColor(.textPrimary)
-    .listRowSeparatorTint(.overflowMenuSeparator)
+    ).padding([.trailing], OverflowMenuActionRow.symbolImagePadding)
+      .accessibilityIdentifier(action.accessibilityIdentifier)
+      .disabled(!action.enabled || action.enterpriseDisabled)
+      .accentColor(.textPrimary)
+      .listRowSeparatorTint(.overflowMenuSeparator)
   }
 
   /// Build the image to be displayed, based on the configuration of the item.
