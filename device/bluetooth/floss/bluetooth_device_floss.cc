@@ -619,18 +619,22 @@ void BluetoothDeviceFloss::GattClientConnectionState(GattStatus status,
     err = ERROR_UNKNOWN;
   }
 
-  if (--num_connecting_calls_ == 0)
+  // If GATT created the connection, we'll also do an ACL connection complete.
+  // Check that num_connecting is > 0 before decrementing it here.
+  if (num_connecting_calls_ > 0 && --num_connecting_calls_ == 0)
     adapter()->NotifyDeviceChanged(this);
 
   DCHECK(num_connecting_calls_ >= 0);
 
-  // Trigger service discovery.
-  if (search_uuid.has_value()) {
-    FlossDBusManager::Get()->GetGattClient()->DiscoverServiceByUuid(
-        base::DoNothing(), address_, search_uuid.value());
-  } else {
-    FlossDBusManager::Get()->GetGattClient()->DiscoverAllServices(
-        base::DoNothing(), address_);
+  // Trigger service discovery only when connected.
+  if (connected) {
+    if (search_uuid.has_value()) {
+      FlossDBusManager::Get()->GetGattClient()->DiscoverServiceByUuid(
+          base::DoNothing(), address_, search_uuid.value());
+    } else {
+      FlossDBusManager::Get()->GetGattClient()->DiscoverAllServices(
+          base::DoNothing(), address_);
+    }
   }
 
   // Complete GATT connection callback.

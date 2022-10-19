@@ -5,6 +5,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -14,6 +15,7 @@
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_characteristic_floss.h"
+#include "device/bluetooth/floss/bluetooth_remote_gatt_descriptor_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
@@ -47,15 +49,16 @@ class BluetoothGattFlossTest : public testing::Test {
     std::unique_ptr<floss::FlossDBusManagerSetter> dbus_setter =
         floss::FlossDBusManager::GetSetterForTesting();
 
+    auto fake_floss_adapter_client = std::make_unique<FakeFlossAdapterClient>();
     auto fake_floss_gatt_client = std::make_unique<FakeFlossGattClient>();
     auto fake_floss_manager_client = std::make_unique<FakeFlossManagerClient>();
 
+    fake_floss_adapter_client_ = fake_floss_adapter_client.get();
     fake_floss_gatt_client_ = fake_floss_gatt_client.get();
     fake_floss_manager_client_ = fake_floss_manager_client.get();
 
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
-    dbus_setter->SetFlossAdapterClient(
-        std::make_unique<FakeFlossAdapterClient>());
+    dbus_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
     dbus_setter->SetFlossGattClient(std::move(fake_floss_gatt_client));
     dbus_setter->SetFlossSocketManager(
         std::make_unique<FakeFlossSocketManager>());
@@ -108,6 +111,20 @@ class BluetoothGattFlossTest : public testing::Test {
                                                   kGattClientId);
   }
 
+  void SetAclConnectionState(std::string address, bool connected) {
+    FlossDeviceId device;
+    device.address = address;
+
+    fake_floss_adapter_client_->NotifyObservers(base::BindLambdaForTesting(
+        [&connected, &device](FlossAdapterClient::Observer* observer) {
+          if (connected) {
+            observer->AdapterDeviceConnected(device);
+          } else {
+            observer->AdapterDeviceDisconnected(device);
+          }
+        }));
+  }
+
   void SetGattConnectionState(GattStatus status,
                               bool connected,
                               std::string address) {
@@ -138,6 +155,7 @@ class BluetoothGattFlossTest : public testing::Test {
 
   // Holds pointer to FakeFloss*Client so that we can manipulate the fakes
   // within the tests.
+  raw_ptr<FakeFlossAdapterClient> fake_floss_adapter_client_;
   raw_ptr<FakeFlossGattClient> fake_floss_gatt_client_;
   raw_ptr<FakeFlossManagerClient> fake_floss_manager_client_;
 };
@@ -163,7 +181,9 @@ TEST_F(BluetoothGattFlossTest, ConnectAndResolveServices) {
           }),
       /*service_uuid=*/absl::nullopt);
 
-  // Fake a connection completion.
+  // Fake a connection completion. First you should get the ACL connection
+  // completed and then the GattConnectionState.
+  SetAclConnectionState(paired_device->GetAddress(), /*connected=*/true);
   SetGattConnectionState(GattStatus::kSuccess, /*connected=*/true,
                          paired_device->GetAddress());
 
@@ -302,6 +322,42 @@ TEST_F(BluetoothGattFlossTest, TranslateReadWriteAuthentication) {
 
     EXPECT_EQ(characteristic->GetAuthForWrite(), auth);
   }
+}
+
+TEST_F(BluetoothGattFlossTest, VerifyAllIdentifiers) {
+  device::BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1);
+
+  GattService underlying_service;
+  underlying_service.uuid = device::BluetoothUUID(kFakeUuidShort);
+  underlying_service.instance_id = 16;
+  underlying_service.service_type = 0;
+
+  auto service = BluetoothRemoteGattServiceFloss::Create(
+      static_cast<BluetoothAdapterFloss*>(adapter_.get()),
+      static_cast<BluetoothDeviceFloss*>(device), underlying_service, true);
+  EXPECT_EQ(service->GetIdentifier(),
+            base::StringPrintf("%s/%d", device->GetAddress().c_str(), 16));
+
+  GattCharacteristic underlying_characteristic;
+  underlying_characteristic.uuid = device::BluetoothUUID(kFakeUuidShort);
+  underlying_characteristic.instance_id = 47;
+
+  auto characteristic = BluetoothRemoteGattCharacteristicFloss::Create(
+      service.get(), &underlying_characteristic);
+  EXPECT_EQ(
+      characteristic->GetIdentifier(),
+      base::StringPrintf("%s/%d/%d", device->GetAddress().c_str(), 16, 47));
+
+  GattDescriptor underlying_descriptor;
+  underlying_descriptor.uuid = device::BluetoothUUID(kFakeUuidShort);
+  underlying_descriptor.instance_id = 72;
+
+  auto descriptor = BluetoothRemoteGattDescriptorFloss::Create(
+      service.get(), characteristic.get(), &underlying_descriptor);
+  EXPECT_EQ(descriptor->GetIdentifier(),
+            base::StringPrintf("%s/%d/%d/%d", device->GetAddress().c_str(), 16,
+                               47, 72));
 }
 
 }  // namespace floss

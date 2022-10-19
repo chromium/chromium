@@ -4,6 +4,7 @@
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_characteristic_floss.h"
 
@@ -42,7 +43,8 @@ BluetoothRemoteGattServiceFloss::BluetoothRemoteGattServiceFloss(
 BluetoothRemoteGattServiceFloss::~BluetoothRemoteGattServiceFloss() = default;
 
 std::string BluetoothRemoteGattServiceFloss::GetIdentifier() const {
-  return device_->GetAddress() + remote_service_.uuid.canonical_value();
+  return base::StringPrintf("%s/%d", device_->GetAddress().c_str(),
+                            remote_service_.instance_id);
 }
 
 device::BluetoothUUID BluetoothRemoteGattServiceFloss::GetUUID() const {

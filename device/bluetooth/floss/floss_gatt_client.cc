@@ -229,7 +229,7 @@ void FlossGattClient::DiscoverServiceByUuid(ResponseCallback<Void> callback,
                                             const std::string& remote_device,
                                             const device::BluetoothUUID& uuid) {
   CallGattMethod<Void>(std::move(callback), gatt::kDiscoverServiceByUuid,
-                       client_id_, remote_device, uuid);
+                       client_id_, remote_device, uuid.canonical_value());
 }
 
 void FlossGattClient::ReadCharacteristic(ResponseCallback<Void> callback,
@@ -248,8 +248,8 @@ void FlossGattClient::ReadUsingCharacteristicUuid(
     const int32_t end_handle,
     const AuthRequired auth_required) {
   CallGattMethod<Void>(std::move(callback), gatt::kReadUsingCharacteristicUuid,
-                       client_id_, remote_device, uuid, start_handle,
-                       end_handle, auth_required);
+                       client_id_, remote_device, uuid.canonical_value(),
+                       start_handle, end_handle, auth_required);
 }
 
 void FlossGattClient::WriteCharacteristic(ResponseCallback<Void> callback,

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
@@ -44,7 +45,8 @@ BluetoothRemoteGattDescriptorFloss::~BluetoothRemoteGattDescriptorFloss() {
 }
 
 std::string BluetoothRemoteGattDescriptorFloss::GetIdentifier() const {
-  return characteristic_->GetIdentifier() + GetUUID().canonical_value();
+  return base::StringPrintf("%s/%d", characteristic_->GetIdentifier().c_str(),
+                            descriptor_->instance_id);
 }
 
 device::BluetoothUUID BluetoothRemoteGattDescriptorFloss::GetUUID() const {
