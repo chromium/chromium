@@ -279,6 +279,7 @@ try_.orchestrator_builder(
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
     },
+    use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
