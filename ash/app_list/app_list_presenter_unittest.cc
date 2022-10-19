@@ -119,10 +119,6 @@ int64_t GetPrimaryDisplayId() {
   return display::Screen::GetScreen()->GetPrimaryDisplay().id();
 }
 
-void SetShelfAlignment(ShelfAlignment alignment) {
-  AshTestBase::GetPrimaryShelf()->SetAlignment(alignment);
-}
-
 void EnableTabletMode(bool enable) {
   // Avoid |TabletModeController::OnGetSwitchStates| from disabling tablet mode
   // again at the end of |TabletModeController::TabletModeController|.
@@ -308,23 +304,6 @@ class AppListPresenterTest : public AshTestBase,
 // toggle mouse and touch events and in some tests to toggle fullscreen mode
 // tests.
 INSTANTIATE_TEST_SUITE_P(All, AppListPresenterTest, testing::Bool());
-
-// Tests for the legacy clamshell "peeking" launcher. These tests can be deleted
-// when ProductivityLauncher ships to stable.
-class AppListPresenterNonBubbleTest : public AppListPresenterTest {
- public:
-  AppListPresenterNonBubbleTest() {
-    feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Instantiate the values in the parameterized tests. Used to
-// toggle mouse and touch events and in some tests to toggle fullscreen mode
-// tests.
-INSTANTIATE_TEST_SUITE_P(All, AppListPresenterNonBubbleTest, testing::Bool());
 
 // Tests all tablet/clamshell classic/bubble launcher combinations.
 class AppListBubbleAndTabletTestBase : public AshTestBase {
@@ -1882,51 +1861,6 @@ TEST_F(ProductivityLauncherTabletTest,
   EXPECT_EQ(centered_y, separator->GetBoundsInScreen().y());
 }
 
-// Not relevant for ProductivityLauncher because the bubble launcher search box
-// is always active.
-TEST_F(AppListPresenterNonBubbleTest, ReshownAppListResetsSearchBoxActivation) {
-  // Activate the search box.
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
-
-  // Dismiss and re-show the AppList.
-  GetAppListTestHelper()->Dismiss();
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-
-  // Test that the search box is no longer active.
-  EXPECT_FALSE(GetAppListTestHelper()
-                   ->GetAppListView()
-                   ->search_box_view()
-                   ->is_search_box_active());
-}
-
-// Tests that the SearchBox activation is reset after the AppList is hidden with
-// no animation from FULLSCREEN_SEARCH. Not relevant for ProductivityLauncher
-// because the bubble launcher search box is always active.
-TEST_F(AppListPresenterNonBubbleTest,
-       SideShelfAppListResetsSearchBoxActivationOnClose) {
-  // Set the shelf to one side, then show the AppList and activate the
-  // searchbox.
-  SetShelfAlignment(ShelfAlignment::kRight);
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
-  ASSERT_TRUE(GetAppListTestHelper()
-                  ->GetAppListView()
-                  ->search_box_view()
-                  ->is_search_box_active());
-
-  // Dismiss the AppList using the controller, this is the same way we dismiss
-  // the AppList when a SearchResult is launched, and skips the
-  // FULLSCREEN_SEARCH -> FULLSCREEN_ALL_APPS transition.
-  Shell::Get()->app_list_controller()->DismissAppList();
-
-  // Test that the search box is not active.
-  EXPECT_FALSE(GetAppListTestHelper()
-                   ->GetAppListView()
-                   ->search_box_view()
-                   ->is_search_box_active());
-}
-
 // Verifies that tapping on the search box in tablet mode with animation and
 // zero state enabled should not bring Chrome crash (https://crbug.com/958267).
 TEST_P(AppListPresenterTest, ClickSearchBoxInTabletMode) {
@@ -3076,8 +3010,8 @@ TEST_F(AppListPresenterTest, AppListBoundsChangeForDisplayChange) {
 
 // Tests that the app list window's bounds and the search box bounds in the
 // fullscreen state are updated when the display bounds change.
-TEST_F(AppListPresenterNonBubbleTest,
-       AppListBoundsChangeForDisplayChangeFullscreen) {
+TEST_F(AppListPresenterTest, AppListBoundsChangeForDisplayChangeFullscreen) {
+  EnableTabletMode(true);
   UpdateDisplay("1024x768");
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
@@ -3107,8 +3041,9 @@ TEST_F(AppListPresenterNonBubbleTest,
 
 // Tests that the app list window's bounds and the search box bounds in the
 // fullscreen search state are updated when the display bounds change.
-TEST_F(AppListPresenterNonBubbleTest,
+TEST_F(AppListPresenterTest,
        AppListBoundsChangeForDisplayChangeFullscreenSearch) {
+  EnableTabletMode(true);
   UpdateDisplay("1024x768");
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
@@ -3135,58 +3070,6 @@ TEST_F(AppListPresenterNonBubbleTest,
             app_list_bounds2.size().GetArea());
   EXPECT_NE(search_box_bounds, search_box_bounds2);
   EXPECT_EQ(400, search_box_bounds2.CenterPoint().x());
-}
-
-// Tests that the app list is not draggable in side shelf alignment.
-// TODO(crbug.com/1281927): Figure out if ProductivityLauncher needs to
-// support swipe to open and close.
-TEST_P(AppListPresenterNonBubbleTest, SideShelfAlignmentDragDisabled) {
-  SetShelfAlignment(ShelfAlignment::kRight);
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  const AppListView* app_list = GetAppListView();
-  EXPECT_TRUE(app_list->is_fullscreen());
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  // Drag the widget across the screen over an arbitrary 100Ms, this would
-  // normally result in the app list transitioning to PEEKING but will now
-  // result in no state change.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->GestureScrollSequence(GetPointOutsideSearchbox(),
-                                   gfx::Point(10, 900), base::Milliseconds(100),
-                                   10);
-  GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  // Tap the app list body. This should still close the app list.
-  generator->GestureTapAt(GetPointOutsideSearchbox());
-  GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
-  GetAppListTestHelper()->CheckVisibility(false);
-}
-
-// Tests that the app list initializes in fullscreen with side shelf alignment
-// and that the state transitions via text input act properly.
-TEST_F(AppListPresenterNonBubbleTest, SideShelfAlignmentTextStateTransitions) {
-  SetShelfAlignment(ShelfAlignment::kLeft);
-
-  // Open the app list with side shelf alignment, then check that it is in
-  // fullscreen mode.
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  AppListView* app_list = GetAppListView();
-  EXPECT_TRUE(app_list->is_fullscreen());
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  // Enter text in the searchbox, the app list should transition to fullscreen
-  // search.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
-  GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
-
-  // Pressing escape should transition the app list should to fullscreen all
-  // apps state.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
-  GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }
 
 // Tests that the app list initializes in fullscreen with tablet mode active
@@ -3270,7 +3153,8 @@ TEST_F(AppListPresenterTest, ShelfAutoHiddenWhenFullscreen) {
 
 // Tests that a keypress activates the searchbox and that clearing the
 // searchbox, the searchbox remains active.
-TEST_F(AppListPresenterNonBubbleTest, KeyPressEnablesSearchBox) {
+// TODO(crbug.com/1360501): Fix to work with the new launcher or remove.
+TEST_F(AppListPresenterTest, DISABLED_KeyPressEnablesSearchBox) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   SearchBoxView* search_box_view = GetAppListView()->search_box_view();
   EXPECT_FALSE(search_box_view->is_search_box_active());
@@ -3285,9 +3169,9 @@ TEST_F(AppListPresenterNonBubbleTest, KeyPressEnablesSearchBox) {
 }
 
 // Tests that search box gets deactivated if the active search model gets
-// switched. Does not apply to ProductivityLauncher, where the search box is
+// switched. Does not apply to bubble launcher, where the search box is
 // always active.
-TEST_P(AppListPresenterNonBubbleTest, SearchBoxDeactivatedOnModelChange) {
+TEST_P(AppListPresenterTest, SearchBoxDeactivatedOnModelChange) {
   EnableTabletMode(true);
 
   const bool test_mouse_event = TestMouseEventParam();
@@ -3323,8 +3207,8 @@ TEST_P(AppListPresenterNonBubbleTest, SearchBoxDeactivatedOnModelChange) {
 }
 
 // Tests that search UI gets closed if search model gets changed.
-// TODO(crbug.com/1273162): Fix for ProductivityLauncher enabled.
-TEST_F(AppListPresenterNonBubbleTest, SearchClearedOnModelChange) {
+// TODO(crbug.com/1360501): Fix to work with the new launcher.
+TEST_F(AppListPresenterTest, DISABLED_SearchClearedOnModelChange) {
   EnableTabletMode(true);
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
