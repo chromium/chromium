@@ -87,6 +87,10 @@ bool TerminalSystemAppDelegate::ShouldShowInLauncher() const {
              crostini::prefs::kTerminalSshAllowedByPolicy);
 }
 
+bool TerminalSystemAppDelegate::IsAppEnabled() const {
+  // Do not install for child accounts.
+  return !profile()->IsChild();
+}
 bool TerminalSystemAppDelegate::ShouldHaveTabStrip() const {
   return true;
 }
