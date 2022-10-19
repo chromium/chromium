@@ -49,3 +49,9 @@
 
 # TODO(crbug.com/1373576)
 -PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginWithPreloadAnonymous/*
+
+# TODO(crbug.com/1375800)
+-All/DumpAccessibilityTreeTest.AccessibilityNodeChangedCrashInEditableText/android
+
+# TODO(crbug.com/1376152)
+-PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginDocumentNotReusedAsNestedFrameNavigation/*

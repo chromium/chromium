@@ -57,3 +57,6 @@
 
 # TODO(crbug/1370814)
 -org.chromium.chrome.browser.site_settings.SiteSettingsTest.testSiteExceptionCookiesBlocked
+
+# TODO(crbug/1374605)
+-org.chromium.chrome.browser.app.appmenu.TabbedAppMenuTest.testKeyboardMenuBoundaries
