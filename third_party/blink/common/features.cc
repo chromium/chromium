@@ -1231,7 +1231,7 @@ BASE_FEATURE(kMaxUnthrottledTimeoutNestingLevel,
              "MaxUnthrottledTimeoutNestingLevel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kMaxUnthrottledTimeoutNestingLevelParam{
-    &kMaxUnthrottledTimeoutNestingLevel, "nesting", 10};
+    &kMaxUnthrottledTimeoutNestingLevel, "nesting", 15};
 bool IsMaxUnthrottledTimeoutNestingLevelEnabled() {
   auto policy = GetUnthrottledNestedTimeoutPolicyOverride();
   if (policy != UnthrottledNestedTimeoutPolicyOverride::kNoOverride)
