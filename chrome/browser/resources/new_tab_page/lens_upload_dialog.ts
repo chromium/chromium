@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LensErrorType, LensFormElement} from './lens_form.js';
@@ -27,6 +28,23 @@ enum DialogState {
   OFFLINE,
 }
 
+enum LensErrorMessage {
+  // No error.
+  NONE,
+  // User provided an invalid file format.
+  FILE_TYPE,
+  // User provided a file that is too large to handle.
+  FILE_SIZE,
+  // User provided multiple files.
+  MULTIPLE_FILES,
+  // User provided URL with improper scheme.
+  SCHEME,
+  // User provided invalid URL.
+  CONFORMANCE,
+  // User provided multiple URLs.
+  MULTIPLE_URLS,
+}
+
 export interface LensUploadDialogElement {
   $: {
     dialog: HTMLDivElement,
@@ -35,8 +53,10 @@ export interface LensUploadDialogElement {
   };
 }
 
+const LensUploadDialogElementBase = I18nMixin(PolymerElement);
+
 // Modal that lets the user upload images for search on Lens.
-export class LensUploadDialogElement extends PolymerElement {
+export class LensUploadDialogElement extends LensUploadDialogElementBase {
   static get is() {
     return 'ntp-lens-upload-dialog';
   }
@@ -50,13 +70,16 @@ export class LensUploadDialogElement extends PolymerElement {
       dialogState_: {
         type: DialogState,
       },
+      lensErrorMessage_: {
+        type: LensErrorMessage,
+      },
       isHidden_: {
         type: Boolean,
         computed: `computeIsHidden_(dialogState_)`,
       },
-      isNormal_: {
+      isNormalOrError_: {
         type: Boolean,
-        computed: `computeIsNormal_(dialogState_)`,
+        computed: `computeIsNormalOrError_(dialogState_)`,
         reflectToAttribute: true,
       },
       isDragging_: {
@@ -67,6 +90,11 @@ export class LensUploadDialogElement extends PolymerElement {
       isLoading_: {
         type: Boolean,
         computed: `computeIsLoading_(dialogState_)`,
+        reflectToAttribute: true,
+      },
+      isError_: {
+        type: Boolean,
+        computed: `computeIsError_(dialogState_)`,
         reflectToAttribute: true,
       },
       isOffline_: {
@@ -81,6 +109,7 @@ export class LensUploadDialogElement extends PolymerElement {
   }
 
   private dialogState_ = DialogState.HIDDEN;
+  private lensErrorMessage_ = LensErrorMessage.NONE;
   private outsideHandlerAttached_ = false;
   private uploadUrl_: string = '';
   private dragCount: number = 0;
@@ -89,8 +118,9 @@ export class LensUploadDialogElement extends PolymerElement {
     return dialogState === DialogState.HIDDEN;
   }
 
-  private computeIsNormal_(dialogState: DialogState): boolean {
-    return dialogState === DialogState.NORMAL;
+  private computeIsNormalOrError_(dialogState: DialogState): boolean {
+    return dialogState === DialogState.NORMAL ||
+        dialogState === DialogState.ERROR;
   }
 
   private computeIsDragging_(dialogState: DialogState): boolean {
@@ -99,6 +129,10 @@ export class LensUploadDialogElement extends PolymerElement {
 
   private computeIsLoading_(dialogState: DialogState): boolean {
     return dialogState === DialogState.LOADING;
+  }
+
+  private computeIsError_(dialogState: DialogState): boolean {
+    return dialogState === DialogState.ERROR;
   }
 
   private computeIsOffline_(dialogState: DialogState): boolean {
@@ -127,6 +161,25 @@ export class LensUploadDialogElement extends PolymerElement {
     this.dialogState_ = DialogState.HIDDEN;
     this.detachOutsideHandler_();
     this.dispatchEvent(new Event('close-lens-search'));
+  }
+
+  private getErrorString_(lensErrorMessage: LensErrorMessage) {
+    switch (lensErrorMessage) {
+      case LensErrorMessage.FILE_TYPE:
+        return this.i18n('lensSearchUploadDialogErrorFileType');
+      case LensErrorMessage.FILE_SIZE:
+        return this.i18n('lensSearchUploadDialogErrorFileSize');
+      case LensErrorMessage.MULTIPLE_FILES:
+        return this.i18n('lensSearchUploadDialogErrorMultipleFiles');
+      case LensErrorMessage.SCHEME:
+        return this.i18n('lensSearchUploadDialogValidationErrorScheme');
+      case LensErrorMessage.CONFORMANCE:
+        return this.i18n('lensSearchUploadDialogValidationErrorConformance');
+      case LensErrorMessage.MULTIPLE_URLS:
+        return this.i18n('lensSearchUploadDialogErrorMultipleUrls');
+      default:
+        return '';
+    }
   }
 
   /**
@@ -184,7 +237,39 @@ export class LensUploadDialogElement extends PolymerElement {
   }
 
   private handleFormError_(_event: CustomEvent<LensErrorType>) {
-    // TODO(crbug.com/1367506): Implement error state.
+    switch (_event.detail) {
+      case LensErrorType.MULTIPLE_FILES:
+        this.dialogState_ = DialogState.ERROR;
+        this.lensErrorMessage_ = LensErrorMessage.MULTIPLE_FILES;
+        break;
+      case LensErrorType.NO_FILE:
+        this.dialogState_ = DialogState.NORMAL;
+        this.lensErrorMessage_ = LensErrorMessage.NONE;
+        break;
+      case LensErrorType.FILE_TYPE:
+        this.dialogState_ = DialogState.ERROR;
+        this.lensErrorMessage_ = LensErrorMessage.FILE_TYPE;
+        break;
+      case LensErrorType.FILE_SIZE:
+        this.dialogState_ = DialogState.ERROR;
+        this.lensErrorMessage_ = LensErrorMessage.FILE_SIZE;
+        break;
+      case LensErrorType.INVALID_SCHEME:
+        this.dialogState_ = DialogState.ERROR;
+        this.lensErrorMessage_ = LensErrorMessage.SCHEME;
+        break;
+      case LensErrorType.INVALID_URL:
+        this.dialogState_ = DialogState.ERROR;
+        this.lensErrorMessage_ = LensErrorMessage.CONFORMANCE;
+        break;
+      case LensErrorType.LENGTH_TOO_GREAT:
+        this.dialogState_ = DialogState.ERROR;
+        this.lensErrorMessage_ = LensErrorMessage.CONFORMANCE;
+        break;
+      default:
+        this.dialogState_ = DialogState.NORMAL;
+        this.lensErrorMessage_ = LensErrorMessage.NONE;
+    }
   }
 
   private onUrlKeyDown_(event: KeyboardEvent) {

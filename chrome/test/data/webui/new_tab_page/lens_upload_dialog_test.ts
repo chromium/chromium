@@ -213,7 +213,7 @@ suite('LensUploadDialogTest', () => {
         uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragleave'));
         await waitAfterNextRender(uploadDialog);
         // Assert.
-        assertTrue(uploadDialog.hasAttribute('is-normal_'));
+        assertTrue(uploadDialog.hasAttribute('is-normal-or-error_'));
       });
 
   test(

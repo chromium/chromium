@@ -7328,6 +7328,24 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_OFFLINE_BUTTON_LABEL" desc="Label for button which allows the user to retry connection.">
         Try again
       </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_ERROR_FILE_TYPE" desc="Error message displayed to user when they provided an invalid file format.">
+        Can't upload. Use an image in one of these formats: .jpg, .gif, .png, .bmp, .tif, or .webp
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_ERROR_FILE_SIZE" desc="Error message displayed to user when they provided a file that is too large to handle.">
+        Can't upload. Use an image smaller than 20MB.
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_ERROR_MULTIPLE_FILES" desc="Error message displayed to user when they provided multiple files.">
+        Can't search multiple images. Add one image at a time.
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_VALIDATION_ERROR_SCHEME" desc="Error message displayed when user provides URL with improper scheme">
+        Can't use this link. Check that your link starts with 'http://' or 'https://' to try again.
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_VALIDATION_ERROR_CONFORMANCE" desc="Error message displayed when user provides invalid URL">
+        Can't use this link. Check for typos or use another link to try again.
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_ERROR_MULTIPLE_URLS" desc="Error message displayed to user when they provided multiple URLs.">
+        Can't search multiple images. Add one image at a time.
+      </message>
       <message name="IDS_TOOLTIP_SAVE_CREDIT_CARD" desc="The tooltip for the icon that shows the save credit card bubble">
         Save card
       </message>

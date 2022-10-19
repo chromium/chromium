@@ -5,8 +5,10 @@
     --upload-dialog-divider-line-or-label-color: var(--color-new-tab-page-secondary-foreground);
     --upload-dialog-drag-drop-background: var(--google-grey-50);
     --upload-dialog-drag-drop-border: 1px dashed var(--google-grey-400);
+    --upload-dialog-drag-drop-error-background-color: var(--google-red-50);
     --upload-dialog-drag-drop-title-color: var(--color-new-tab-page-secondary-foreground);
     --upload-dialog-drag-drop-upload-text-color: var(--google-blue-700);
+    --upload-dialog-error-message-color: var(--google-red-800);
     --upload-dialog-input-box-background: var(--color-new-tab-page-background-override);
     --upload-dialog-input-box-border-color: var(--google-grey-300);
     --upload-dialog-input-box-color: var(--google-grey-800);
@@ -18,6 +20,23 @@
     --upload-dialog-title-color: var(--google-grey-800);
     font-family: inherit;
     width: calc(100% + 8px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --upload-dialog-divider-line-border-top: 1px solid var(--google-grey-800);
+      --upload-dialog-input-box-color: rgba(var(--google-grey-900-rgb), .68);
+      --upload-dialog-drag-drop-border: 1px dashed var(--google-grey-800);
+      --upload-dialog-drag-drop-error-background-color: var(--google-red-300);
+      --upload-dialog-drag-drop-upload-text-color: var(--google-blue-300);
+      --upload-dialog-error-message-color: var(--google-grey-900);
+      --upload-dialog-input-box-border-color: var(--google-grey-800);
+      --upload-dialog-input-box-color: rgba(var(--google-grey-900-rgb), .68);
+      --upload-dialog-input-box-placeholder-color: var(--google-grey-700);
+      --upload-dialog-input-submit-border-color: var(--google-grey-800);
+      --upload-dialog-input-submit-color: var(--google-blue-300);
+      --upload-dialog-title-color: var(--google-grey-100);
+    }
   }
 
   :host([is-dragging_]),
@@ -71,6 +90,26 @@
     padding: 20px;
     position: relative;
     width: 100%;
+  }
+
+  #dragDropError {
+    align-items: center;
+    background-color: var(--upload-dialog-drag-drop-error-background-color);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    justify-content: space-between;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  #dragDropErrorMessage {
+    color: var(--upload-dialog-error-message-color);
+    flex: 1;
+    font-size: 12px;
+    padding: 5px;
+    text-align: center;
   }
 
   .drag-drop-title-container {
@@ -264,8 +303,16 @@
          on-dragover="onDragOver_"
          on-dragleave="onDragLeave_"
          on-drop="onDrop_">
+      <!-- Error state -->
+      <template is="dom-if" if="{{isError_}}">
+        <div id="dragDropError">
+          <div id="dragDropErrorMessage">
+            [[getErrorString_(lensErrorMessage_)]]
+          </div>
+        </div>
+      </template>
       <!-- Normal state -->
-      <template is="dom-if" if="{{isNormal_}}">
+      <template is="dom-if" if="{{isNormalOrError_}}">
         <div class="drag-drop-title-container">
           <div id="dragDropIllustration"></div>
           <div class="drag-drop-title">
