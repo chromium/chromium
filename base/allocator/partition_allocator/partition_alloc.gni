@@ -30,26 +30,20 @@ declare_args() {
 }
 
 declare_args() {
-  # PartitionAlloc-Everywhere (PA-E).
-  enable_partition_alloc_as_malloc_support =
-      use_partition_alloc_as_malloc_default && use_allocator == "partition"
+  enable_backup_ref_ptr_support =
+      enable_backup_ref_ptr_support_default && use_allocator == "partition"
 
-  # Build support for Use-after-Free protection via BackupRefPtr (BRP) or
-  # MTECheckedPtr. To be effective, these need to be paired with raw_ptr<>.
-  #
-  # These are effective only for memory allocated from PartitionAlloc, so it is
-  # recommended to enable PA-E above, but isn't strictly necessary. Embedders
-  # can create and use PA partitions explicitly.
-  enable_backup_ref_ptr_support = enable_backup_ref_ptr_support_default
-  enable_mte_checked_ptr_support = enable_mte_checked_ptr_support_default
+  enable_mte_checked_ptr_support =
+      enable_mte_checked_ptr_support_default && use_allocator == "partition"
 }
-
-assert(
-    !enable_partition_alloc_as_malloc_support || use_allocator == "partition",
-    "PA-E support can be enabled only if use_allocator == \"partition\"")
 
 assert(!(enable_backup_ref_ptr_support && enable_mte_checked_ptr_support),
        "MTECheckedPtrSupport conflicts with BRPSupport.")
+
+declare_args() {
+  enable_partition_alloc_as_malloc_support =
+      use_partition_alloc_as_malloc_default && use_allocator == "partition"
+}
 
 declare_args() {
   # - put_ref_count_in_previous_slot: place the ref-count at the end of the

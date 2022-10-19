@@ -33,8 +33,6 @@ declare_args() {
 if (!use_partition_alloc && use_allocator == "partition") {
   # If there is a conflict, prioritize |use_partition_alloc| over
   # |use_allocator|.
-  # TODO(bartekn): Move |use_partition_alloc| to PA lib, since we'd need to
-  # override |use_allocator| there.
   use_allocator = "none"
 }
 
@@ -55,9 +53,8 @@ if (is_win && use_allocator_shim) {
 declare_args() {
   # If we use PartitionAlloc as default allocator and enable its MTECheckedPtr
   # support as default, we can use_mte_checked_ptr=true as default.
-  use_mte_checked_ptr =
-      enable_mte_checked_ptr_support_default && use_partition_alloc &&
-      enable_partition_alloc_as_malloc_support
+  use_mte_checked_ptr = enable_mte_checked_ptr_support_default &&
+                        use_partition_alloc && use_allocator == "partition"
 }
 
 # use_backup_ref_ptr=true compiles BackupRefPtrImpl as the implementation of
@@ -86,7 +83,7 @@ assert(!(use_backup_ref_ptr && use_mte_checked_ptr),
 # only Blink partitions, where we currently don't even use raw_ptr<T>. Better to
 # trigger an error, than have BackupRefPtr silently disabled while believing it
 # is enabled.
-assert(!use_backup_ref_ptr || enable_partition_alloc_as_malloc_support,
+assert(!use_backup_ref_ptr || use_allocator == "partition",
        "Can't use BackupRefPtr without PartitionAlloc-Everywhere")
 
 declare_args() {
