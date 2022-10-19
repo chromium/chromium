@@ -469,6 +469,32 @@ test(t => {
 }, 'Test planar constructed I420 VideoFrame with colorSpace');
 
 test(t => {
+  let fmt = 'I420';
+  let vfInit = {
+    format: fmt,
+    timestamp: 1234,
+    codedWidth: 4,
+    codedHeight: 2,
+    colorSpace: {
+      primaries: null,
+      transfer: null,
+      matrix: null,
+      fullRange: null,
+    },
+  };
+  let data = new Uint8Array([
+    1, 2, 3, 4, 5, 6, 7, 8,  // y
+    1, 2,                    // u
+    1, 2,                    // v
+  ]);
+  let frame = new VideoFrame(data, vfInit);
+  assert_true(frame.colorSpace.primaries == null, 'color primaries');
+  assert_true(frame.colorSpace.transfer == null, 'color transfer');
+  assert_true(frame.colorSpace.matrix == null, 'color matrix');
+  assert_true(frame.colorSpace.fullRange == null, 'color range');
+}, 'Test planar constructed I420 VideoFrame with null colorSpace values');
+
+test(t => {
   let fmt = 'I420A';
   let vfInit = {format: fmt, timestamp: 1234, codedWidth: 4, codedHeight: 2};
   let data = new Uint8Array([
