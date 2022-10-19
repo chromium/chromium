@@ -39,7 +39,7 @@ let fontsBrowserProxy: TestFontsBrowserProxy;
 suite('AppearanceFontHandler', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      enableExperimentalWebPlatformFeatures: true,
+      enableMathMLCore: true,
     });
   });
 

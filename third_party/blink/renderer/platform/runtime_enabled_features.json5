@@ -1613,6 +1613,7 @@
       name: "MathMLCore",
       status:"experimental",
       depends_on: ["LayoutNG"],
+      base_feature: "MathMLCore",
     },
     {
       name:"MeasureMemory",
