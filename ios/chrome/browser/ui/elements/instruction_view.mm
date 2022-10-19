@@ -9,6 +9,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -125,7 +126,8 @@ constexpr CGFloat kIconLabelWidth = 30;
     [separator.trailingAnchor constraintEqualToAnchor:liner.trailingAnchor],
     [separator.topAnchor constraintEqualToAnchor:liner.topAnchor],
     [separator.bottomAnchor constraintEqualToAnchor:liner.bottomAnchor],
-    [liner.heightAnchor constraintEqualToConstant:kSeparatorHeight]
+    [liner.heightAnchor
+        constraintEqualToConstant:AlignValueToPixel(kSeparatorHeight)],
   ]];
 
   return liner;
