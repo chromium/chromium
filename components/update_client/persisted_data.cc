@@ -21,9 +21,9 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/update_client/activity_data_service.h"
 
-const char kPersistedDataPreference[] = "updateclientdata";
-
 namespace update_client {
+
+const char kPersistedDataPreference[] = "updateclientdata";
 
 PersistedData::PersistedData(PrefService* pref_service,
                              ActivityDataService* activity_data_service)

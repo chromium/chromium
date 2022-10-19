@@ -45,7 +45,7 @@ using ::testing::Unused;
 
 namespace component_updater {
 
-class MockInstaller : public CrxInstaller {
+class MockInstaller : public update_client::CrxInstaller {
  public:
   MockInstaller() = default;
   MOCK_METHOD1(OnUpdateError, void(int error));

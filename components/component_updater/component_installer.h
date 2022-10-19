@@ -18,6 +18,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/update_client/persisted_data.h"
 #include "components/update_client/update_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,6 +28,10 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace component_updater {
+
+// Version "0.0.0.0" corresponds to no installed version. By the server's
+// conventions, we represent it as a dotted quad.
+extern const char kNullVersion[];
 
 struct ComponentRegistration;
 class ComponentUpdateService;
@@ -141,7 +146,8 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   void Register(
       RegisterCallback register_callback,
       base::OnceClosure callback,
-      base::TaskPriority task_priority = base::TaskPriority::USER_VISIBLE);
+      base::TaskPriority task_priority = base::TaskPriority::USER_VISIBLE,
+      const base::Version& registered_version = base::Version(kNullVersion));
 
   // Overrides from update_client::CrxInstaller.
   void OnUpdateError(int error) override;
@@ -188,10 +194,22 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       base::Value* manifest,
       base::Version* version,
       base::FilePath* install_path);
-  void StartRegistration(scoped_refptr<RegistrationInfo> registration_info);
+  void StartRegistration(const base::Version& registered_version,
+                         scoped_refptr<RegistrationInfo> registration_info);
   void FinishRegistration(scoped_refptr<RegistrationInfo> registration_info,
                           RegisterCallback register_callback,
                           base::OnceClosure callback);
+  absl::optional<base::Value> GetValidInstallationManifest(
+      const base::FilePath& path);
+  absl::optional<base::Version> SelectComponentVersion(
+      const base::Version& registered_version,
+      const base::FilePath& base_dir,
+      scoped_refptr<RegistrationInfo> registration_info);
+
+  void DeleteUnselectedComponentVersions(
+      const base::FilePath& base_dir,
+      const absl::optional<base::Version>& selected_version);
+  absl::optional<base::FilePath> GetComponentDirectory();
   void ComponentReady(base::Value manifest);
   void UninstallOnTaskRunner();
 
@@ -207,6 +225,8 @@ class ComponentInstaller final : public update_client::CrxInstaller {
 
   // Posts responses back to the main thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+
+  FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, SelectComponentVersion);
 };
 
 }  // namespace component_updater

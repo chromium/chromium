@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/component_updater/update_scheduler.h"
+#include "components/update_client/persisted_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -28,9 +29,6 @@ namespace component_updater {
 
 class OnDemandUpdater;
 
-using CrxInstaller = update_client::CrxInstaller;
-using UpdateClient = update_client::UpdateClient;
-
 class CrxUpdateService : public ComponentUpdateService,
                          public ComponentUpdateService::Observer,
                          public OnDemandUpdater {
@@ -39,7 +37,7 @@ class CrxUpdateService : public ComponentUpdateService,
  public:
   CrxUpdateService(scoped_refptr<Configurator> config,
                    std::unique_ptr<UpdateScheduler> scheduler,
-                   scoped_refptr<UpdateClient> update_client,
+                   scoped_refptr<update_client::UpdateClient> update_client,
                    const std::string& brand);
 
   CrxUpdateService(const CrxUpdateService&) = delete;
@@ -59,6 +57,7 @@ class CrxUpdateService : public ComponentUpdateService,
                      base::OnceClosure callback) override;
   bool GetComponentDetails(const std::string& id,
                            CrxUpdateItem* item) const override;
+  base::Version GetRegisteredVersion(const std::string& app_id) override;
 
   // Overrides for Observer.
   void OnEvent(Events event, const std::string& id) override;
@@ -98,8 +97,7 @@ class CrxUpdateService : public ComponentUpdateService,
 
   scoped_refptr<Configurator> config_;
   std::unique_ptr<UpdateScheduler> scheduler_;
-
-  scoped_refptr<UpdateClient> update_client_;
+  scoped_refptr<update_client::UpdateClient> update_client_;
 
   std::string brand_;
 

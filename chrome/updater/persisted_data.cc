@@ -21,6 +21,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/update_client/persisted_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -30,9 +31,6 @@
 #endif
 
 namespace {
-
-// Uses the same pref as the update_client code.
-constexpr char kPersistedDataPreference[] = "updateclientdata";
 
 constexpr char kPV[] = "pv";    // Key for storing product version.
 constexpr char kFP[] = "fp";    // Key for storing fingerprint.
@@ -54,7 +52,8 @@ namespace updater {
 PersistedData::PersistedData(PrefService* pref_service)
     : pref_service_(pref_service) {
   DCHECK(pref_service_);
-  DCHECK(pref_service_->FindPreference(kPersistedDataPreference));
+  DCHECK(
+      pref_service_->FindPreference(update_client::kPersistedDataPreference));
 }
 
 PersistedData::~PersistedData() {
@@ -142,7 +141,8 @@ bool PersistedData::RemoveApp(const std::string& id) {
   if (!pref_service_)
     return false;
 
-  ScopedDictPrefUpdate update(pref_service_, kPersistedDataPreference);
+  ScopedDictPrefUpdate update(pref_service_,
+                              update_client::kPersistedDataPreference);
   base::Value::Dict* apps = update->FindDict("apps");
 
   return apps ? apps->Remove(id) : false;
@@ -155,7 +155,7 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   // corresponds to an app:
   // {"updateclientdata":{"apps":{"{44FC7FE2-65CE-487C-93F4-EDEE46EEAAAB}":{...
   const base::Value::Dict& dict =
-      pref_service_->GetDict(kPersistedDataPreference);
+      pref_service_->GetDict(update_client::kPersistedDataPreference);
   const base::Value::Dict* apps = dict.FindDict("apps");
   if (!apps)
     return {};
@@ -174,7 +174,7 @@ const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
   if (!pref_service_)
     return nullptr;
   const base::Value::Dict& dict =
-      pref_service_->GetDict(kPersistedDataPreference);
+      pref_service_->GetDict(update_client::kPersistedDataPreference);
   const base::Value::Dict* apps = dict.FindDict("apps");
   if (!apps)
     return nullptr;
@@ -207,7 +207,8 @@ void PersistedData::SetString(const std::string& id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_)
     return;
-  ScopedDictPrefUpdate update(pref_service_, kPersistedDataPreference);
+  ScopedDictPrefUpdate update(pref_service_,
+                              update_client::kPersistedDataPreference);
   GetOrCreateAppKey(id, update.Get())->Set(key, value);
 }
 

@@ -23,6 +23,8 @@ class Version;
 
 namespace update_client {
 
+extern const char kPersistedDataPreference[];
+
 class ActivityDataService;
 
 // A PersistedData is a wrapper layer around a PrefService, designed to maintain

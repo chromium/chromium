@@ -18,6 +18,8 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
@@ -38,6 +40,7 @@
 #include "components/update_client/update_client_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ComponentUnpacker = update_client::ComponentUnpacker;
 using Configurator = update_client::Configurator;
@@ -225,6 +228,7 @@ class ComponentInstallerTest : public testing::Test {
 
   std::unique_ptr<TestingPrefServiceSimple> pref_ =
       std::make_unique<TestingPrefServiceSimple>();
+
   scoped_refptr<TestConfigurator> config_ =
       base::MakeRefCounted<TestConfigurator>(pref_.get());
   raw_ptr<MockUpdateScheduler> scheduler_ = nullptr;
@@ -243,6 +247,7 @@ ComponentInstallerTest::ComponentInstallerTest() {
   component_updater_ = std::make_unique<CrxUpdateService>(
       config_, std::move(scheduler), update_client_, "");
   RegisterComponentUpdateServicePrefs(pref_->registry());
+  update_client::RegisterPrefs(pref_->registry());
 }
 
 ComponentInstallerTest::~ComponentInstallerTest() {
@@ -284,6 +289,30 @@ void ComponentInstallerTest::Schedule(
 }
 
 }  // namespace
+
+absl::optional<base::FilePath> CreateComponentDirectory(
+    const base::FilePath& base_dir,
+    const std::string& name,
+    const std::string& version,
+    const std::string& min_env_version) {
+  base::FilePath component_dir =
+      base_dir.AppendASCII(name).AppendASCII(version);
+
+  if (!base::CreateDirectory(component_dir))
+    return absl::nullopt;
+
+  if (!base::WriteFile(component_dir.AppendASCII("manifest.json"),
+                       base::StringPrintf(R"({
+        "name": "%s",
+        "version": "%s",
+        "min_env_version": "%s"
+    })",
+                                          name.c_str(), version.c_str(),
+                                          min_env_version.c_str())))
+    return absl::nullopt;
+
+  return absl::make_optional(component_dir);
+}
 
 // Tests that the component metadata is propagated from the component installer
 // and its component policy, through the instance of the CrxComponent, to the
@@ -494,6 +523,69 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallError) {
   EXPECT_FALSE(base::PathExists(unpack_path));
   EXPECT_CALL(update_client(), Stop()).Times(1);
   EXPECT_CALL(scheduler(), Stop()).Times(1);
+}
+
+TEST_F(ComponentInstallerTest, SelectComponentVersion) {
+  auto installer = base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<MockInstallerPolicy>());
+
+  base::FilePath base_dir;
+  base::ScopedPathOverride scoped_path_override(DIR_COMPONENT_USER);
+  ASSERT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
+  base_dir = base_dir.AppendASCII("select_component_version_test");
+
+  for (const auto* n : {"1", "2", "3", "4", "5", "6", "7"}) {
+    CreateComponentDirectory(base_dir, "test_component",
+                             base::StrCat({n, ".0.0.0"}), "0.0.1");
+  }
+
+  base_dir = base_dir.AppendASCII("test_component");
+
+  absl::optional<base::Version> selected_component;
+
+  auto registration_info =
+      base::MakeRefCounted<ComponentInstaller::RegistrationInfo>();
+  selected_component = installer->SelectComponentVersion(
+      base::Version("1.0.0.0"), base_dir, registration_info);
+  ASSERT_TRUE(selected_component &&
+              selected_component == base::Version("1.0.0.0"));
+  ASSERT_EQ(registration_info->version, base::Version("1.0.0.0"));
+
+  // Case where no valid bundled or registered version.
+  registration_info =
+      base::MakeRefCounted<ComponentInstaller::RegistrationInfo>();
+  selected_component = installer->SelectComponentVersion(
+      base::Version("0.0.0.0"), base_dir, registration_info);
+  ASSERT_TRUE(selected_component &&
+              *selected_component == base::Version("7.0.0.0"));
+  ASSERT_EQ(registration_info->version, base::Version("7.0.0.0"));
+
+  registration_info->version = base::Version("3.0.0.0");
+  selected_component = installer->SelectComponentVersion(
+      base::Version("5.0.0.0"), base_dir, registration_info);
+  ASSERT_TRUE(selected_component &&
+              *selected_component == base::Version("5.0.0.0"));
+  ASSERT_EQ(registration_info->version, base::Version("5.0.0.0"));
+
+  registration_info->version = base::Version("4.0.0.0");
+  selected_component = installer->SelectComponentVersion(
+      base::Version("0.0.0.0"), base_dir, registration_info);
+  ASSERT_TRUE(selected_component &&
+              *selected_component == base::Version("7.0.0.0"));
+  ASSERT_EQ(registration_info->version, base::Version("7.0.0.0"));
+
+  registration_info->version = base::Version("12.0.0.0");
+  selected_component = installer->SelectComponentVersion(
+      base::Version("1.0.0.0"), base_dir, registration_info);
+  ASSERT_FALSE(selected_component);
+  ASSERT_EQ(registration_info->version, base::Version("12.0.0.0"));
+
+  registration_info->version = base::Version("6.0.0.0");
+  selected_component = installer->SelectComponentVersion(
+      base::Version("1.0.0.0"), base_dir, registration_info);
+  ASSERT_TRUE(selected_component &&
+              *selected_component == base::Version("7.0.0.0"));
+  ASSERT_EQ(registration_info->version, base::Version("7.0.0.0"));
 }
 
 }  // namespace component_updater

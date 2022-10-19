@@ -5,6 +5,7 @@
 #include "components/component_updater/component_updater_service.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -22,6 +24,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service_internal.h"
 #include "components/component_updater/component_updater_utils.h"
 #include "components/component_updater/pref_names.h"
@@ -124,6 +127,18 @@ void CrxUpdateService::AddObserver(Observer* observer) {
 void CrxUpdateService::RemoveObserver(Observer* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
   update_client_->RemoveObserver(observer);
+}
+
+base::Version CrxUpdateService::GetRegisteredVersion(
+    const std::string& app_id) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  base::Version registered_version =
+      std::make_unique<update_client::PersistedData>(
+          config_->GetPrefService(), config_->GetActivityDataService())
+          ->GetProductVersion(app_id);
+
+  return (registered_version.IsValid()) ? registered_version
+                                        : base::Version(kNullVersion);
 }
 
 void CrxUpdateService::Start() {
