@@ -308,20 +308,15 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
     thumb_rect.Inset(fill_insets + edge_adjust_insets);
   } else {
     ControlColorId color_id = kScrollbarThumb;
-    SkAlpha thumb_alpha = SK_AlphaTRANSPARENT;
     switch (state) {
       case NativeTheme::kDisabled:
+      case NativeTheme::kNormal:
         break;
       case NativeTheme::kHovered:
         color_id = kScrollbarThumbHovered;
-        thumb_alpha = 0x4D;
-        break;
-      case NativeTheme::kNormal:
-        thumb_alpha = 0x33;
         break;
       case NativeTheme::kPressed:
         color_id = kScrollbarThumbPressed;
-        thumb_alpha = 0x80;
         break;
       case NativeTheme::kNumStates:
         NOTREACHED();
@@ -337,11 +332,7 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
     else
       thumb_rect.Inset(gfx::Insets::VH(kThumbPadding, extra_padding));
 
-    thumb_color =
-        (InForcedColorsMode() && features::IsForcedColorsEnabled())
-            ? GetControlColor(color_id, color_scheme)
-            : SkColorSetA(GetControlColor(kScrollbarThumb, color_scheme),
-                          thumb_alpha);
+    thumb_color = GetControlColor(color_id, color_scheme);
   }
 
   cc::PaintFlags flags;

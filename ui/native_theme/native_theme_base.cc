@@ -1465,9 +1465,11 @@ SkColor NativeThemeBase::GetControlColor(ControlColorId color_id,
     case kScrollbarThumbInactive:
       return SkColorSetRGB(0xEA, 0xEA, 0xEA);
     case kScrollbarThumbHovered:
+      return SkColorSetA(SK_ColorBLACK, 0x4D);
     case kScrollbarThumbPressed:
+      return SkColorSetA(SK_ColorBLACK, 0x80);
     case kScrollbarThumb:
-      return SK_ColorBLACK;
+      return SkColorSetA(SK_ColorBLACK, 0x33);
   }
   NOTREACHED();
   return gfx::kPlaceholderColor;
@@ -1542,10 +1544,13 @@ SkColor NativeThemeBase::GetDarkModeControlColor(
     case kScrollbarTrack:
       return SkColorSetRGB(0x42, 0x42, 0x42);
     case kScrollbarThumbInactive:
-    case kScrollbarThumbHovered:
-    case kScrollbarThumbPressed:
-    case kScrollbarThumb:
       return SK_ColorWHITE;
+    case kScrollbarThumbHovered:
+      return SkColorSetA(SK_ColorWHITE, 0x4D);
+    case kScrollbarThumbPressed:
+      return SkColorSetA(SK_ColorWHITE, 0x80);
+    case kScrollbarThumb:
+      return SkColorSetA(SK_ColorWHITE, 0x33);
   }
   NOTREACHED();
   return gfx::kPlaceholderColor;
