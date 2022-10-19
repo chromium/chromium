@@ -2113,7 +2113,7 @@
   {
     "name": "enable-desktop-pwas-elided-extensions-menu",
     "owners": [ "cmp@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 130
   },
   {
     "name": "enable-desktop-pwas-launch-handler",
