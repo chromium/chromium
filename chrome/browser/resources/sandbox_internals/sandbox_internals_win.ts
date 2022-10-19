@@ -98,7 +98,7 @@ abstract class MitigationField {
 /**
  * PROCESS_CREATION_MITIGATION_POLICY legacy bits.
  */
-class PC0Field extends MitigationField {
+class Pc0Field extends MitigationField {
   /**
    * @param bytes platform mitigations data.
    * @return chunk containing this field or null.
@@ -118,7 +118,7 @@ class PC0Field extends MitigationField {
 /**
  * PROCESS_CREATION_MITIGATION_POLICY_*
  */
-class PC1Field extends MitigationField {
+class Pc1Field extends MitigationField {
   getFieldData(bytes: Uint8Array) {
     if (bytes.length === 8) {
       return bytes;
@@ -132,7 +132,7 @@ class PC1Field extends MitigationField {
 /**
  * PROCESS_CREATION_MITIGATION_POLICY2_*
  */
-class PC2Field extends MitigationField {
+class Pc2Field extends MitigationField {
   getFieldData(bytes: Uint8Array) {
     if (bytes.length === 8) {
       return null;
@@ -154,97 +154,97 @@ class DecodeMitigations {
     this.fields = [
       // Defined in Windows.h from Winbase.h
       // basic (pc0) mitigations in {win7},{lsb of pc1}.
-      new PC0Field('DEP_ENABLE', 0x1, 0x01, 0),
-      new PC0Field('DEP_ATL_THUNK_ENABLE', 0x2, 0x02, 0),
-      new PC0Field('SEHOP_ENABLE', 0x4, 0x04, 0),
+      new Pc0Field('DEP_ENABLE', 0x1, 0x01, 0),
+      new Pc0Field('DEP_ATL_THUNK_ENABLE', 0x2, 0x02, 0),
+      new Pc0Field('SEHOP_ENABLE', 0x4, 0x04, 0),
 
       // pc1 mitigations in {lsb of pc1}.
-      new PC1Field('FORCE_RELOCATE_IMAGES', 0x1, 0x03, 8),
-      new PC1Field('FORCE_RELOCATE_IMAGES_ALWAYS_OFF', 0x2, 0x03, 8),
-      new PC1Field('FORCE_RELOCATE_IMAGES_ALWAYS_ON_REQ_RELOCS', 0x3, 0x03, 8),
-      new PC1Field('HEAP_TERMINATE', 0x1, 0x03, 12),
-      new PC1Field('HEAP_TERMINATE_ALWAYS_OFF', 0x2, 0x03, 12),
-      new PC1Field('HEAP_TERMINATE_RESERVED', 0x3, 0x03, 12),
-      new PC1Field('BOTTOM_UP_ASLR', 0x1, 0x03, 16),
-      new PC1Field('BOTTOM_UP_ASLR_ALWAYS_OFF', 0x2, 0x03, 16),
-      new PC1Field('BOTTOM_UP_ASLR_RESERVED', 0x3, 0x03, 16),
-      new PC1Field('HIGH_ENTROPY_ASLR', 0x1, 0x03, 20),
-      new PC1Field('HIGH_ENTROPY_ASLR_ALWAYS_OFF', 0x2, 0x03, 20),
-      new PC1Field('HIGH_ENTROPY_ASLR_RESERVED', 0x3, 0x03, 20),
-      new PC1Field('STRICT_HANDLE_CHECKS', 0x1, 0x03, 24),
-      new PC1Field('STRICT_HANDLE_CHECKS_ALWAYS_OFF', 0x2, 0x03, 24),
-      new PC1Field('STRICT_HANDLE_CHECKS_RESERVED', 0x3, 0x03, 24),
-      new PC1Field('WIN32K_SYSTEM_CALL_DISABLE', 0x1, 0x03, 28),
-      new PC1Field('WIN32K_SYSTEM_CALL_DISABLE_ALWAYS_OFF', 0x2, 0x03, 28),
-      new PC1Field('WIN32K_SYSTEM_CALL_DISABLE_RESERVED', 0x3, 0x03, 28),
-      new PC1Field('EXTENSION_POINT_DISABLE', 0x1, 0x03, 32),
-      new PC1Field('EXTENSION_POINT_DISABLE_ALWAYS_OFF', 0x2, 0x03, 32),
-      new PC1Field('EXTENSION_POINT_DISABLE_RESERVED', 0x3, 0x03, 32),
-      new PC1Field('PROHIBIT_DYNAMIC_CODE', 0x1, 0x03, 36),
-      new PC1Field('PROHIBIT_DYNAMIC_CODE_ALWAYS_OFF', 0x2, 0x03, 36),
-      new PC1Field(
+      new Pc1Field('FORCE_RELOCATE_IMAGES', 0x1, 0x03, 8),
+      new Pc1Field('FORCE_RELOCATE_IMAGES_ALWAYS_OFF', 0x2, 0x03, 8),
+      new Pc1Field('FORCE_RELOCATE_IMAGES_ALWAYS_ON_REQ_RELOCS', 0x3, 0x03, 8),
+      new Pc1Field('HEAP_TERMINATE', 0x1, 0x03, 12),
+      new Pc1Field('HEAP_TERMINATE_ALWAYS_OFF', 0x2, 0x03, 12),
+      new Pc1Field('HEAP_TERMINATE_RESERVED', 0x3, 0x03, 12),
+      new Pc1Field('BOTTOM_UP_ASLR', 0x1, 0x03, 16),
+      new Pc1Field('BOTTOM_UP_ASLR_ALWAYS_OFF', 0x2, 0x03, 16),
+      new Pc1Field('BOTTOM_UP_ASLR_RESERVED', 0x3, 0x03, 16),
+      new Pc1Field('HIGH_ENTROPY_ASLR', 0x1, 0x03, 20),
+      new Pc1Field('HIGH_ENTROPY_ASLR_ALWAYS_OFF', 0x2, 0x03, 20),
+      new Pc1Field('HIGH_ENTROPY_ASLR_RESERVED', 0x3, 0x03, 20),
+      new Pc1Field('STRICT_HANDLE_CHECKS', 0x1, 0x03, 24),
+      new Pc1Field('STRICT_HANDLE_CHECKS_ALWAYS_OFF', 0x2, 0x03, 24),
+      new Pc1Field('STRICT_HANDLE_CHECKS_RESERVED', 0x3, 0x03, 24),
+      new Pc1Field('WIN32K_SYSTEM_CALL_DISABLE', 0x1, 0x03, 28),
+      new Pc1Field('WIN32K_SYSTEM_CALL_DISABLE_ALWAYS_OFF', 0x2, 0x03, 28),
+      new Pc1Field('WIN32K_SYSTEM_CALL_DISABLE_RESERVED', 0x3, 0x03, 28),
+      new Pc1Field('EXTENSION_POINT_DISABLE', 0x1, 0x03, 32),
+      new Pc1Field('EXTENSION_POINT_DISABLE_ALWAYS_OFF', 0x2, 0x03, 32),
+      new Pc1Field('EXTENSION_POINT_DISABLE_RESERVED', 0x3, 0x03, 32),
+      new Pc1Field('PROHIBIT_DYNAMIC_CODE', 0x1, 0x03, 36),
+      new Pc1Field('PROHIBIT_DYNAMIC_CODE_ALWAYS_OFF', 0x2, 0x03, 36),
+      new Pc1Field(
           'PROHIBIT_DYNAMIC_CODE_ALWAYS_ON_ALLOW_OPT_OUT', 0x3, 0x03, 36),
-      new PC1Field('CONTROL_FLOW_GUARD', 0x1, 0x03, 40),
-      new PC1Field('CONTROL_FLOW_GUARD_ALWAYS_OFF', 0x2, 0x03, 40),
-      new PC1Field('CONTROL_FLOW_GUARD_EXPORT_SUPPRESSION', 0x3, 0x03, 40),
-      new PC1Field('BLOCK_NON_MICROSOFT_BINARIES', 0x1, 0x03, 44),
-      new PC1Field('BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_OFF', 0x2, 0x03, 44),
-      new PC1Field('BLOCK_NON_MICROSOFT_BINARIES_ALLOW_STORE', 0x3, 0x03, 44),
-      new PC1Field('FONT_DISABLE', 0x1, 0x03, 48),
-      new PC1Field('FONT_DISABLE_ALWAYS_OFF', 0x2, 0x03, 48),
-      new PC1Field('AUDIT_NONSYSTEM_FONTS', 0x3, 0x03, 48),
-      new PC1Field('IMAGE_LOAD_NO_REMOTE', 0x1, 0x03, 52),
-      new PC1Field('IMAGE_LOAD_NO_REMOTE_ALWAYS_OFF', 0x2, 0x03, 52),
-      new PC1Field('IMAGE_LOAD_NO_REMOTE_RESERVED', 0x3, 0x03, 52),
-      new PC1Field('IMAGE_LOAD_NO_LOW_LABEL', 0x1, 0x03, 56),
-      new PC1Field('IMAGE_LOAD_NO_LOW_LABEL_ALWAYS_OFF', 0x2, 0x03, 56),
-      new PC1Field('IMAGE_LOAD_NO_LOW_LABEL_RESERVED', 0x3, 0x03, 56),
-      new PC1Field('IMAGE_LOAD_PREFER_SYSTEM32', 0x1, 0x03, 60),
-      new PC1Field('IMAGE_LOAD_PREFER_SYSTEM32_ALWAYS_OFF', 0x2, 0x03, 60),
-      new PC1Field('IMAGE_LOAD_PREFER_SYSTEM32_RESERVED', 0x3, 0x03, 60),
+      new Pc1Field('CONTROL_FLOW_GUARD', 0x1, 0x03, 40),
+      new Pc1Field('CONTROL_FLOW_GUARD_ALWAYS_OFF', 0x2, 0x03, 40),
+      new Pc1Field('CONTROL_FLOW_GUARD_EXPORT_SUPPRESSION', 0x3, 0x03, 40),
+      new Pc1Field('BLOCK_NON_MICROSOFT_BINARIES', 0x1, 0x03, 44),
+      new Pc1Field('BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_OFF', 0x2, 0x03, 44),
+      new Pc1Field('BLOCK_NON_MICROSOFT_BINARIES_ALLOW_STORE', 0x3, 0x03, 44),
+      new Pc1Field('FONT_DISABLE', 0x1, 0x03, 48),
+      new Pc1Field('FONT_DISABLE_ALWAYS_OFF', 0x2, 0x03, 48),
+      new Pc1Field('AUDIT_NONSYSTEM_FONTS', 0x3, 0x03, 48),
+      new Pc1Field('IMAGE_LOAD_NO_REMOTE', 0x1, 0x03, 52),
+      new Pc1Field('IMAGE_LOAD_NO_REMOTE_ALWAYS_OFF', 0x2, 0x03, 52),
+      new Pc1Field('IMAGE_LOAD_NO_REMOTE_RESERVED', 0x3, 0x03, 52),
+      new Pc1Field('IMAGE_LOAD_NO_LOW_LABEL', 0x1, 0x03, 56),
+      new Pc1Field('IMAGE_LOAD_NO_LOW_LABEL_ALWAYS_OFF', 0x2, 0x03, 56),
+      new Pc1Field('IMAGE_LOAD_NO_LOW_LABEL_RESERVED', 0x3, 0x03, 56),
+      new Pc1Field('IMAGE_LOAD_PREFER_SYSTEM32', 0x1, 0x03, 60),
+      new Pc1Field('IMAGE_LOAD_PREFER_SYSTEM32_ALWAYS_OFF', 0x2, 0x03, 60),
+      new Pc1Field('IMAGE_LOAD_PREFER_SYSTEM32_RESERVED', 0x3, 0x03, 60),
 
       // pc2: in second 64bit block only.
-      new PC2Field('LOADER_INTEGRITY_CONTINUITY', 0x1, 0x03, 4),
-      new PC2Field('LOADER_INTEGRITY_CONTINUITY_ALWAYS_OFF', 0x2, 0x03, 4),
-      new PC2Field('LOADER_INTEGRITY_CONTINUITY_AUDIT', 0x3, 0x03, 4),
-      new PC2Field('STRICT_CONTROL_FLOW_GUARD', 0x1, 0x03, 8),
-      new PC2Field('STRICT_CONTROL_FLOW_GUARD_ALWAYS_OFF', 0x2, 0x03, 8),
-      new PC2Field('STRICT_CONTROL_FLOW_GUARD_RESERVED', 0x3, 0x03, 8),
-      new PC2Field('MODULE_TAMPERING_PROTECTION', 0x1, 0x03, 12),
-      new PC2Field('MODULE_TAMPERING_PROTECTION_ALWAYS_OFF', 0x2, 0x03, 12),
-      new PC2Field('MODULE_TAMPERING_PROTECTION_NOINHERIT', 0x3, 0x03, 12),
-      new PC2Field('RESTRICT_INDIRECT_BRANCH_PREDICTION', 0x1, 0x03, 16),
-      new PC2Field(
+      new Pc2Field('LOADER_INTEGRITY_CONTINUITY', 0x1, 0x03, 4),
+      new Pc2Field('LOADER_INTEGRITY_CONTINUITY_ALWAYS_OFF', 0x2, 0x03, 4),
+      new Pc2Field('LOADER_INTEGRITY_CONTINUITY_AUDIT', 0x3, 0x03, 4),
+      new Pc2Field('STRICT_CONTROL_FLOW_GUARD', 0x1, 0x03, 8),
+      new Pc2Field('STRICT_CONTROL_FLOW_GUARD_ALWAYS_OFF', 0x2, 0x03, 8),
+      new Pc2Field('STRICT_CONTROL_FLOW_GUARD_RESERVED', 0x3, 0x03, 8),
+      new Pc2Field('MODULE_TAMPERING_PROTECTION', 0x1, 0x03, 12),
+      new Pc2Field('MODULE_TAMPERING_PROTECTION_ALWAYS_OFF', 0x2, 0x03, 12),
+      new Pc2Field('MODULE_TAMPERING_PROTECTION_NOINHERIT', 0x3, 0x03, 12),
+      new Pc2Field('RESTRICT_INDIRECT_BRANCH_PREDICTION', 0x1, 0x03, 16),
+      new Pc2Field(
           'RESTRICT_INDIRECT_BRANCH_PREDICTION_ALWAYS_OFF', 0x2, 0x03, 16),
-      new PC2Field(
+      new Pc2Field(
           'RESTRICT_INDIRECT_BRANCH_PREDICTION_RESERVED', 0x3, 0x03, 16),
-      new PC2Field('ALLOW_DOWNGRADE_DYNAMIC_CODE_POLICY', 0x1, 0x03, 20),
-      new PC2Field(
+      new Pc2Field('ALLOW_DOWNGRADE_DYNAMIC_CODE_POLICY', 0x1, 0x03, 20),
+      new Pc2Field(
           'ALLOW_DOWNGRADE_DYNAMIC_CODE_POLICY_ALWAYS_OFF', 0x2, 0x03, 20),
-      new PC2Field(
+      new Pc2Field(
           'ALLOW_DOWNGRADE_DYNAMIC_CODE_POLICY_RESERVED', 0x3, 0x03, 20),
-      new PC2Field('SPECULATIVE_STORE_BYPASS_DISABLE', 0x1, 0x03, 24),
-      new PC2Field(
+      new Pc2Field('SPECULATIVE_STORE_BYPASS_DISABLE', 0x1, 0x03, 24),
+      new Pc2Field(
           'SPECULATIVE_STORE_BYPASS_DISABLE_ALWAYS_OFF', 0x2, 0x03, 24),
-      new PC2Field('SPECULATIVE_STORE_BYPASS_DISABLE_RESERVED', 0x3, 0x03, 24),
-      new PC2Field('CET_USER_SHADOW_STACKS', 0x1, 0x03, 28),
-      new PC2Field('CET_USER_SHADOW_STACKS_ALWAYS_OFF', 0x2, 0x03, 28),
-      new PC2Field('CET_USER_SHADOW_STACKS_STRICT_MODE', 0x3, 0x03, 28),
-      new PC2Field('USER_CET_SET_CONTEXT_IP_VALIDATION', 0x1, 0x03, 32),
-      new PC2Field(
+      new Pc2Field('SPECULATIVE_STORE_BYPASS_DISABLE_RESERVED', 0x3, 0x03, 24),
+      new Pc2Field('CET_USER_SHADOW_STACKS', 0x1, 0x03, 28),
+      new Pc2Field('CET_USER_SHADOW_STACKS_ALWAYS_OFF', 0x2, 0x03, 28),
+      new Pc2Field('CET_USER_SHADOW_STACKS_STRICT_MODE', 0x3, 0x03, 28),
+      new Pc2Field('USER_CET_SET_CONTEXT_IP_VALIDATION', 0x1, 0x03, 32),
+      new Pc2Field(
           'USER_CET_SET_CONTEXT_IP_VALIDATION_ALWAYS_OFF', 0x2, 0x03, 32),
-      new PC2Field(
+      new Pc2Field(
           'USER_CET_SET_CONTEXT_IP_VALIDATION_RELAXED_MODE', 0x3, 0x03, 32),
-      new PC2Field('BLOCK_NON_CET_BINARIES', 0x1, 0x03, 36),
-      new PC2Field('BLOCK_NON_CET_BINARIES_ALWAYS_OFF', 0x2, 0x03, 36),
-      new PC2Field('BLOCK_NON_CET_BINARIES_NON_EHCONT', 0x3, 0x03, 36),
-      new PC2Field('XTENDED_CONTROL_FLOW_GUARD', 0x1, 0x03, 40),
-      new PC2Field('XTENDED_CONTROL_FLOW_GUARD_ALWAYS_OFF', 0x2, 0x03, 40),
-      new PC2Field('XTENDED_CONTROL_FLOW_GUARD_RESERVED', 0x3, 0x03, 40),
-      new PC2Field('CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY', 0x1, 0x03, 48),
-      new PC2Field(
+      new Pc2Field('BLOCK_NON_CET_BINARIES', 0x1, 0x03, 36),
+      new Pc2Field('BLOCK_NON_CET_BINARIES_ALWAYS_OFF', 0x2, 0x03, 36),
+      new Pc2Field('BLOCK_NON_CET_BINARIES_NON_EHCONT', 0x3, 0x03, 36),
+      new Pc2Field('XTENDED_CONTROL_FLOW_GUARD', 0x1, 0x03, 40),
+      new Pc2Field('XTENDED_CONTROL_FLOW_GUARD_ALWAYS_OFF', 0x2, 0x03, 40),
+      new Pc2Field('XTENDED_CONTROL_FLOW_GUARD_RESERVED', 0x3, 0x03, 40),
+      new Pc2Field('CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY', 0x1, 0x03, 48),
+      new Pc2Field(
           'CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY_ALWAYS_OFF', 0x2, 0x03, 48),
-      new PC2Field('CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY_RESERVED', 0x3, 0x03, 48),
+      new Pc2Field('CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY_RESERVED', 0x3, 0x03, 48),
     ];
   }
 

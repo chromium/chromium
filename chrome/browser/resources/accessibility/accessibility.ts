@@ -10,7 +10,7 @@ import {$} from 'chrome://resources/js/util.js';
 
 // Note: keep these values in sync with the values in
 // ui/accessibility/ax_mode.h
-enum AXMode {
+enum AxMode {
   NATIVE_APIS = 1 << 0,
   WEB_CONTENTS = 1 << 1,
   INLINE_TEXT_BOXES = 1 << 2,
@@ -31,7 +31,7 @@ type BrowserData = Data&{
 };
 
 type PageData = Data&{
-  a11yMode: AXMode,
+  a11yMode: AxMode,
   faviconUrl: string,
   name: string,
   pid: number,
@@ -79,7 +79,7 @@ type GlobalStateName = 'native'|'web'|'metadata'|'pdf';
 
 class BrowserProxy {
   toggleAccessibility(
-      processId: number, routingId: number, modeId: AXMode,
+      processId: number, routingId: number, modeId: AxMode,
       shouldRequestTree: boolean) {
     chrome.send('toggleAccessibility', [{
                   processId,
@@ -150,7 +150,7 @@ function getIdFromData(data: PageData|BrowserData|WidgetData): string {
 }
 
 function toggleAccessibility(
-    data: PageData, mode: AXMode, globalStateName: GlobalStateName) {
+    data: PageData, mode: AxMode, globalStateName: GlobalStateName) {
   if (!(globalStateName in data)) {
     return;
   }
@@ -350,15 +350,15 @@ function formatRow(
     }
     row.appendChild(siteInfo);
 
-    row.appendChild(createModeElement(AXMode.NATIVE_APIS, pageData, 'native'));
-    row.appendChild(createModeElement(AXMode.WEB_CONTENTS, pageData, 'native'));
+    row.appendChild(createModeElement(AxMode.NATIVE_APIS, pageData, 'native'));
+    row.appendChild(createModeElement(AxMode.WEB_CONTENTS, pageData, 'native'));
     row.appendChild(
-        createModeElement(AXMode.INLINE_TEXT_BOXES, pageData, 'web'));
-    row.appendChild(createModeElement(AXMode.SCREEN_READER, pageData, 'web'));
-    row.appendChild(createModeElement(AXMode.HTML, pageData, 'web'));
+        createModeElement(AxMode.INLINE_TEXT_BOXES, pageData, 'web'));
+    row.appendChild(createModeElement(AxMode.SCREEN_READER, pageData, 'web'));
+    row.appendChild(createModeElement(AxMode.HTML, pageData, 'web'));
     row.appendChild(
-        createModeElement(AXMode.HTML_METADATA, pageData, 'metadata'));
-    row.appendChild(createModeElement(AXMode.PDF, pageData, 'pdf'));
+        createModeElement(AxMode.HTML_METADATA, pageData, 'metadata'));
+    row.appendChild(createModeElement(AxMode.PDF, pageData, 'pdf'));
   } else {
     const siteInfo = document.createElement('span');
     siteInfo.appendChild(formatValue(data, 'name'));
@@ -432,30 +432,30 @@ function formatValue(
   return span;
 }
 
-function getNameForAccessibilityMode(mode: AXMode) {
+function getNameForAccessibilityMode(mode: AxMode) {
   switch (mode) {
-    case AXMode.NATIVE_APIS:
+    case AxMode.NATIVE_APIS:
       return 'Native';
-    case AXMode.WEB_CONTENTS:
+    case AxMode.WEB_CONTENTS:
       return 'Web';
-    case AXMode.INLINE_TEXT_BOXES:
+    case AxMode.INLINE_TEXT_BOXES:
       return 'Inline text';
-    case AXMode.SCREEN_READER:
+    case AxMode.SCREEN_READER:
       return 'Screen reader';
-    case AXMode.HTML:
+    case AxMode.HTML:
       return 'HTML';
-    case AXMode.HTML_METADATA:
+    case AxMode.HTML_METADATA:
       return 'HTML Metadata';
-    case AXMode.LABEL_IMAGES:
+    case AxMode.LABEL_IMAGES:
       return 'Label images';
-    case AXMode.PDF:
+    case AxMode.PDF:
       return 'PDF';
   }
   return 'unknown';
 }
 
 function createModeElement(
-    mode: AXMode, data: PageData, globalStateName: GlobalStateName) {
+    mode: AxMode, data: PageData, globalStateName: GlobalStateName) {
   const currentMode = data.a11yMode;
   const link = document.createElement('a', {is: 'action-link'});
   link.setAttribute('is', 'action-link');

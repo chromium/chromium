@@ -103,7 +103,20 @@ module.exports = {
         'error',
         {
           selector: ['class', 'interface', 'typeAlias', 'enum', 'typeParameter'],
-          format: ['PascalCase'],
+          format: ['StrictPascalCase'],
+          filter: {
+            regex: '^(' +
+                // Exclude TypeScript defined interfaces HTMLElementTagNameMap
+                // and HTMLElementEventMap.
+                'HTMLElementTagNameMap|HTMLElementEventMap|' +
+                // Exclude native DOM types which are always named like HTML<Foo>Element.
+                'HTML[A-Za-z]{0,}Element|' +
+                // Exclude native DOM interfaces.
+                'UIEvent|UIEventInit|DOMError|' +
+                // Exclude the deprecated WebUIListenerBehavior interface.
+                'WebUIListenerBehavior)$',
+            match: false,
+          },
         },
         {
           selector: 'enumMember',

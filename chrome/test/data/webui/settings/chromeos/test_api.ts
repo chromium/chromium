@@ -139,7 +139,7 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
   }
 }
 
-class OSSettingsDriver implements OSSettingsDriverInterface {
+class OsSettingsDriver implements OSSettingsDriverInterface {
   async goToLockScreenSettings():
       Promise<{lockScreenSettings: LockScreenSettingsRemote}> {
     const privacyPage =
@@ -181,10 +181,10 @@ class OSSettingsDriver implements OSSettingsDriverInterface {
   }
 }
 
-// Passes an OSSettingsDriver remote to the browser process.
+// Passes an OsSettingsDriver remote to the browser process.
 export async function register(): Promise<void> {
   const browserProcess = OSSettingsBrowserProcess.getRemote();
-  const receiver = new OSSettingsDriverReceiver(new OSSettingsDriver());
+  const receiver = new OSSettingsDriverReceiver(new OsSettingsDriver());
   const remote = receiver.$.bindNewPipeAndPassRemote();
   await browserProcess.registerOSSettingsDriver(remote);
 }

@@ -27,7 +27,7 @@ import {getTemplate} from './realbox_match.html.js';
  * field.
  * See components/omnibox/browser/autocomplete_match.h.
  */
-enum ACMatchClassificationStyle {
+enum AcMatchClassificationStyle {
   NONE = 0,
   URL =   1 << 0,  // A URL.
   MATCH = 1 << 1,  // A match for the user's search term.
@@ -355,19 +355,19 @@ export class RealboxMatchElement extends PolymerElement {
   }
 
   /**
-   * Decodes the ACMatchClassificationStyle enteries encoded in the given
+   * Decodes the AcMatchClassificationStyle enteries encoded in the given
    * ACMatchClassification style field, maps each entry to a CSS
    * class and returns them.
    */
   private convertClassificationStyleToCSSClasses_(style: number): string[] {
     const classes = [];
-    if (style & ACMatchClassificationStyle.DIM) {
+    if (style & AcMatchClassificationStyle.DIM) {
       classes.push('dim');
     }
-    if (style & ACMatchClassificationStyle.MATCH) {
+    if (style & AcMatchClassificationStyle.MATCH) {
       classes.push('match');
     }
-    if (style & ACMatchClassificationStyle.URL) {
+    if (style & AcMatchClassificationStyle.URL) {
       classes.push('url');
     }
     return classes;

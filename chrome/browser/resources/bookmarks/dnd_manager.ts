@@ -259,7 +259,7 @@ class DropIndicator {
 /**
  * Manages drag and drop events for the bookmarks-app.
  */
-export class DNDManager {
+export class DndManager {
   private dragInfo_: DragInfo|null;
   private dropDestination_: DropDestination|null;
   private dropIndicator_: DropIndicator|null;

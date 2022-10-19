@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://
 
 import {createBackgroundImage} from './test_support.js';
 
-class FakeIFrameElement extends HTMLIFrameElement {
+class FakeIframeElement extends HTMLIFrameElement {
   url: string|null = null;
 
   override get contentWindow() {
@@ -18,11 +18,11 @@ class FakeIFrameElement extends HTMLIFrameElement {
   }
 }
 
-customElements.define('fake-iframe', FakeIFrameElement, {extends: 'iframe'});
+customElements.define('fake-iframe', FakeIframeElement, {extends: 'iframe'});
 
 suite('NewTabPageBackgroundManagerTest', () => {
   let backgroundManager: BackgroundManager;
-  let backgroundImage: FakeIFrameElement;
+  let backgroundImage: FakeIframeElement;
 
   function wrapImageUrl(url: string): string {
     return `chrome-untrusted://new-tab-page/custom_background_image?url=${
@@ -33,7 +33,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
     document.body.innerHTML =
         window.trustedTypes!.emptyHTML as unknown as string;
 
-    backgroundImage = new FakeIFrameElement();
+    backgroundImage = new FakeIframeElement();
     backgroundImage.id = 'backgroundImage';
     document.body.appendChild(backgroundImage);
 

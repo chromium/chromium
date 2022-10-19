@@ -14,18 +14,17 @@ import {BaseAction} from './base_store.js';
  * isn't the latest action anymore. This effectively cancels any pending
  * generator()/action.
  *
- * @template TYield Type of the action yielded by the Actions Producer.
+ * @template T Type of the action yielded by the Actions Producer.
  * @template Args the inferred type for all the args for foo().
  *
  * @param actionsProducer This will be the `foo` above.
  */
-export function keepLatest<TYield extends BaseAction, Args extends any[]>(
-    actionsProducer: ActionsProducer<TYield, Args>):
-    ActionsProducer<TYield, Args> {
+export function keepLatest<T extends BaseAction, Args extends any[]>(
+    actionsProducer: ActionsProducer<T, Args>): ActionsProducer<T, Args> {
   // Scope #1: Initial setup.
   let counter = 0;
 
-  async function* wrap(...args: Args): ActionsProducerGen<TYield> {
+  async function* wrap(...args: Args): ActionsProducerGen<T> {
     // Scope #2: Per-call to the ActionsProducer.
     const actionId = ++counter;
 

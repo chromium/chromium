@@ -12,7 +12,7 @@ import './support_tool_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy, BrowserProxyImpl, PIIDataItem} from './browser_proxy.js';
+import {BrowserProxy, BrowserProxyImpl, PiiDataItem} from './browser_proxy.js';
 import {getTemplate} from './pii_selection.html.js';
 import {SupportToolPageMixin} from './support_tool_page_mixin.js';
 
@@ -24,9 +24,9 @@ enum PiiRadioButtons {
   INCLUDE_SOME = 'include-some',
 }
 
-const PIISelectionElementBase = SupportToolPageMixin(PolymerElement);
+const PiiSelectionElementBase = SupportToolPageMixin(PolymerElement);
 
-export class PIISelectionElement extends PIISelectionElementBase {
+export class PiiSelectionElement extends PiiSelectionElementBase {
   static get is() {
     return 'pii-selection';
   }
@@ -64,10 +64,10 @@ export class PIISelectionElement extends PIISelectionElementBase {
   private selectAll_: boolean;
   private selectedRadioButton_: string;
   private showPIISelection_: boolean;
-  private detectedPIIItems_: PIIDataItem[];
+  private detectedPIIItems_: PiiDataItem[];
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  updateDetectedPIIItems(items: PIIDataItem[]) {
+  updateDetectedPIIItems(items: PiiDataItem[]) {
     items.forEach((item) => {
       item.expandDetails = false;
     });
@@ -118,8 +118,8 @@ export class PIISelectionElement extends PIISelectionElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'pii-selection': PIISelectionElement;
+    'pii-selection': PiiSelectionElement;
   }
 }
 
-customElements.define(PIISelectionElement.is, PIISelectionElement);
+customElements.define(PiiSelectionElement.is, PiiSelectionElement);

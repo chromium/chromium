@@ -116,7 +116,7 @@ export function queryDecoratedElement<T>(
 }
 
 /**
- * Creates an instance of UserDOMError subtype of DOMError because DOMError is
+ * Creates an instance of UserDomError subtype of DOMError because DOMError is
  * deprecated and its Closure extern is wrong, doesn't have the constructor
  * with 2 arguments. This DOMError looks like a FileError except that it does
  * not have the deprecated FileError.code member.
@@ -125,13 +125,13 @@ export function queryDecoratedElement<T>(
  * @param {string=} message optional message.
  */
 export function createDOMError(name: string, message?: string): DOMError {
-  return new UserDOMError(name, message);
+  return new UserDomError(name, message);
 }
 
 /**
  * Creates a DOMError-like object to be used in place of returning file errors.
  */
-class UserDOMError extends DOMError {
+class UserDomError extends DOMError {
   private name_: string;
   private message_: string;
 
