@@ -742,6 +742,9 @@ class MetaBuildWrapper:
           cas_digest,
           '-server',
           swarming_server,
+          # 30 is try level. So use the same here.
+          '-priority',
+          '30',
           '-tag=purpose:user-debug-mb',
           '-relative-cwd',
           self.ToSrcRelPath(build_dir),
