@@ -13,6 +13,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
@@ -33,6 +35,9 @@ namespace {
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
+
+// Version number of the database.
+const int kCurrentVersionNumber = 2;
 
 static const size_t kTableCount = 7u;
 
@@ -65,13 +70,17 @@ class FirstPartySetsDatabaseTest : public testing::Test {
 
   void CloseDatabase() { db_.reset(); }
 
-  static base::FilePath GetSqlFilePath(base::StringPiece sql_file_name) {
+  static base::FilePath GetSqlFilePath(const std::string sql_file_name) {
     base::FilePath path;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
     path = path.AppendASCII("content/test/data/first_party_sets/");
     path = path.AppendASCII(sql_file_name);
     EXPECT_TRUE(base::PathExists(path));
     return path;
+  }
+
+  static base::FilePath GetCurrentVersionSqlFilePath() {
+    return GetSqlFilePath(base::StringPrintf("v%d.sql", kCurrentVersionNumber));
   }
 
   size_t CountPublicSetsEntries(sql::Database* db) {
@@ -150,7 +159,7 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   // [manual_sets], [browser_context_sites_to_clear],
   // [browser_contexts_cleared], and [meta].
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(2, VersionFromMetaTable(db));
+  EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
   // [idx_public_sets_version_browser_contexts], [idx_marked_at_run_sites],
   // [idx_cleared_at_run_browser_contexts], and [sqlite_autoindex_meta_1].
   EXPECT_EQ(4u, sql::test::CountSQLIndices(&db));
@@ -176,8 +185,8 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
 
 TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
   base::HistogramTester histograms;
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -189,7 +198,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(2u, CountPublicSetsEntries(&db));
   EXPECT_EQ(3u, CountBrowserContextSetsVersionEntries(&db));
-  EXPECT_EQ(2, VersionFromMetaTable(db));
+  EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
   EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
   EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
@@ -202,8 +211,8 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
 
 TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooOld) {
   base::HistogramTester histograms;
-  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      db_path(), GetSqlFilePath("v0.init_too_old.sql")));
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -216,7 +225,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooOld) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(2, VersionFromMetaTable(db));
+  EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
   EXPECT_EQ(0u, CountPublicSetsEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextSetsVersionEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextSitesToClearEntries(&db));
@@ -245,7 +254,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooNew) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(2, VersionFromMetaTable(db));
+  EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
   EXPECT_EQ(0u, CountPublicSetsEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextSetsVersionEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextSitesToClearEntries(&db));
@@ -388,8 +397,8 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
 }
 
 TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   const std::string browser_context_id = "b2";
   // Verify data in the pre-existing DB.
@@ -564,8 +573,8 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
 }
 
 TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   const base::Version version("0.0.1");
   const std::string aaa = "https://aaa.test";
@@ -629,8 +638,8 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
 }
 
 TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_InvalidVersion) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   // Verify data in the pre-existing DB.
   {
@@ -687,8 +696,8 @@ TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_NoPreExistingDB) {
 }
 
 TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_PreExistingDB) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   const std::string browser_context_id = "b0";
   int64_t pre_run_count = 0;
@@ -769,8 +778,8 @@ TEST_F(FirstPartySetsDatabaseTest,
 }
 
 TEST_F(FirstPartySetsDatabaseTest, InsertBrowserContextCleared_PreExistingDB) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   int64_t pre_run_count = 0;
   // Verify data in the pre-existing DB, and set `pre_run_count`.
@@ -821,8 +830,8 @@ TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters_NoPreExistingDB) {
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   const std::string browser_context_id = "b0";
   const int64_t expected_run_count = 2;
@@ -868,8 +877,8 @@ TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications_NoPreExistingDB) {
 }
 
 TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   // Verify data in the pre-existing DB.
   {
@@ -898,8 +907,8 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPreExistingDB) {
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   // Verify data in the pre-existing DB.
   {
@@ -934,8 +943,8 @@ TEST_F(FirstPartySetsDatabaseTest,
 }
 
 TEST_F(FirstPartySetsDatabaseTest, HasEntryInBrowserContextsClearedForTesting) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
+                                               GetCurrentVersionSqlFilePath()));
 
   // Verify data in the pre-existing DB.
   {
