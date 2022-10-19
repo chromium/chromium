@@ -4044,7 +4044,7 @@
       # Chrome OS only.
       'ash_components_unittests': {},
       # TODO(crbug.com/1351793) Enable on CQ when stable.
-      'ash_crosapi_browsertests': {
+      'ash_crosapi_tests': {
         'ci_only': True,
       },
       'ash_unittests': {

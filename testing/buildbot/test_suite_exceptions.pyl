@@ -123,6 +123,13 @@
       },
     },
   },
+  'ash_crosapi_tests': {
+    'remove_from': [
+      # Disabling MSan tests since linux-chromeos chrome crashes on MSan build.
+      # TODO(crbug.com/1376064): Re-enable.
+      'Linux ChromiumOS MSan Tests',
+    ]
+  },
   'aura_unittests amd64-generic': {
     'remove_from': [
       # TODO(crbug.com/1204231): Re-enable.
