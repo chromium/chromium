@@ -92,7 +92,6 @@
 
 using ash::file_manager::kChromeUIFileManagerURL;
 using extensions::Extension;
-using extensions::api::file_manager_private::Verb;
 using storage::FileSystemURL;
 
 namespace file_manager::file_tasks {
@@ -634,14 +633,12 @@ bool TaskDescriptor::operator<(const TaskDescriptor& other) const {
 
 FullTaskDescriptor::FullTaskDescriptor(const TaskDescriptor& in_task_descriptor,
                                        const std::string& in_task_title,
-                                       const Verb in_task_verb,
                                        const GURL& in_icon_url,
                                        bool in_is_default,
                                        bool in_is_generic_file_handler,
                                        bool in_is_file_extension_match)
     : task_descriptor(in_task_descriptor),
       task_title(in_task_title),
-      task_verb(in_task_verb),
       icon_url(in_icon_url),
       is_default(in_is_default),
       is_generic_file_handler(in_is_generic_file_handler),

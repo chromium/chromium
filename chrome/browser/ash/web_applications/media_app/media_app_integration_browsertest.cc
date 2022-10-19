@@ -1137,8 +1137,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppEligibleOpenTask) {
     const auto& descriptor = task.task_descriptor;
 
     EXPECT_EQ("Gallery", task.task_title);
-    EXPECT_EQ(extensions::api::file_manager_private::Verb::VERB_NONE,
-              task.task_verb);
     EXPECT_EQ(descriptor.app_id, MediaAppAppId());
     EXPECT_EQ(ash::kChromeUIMediaAppURL, descriptor.action_id);
     EXPECT_EQ(file_manager::file_tasks::TASK_TYPE_WEB_APP,

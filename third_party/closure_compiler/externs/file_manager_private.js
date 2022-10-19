@@ -266,14 +266,6 @@ chrome.fileManagerPrivate.Source = {
 };
 
 /** @enum {string} */
-chrome.fileManagerPrivate.Verb = {
-  OPEN_WITH: 'open_with',
-  ADD_TO: 'add_to',
-  PACK_WITH: 'pack_with',
-  SHARE_WITH: 'share_with',
-};
-
-/** @enum {string} */
 chrome.fileManagerPrivate.SourceRestriction = {
   ANY_SOURCE: 'any_source',
   NATIVE_SOURCE: 'native_source',
@@ -380,7 +372,6 @@ chrome.fileManagerPrivate.FileTaskDescriptor;
  * @typedef {{
  *   descriptor: !chrome.fileManagerPrivate.FileTaskDescriptor,
  *   title: string,
- *   verb: (!chrome.fileManagerPrivate.Verb|undefined),
  *   iconUrl: (string|undefined),
  *   isDefault: (boolean|undefined),
  *   isGenericFileHandler: (boolean|undefined)

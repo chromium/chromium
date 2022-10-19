@@ -214,14 +214,12 @@ struct TaskDescriptor {
 
 // Describes a task with extra information such as icon URL.
 struct FullTaskDescriptor {
-  FullTaskDescriptor(
-      const TaskDescriptor& task_descriptor,
-      const std::string& task_title,
-      const extensions::api::file_manager_private::Verb task_verb,
-      const GURL& icon_url,
-      bool is_default,
-      bool is_generic_file_handler,
-      bool is_file_extension_match);
+  FullTaskDescriptor(const TaskDescriptor& task_descriptor,
+                     const std::string& task_title,
+                     const GURL& icon_url,
+                     bool is_default,
+                     bool is_generic_file_handler,
+                     bool is_file_extension_match);
 
   FullTaskDescriptor(const FullTaskDescriptor& other);
   FullTaskDescriptor& operator=(const FullTaskDescriptor& other);
@@ -230,9 +228,6 @@ struct FullTaskDescriptor {
   TaskDescriptor task_descriptor;
   // The user-visible title/name of the app/extension/thing to be launched.
   std::string task_title;
-  // Describes different ways the same Task might handle file/s, e.g. open with,
-  // pack with, share with, etc.
-  extensions::api::file_manager_private::Verb task_verb;
   // The icon URL for the task (ex. app icon)
   GURL icon_url;
   // The default task is stored in user preferences and will be used when the

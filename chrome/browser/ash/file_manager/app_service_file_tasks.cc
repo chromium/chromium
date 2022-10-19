@@ -77,8 +77,6 @@ ConvertLaunchResultToTaskResult(const apps::LaunchResult& result,
   }
 }
 
-using extensions::api::file_manager_private::Verb;
-
 namespace {
 
 TaskType GetTaskType(apps::AppType app_type) {
@@ -292,7 +290,7 @@ void FindAppServiceTasks(Profile* profile,
     result_list->push_back(FullTaskDescriptor(
         TaskDescriptor(launch_entry.app_id, GetTaskType(app_type),
                        launch_entry.activity_name),
-        launch_entry.activity_label, Verb::VERB_NONE, icon_url,
+        launch_entry.activity_label, icon_url,
         /* is_default=*/false,
         // TODO(petermarshall): Handle the rest of the logic from FindWebTasks()
         // e.g. prioritise non-generic handlers.

@@ -161,13 +161,11 @@ void OnArcIconLoaded(
     std::unique_ptr<arc::ArcIntentHelperBridge::ActivityToIconsMap> icons) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  using extensions::api::file_manager_private::Verb;
   for (const arc::mojom::IntentHandlerInfoPtr& handler : handlers) {
     std::string action(arc::kIntentActionView);
     if (handler->action.has_value())
       action = *handler->action;
     std::string name(handler->name);
-    Verb handler_verb = Verb::VERB_NONE;
     if (action == arc::kIntentActionSend ||
         action == arc::kIntentActionSendMultiple) {
       // Use app service to get send tasks.
@@ -182,7 +180,7 @@ void OnArcIconLoaded(
         TaskDescriptor(
             ActivityNameToAppId(handler->package_name, handler->activity_name),
             TASK_TYPE_ARC_APP, ArcActionToFileTaskActionId(action)),
-        name, handler_verb, icon_url, false /* is_default */,
+        name, icon_url, false /* is_default */,
         action != arc::kIntentActionView /* is_generic */,
         false /* is_file_extension_match */);
   }

@@ -106,12 +106,10 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
             actionId: 'text',
           },
           title: 'Text',
-          verb: 'open_with',
         },
         {
           descriptor: pluginVmAppDescriptor,
           title: 'App (Windows)',
-          verb: 'open_with',
         },
       ]]));
 
@@ -181,12 +179,10 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
             actionId: 'text',
           },
           title: 'Text',
-          verb: 'open_with',
         },
         {
           descriptor: pluginVmAppDescriptor,
           title: 'App (Windows)',
-          verb: 'open_with',
         },
       ]]));
 

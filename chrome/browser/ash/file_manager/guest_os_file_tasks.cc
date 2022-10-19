@@ -245,9 +245,8 @@ void FindGuestOsTasks(Profile* profile,
         base::StrCat({chrome::kChromeUIAppIconURL, result_app_ids[i], "/32"}));
     result_list->push_back(FullTaskDescriptor(
         TaskDescriptor(result_app_ids[i], task_types[i], kGuestOsAppActionID),
-        result_app_names[i],
-        extensions::api::file_manager_private::Verb::VERB_OPEN_WITH, icon_url,
-        /*is_default=*/false, /*is_generic=*/false,
+        result_app_names[i], icon_url,
+        /*is_default=*/false, /*is_generic_file_handler=*/false,
         /*is_file_extension_match=*/false));
   }
 

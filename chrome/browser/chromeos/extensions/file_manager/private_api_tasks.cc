@@ -236,7 +236,6 @@ void FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed(
     if (!task.icon_url.is_empty())
       converted.icon_url = task.icon_url.spec();
     converted.title = task.task_title;
-    converted.verb = task.task_verb;
     converted.is_default = task.is_default;
     converted.is_generic_file_handler = task.is_generic_file_handler;
     results.push_back(std::move(converted));

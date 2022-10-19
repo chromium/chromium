@@ -304,15 +304,6 @@ enum Source {
   system
 };
 
-// File handler verbs used to describe the action that an extension performs
-// over a file or directory.
-enum Verb {
-  open_with,
-  add_to,
-  pack_with,
-  share_with
-};
-
 // Recent file sources allowed in getRecentFiles().
 enum SourceRestriction {
   // Allows any source.
@@ -434,10 +425,6 @@ dictionary FileTask {
 
   // Task title (ex. App name).
   DOMString title;
-
-  // The verb that will be used to indicate the action a task performs over
-  // a file (ex. "open_with").
-  Verb? verb;
 
   // Task icon url (from chrome://extension-icon/...)
   DOMString iconUrl;

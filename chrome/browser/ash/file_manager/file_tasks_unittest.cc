@@ -63,16 +63,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using extensions::api::file_manager_private::Verb;
-
 namespace file_manager::file_tasks {
 
 TEST(FileManagerFileTasksTest, FullTaskDescriptor_WithIconAndDefault) {
   FullTaskDescriptor full_descriptor(
       TaskDescriptor("app-id", TASK_TYPE_FILE_BROWSER_HANDLER, "action-id"),
-      "task title", Verb::VERB_OPEN_WITH, GURL("http://example.com/icon.png"),
-      true /* is_default */, false /* is_generic_file_handler */,
-      false /* is_file_extension_match */);
+      "task title", GURL("http://example.com/icon.png"), true /* is_default */,
+      false /* is_generic_file_handler */, false /* is_file_extension_match */);
 
   EXPECT_EQ("app-id", full_descriptor.task_descriptor.app_id);
   EXPECT_EQ(TaskType::TASK_TYPE_FILE_BROWSER_HANDLER,
@@ -80,7 +77,6 @@ TEST(FileManagerFileTasksTest, FullTaskDescriptor_WithIconAndDefault) {
   EXPECT_EQ("action-id", full_descriptor.task_descriptor.action_id);
   EXPECT_EQ("http://example.com/icon.png", full_descriptor.icon_url.spec());
   EXPECT_EQ("task title", full_descriptor.task_title);
-  EXPECT_EQ(Verb::VERB_OPEN_WITH, full_descriptor.task_verb);
   EXPECT_TRUE(full_descriptor.is_default);
 }
 
@@ -292,8 +288,8 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
     for (const auto& [app_id, _] : kAppIdPolicyIdMapping) {
       tasks.emplace_back(
           TaskDescriptor{app_id, TASK_TYPE_FILE_HANDLER, "action-id"},
-          /*task_title=*/"Task", Verb::VERB_OPEN_WITH,
-          GURL("https://example.com/app.png"), false, false, false);
+          /*task_title=*/"Task", GURL("https://example.com/app.png"), false,
+          false, false);
     }
 
     AddFakeAppToAppService(kWebAppId, /*package_name=*/{},
@@ -423,13 +419,13 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   tasks.emplace_back(
-      text_app_task, "Text.app", Verb::VERB_OPEN_WITH,
-      GURL("http://example.com/text_app.png"), false /* is_default */,
-      false /* is_generic_file_handler */, false /* is_file_extension_match */);
+      text_app_task, "Text.app", GURL("http://example.com/text_app.png"),
+      false /* is_default */, false /* is_generic_file_handler */,
+      false /* is_file_extension_match */);
   tasks.emplace_back(
-      nice_app_task, "Nice.app", Verb::VERB_ADD_TO,
-      GURL("http://example.com/nice_app.png"), false /* is_default */,
-      false /* is_generic_file_handler */, false /* is_file_extension_match */);
+      nice_app_task, "Nice.app", GURL("http://example.com/nice_app.png"),
+      false /* is_default */, false /* is_generic_file_handler */,
+      false /* is_file_extension_match */);
   std::vector<extensions::EntryInfo> entries;
   entries.emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"), "text/plain",
                        false);
@@ -484,7 +480,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   tasks.emplace_back(
-      files_app_task, "View in browser", Verb::VERB_OPEN_WITH,
+      files_app_task, "View in browser",
       GURL("http://example.com/some_icon.png"), false /* is_default */,
       false /* is_generic_file_handler */, false /* is_file_extension_match */);
   std::vector<extensions::EntryInfo> entries;
@@ -512,11 +508,11 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   tasks.emplace_back(
-      files_app_task, "View in browser", Verb::VERB_OPEN_WITH,
+      files_app_task, "View in browser",
       GURL("http://example.com/some_icon.png"), false /* is_default */,
       false /* is_generic_file_handler */, false /* is_file_extension_match */);
   tasks.emplace_back(
-      text_app_task, "Text", Verb::VERB_OPEN_WITH,
+      text_app_task, "Text",
       GURL("chrome://extension-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/16/1"),
       false /* is_default */, false /* is_generic_file_handler */,
       false /* is_file_extension_match */);
@@ -545,11 +541,11 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   tasks.emplace_back(
-      files_app_task, "View in browser", Verb::VERB_OPEN_WITH,
+      files_app_task, "View in browser",
       GURL("http://example.com/some_icon.png"), false /* is_default */,
       false /* is_generic_file_handler */, false /* is_file_extension_match */);
   tasks.emplace_back(
-      text_app_task, "Text", Verb::VERB_OPEN_WITH,
+      text_app_task, "Text",
       GURL("chrome://extension-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/16/1"),
       false /* is_default */, false /* is_generic_file_handler */,
       false /* is_file_extension_match */);
@@ -577,7 +573,6 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
   tasks.emplace_back(
       files_app_task, "Office Editing for Docs, Sheets & Slides",
-      Verb::VERB_OPEN_WITH,
       GURL("chrome://extension-icon/bpmcpldpdmajfigpchkicefoigmkfalc/32/1"),
       false /* is_default */, false /* is_generic_file_handler */,
       false /* is_file_extension_match */);
@@ -655,13 +650,13 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   tasks.emplace_back(
-      app_service_file_task, "View Images", Verb::VERB_NONE,
+      app_service_file_task, "View Images",
       GURL("http://example.com/some_icon.png"), false /* is_default */,
       false /* is_generic_file_handler */, false /* is_file_extension_match */);
-  tasks.emplace_back(
-      other_task, "Other", Verb::VERB_NONE,
-      GURL("http://example.com/other.text"), false /* is_default */,
-      false /* is_generic_file_handler */, false /* is_file_extension_match */);
+  tasks.emplace_back(other_task, "Other", GURL("http://example.com/other.text"),
+                     false /* is_default */,
+                     false /* is_generic_file_handler */,
+                     false /* is_file_extension_match */);
   std::vector<extensions::EntryInfo> entries;
   entries.emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"), "image/png",
                        false);
