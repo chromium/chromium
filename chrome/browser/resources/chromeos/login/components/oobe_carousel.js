@@ -2,14 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #js_imports_placeholder */
+/**
+ * @fileoverview
+ * Simple OOBE polymer element which is used for displaying slides in a
+ * carousel. It has fixed height and width which match general width and height
+ * oobe-dialog restrictions.
+ *
+ *  Example (each slide must be within a oobe-slide tag):
+ *    <oobe-carousel slide-duration="2">
+ *      <div slot="slides">Slide 1</div>
+ *      <div slot="slides">Slide 2</div>
+ *      <div slot="slides">Slide 3</div>
+ *    </oobe-carousel>
+ *
+ *  Note: This element assumes that load_time_data is included in the enclosing
+ *  document level.
+ */
 
-class OobeCarousel extends Polymer.Element {
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+/** @polymer */
+class OobeCarousel extends PolymerElement {
   static get is() {
     return 'oobe-carousel';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
