@@ -1691,6 +1691,13 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
   const CSSSelector& selector = *context.selector;
   Element& element = *context.element;
 
+  if (context.in_nested_complex_selector) {
+    // This would normally be rejected parse-time, but can happen
+    // with the & selector, so reject it match-time.
+    // See https://github.com/w3c/csswg-drafts/issues/7912.
+    return false;
+  }
+
   switch (selector.GetPseudoType()) {
     case CSSSelector::kPseudoCue: {
       SelectorCheckingContext sub_context(context);
