@@ -32,9 +32,16 @@ class CertManagerImpl : public CertManager {
 
   ~CertManagerImpl() override;
 
-  // Asynchronously import a PEM-formatted private and user certificate into
-  // the NSS certificate database. Calls a callback with its ID and the slot
-  // ID of the database. This method will asynchronously fetch the database.
+  // Asynchronously import a PEM-formatted private key and user certificate into
+  // the NSS certificate database. Once done, |callback| will be called with its
+  // ID and the slot ID of the database. This method will asynchronously fetch
+  // the database. Calling this method will remove any previously imported
+  // private keys and certificates with the same ID.
+  // For Passpoint, the expected removal flow of private keys and certificates
+  // are done in shill directly using PKCS#11 API. This means that any state of
+  // NSS for the private keys and certificates are not cleaned. This resulted in
+  // any subsequent provisionings of a deleted certificate to fail. In order to
+  // not have the side effect, the removal is necessary.
   void ImportPrivateKeyAndCert(
       const std::string& key_pem,
       const std::string& cert_pem,
@@ -51,10 +58,13 @@ class CertManagerImpl : public CertManager {
   std::string ImportUserCert(const std::string& cert_pem,
                              net::NSSCertDatabase* database);
 
+  void DeleteCertAndKey(const std::string& cert_pem,
+                        net::NSSCertDatabase* database);
+
   // Get the private slot ID used by this class.
   int GetSlotID(net::NSSCertDatabase* database);
 
-  // Import a PEM-formatted private and user certificate into the NSS
+  // Import a PEM-formatted private key and user certificate into the NSS
   // certificate database. Calls a callback with its ID and the slot ID of the
   // database.
   void ImportPrivateKeyAndCertWithDB(const std::string& key_pem,
