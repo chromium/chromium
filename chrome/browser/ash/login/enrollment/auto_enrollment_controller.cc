@@ -232,7 +232,8 @@ void AutoEnrollmentController::Start() {
 void AutoEnrollmentController::StartWithSystemClockSyncState() {
   auto_enrollment_check_type_ =
       policy::AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
-          IsSystemClockSynchronized(system_clock_sync_state_));
+          IsSystemClockSynchronized(system_clock_sync_state_),
+          system::StatisticsProvider::GetInstance());
   if (auto_enrollment_check_type_ ==
       policy::AutoEnrollmentTypeChecker::CheckType::kNone) {
     UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);

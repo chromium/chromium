@@ -27,6 +27,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/system/statistics_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
 namespace ash {
@@ -258,7 +259,8 @@ void GetAvailableUpdateModes(
     // disallowed until FRE determines that the device is not remotely managed
     // or it does get enrolled and the admin allows TPM firmware updates.
     const auto requirement =
-        policy::AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD();
+        policy::AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+            system::StatisticsProvider::GetInstance());
     if (requirement == policy::AutoEnrollmentTypeChecker::FRERequirement::
                            kExplicitlyRequired) {
       std::move(completion).Run(std::set<Mode>());
