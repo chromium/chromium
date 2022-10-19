@@ -139,8 +139,10 @@ ContinueTaskView::~ContinueTaskView() {}
 
 void ContinueTaskView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  bubble_utils::ApplyStyle(title_, bubble_utils::LabelStyle::kBody);
-  bubble_utils::ApplyStyle(subtitle_, bubble_utils::LabelStyle::kSubtitle);
+  bubble_utils::ApplyStyle(title_, bubble_utils::TypographyStyle::kBody1);
+  bubble_utils::ApplyStyle(
+      subtitle_, bubble_utils::TypographyStyle::kAnnotation1,
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
   UpdateIcon();
   UpdateStyleForTabletMode();
 }

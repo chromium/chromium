@@ -223,12 +223,15 @@ void AppListToastView::StyleForTabletMode() {
 
 void AppListToastView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  if (title_label_)
+  if (title_label_) {
     bubble_utils::ApplyStyle(title_label_,
-                             bubble_utils::LabelStyle::kChipTitle);
-  if (subtitle_label_)
-    bubble_utils::ApplyStyle(subtitle_label_,
-                             bubble_utils::LabelStyle::kSubtitle);
+                             bubble_utils::TypographyStyle::kBody2);
+  }
+  if (subtitle_label_) {
+    bubble_utils::ApplyStyle(
+        subtitle_label_, bubble_utils::TypographyStyle::kAnnotation1,
+        AshColorProvider::ContentLayerType::kTextColorSecondary);
+  }
 
   if (style_for_tablet_mode_) {
     SetBackground(views::CreateRoundedRectBackground(

@@ -12,51 +12,40 @@ namespace ash::holding_space_ui {
 
 views::Builder<views::Label> CreateTopLevelBubbleHeaderLabel(int message_id) {
   return views::Builder<views::Label>(
-      bubble_utils::CreateLabel(bubble_utils::LabelStyle::kHeader,
+      bubble_utils::CreateLabel(bubble_utils::TypographyStyle::kTitle1,
                                 l10n_util::GetStringUTF16(message_id)));
 }
 
 views::Builder<views::Label> CreateSectionHeaderLabel(int message_id) {
-  bubble_utils::LabelStyle style = bubble_utils::LabelStyle::kHeader;
-  bubble_utils::LabelStyleOverrides overrides;
-
-  if (features::IsHoldingSpaceRefreshEnabled()) {
-    style = bubble_utils::LabelStyle::kBody;
-    overrides.font_weight = gfx::Font::Weight::MEDIUM;
-  }
-
-  return views::Builder<views::Label>(bubble_utils::CreateLabel(
-      style, l10n_util::GetStringUTF16(message_id), overrides));
+  return views::Builder<views::Label>(
+      bubble_utils::CreateLabel(features::IsHoldingSpaceRefreshEnabled()
+                                    ? bubble_utils::TypographyStyle::kButton1
+                                    : bubble_utils::TypographyStyle::kTitle1,
+                                l10n_util::GetStringUTF16(message_id)));
 }
 
 views::Builder<views::Label> CreateSuggestionsSectionHeaderLabel(
     int message_id) {
   return views::Builder<views::Label>(bubble_utils::CreateLabel(
-      bubble_utils::LabelStyle::kSubheader,
+      bubble_utils::TypographyStyle::kButton2,
       l10n_util::GetStringUTF16(message_id),
-      bubble_utils::LabelStyleOverrides(
-          /*font_weight=*/absl::nullopt, /*text_color=*/absl::nullopt)));
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
 }
 
 views::Builder<views::Label> CreateBubblePlaceholderLabel(int message_id) {
   return views::Builder<views::Label>(bubble_utils::CreateLabel(
-      bubble_utils::LabelStyle::kHeader, l10n_util::GetStringUTF16(message_id),
-      bubble_utils::LabelStyleOverrides(
-          /*font_weight=*/absl::nullopt, /*text_color=*/
-          AshColorProvider::ContentLayerType::kTextColorSecondary)));
+      bubble_utils::TypographyStyle::kTitle1,
+      l10n_util::GetStringUTF16(message_id),
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
 }
 
 views::Builder<views::Label> CreateSectionPlaceholderLabel(
     const std::u16string& text) {
-  bubble_utils::LabelStyleOverrides overrides;
-
-  if (features::IsHoldingSpaceSuggestionsEnabled()) {
-    overrides.text_color =
-        AshColorProvider::ContentLayerType::kTextColorSecondary;
-  }
-
   return views::Builder<views::Label>(bubble_utils::CreateLabel(
-      bubble_utils::LabelStyle::kBody, text, overrides));
+      bubble_utils::TypographyStyle::kBody1, text,
+      features::IsHoldingSpaceSuggestionsEnabled()
+          ? AshColorProvider::ContentLayerType::kTextColorSecondary
+          : AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 }  // namespace ash::holding_space_ui

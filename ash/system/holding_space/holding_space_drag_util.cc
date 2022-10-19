@@ -226,7 +226,7 @@ class DragImageItemChipView : public DragImageItemView {
     // Label.
     ScopedLightModeAsDefault scoped_light_mode;
     auto* label = AddChildView(bubble_utils::CreateLabel(
-        bubble_utils::LabelStyle::kChipTitle, item->GetText()));
+        bubble_utils::TypographyStyle::kBody2, item->GetText()));
     label->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     layout->SetFlexForView(label, 1);
@@ -314,7 +314,7 @@ class DragImageOverflowBadge : public views::View {
 
     // Label.
     auto* label = AddChildView(
-        bubble_utils::CreateLabel(bubble_utils::LabelStyle::kBadge));
+        bubble_utils::CreateLabel(bubble_utils::TypographyStyle::kButton1));
     label->SetEnabledColor(
         DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
             ? gfx::kGoogleGrey900

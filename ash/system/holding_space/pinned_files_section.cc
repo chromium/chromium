@@ -162,7 +162,7 @@ class FilesAppChip : public views::Button {
 
     // Label.
     auto* label = AddChildView(
-        bubble_utils::CreateLabel(bubble_utils::LabelStyle::kChipTitle));
+        bubble_utils::CreateLabel(bubble_utils::TypographyStyle::kBody2));
     label->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT));
     layout->SetFlexForView(label, 1);
