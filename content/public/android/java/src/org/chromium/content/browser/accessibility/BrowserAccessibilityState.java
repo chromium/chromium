@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -94,19 +95,18 @@ public class BrowserAccessibilityState {
     // The IDs of all running accessibility services.
     private static String[] sServiceIds;
 
-    private static Handler sHandler;
-
     // The set of listeners of BrowserAccessibilityState, implemented using
     // a WeakHashSet behind the scenes so that listeners can be garbage-collected
     // and will be automatically removed from this set.
-    private static Set<Listener> sListeners =
+    private static final Set<Listener> sListeners =
             Collections.newSetFromMap(new WeakHashMap<Listener, Boolean>());
 
-    // The number of milliseconds to wait before checking the set of running
-    // accessibility services again, when we think it changed. Uses an exponential
-    // back-off until it's greater than MAX_DELAY_MILLIS.
-    private static final int MIN_DELAY_MILLIS = 500;
-    private static final int MAX_DELAY_MILLIS = 60000;
+    // The number of milliseconds to wait before checking the set of running accessibility services
+    // again, when we think it changed. Uses an exponential back-off until it's greater than
+    // MAX_DELAY_MILLIS. Note that each delay is additive, so the total time for a guaranteed signal
+    // to listener is ~7.5 seconds.
+    private static final int MIN_DELAY_MILLIS = 250;
+    private static final int MAX_DELAY_MILLIS = 5000;
     private static int sNextDelayMillis = MIN_DELAY_MILLIS;
 
     public static void addListener(Listener listener) {
@@ -141,43 +141,6 @@ public class BrowserAccessibilityState {
         if (!sInitialized) updateAccessibilityServices();
 
         return sAccessibilitySpeakPasswordEnabled;
-    }
-
-    private static class AnimatorDurationScaleObserver extends ContentObserver {
-        public AnimatorDurationScaleObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onChange(selfChange, null);
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            assert ThreadUtils.runningOnUiThread();
-            BrowserAccessibilityStateJni.get().onAnimatorDurationScaleChanged();
-        }
-    }
-
-    private static class AccessibilityServicesObserver extends ContentObserver {
-        public AccessibilityServicesObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            onChange(selfChange, null);
-        }
-
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            // Note that when Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES changes,
-            // the set of running accessibility services doesn't always reflect that
-            // immediately, but updateAccessibilityServices checks for this and keeps
-            // polling until they agree.
-            getHandler().post(() -> { updateAccessibilityServices(); });
-        }
     }
 
     @VisibleForTesting
@@ -316,23 +279,24 @@ public class BrowserAccessibilityState {
             Log.v(TAG, "Enabled accessibility services: " + enabledServiceNames.toString());
             Log.v(TAG, "Running accessibility services: " + runningServiceNames.toString());
             Log.v(TAG, "Will check again after " + sNextDelayMillis + " milliseconds.");
-            getHandler().postDelayed(() -> { updateAccessibilityServices(); }, sNextDelayMillis);
-            if (sNextDelayMillis < MAX_DELAY_MILLIS) sNextDelayMillis *= 2;
+
+            // Do not inform listeners until the services agree, unless the limit set by
+            // {MAX_DELAY_MILLIS} has been reached, in which case send whatever we have.
+            if (sNextDelayMillis < MAX_DELAY_MILLIS) {
+                ThreadUtils.getUiThreadHandler().postDelayed(
+                        BrowserAccessibilityState::updateAccessibilityServices, sNextDelayMillis);
+                sNextDelayMillis *= 2;
+                return;
+            }
         }
 
         // Update all listeners that there was a state change and pass whether or not the
         // new state includes a screen reader.
+        Log.v(TAG, "Informing listeners of changes.");
         sScreenReader = (0 != (sEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
         for (Listener listener : sListeners) {
-            Log.v(TAG, "Informing listeners of changes.");
             listener.onBrowserAccessibilityStateChanged(sScreenReader);
         }
-    }
-
-    static Handler getHandler() {
-        if (sHandler == null) sHandler = new Handler(ThreadUtils.getUiThreadLooper());
-
-        return sHandler;
     }
 
     /**
@@ -391,26 +355,54 @@ public class BrowserAccessibilityState {
     @CalledByNative
     static void registerObservers() {
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
+        ServicesObserver animationDurationScaleObserver =
+                new ServicesObserver(ThreadUtils.getUiThreadHandler(),
+                        () -> BrowserAccessibilityStateJni.get().onAnimatorDurationScaleChanged());
+        ServicesObserver accessibilityServiceObserver =
+                new ServicesObserver(ThreadUtils.getUiThreadHandler(),
+                        BrowserAccessibilityState::updateAccessibilityServices);
 
         // We want to be notified whenever the user has updated the animator duration scale.
         contentResolver.registerContentObserver(
                 Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE), false,
-                new AnimatorDurationScaleObserver(getHandler()));
+                animationDurationScaleObserver);
 
         // We want to be notified whenever the currently enabled services changes.
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES), false,
-                new AccessibilityServicesObserver(getHandler()));
+                accessibilityServiceObserver);
+        contentResolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.Secure.TOUCH_EXPLORATION_ENABLED), false,
+                accessibilityServiceObserver);
 
         // We want to be notified if the user changes their preferred password show/speak settings.
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD), false,
-                new AccessibilityServicesObserver(getHandler()));
+                accessibilityServiceObserver);
         contentResolver.registerContentObserver(
                 Settings.System.getUriFor(Settings.System.TEXT_SHOW_PASSWORD), false,
-                new AccessibilityServicesObserver(getHandler()));
+                accessibilityServiceObserver);
 
         if (!sInitialized) updateAccessibilityServices();
+    }
+
+    private static class ServicesObserver extends ContentObserver {
+        private final Runnable mRunnable;
+
+        public ServicesObserver(Handler handler, Runnable runnable) {
+            super(handler);
+            mRunnable = runnable;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, @Nullable Uri uri) {
+            ThreadUtils.getUiThreadHandler().post(mRunnable);
+        }
     }
 
     @NativeMethods
