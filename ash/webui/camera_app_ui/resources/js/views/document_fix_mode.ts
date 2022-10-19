@@ -264,9 +264,11 @@ export class DocumentFixMode {
       });
 
       // Use arrow key to move corner.
-      const KEYS = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
+      const KEYS: util.KeyboardShortcut[] =
+          ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
       function getKeyIndex(e: KeyboardEvent) {
-        return KEYS.indexOf(e.key);
+        const key = util.getKeyboardShortcut(e);
+        return KEYS.indexOf(key);
       }
       const KEY_MOVEMENTS = [
         new Vector(0, -1),

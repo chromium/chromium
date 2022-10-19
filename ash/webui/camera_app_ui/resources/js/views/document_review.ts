@@ -31,7 +31,13 @@ import {
   Rotation,
   ViewName,
 } from '../type.js';
-import {instantiateTemplate, loadImage, share} from '../util.js';
+import {
+  getKeyboardShortcut,
+  instantiateTemplate,
+  KeyboardShortcut,
+  loadImage,
+  share,
+} from '../util.js';
 
 import {DocumentFixMode} from './document_fix_mode.js';
 import {DocumentPreviewMode} from './document_preview_mode.js';
@@ -132,7 +138,8 @@ export class DocumentReview extends View {
     this.previewElement =
         dom.getFrom(this.root, `.${this.classes.preview}`, HTMLDivElement);
     this.pagesElement.addEventListener('keydown', (e) => {
-      if (e.key === ' ') {
+      const key = getKeyboardShortcut(e);
+      if (key === ' ') {
         const target = assertInstanceof(e.target, HTMLElement);
         target.click();
       }
@@ -511,7 +518,7 @@ export class DocumentReview extends View {
     return true;
   }
 
-  override onKeyPressed(key: string): boolean {
+  override onKeyPressed(key: KeyboardShortcut): boolean {
     if (super.onKeyPressed(key)) {
       return true;
     }
@@ -519,12 +526,12 @@ export class DocumentReview extends View {
         !this.pagesElement.contains(document.activeElement)) {
       return false;
     }
-    if (key === 'Up') {
+    if (key === 'ArrowUp') {
       const index = this.selectedIndex === 0 ? this.pages.length - 1 :
                                                this.selectedIndex - 1;
       this.selectPage(index);
       return true;
-    } else if (key === 'Down') {
+    } else if (key === 'ArrowDown') {
       const index = this.selectedIndex === this.pages.length - 1 ?
           0 :
           this.selectedIndex + 1;

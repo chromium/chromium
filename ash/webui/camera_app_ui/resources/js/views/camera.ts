@@ -927,7 +927,7 @@ export class Camera extends View implements CameraViewUI {
     this.layoutHandler.update();
   }
 
-  override handlingKey(key: string): boolean {
+  override handlingKey(key: util.KeyboardShortcut): boolean {
     if (key === 'Ctrl-R') {
       toast.showDebugMessage(
           this.cameraManager.getPreviewResolution().toString());
@@ -942,7 +942,7 @@ export class Camera extends View implements CameraViewUI {
       }
       return true;
     }
-    if (key === 'Space') {
+    if (key === ' ') {
       this.focusShutterButton();
       if (state.get(state.State.TAKING)) {
         this.endTake();

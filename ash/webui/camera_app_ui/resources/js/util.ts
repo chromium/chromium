@@ -58,44 +58,92 @@ export function bitmapToJpegBlob(bitmap: ImageBitmap): Promise<Blob> {
 }
 
 /**
+ * Types for keyboard shortcuts.
+ */
+const KEYBOARD_KEYS = [
+  ' ',
+  '-',
+  '=',
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'J',
+  'K',
+  'L',
+  'M',
+  'N',
+  'O',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+  'U',
+  'V',
+  'W',
+  'X',
+  'Y',
+  'Z',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowUp',
+  'AudioVolumeUp',
+  'AudioVolumeDown',
+  'BrowserBack',
+  'Delete',
+  'Enter',
+  'Escape',
+] as const;
+const KEYBOARD_KEY_SET = new Set(KEYBOARD_KEYS);
+type KeyboardKey = typeof KEYBOARD_KEYS[number];
+
+// TODO(b/248398229): After upgrading TS to 4.7 or later, we can use "extends
+// constraints on infer" to simplify the syntax of `WithModifiers`.
+type WithModifiers<Modifiers extends string[], Key extends string> =
+    Modifiers extends [...infer Rest, infer Last] ?
+    Rest extends string[] ?
+    Last extends string ? WithModifiers<Rest, Key|`${Last}-${Key}`>: never :
+    never :
+    Key;
+export type KeyboardShortcut =
+    WithModifiers<['Ctrl', 'Alt', 'Shift'], KeyboardKey>|'Unsupported';
+
+/**
  * Returns a shortcut string, such as Ctrl-Alt-A.
  *
  * @param event Keyboard event.
  * @return Shortcut identifier.
  */
-export function getShortcutIdentifier(event: KeyboardEvent): string {
-  let identifier = (event.ctrlKey ? 'Ctrl-' : '') +
-      (event.altKey ? 'Alt-' : '') + (event.shiftKey ? 'Shift-' : '') +
-      (event.metaKey ? 'Meta-' : '');
-  if (event.key) {
-    switch (event.key) {
-      case 'ArrowLeft':
-        identifier += 'Left';
-        break;
-      case 'ArrowRight':
-        identifier += 'Right';
-        break;
-      case 'ArrowDown':
-        identifier += 'Down';
-        break;
-      case 'ArrowUp':
-        identifier += 'Up';
-        break;
-      case ' ':
-        identifier += 'Space';
-        break;
-      case 'a':
-      case 'p':
-      case 's':
-      case 'v':
-      case 'r':
-        identifier += event.key.toUpperCase();
-        break;
-      default:
-        identifier += event.key;
-    }
+export function getKeyboardShortcut(event: KeyboardEvent): KeyboardShortcut {
+  let key = event.key;
+  if (key.match(/^[a-z]$/)) {
+    key = key.toUpperCase();
   }
-  return identifier;
+  if (!isSupportedKeyboardKey(key)) {
+    return 'Unsupported';
+  }
+  let modifiers: WithModifiers<['Ctrl', 'Alt', 'Shift'], ''> = '';
+  if (event.ctrlKey) {
+    modifiers = `${modifiers}Ctrl-`;
+  }
+  if (event.altKey) {
+    modifiers = `${modifiers}Alt-`;
+  }
+  if (event.shiftKey) {
+    modifiers = `${modifiers}Shift-`;
+  }
+  return `${modifiers}${key}`;
+}
+
+function isSupportedKeyboardKey(key: string): key is KeyboardKey {
+  return KEYBOARD_KEY_SET.has(key as KeyboardKey);
 }
 
 /**

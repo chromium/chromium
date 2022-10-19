@@ -161,7 +161,7 @@ export function close(name: ViewName, condition?: unknown): void {
  * @param event Key press event.
  */
 export function onKeyPressed(event: KeyboardEvent): void {
-  const key = util.getShortcutIdentifier(event);
+  const key = util.getKeyboardShortcut(event);
   switch (key) {
     case 'BrowserBack':
       // Only works for non-intent instance.

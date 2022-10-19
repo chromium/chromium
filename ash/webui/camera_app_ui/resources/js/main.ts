@@ -139,7 +139,7 @@ export class App {
     for (const element of dom.getAll('input', HTMLInputElement)) {
       element.addEventListener('keypress', (event) => {
         const e = assertInstanceof(event, KeyboardEvent);
-        if (util.getShortcutIdentifier(e) === 'Enter') {
+        if (util.getKeyboardShortcut(e) === 'Enter') {
           element.click();
         }
       });
