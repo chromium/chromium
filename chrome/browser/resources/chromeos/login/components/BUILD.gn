@@ -27,7 +27,7 @@ group("closure_compile") {
     ":keyboard_utils_for_injection",
     ":keyboard_utils_for_injection.m",
     ":long_touch_detector.m",
-    ":network_select_login.m",
+    ":network_select_login",
     ":notification_card",
     ":oobe_a11y_option",
     ":oobe_apps_list.m",
@@ -57,7 +57,6 @@ group("polymer3_elements") {
                   "oobe_vars:polymer3_elements",
 
                   # Local targets
-                  ":network_select_login_module",
                   ":oobe_apps_list_module",
                   ":oobe_icons_module",
                   ":oobe_icons_module",
@@ -136,8 +135,8 @@ js_library("long_touch_detector.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("network_select_login.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/network_select_login.m.js" ]
+js_library("network_select_login") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/network_select_login.js" ]
   deps = [
     "../:cr_ui.m",
     "//ash/webui/common/resources/network:network_select",
@@ -145,7 +144,7 @@ js_library("network_select_login.m") {
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:assert",
   ]
-  extra_deps = [ ":network_select_login_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("notification_card") {
@@ -269,15 +268,6 @@ js_library("web_view_loader.m") {
   extra_deps = [ ":modulize" ]
 }
 
-polymer_modulizer("network_select_login") {
-  js_file = "network_select_login.js"
-  html_file = "network_select_login.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("oobe_apps_list") {
   js_file = "oobe_apps_list.js"
   html_file = "oobe_apps_list.html"
@@ -319,6 +309,7 @@ html_to_js("web_components") {
     "gaia_header.js",
     "gaia_input_form.js",
     "hd_iron_icon.js",
+    "network_select_login.js",
     "notification_card.js",
     "oobe_a11y_option.js",
     "oobe_carousel.js",

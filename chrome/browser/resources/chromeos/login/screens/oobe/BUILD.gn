@@ -146,7 +146,7 @@ js_library("quick_start.m") {
 js_library("oobe_network") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/oobe_network.js" ]
   deps = [
-    "../../components:network_select_login.m",
+    "../../components:network_select_login",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",

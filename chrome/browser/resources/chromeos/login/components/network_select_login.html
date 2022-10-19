@@ -1,37 +1,28 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/ash/common/network/mojo_interface_provider.html">
-<link rel="import" href="chrome://resources/ash/common/network/network_list_types.html">
-<link rel="import" href="chrome://resources/ash/common/network/network_select.html">
-<link rel="import" href="chrome://resources/ash/common/network/onc_mojo.html">
+<style>
+  :host {
+    display: inline-flex;
+  }
 
-<link rel="import" href="../cr_ui.html">
-<link rel="import" href="./oobe_network_icons.html">
+  #networkSelect {
+    flex: 1;
+  }
+</style>
+<network-select id="networkSelect" class="focus-on-show"
+    show-scan-progress
+    enable-wifi-scans="[[enableWifiScans]]"
+    custom-items="[[getNetworkCustomItems_(isNetworkConnected)]]"
+    on-default-network-changed="onDefaultNetworkChanged_"
+    on-network-connect-changed="onNetworkConnectChanged_"
+    on-network-list-changed="onNetworkListChanged_"
+    on-network-item-selected="onNetworkListNetworkItemSelected_"
+    on-custom-item-selected="onNetworkListCustomItemSelected_"
+    no-bottom-scroll-border="[[noBottomScrollBorder]]"
+    show-technology-badge="[[showTechnologyBadge_]]">
+</network-select>
 
-<dom-module id="network-select-login">
-  <template>
-    <style>
-      :host {
-        display: inline-flex;
-      }
-
-      #networkSelect {
-        flex: 1;
-      }
-    </style>
-    <network-select id="networkSelect" class="focus-on-show"
-        show-scan-progress
-        enable-wifi-scans="[[enableWifiScans]]"
-        custom-items="[[getNetworkCustomItems_(isNetworkConnected)]]"
-        on-default-network-changed="onDefaultNetworkChanged_"
-        on-network-connect-changed="onNetworkConnectChanged_"
-        on-network-list-changed="onNetworkListChanged_"
-        on-network-item-selected="onNetworkListNetworkItemSelected_"
-        on-custom-item-selected="onNetworkListCustomItemSelected_"
-        no-bottom-scroll-border="[[noBottomScrollBorder]]"
-        show-technology-badge="[[showTechnologyBadge_]]">
-    </network-select>
-  </template>
-  <script src="network_select_login.js"></script>
-</dom-module>

@@ -6,9 +6,18 @@
  * @fileoverview Polymer element wrapping network-select for login/oobe.
  */
 
-/* #js_imports_placeholder */
+import '//resources/ash/common/network/network_select.js';
+import './oobe_network_icons.m.js';
+
+import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
+import {NetworkList} from '//resources/ash/common/network/network_list_types.js';
+import {OncMojo} from '//resources/ash/common/network/onc_mojo.js';
+import {assert} from '//resources/js/assert.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+
+import {Oobe} from '../cr_ui.m.js';
 
 /**
  * Custom data that is stored with network element to trigger action.
@@ -16,12 +25,15 @@ import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos
  */
 let networkCustomItemCustomData;
 
-/* #export */ class NetworkSelectLogin extends Polymer.Element {
+/** @polymer */
+export class NetworkSelectLogin extends PolymerElement {
   static get is() {
     return 'network-select-login';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -32,6 +44,7 @@ let networkCustomItemCustomData;
       isNetworkConnected: {
         type: Boolean,
         notify: true,
+        value: false,
       },
 
       /**
@@ -41,6 +54,7 @@ let networkCustomItemCustomData;
        */
       configureConnected: {
         type: Boolean,
+        value: false,
       },
 
       /**
@@ -50,6 +64,7 @@ let networkCustomItemCustomData;
        */
       enableWifiScans: {
         type: Boolean,
+        value: true,
       },
 
       /**
@@ -58,18 +73,13 @@ let networkCustomItemCustomData;
        */
       showTechnologyBadge_: {
         type: Boolean,
+        value: false,
       },
     };
   }
 
   constructor() {
     super();
-    // Properties
-    this.isNetworkConnected = false;
-    this.configureConnected = false;
-    this.enableWifiScans = true;
-    this.showTechnologyBadge_ = false;
-    // Fields
     /**
      * GUID of the user-selected network. It is remembered after user taps on
      * network entry. After we receive event "connected" on this network,
@@ -293,8 +303,8 @@ let networkCustomItemCustomData;
       return;
     }
 
-    const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    const networkConfig =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
     networkConfig.startConnect(guid).then(response => {
       switch (response.result) {

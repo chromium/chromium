@@ -656,7 +656,7 @@ js_library("error_message") {
   deps = [
     "../../:cr_ui.m",
     "../../components:display_manager_types.m",
-    "../../components:network_select_login.m",
+    "../../components:network_select_login",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",

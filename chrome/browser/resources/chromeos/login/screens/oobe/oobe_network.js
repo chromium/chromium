@@ -16,14 +16,13 @@ import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.m.js';
 
 import {NetworkList} from '//resources/ash/common/network/network_list_types.js';
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
-import {NetworkSelectLogin} from '../../components/network_select_login.m.js';
+import {NetworkSelectLogin} from '../../components/network_select_login.js';
 
 
 /**
