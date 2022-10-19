@@ -377,7 +377,8 @@ export async function createShortcut(appId, directoryName) {
  * @return {Promise} Promise fulfilled on success.
  */
 export async function expandTreeItem(appId, treeItem) {
-  const expandIcon = treeItem + '> .tree-row[has-children=true] .expand-icon';
+  const expandIcon = treeItem +
+      '> .tree-row:is([has-children=true], [may-have-children]) .expand-icon';
   await remoteCall.waitAndClickElement(appId, expandIcon);
 
   const expandedSubtree = treeItem + '> .tree-children[expanded]';
@@ -395,7 +396,8 @@ export async function expandTreeItem(appId, treeItem) {
  */
 export async function recursiveExpand(appId, breadcrumbsPath) {
   const paths = breadcrumbsPath.split('/').filter(path => path);
-  const hasChildren = ' > .tree-row[has-children=true]';
+  const hasChildren =
+      ' > .tree-row:is([has-children=true], [may-have-children])';
 
   // Expand each directory in the breadcrumb.
   let query = '#directory-tree';

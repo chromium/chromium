@@ -293,7 +293,7 @@ export class DirectoryItem extends FilesTreeItem {
     this.addEventListener('collapse', this.onCollapse_.bind(this), false);
 
     // Default delayExpansion to false. Volumes will set it to true for
-    // provided file systems. SubDirectories will inherit from their
+    // provided and SMB file systems. SubDirectories will inherit from their
     // parent.
     this.delayExpansion = false;
 
@@ -1116,9 +1116,10 @@ class VolumeItem extends DirectoryItem {
     this.volumeInfo_ = modelItem.volumeInfo;
     this.disabled = modelItem.disabled;
 
-    // Provided volumes should delay the expansion of child nodes
-    // for performance reasons.
-    this.delayExpansion = (this.volumeInfo.volumeType === 'provided');
+    // Network file systems should delay the expansion of child nodes for
+    // performance reasons.
+    this.delayExpansion =
+        this.volumeInfo.source === VolumeManagerCommon.Source.NETWORK;
 
     // Set helper attribute for testing.
     if (window.IN_TEST) {
