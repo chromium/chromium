@@ -80,18 +80,9 @@ package size.
     - If it does not, look to remove it. See below.
 
 If you find it *should* be removed from a size-constrained platform, you should
-guard the code with the `IS_FUCHSIA` and `ARCH_CPU_ARM64` macros, as this
-CPU-architecture is the (current) set that requires size-checks. **Please also
-include the following comment and bug
-([crbug.com/1353061](https://crbug.com/1353061)) like so:**
-
-```cpp
-// TODO(crbug.com/1353061): Replace with more appropriate logic.
-#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
-// Feature you want to exclude from fuchsia-arm64
-// ...
-#endif  // BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
-```
+guard the code with a `BUILDFLAG` and disable the associated feature in
+size-constrained builds by explicitly setting the GN arg in
+[`size_optimized_cast_receiver_args.gn`](../../../build/config/fuchsia/size_optimized_cast_receiver_args.gn).
 
 - See if any of the generic [optimization advice] is applicable.
 - See [the section below](#obvious-regressions)
@@ -178,12 +169,13 @@ Then run `gclient sync` to add the fuchsia-sdk to your `third_party` directory.
 Set up a build directory with the following GN Args:
 
 ```
+import("//build/config/fuchsia/size_optimized_cast_receiver_args.gn")
 dcheck_always_on = false
 is_debug = false
 is_official_build = true
 target_cpu = "arm64"
 target_os = "fuchsia"
-use_goma = true
+use_goma = true  # If appropriate.
 ```
 
 ### 2. Build
