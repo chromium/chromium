@@ -356,7 +356,6 @@ struct GL_EXPORT DisplayExtensionsEGL {
   bool b_EGL_ANGLE_iosurface_client_buffer;
   bool b_EGL_ANGLE_keyed_mutex;
   bool b_EGL_ANGLE_power_preference;
-  bool b_EGL_ANGLE_program_cache_control;
   bool b_EGL_ANGLE_query_surface_pointer;
   bool b_EGL_ANGLE_robust_resource_initialization;
   bool b_EGL_ANGLE_stream_producer_d3d_texture;
