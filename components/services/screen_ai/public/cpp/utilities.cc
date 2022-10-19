@@ -5,8 +5,10 @@
 #include "components/services/screen_ai/public/cpp/utilities.h"
 
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "components/component_updater/component_updater_paths.h"
 
 namespace screen_ai {
@@ -16,22 +18,20 @@ const base::FilePath::CharType kScreenAISubDirName[] =
     FILE_PATH_LITERAL("screen_ai");
 
 const base::FilePath::CharType kScreenAIComponentBinaryName[] =
-    FILE_PATH_LITERAL("libchrome_screen_ai.so");
-
-enum {
-  PATH_START = 13000,
-
-  // Note that this value is not kept between sessions or shared between
-  // processes.
-  PATH_SCREEN_AI_LIBRARY_BINARY,
-
-  PATH_END
-};
+#if BUILDFLAG(IS_WIN)
+    FILE_PATH_LITERAL("chrome_screen_ai.dll");
+#else
+    FILE_PATH_LITERAL("libchromescreenai.so");
+#endif
 
 }  // namespace
 
 base::FilePath GetRelativeInstallDir() {
   return base::FilePath(kScreenAISubDirName);
+}
+
+base::FilePath GetComponentBinaryFileName() {
+  return base::FilePath(kScreenAIComponentBinaryName);
 }
 
 base::FilePath GetComponentDir() {
@@ -66,16 +66,6 @@ base::FilePath GetLatestComponentBinaryPath() {
     return base::FilePath();
 
   return component_path;
-}
-
-void StoreComponentBinaryPath(const base::FilePath& path) {
-  base::PathService::Override(PATH_SCREEN_AI_LIBRARY_BINARY, path);
-}
-
-base::FilePath GetStoredComponentBinaryPath() {
-  base::FilePath path;
-  base::PathService::Get(PATH_SCREEN_AI_LIBRARY_BINARY, &path);
-  return path;
 }
 
 }  // namespace screen_ai

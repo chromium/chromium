@@ -18,6 +18,7 @@ include_rules = [
   "+components/services/quarantine/test_support.h",
   "+components/services/quarantine/quarantine.h",
   "+components/services/screen_ai/buildflags",
+  "+components/services/screen_ai/public/cpp",
   "+components/services/storage",
   "+components/services/storage/public",
   "+components/session_manager/core",

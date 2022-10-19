@@ -60,7 +60,8 @@
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if (BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && \
+     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)))
 #include "components/services/screen_ai/sandbox/screen_ai_sandbox_hook_linux.h"  // nogncheck
 #endif
 

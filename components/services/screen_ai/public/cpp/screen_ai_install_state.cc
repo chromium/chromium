@@ -4,6 +4,7 @@
 
 #include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 
@@ -21,7 +22,7 @@ ScreenAIInstallState::~ScreenAIInstallState() = default;
 void ScreenAIInstallState::AddObserver(
     ScreenAIInstallState::Observer* observer) {
   observers_.push_back(observer);
-  if (component_ready_)
+  if (!component_binary_path_.empty())
     observer->ComponentReady();
 }
 
@@ -32,11 +33,16 @@ void ScreenAIInstallState::RemoveObserver(
     observers_.erase(pos);
 }
 
-void ScreenAIInstallState::SetComponentReady() {
-  component_ready_ = true;
+void ScreenAIInstallState::SetComponentReady(
+    const base::FilePath& component_binary_path) {
+  component_binary_path_ = component_binary_path;
 
   for (ScreenAIInstallState::Observer* observer : observers_)
     observer->ComponentReady();
+}
+
+bool ScreenAIInstallState::is_component_ready() {
+  return !component_binary_path_.empty();
 }
 
 }  // namespace screen_ai

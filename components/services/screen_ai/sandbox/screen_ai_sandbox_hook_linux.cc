@@ -34,7 +34,6 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
       VLOG(2) << "Screen AI library loaded pre-sandboxing:" << library_path;
     }
   }
-  screen_ai::StoreComponentBinaryPath(library_path);
 
   auto* instance = sandbox::policy::SandboxLinux::GetInstance();
 

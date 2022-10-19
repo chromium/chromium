@@ -4262,6 +4262,9 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
 #endif
     case sandbox::mojom::Sandbox::kPrintCompositor:
     case sandbox::mojom::Sandbox::kAudio:
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    case sandbox::mojom::Sandbox::kScreenAI:
+#endif
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kPdfConversion:
     case sandbox::mojom::Sandbox::kService:
@@ -4347,6 +4350,9 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
     case sandbox::mojom::Sandbox::kPrintCompositor:
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    case sandbox::mojom::Sandbox::kScreenAI:
+#endif
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kPdfConversion:
@@ -6676,8 +6682,8 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     CHECK(client->SetParameter(sandbox::policy::kParamSodaLanguagePackPath,
                                soda_language_pack_path.value()));
     return true;
-  } else if (sandbox_type == sandbox::mojom::Sandbox::kScreenAI) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  } else if (sandbox_type == sandbox::mojom::Sandbox::kScreenAI) {
     // ScreenAI service needs read access to ScreenAI component path, so that it
     // would be able to find the latest downloaded version, and load its binary
     // and all enclosed model files.

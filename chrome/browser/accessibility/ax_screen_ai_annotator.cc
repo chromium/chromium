@@ -55,7 +55,7 @@ void AXScreenAIAnnotator::AnnotateScreenshot(Browser* browser) {
 
 // TODO(https://crbug.com/1278249): Add UMA for screenshot timing to ensure
 // the sync method is not blocking the browser process.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   gfx::Image snapshot;
   if (!ui::GrabViewSnapshot(native_view, gfx::Rect(web_contents->GetSize()),
                             &snapshot)) {

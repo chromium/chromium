@@ -4,6 +4,7 @@
 
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
 
+#include "base/files/file_path.h"
 #include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 #include "content/public/browser/service_process_host.h"
 
@@ -46,11 +47,20 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
     return;
   }
 
+  base::FilePath library_path =
+      ScreenAIInstallState::GetInstance()->get_component_binary_path();
+
+  // TODO(https://crbug.com/1278249): Make sure the library is loaded from
+  // |library_path| and component updater doesn't download a new version
+  // during sandbox creation.
   content::ServiceProcessHost::Launch(
       screen_ai_service_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           .WithDisplayName("Screen AI Service")
           .Pass());
+
+  if (screen_ai_service_.is_bound())
+    screen_ai_service_->LoadLibrary(library_path);
 }
 
 }  // namespace screen_ai

@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -2495,8 +2496,10 @@ class PdfOcrContextMenuBrowserTest : public PdfPluginContextMenuBrowserTest,
       scoped_feature_list_.InitAndDisableFeature(features::kPdfOcr);
     accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(
         IsScreenReaderEnabled());
-    screen_ai::ScreenAIInstallState::GetInstance()->SetComponentReadyForTesting(
-        IsComponentReady());
+    screen_ai::ScreenAIInstallState::GetInstance()
+        ->set_component_ready_for_testing(
+            IsComponentReady() ? base::FilePath(FILE_PATH_LITERAL("tmp"))
+                               : base::FilePath());
   }
 
   PdfOcrContextMenuBrowserTest(const PdfOcrContextMenuBrowserTest&) = delete;

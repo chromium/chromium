@@ -4,6 +4,7 @@
 
 module screen_ai.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
@@ -53,6 +54,11 @@ interface Screen2xMainContentExtractor {
 //      returns the main content of the tree.
 [ServiceSandbox=sandbox.mojom.Sandbox.kScreenAI]
 interface ScreenAIService {
+  // Triggers the service to load and initialize the Screen AI library at
+  // |library_path|. This should be called from the browser process and be
+  // eventually replaced by passing file handles.
+  LoadLibrary(mojo_base.mojom.FilePath library_path);
+
   // Binds a new annotator to the service.
   BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);
 

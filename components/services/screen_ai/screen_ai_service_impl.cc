@@ -4,10 +4,16 @@
 
 #include "components/services/screen_ai/screen_ai_service_impl.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
+#include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/services/screen_ai/proto/proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "components/services/screen_ai/screen_ai_ax_tree_serializer.h"
@@ -19,21 +25,6 @@
 namespace screen_ai {
 
 namespace {
-
-base::FilePath GetLibraryFilePath() {
-  base::FilePath library_path = GetStoredComponentBinaryPath();
-
-  if (!library_path.empty())
-    return library_path;
-
-  // Binary file path is set while setting the sandbox on Linux, or the first
-  // time this function is called. So in all other cases we need to look for
-  // the library binary in its component folder.
-  library_path = GetLatestComponentBinaryPath();
-  StoreComponentBinaryPath(library_path);
-
-  return library_path;
-}
 
 std::string MakeString(const char* content, uint32_t length) {
   DCHECK(content);
@@ -49,18 +40,24 @@ std::string MakeString(const char* content, uint32_t length) {
 
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIService> receiver)
-    : library_(GetLibraryFilePath()),
-      init_function_(
-          reinterpret_cast<InitFunction>(library_.GetFunctionPointer("Init"))),
-      annotate_function_(reinterpret_cast<AnnotateFunction>(
-          library_.GetFunctionPointer("Annotate"))),
-      extract_main_content_function_(
-          reinterpret_cast<ExtractMainContentFunction>(
-              library_.GetFunctionPointer("ExtractMainContent"))),
-      receiver_(this, std::move(receiver)) {
-  DCHECK(init_function_ && annotate_function_ &&
-         extract_main_content_function_);
-  if (!CallLibraryInitFunction()) {
+    : receiver_(this, std::move(receiver)) {}
+
+void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
+  library_ = base::ScopedNativeLibrary(library_path);
+  init_function_ =
+      reinterpret_cast<InitFunction>(library_.GetFunctionPointer("Init"));
+  extract_main_content_function_ = reinterpret_cast<ExtractMainContentFunction>(
+      library_.GetFunctionPointer("ExtractMainContent"));
+  DCHECK(init_function_ && extract_main_content_function_);
+// TODO(https://crbug.com/1278249): Enable when ScreenAI is supported on
+// Windows.
+#if !BUILDFLAG(IS_WIN)
+  annotate_function_ = reinterpret_cast<AnnotateFunction>(
+      library_.GetFunctionPointer("Annotate"));
+  DCHECK(annotate_function_);
+#endif
+
+  if (!CallLibraryInitFunction(library_path.DirName())) {
     // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
     VLOG(0) << "Screen AI library initialization failed.";
     base::Process::TerminateCurrentProcessImmediately(-1);
@@ -68,16 +65,20 @@ ScreenAIService::ScreenAIService(
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAIService::CallLibraryInitFunction() {
-  return init_function_(
-      /*init_visual_annotations = */ features::
-              IsScreenAIVisualAnnotationsEnabled() ||
-          features::IsPdfOcrEnabled(),
-      /*init_main_content_extraction = */
-      features::IsReadAnythingWithScreen2xEnabled(),
-      /*debug_mode = */ features::IsScreenAIDebugModeEnabled(),
-      /*models_path = */
-      GetLibraryFilePath().DirName().MaybeAsASCII().c_str());
+bool ScreenAIService::CallLibraryInitFunction(
+    const base::FilePath& models_path) {
+  bool init_main_content_extraction =
+      features::IsReadAnythingWithScreen2xEnabled();
+  bool init_visual_annotations;
+#if BUILDFLAG(IS_WIN)
+  init_visual_annotations = false;
+#else
+  init_visual_annotations = features::IsScreenAIVisualAnnotationsEnabled() ||
+                            features::IsPdfOcrEnabled();
+#endif
+  return init_function_(init_visual_annotations, init_main_content_extraction,
+                        features::IsScreenAIDebugModeEnabled(),
+                        models_path.MaybeAsASCII().c_str());
 }
 
 ScreenAIService::~ScreenAIService() = default;
@@ -148,7 +149,13 @@ bool ScreenAIService::CallLibraryAnnotateFunction(
     const SkBitmap& image,
     char*& annotation_proto,
     uint32_t& annotation_proto_length) {
+#if BUILDFLAG(IS_WIN)
+  NOTIMPLEMENTED();
+  return false;
+#else
+  DCHECK(annotate_function_);
   return annotate_function_(image, annotation_proto, annotation_proto_length);
+#endif
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
@@ -182,6 +189,7 @@ bool ScreenAIService::CallLibraryExtractMainContentFunction(
     const uint32_t serialized_snapshot_length,
     int32_t*& node_ids,
     uint32_t& nodes_count) {
+  DCHECK(extract_main_content_function_);
   return extract_main_content_function_(
       serialized_snapshot, serialized_snapshot_length, node_ids, nodes_count);
 }
