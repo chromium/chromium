@@ -26,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
 #include "components/sync/engine/loopback_server/persistent_permanent_entity.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
@@ -560,6 +561,26 @@ string LoopbackServer::CommitEntity(
     } else {
       entity = PersistentBookmarkEntity::CreateNew(client_entity, parent_id,
                                                    client_guid);
+    }
+  } else if (type == syncer::PASSWORDS) {
+    entity = PersistentUniqueClientEntity::CreateFromEntity(client_entity);
+    // If the commit is coming from a legacy client that doesn't support
+    // password notes, carry over an existing note backup. The same logic is
+    // implemented on the production sync server.
+    if (!client_entity.specifics().password().has_encrypted_notes_backup()) {
+      EntityMap::const_iterator iter =
+          entities_.find(client_entity.id_string());
+      if (iter != entities_.end()) {
+        const LoopbackServerEntity* server_entity = iter->second.get();
+        if (server_entity->GetSpecifics()
+                .password()
+                .has_encrypted_notes_backup()) {
+          sync_pb::EntitySpecifics specifics = entity->GetSpecifics();
+          *specifics.mutable_password()->mutable_encrypted_notes_backup() =
+              server_entity->GetSpecifics().password().encrypted_notes_backup();
+          entity->SetSpecifics(specifics);
+        }
+      }
     }
   } else {
     entity = PersistentUniqueClientEntity::CreateFromEntity(client_entity);

@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
@@ -22,6 +23,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -43,6 +45,7 @@ using passwords_helper::ProfileContainsSamePasswordFormsAsVerifier;
 using password_manager::PasswordForm;
 
 using testing::Contains;
+using testing::Field;
 
 const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
     syncer::SyncFirstSetupCompleteSource::BASIC_FLOW;
@@ -135,6 +138,28 @@ class SingleClientPasswordsSyncTestWithCachingSpecificsEnabledAfterRestart
       override = default;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This is a test the server behaviour of preserving passwords note across
+// commits from clients to support and don't support password notes.
+class SingleClientPasswordsSyncTestWithNotesDisableAfterEnable
+    : public SyncTest {
+ public:
+  SingleClientPasswordsSyncTestWithNotesDisableAfterEnable()
+      : SyncTest(SINGLE_CLIENT) {
+    // Enabled the features when there are even numbers of PRE's to achieve an
+    // alternating behaviour.
+    feature_list_.InitWithFeatureState(syncer::kPasswordNotesWithBackup,
+                                       GetTestPreCount() % 2 == 0);
+    password_form_ = CreateTestPasswordForm(0);
+  }
+  ~SingleClientPasswordsSyncTestWithNotesDisableAfterEnable() override =
+      default;
+  const PasswordForm& password_form() { return password_form_; }
+
+ private:
+  PasswordForm password_form_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -821,6 +846,169 @@ IN_PROC_BROWSER_TEST_F(
   // expected to be recorded twice.
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
                                       kNone, /*expected_bucket_count=*/2);
+}
+
+// The follow 3 tests are testing the interaction between clients that support
+// and don't support notes. The test fixture enables the features for even
+// number of PREs.
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotesDisableAfterEnable,
+                       PRE_PRE_ServerPreservesNotesBackup) {
+  // Enabled by the test fixture.
+  ASSERT_TRUE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Add password with a note and commit it to the server.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  PasswordForm form = password_form();
+  form.notes.emplace_back(u"example note", base::Time::Now());
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
+  EXPECT_EQ(1, GetPasswordCount(0));
+  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotesDisableAfterEnable,
+                       PRE_ServerPreservesNotesBackup) {
+  // Disabled by the test fixture.
+  ASSERT_FALSE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+  // The server should still contains the entity with the note.
+  ASSERT_EQ(1U,
+            fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS).size());
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  password_manager::PasswordStoreInterface* store =
+      GetProfilePasswordStoreInterface(0);
+
+  // Now stop sync and delete the local copy to simulate downloading to a
+  // legacy client that doesn't support notes.
+  GetClient(0)->StopSyncServiceAndClearData();
+  passwords_helper::RemoveLogins(store);
+
+  // Now setup client which should force downloading the password with the note
+  // to the legacy client.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  // Make sure the password showed up in the profile store.
+  ASSERT_EQ(1, GetPasswordCount(0));
+  // Update the password to simulate a commit from a legacy client that doesn't
+  // support password notes.
+  PasswordForm form = password_form();
+  form.password_value = u"new_password";
+  store->UpdateLogin(form);
+  // Add another arbitrary credentials to wait until 2 passwords have reached
+  // the server.
+  store->AddLogin(CreateTestPasswordForm(1));
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotesDisableAfterEnable,
+                       ServerPreservesNotesBackup) {
+  // Enabled by the test fixture.
+  ASSERT_TRUE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+  // The server now should have two entities.
+  ASSERT_EQ(2U,
+            fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS).size());
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  password_manager::PasswordStoreInterface* store =
+      GetProfilePasswordStoreInterface(0);
+
+  // Now reset sync and delete the local copy to simulate downloading to a
+  // modern client that supports notes.
+  GetClient(0)->StopSyncServiceAndClearData();
+  passwords_helper::RemoveLogins(store);
+
+  // Now setup client which should force downloading the password with the note
+  // to the legacy client.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  // Make sure the both password showed up in the profile store.
+  ASSERT_THAT(passwords_helper::GetAllLogins(store), testing::SizeIs(2));
+  // Test that the note appears in the credentials added in the first test. This
+  // is possible because the server carries over the notes across commits from
+  // modern and legacy clients.
+  EXPECT_THAT(
+      passwords_helper::GetAllLogins(store),
+      Contains(Pointee(AllOf(
+          Field(&PasswordForm::signon_realm, password_form().signon_realm),
+          Field(&PasswordForm::username_value, password_form().username_value),
+          Field(&PasswordForm::password_value, u"new_password"),
+          Field(&PasswordForm::notes,
+                Contains(Field(&password_manager::PasswordNote::value,
+                               u"example note")))))));
+}
+
+class SingleClientPasswordsSyncTestConsumesNotesBackup : public SyncTest {
+ public:
+  SingleClientPasswordsSyncTestConsumesNotesBackup() : SyncTest(SINGLE_CLIENT) {
+    feature_list_.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+  }
+  ~SingleClientPasswordsSyncTestConsumesNotesBackup() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestConsumesNotesBackup,
+                       ClientReadsNotesFromTheBackup) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+  base::HistogramTester histogram_tester;
+
+  const std::string& kEncryptionPassphrase =
+      base::Base64Encode(GetFakeServer()->GetKeystoreKeys().back());
+
+  // Add an entity on the server that does *not* have the notes field set.
+  sync_pb::PasswordSpecificsData password_data;
+  password_data.set_origin("http://fake-site.com/");
+  password_data.set_signon_realm("http://fake-site.com/");
+  password_data.set_username_value("username");
+  password_data.set_password_value("password");
+  passwords_helper::InjectKeystoreEncryptedServerPassword(password_data,
+                                                          GetFakeServer());
+
+  // Set the notes backup field to simulate a notes backup preserved by the
+  // server upon a commit from a legacy client that didn't set the notes field
+  // in the password specifics data.
+  std::vector<sync_pb::SyncEntity> server_passwords =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::PASSWORDS);
+  ASSERT_EQ(1ul, server_passwords.size());
+  std::string entity_id = server_passwords[0].id_string();
+  sync_pb::EntitySpecifics specifics = server_passwords[0].specifics();
+  sync_pb::PasswordSpecifics* password_specifics = specifics.mutable_password();
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          kEncryptionPassphrase,
+          syncer::KeyDerivationParams::CreateForPbkdf2());
+  sync_pb::PasswordSpecificsData_Notes notes;
+  sync_pb::PasswordSpecificsData_Notes_Note* note = notes.add_note();
+  note->set_value("some important note");
+  cryptographer->Encrypt(notes,
+                         password_specifics->mutable_encrypted_notes_backup());
+  GetFakeServer()->ModifyEntitySpecifics(entity_id, specifics);
+
+  // The server now should have one password entity.
+  ASSERT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS),
+              testing::SizeIs(1));
+
+  // Enable sync to download the passwords on the server.
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  PasswordSyncActiveChecker(GetSyncService(0)).Wait();
+
+  // The local store should contain the note since the client should read the
+  // backup when the note in the specifics data isn't set.
+  EXPECT_THAT(
+      passwords_helper::GetAllLogins(GetProfilePasswordStoreInterface(0)),
+      Contains(Pointee(
+          AllOf(Field(&PasswordForm::signon_realm, "http://fake-site.com/"),
+                Field(&PasswordForm::username_value, u"username"),
+                Field(&PasswordForm::password_value, u"password"),
+                Field(&PasswordForm::notes,
+                      Contains(Field(&password_manager::PasswordNote::value,
+                                     u"some important note")))))));
+  histogram_tester.ExpectUniqueSample("Sync.PasswordNotesStateInUpdate",
+                                      /*kSetOnlyInBackup*/ 2, 1);
 }
 
 }  // namespace
