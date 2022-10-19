@@ -605,11 +605,13 @@ crbug.com/968791 [ Mac ] virtual/scalefactor200/css3/filters/effect-blur-hw.html
 crbug.com/968791 virtual/scalefactor200/css3/filters/filterRegions.html [ Failure ]
 
 # These appear to be actually incorrect at device_scale_factor 2.0:
-crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-001.html [ Failure ]
-crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-002.html [ Failure ]
-crbug.com/968791 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-003.html [ Failure ]
-crbug.com/968791 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-004.html [ Failure ]
-crbug.com/968791 [ Debug Mac11 ] virtual/scalefactor200/external/wpt/css/filter-effects/filters-test-brightness-003.html [ Failure ]
+crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-001.html [ Failure ]
+crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-002.html [ Failure ]
+crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-003.html [ Failure ]
+crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-004.html [ Failure ]
+crbug.com/1051044 [ Debug Mac11 ] virtual/scalefactor200/external/wpt/css/filter-effects/filters-test-brightness-003.html [ Failure ]
+crbug.com/1362405 css3/filters/effect-reference-hidpi.html [ Failure Pass ]
+crbug.com/1362405 css3/filters/effect-reference-hidpi-hw.html [ Failure Pass ]
 
 crbug.com/916825 external/wpt/css/filter-effects/filter-subregion-01.html [ Failure ]
 
@@ -7212,7 +7214,6 @@ crbug.com/1159586 virtual/post-message-different-partition-same-origin-blocked/e
 
 # Sheriff 2022-10-03
 crbug.com/1368767 wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
-crbug.com/1362405 css3/filters/effect-reference-hidpi.html [ Skip ]
 
 # These tests are optional and not reliably supported in Chrome.
 crbug.com/1370307 external/wpt/encoding-detection/ar-ISO-8859-6-late.tentative.html [ Failure Pass ]
