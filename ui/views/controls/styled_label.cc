@@ -19,6 +19,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/controls/label.h"
@@ -339,10 +340,14 @@ views::Link* StyledLabel::GetFirstLinkForTesting() {
 
 int StyledLabel::StartX(int excess_space) const {
   int x = GetInsets().left();
-  if (horizontal_alignment_ == gfx::ALIGN_LEFT)
+  // If the element should be aligned to the leading side (left in LTR, or right
+  // in RTL), position it at the leading side Insets (left).
+  if (horizontal_alignment_ ==
+      (base::i18n::IsRTL() ? gfx::ALIGN_RIGHT : gfx::ALIGN_LEFT)) {
     return x;
-  return x + ((horizontal_alignment_ == gfx::ALIGN_CENTER) ? (excess_space / 2)
-                                                           : excess_space);
+  }
+  return x + (horizontal_alignment_ == gfx::ALIGN_CENTER ? (excess_space / 2)
+                                                         : excess_space);
 }
 
 void StyledLabel::CalculateLayout(int width) const {

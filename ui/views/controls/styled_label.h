@@ -264,7 +264,8 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   // The horizontal alignment. This value is flipped for RTL. The default
   // behavior is to align left in LTR UI and right in RTL UI.
-  gfx::HorizontalAlignment horizontal_alignment_ = gfx::ALIGN_LEFT;
+  gfx::HorizontalAlignment horizontal_alignment_ =
+      base::i18n::IsRTL() ? gfx::ALIGN_RIGHT : gfx::ALIGN_LEFT;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, StyledLabel, View)

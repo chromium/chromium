@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/link_fragment.h"
@@ -649,10 +650,16 @@ TEST_F(StyledLabelTest, AlignmentInLTR) {
   // Test the default alignment puts the text on the leading side (left).
   EXPECT_EQ(0, children.front()->bounds().x());
 
+  // Setting |ALIGN_RIGHT| indicates the text should be aligned to the trailing
+  // side, and hence its trailing side coordinates (i.e. right) should align
+  // with the trailing side coordinate of the label (right).
   styled()->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   test::RunScheduledLayout(styled());
   EXPECT_EQ(1000, children.front()->bounds().right());
 
+  // Setting |ALIGN_LEFT| indicates the text should be aligned to the leading
+  // side, and hence its leading side coordinates (i.e. x) should align with the
+  // leading side coordinate of the label (x).
   styled()->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   test::RunScheduledLayout(styled());
   EXPECT_EQ(0, children.front()->bounds().x());
@@ -683,13 +690,17 @@ TEST_F(StyledLabelTest, AlignmentInRTL) {
   // Note that x-coordinates in RTL place the origin (0) on the right.
   EXPECT_EQ(0, children.front()->bounds().x());
 
-  // Setting |ALIGN_LEFT| should be flipped to |ALIGN_RIGHT|.
-  styled()->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  // Setting |ALIGN_RIGHT| indicates the text should be aligned to the trailing
+  // side, and hence its trailing side coordinates (i.e. right) should align
+  // with the trailing side coordinate of the label (right).
+  styled()->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   test::RunScheduledLayout(styled());
   EXPECT_EQ(1000, children.front()->bounds().right());
 
-  // Setting |ALIGN_RIGHT| should be flipped to |ALIGN_LEFT|.
-  styled()->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  // Setting |ALIGN_LEFT| indicates the text should be aligned to the leading
+  // side, and hence its leading side coordinates (i.e. x) should align with the
+  // leading side coordinate of the label (x).
+  styled()->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   test::RunScheduledLayout(styled());
   EXPECT_EQ(0, children.front()->bounds().x());
 
