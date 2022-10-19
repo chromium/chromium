@@ -131,21 +131,20 @@ class ToValueVisitor {
  public:
   explicit ToValueVisitor(const ProtoValueConversionOptions& options =
                               ProtoValueConversionOptions(),
-                          base::DictionaryValue* value = nullptr)
+                          base::Value::Dict* value = nullptr)
       : options_(options), value_(value) {}
 
   template <class P>
   void VisitBytes(const P& parent_proto,
                   const char* field_name,
                   const std::string& field) {
-    value_->GetDict().Set(
-        field_name,
-        base::Base64Encode(base::as_bytes(base::make_span(field))));
+    value_->Set(field_name,
+                base::Base64Encode(base::as_bytes(base::make_span(field))));
   }
 
   template <class P, class E>
   void VisitEnum(const P& parent_proto, const char* field_name, E field) {
-    value_->GetDict().Set(field_name, ProtoEnumToString(field));
+    value_->Set(field_name, ProtoEnumToString(field));
   }
 
   template <class P, class F>
@@ -157,7 +156,7 @@ class ToValueVisitor {
       for (const auto& field : repeated_field) {
         list.Append(base::Value::FromUniquePtrValue(ToValue(field)));
       }
-      value_->GetDict().Set(field_name, std::move(list));
+      value_->Set(field_name, std::move(list));
     }
   }
 
@@ -170,7 +169,7 @@ class ToValueVisitor {
       for (const auto& field : repeated_field) {
         list.Append(base::Value::FromUniquePtrValue(ToValue(field)));
       }
-      value_->GetDict().Set(field_name, std::move(list));
+      value_->Set(field_name, std::move(list));
     }
   }
 
@@ -256,10 +255,11 @@ class ToValueVisitor {
  private:
   template <class P>
   std::unique_ptr<base::DictionaryValue> ToValueImpl(const P& proto) const {
-    auto value = std::make_unique<base::DictionaryValue>();
-    ToValueVisitor visitor(options_, value.get());
+    base::Value::Dict dict;
+    ToValueVisitor visitor(options_, &dict);
     VisitProtoFields(visitor, proto);
-    return value;
+    return base::DictionaryValue::From(
+        std::make_unique<base::Value>(std::move(dict)));
   }
 
   std::unique_ptr<base::Value> ToValue(const std::string& value) const {
@@ -292,12 +292,11 @@ class ToValueVisitor {
   // Needs to be here to see all ToValue() overloads above.
   template <class P, class F>
   void VisitImpl(P&, const char* field_name, const F& field) {
-    value_->GetDict().Set(field_name,
-                          base::Value::FromUniquePtrValue(ToValue(field)));
+    value_->Set(field_name, base::Value::FromUniquePtrValue(ToValue(field)));
   }
 
   const ProtoValueConversionOptions options_;
-  raw_ptr<base::DictionaryValue> value_;
+  raw_ptr<base::Value::Dict> value_;
 };
 
 }  // namespace
