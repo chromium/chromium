@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
@@ -99,6 +100,31 @@ enum PinState {
 class GlobalMediaControlsTitleView : public views::View {
  public:
   GlobalMediaControlsTitleView() {
+    auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal, kTitleViewInsets));
+    box_layout->set_minimum_cross_axis_size(kTitleViewHeight);
+    box_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+
+    title_label_ = AddChildView(std::make_unique<views::Label>());
+    title_label_->SetText(
+        l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE));
+    title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    title_label_->SetAutoColorReadabilityEnabled(false);
+    title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
+        kTitleFontSizeIncrease, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+
+    // Media tray should always be pinned to shelf when we are opening the
+    // dialog.
+    DCHECK(MediaTray::IsPinnedToShelf());
+    pin_button_ = AddChildView(std::make_unique<MediaTray::PinButton>());
+
+    box_layout->SetFlexForView(title_label_, 1);
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
     SetBorder(views::CreatePaddedBorder(
         views::CreateSolidSidedBorder(
             gfx::Insets::TLBR(0, 0, kMenuSeparatorWidth, 0),
@@ -107,35 +133,15 @@ class GlobalMediaControlsTitleView : public views::View {
         gfx::Insets::TLBR(kMenuSeparatorVerticalPadding, 0,
                           kMenuSeparatorVerticalPadding - kMenuSeparatorWidth,
                           0)));
-
-    auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, kTitleViewInsets));
-    box_layout->set_minimum_cross_axis_size(kTitleViewHeight);
-    box_layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-
-    auto* title_label = AddChildView(std::make_unique<views::Label>());
-    title_label->SetText(
-        l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE));
-    title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+    title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
-    title_label->SetAutoColorReadabilityEnabled(false);
-    title_label->SetFontList(views::Label::GetDefaultFontList().Derive(
-        kTitleFontSizeIncrease, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-
-    // Media tray should always be pinned to shelf when we are opening the
-    // dialog.
-    DCHECK(MediaTray::IsPinnedToShelf());
-    pin_button_ = AddChildView(std::make_unique<MediaTray::PinButton>());
-
-    box_layout->SetFlexForView(title_label, 1);
   }
 
   views::Button* pin_button() { return pin_button_; }
 
  private:
-  MediaTray::PinButton* pin_button_ = nullptr;
+  views::ImageButton* pin_button_ = nullptr;
+  views::Label* title_label_ = nullptr;
 };
 
 }  // namespace
@@ -250,12 +256,8 @@ void MediaTray::HandleLocaleChange() {
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
 }
 
-bool MediaTray::PerformAction(const ui::Event& event) {
-  if (bubble_)
-    CloseBubble();
-  else
-    ShowBubble();
-  return true;
+views::Widget* MediaTray::GetBubbleWidget() const {
+  return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
 void MediaTray::ShowBubble() {

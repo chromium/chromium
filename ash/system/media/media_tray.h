@@ -16,7 +16,10 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace views {
+class Button;
 class ImageView;
+class View;
+class Widget;
 }  // namespace views
 
 namespace ash {
@@ -28,20 +31,22 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
                              public TrayBackgroundView,
                              public SessionObserver {
  public:
-  // Register prefs::kGlobalMediaControlsPinned.
+  // Register `prefs::kGlobalMediaControlsPinned`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns if global media controls is pinned to shelf.
   static bool IsPinnedToShelf();
 
-  // Set kGlobalMediaControlsPinned.
+  // Set `kGlobalMediaControlsPinned`.
   static void SetPinnedToShelf(bool pinned);
 
-  // Pin button showed in media tray bubble's title view and media controls
-  // detailed view's title view.
+  // Pin button shown in `GlobalMediaControlsTitleView` and
+  // `UnifiedMediaControlsDetailedView`.
   class PinButton : public IconButton {
    public:
     PinButton();
+    PinButton(const PinButton&) = delete;
+    PinButton& operator=(const PinButton&) = delete;
     ~PinButton() override = default;
 
    private:
@@ -49,6 +54,8 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   };
 
   explicit MediaTray(Shelf* shelf);
+  MediaTray(const MediaTray&) = delete;
+  MediaTray& operator=(const MediaTray&) = delete;
   ~MediaTray() override;
 
   // MediaNotificationProviderObserver implementations.
@@ -59,7 +66,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   std::u16string GetAccessibleNameForTray() override;
   void UpdateAfterLoginStatusChange() override;
   void HandleLocaleChange() override;
-  bool PerformAction(const ui::Event& event) override;
+  views::Widget* GetBubbleWidget() const override;
   void ShowBubble() override;
   void CloseBubble() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
