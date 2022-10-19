@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1220509181886849806">Queres usar o contrasinal gardado?</translation>
+<translation id="1580351948163139119">Contrasinal de <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">A lista de credenciais que se completarán ao tocar está aberta ata a metade da pantalla.</translation>
 <translation id="207576718733492531">A lista de credenciais que se completarán ao tocar está pechada.</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">A lista de credenciais que se completarán ao tocar está aberta a pantalla completa.</translation>
 <translation id="5591247451101092906">Queres usar a clave de acceso ou o contrasinal gardado?</translation>
 <translation id="5624120631404540903">Xestionar contrasinais</translation>
+<translation id="7736236483645733578">Clave de acceso de <ph name="USERNAME" />; usar bloqueo de pantalla.</translation>
 <translation id="804577341878669140">Continuar coa conta</translation>
 </translationbundle>

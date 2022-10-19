@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1220509181886849806">Vai izmantot saglabāto paroli?</translation>
+<translation id="1580351948163139119">Parole lietotājvārdam <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Pieskaroties aizpildāmo akreditācijas datu saraksts ir atvērts pusekrāna augstumā.</translation>
 <translation id="207576718733492531">Pieskaroties aizpildāmo akreditācijas datu saraksts ir aizvērts.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Pieskaroties aizpildāmo akreditācijas datu saraksts ir atvērts pilna ekrāna augstumā.</translation>
 <translation id="5591247451101092906">Vai izmantot saglabāto paroli vai piekļuves atslēgu?</translation>
 <translation id="5624120631404540903">Pārvaldīt paroles</translation>
+<translation id="7736236483645733578">Lietotāja <ph name="USERNAME" /> piekļuves atslēga. Izmantojiet ekrāna bloķēšanu.</translation>
 <translation id="804577341878669140">Lai turpinātu, apstipriniet kontu</translation>
 </translationbundle>

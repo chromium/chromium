@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Σύρετε τον σύνδεσμο στη γραμμή διευθύνσεων της καρτέλας</translation>
 <translation id="1251638888133819822">Ενεργοποιήστε ή απενεργοποιήστε τον μεγεθυντικό φακό πλήρους οθόνης</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Εκτύπωση της τρέχουσας σελίδας</translation>
-<translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> ή <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Μετάβαση στο τέλος της γραμμής</translation>
 <translation id="1499072997694708844">Κλείστε τυχόν παράθυρα εύρεσης ή σταματήστε τη φόρτωση της τρέχουσα σελίδας</translation>
-<translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
 <translation id="1516966594427080024">Άνοιγμα νέου παραθύρου στην κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="152892567002884378">Αύξηση έντασης ήχου</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> και έπειτα <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Μετακίνηση στην αρχή της προηγούμενης λέξης</translation>
 <translation id="1679841710523778799">Αύξηση φωτεινότητας</translation>
 <translation id="168356808214100546">Πατώντας παρατεταμένα το <ph name="ALT" />, πατήστε το <ph name="TAB" /> μέχρι να φτάσετε στο παράθυρο που θέλετε να ανοίξετε και έπειτα αφήστε τα πλήκτρα.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Προσθέστε το www. και το .com στο κείμενο που έχετε πληκτρολογήσει στη γραμμή διευθύνσεων και έπειτα ανοίξτε τη σελίδα</translation>
 <translation id="1768987374400973299">Λήψη στιγμιότυπου οθόνης/εγγραφή</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Ενεργοποίηση ή απενεργοποίηση του ChromeVox (εκφωνημένα σχόλια)</translation>
 <translation id="2480851840841871861">Άνοιγμα Βοηθού Google</translation>
 <translation id="2488661730534396940">Ενεργοποίηση επιφάνειας εργασίας στα αριστερά</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Άνοιγμα εφαρμογής Διαγνωστικά στοιχεία</translation>
 <translation id="2530339807289914946">Κύλιση στην ιστοσελίδα προς τα κάτω</translation>
 <translation id="2530896289327917474">Ενεργοποίηση ή απενεργοποίηση της περιήγησης με σύμβολα προσθήκης.</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Συντομεύσεις</translation>
 <translation id="3084301071537457911">Επισήμανση του επόμενου στοιχείου στο ράφι σας</translation>
 <translation id="309173601632226815">Επισήμανση του κουμπιού εκκίνησης στο ράφι σας</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Εστίαση γραμμής διευθύνσεων</translation>
 <translation id="3256109297135787951">Κατάργηση της επισήμανσης από κάποιο στοιχείο στο ράφι σας</translation>
 <translation id="3288816184963444640">Κλείσιμο τρέχοντος παραθύρου</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Μετακίνηση στο τέλος της επόμενης λέξης</translation>
 <translation id="4866066940972151697">Ενεργοποίηση επιφάνειας εργασίας στα δεξιά</translation>
 <translation id="4916163929714267752">Άνοιγμα του συνδέσμου σε νέο παράθυρο</translation>
-<translation id="492453977506755176">Πλήκτρο λειτουργίας λήψης</translation>
 <translation id="5030659775136592441">Εμφάνιση διαχείρισης σελιδοδεικτών</translation>
 <translation id="5034421018520995080">Μετάβαση στο επάνω μέρος της σελίδας</translation>
-<translation id="5042305953558921026">Πλήκτρο λειτουργίας επισκόπησης</translation>
 <translation id="5104462712192763270">Αποθήκευση της τρέχουσας σελίδας</translation>
 <translation id="5121628974188116412">Μετάβαση στο κάτω μέρος της σελίδας</translation>
 <translation id="5222676887888702881">Έξοδος</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Λήψη στιγμιότυπου ολόκληρης της οθόνης</translation>
 <translation id="6022924867608035986">Διαγραφή κειμένου πλαισίου αναζήτησης</translation>
 <translation id="6052614013050385269">Δεξί κλικ σε έναν σύνδεσμο</translation>
-<translation id="6129953537138746214">Κενό</translation>
 <translation id="6143669479988153888">Μεγέθυνση της σελίδας</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="6228457605945141550">Μείωση φωτεινότητας</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Επιλογή προηγούμενης λέξης ή γράμματος</translation>
 <translation id="8727232706774971183">Εμφάνιση όλων των ειδοποιήσεών σας</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 έως 8</translation>
-<translation id="8855885154700222542">Πλήκτρο πλήρους οθόνης</translation>
 <translation id="8881584919399569791">Μετακινήστε το ενεργό παράθυρο στο γραφείο στα αριστερά</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8924883688469390268">Εναλλαγή στον προηγούμενο χρήστη</translation>

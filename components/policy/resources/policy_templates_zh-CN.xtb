@@ -5340,7 +5340,6 @@
           如果此政策已停用，用户将无法添加 Kerberos 帐号。此时，只能通过“配置 Kerberos 帐号”政策添加 Kerberos 帐号。这一方式可以有效地锁定帐号。</translation>
 <translation id="6491139795995924304">允许在设备上使用蓝牙功能</translation>
 <translation id="6491305972928809525">不在自助服务终端模式下显示悬浮式无障碍功能菜单</translation>
-<translation id="6491610602835998107">禁止为帮助改进安全浏览功能而报告系统信息和网页内容</translation>
 <translation id="6491872498385040936">此政策已被弃用。请考虑使用替换此政策的 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />；借助该政策，您可以进行更加精确的微调。
 
       强制启用 YouTube“适中”受限模式，并禁止用户更改此设置。
@@ -6826,6 +6825,10 @@
 <translation id="7962093600142350905">此政策用于控制是否在“打印预览”对话框中向用户显示任何可用的 Privet 打印机。
       如果此政策已启用，系统将会显示可用的 Privet 打印机。
       如果此政策已停用或未设置，系统将不会在“打印预览”对话框中显示 Privet 打印机，因为该打印方法已被弃用。</translation>
+<translation id="7967976640306183631">启用此政策会禁止使用键盘快捷键或扩展程序 API 截屏。停用或不设置此政策则会允许截屏。
+
+      请注意，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，此政策不会阻止用户通过操作系统或第三方应用截屏。
+      </translation>
 <translation id="7970844378072291834">强制启用纯 HTTPS 模式（尚不支持）</translation>
 <translation id="7972642710812569707">强制重新启用第三方情境下的 WebSQL。</translation>
 <translation id="7973609468423251675">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。

@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />ను <ph name="FOLDER_NAME" /> ఫోల్డర్‌కు తరలించండి.</translation>
 <translation id="1293264513303784526">USB-C పరికరం (ఎడమ పోర్ట్)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">లాక్-స్క్రీన్ నోటిఫికేషన్ సెట్టింగ్‌లను మార్చండి</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">సిఫార్సు చేసిన యాప్‌లు</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> మిగిలి ఉంది</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> కనెక్ట్ కాలేదు.</translation>
 <translation id="1677582821739292812">ఎవరో మీ స్క్రీన్ వైపు చూస్తున్నారు</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> టైమర్ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 అడ్రస్‌: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ఎడమ వైపున డాక్ చేసి ఉన్న విండోను యాక్టివేట్ చేయండి.</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">కీబోర్డ్ లేఅవుట్‌ను మార్చడానికి <ph name="KEYBOARD_SHORTCUT" />ని నొక్కండి.</translation>
 <translation id="2501920221385095727">స్టిక్కీ కీలు</translation>
 <translation id="2509468283778169019">CAPS LOCK ఆన్‌లో ఉంది</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">మీ ప్రొఫైల్ ఫోటోను నొక్కండి</translation>
 <translation id="255671100581129685">Google Assistant పబ్లిక్ సెషన్‌లో అందుబాటులో లేదు.</translation>
 <translation id="256712445991462162">డాక్ చేసిన మాగ్నిఫైయర్</translation>
@@ -378,6 +381,7 @@
 <translation id="3105917916468784889">స్క్రీన్‌షాట్ తీయండి</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (బ్లూటూత్)</translation>
 <translation id="3120421559657122717">పరికరాన్ని షట్ డౌన్ చేయాలా?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">అప్‌డేట్ చేయ‌డానికి పునఃప్రారంభించండి</translation>
 <translation id="3139382871451988441">కెమెరా యాక్సెస్‌ను ఆఫ్ చేయండి.</translation>
 <translation id="3139942575505304791">డెస్క్ 1</translation>
@@ -705,6 +709,7 @@
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4918086044614829423">ఆమోదించు</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> ప్రస్తుతం మీ కెమెరాను ఉపయోగిస్తోంది</translation>
+<translation id="492453977506755176">క్యాప్చర్ మోడ్ కీ</translation>
 <translation id="4925542575807923399">బహుళ సైన్-ఇన్ సెషన్‌లో ఈ ఖాతా మొదటిగా సైన్-ఇన్ చేసిన ఖాతాగా ఉండటం ఈ ఖాతా నిర్వాహకులకు అవసరం.</translation>
 <translation id="4938176435186993759">అన్ని సూచనలను దాచండి</translation>
 <translation id="4945196315133970626">నోటిఫికేషన్‌లను ఆఫ్ చేయండి</translation>
@@ -726,6 +731,7 @@
 <translation id="5033299697334913360">ఫుల్ స్క్రీన్‌ను క్యాప్చర్ చేయడానికి ఎక్కడైనా క్లిక్ చేయండి</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ఒక కొత్త ఫోన్‌కి కనెక్ట్ చేయబడింది</translation>
 <translation id="5035389544768382859">డిస్‌ప్లే కాన్ఫిగరేషన్‌ను నిర్ధారించండి</translation>
+<translation id="5042305953558921026">ఓవర్‌వ్యూ మోడ్ కీ</translation>
 <translation id="504465286040788597">మునుపటి పేరా</translation>
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="5071064518267176975">యాప్ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
@@ -915,6 +921,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="612734058257491180">అతిథి సెషన్‌లో Google Assistant పని చేయదు.</translation>
+<translation id="6129953537138746214">ఖాళీ</translation>
 <translation id="6134259848159370930">మీ పరికరం, యాప్‌లు, సెట్టింగ్‌లు, వెబ్‌ను వెతకండి.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయండి'ని తెరవండి</translation>
 <translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
@@ -1386,6 +1393,7 @@
 <translation id="8843682306134542540">భ్రమణం లాక్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">మీ పిన్ లేదా పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. గమనిక: మీరు ఇటీవలే మీ పాస్‌వర్డ్‌ను మార్చి ఉంటే, మీ పాత పాస్‌వర్డ్‌ను ఉపయోగించండి. మీరు ఖాతా నుంచి సైన్ అవుట్ చేసిన తర్వాత మీ కొత్త పాస్‌వర్డ్ వర్తిస్తుంది.</translation>
+<translation id="8855885154700222542">పూర్తిస్క్రీన్ కీ</translation>
 <translation id="8870509716567206129">యాప్‌లో విభజన స్క్రీన్‌కు మద్దతు లేదు.</translation>
 <translation id="8874184842967597500">కనెక్ట్ కాలేదు</translation>
 <translation id="8876661425082386199">మీ కనెక్షన్‌ను చెక్ చేయండి</translation>

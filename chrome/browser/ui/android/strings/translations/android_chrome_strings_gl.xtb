@@ -270,6 +270,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2497852260688568942">O administrador desactivou a sincronización</translation>
 <translation id="250020030759455918">Poderás ver o teu estado de inicio de sesión de <ph name="SITE_NAME" />, os teus datos de navegación e os datos do sitio en Chrome</translation>
+<translation id="2510106555128151389">Instalando <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2513403576141822879">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Sincronización e servizos de Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2523184218357549926">Envía a Google os URL das páxinas que visitas</translation>
@@ -1280,6 +1281,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="7887334752153342268">Duplicar</translation>
 <translation id="789763218334337857">Como usar Chrome?</translation>
 <translation id="7903184275147100332">Esta acción pode tardar un minuto</translation>
+<translation id="7914399737746719723">Instalouse a aplicación</translation>
 <translation id="7919123827536834358">Traducir automaticamente texto escrito nestes idiomas</translation>
 <translation id="7926975587469166629">Alcume da tarxeta</translation>
 <translation id="7929962904089429003">Abrir o menú</translation>

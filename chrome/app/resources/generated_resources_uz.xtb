@@ -420,6 +420,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1397594434718759194">Chromega quyidagi qurilmalardan kirgansiz va ularni elektron kalit sifatida ishlatishingiz mumkin.</translation>
 <translation id="1398853756734560583">Yoyish</translation>
 <translation id="139911022479327130">Telefonni qulfdan chiqaring va shaxsingizni tasdiqlang</translation>
+<translation id="1401216725754314428">Aloqador saytlar haqida yangi varaqda batafsil axborot oling</translation>
 <translation id="1401308693935339022">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin.</translation>
 <translation id="1403222014593521787">Proksi-serverga ulanib boʻlmadi</translation>
 <translation id="1405779994569073824">Ishdan chiqdi.</translation>
@@ -7682,6 +7683,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8206745257863499010">Blyuz</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8207404892907560325">Kodni tanlash</translation>
+<translation id="8208188204689616705">Bu saytlar <ph name="FPS_OWNER" /> guruhiga kiradi. Guruhdagi saytlar guruhdagi faoliyatni koʻra oladi.</translation>
 <translation id="8208216423136871611">Saqlanmasin</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Yangi bildirishnoma}other{# ta yangi bildirishnoma}}</translation>
 <translation id="821119981794423735">Parollarni <ph name="USER_EMAIL" /> uchun Google Parollar menejeriga import qilish uchun CSV faylni tanlang</translation>

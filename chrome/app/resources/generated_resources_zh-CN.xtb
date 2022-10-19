@@ -417,6 +417,7 @@
 <translation id="1397594434718759194">您已在这些设备上登录 Chrome，因此您可以将他们用作安全密钥。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="139911022479327130">解锁您的手机并证实您的身份</translation>
+<translation id="1401216725754314428">在新标签页中详细了解相关网站</translation>
 <translation id="1401308693935339022">使用位置信息。允许具有位置权限的应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="1403222014593521787">无法连接到代理</translation>
 <translation id="1405779994569073824">已崩溃。</translation>
@@ -7647,6 +7648,7 @@
 <translation id="820568752112382238">最常访问的网站</translation>
 <translation id="8206745257863499010">音符</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
+<translation id="8208188204689616705">这些网站属于一个由 <ph name="FPS_OWNER" /> 定义的群组。群组中的网站可查看您在该群组中的活动记录。</translation>
 <translation id="8208216423136871611">不保存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 条新通知}}</translation>
 <translation id="821119981794423735">若要将密码导入 <ph name="USER_EMAIL" /> 的 Google 密码管理工具，请选择一个 CSV 文件</translation>

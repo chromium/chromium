@@ -72,6 +72,7 @@
 <translation id="1290982764014248209">将“<ph name="DRAGGED_APP" />”移至文件夹“<ph name="FOLDER_NAME" />”内。</translation>
 <translation id="1293264513303784526">USB-C 设备（左侧端口）</translation>
 <translation id="1293556467332435079">文件</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">更改锁定屏幕通知设置</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">推荐的应用</translation>
@@ -91,6 +92,7 @@
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。使用箭头键可浏览日期。</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />，已安装的应用</translation>
+<translation id="1415846719612499304">显示网络列表。<ph name="STATE_TEXT" />。</translation>
 <translation id="1419738280318246476">解锁设备即可执行通知操作</translation>
 <translation id="1420408895951708260">开启/关闭护眼模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片和播放的媒体</translation>
@@ -130,6 +132,7 @@
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">未连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1677582821739292812">有人正在看着您的屏幕</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />定时器   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 地址：<ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">将活动窗口停靠在左侧。</translation>
@@ -280,6 +283,7 @@
 <translation id="2484513351006226581">按 <ph name="KEYBOARD_SHORTCUT" />键可切换键盘布局。</translation>
 <translation id="2501920221385095727">粘滞键</translation>
 <translation id="2509468283778169019">CAPS LOCK 已打开</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">请点按您的个人资料图片</translation>
 <translation id="255671100581129685">无法在公用自助终端使用 Google 助理。</translation>
 <translation id="256712445991462162">停靠的放大镜</translation>
@@ -305,6 +309,7 @@
 <translation id="2678852583403169292">“随选朗读”菜单</translation>
 <translation id="2689613560355655046">桌面 8</translation>
 <translation id="2695305337569143674">网络</translation>
+<translation id="2697697418792422688">显示键盘设置。已选择“<ph name="KEYBOARD_NAME" />”。</translation>
 <translation id="2700493154570097719">设置键盘</translation>
 <translation id="2704781753052663061">连接到其他 Wi-Fi 网络</translation>
 <translation id="2705001408393684014">开启/关闭麦克风。<ph name="STATE_TEXT" /></translation>
@@ -378,6 +383,7 @@
 <translation id="3105917916468784889">生成屏幕截图</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（蓝牙）</translation>
 <translation id="3120421559657122717">要关机吗？</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">重新启动以进行更新</translation>
 <translation id="3139382871451988441">关闭摄像头使用权限。</translation>
 <translation id="3139942575505304791">桌面 1</translation>
@@ -701,6 +707,7 @@
 <translation id="4917385247580444890">强</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" />正在使用您的摄像头</translation>
+<translation id="492453977506755176">“截屏/录屏模式”键</translation>
 <translation id="4925542575807923399">此帐号的管理员规定：在多帐号登录会话中，此帐号必须是最先登录的帐号。</translation>
 <translation id="4938176435186993759">隐藏所有建议</translation>
 <translation id="4945196315133970626">关闭通知</translation>
@@ -721,6 +728,7 @@
 <translation id="5033299697334913360">点击任意位置即可截取整个屏幕</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />已连接到新手机</translation>
 <translation id="5035389544768382859">确认显示屏配置</translation>
+<translation id="5042305953558921026">“概览模式”键</translation>
 <translation id="504465286040788597">上一个段落</translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="5071064518267176975">有一款应用想使用麦克风</translation>
@@ -771,6 +779,7 @@
 <translation id="5327248766486351172">名称</translation>
 <translation id="5329548388331921293">正在连接…</translation>
 <translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
+<translation id="533282197239610265">显示投放设备</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
 <translation id="5352250171825660495">深色主题已开启</translation>
 <translation id="5356963482258194581">在深色主题和浅色主题之间切换。右键点击相应桌面，然后选择“壁纸和样式”。</translation>
@@ -802,10 +811,12 @@
 <translation id="553675580533261935">退出会话</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="554893713779400387">开启/关闭语音输入</translation>
+<translation id="5558091555391176027">开启/关闭“附近分享”的高可见度模式</translation>
 <translation id="5560420195677022218">在 <ph name="DEVICE_TYPE" /> 上查看手机中的应用</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5571066253365925590">蓝牙已启用</translation>
 <translation id="557563299383177668">下一个段落</translation>
+<translation id="5577082622442191756">开启/关闭蓝牙。<ph name="STATE_TEXT" />。</translation>
 <translation id="5577281275355252094">请确保在手机上启用蓝牙以便使用 Phone Hub</translation>
 <translation id="5580000943347215299">库</translation>
 <translation id="558849140439112033">拖动鼠标指针即可选择要截取的区域</translation>
@@ -874,6 +885,7 @@
 <translation id="595202126637698455">已启用性能跟踪</translation>
 <translation id="5955304353782037793">应用</translation>
 <translation id="5958529069007801266">受监管用户</translation>
+<translation id="5965524703725988602">开启/关闭深色主题。<ph name="STATE_TEXT" />。</translation>
 <translation id="5976112937189445008">按 Enter 键即可录制窗口</translation>
 <translation id="5977415296283489383">耳机</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
@@ -908,6 +920,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">确认下载“<ph name="FILENAME" />”</translation>
 <translation id="612734058257491180">无法在访客会话中使用 Google 助理。</translation>
+<translation id="6129953537138746214">空格</translation>
 <translation id="6134259848159370930">搜索您的设备、应用、设置和网站。</translation>
 <translation id="6137566720514957455">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的“移除帐号”对话框</translation>
 <translation id="6141988275892716286">确认下载</translation>
@@ -1113,6 +1126,7 @@
 <translation id="7378889811480108604">省电模式已关闭</translation>
 <translation id="7382680553121047388">开启</translation>
 <translation id="7384028040782072252">若要将您的应用重新排序，请右键点击任意位置</translation>
+<translation id="7386767620098596324">开启/关闭网络连接。<ph name="STATE_TEXT" />。</translation>
 <translation id="7392563512730092880">日后您随时可从“设置”中进行设置。</translation>
 <translation id="7405710164030118432">要解锁此设备，请输入您的 Family Link 家长访问码</translation>
 <translation id="7406608787870898861">请完成您的移动网络设置</translation>
@@ -1252,6 +1266,7 @@
 <translation id="8142441511840089262">双击</translation>
 <translation id="8142699993796781067">专用网络</translation>
 <translation id="8144760705599030999">将您的“<ph name="NAME" />”保存到 <ph name="EMAIL" />，即可更快速地与您的其他设备配对</translation>
+<translation id="8149413265954228307">显示蓝牙设置。<ph name="STATE_TEXT" />。</translation>
 <translation id="8152092012181020186">按 Ctrl + W 即可关闭。</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />，自动填充</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />：此设置由您的管理员管理。</translation>
@@ -1312,6 +1327,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按 Alt+搜索键或按 Shift 键可取消。</translation>
 <translation id="8492573885090281069">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
+<translation id="8496402167048257517">显示“附近分享”设置</translation>
 <translation id="85123341071060231">Chromebook 的蓝牙功能已关闭。若要解锁 Chromebook，请输入密码。</translation>
 <translation id="8513108775083588393">自动旋转屏幕</translation>
 <translation id="851458219935658693">显示当前桌面中的窗口，已选中单选按钮</translation>
@@ -1372,6 +1388,7 @@
 <translation id="8843682306134542540">切换旋转锁定设置。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
+<translation id="8855885154700222542">全屏键</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8876661425082386199">请检查您的网络连接状况</translation>

@@ -72,6 +72,7 @@
 <translation id="1290982764014248209">Перемістити додаток <ph name="DRAGGED_APP" /> у папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="1293264513303784526">Пристрій із портом USB типу C (ліворуч)</translation>
 <translation id="1293556467332435079">Файли</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Змінити налаштування сповіщень на заблокованому екрані</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">РЕКОМЕНДОВАНІ ПРОГРАМИ</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> не підключено.</translation>
 <translation id="1677582821739292812">Хтось дивиться на ваш екран</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Адреса IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Активне вікно закріплено ліворуч.</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">Натисніть комбінацію клавіш <ph name="KEYBOARD_SHORTCUT" />, щоб змінити розкладку клавіатури.</translation>
 <translation id="2501920221385095727">Залипання клавіш</translation>
 <translation id="2509468283778169019">Режим CAPS LOCK увімкнено</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Натисніть зображення профілю</translation>
 <translation id="255671100581129685">Google Асистент недоступний у сеансі для всіх.</translation>
 <translation id="256712445991462162">закріплену лупу</translation>
@@ -378,6 +381,7 @@
 <translation id="3105917916468784889">Зробити знімок екрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Завершити роботу пристрою?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Перезапустіть, щоб оновити</translation>
 <translation id="3139382871451988441">Вимкнути доступ до камери.</translation>
 <translation id="3139942575505304791">Робочий стіл 1</translation>
@@ -701,6 +705,7 @@
 <translation id="4917385247580444890">Потужний</translation>
 <translation id="4918086044614829423">Прийняти</translation>
 <translation id="4919841137949306064">Додаток <ph name="APP_NAME" /> використовує вашу камеру</translation>
+<translation id="492453977506755176">Клавіша режиму зйомки</translation>
 <translation id="4925542575807923399">Адміністратору облікового запису потрібно, щоб цей обліковий запис був першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
 <translation id="4938176435186993759">Приховати всі пропозиції</translation>
 <translation id="4945196315133970626">Вимкнути сповіщення</translation>
@@ -721,6 +726,7 @@
 <translation id="5033299697334913360">Натисніть будь-де, щоб зробити знімок усього екрана</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> під’єднано до нового телефона</translation>
 <translation id="5035389544768382859">Підтвердьте налаштування дисплея</translation>
+<translation id="5042305953558921026">Клавіша режиму огляду</translation>
 <translation id="504465286040788597">Попередній абзац</translation>
 <translation id="5045550434625856497">Неправильний пароль</translation>
 <translation id="5071064518267176975">Додаток хоче використовувати мікрофон</translation>
@@ -908,6 +914,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Підтвердити завантаження файлу <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Асистент недоступний під час сеансу в режимі "Гість".</translation>
+<translation id="6129953537138746214">Пробіл</translation>
 <translation id="6134259848159370930">Шукайте на пристрої, у додатках, налаштуваннях та Інтернеті.</translation>
 <translation id="6137566720514957455">Відкрити вікно видалення облікового запису <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Підтвердити завантаження</translation>
@@ -1375,6 +1382,7 @@
 <translation id="8843682306134542540">Заблокувати/розблокувати обертання. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search (Пошук)+Esc</translation>
 <translation id="8853703225951107899">PIN-код або пароль усе ще не вдається підтвердити. Примітка: якщо ви нещодавно змінювали пароль, введіть старий. Новий пароль буде застосовано, щойно ви вийдете з облікового запису.</translation>
+<translation id="8855885154700222542">Клавіша повноекранного режиму</translation>
 <translation id="8870509716567206129">Додаток не підтримує розділення екрана.</translation>
 <translation id="8874184842967597500">Не під’єднано</translation>
 <translation id="8876661425082386199">Перевірте з'єднання</translation>

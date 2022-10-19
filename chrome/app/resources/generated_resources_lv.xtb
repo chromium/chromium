@@ -422,6 +422,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1397594434718759194">Jūs esat pierakstījies pārlūkā Chrome šajās ierīcēs, tādējādi varat tās izmantot kā drošības atslēgas.</translation>
 <translation id="1398853756734560583">Maksimizēt</translation>
 <translation id="139911022479327130">Atbloķējiet tālruni un apstipriniet, ka tas esat jūs.</translation>
+<translation id="1401216725754314428">Skatīt plašāku informāciju par saistītajām vietnēm jaunā cilnē</translation>
 <translation id="1401308693935339022">Atrašanās vietas datu izmantošana. Ļauj lietotnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot šīs ierīces atrašanās vietas datus. Google periodiski var vākt atrašanās vietas datus un izmantot šos datus anonīmā veidā, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus.</translation>
 <translation id="1403222014593521787">Nevar izveidot savienojumu ar starpniekserveri</translation>
 <translation id="1405779994569073824">Avarējusi.</translation>
@@ -7683,6 +7684,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8206745257863499010">Blūzs</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8207404892907560325">Izvēlieties piekļuves atslēgu</translation>
+<translation id="8208188204689616705">Šīs vietnes ir uzņēmuma <ph name="FPS_OWNER" /> definētā grupā. Grupā iekļauto vietņu īpašnieki var skatīt darbības, ko veicat jebkurā grupas vietnē.</translation>
 <translation id="8208216423136871611">Nesaglabāt</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Jauns paziņojums}zero{# jaunu paziņojumu}one{# jauns paziņojums}other{# jauni paziņojumi}}</translation>
 <translation id="821119981794423735">Lai importētu Google paroļu pārvaldniekā konta <ph name="USER_EMAIL" /> paroles, atlasiet CSV failu</translation>

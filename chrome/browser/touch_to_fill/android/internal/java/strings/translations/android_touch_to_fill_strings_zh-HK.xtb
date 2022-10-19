@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1220509181886849806">要使用已儲存的密碼嗎？</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" /> 嘅密碼。</translation>
 <translation id="1717486229951421299">㩒一下先可以填嘅憑證清單宜家顯示喺畫面下半部。</translation>
 <translation id="207576718733492531">㩒一下先可以填嘅憑證清單閂咗。</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">㩒一下先可以填嘅憑證清單，宜家顯示喺成個畫面。</translation>
 <translation id="5591247451101092906">要使用已儲存的密碼或密鑰嗎？</translation>
 <translation id="5624120631404540903">管理密碼</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" /> 嘅密鑰，用螢幕鎖定。</translation>
 <translation id="804577341878669140">登入帳戶繼續</translation>
 </translationbundle>

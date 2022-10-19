@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1220509181886849806">保存したパスワードを使用しますか？</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" /> のパスワードです。</translation>
 <translation id="1717486229951421299">タップ操作で入力する認証情報のリストが画面の下半分に表示されています。</translation>
 <translation id="207576718733492531">タップ操作で入力する認証情報のリストは閉じています。</translation>
 <translation id="2359808026110333948">続行</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">タップ操作で入力する認証情報のリストが画面全体に表示されています。</translation>
 <translation id="5591247451101092906">保存したパスワードまたはパスキーを使用しますか？</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" /> のパスキーです、画面ロックを使用してください。</translation>
 <translation id="804577341878669140">次のアカウントで続行</translation>
 </translationbundle>

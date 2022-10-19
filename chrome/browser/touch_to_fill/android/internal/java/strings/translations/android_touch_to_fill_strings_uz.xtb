@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1220509181886849806">Saqlangan paroldan foydalanilsinmi?</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" /> hisobi paroli.</translation>
 <translation id="1717486229951421299">Teginib kiritiladigan login va parollar yarim hajmda ochildi.</translation>
 <translation id="207576718733492531">Teginib kiritiladigan login va parollar roʻyxati yopiq.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Teginib kiritiladigan login va parollar toʻliq hajmda ochildi.</translation>
 <translation id="5591247451101092906">Saqlangan parol yoki kod ishlatilsinmi?</translation>
 <translation id="5624120631404540903">Sozlash</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" /> hisobi kodi, ekran qulfidan foydalaning.</translation>
 <translation id="804577341878669140">Shu hisobda davom etish</translation>
 </translationbundle>

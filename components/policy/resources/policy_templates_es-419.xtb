@@ -5484,7 +5484,6 @@ principal del string usuario-agente en 99.
           Si inhabilitas esta política, los usuarios no podrán agregar cuentas de Kerberos. Las cuentas solo se pueden agregar mediante la política "Configurar cuentas de Kerberos". Este es un procedimiento eficaz para proteger las cuentas.</translation>
 <translation id="6491139795995924304">Permitir Bluetooth en el dispositivo</translation>
 <translation id="6491305972928809525">No mostrar el menú de accesibilidad flotante en el modo kiosco</translation>
-<translation id="6491610602835998107">Inhabilitar los informes de información del sistema y el contenido de la página para ayudar a mejorar la Navegación segura</translation>
 <translation id="6491872498385040936">Esta política es obsoleta. Considera usar <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, que anula esta política y te permite implementar una configuración más detallada.
 
       Aplica el modo restringido moderado en YouTube y evita que los usuarios cambien esta configuración.

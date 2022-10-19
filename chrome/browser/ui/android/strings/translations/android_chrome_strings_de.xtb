@@ -270,6 +270,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2497852260688568942">Die Synchronisierung wurde von deinem Administrator deaktiviert</translation>
 <translation id="250020030759455918">Du kannst deinen Anmeldestatus für <ph name="SITE_NAME" />, Browserdaten und Websitedaten in Chrome einsehen</translation>
+<translation id="2510106555128151389">„<ph name="WEBAPK_NAME" />“ wird installiert…</translation>
 <translation id="2513403576141822879">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten findest du unter <ph name="BEGIN_LINK" />Synchronisierung und Google-Dienste<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2523184218357549926">URLs der von dir besuchten Seiten werden an Google gesendet</translation>
@@ -1280,6 +1281,7 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="7887334752153342268">Duplizieren</translation>
 <translation id="789763218334337857">Chrome verwenden</translation>
 <translation id="7903184275147100332">Dies kann einen Moment dauern</translation>
+<translation id="7914399737746719723">App wurde installiert</translation>
 <translation id="7919123827536834358">Diese Sprachen automatisch übersetzen</translation>
 <translation id="7926975587469166629">Kartenalias</translation>
 <translation id="7929962904089429003">Menü öffnen</translation>

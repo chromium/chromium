@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1220509181886849806">Folosești parola salvată?</translation>
+<translation id="1580351948163139119">Parola pentru <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Lista datelor de conectare care trebuie completate la atingere este deschisă la jumătate din înălțime.</translation>
 <translation id="207576718733492531">Lista datelor de conectare care trebuie completate la atingere s-a închis.</translation>
 <translation id="2359808026110333948">Continuă</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Lista datelor de conectare care trebuie completate la atingere este deschisă la înălțimea completă.</translation>
 <translation id="5591247451101092906">Folosești parola sau cheia de acces salvată?</translation>
 <translation id="5624120631404540903">Gestionați parolele</translation>
+<translation id="7736236483645733578">Parola pentru <ph name="USERNAME" />; folosește blocarea ecranului.</translation>
 <translation id="804577341878669140">Accesează contul</translation>
 </translationbundle>

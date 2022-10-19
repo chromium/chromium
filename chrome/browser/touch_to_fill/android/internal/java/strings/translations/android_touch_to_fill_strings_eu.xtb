@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1220509181886849806">Gordetako pasahitza erabili nahi duzu?</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" /> erabiltzaile-kontuko pasahitza.</translation>
 <translation id="1717486229951421299">Ukitzean bete beharreko kredentzialen zerrenda altuera erdian irekita dago.</translation>
 <translation id="207576718733492531">Ukitzean bete beharreko kredentzialen zerrenda itxita dago.</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Ukitzean bete beharreko kredentzialen zerrenda altuera osoan irekita dago.</translation>
 <translation id="5591247451101092906">Gordetako pasahitza edo sarbide-gakoa erabili nahi duzu?</translation>
 <translation id="5624120631404540903">Kudeatu pasahitzak</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" /> erabiltzaile-kontuko sarbide-gakoa. Erabili pantailaren blokeoa.</translation>
 <translation id="804577341878669140">Egin aurrera kontuarekin</translation>
 </translationbundle>

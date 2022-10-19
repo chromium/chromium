@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />をフォルダ<ph name="FOLDER_NAME" />に移動します。</translation>
 <translation id="1293264513303784526">USB-C デバイス（左側面のポート）</translation>
 <translation id="1293556467332435079">ファイル</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">ロック画面の通知設定を変更</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">おすすめのアプリ</translation>
@@ -91,6 +92,7 @@
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。矢印キーを使用して日付を変更します。</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />、インストール済みアプリ</translation>
+<translation id="1415846719612499304">ネットワーク リストを表示します。<ph name="STATE_TEXT" />。</translation>
 <translation id="1419738280318246476">通知に関する操作を行うには、デバイスのロックを解除してください</translation>
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真やメディアを表示します</translation>
@@ -130,6 +132,7 @@
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
 <translation id="1677582821739292812">他の人があなたの画面を見ています</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> タイマー · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 アドレス: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">アクティブなウィンドウを左側に固定しました。</translation>
@@ -279,6 +282,7 @@
 <translation id="2484513351006226581">キーボード レイアウトを切り替えるには <ph name="KEYBOARD_SHORTCUT" /> キーを押します。</translation>
 <translation id="2501920221385095727">固定キー</translation>
 <translation id="2509468283778169019">Caps Lock がオンになっています</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">プロフィール画像をタップしてください</translation>
 <translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
@@ -304,6 +308,7 @@
 <translation id="2678852583403169292">選択して読み上げメニュー</translation>
 <translation id="2689613560355655046">デスク 8</translation>
 <translation id="2695305337569143674">ウェブ</translation>
+<translation id="2697697418792422688">キーボード設定を表示します。<ph name="KEYBOARD_NAME" /> が選択されています。</translation>
 <translation id="2700493154570097719">キーボードを設定</translation>
 <translation id="2704781753052663061">他の Wi-Fi ネットワークに接続</translation>
 <translation id="2705001408393684014">マイクを切り替えます。<ph name="STATE_TEXT" /></translation>
@@ -377,6 +382,7 @@
 <translation id="3105917916468784889">スクリーンショットを撮る</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（Bluetooth）</translation>
 <translation id="3120421559657122717">デバイスをシャットダウンしますか？</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">再起動して更新</translation>
 <translation id="3139382871451988441">カメラへのアクセスをオフにします。</translation>
 <translation id="3139942575505304791">デスク 1</translation>
@@ -699,6 +705,7 @@
 <translation id="4917385247580444890">強い</translation>
 <translation id="4918086044614829423">同意する</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> がカメラを使用しています</translation>
+<translation id="492453977506755176">キャプチャ モード キー</translation>
 <translation id="4925542575807923399">このアカウントの管理者が、マルチ ログイン セッションにおいて最初にこのアカウントにログインすることを要件としています。</translation>
 <translation id="4938176435186993759">すべての候補を非表示</translation>
 <translation id="4945196315133970626">通知をオフにする</translation>
@@ -719,6 +726,7 @@
 <translation id="5033299697334913360">全画面をキャプチャするには任意の場所をクリックしてください</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> が新しいスマートフォンに接続されました</translation>
 <translation id="5035389544768382859">ディスプレイ設定の確定</translation>
+<translation id="5042305953558921026">概要モード キー</translation>
 <translation id="504465286040788597">前の段落</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5071064518267176975">アプリがマイクの使用を求めています</translation>
@@ -768,6 +776,7 @@
 <translation id="5327248766486351172">名前</translation>
 <translation id="5329548388331921293">接続中…</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
+<translation id="533282197239610265">キャスト デバイスを表示します</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右）</translation>
 <translation id="5352250171825660495">ダークモードはオンになっています</translation>
 <translation id="5356963482258194581">ダークモードとライトモードを切り替えます。デスクトップを右クリックして、[壁紙とスタイル] を選択します。</translation>
@@ -798,10 +807,12 @@
 <translation id="553675580533261935">セッションの終了</translation>
 <translation id="5537725057119320332">キャスト</translation>
 <translation id="554893713779400387">音声入力を切り替え</translation>
+<translation id="5558091555391176027">ニアバイシェアで付近のデバイスに表示されるモードのオンとオフを切り替えます</translation>
 <translation id="5560420195677022218"><ph name="DEVICE_TYPE" /> でスマートフォンのアプリを表示します</translation>
 <translation id="556042886152191864">ボタン</translation>
 <translation id="5571066253365925590">Bluetooth オン</translation>
 <translation id="557563299383177668">次の段落</translation>
+<translation id="5577082622442191756">Bluetooth を切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="5577281275355252094">スマートフォン ハブを使用するには、スマートフォンで Bluetooth が有効になっていることを確認してください</translation>
 <translation id="5580000943347215299">ライブラリ</translation>
 <translation id="558849140439112033">キャプチャする領域をドラッグして選択してください</translation>
@@ -870,6 +881,7 @@
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>
 <translation id="5955304353782037793">アプリ</translation>
 <translation id="5958529069007801266">監視対象ユーザー</translation>
+<translation id="5965524703725988602">ダークモードのオンとオフを切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="5976112937189445008">ウィンドウを録画するには Enter キーを押してください</translation>
 <translation id="5977415296283489383">ヘッドホン</translation>
 <translation id="5978382165065462689">リモート サポート経由で画面の制御を共有しています。</translation>
@@ -904,6 +916,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> のダウンロードの確認</translation>
 <translation id="612734058257491180">Google アシスタントは、ゲスト セッションではご利用いただけません。</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6134259848159370930">デバイス、アプリ、設定、ウェブを検索します。</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> の削除ダイアログを開きます</translation>
 <translation id="6141988275892716286">ダウンロードの確認</translation>
@@ -1113,6 +1126,7 @@
 <translation id="7378889811480108604">バッテリー セーバー モードがオフです</translation>
 <translation id="7382680553121047388">オン</translation>
 <translation id="7384028040782072252">任意の場所を右クリックしてアプリを並べ替えられます</translation>
+<translation id="7386767620098596324">ネットワーク接続を切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="7392563512730092880">[設定] でいつでも設定できます。</translation>
 <translation id="7405710164030118432">このデバイスのロックを解除するには、ファミリー リンクの保護者のアクセスコードを入力してください</translation>
 <translation id="7406608787870898861">モバイル ネットワークの設定を完了してください</translation>
@@ -1252,6 +1266,7 @@
 <translation id="8142441511840089262">ダブルクリック</translation>
 <translation id="8142699993796781067">プライベート</translation>
 <translation id="8144760705599030999"><ph name="NAME" /> を <ph name="EMAIL" /> に保存すると、他のデバイスとすばやくペア設定できます</translation>
+<translation id="8149413265954228307">Bluetooth の設定を表示します。<ph name="STATE_TEXT" />。</translation>
 <translation id="8152092012181020186">閉じるには Ctrl+W キーを押します。</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />、オートコンプリート</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> この設定は管理者によって管理されています。</translation>
@@ -1312,6 +1327,7 @@
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" />は <ph name="ORGANIZATION_NAME" /> により<ph name="FEATURE_STATE" />に設定されています。</translation>
 <translation id="8477270416194247200">キャンセルするには Alt+ 検索キーまたは Shift キーを押します。</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
+<translation id="8496402167048257517">ニアバイシェア設定を表示します</translation>
 <translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。ロックを解除するにはパスワードをご入力ください</translation>
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
@@ -1371,6 +1387,7 @@
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
+<translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8876661425082386199">接続を確認してください</translation>

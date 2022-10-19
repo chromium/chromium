@@ -420,6 +420,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1397594434718759194">Has iniciado sesión en Chrome en estos dispositivos, por lo que puedes usarlos como llaves de seguridad.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="139911022479327130">Desbloquea tu teléfono y confirma que eres tú</translation>
+<translation id="1401216725754314428">Más información sobre los sitios relacionados en una nueva pestaña</translation>
 <translation id="1401308693935339022">Usa la ubicación. Permite que las aplicaciones y los servicios que tienen permiso de ubicación utilicen la ubicación de este dispositivo. Es posible que Google recoja datos de ubicación de forma periódica y los utilice de forma anónima para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
 <translation id="1403222014593521787">No se ha podido establecer conexión con el proxy</translation>
 <translation id="1405779994569073824">Error.</translation>
@@ -7681,6 +7682,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8206745257863499010">Música</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8207404892907560325">Elige una clave de acceso</translation>
+<translation id="8208188204689616705">Estos sitios están en un grupo definido por <ph name="FPS_OWNER" />. Los sitios que forman parte de un grupo pueden ver tu actividad en el grupo.</translation>
 <translation id="8208216423136871611">No guardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="821119981794423735">Para importar contraseñas al gestor de contraseñas de Google para <ph name="USER_EMAIL" />, selecciona un archivo CSV</translation>

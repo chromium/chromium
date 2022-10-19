@@ -422,6 +422,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1397594434718759194">Na tych urządzeniach jesteś zalogowany(-a) w Chrome, więc możesz ich używać jako kluczy bezpieczeństwa.</translation>
 <translation id="1398853756734560583">Maksymalizuj</translation>
 <translation id="139911022479327130">Odblokuj telefon i potwierdź, że to Ty</translation>
+<translation id="1401216725754314428">Dowiedz się więcej o powiązanych witrynach w nowej karcie</translation>
 <translation id="1401308693935339022">Używaj lokalizacji. Zezwól na używanie lokalizacji tego urządzenia przez aplikacje i usługi, które mają dostęp do lokalizacji. Google może okresowo gromadzić dane o lokalizacji i używać ich anonimowo, by zwiększyć dokładność lokalizacji oraz usprawnić działanie związanych z nią usług.</translation>
 <translation id="1403222014593521787">Nie udało się nawiązać połączenia z serwerem proxy</translation>
 <translation id="1405779994569073824">Awaria</translation>
@@ -593,6 +594,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1552752544932680961">Zarządzaj rozszerzeniem</translation>
 <translation id="1553538517812678578">nieograniczona</translation>
 <translation id="1555130319947370107">Niebieski</translation>
+<translation id="1556127816860282890">Aktywność w tle i niektóre efekty wizualne (np. płynne przewijanie) mogą być ograniczone</translation>
 <translation id="1556537182262721003">Nie można przenieść katalogu rozszerzenia do profilu.</translation>
 <translation id="1558391695376153246">Zamknij karty incognito</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -4128,6 +4130,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4852916668365817106">Kolor kursora myszy</translation>
 <translation id="4853020600495124913">Otwórz w &amp;nowym oknie</translation>
 <translation id="4854317507773910281">Wybierz konto rodzica na potrzeby zatwierdzenia</translation>
+<translation id="4854603338816296098">Adres został usunięty</translation>
 <translation id="485480310608090163">Więcej ustawień i uprawnień</translation>
 <translation id="4858792381671956233">Zapytałeś rodziców, czy możesz wejść na tę stronę</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -7669,6 +7672,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8206745257863499010">Bluesowy</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8207404892907560325">Wybierz klucz</translation>
+<translation id="8208188204689616705">Te witryny należą do grupy zdefiniowanej przez firmę <ph name="FPS_OWNER" />. Witryny z tej grupy mają dostęp do danych o Twojej aktywności w grupie.</translation>
 <translation id="8208216423136871611">Nie zapisuj</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nowe powiadomienie}few{# nowe powiadomienia}many{# nowych powiadomień}other{# nowego powiadomienia}}</translation>
 <translation id="821119981794423735">Aby zaimportować hasła do Menedżera haseł Google dla konta <ph name="USER_EMAIL" />, wybierz plik CSV</translation>

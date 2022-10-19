@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">ব্ৰাউজিঙৰ ইতিহাস</translation>
 <translation id="2497852260688568942">আপোনাৰ প্ৰশাসকে ছিংক অক্ষম কৰিছে</translation>
 <translation id="250020030759455918">আপুনি আপোনাৰ <ph name="SITE_NAME" />ৰ ছাইন ইনৰ স্থিতি, ব্ৰাউজ কৰা ডেটা আৰু ছাইটৰ ডেটা Chromeত দেখা পাব</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ইনষ্টল কৰি থকা হৈছে...</translation>
 <translation id="2513403576141822879">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহৰ সৈতে জড়িত অধিক ছেটিঙৰ বাবে <ph name="BEGIN_LINK" />ছিংক আৰু Google সেৱা<ph name="END_LINK" /> চাওক</translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2523184218357549926">আপুনি চোৱা পৃষ্ঠাসমূহৰ URL Googleলৈ পঠিওৱা হয়</translation>
@@ -1279,6 +1280,7 @@
 <translation id="7887334752153342268">নকল</translation>
 <translation id="789763218334337857">Chrome কেনেকৈ ব্যৱহাৰ কৰিব লাগে</translation>
 <translation id="7903184275147100332">এইটোৰ বাবে কিছু সময় লাগিব পাৰে</translation>
+<translation id="7914399737746719723">এপ্‌ ইনষ্টল কৰা হৈছে</translation>
 <translation id="7919123827536834358">এই ভাষাসমূহ স্বয়ংক্ৰিয়ভাৱে অনুবাদ কৰক</translation>
 <translation id="7926975587469166629">কার্ডৰ উপনাম</translation>
 <translation id="7929962904089429003">মেনু খোলক</translation>

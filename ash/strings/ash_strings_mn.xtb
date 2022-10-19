@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />-г <ph name="FOLDER_NAME" /> фолдерт зөөнө.</translation>
 <translation id="1293264513303784526">USB-C төхөөрөмж (зүүн талын порт)</translation>
 <translation id="1293556467332435079">Файлууд</translation>
+<translation id="1293699935367580298">Esc товч</translation>
 <translation id="1294929383540927798">Түгжигдсэн дэлгэцийн мэдэгдлийн тохиргоог өөрчлөх</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">САНАЛ БОЛГОСОН АПП</translation>
@@ -131,6 +132,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> холбогдоогүй.</translation>
 <translation id="1677582821739292812">Хэн нэгэн дэлгэц рүү тань харж байна</translation>
+<translation id="169515659049020177">Солих</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> цаг хэмжигч · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 хаяг: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Идэвхтэй цонхыг зүүн талд суурилуулсан.</translation>
@@ -251,6 +253,7 @@
 <translation id="2322173485024759474">Нэг үсгээр буцаах</translation>
 <translation id="2339073806695260576">Тэмдэглэл бичих, дэлгэцийн зураг авах, лазер чиглүүлэгч эсвэл томруулдаг шил ашиглахын тулд тавиур дээрх мэдрэгч үзэгний товчлуурыг товшино уу.</translation>
 <translation id="2341729377289034582">Босоо чиглэлээр түгжсэн</translation>
+<translation id="2345226652884463045">Засах текстийг сонгохын тулд enter эсвэл хайлт + хоосон зай авах товчлуурыг дарна уу.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> яриаг одоо дотоодод боловсруулах бөгөөд энэ нь офлайнаар ажиллана. Та Дуу хоолойгоор бичих онцлогийн хэлээ Тохиргоо &gt; Хандалт хэсэгт өөрчлөх боломжтой.</translation>
 <translation id="2352467521400612932">Мэдрэгч үзэгний тохиргоо</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> идэвхжүүлж байна</translation>
@@ -281,6 +284,7 @@
 <translation id="2484513351006226581">Гарын бүдүүвчийг солихын тулд <ph name="KEYBOARD_SHORTCUT" />-г дарна уу.</translation>
 <translation id="2501920221385095727">Холбогч түлхүүр</translation>
 <translation id="2509468283778169019">CAPS LOCK асаалттай байна</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Профайл зургаа товшино уу</translation>
 <translation id="255671100581129685">Олон нийтийн харилцан үйлдэлд Google Туслах боломжгүй байна.</translation>
 <translation id="256712445991462162">суурилуулсан томруулагч</translation>
@@ -380,6 +384,7 @@
 <translation id="3105917916468784889">Дэлгэцийн зураг авах</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Төхөөрөмжийг унтраах уу?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Шинэчлэлт хийхээр дахин эхлүүлэх</translation>
 <translation id="3139382871451988441">Камерын хандалтыг унтраана уу.</translation>
 <translation id="3139942575505304791">Дэлгэц 1</translation>
@@ -704,6 +709,7 @@
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> одоогоор таны камерыг ашиглаж байна</translation>
+<translation id="492453977506755176">Зураг авах горимын товч</translation>
 <translation id="4925542575807923399">Энэ хаягийг хариуцсан ажилтан нь олон хаягаар зэрэг нэвтрэх тохиолдолд зөвхөн энэ хаягаар түрүүлж нэвтэрсний дараагаар бусад хаягт нэвтрэх боломжтой байхаар тохируулсан байна.</translation>
 <translation id="4938176435186993759">Бүх зөвлөмжийг нуух</translation>
 <translation id="4945196315133970626">Мэдэгдлийг унтраах</translation>
@@ -724,6 +730,7 @@
 <translation id="5033299697334913360">Бүтэн дэлгэцийн зургийг авахын тулд дурын газар товшино уу</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> шинэ утсанд холбогдсон байна</translation>
 <translation id="5035389544768382859">Дэлгэцийн тохируулгыг баталгаажуулах</translation>
+<translation id="5042305953558921026">Тойм горимын түлхүүр</translation>
 <translation id="504465286040788597">Өмнөх догол мөр</translation>
 <translation id="5045550434625856497">Буруу нууц үг</translation>
 <translation id="5071064518267176975">Апп микрофон ашиглахыг хүсэж байна</translation>
@@ -915,6 +922,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" />-н таталтыг баталгаажуулах</translation>
 <translation id="612734058257491180">Зочны сургалтад Google Туслах боломжгүй байна.</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6134259848159370930">Төхөөрөмж, апп, тохиргоо, вебээс хайна уу.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-н хасах харилцах цонхыг нээнэ үү</translation>
 <translation id="6141988275892716286">Таталтыг баталгаажуулах</translation>
@@ -1386,6 +1394,7 @@
 <translation id="8843682306134542540">Эргүүлэлтийн түгжээг унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадаагүй хэвээрээ байна. Тайлбар: Хэрэв та нууц үгээ саяхан сольсон бол хуучин нууц үгээ ашиглана уу. Таныг гарсны дараа, шинэ нууц үгийг ашиглах боломжтой болно.</translation>
+<translation id="8855885154700222542">Бүтэн дэлгэцийн түлхүүр</translation>
 <translation id="8870509716567206129">Апп нь дэлгэц хуваах тохиргоог дэмждэггүй.</translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>
 <translation id="8876661425082386199">Холболтоо шалгана уу</translation>

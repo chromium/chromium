@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1220509181886849806">सेभ गरिएको पासवर्ड प्रयोग गर्ने हो?</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" /> को पासवर्ड</translation>
 <translation id="1717486229951421299">छुँदाखेरि भरिने प्रमाणहरूको सूची आधा उचाइमा खोलिएको छ।</translation>
 <translation id="207576718733492531">छुँदाखेरि भरिने प्रमाणहरूको सूची बन्द छ।</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">छुँदाखेरि भरिने प्रमाणहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
 <translation id="5591247451101092906">सेभ गरिएको पासवर्ड वा पासकी प्रयोग गर्ने हो?</translation>
 <translation id="5624120631404540903">पासवर्डहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" /> को पासकी, आफ्नो स्क्रिन लक प्रयोग गर्नुहोस्।</translation>
 <translation id="804577341878669140">खातामा जारी राख्नुहोस्</translation>
 </translationbundle>

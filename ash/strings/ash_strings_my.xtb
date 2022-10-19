@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> ကို <ph name="FOLDER_NAME" /> ဖိုင်တွဲသို့ ရွှေ့သည်။</translation>
 <translation id="1293264513303784526">USB-C ကိရိယာ (ဘယ် ပို့တ်)</translation>
 <translation id="1293556467332435079">ဖိုင်များ</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">လော့ခ်ချထားချိန် မျက်နှာပြင် အကြောင်းကြားချက် ဆက်တင်များကို ပြောင်းရန်</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">အကြံပြုထားသည့် အက်ပ်များ</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> ကျန်ပါသည်</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ချိတ်ဆက်မထားပါ။</translation>
 <translation id="1677582821739292812">တစ်စုံတစ်ဦးက သင့်စခရင်ကို ကြည့်နေသည်</translation>
+<translation id="169515659049020177">Shift ကီး</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> တိုင်မာ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 လိပ်စာ− <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ဖွင့်ထားသည့်ဝင်းဒိုးကို ဘယ်ဖက်တွင် နေရာချလိုက်သည်။</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">ကီးဘုတ်လက်ကွက် ပြောင်းရန် <ph name="KEYBOARD_SHORTCUT" /> ကို နှိပ်ပါ။</translation>
 <translation id="2501920221385095727">Sticky keys</translation>
 <translation id="2509468283778169019">စာလုံးကြီးရန် သော့ခလုတ် ပွင့်နေ</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">သင့်ပရိုဖိုင်ပုံကို တို့ရန်</translation>
 <translation id="255671100581129685">အများသုံးစက်ရှင်တွင် Google Assistant အသုံးပြု၍ မရပါ။</translation>
 <translation id="256712445991462162">နေရာချထားသည့် မှန်ဘီလူး</translation>
@@ -378,6 +381,7 @@
 <translation id="3105917916468784889">ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ဘလူးတုသ်)</translation>
 <translation id="3120421559657122717">စက်ကို အပြီးပိတ်မလား။</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">အပ်ဒိတ်လုပ်ရန် ပြန်ဖွင့်ပါ</translation>
 <translation id="3139382871451988441">ကင်မရာသုံးခွင့် ပိတ်ရန်။</translation>
 <translation id="3139942575505304791">စာရေးခုံ ၁</translation>
@@ -701,6 +705,7 @@
 <translation id="4917385247580444890">အားကောင်းသည်</translation>
 <translation id="4918086044614829423">လက်ခံရန်</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> က သင့်ကင်မရာကို လက်ရှိသုံးနေသည်</translation>
+<translation id="492453977506755176">ပုံဖမ်းယူမှုမုဒ် ကီး</translation>
 <translation id="4925542575807923399">ဤအကောင့်၏ ကြီးကြပ်သူသည် ဤအကောင့်အား အကြိမ်ကြိမ် လက်မှတ်ထိုးရမည့် အစီအစဉ် ထဲက ပထမဦးဆုံး လက်မှတ်ထိုး ဝင်သည့် အကောင့် အဖြစ်လိုအပ်သည်။</translation>
 <translation id="4938176435186993759">အကြံပြုချက်အားလုံး ဖျောက်ထားရန်</translation>
 <translation id="4945196315133970626">အကြောင်းကြားချက်များ ပိတ်ရန်</translation>
@@ -721,6 +726,7 @@
 <translation id="5033299697334913360">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> က ဖုန်းအသစ်သို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="5035389544768382859">ဖန်သားပြင် စီစဉ်သတ်မှတ်မှု အတည်ပြုခြင်း</translation>
+<translation id="5042305953558921026">အနှစ်ချုပ်မုဒ် ကီး</translation>
 <translation id="504465286040788597">ယခင်စာပိုဒ်</translation>
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
 <translation id="5071064518267176975">အက်ပ်က သင့်မိုက်ခရိုဖုန်းကို သုံးလိုသည်</translation>
@@ -908,6 +914,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />။ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>
 <translation id="612734058257491180">ဧည့်သည်စက်ရှင်တွင် Google Assistant ကို အသုံးပြု၍ မရပါ။</translation>
+<translation id="6129953537138746214">နေရာခြား</translation>
 <translation id="6134259848159370930">သင့်စက်ပစ္စည်း၊ အက်ပ်၊ ဆက်တင်နှင့် ဝဘ်တွင် ရှာပါ။</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> အတွက် ဖယ်ရှားမှုဒိုင်ယာလော့ခ် ဖွင့်မည်</translation>
 <translation id="6141988275892716286">ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>
@@ -1375,6 +1382,7 @@
 <translation id="8843682306134542540">လှည့်ခြင်းလော့ခ် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">ရှာဖွေမှု+Esc</translation>
 <translation id="8853703225951107899">သင့်ပင်နံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေး၍မရနိုင်သေးပါ။ မှတ်ချက် - လတ်တလောတွင် သင့်စကားဝှက်ကို ပြောင်းထားပါက စကားဝှက်အဟောင်းကို သုံးပါ။ ထွက်ပြီးသည့်အခါ စကားဝှက်အသစ်ကို အသုံးပြုပါမည်။</translation>
+<translation id="8855885154700222542">မျက်နှာပြင်ပြည့် ခလုတ်</translation>
 <translation id="8870509716567206129">အက်ပ်သည် မျက်နှာပြင်ခွဲပြခြင်းကို ပံ့ပိုးမထားပါ။</translation>
 <translation id="8874184842967597500">ချိတ်ဆက် မထား</translation>
 <translation id="8876661425082386199">သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>

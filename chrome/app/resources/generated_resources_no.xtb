@@ -422,6 +422,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1397594434718759194">Du er logget på Chrome på disse enhetene, så du kan bruke dem som sikkerhetsnøkler.</translation>
 <translation id="1398853756734560583">Maksimer</translation>
 <translation id="139911022479327130">Lås opp telefonen, og bekreft at det er deg</translation>
+<translation id="1401216725754314428">Finn ut mer om relaterte nettsteder på en ny fane</translation>
 <translation id="1401308693935339022">Bruk posisjon. Tillat at apper og tjenester med posisjonstillatelse bruker posisjonen til enheten. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene på en anonym måte til å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre.</translation>
 <translation id="1403222014593521787">Kunne ikke koble til proxy-tjeneren</translation>
 <translation id="1405779994569073824">Kræsjet.</translation>
@@ -7687,6 +7688,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8206745257863499010">Plystre</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8207404892907560325">Velg en tilgangsnøkkel</translation>
+<translation id="8208188204689616705">Disse nettstedene er med i en gruppe som er definert av <ph name="FPS_OWNER" />. Nettsteder i grupper kan se aktiviteten din i gruppen.</translation>
 <translation id="8208216423136871611">Ikke lagre</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nytt varsel}other{# nye varsler}}</translation>
 <translation id="821119981794423735">For å importere passord til Google Passordlagring for <ph name="USER_EMAIL" />, velg en CSV-fil</translation>

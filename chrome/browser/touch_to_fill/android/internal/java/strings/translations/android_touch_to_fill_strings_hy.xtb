@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1220509181886849806">Օգտագործե՞լ պահված գաղտնաբառը</translation>
+<translation id="1580351948163139119">Գաղտնաբառ <ph name="USERNAME" /> օգտատիրոջ համար։</translation>
 <translation id="1717486229951421299">Մուտքի տվյալները, որոնք պետք է լրացվեն հպումով, ցուցադրված են էկրանի կեսով:</translation>
 <translation id="207576718733492531">Մուտքի տվյալները, որոնք պետք է լրացվեն հպումով, ցուցադրված չեն։</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Մուտքի տվյալները, որոնք պետք է լրացվեն հպումով, ցուցադրված են ամբողջ էկրանով:</translation>
 <translation id="5591247451101092906">Օգտագործե՞լ պահված գաղտնաբառ կամ անցաբառ</translation>
 <translation id="5624120631404540903">Կառավարել գաղտնաբառերը</translation>
+<translation id="7736236483645733578">Անցաբառ <ph name="USERNAME" /> օգտատիրոջ համար, օգտագործեք ձեր էկրանի կողպումը։</translation>
 <translation id="804577341878669140">Շարունակել հաշվով</translation>
 </translationbundle>

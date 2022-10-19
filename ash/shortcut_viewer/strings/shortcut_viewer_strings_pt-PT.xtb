@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Arraste o link para a barra de endereço do separador.</translation>
 <translation id="1251638888133819822">Ativar ou desativar a lupa de ecrã inteiro</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Imprimir a página atual</translation>
-<translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> ou <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" />.</translation>
 <translation id="1477442857810932985">Ir para o fim da linha</translation>
 <translation id="1499072997694708844">Feche todas as janelas abertas ou pare o carregamento da página atual.</translation>
-<translation id="1510238584712386396">Iniciador</translation>
 <translation id="1516966594427080024">Abra uma nova janela no Modo de navegação anónima</translation>
 <translation id="152892567002884378">Aumentar o volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, em seguida, <ph name="ESC" />.</translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Ir para o início da palavra anterior</translation>
 <translation id="1679841710523778799">Aumentar o brilho</translation>
 <translation id="168356808214100546">Prima sem soltar <ph name="ALT" /> e, em seguida, toque em <ph name="TAB" /> até alcançar a janela que pretende abrir. Em seguida, solte.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Adicionar www. e .com à informação introduzida na barra de endereço e, em seguida, abrir a página</translation>
 <translation id="1768987374400973299">Crie uma gravação/captura de ecrã</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Ativar ou desativar o ChromeVox (feedback de voz)</translation>
 <translation id="2480851840841871861">Abrir o Assistente Google</translation>
 <translation id="2488661730534396940">Ative o espaço de trabalho à esquerda.</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Abrir app Diagnósticos</translation>
 <translation id="2530339807289914946">Deslocar-se para baixo na página Web</translation>
 <translation id="2530896289327917474">Ativar ou desativar a navegação por cursor</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3084301071537457911">Realçar o item seguinte na prateleira</translation>
 <translation id="309173601632226815">Realçar o botão do iniciador na prateleira</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Focar barra de endereço</translation>
 <translation id="3256109297135787951">Remover o realce de um item na prateleira</translation>
 <translation id="3288816184963444640">Fechar a janela atual</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Ir para o fim da palavra seguinte</translation>
 <translation id="4866066940972151697">Ative o espaço de trabalho à direita.</translation>
 <translation id="4916163929714267752">Abrir o link numa nova janela</translation>
-<translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="5030659775136592441">Mostrar o gestor de marcadores</translation>
 <translation id="5034421018520995080">Ir para a parte superior da página</translation>
-<translation id="5042305953558921026">Tecla de Modo de vista geral</translation>
 <translation id="5104462712192763270">Guardar a página atual</translation>
 <translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Tire uma captura de ecrã inteiro</translation>
 <translation id="6022924867608035986">Limpar texto da caixa de pesquisa</translation>
 <translation id="6052614013050385269">Clicar com o botão direito num link</translation>
-<translation id="6129953537138746214">Espaço</translation>
 <translation id="6143669479988153888">Ampliar a página</translation>
 <translation id="6185696379715117369">Página para cima</translation>
 <translation id="6228457605945141550">Diminuir o brilho</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Selecionar a palavra ou letra anterior</translation>
 <translation id="8727232706774971183">Ver as suas notificações</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 a 8</translation>
-<translation id="8855885154700222542">Tecla de ecrã inteiro</translation>
 <translation id="8881584919399569791">Mova a janela ativa para o espaço de trabalho à esquerda.</translation>
 <translation id="88986195241502842">Página para baixo</translation>
 <translation id="8924883688469390268">Mudar para o utilizador anterior</translation>

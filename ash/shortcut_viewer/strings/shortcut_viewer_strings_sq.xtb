@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Zvarrit lidhjen në shiritin e adresës së skedës</translation>
 <translation id="1251638888133819822">Aktivizo ose çaktivizo zmadhuesin me ekran të plotë</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Printo faqen aktuale</translation>
-<translation id="1383876407941801731">Kërko</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> ose <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Shko në fund të rreshtit</translation>
 <translation id="1499072997694708844">Mbyll çdo dritare të hapur gjetjeje ose ndalo ngarkimin e faqes aktuale</translation>
-<translation id="1510238584712386396">Nisësi</translation>
 <translation id="1516966594427080024">Hap një dritare të re në modalitetin "e fshehtë"</translation>
 <translation id="152892567002884378">Rrit volumin</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, më pas <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Lëviz në fillim të fjalës së mëparshme</translation>
 <translation id="1679841710523778799">Aktivizo ndriçimin</translation>
 <translation id="168356808214100546">Shtyp dhe mbaj shtypur <ph name="ALT" />, trokit <ph name="TAB" /> derisa të arrish te dritarja që dëshiron të hapësh, më pas lëshoje.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Shto www. dhe .com në tekstin e shkruar në shiritin e adresës, më pas hap faqen</translation>
 <translation id="1768987374400973299">Nxirr një pamje të ekranit/bëj regjistrim</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Aktivizo ose çaktivizo ChromeVox (komentet me zë)</translation>
 <translation id="2480851840841871861">Hap "Asistentin e Google"</translation>
 <translation id="2488661730534396940">Aktivizo tavolinën e punës në të majtë</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Hap aplikacionin "Diagnostikimi"</translation>
 <translation id="2530339807289914946">Lëviz poshtë faqes së uebit</translation>
 <translation id="2530896289327917474">Aktivizo ose çaktivizo shfletimin me kursor teksti</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Shkurtoret</translation>
 <translation id="3084301071537457911">Thekso artikullin e radhës në raft</translation>
 <translation id="309173601632226815">Thekso butonin e nisësit në raft</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Shiriti i adresës së fokusimit</translation>
 <translation id="3256109297135787951">Hiq theksimin nga një artikull në raftin tënd</translation>
 <translation id="3288816184963444640">Mbyll dritaren aktuale</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Lëviz në fund të fjalës tjetër</translation>
 <translation id="4866066940972151697">Aktivizo tavolinën e punës në të djathtë</translation>
 <translation id="4916163929714267752">Hape lidhjen në një dritare të re</translation>
-<translation id="492453977506755176">Çelësi i modalitetit të regjistrimit</translation>
 <translation id="5030659775136592441">Shfaq menaxherin e faqeshënuesve</translation>
 <translation id="5034421018520995080">Shko në krye të faqes</translation>
-<translation id="5042305953558921026">Tasti i modalitetit "Përmbledhja"</translation>
 <translation id="5104462712192763270">Ruaj faqen aktuale</translation>
 <translation id="5121628974188116412">Shko në fund të faqes</translation>
 <translation id="5222676887888702881">Dil</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Regjistro një pamje ekrani të plotë</translation>
 <translation id="6022924867608035986">Pastro testin e kutisë së kërkimit</translation>
 <translation id="6052614013050385269">Kliko me të djathtën te një lidhje</translation>
-<translation id="6129953537138746214">Hapësirë</translation>
 <translation id="6143669479988153888">Zmadho faqen</translation>
 <translation id="6185696379715117369">Faqe lart</translation>
 <translation id="6228457605945141550">Ul ndriçimin</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Zgjidh fjalën ose shkronjën e mëparshme</translation>
 <translation id="8727232706774971183">Shiko njoftimet e tua</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1-8</translation>
-<translation id="8855885154700222542">Tasti i ekranit të plotë</translation>
 <translation id="8881584919399569791">Zhvendos dritaren aktive në tavolinën e punës në të majtë</translation>
 <translation id="88986195241502842">Faqe poshtë</translation>
 <translation id="8924883688469390268">Kalo te përdoruesi i mëparshëm</translation>

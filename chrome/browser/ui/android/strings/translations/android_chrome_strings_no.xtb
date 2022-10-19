@@ -270,6 +270,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2496180316473517155">Nettleserlogg</translation>
 <translation id="2497852260688568942">Administratoren din har slått av synkronisering</translation>
 <translation id="250020030759455918">Du kommer til å se påloggingsstatus, nettlesingsdata og nettstedsdata for <ph name="SITE_NAME" /> i Chrome</translation>
+<translation id="2510106555128151389">Installerer <ph name="WEBAPK_NAME" /> …</translation>
 <translation id="2513403576141822879">Se <ph name="BEGIN_LINK" />Synkronisering og Google tjenester<ph name="END_LINK" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2523184218357549926">Sender Google nettadressene til sider du besøker</translation>
@@ -1280,6 +1281,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="7887334752153342268">Dupliser</translation>
 <translation id="789763218334337857">Slik bruker du Chrome</translation>
 <translation id="7903184275147100332">Dette kan ta en liten stund</translation>
+<translation id="7914399737746719723">Appen er installert</translation>
 <translation id="7919123827536834358">Oversett disse språkene automatisk</translation>
 <translation id="7926975587469166629">Kallenavn på kortet</translation>
 <translation id="7929962904089429003">Åpne menyen</translation>

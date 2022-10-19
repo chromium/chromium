@@ -279,6 +279,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1244303850296295656">Plėtinio klaida</translation>
 <translation id="1245628370644070008">Vietinių duomenų atkūrimas</translation>
 <translation id="1246863218384630739">Nepavyko įdiegti „<ph name="VM_NAME" />“: vaizdo URL pateikė <ph name="HTTP_ERROR" /> klaidos kodą. Susisiekite su administratoriumi.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{Pranešimai neleidžiami 1 svetainėje}one{Pranešimai neleidžiami {NUM_SITES} svetainėje}few{Pranešimai neleidžiami {NUM_SITES} svetainėse}many{Pranešimai neleidžiami {NUM_SITES} svetainės}other{Pranešimai neleidžiami {NUM_SITES} svetainių}}</translation>
 <translation id="1251366534849411931">Pradžioje turi būti nurodytas riestinis skliaustas: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Bus išvalyta <ph name="TOTAL_USAGE" /> svetainių ir įdiegtų programų saugomų duomenų</translation>
 <translation id="1251578593170406502">Ieškoma mobiliojo ryšio duomenų tinklų...</translation>
@@ -425,6 +426,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1397594434718759194">Esate prisijungę prie „Chrome“ šiuose įrenginiuose, todėl galite naudoti juos kaip saugos raktus.</translation>
 <translation id="1398853756734560583">Išskleisti</translation>
 <translation id="139911022479327130">Telefono atrakinimas ir tapatybės patvirtinimas</translation>
+<translation id="1401216725754314428">Naujame skirtuke sužinokite daugiau apie susijusias svetaines</translation>
 <translation id="1401308693935339022">Naudokite vietovės nustatymą. Leiskite programoms ir paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti šio įrenginio vietovę. „Google“ gali periodiškai rinkti vietovių duomenis ir anonimiškai naudoti šią informaciją vietovės tikslumui ir vietove pagrįstoms paslaugoms tobulinti.</translation>
 <translation id="1403222014593521787">Nepavyko prisijungti prie tarpinio serverio</translation>
 <translation id="1405779994569073824">Užstrigo.</translation>
@@ -1659,6 +1661,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2476974672882258506">Išjunkite „Windows“, kad pašalintumėte „<ph name="PARALLELS_DESKTOP" />“.</translation>
 <translation id="2477065602824695373">Kadangi nustatėte kelis jungiklius, automatinis nuskaitymas buvo išjungtas.</translation>
 <translation id="2478176599153288112">Medijos failo leidimai, susiję su plėtiniu „<ph name="EXTENSION" />“</translation>
+<translation id="24786041351753425">Įgalinkite duomenų atkūrimo paslaugą.</translation>
 <translation id="2480868415629598489">Keisti kopijuojamus ir įklijuojamus duomenis</translation>
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2482895651873876648">Skirtukas perkeltas į grupę „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
@@ -2274,6 +2277,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3024374909719388945">Naudoti 24 val. laikrodį</translation>
 <translation id="3027296729579831126">Įjungti Bendrinimo netoliese funkciją</translation>
 <translation id="3029466929721441205">Rašiklio įrankių rodymas lentynoje</translation>
+<translation id="3029808567601324798">Laikas iki užrakinimo</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį šiandien. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}one{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį iki nurodyto termino. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}few{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį iki nurodyto termino. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}many{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį iki nurodyto termino. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}other{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį iki nurodyto termino. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}}</translation>
 <translation id="3030967311408872958">Nuo saulėlydžio iki saulėtekio</translation>
 <translation id="3031417829280473749">Slaptasis agentas</translation>
@@ -4222,6 +4226,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4901154724271753917">Išskleisti neseniai uždarytą</translation>
 <translation id="4901309472892185668">Pasirinkite eksperimento būseną, skirtą eksperimentui „<ph name="EXPERIMENT_NAME" />“.</translation>
 <translation id="49027928311173603">Iš serverio atsisiųsta politika netinkama: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">Pailginamas akumuliatoriaus veikimo laikas apribojant veiklą fone ir vaizdo efektus, pvz., sklandų slinkimą.</translation>
 <translation id="4906490889887219338">Nustatykite arba tvarkykite tinklo failų bendrinimą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Pasirinkite, kada šis plėtinys gali skaityti ir keisti svetainės duomenis</translation>
 <translation id="4907161631261076876">Šis failas atsisiunčiamas retai ir gali būti pavojingas.</translation>
@@ -5329,6 +5334,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5971037678316050792">Valdyti „Bluetooth“ adapterio būseną ir susiejimą</translation>
 <translation id="597235323114979258">Žr. daugiau paskirties vietų</translation>
 <translation id="5972543790327947908">Kai kurios palaikomos nuorodos vis tiek bus atidarytos „<ph name="APP_NAME" />“, „<ph name="APP_NAME_2" />“ arba „<ph name="APP_NAME_3" />“.</translation>
+<translation id="5972559880616357748">Daugiau veiksmų (<ph name="SITE_GROUP" />)</translation>
 <translation id="5972666587303800813">Neveikianti paslauga</translation>
 <translation id="5972708806901999743">Perkelti į viršų</translation>
 <translation id="5972826969634861500">Paleisti „<ph name="PRODUCT_NAME" />“</translation>
@@ -7707,6 +7713,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8206745257863499010">Bliuzas</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
 <translation id="8207404892907560325">Pasirinkite „passkey“</translation>
+<translation id="8208188204689616705">Šios svetainės priklauso <ph name="FPS_OWNER" /> nustatytai grupei. Grupėje esančios svetainės gali matyti jūsų veiklą grupėje.</translation>
 <translation id="8208216423136871611">Neišsaugoti</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Naujas pranešimas}one{# naujas pranešimas}few{# nauji pranešimai}many{# naujo pranešimo}other{# naujų pranešimų}}</translation>
 <translation id="821119981794423735">Jei norite importuoti <ph name="USER_EMAIL" /> „Google“ slaptažodžių tvarkyklės slaptažodžius, pasirinkite CSV failą</translation>
@@ -8523,6 +8530,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8987927404178983737">Mėnuo</translation>
 <translation id="8989359959810288806">Atnaujinti įrenginio kaip modemo naudojimo būseną</translation>
 <translation id="8991520179165052608">Svetainė gali naudoti jūsų mikrofoną</translation>
+<translation id="8993059306046735527">Jei pamiršite „<ph name="DEVICE_TYPE" />“ slaptažodį, vis tiek galėsite atkurti vietinius duomenis. Turėsite prisijungti prie „Google“ paskyros arba naudoti paskyros atkūrimo funkciją.</translation>
 <translation id="899384117894244799">Riboto naudotojo profilio pašalinimas</translation>
 <translation id="899403249577094719">„Netscape“ sertifikatų bazės URL</translation>
 <translation id="899657321862108550">Jūsų „Chrome“, visur</translation>
@@ -8622,6 +8630,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="9078316009970372699">Išjungti momentinį įrenginio kaip modemo naudojimą</translation>
 <translation id="9078842827190780028">Žr. daugiau paieškos rezultatų šoniniame skydelyje</translation>
 <translation id="9079267182985899251">Netrukus ši parinktis nebebus palaikoma. Jei norite rodyti skirtuką, naudokite „<ph name="GOOGLE_MEET" />“.</translation>
+<translation id="9080175821499742274">Atminties taupymo priemonė atlaisvina atminties iš neaktyvių skirtukų, kad ją būtų galima naudoti aktyviuose skirtukuose ir kitose programose.</translation>
 <translation id="9080971985541434310">įvertina pomėgius – „Chrome“ gali įvertinti jūsų pomėgius</translation>
 <translation id="9081543426177426948">Svetainės, kuriose lankotės, nėra saugomos inkognito režimu</translation>
 <translation id="9084064520949870008">Atidaryti kaip langą</translation>
@@ -8811,6 +8820,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="964790508619473209">Ekrano išdėstymas</translation>
 <translation id="965211523698323809">Siųskite ir gaukite teksto pranešimus naudodami „<ph name="DEVICE_TYPE" />“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Pranešti apie „Google Cast“ problemą</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Peržiūrėkite 1 svetainę, kuri neseniai išsiuntė daug pranešimų}one{Peržiūrėkite {NUM_SITES} svetainę, kuri neseniai išsiuntė daug pranešimų}few{Peržiūrėkite {NUM_SITES} svetaines, kurios neseniai išsiuntė daug pranešimų}many{Peržiūrėkite {NUM_SITES} svetainės, kurios neseniai išsiuntė daug pranešimų}other{Peržiūrėkite {NUM_SITES} svetainių, kurios neseniai išsiuntė daug pranešimų}}</translation>
 <translation id="967398046773905967">Neleisti svetainėms pasiekti HID įrenginių</translation>
 <translation id="967624055006145463">Saugomi duomenys</translation>
 <translation id="96774243435178359">Tvarkomi spausdintuvai</translation>

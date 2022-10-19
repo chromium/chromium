@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Trascina il link nella barra degli indirizzi della scheda</translation>
 <translation id="1251638888133819822">Attiva o disattiva la lente d'ingrandimento a schermo intero</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /> <ph name="SEPARATOR1" /> <ph name="MODIFIER2" /> <ph name="SEPARATOR2" /> <ph name="MODIFIER3" /> <ph name="SEPARATOR3" /> <ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Stampa la pagina corrente</translation>
-<translation id="1383876407941801731">Cerca</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> o <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Vai alla fine della riga</translation>
 <translation id="1499072997694708844">Chiude le finestre di ricerca aperte o interrompe il caricamento della pagina attuale</translation>
-<translation id="1510238584712386396">Avvio app</translation>
 <translation id="1516966594427080024">Apri una nuova finestra in modalità di navigazione in incognito</translation>
 <translation id="152892567002884378">Alza il volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, quindi <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Passa all'inizio della parola precedente</translation>
 <translation id="1679841710523778799">Aumenta la luminosità</translation>
 <translation id="168356808214100546">Tieni premuto <ph name="ALT" />, tocca <ph name="TAB" /> fin quando arrivi alla finestra che vuoi aprire, quindi rilascia.</translation>
-<translation id="169515659049020177">Maiusc</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Aggiunge www. e .com all'indirizzo inserito nella barra degli indirizzi, quindi apre la pagina</translation>
 <translation id="1768987374400973299">Acquisisci screenshot/registrazione</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Attiva o disattiva ChromeVox (funzione di lettura vocale)</translation>
 <translation id="2480851840841871861">Apri l'Assistente Google</translation>
 <translation id="2488661730534396940">Attiva la scrivania a sinistra</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Aprire l'app Diagnostica</translation>
 <translation id="2530339807289914946">Scorre la pagina web verso il basso</translation>
 <translation id="2530896289327917474">Attiva o disattiva la navigazione con cursore</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Scorciatoie</translation>
 <translation id="3084301071537457911">Mette in evidenza l'elemento successivo sulla barra delle app</translation>
 <translation id="309173601632226815">Mette in evidenza il pulsante Avvio applicazioni nella barra delle app</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Area attiva nella barra degli indirizzi</translation>
 <translation id="3256109297135787951">Consente di rimuovere l'evidenziazione da un elemento sulla barra delle app</translation>
 <translation id="3288816184963444640">Chiude la finestra corrente</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Passa alla fine della parola successiva</translation>
 <translation id="4866066940972151697">Attiva la scrivania a destra</translation>
 <translation id="4916163929714267752">Apre il link in una nuova finestra</translation>
-<translation id="492453977506755176">Tasto modalità di acquisizione</translation>
 <translation id="5030659775136592441">Consente di mostrare Gestione Preferiti</translation>
 <translation id="5034421018520995080">Passa alla parte superiore della pagina</translation>
-<translation id="5042305953558921026">Tasto modalità panoramica</translation>
 <translation id="5104462712192763270">Salva la pagina corrente</translation>
 <translation id="5121628974188116412">Passa alla parte inferiore della pagina</translation>
 <translation id="5222676887888702881">Esci</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Acquisisci screenshot a schermo intero</translation>
 <translation id="6022924867608035986">Cancella testo dalla casella di ricerca</translation>
 <translation id="6052614013050385269">Consente di fare clic sul link con il pulsante destro del mouse</translation>
-<translation id="6129953537138746214">Spazio</translation>
 <translation id="6143669479988153888">Aumenta lo zoom nella pagina</translation>
 <translation id="6185696379715117369">Pagina su</translation>
 <translation id="6228457605945141550">Diminuisce la luminosità</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Seleziona la parola o la lettera precedente</translation>
 <translation id="8727232706774971183">Visualizza le notifiche</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> da 1 a 8</translation>
-<translation id="8855885154700222542">Tasto schermo intero</translation>
 <translation id="8881584919399569791">Sposta la finestra attiva sulla scrivania a sinistra</translation>
 <translation id="88986195241502842">Pagina giù</translation>
 <translation id="8924883688469390268">Passa all'utente precedente</translation>

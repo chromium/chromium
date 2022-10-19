@@ -72,6 +72,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1290982764014248209">Ilipat ang <ph name="DRAGGED_APP" /> sa folder na <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">USB-C device (port sa kaliwa)</translation>
 <translation id="1293556467332435079">Mga File</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Baguhin ang mga setting ng notification ng lock-screen</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">MGA INIREREKOMENDANG APP</translation>
@@ -91,6 +92,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1407069428457324124">Madilim na tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gamitin ang mga arrow key para mag-navigate sa pagitan ng mga petsa.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, Naka-install na App</translation>
+<translation id="1415846719612499304">Ipakita ang listahan ng network. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">I-unlock ang device para maisagawa ang pagkilos sa notification</translation>
 <translation id="1420408895951708260">I-toggle ang Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Tingnan ang mga kamakailang larawan at media ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
@@ -130,6 +132,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
 <translation id="1677507110654891115">Hindi nakakonekta ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="1677582821739292812">May taong tumitingin sa iyong screen</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> timer · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 address: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Naka-dock sa kaliwa ang aktibong window.</translation>
@@ -250,6 +253,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2322173485024759474">Bumalik nang paisa-isang titik</translation>
 <translation id="2339073806695260576">I-tap ang button na stylus sa shelf para magsulat ng tala, mag-screenshot, gamitin ang laser pointer, o magnifying glass.</translation>
 <translation id="2341729377289034582">Naka-lock sa vertical</translation>
+<translation id="2345226652884463045">Pindutin ang enter o hanapin + space para piliin ang text na ie-edit.</translation>
 <translation id="2350794187831162545">Lokal nang ipinoproseso ang <ph name="LANGUAGE" /> at gumagana ito offline. Puwede mong palitan ang wika ng iyong Dictation sa Mga Setting &gt; Pagiging Accessible.</translation>
 <translation id="2352467521400612932">Mga setting ng stylus</translation>
 <translation id="2354174487190027830">Ina-activate ang <ph name="NAME" /></translation>
@@ -280,6 +284,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2484513351006226581">Pindutin ang <ph name="KEYBOARD_SHORTCUT" /> upang palitan ang layout ng keyboard.</translation>
 <translation id="2501920221385095727">Mga sticky key</translation>
 <translation id="2509468283778169019">Naka-on ang CAPS LOCK</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">I-tap ang iyong larawan sa profile</translation>
 <translation id="255671100581129685">Hindi available ang Google Assistant sa isang pampublikong session.</translation>
 <translation id="256712445991462162">ang naka-dock na magnifier</translation>
@@ -305,6 +310,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2678852583403169292">Menu ng Select-to-speak</translation>
 <translation id="2689613560355655046">Desk 8</translation>
 <translation id="2695305337569143674">web</translation>
+<translation id="2697697418792422688">Ipakita ang mga setting ng keyboard. Pinili ang <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Itakda ang iyong keyboard</translation>
 <translation id="2704781753052663061">Sumali sa iba pang Wi-Fi network</translation>
 <translation id="2705001408393684014">I-toggle ang Mikropono. <ph name="STATE_TEXT" /></translation>
@@ -378,6 +384,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3105917916468784889">Kunin screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">I-shut down ang device?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">I-restart upang mag-update</translation>
 <translation id="3139382871451988441">I-off ang access sa camera.</translation>
 <translation id="3139942575505304791">Desk 1</translation>
@@ -704,6 +711,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4919841137949306064">Kasalukuyang ginagamit ng <ph name="APP_NAME" /> ang iyong camera</translation>
+<translation id="492453977506755176">Key para sa capture mode</translation>
 <translation id="4925542575807923399">Kinakailangan ng administrator sa account na ito na ang account na ito ang unang i-sign in na account sa isang session ng multiple na pag-sign in.</translation>
 <translation id="4938176435186993759">I-hide ang lahat ng suhestyon</translation>
 <translation id="4945196315133970626">I-off ang mga notification</translation>
@@ -725,6 +733,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5033299697334913360">Mag-click kahit saan para i-capture ang full screen</translation>
 <translation id="5035236842988137213">Kumonekta ang <ph name="DEVICE_NAME" /> sa isang bagong telepono</translation>
 <translation id="5035389544768382859">Kumpirmahin ang Configuration ng Display</translation>
+<translation id="5042305953558921026">Key para sa overview mode</translation>
 <translation id="504465286040788597">Nakaraang talata</translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
 <translation id="5071064518267176975">Gustong gamitin ng isang app ang mikropono</translation>
@@ -776,6 +785,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5327248766486351172">Pangalan</translation>
 <translation id="5329548388331921293">Kumokonekta...</translation>
 <translation id="5331975486040154427">USB-C device (port sa kaliwang bahagi sa likod)</translation>
+<translation id="533282197239610265">Ipakita ang mga cast device</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="5352250171825660495">Naka-on ang Madilim na tema</translation>
 <translation id="5356963482258194581">Magpalipat-lipat sa madilim at maliwanag na tema. Mag-right click sa desktop at piliin ang Wallpaper at style.</translation>
@@ -807,10 +817,12 @@ Isaksak ang iyong device.</translation>
 <translation id="553675580533261935">Lumalabas sa session</translation>
 <translation id="5537725057119320332">I-cast</translation>
 <translation id="554893713779400387">I-toggle ang pagdidikta</translation>
+<translation id="5558091555391176027">I-toggle ang mataas na visibility ng Nearby Share</translation>
 <translation id="5560420195677022218">Tingnan ang mga app ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="556042886152191864">Pindutan</translation>
 <translation id="5571066253365925590">Pinapagana ang Bluetooth</translation>
 <translation id="557563299383177668">Susunod na parirala</translation>
+<translation id="5577082622442191756">I-toggle ang Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Tingnan kung naka-enable ang Bluetooth sa iyong telepono para magamit ang Phone Hub</translation>
 <translation id="5580000943347215299">Library</translation>
 <translation id="558849140439112033">Mag-drag para pumili ng bahaging ika-capture</translation>
@@ -880,6 +892,7 @@ Isaksak ang iyong device.</translation>
 <translation id="595202126637698455">Naka-enable ang pagte-trace sa pagganap</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Pinangangasiwaang user</translation>
+<translation id="5965524703725988602">I-toggle ang Madilim na tema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Pindutin ang enter para i-record ang window</translation>
 <translation id="5977415296283489383">Headphone</translation>
 <translation id="5978382165065462689">Pagbabahagi ng kontrol sa iyong screen sa pamamagitan ng Remote Assistance.</translation>
@@ -914,6 +927,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Kumpirmahin ang pag-download ng <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Hindi available ang Google Assistant sa session ng bisita.</translation>
+<translation id="6129953537138746214">Puwang</translation>
 <translation id="6134259848159370930">Maghanap sa iyong device, mga app, mga setting, at web.</translation>
 <translation id="6137566720514957455">Buksan ang alisin ang dialog para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Kumpirmahin ang pag-download</translation>
@@ -1125,6 +1139,7 @@ Kaka-install lang</translation>
 <translation id="7378889811480108604">Naka-off ang battery saver mode</translation>
 <translation id="7382680553121047388">I-on</translation>
 <translation id="7384028040782072252">Mag-right click kahit saan para baguhin ang pagkakaayos ng iyong mga app</translation>
+<translation id="7386767620098596324">I-toggle ang koneksyon ng network. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Puwede kang mag-set up sa ibang pagkakataon mula sa Mga Setting anumang oras.</translation>
 <translation id="7405710164030118432">Para i-unlock ang device, ilagay ang iyong access code ng magulang sa Family Link</translation>
 <translation id="7406608787870898861">Tapusin ang pag-set up ng iyong mobile network</translation>
@@ -1265,6 +1280,7 @@ Kaka-install lang</translation>
 <translation id="8142441511840089262">I-double click</translation>
 <translation id="8142699993796781067">Pribadong network</translation>
 <translation id="8144760705599030999">I-save ang iyong <ph name="NAME" /> sa <ph name="EMAIL" /> para sa mas mabilis na pagpapares sa iba mo pang device</translation>
+<translation id="8149413265954228307">Ipakita ang mga setting ng Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Pindutin ang Ctrl + W para isara ito.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Autocomplete</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
@@ -1325,6 +1341,7 @@ Kaka-install lang</translation>
 <translation id="8473301994082929012">Ang <ph name="ORGANIZATION_NAME" /> ay may <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pindutin ang Alt+Search o Shift upang kanselahin.</translation>
 <translation id="8492573885090281069">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" />. Ginawang <ph name="FALLBACK_RESOLUTION" /> ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga dating setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Ipakita ang mga setting ng Nearby Share</translation>
 <translation id="85123341071060231">Naka-off ang Bluetooth ng Chromebook mo. Para i-unlock ito, ilagay ang password.</translation>
 <translation id="8513108775083588393">I-auto rotate</translation>
 <translation id="851458219935658693">Ipakita ang mga window mula sa kasalukuyang desk at piniling radio button</translation>
@@ -1384,6 +1401,7 @@ Kaka-install lang</translation>
 <translation id="8843682306134542540">I-toggle ang lock ng pag-rotate. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hindi pa rin ma-verify ang iyong PIN o password. Tandaan: Kung pinalitan mo kamakailan ang iyong password, gamitin ang lumang password mo. Malalapat ang iyong bagong password kapag nag-sign out ka.</translation>
+<translation id="8855885154700222542">Key ng fullscreen</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
 <translation id="8874184842967597500">Hindi konekta</translation>
 <translation id="8876661425082386199">Suriin ang iyong koneksyon</translation>

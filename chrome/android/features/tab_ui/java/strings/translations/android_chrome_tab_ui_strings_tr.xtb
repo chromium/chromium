@@ -84,6 +84,7 @@
 <translation id="753732157349120914">Sekme Değiştirici</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'dan <ph name="REVIEWS_COUNT_ONE" /> yorum}other{Google'dan <ph name="REVIEWS_COUNT_MANY" /> yorum}}</translation>
 <translation id="7559245342362162951">Grubun sekmelerini tam ekran ızgarada gösterir</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Seçili <ph name="TABS_COUNT_ONE" /> sekmeyi paylaş}other{Seçili <ph name="TABS_COUNT_MANY" /> sekmeyi paylaş}}</translation>
 <translation id="7792771145871471484">Önerileri inceleyin.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi gruplandır}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi gruplandır}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_ONE" /> yorum}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_MANY" /> yorum}}</translation>

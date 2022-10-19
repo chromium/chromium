@@ -72,6 +72,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1290982764014248209">Alih <ph name="DRAGGED_APP" /> ke folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Peranti USB-C (port kiri)</translation>
 <translation id="1293556467332435079">Fail</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Tukar tetapan pemberitahuan kunci skrin</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APL YANG DISYORKAN</translation>
@@ -130,6 +131,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1677472565718498478">Berbaki <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> tidak disambungkan.</translation>
 <translation id="1677582821739292812">Seseorang sedang memandang skrin anda</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Pemasa <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Alamat IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Tetingkap aktif didok sebelah kiri.</translation>
@@ -281,6 +283,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk menukar atur letak papan kekunci.</translation>
 <translation id="2501920221385095727">Kekunci lekit</translation>
 <translation id="2509468283778169019">Kekunci CAPS LOCK dihidupkan</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Ketik imej profil anda</translation>
 <translation id="255671100581129685">Google Assistant tidak tersedia dalam sesi awam.</translation>
 <translation id="256712445991462162">penggadang yang didokkan</translation>
@@ -379,6 +382,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3105917916468784889">Ambil tangkapan skrin</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Matikan peranti?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Mulakan semula untuk mengemas kini</translation>
 <translation id="3139382871451988441">Matikan akses kamera.</translation>
 <translation id="3139942575505304791">Meja 1</translation>
@@ -703,6 +707,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> sedang menggunakan kamera anda pada masa ini</translation>
+<translation id="492453977506755176">Kekunci mod tangkap</translation>
 <translation id="4925542575807923399">Pentadbir akaun ini memerlukan akaun ini menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
 <translation id="4938176435186993759">Sembunyikan semua cadangan</translation>
 <translation id="4945196315133970626">Matikan pemberitahuan</translation>
@@ -723,6 +728,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5033299697334913360">Klik mana-mana bahagian untuk menangkap skrin penuh</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> disambungkan ke telefon baharu</translation>
 <translation id="5035389544768382859">Sahkan Konfigurasi Paparan</translation>
+<translation id="5042305953558921026">Kekunci mod ikhtisar</translation>
 <translation id="504465286040788597">Perenggan sebelumnya</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
 <translation id="5071064518267176975">Satu apl mahu menggunakan mikrofon</translation>
@@ -910,6 +916,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Sahkan muat turun <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Assistant tidak tersedia dalam sesi tetamu.</translation>
+<translation id="6129953537138746214">Ruang</translation>
 <translation id="6134259848159370930">Cari dalam peranti anda, apl, tetapan dan web.</translation>
 <translation id="6137566720514957455">Buka dialog alih keluar untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Sahkan muat turun</translation>
@@ -1377,6 +1384,7 @@ Pemasangan baharu</translation>
 <translation id="8843682306134542540">Togol kunci putaran. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Carian+Esc</translation>
 <translation id="8853703225951107899">PIN atau kata laluan anda masih tidak dapat disahkan. Nota: Jika anda menukar kata laluan anda baru-baru ini, gunakan kata laluan lama anda. Kata laluan baharu anda akan digunakan apabila anda log keluar.</translation>
+<translation id="8855885154700222542">Kekunci skrin penuh</translation>
 <translation id="8870509716567206129">Apl tidak menyokong skrin pisah.</translation>
 <translation id="8874184842967597500">Tidak bersambung</translation>
 <translation id="8876661425082386199">Semak sambungan anda</translation>

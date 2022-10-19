@@ -5435,7 +5435,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
           Si cette règle est désactivée, les utilisateurs ne peuvent pas ajouter de comptes Kerberos. Ces derniers ne peuvent être ajoutés qu'avec la règle "Configurer les comptes Kerberos". C'est un moyen efficace de verrouiller des comptes.</translation>
 <translation id="6491139795995924304">Autoriser le Bluetooth sur l'appareil</translation>
 <translation id="6491305972928809525">Ne pas afficher le menu d'accessibilité flottant en mode Kiosque</translation>
-<translation id="6491610602835998107">Désactiver les rapports sur les informations système et du contenu de pages afin d'améliorer la navigation sécurisée</translation>
 <translation id="6491872498385040936">Cette règle est obsolète. Utilisez plutôt <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, qui est prioritaire sur cette règle et permet des réglages plus fins.
 
       Cette règle impose le mode restreint modéré sur YouTube et empêche les utilisateurs de modifier ce paramètre.

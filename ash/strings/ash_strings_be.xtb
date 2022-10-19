@@ -72,6 +72,7 @@
 <translation id="1290982764014248209">Перамясціць у папку "<ph name="FOLDER_NAME" />" праграму "<ph name="DRAGGED_APP" />"</translation>
 <translation id="1293264513303784526">Прылада USB-C (левы порт)</translation>
 <translation id="1293556467332435079">Файлы</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Змяніць налады апавяшчэнняў экрана блакіроўкі</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">РЭКАМЕНДАВАНЫЯ ПРАГРАМЫ</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478">Засталося <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функцыя "<ph name="FEATURE_NAME" />" не падключана.</translation>
 <translation id="1677582821739292812">Нехта глядзіць на ваш экран</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Адрас IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Актыўнае акно замацавана злева.</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">Каб пераключыць раскладку клавіятуры, націсніце <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Заліпанне клавіш</translation>
 <translation id="2509468283778169019">CAPS LOCK уключаны</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Націсніце відарыс профілю</translation>
 <translation id="255671100581129685">Памочнік Google недаступны ў агульнадаступным сеансе.</translation>
 <translation id="256712445991462162">прыстыкаваная лупа</translation>
@@ -378,6 +381,7 @@
 <translation id="3105917916468784889">Зрабіць здымак экрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Завяршыць працу прылады?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Перазапусціце для абнаўлення</translation>
 <translation id="3139382871451988441">Адключыць доступ да камеры.</translation>
 <translation id="3139942575505304791">Стол 1</translation>
@@ -701,6 +705,7 @@
 <translation id="4917385247580444890">Моцны</translation>
 <translation id="4918086044614829423">Прыняць</translation>
 <translation id="4919841137949306064">Зараз <ph name="APP_NAME" /> выкарыстоўвае камеру</translation>
+<translation id="492453977506755176">Клавіша пераходу ў рэжым здымання</translation>
 <translation id="4925542575807923399">Адміністратар гэтага ўліковага запісу патрабуе, каб у сеансе з уваходам у некалькі ўліковых запісаў гэты ўліковы запіс быў першым.</translation>
 <translation id="4938176435186993759">Схаваць усе прапановы</translation>
 <translation id="4945196315133970626">Выключыць апавяшчэнні</translation>
@@ -721,6 +726,7 @@
 <translation id="5033299697334913360">Каб зняць увесь экран, націсніце ў любым яго месцы</translation>
 <translation id="5035236842988137213">Прылада <ph name="DEVICE_NAME" /> падключана да новага тэлефона</translation>
 <translation id="5035389544768382859">Пацвярджэнне канфігурацыі дысплэя</translation>
+<translation id="5042305953558921026">Клавіша рэжыму агляду</translation>
 <translation id="504465286040788597">Папярэдні абзац</translation>
 <translation id="5045550434625856497">Няправільны пароль</translation>
 <translation id="5071064518267176975">Праграма запытвае дазвол на выкарыстанне мікрафона</translation>
@@ -908,6 +914,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Пацвердзіце спампоўванне файла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Памочнік Google недаступны ў гасцявым сеансе.</translation>
+<translation id="6129953537138746214">Прабел</translation>
 <translation id="6134259848159370930">Пошук на прыладзе, у праграмах, наладах і інтэрнэце.</translation>
 <translation id="6137566720514957455">Адкрыць дыялогавае акно выдалення ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Пацвярджэнне спампоўвання</translation>
@@ -1375,6 +1382,7 @@
 <translation id="8843682306134542540">Уключыць або выключыць блакіроўку павароту. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Клавіша пошуку + Esc</translation>
 <translation id="8853703225951107899">Пароль або PIN-код спраўдзіць зноў не ўдалося. Заўвага: калі вы нядаўна змянілі пароль, то выкарыстайце тут стары пароль. Новы пароль будзе прыменены пасля выхаду.</translation>
+<translation id="8855885154700222542">Клавіша поўнаэкраннага рэжыму</translation>
 <translation id="8870509716567206129">Праграма не падтрымлівае рэжым падзеленага экрана.</translation>
 <translation id="8874184842967597500">Не падключана</translation>
 <translation id="8876661425082386199">Праверце падключэнне</translation>

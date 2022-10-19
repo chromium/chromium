@@ -419,6 +419,7 @@
 <translation id="1397594434718759194">由於您已在這些裝置上登入 Chrome，因此這些裝置可以用作安全密鑰。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="139911022479327130">解鎖手機並確認您的身分</translation>
+<translation id="1401216725754314428">喺新分頁度進一步了解相關網站</translation>
 <translation id="1401308693935339022">使用定位服務。允許具備位置資訊存取權的應用程式和服務使用此裝置位置。Google 可能會定期收集位置資料，並以匿名方式使用這些資料，以提升位置精確度和適地性服務。</translation>
 <translation id="1403222014593521787">無法連線至 Proxy</translation>
 <translation id="1405779994569073824">已當機。</translation>
@@ -7675,6 +7676,7 @@
 <translation id="820568752112382238">最常瀏覽的網站</translation>
 <translation id="8206745257863499010">藍調</translation>
 <translation id="8206859287963243715">蜂窩</translation>
+<translation id="8208188204689616705">這些網站屬於由 <ph name="FPS_OWNER" /> 定義的群組，群組中的網站可以查看您在該群組的活動。</translation>
 <translation id="8208216423136871611">不要儲存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
 <translation id="821119981794423735">如要將密碼匯入 <ph name="USER_EMAIL" /> 的「Google 密碼管理工具」，請選取 CSV 檔案</translation>

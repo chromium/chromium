@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />কে <ph name="FOLDER_NAME" /> ফোল্ডারে সরান।</translation>
 <translation id="1293264513303784526">USB-C ডিভাইস (বাঁ পোর্ট)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">লক-স্ক্রিন বিজ্ঞপ্তির সেটিংস পরিবর্তন করুন</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">প্রস্তাবিত অ্যাপ</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা নেই।</translation>
 <translation id="1677582821739292812">কেউ আপনার স্ক্রিনের দিকে তাকিয়ে আছে</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-এর টাইমার · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ঠিকানা: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">অ্যাক্টিভ উইন্ডোটি বাঁদিকে ডক করা আছে।</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">কীবোর্ড লে-আউট পরিবর্তন করতে <ph name="KEYBOARD_SHORTCUT" /> টিপুন।</translation>
 <translation id="2501920221385095727">স্টিকি কীজ</translation>
 <translation id="2509468283778169019">CAPS LOCK চালু</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">আপনার প্রোফাইল ছবিতে ট্যাপ করুন</translation>
 <translation id="255671100581129685">সর্বজনীন সেশনে Google অ্যাসিস্ট্যান্ট উপলভ্য নয়।</translation>
 <translation id="256712445991462162">ডক করা ম্যাগনিফায়ার</translation>
@@ -378,6 +381,7 @@
 <translation id="3105917916468784889">স্ক্রিনশট নিন</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ব্লুটুথ)</translation>
 <translation id="3120421559657122717">ডিভাইস বন্ধ করবেন?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">আপডেট করার জন্য পুনরারম্ভ করুন</translation>
 <translation id="3139382871451988441">ক্যামেরা অ্যাক্সেস বন্ধ করুন।</translation>
 <translation id="3139942575505304791">ডেস্ক ১</translation>
@@ -701,6 +705,7 @@
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> এখন আপনার ক্যামেরা ব্যবহার করছে</translation>
+<translation id="492453977506755176">'ক্যাপচার মোড' কী</translation>
 <translation id="4925542575807923399">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর অ্যাকাউন্টটিকে একাধিক সাইন-ইন সেশনের প্রথম সাইন-ইন করে থাকা অ্যাকাউন্ট হিসেবে রাখতে চায়৷</translation>
 <translation id="4938176435186993759">সব সাজেশন লুকান</translation>
 <translation id="4945196315133970626">বিজ্ঞপ্তি বন্ধ করুন</translation>
@@ -721,6 +726,7 @@
 <translation id="5033299697334913360">সম্পূর্ণ স্ক্রিন ক্যাপচার করতে যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />টি নতুন ফোনে কানেক্ট করা হয়েছে</translation>
 <translation id="5035389544768382859">ডিসপ্লে কনফিগারেশন কনফার্ম করুন</translation>
+<translation id="5042305953558921026">এক নজরে দেখার বোতাম</translation>
 <translation id="504465286040788597">পূর্ববর্তী অনুচ্ছেদ</translation>
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
 <translation id="5071064518267176975">অ্যাপ মাইক্রোফোন ব্যবহার করতে চায়</translation>
@@ -908,6 +914,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ডাউনলোড নিশ্চিত করুন</translation>
 <translation id="612734058257491180">Google অ্যাসিস্ট্যান্ট কোনও গেস্ট সেশনে উপলভ্য নয়।</translation>
+<translation id="6129953537138746214">ব্যবধান</translation>
 <translation id="6134259848159370930">আপনার ডিভাইস, অ্যাপ, সেটিংস এবং ওয়েবে সার্চ করুন।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য, 'অ্যাকাউন্ট সরিয়ে দিন' ডায়ালগ খুলুন</translation>
 <translation id="6141988275892716286">ডাউনলোড নিশ্চিত করুন</translation>
@@ -1375,6 +1382,7 @@
 <translation id="8843682306134542540">রোটেশন লক টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">আপনার পিন বা পাসওয়ার্ড এখনও যাচাই করা যায়নি। মনে রাখবেন: আপনি সম্প্রতি পাসওয়ার্ড পরিবর্তন করে থাকলে, পুরনো পাসওয়ার্ড ব্যবহার করুন। আপনি সাইন-আউট করলে নতুন পাসওয়ার্ড প্রয়োগ করা হবে।</translation>
+<translation id="8855885154700222542">ফুলস্ক্রিন করার বোতাম</translation>
 <translation id="8870509716567206129">অ্যাপ্লিকেশনটি বিভক্ত-স্ক্রিন সমর্থন করে না৷</translation>
 <translation id="8874184842967597500">সংযুক্ত নয়</translation>
 <translation id="8876661425082386199">আপনার ইন্টারনেট কানেকশন চেক করুন</translation>

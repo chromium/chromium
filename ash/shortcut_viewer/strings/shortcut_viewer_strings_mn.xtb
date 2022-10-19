@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Холбоосыг табын хаяг оруулах хэсэгт чирэх</translation>
 <translation id="1251638888133819822">Бүтэн дэлгэцийн томруулагчийг асаах эсвэл унтраах</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc товч</translation>
 <translation id="1299858300159559687">Одоогийн хуудсaa хэвлэх</translation>
-<translation id="1383876407941801731">Хайлт</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> эсвэл <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Мөрийн төгсгөл рүү очно уу</translation>
 <translation id="1499072997694708844">Нээлттэй олдох дурын цонхыг хаах эсвэл одоогийн хуудсаа ачаалахаа болих</translation>
-<translation id="1510238584712386396">Launcher</translation>
 <translation id="1516966594427080024">Нууцлалтай горимд шинэ цонх нээх</translation>
 <translation id="152892567002884378">Дууны түвшинг нэмэх</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> дараа нь <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Өмнөх үгийн эхлэх хэсэгт шилжинэ үү</translation>
 <translation id="1679841710523778799">Гэрэлтүүлэг нэмэх</translation>
 <translation id="168356808214100546">Нээх цонхоо олох хүртлээ <ph name="ALT" />-г удаан дараад <ph name="TAB" />-г товшино уу. Цонхыг олсны дараа суллана уу.</translation>
-<translation id="169515659049020177">Солих</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Хаяг оруулах хэсэгт www. болон .com гэж нэмээд хуудсыг нээнэ үү</translation>
 <translation id="1768987374400973299">Дэлгэцийн агшныг авах/бичих</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">ChromeVox-г (хэлсэн санал) унтраах, асаах</translation>
 <translation id="2480851840841871861">Google Туслахыг нээх</translation>
 <translation id="2488661730534396940">Зүүн талын дэлгэцийг идэвхжүүлэх</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Оношилгооны аппыг нээх</translation>
 <translation id="2530339807289914946">Веб хуудсыг доош гүйлгэх</translation>
 <translation id="2530896289327917474">Caret browsing-г асаах эсвэл унтраах</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Товчлол</translation>
 <translation id="3084301071537457911">Тавиур дээрх дараагийн зүйлийг тодруулах</translation>
 <translation id="309173601632226815">Тавиур дээрх эхлүүлэх товчлуурыг тодруулах</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Хаягийн мөрөнд төвлөрөх</translation>
 <translation id="3256109297135787951">Тавиур дээрх зүйлээсээ тодруулгыг устгах</translation>
 <translation id="3288816184963444640">Одоогийн цонхыг хаах</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Дараагийн үгийн төгсгөл рүү шилжих</translation>
 <translation id="4866066940972151697">Баруун талын дэлгэцийг идэвхжүүлэх</translation>
 <translation id="4916163929714267752">Холбоосыг шинэ цонхонд нээх</translation>
-<translation id="492453977506755176">Зураг авах горимын товч</translation>
 <translation id="5030659775136592441">Хавчуургын менежерийг харуулах</translation>
 <translation id="5034421018520995080">Хуудасны дээд хэсэгт очих</translation>
-<translation id="5042305953558921026">Тойм горимын түлхүүр</translation>
 <translation id="5104462712192763270">Одоогийн хуудсаа хадгалах</translation>
 <translation id="5121628974188116412">Хуудасны доод хэсэгт очих</translation>
 <translation id="5222676887888702881">Гарах</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Бүтэн дэлгэцийн агшныг авах</translation>
 <translation id="6022924867608035986">Хайлтын талбарын текстийг утсгах</translation>
 <translation id="6052614013050385269">Холбоосны баруун товчлуурыг дарах</translation>
-<translation id="6129953537138746214">Space</translation>
 <translation id="6143669479988153888">Хуудсанд томруулах</translation>
 <translation id="6185696379715117369">Хуудас дээшлүүлэх</translation>
 <translation id="6228457605945141550">Гэрэлтүүлгийг бууруулах</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Өмнөх үг эсвэл үсгийг сонгох</translation>
 <translation id="8727232706774971183">Мэдэгдлээ харах</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1-ээс 8</translation>
-<translation id="8855885154700222542">Бүтэн дэлгэцийн түлхүүр</translation>
 <translation id="8881584919399569791">Идэвхтэй цонхыг зүүн талын дэлгэц рүү шилжүүлэх</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8924883688469390268">Өмнөх хэрэглэгч рүү сэлгэх</translation>

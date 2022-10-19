@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">سابقه مرور</translation>
 <translation id="2497852260688568942">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
 <translation id="250020030759455918">‏وضعیت ورود به سیستم <ph name="SITE_NAME" />، داده‌های محصول مرور، و داده‌های سایت را در Chrome خواهید دید</translation>
+<translation id="2510106555128151389">درحال نصب <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2513403576141822879">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت و جمع‌آوری داده‌ها، <ph name="BEGIN_LINK" />همگام‌سازی و سرویس‌های Google<ph name="END_LINK" /> را ببینید</translation>
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2523184218357549926">‏نشانی وب صفحه‌هایی را که بازدید می‌کنید برای Google ارسال می‌کند</translation>
@@ -1280,6 +1281,7 @@
 <translation id="7887334752153342268">کپی‌برداری</translation>
 <translation id="789763218334337857">‏نحوه استفاده از Chrome</translation>
 <translation id="7903184275147100332">ممکن است یک دقیقه طول بکشد</translation>
+<translation id="7914399737746719723">برنامه نصب شد</translation>
 <translation id="7919123827536834358">این زبان‌ها به‌طور خودکار ترجمه شوند</translation>
 <translation id="7926975587469166629">نام مستعار کارت</translation>
 <translation id="7929962904089429003">باز کردن منو</translation>

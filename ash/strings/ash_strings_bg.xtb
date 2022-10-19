@@ -72,6 +72,7 @@
 <translation id="1290982764014248209">Преместване на <ph name="DRAGGED_APP" /> в папката <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">USB-C устройство (левият порт)</translation>
 <translation id="1293556467332435079">Файлове</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Промяна на настройките за известия на заключения екран</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ПРЕПОРЪЧАНИ ПРИЛОЖЕНИЯ</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функцията „<ph name="FEATURE_NAME" />“ не е свързана.</translation>
 <translation id="1677582821739292812">Някой гледа в екрана ви</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Таймер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 адрес: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Активният прозорец е прикрепен отляво.</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">Натиснете <ph name="KEYBOARD_SHORTCUT" /> за превключване на клавиатурната подредба.</translation>
 <translation id="2501920221385095727">Оставащи клавиши</translation>
 <translation id="2509468283778169019">„CAPS LOCK“ е включен</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Докоснете изображението на потребителския си профил</translation>
 <translation id="255671100581129685">Google Асистент не е налице по време на публична сесия.</translation>
 <translation id="256712445991462162">лупата в прикрепен режим</translation>
@@ -378,6 +381,7 @@
 <translation id="3105917916468784889">Създаване на екранна снимка</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Да се изключи ли устройството?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Рестартирайте, за да актуализирате</translation>
 <translation id="3139382871451988441">Забранете достъпа до камерата.</translation>
 <translation id="3139942575505304791">Работен кът 1</translation>
@@ -701,6 +705,7 @@
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4918086044614829423">Приемам</translation>
 <translation id="4919841137949306064">Понастоящем <ph name="APP_NAME" /> използва камерата ви</translation>
+<translation id="492453977506755176">Клавиш за режима на заснемане</translation>
 <translation id="4925542575807923399">Този администратор изисква профилът му да е първият, в който да се влезе, при сесия с централизиран вход.</translation>
 <translation id="4938176435186993759">Скриване на всички предложения</translation>
 <translation id="4945196315133970626">Изключване на известията</translation>
@@ -721,6 +726,7 @@
 <translation id="5033299697334913360">Кликнете върху произволно място, за да се заснеме целият екран</translation>
 <translation id="5035236842988137213">Устройството <ph name="DEVICE_NAME" /> е свързано с нов телефон</translation>
 <translation id="5035389544768382859">Потвърждаване на конфигурацията на дисплея</translation>
+<translation id="5042305953558921026">Клавиш за режима за общ преглед</translation>
 <translation id="504465286040788597">Предишен абзац</translation>
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="5071064518267176975">Приложение иска да използва микрофона</translation>
@@ -908,6 +914,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Потвърждаване на изтеглянето на <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Асистент не се поддържа по време на сесия като гост.</translation>
+<translation id="6129953537138746214">Интервал</translation>
 <translation id="6134259848159370930">Търсете в устройството, приложенията, настройките и мрежата.</translation>
 <translation id="6137566720514957455">Отваряне на диалоговия прозорец за премахване на профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Потвърждаване на изтеглянето</translation>
@@ -1375,6 +1382,7 @@
 <translation id="8843682306134542540">Превключване на функцията за заключване на завъртането. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">търсене + Esc</translation>
 <translation id="8853703225951107899">ПИН кодът или паролата ви пак не бяха потвърдени. Забележка: Ако наскоро сте променили паролата си, използвайте старата. Новата ще бъде приложена, щом излезете от профила си.</translation>
+<translation id="8855885154700222542">Клавиш за цял екран</translation>
 <translation id="8870509716567206129">Приложението не поддържа разделен екран.</translation>
 <translation id="8874184842967597500">Няма връзка</translation>
 <translation id="8876661425082386199">Проверка на връзката ви</translation>

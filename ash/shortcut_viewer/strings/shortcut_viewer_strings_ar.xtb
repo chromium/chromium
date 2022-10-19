@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">اسحب الرابط إلى شريط عناوين علامة التبويب</translation>
 <translation id="1251638888133819822">تفعيل وضع "المكبّر بملء الشاشة" أو إيقافه</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">طباعة الصفحة الحالية</translation>
-<translation id="1383876407941801731">البحث</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> أو <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">الانتقال إلى نهاية السطر</translation>
 <translation id="1499072997694708844">عليك إغلاق أي نوافذ بحث مفتوحة أو إيقاف تحميل الصفحة الحالية.</translation>
-<translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1516966594427080024">لفتح نافذة جديدة في وضع التصفُّح المتخفي</translation>
 <translation id="152892567002884378">رفع مستوى الصوت</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />، ثم <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">الانتقال إلى بداية الكلمة السابقة</translation>
 <translation id="1679841710523778799">زيادة السطوع</translation>
 <translation id="168356808214100546">اضغط مع الاستمرار على <ph name="ALT" />، وانقر على <ph name="TAB" /> إلى أن تصل إلى النافذة المراد فتحها، ثم ارفع إصبعك.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">‏إضافة .www وcom. إلى الإدخال في شريط العناوين، ثم فتح الصفحة</translation>
 <translation id="1768987374400973299">تصوير/تسجيل الشاشة</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">‏تفعيل ChromeVox (التعليقات والملاحظات المنطوقة) أو إيقافه</translation>
 <translation id="2480851840841871861">‏فتح "مساعد Google"</translation>
 <translation id="2488661730534396940">تفعيل المكتب على يمين الصفحة</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">‏فتح تطبيق Diagnostics</translation>
 <translation id="2530339807289914946">التمرير إلى أسفل صفحة الويب</translation>
 <translation id="2530896289327917474">تفعيل ميزة "التصفُّح النصي بالمؤشر" أو إيقافها</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">الاختصارات</translation>
 <translation id="3084301071537457911">تمييز العنصر التالي على الرف</translation>
 <translation id="309173601632226815">‏تحديد الزر Launcher على الرف</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">تركيز شريط العناوين</translation>
 <translation id="3256109297135787951">إزالة التحديد عن عنصر على الرف</translation>
 <translation id="3288816184963444640">إغلاق النافذة الحالية</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">الانتقال إلى نهاية الكلمة التالية</translation>
 <translation id="4866066940972151697">تفعيل المكتب على يسار الصفحة</translation>
 <translation id="4916163929714267752">فتح الرابط في نافذة جديدة</translation>
-<translation id="492453977506755176">مفتاح وضع تصوير الشاشة</translation>
 <translation id="5030659775136592441">عرض "مدير الإشارات"</translation>
 <translation id="5034421018520995080">الانتقال إلى أعلى الصفحة</translation>
-<translation id="5042305953558921026">مفتاح وضع النظرة العامة</translation>
 <translation id="5104462712192763270">حفظ الصفحة الحالية</translation>
 <translation id="5121628974188116412">الانتقال إلى أسفل الصفحة</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">الحصول على لقطة لملء الشاشة</translation>
 <translation id="6022924867608035986">محو نص مربع البحث</translation>
 <translation id="6052614013050385269">النقر بالزر الأيمن على رابط</translation>
-<translation id="6129953537138746214">مسافة</translation>
 <translation id="6143669479988153888">التكبير في الصفحة</translation>
 <translation id="6185696379715117369">صفحة لأعلى</translation>
 <translation id="6228457605945141550">تقليل السطوع</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">اختيار الكلمة السابقة أو الحرف السابق</translation>
 <translation id="8727232706774971183">الاطلاع على الإشعارات</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> من 1 إلى 8</translation>
-<translation id="8855885154700222542">مفتاح ملء الشاشة</translation>
 <translation id="8881584919399569791">نقل نافذة نشطة إلى سطح المكتب الأيمن</translation>
 <translation id="88986195241502842">صفحة لأسفل</translation>
 <translation id="8924883688469390268">التبديل إلى المستخدم السابق</translation>

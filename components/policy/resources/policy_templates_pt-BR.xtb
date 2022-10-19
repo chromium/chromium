@@ -5470,7 +5470,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           Se esta política for desativada, os usuários não poderão adicionar contas do Kerberos. As contas só poderão ser adicionadas pela política "Configurar contas do Kerberos". Essa é uma maneira eficiente de bloquear contas.</translation>
 <translation id="6491139795995924304">Permitir o Bluetooth no dispositivo</translation>
 <translation id="6491305972928809525">Não mostrar o menu flutuante de acessibilidade no modo quiosque</translation>
-<translation id="6491610602835998107">Desativar relatórios de informações do sistema e conteúdo da página para ajudar a melhorar o recurso Navegação segura</translation>
 <translation id="6491872498385040936">O uso desta política foi suspenso. Recomendamos que você use <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, que substitui esta política e permite um ajuste mais refinado.
 
 Força o Modo restrito moderado do YouTube e impede que os usuários alterem esta configuração.
@@ -6964,6 +6963,10 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="7962093600142350905">Esta política controla se as impressoras com protocolo Privet disponíveis serão exibidas ao usuário na caixa de diálogo de visualização de impressão.
       Se a política for definida como "Ativada", as impressoras com protocolo Privet disponíveis serão exibidas.
       Se ela for definida como "Desativada" ou deixada sem definição, as impressoras com protocolo Privet não serão exibidas na visualização de impressão, já que esse método de impressão está suspenso.</translation>
+<translation id="7967976640306183631">Se a política for ativada, não vai ser permitido fazer capturas de tela com os atalhos do teclado ou as APIs de extensão. Se ela for desativada ou deixada sem definição, será possível fazer capturas de tela.
+
+      No <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />, isso não impede capturas de tela com apps do sistema operacional ou de terceiros.
+      </translation>
 <translation id="7970844378072291834">Forçar a ativação do HTTPS-Only Mode (indisponível no momento)</translation>
 <translation id="7972642710812569707">Forçar a reativação do WebSQL em contextos de terceiros.</translation>
 <translation id="7973609468423251675">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.

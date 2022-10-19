@@ -72,6 +72,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1290982764014248209">Skuif <ph name="DRAGGED_APP" /> na vouer <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">USB C-toestel (poort aan linkerkant)</translation>
 <translation id="1293556467332435079">Lêers</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Verander die sluitskerm-kennisgewinginstellings</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">AANBEVEELDE PROGRAMME</translation>
@@ -131,6 +132,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> oor</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is nie gekoppel nie.</translation>
 <translation id="1677582821739292812">Iemand kyk tans na jou skerm</translation>
+<translation id="169515659049020177">Skuifsleutel</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-afteller · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adres: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktiewe venster is aan die linkerkant gedok.</translation>
@@ -281,6 +283,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2484513351006226581">Druk <ph name="KEYBOARD_SHORTCUT" /> om sleutelborduitleg te wissel.</translation>
 <translation id="2501920221385095727">Taaisleutels</translation>
 <translation id="2509468283778169019">HOOFLETTERSLOT is aan</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Tik op jou profielprent</translation>
 <translation id="255671100581129685">Die Google Assistent is nie in 'n publieke sessie beskikbaar nie.</translation>
 <translation id="256712445991462162">die gedokte vergrootglas</translation>
@@ -380,6 +383,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3105917916468784889">Neem skermkiekie</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Skakel toestel af?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Herbegin om op te dateer</translation>
 <translation id="3139382871451988441">Skakel kameratoegang af.</translation>
 <translation id="3139942575505304791">Lessenaar 1</translation>
@@ -704,6 +708,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> gebruik tans jou kamera</translation>
+<translation id="492453977506755176">Vasvangmodus-sleutel</translation>
 <translation id="4925542575807923399">Die administrateur vir hierdie rekening vereis dat hierdie rekening die eerste een moet wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="4938176435186993759">Versteek alle voorstelle</translation>
 <translation id="4945196315133970626">Skakel kennisgewings af</translation>
@@ -724,6 +729,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5033299697334913360">Klik enige plek om volskerm vas te vang</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> het aan 'n nuwe foon gekoppel</translation>
 <translation id="5035389544768382859">Bevestig vertoonskermopstelling</translation>
+<translation id="5042305953558921026">Oorsigmodus-sleutel</translation>
 <translation id="504465286040788597">Vorige paragraaf</translation>
 <translation id="5045550434625856497">Verkeerde wagwoord</translation>
 <translation id="5071064518267176975">'n Program wil die mikrofoon gebruik</translation>
@@ -915,6 +921,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bevestig aflaai <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Die Google Assistent is nie in 'n gastesessie beskikbaar nie.</translation>
+<translation id="6129953537138746214">Spasie</translation>
 <translation id="6134259848159370930">Deursoek jou toestel, programme en die web.</translation>
 <translation id="6137566720514957455">Maak verwyderingdialoog oop vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Bevestig aflaai</translation>
@@ -1385,6 +1392,7 @@ Nuwe installasie</translation>
 <translation id="8843682306134542540">Wissel rotasieslot. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Jou PIN of wagwoord kon steeds nie geverifieer word nie. Let wel: As jy jou wagwoord onlangs verander het, moet jy jou ou wagwoord gebruik. Jou nuwe wagwoord sal van toepassing wees sodra jy afmeld.</translation>
+<translation id="8855885154700222542">Volskermsleutel</translation>
 <translation id="8870509716567206129">Program steun nie verdeelde skerm nie.</translation>
 <translation id="8874184842967597500">Nie gekoppel nie</translation>
 <translation id="8876661425082386199">Gaan jou verbinding na</translation>

@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">ลากลิงก์ไปยังแถบที่อยู่ของแท็บ</translation>
 <translation id="1251638888133819822">เปิดหรือปิดแว่นขยายทั้งหน้าจอ</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">พิมพ์หน้าเว็บปัจจุบัน</translation>
-<translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> หรือ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">ไปที่ท้ายบรรทัด</translation>
 <translation id="1499072997694708844">ปิดหน้าต่างการค้นหาที่เปิดอยู่หรือหยุดการโหลดหน้าปัจจุบัน</translation>
-<translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
 <translation id="1516966594427080024">เปิดหน้าต่างใหม่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">ย้ายไปยังจุดเริ่มต้นของคำก่อนหน้า</translation>
 <translation id="1679841710523778799">เพิ่มความสว่าง</translation>
 <translation id="168356808214100546">กด <ph name="ALT" /> ค้างไว้แล้วแตะ <ph name="TAB" /> จนกว่าคุณจะไปถึงหน้าต่างที่ต้องการเปิดแล้วจึงปล่อย</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">เพิ่ม www. และ .com ในข้อมูลที่คุณป้อนลงในแถบที่อยู่ แล้วเปิดหน้าเว็บนั้น</translation>
 <translation id="1768987374400973299">ถ่ายภาพหน้าจอ/บันทึกหน้าจอ</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">เปิดหรือปิด ChromeVox (อธิบายและอ่านออกเสียง)</translation>
 <translation id="2480851840841871861">เปิด Google Assistant</translation>
 <translation id="2488661730534396940">เปิดใช้งานพื้นที่ทำงานด้านซ้าย</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">เปิดแอปการวินิจฉัย</translation>
 <translation id="2530339807289914946">เลื่อนหน้าเว็บลง</translation>
 <translation id="2530896289327917474">เปิดหรือปิดการเรียกดูด้วยแป้นพิมพ์</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">ทางลัด</translation>
 <translation id="3084301071537457911">ไฮไลต์รายการถัดไปบนชั้นวาง</translation>
 <translation id="309173601632226815">ไฮไลต์ปุ่ม Launcher บนชั้นวาง</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">โฟกัสแถบที่อยู่</translation>
 <translation id="3256109297135787951">นำไฮไลต์ออกจากรายการบนชั้นวาง</translation>
 <translation id="3288816184963444640">ปิดหน้าต่างปัจจุบัน</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">ย้ายไปท้ายคำถัดไป</translation>
 <translation id="4866066940972151697">เปิดใช้งานพื้นที่ทำงานด้านขวา</translation>
 <translation id="4916163929714267752">เปิดลิงก์ในหน้าต่างใหม่</translation>
-<translation id="492453977506755176">แป้นสำหรับโหมดจับภาพ</translation>
 <translation id="5030659775136592441">แสดงการจัดการบุ๊กมาร์ก</translation>
 <translation id="5034421018520995080">ไปที่ด้านบนสุดของหน้า</translation>
-<translation id="5042305953558921026">แป้นโหมดภาพรวม</translation>
 <translation id="5104462712192763270">บันทึกหน้าเว็บปัจจุบัน</translation>
 <translation id="5121628974188116412">ไปที่ด้านล่างสุดของหน้า</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">จับภาพแบบเต็มหน้าจอ</translation>
 <translation id="6022924867608035986">ล้างข้อความในช่องค้นหา</translation>
 <translation id="6052614013050385269">คลิกขวาที่ลิงก์</translation>
-<translation id="6129953537138746214">ช่องว่าง</translation>
 <translation id="6143669479988153888">ขยายหน้าเว็บ</translation>
 <translation id="6185696379715117369">เลื่อนหน้าขึ้น</translation>
 <translation id="6228457605945141550">ลดความสว่าง</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">เลือกคำหรืออักษรก่อนหน้า</translation>
 <translation id="8727232706774971183">ดูการแจ้งเตือน</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 จนถึง 8</translation>
-<translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
 <translation id="8881584919399569791">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังพื้นที่ทำงานทางด้านซ้าย</translation>
 <translation id="88986195241502842">เลื่อนหน้าลง</translation>
 <translation id="8924883688469390268">เปลี่ยนเป็นผู้ใช้ก่อนหน้า</translation>

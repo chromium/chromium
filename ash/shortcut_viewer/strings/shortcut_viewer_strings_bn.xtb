@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">ট্যাব অ্যাড্রেস বারে লিঙ্কটি টেনে আনুন</translation>
 <translation id="1251638888133819822">ফুলস্ক্রিন ম্যাগনিফায়ার চালু অথবা বন্ধ করুন</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">আপনার বর্তমান পৃষ্ঠাটি প্রিন্ট করুন</translation>
-<translation id="1383876407941801731">Search</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> অথবা <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">লাইনের শেষে যান</translation>
 <translation id="1499072997694708844">কোনও খোলা খোঁজার উইন্ডো বা বর্তমান পৃষ্ঠাটি লোড করা বন্ধ করুন</translation>
-<translation id="1510238584712386396">লঞ্চার</translation>
 <translation id="1516966594427080024">ছদ্মবেশী মোডে একটি নতুন উইন্ডো খুলুন</translation>
 <translation id="152892567002884378">ভলিউম বাড়ান</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, তারপর <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">আগের শব্দের শুরুতে নিয়ে যান</translation>
 <translation id="1679841710523778799">উজ্জ্বলতা বাড়ান</translation>
 <translation id="168356808214100546"><ph name="ALT" /> বোতাম টিপে ধরে রেখে যে উইন্ডোটি খুলতে চান সেটি বেছে নেওয়ার জন্য <ph name="TAB" /> বোতাামটি বারবার টিপুন এবং তারপর উইন্ডোটি বেছে নেওয়া হয়ে গেলে আঙুল তুলে নিন।</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">অ্যাড্রেস বারে আপনার ইনপুটে www. এবং .com যোগ করে পৃষ্ঠা খুলুন</translation>
 <translation id="1768987374400973299">স্ক্রিনশন নিন/রেকর্ড করুন</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">ChromeVox (স্ক্রিনে যা আছে তা পড়ে শোনানোর বৈশিষ্ট্য) চালু অথবা বন্ধ করুন</translation>
 <translation id="2480851840841871861">Google অ্যাসিস্ট্যান্ট খুলুন</translation>
 <translation id="2488661730534396940">বাঁদিকের ডেস্কটি চালু করুন</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">'ডায়াগনস্টিকস অ্যাপ' খুলুন</translation>
 <translation id="2530339807289914946">ওয়েব পৃষ্ঠাটিকে স্ক্রল করে নিচে নিয়ে আসুন</translation>
 <translation id="2530896289327917474">ক্যারেট ব্রাউজিং চালু বা বন্ধ করুন</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">শর্টকাট</translation>
 <translation id="3084301071537457911">আপনার শেল্ফে পরবর্তী আইটেমটি হাইলাইট করুন</translation>
 <translation id="309173601632226815">আপনার শেল্ফে লঞ্চার বোতামটি হাইলাইট করুন</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">ফোকাস অ্যাড্রেস বার</translation>
 <translation id="3256109297135787951">আপনার শেল্ফে আইটেম থেকে হাইলাইট সরিয়ে দিন</translation>
 <translation id="3288816184963444640">বর্তমান উইন্ডোটি বন্ধ করুন</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">পরের শব্দের শেষে নিয়ে যান</translation>
 <translation id="4866066940972151697">ডানদিকের ডেস্কটি চালু করুন</translation>
 <translation id="4916163929714267752">একটি নতুন উইন্ডোতে লিঙ্কটি খুলুন</translation>
-<translation id="492453977506755176">'ক্যাপচার মোড' কী</translation>
 <translation id="5030659775136592441">বুকমার্ক পরিচালক দেখান</translation>
 <translation id="5034421018520995080">পৃষ্ঠার উপরে যান</translation>
-<translation id="5042305953558921026">এক নজরে দেখার বোতাম</translation>
 <translation id="5104462712192763270">আপনার বর্তমান পৃষ্ঠাটি সেভ করুন</translation>
 <translation id="5121628974188116412">পৃষ্ঠার নিচে যান</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">ফুল স্ক্রিনের স্ক্রিনশট নিন</translation>
 <translation id="6022924867608035986">সার্চ বক্সের টেক্সট সাফ করুন</translation>
 <translation id="6052614013050385269">একটি লিঙ্কে রাইট ক্লিক করুন</translation>
-<translation id="6129953537138746214">ব্যবধান</translation>
 <translation id="6143669479988153888">পৃষ্ঠাটিতে বড় করুন</translation>
 <translation id="6185696379715117369">পৃষ্ঠায় উপরের দিকে যান</translation>
 <translation id="6228457605945141550">উজ্জ্বলতা কমান</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">আগের শব্দ অথবা অক্ষরটি বেছে নিন</translation>
 <translation id="8727232706774971183">আপনার বিজ্ঞপ্তিগুলি দেখুন</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> ১ থেকে ৮ পর্যন্ত</translation>
-<translation id="8855885154700222542">ফুলস্ক্রিন করার বোতাম</translation>
 <translation id="8881584919399569791">চালু উইন্ডোকে বাঁদিকের ডেস্কে সরান</translation>
 <translation id="88986195241502842">পৃষ্ঠায় নীচের দিকে যান</translation>
 <translation id="8924883688469390268">আগের ব্যবহারকারীকে বেছে নিন</translation>

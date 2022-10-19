@@ -422,6 +422,7 @@
 <translation id="1397594434718759194">다음 기기에서 Chrome에 로그인되어 있으므로 기기를 보안 키로 사용할 수 있습니다.</translation>
 <translation id="1398853756734560583">최대화</translation>
 <translation id="139911022479327130">휴대전화의 잠금을 해제하고 본인 여부를 확인합니다.</translation>
+<translation id="1401216725754314428">새 탭에서 관련 사이트 자세히 알아보기</translation>
 <translation id="1401308693935339022">위치를 사용합니다. 위치 정보 액세스 권한이 있는 앱 및 서비스가 이 기기의 위치를 사용하도록 허용합니다. Google에서 주기적으로 위치 데이터를 수집하고 데이터를 익명으로 사용하여 위치 정확성과 위치 기반 서비스를 개선할 수 있습니다.</translation>
 <translation id="1403222014593521787">프록시에 연결할 수 없습니다.</translation>
 <translation id="1405779994569073824">비정상 종료됨</translation>
@@ -7697,6 +7698,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8206745257863499010">음악</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8207404892907560325">패스키 선택</translation>
+<translation id="8208188204689616705"><ph name="FPS_OWNER" />에서 정의한 그룹에 속하는 사이트입니다. 그룹의 사이트에서 내 그룹 활동을 볼 수 있습니다.</translation>
 <translation id="8208216423136871611">저장하지 않음</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{새 알림}other{새 알림 #개}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" />의 Google 비밀번호 관리자에 비밀번호를 가져오려면 CSV 파일을 선택하세요</translation>

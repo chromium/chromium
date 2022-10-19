@@ -72,6 +72,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> in den Ordner <ph name="FOLDER_NAME" /> verschieben.</translation>
 <translation id="1293264513303784526">USB-C-Gerät (Port links)</translation>
 <translation id="1293556467332435079">Dateien</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Benachrichtigungseinstellungen für den Sperrbildschirm ändern</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">EMPFOHLENE APPS</translation>
@@ -91,6 +92,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1407069428457324124">Dunkles Design</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" /> – Mit den Pfeiltasten kannst du zwischen den Datumsangaben wechseln.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installierte App</translation>
+<translation id="1415846719612499304">Netzwerkliste anzeigen. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Wenn du die Benachrichtigungsaktion ausführen möchtest, entsperre das Gerät</translation>
 <translation id="1420408895951708260">Nachtlicht an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Letzte Fotos und Medien von deinem Smartphone auf deinem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
@@ -130,6 +132,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
 <translation id="1677507110654891115">"<ph name="FEATURE_NAME" />" ist nicht verbunden.</translation>
 <translation id="1677582821739292812">Jemand sieht auf deinen Bildschirm</translation>
+<translation id="169515659049020177">Umschalttaste</translation>
 <translation id="1698080062160024910">Timer: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-Adresse: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktives Fenster links fixiert.</translation>
@@ -280,6 +283,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2484513351006226581">Drücke <ph name="KEYBOARD_SHORTCUT" />, um das Tastaturlayout zu ändern.</translation>
 <translation id="2501920221385095727">Sticky Keys</translation>
 <translation id="2509468283778169019">Feststelltaste aktiviert</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Tippe auf dein Profilbild</translation>
 <translation id="255671100581129685">In öffentlichen Sitzungen ist Google Assistant nicht verfügbar.</translation>
 <translation id="256712445991462162">die angedockte Lupe</translation>
@@ -305,6 +309,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2678852583403169292">Menü für die Funktion „Vorlesen“</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
 <translation id="2695305337569143674">Web</translation>
+<translation id="2697697418792422688">Tastatureinstellungen anzeigen. <ph name="KEYBOARD_NAME" /> ist ausgewählt.</translation>
 <translation id="2700493154570097719">Tastatur einrichten</translation>
 <translation id="2704781753052663061">Mit anderen WLANs verbinden</translation>
 <translation id="2705001408393684014">Mikrofon ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
@@ -378,6 +383,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3105917916468784889">Screenshot aufnehmen</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Gerät herunterfahren?</translation>
+<translation id="3126026824346185272">Strg</translation>
 <translation id="3126069444801937830">Zum Aktualisieren neu starten</translation>
 <translation id="3139382871451988441">Kamerazugriff deaktivieren.</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
@@ -700,6 +706,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4918086044614829423">Annehmen</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> verwendet gerade deine Kamera</translation>
+<translation id="492453977506755176">Taste für den Aufnahmemodus</translation>
 <translation id="4925542575807923399">Der Administrator dieses Kontos hat festgelegt, dass dieses Konto in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein muss.</translation>
 <translation id="4938176435186993759">Alle Vorschläge ausblenden</translation>
 <translation id="4945196315133970626">Benachrichtigungen deaktivieren</translation>
@@ -720,6 +727,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5033299697334913360">Auf eine beliebige Stelle klicken, um den ganzen Bildschirm aufzuzeichnen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ist mit einem neuen Smartphone verbunden</translation>
 <translation id="5035389544768382859">Displaykonfiguration bestätigen</translation>
+<translation id="5042305953558921026">Taste für Übersichtsmodus</translation>
 <translation id="504465286040788597">Vorheriger Absatz</translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
 <translation id="5071064518267176975">Eine App möchte das Mikrofon verwenden</translation>
@@ -770,6 +778,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5329548388331921293">Wird verbunden…</translation>
 <translation id="5331975486040154427">USB-C-Gerät (Port hinten links)</translation>
+<translation id="533282197239610265">Übertragungsgeräte anzeigen</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (rechts)</translation>
 <translation id="5352250171825660495">Dunkles Design ist aktiviert</translation>
 <translation id="5356963482258194581">Du kannst zwischen dem dunklen und hellen Design wechseln. Klicke mit der rechten Maustaste auf den Desktop und wähle „Hintergrund &amp; Stil“ aus.</translation>
@@ -801,10 +810,12 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="553675580533261935">Sitzung wird beendet</translation>
 <translation id="5537725057119320332">Streamen</translation>
 <translation id="554893713779400387">Diktierfunktion ein-/ausschalten</translation>
+<translation id="5558091555391176027">Hohe Sichtbarkeit bei Nearby Share aktivieren/deaktivieren</translation>
 <translation id="5560420195677022218">Du kannst auf deinem Gerät „<ph name="DEVICE_TYPE" />“ die Apps von deinem Smartphone aufrufen</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
 <translation id="5571066253365925590">Bluetooth aktiviert</translation>
 <translation id="557563299383177668">Nächster Absatz</translation>
+<translation id="5577082622442191756">Bluetooth aktivieren/deaktivieren. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Achte darauf, dass Bluetooth auf dem Smartphone aktiviert ist, um Phone Hub zu nutzen</translation>
 <translation id="5580000943347215299">Bibliothek</translation>
 <translation id="558849140439112033">Ziehen, um einen Bereich für die Aufnahme auszuwählen</translation>
@@ -873,6 +884,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="595202126637698455">Leistungsnachverfolgung aktiviert</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Betreuter Nutzer</translation>
+<translation id="5965524703725988602">Dunkles Design aktivieren/deaktivieren. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Eingabetaste drücken, um Fenster aufzuzeichnen</translation>
 <translation id="5977415296283489383">Kopfhörer</translation>
 <translation id="5978382165065462689">Du teilst dir die Bildschirmsteuerung per Remote-Unterstützung.</translation>
@@ -907,6 +919,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Download bestätigen: <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">In Gastsitzungen ist Google Assistant nicht verfügbar.</translation>
+<translation id="6129953537138746214">Leertaste</translation>
 <translation id="6134259848159370930">Auf deinem Gerät, in Apps, Einstellungen und im Web suchen.</translation>
 <translation id="6137566720514957455">Dialog „Entfernen“ für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
 <translation id="6141988275892716286">Download bestätigen</translation>
@@ -1115,6 +1128,7 @@ Neuinstallation</translation>
 <translation id="7378889811480108604">Energiesparmodus ist deaktiviert</translation>
 <translation id="7382680553121047388">An</translation>
 <translation id="7384028040782072252">An einer beliebigen Stelle rechtsklicken, um Apps neu zu sortieren</translation>
+<translation id="7386767620098596324">Netzwerkverbindung aktivieren/deaktivieren. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Du kannst die Einrichtung jederzeit später in den Einstellungen vornehmen.</translation>
 <translation id="7405710164030118432">Wenn du das Gerät entsperren möchtest, gib deinen Eltern-Zugangscode für Family Link ein</translation>
 <translation id="7406608787870898861">Einrichtung des Mobilfunknetzes abschließen</translation>
@@ -1254,6 +1268,7 @@ Neuinstallation</translation>
 <translation id="8142441511840089262">Doppelklick</translation>
 <translation id="8142699993796781067">Privates Netzwerk</translation>
 <translation id="8144760705599030999">Speichere <ph name="NAME" /> unter <ph name="EMAIL" />, um das Gerät schneller mit anderen Geräten koppeln zu können</translation>
+<translation id="8149413265954228307">Bluetooth-Einstellungen anzeigen. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Drücke zum Schließen Strg + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatische Vervollständigung</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – Diese Einstellung wird von deinem Administrator verwaltet.</translation>
@@ -1314,6 +1329,7 @@ Neuinstallation</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> hat <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Drücke Alt + Such-Taste oder die Umschalttaste, um die Aktivierung aufzuheben.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> geändert. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
+<translation id="8496402167048257517">Nearby Share-Einstellungen anzeigen</translation>
 <translation id="85123341071060231">Auf deinem Chromebook ist Bluetooth deaktiviert. Gib zum Entsperren das Passwort ein.</translation>
 <translation id="8513108775083588393">Autom. drehen</translation>
 <translation id="851458219935658693">Fenster des aktuellen Desktops werden angezeigt, Optionsfeld ausgewählt</translation>
@@ -1374,6 +1390,7 @@ Neuinstallation</translation>
 <translation id="8843682306134542540">Rotationssperre an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Suche + Esc</translation>
 <translation id="8853703225951107899">Deine PIN oder dein Passwort konnten noch immer nicht bestätigt werden. Hinweis: Wenn du kürzlich dein Passwort geändert hast, verwende dein altes Passwort. Dein neues Passwort wird übernommen, sobald du dich abmeldest.</translation>
+<translation id="8855885154700222542">Taste für Vollbildmodus</translation>
 <translation id="8870509716567206129">Das Teilen des Bildschirms wird in dieser App nicht unterstützt.</translation>
 <translation id="8874184842967597500">Nicht verbunden</translation>
 <translation id="8876661425082386199">Verbindung prüfen</translation>

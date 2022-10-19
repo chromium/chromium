@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">ଲିଙ୍କ୍‌କୁ ଟାବ୍‌ର ଠିକଣା ବାର୍‌କୁ ଟାଣନ୍ତୁ</translation>
 <translation id="1251638888133819822">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମାଗ୍ନିଫାୟର୍ ଅନ୍ କିମ୍ୱା ଅଫ୍ କରନ୍ତୁ</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">ଆପଣଙ୍କର ସାମ୍ପ୍ରତିକ ପ଼ୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
-<translation id="1383876407941801731">Search</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> କିମ୍ବା <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">ଲାଇନ୍‍ର ଶେଷକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1499072997694708844">ଯେ କୌଣସି ଖୋଲାଥିବା ’ଖୋଜିବା ୱିଣ୍ଡୋ’ ବନ୍ଦ କରନ୍ତୁ ବା ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ପୃଷ୍ଠା ଲୋଡ୍ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
 <translation id="1516966594427080024">ଇନକଗ୍ନିଟୋ ମୋଡରେ ଏକ ନୂଆ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="152892567002884378">ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ତା’ପରେ <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">ପୂର୍ବବର୍ତ୍ତୀ ଶବ୍ଦର ଆରମ୍ଭକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1679841710523778799">ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="168356808214100546">ଯେପର୍ଯ୍ୟନ୍ତ ଆପଣ ଖୋଲିବାକୁ ଚାହୁଁଥିବା ୱିଣ୍ଡୋରେ ପହଞ୍ଚି ନାହାନ୍ତି, ସେପର୍ଯ୍ୟନ୍ତ <ph name="ALT" /> ଦାବି ଧରନ୍ତୁ, <ph name="TAB" />ରେ ଟାପ୍‍ କରନ୍ତୁ, ତା’ପରେ ଛାଡିଦିଅନ୍ତୁ।</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ଆଡ୍ରେସ୍‌ ବାର୍‌ରେ ଆପଣଙ୍କର ଇନ୍‍ପୁଟ୍‌ରେ www. ଏବଂ .com ଯୋଗ କରନ୍ତୁ, ଏହାପରେ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="1768987374400973299">ସ୍କ୍ରିନସଟ୍ ନିଅନ୍ତୁ/ରେକର୍ଡିଂ କରନ୍ତୁ</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">ChromeVox (କୁହାଯାଉଥିବା ମତାମତ) ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2480851840841871861">Google Assistant ଖୋଲନ୍ତୁ</translation>
 <translation id="2488661730534396940">ବାମ ପଟରେ ଥିବା ଡେସ୍କକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଆପ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="2530339807289914946">ୱେବ୍ ପୃଷ୍ଠାରେ ତଳକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="2530896289327917474">କ୍ୟାରେଟ୍ ବ୍ରାଉଜିଂ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">ସର୍ଟକଟ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3084301071537457911">ଆପଣଙ୍କ ସେଲ୍ଫରେ ପରବର୍ତ୍ତୀ ଆଇଟମ୍‍କୁ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="309173601632226815">ଆପଣଙ୍କ ସେଲ୍ଫରେ ଲଞ୍ଚର୍‌ ବଟନ୍‌ ହାଇଲାଇଟ୍‌ କରନ୍ତୁ</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">ଠିକଣା ବାର୍‌ରେ ଫୋକସ୍ କରନ୍ତୁ</translation>
 <translation id="3256109297135787951">ଆପଣଙ୍କ ସେଲ୍ଫରେ ଥିବା ଏକ ଆଇଟମ୍‌ରୁ ହାଇଲାଇଟ୍‌କୁ କାଢ଼ନ୍ତୁ</translation>
 <translation id="3288816184963444640">ବର୍ତ୍ତମାନର ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">ପରବର୍ତ୍ତୀ ଶବ୍ଦର ଶେଷକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4866066940972151697">ଡାହାଣ ପଟରେ ଥିବା ଡେସ୍କକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4916163929714267752">ଏକ ନୂଆ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
-<translation id="492453977506755176">କ୍ୟାପଚର୍ ମୋଡ୍ କୀ</translation>
 <translation id="5030659775136592441">ବୁକ୍‌ମାର୍କ ପରିଚାଳକ ଦେଖାନ୍ତୁ</translation>
 <translation id="5034421018520995080">ପୃଷ୍ଠାର ଉପରିଭାଗକୁ ଯାଆନ୍ତୁ</translation>
-<translation id="5042305953558921026">ସାଧାରଣ ସମୀକ୍ଷା ମୋଡ୍‌ କୀ</translation>
 <translation id="5104462712192763270">ଆପଣଙ୍କର ବର୍ତ୍ତମାନ ପୃଷ୍ଠାକୁ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="5121628974188116412">ପୃଷ୍ଠାର ତଳଭାଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନର ସ୍କ୍ରିନସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="6022924867608035986">ସର୍ଚ୍ଚବକ୍ସ ଟେକ୍ସଟ୍ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6052614013050385269">ଏକ ଲିଙ୍କ୍‌ରେ ରାଇଟ୍‍-କ୍ଲିକ୍ କରନ୍ତୁ</translation>
-<translation id="6129953537138746214">ସ୍ପେସ୍</translation>
 <translation id="6143669479988153888">ପୃଷ୍ଠାରେ ଜୁମ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="6185696379715117369">ଉପରର ପୃଷ୍ଠା</translation>
 <translation id="6228457605945141550">ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">ପୂର୍ବବର୍ତ୍ତୀ ଶବ୍ଦ କିମ୍ବା ଅକ୍ଷରକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8727232706774971183">ଆପଣଙ୍କର ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1ରୁ 8 ପର୍ଯ୍ୟନ୍ତ</translation>
-<translation id="8855885154700222542">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍‌ କୀ</translation>
 <translation id="8881584919399569791">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ବାମ ପଟ ଡେସ୍କକୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="88986195241502842">ନିମ୍ନ ପୃଷ୍ଠା</translation>
 <translation id="8924883688469390268">ପୂର୍ବବର୍ତ୍ତୀ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>

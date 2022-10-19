@@ -72,6 +72,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1290982764014248209">Mou <ph name="DRAGGED_APP" /> a la carpeta <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Dispositiu USB-C (port esquerre)</translation>
 <translation id="1293556467332435079">Fitxers</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Canvia la configuració de notificacions de la pantalla de bloqueig</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APLICACIONS RECOMANADES</translation>
@@ -131,6 +132,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">La funció <ph name="FEATURE_NAME" /> no està connectada.</translation>
 <translation id="1677582821739292812">Algú està mirant la teva pantalla</translation>
+<translation id="169515659049020177">Maj</translation>
 <translation id="1698080062160024910">Temporitzador de: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adreça IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Finestra activa acoblada a l'esquerra.</translation>
@@ -281,6 +283,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2484513351006226581">Prem <ph name="KEYBOARD_SHORTCUT" /> per canviar la disposició del teclat.</translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
 <translation id="2509468283778169019">BLOQ MAJ està activat.</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Toca la teva imatge de perfil</translation>
 <translation id="255671100581129685">L'Assistent de Google no està disponible a les sessions públiques.</translation>
 <translation id="256712445991462162">la lupa acoblada</translation>
@@ -380,6 +383,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3105917916468784889">Fes una captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Vols apagar el dispositiu?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reinicia per actualitzar</translation>
 <translation id="3139382871451988441">Desactiva l'accés a la càmera.</translation>
 <translation id="3139942575505304791">Escriptori 1</translation>
@@ -703,6 +707,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4917385247580444890">Forta</translation>
 <translation id="4918086044614829423">Accepta</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> està utilitzant la càmera</translation>
+<translation id="492453977506755176">Tecla del mode de captura</translation>
 <translation id="4925542575807923399">L'administrador d'aquest compte requereix que sigui el primer compte que iniciï la sessió en una sessió amb inici de sessió múltiple.</translation>
 <translation id="4938176435186993759">Amaga tots els suggeriments</translation>
 <translation id="4945196315133970626">Desactiva les notificacions</translation>
@@ -723,6 +728,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5033299697334913360">Fes clic en qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> s'ha connectat a un altre telèfon</translation>
 <translation id="5035389544768382859">Confirma la configuració de la pantalla</translation>
+<translation id="5042305953558921026">Tecla del mode de visió general</translation>
 <translation id="504465286040788597">Paràgraf anterior</translation>
 <translation id="5045550434625856497">Contrasenya incorrecta</translation>
 <translation id="5071064518267176975">Una aplicació vol utilitzar el micròfon</translation>
@@ -914,6 +920,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
+<translation id="6129953537138746214">Espai</translation>
 <translation id="6134259848159370930">Cerca al dispositiu, en aplicacions, a la configuració i al web.</translation>
 <translation id="6137566720514957455">Obre el quadre de diàleg per suprimir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirma la baixada</translation>
@@ -1381,6 +1388,7 @@ Instal·lació nova</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueig de rotació. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>
 <translation id="8853703225951107899">El PIN o la contrasenya continuen sense poder-se verificar. Nota: si fa poc que has canviat la contrasenya, fes servir l'antiga. La contrasenya nova s'aplicarà un cop hagis tancat la sessió.</translation>
+<translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8870509716567206129">L'aplicació no admet la pantalla dividida.</translation>
 <translation id="8874184842967597500">No connectada</translation>
 <translation id="8876661425082386199">Comprova la connexió</translation>

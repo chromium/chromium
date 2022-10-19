@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">Markatu guztiak irakurritako gisa</translation>
 <translation id="1689333818294560261">Goitizena</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> hautatu dira</translation>
+<translation id="1715515772563243997"><ph name="SITE" /> fidagarria dela uste baduzu, gordetako pasahitz bat erabil dezakezu saioa hasteko.</translation>
 <translation id="1740468249224277719">Instalatzeko, sakatu birritan.</translation>
 <translation id="1752547299766512813">Gorde pasahitzak</translation>
 <translation id="1753905327828125965">Gehien bisitatutakoak</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">Editatu laster-marka</translation>
 <translation id="2155145621546387786">Partekatu Chrome</translation>
 <translation id="2175927920773552910">QR kodea</translation>
+<translation id="2178545675770638239">Hautatu pasahitz bat</translation>
 <translation id="2218443599109088993">Txikitu</translation>
 <translation id="2230173723195178503">Kargatu da webgunea</translation>
 <translation id="2239626343334228536">Arakatze-datuak garbitzen…</translation>
@@ -434,6 +436,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4502566650163919158">Egiaztatu</translation>
 <translation id="4505980578794259603">Azken egiaztatze-data: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Itxi saioa hasteko promozioa</translation>
+<translation id="4514889972748124117">Iradoki pasahitz konplexu bat…</translation>
 <translation id="4520798012560649652">Lortu ezkutuko moduari buruzko informazio gehiago</translation>
 <translation id="4526249700380860531">Ikusi eta kudeatu gordetako pasahitzak <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> estekan.</translation>
 <translation id="452750746583162491">Berrikusi sinkronizatutako datuak</translation>
@@ -1016,6 +1019,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8917490105272468696">Bai, ados</translation>
 <translation id="8928133177108699615">Mahaigainekoa</translation>
 <translation id="8952559610785099500">Gehitu pasahitz bat</translation>
+<translation id="8953046091948372197">Hemen dituzu pasahitzak</translation>
 <translation id="895541991026785598">Jakinarazi arazo bat</translation>
 <translation id="8974714402877957201">1. Ireki iPad-aren Settings (ezarpenak) atala.</translation>
 <translation id="8976382372951310360">Laguntza</translation>
@@ -1049,6 +1053,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9200875785104711666">Duela <ph name="TIME" /> egun</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Hutsegite-txostena bidali da</translation>
+<translation id="941747855997058526">Hautatu pasahitz bat…</translation>
 <translation id="952704832371081537">Utzi</translation>
 <translation id="953008885340860025">Amaitu egin da Chrome-ko saioa</translation>
 <translation id="959066944189734975">Hasi zara <ph name="CHANNEL_NAME" /> webguneari jarraitzen</translation>

@@ -72,6 +72,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1290982764014248209">Mută <ph name="DRAGGED_APP" /> în dosarul <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Dispozitiv USB-C (portul din stânga)</translation>
 <translation id="1293556467332435079">Fișiere</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Modifică setările pentru notificările de pe ecranul de blocare</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APLICAȚII RECOMANDATE</translation>
@@ -91,6 +92,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1407069428457324124">Temă întunecată</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Folosește tastele săgeți ca să navighezi între date.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplicație instalată</translation>
+<translation id="1415846719612499304">Afișează lista de rețele. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Deblochează dispozitivul pentru efectuarea acțiunii de notificare</translation>
 <translation id="1420408895951708260">Comută Lumina de noapte. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Vezi fotografiile și elementele media recente ale telefonului tău pe <ph name="DEVICE_TYPE" /></translation>
@@ -130,6 +132,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Opțiunea <ph name="FEATURE_NAME" /> nu s-a conectat.</translation>
 <translation id="1677582821739292812">Cineva se uită la ecranul tău</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Temporizator de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresă IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Fereastra activă a fost fixată în stânga.</translation>
@@ -280,6 +283,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2484513351006226581">Apasă <ph name="KEYBOARD_SHORTCUT" /> pentru a schimba aspectul tastaturii.</translation>
 <translation id="2501920221385095727">Taste adezive</translation>
 <translation id="2509468283778169019">Tasta CAPS LOCK este activată</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Atinge imaginea de profil</translation>
 <translation id="255671100581129685">Asistentul Google nu este disponibil într-o sesiune publică.</translation>
 <translation id="256712445991462162">lupa andocată</translation>
@@ -305,6 +309,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2678852583403169292">Meniul Selectați și ascultați</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
 <translation id="2695305337569143674">web</translation>
+<translation id="2697697418792422688">Afișează setările pentru tastatură. S-a selectat <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Setează tastatura</translation>
 <translation id="2704781753052663061">Alătură-te altor rețele Wi-Fi</translation>
 <translation id="2705001408393684014">Comută microfonul. <ph name="STATE_TEXT" /></translation>
@@ -378,6 +383,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3105917916468784889">Realizează o captură de ecran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Închizi dispozitivul?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reporniți pentru a actualiza</translation>
 <translation id="3139382871451988441">Dezactivează accesul la camera foto.</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
@@ -704,6 +710,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4918086044614829423">Acceptă</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> folosește momentan camera foto</translation>
+<translation id="492453977506755176">Tasta modului de capturare</translation>
 <translation id="4925542575807923399">Administratorul acestui cont solicită ca acest cont să fie primul conectat într-o sesiune de conectare multiplă.</translation>
 <translation id="4938176435186993759">Ascunde toate sugestiile</translation>
 <translation id="4945196315133970626">Dezactivează notificările</translation>
@@ -725,6 +732,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5033299697334913360">Dă clic oriunde pentru a captura ecranul complet</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> conectat la un telefon nou</translation>
 <translation id="5035389544768382859">Confirmă configurația afișajului</translation>
+<translation id="5042305953558921026">Tasta pentru modul de prezentare generală</translation>
 <translation id="504465286040788597">Paragraful anterior</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
 <translation id="5071064518267176975">O aplicație solicită permisiunea de a folosi microfonul</translation>
@@ -776,6 +784,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5327248766486351172">Nume</translation>
 <translation id="5329548388331921293">Se conectează…</translation>
 <translation id="5331975486040154427">Dispozitiv USB-C (portul din stânga spate)</translation>
+<translation id="533282197239610265">Afișează dispozitivele de proiecție</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (dreapta)</translation>
 <translation id="5352250171825660495">Tema întunecată este activată</translation>
 <translation id="5356963482258194581">Comută între tema luminoasă și cea întunecată Dă clic dreapta pe desktop și selectează Stil și imagine de fundal.</translation>
@@ -807,10 +816,12 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="553675580533261935">Se iese din sesiune</translation>
 <translation id="5537725057119320332">Proiectează</translation>
 <translation id="554893713779400387">Activează/dezactivează dictarea</translation>
+<translation id="5558091555391176027">Activează / dezactivează vizibilitatea crescută pentru Trimiterea în apropiere</translation>
 <translation id="5560420195677022218">Afișează aplicațiile telefonului pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5571066253365925590">Bluetooth activat</translation>
 <translation id="557563299383177668">Paragraful următor</translation>
+<translation id="5577082622442191756">Comută Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Asigură-te că ai activat Bluetooth pe telefon pentru a folosi Phone Hub</translation>
 <translation id="5580000943347215299">Bibliotecă</translation>
 <translation id="558849140439112033">Trage pentru a selecta o zonă de capturat</translation>
@@ -880,6 +891,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="595202126637698455">Urmărirea performanței este activată</translation>
 <translation id="5955304353782037793">aplicație</translation>
 <translation id="5958529069007801266">Utilizator monitorizat</translation>
+<translation id="5965524703725988602">Activează / dezactivează Tema întunecată. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Apasă pe Enter pentru a înregistra fereastra</translation>
 <translation id="5977415296283489383">Căști</translation>
 <translation id="5978382165065462689">În prezent, permiți controlul la ecran prin Asistență la distanță.</translation>
@@ -914,6 +926,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmă descărcarea fișierului <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistentul Google nu este disponibil într-o sesiune pentru invitați.</translation>
+<translation id="6129953537138746214">Spațiu</translation>
 <translation id="6134259848159370930">Caută pe dispozitiv, în aplicații, în setări și pe web.</translation>
 <translation id="6137566720514957455">Deschide fereastra de dialog Elimină pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirmă descărcarea</translation>
@@ -1125,6 +1138,7 @@ Instalare nouă</translation>
 <translation id="7378889811480108604">Modul Economisirea bateriei este dezactivat</translation>
 <translation id="7382680553121047388">Activat</translation>
 <translation id="7384028040782072252">Dă clic dreapta oriunde ca să-ți reordonezi aplicațiile</translation>
+<translation id="7386767620098596324">Comută conexiunea la rețea. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Poți configura oricând funcția în Setări.</translation>
 <translation id="7405710164030118432">Pentru a debloca dispozitivul, introdu codul de acces parental pentru Family Link</translation>
 <translation id="7406608787870898861">Finalizează configurarea rețelei mobile</translation>
@@ -1265,6 +1279,7 @@ Instalare nouă</translation>
 <translation id="8142441511840089262">Dublu clic</translation>
 <translation id="8142699993796781067">Rețea privată</translation>
 <translation id="8144760705599030999">Salvează <ph name="NAME" /> în <ph name="EMAIL" /> pentru asocierea mai rapidă cu celelalte dispozitive</translation>
+<translation id="8149413265954228307">Afișează setările Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Apasă Ctrl + W pentru a închide.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, completare automată</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Această setare este gestionată de administrator.</translation>
@@ -1325,6 +1340,7 @@ Instalare nouă</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> are <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Apasă pe Alt + tasta de căutare sau pe Shift pentru a anula.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" />. Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" />. Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8496402167048257517">Afișează setările Trimiterii în apropiere</translation>
 <translation id="85123341071060231">Bluetooth-ul Chromebook-ului este dezactivat. Pentru a-ți debloca Chromebookul, introdu parola.</translation>
 <translation id="8513108775083588393">Rotire autom.</translation>
 <translation id="851458219935658693">Se afișează ferestrele de pe desktopul actual, buton radio selectat</translation>
@@ -1385,6 +1401,7 @@ Instalare nouă</translation>
 <translation id="8843682306134542540">Comută blocarea rotației. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Tasta de căutare + Esc</translation>
 <translation id="8853703225951107899">Codul PIN sau parola tot nu au putut fi confirmate. Notă: dacă ai schimbat parola recent, folosește vechea parolă. Noua parolă se va aplica după ce te deconectezi.</translation>
+<translation id="8855885154700222542">Tasta pentru ecran complet</translation>
 <translation id="8870509716567206129">Aplicația nu acceptă ecranul împărțit.</translation>
 <translation id="8874184842967597500">Neconectat</translation>
 <translation id="8876661425082386199">Verifică-ți conexiunea</translation>

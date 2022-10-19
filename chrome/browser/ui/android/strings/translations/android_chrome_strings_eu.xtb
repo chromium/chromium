@@ -270,6 +270,7 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="2496180316473517155">Arakatze-historia</translation>
 <translation id="2497852260688568942">Administratzaileak sinkronizazioa desgaitu du</translation>
 <translation id="250020030759455918"><ph name="SITE_NAME" /> webgunean saioa hasi duzun ala ez, arakatze-datuak eta webguneetako datuak ikusiko dituzu Chrome-n</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> instalatzen…</translation>
 <translation id="2513403576141822879">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Sinkronizazioa eta Google-ren zerbitzuak<ph name="END_LINK" /> atalera</translation>
 <translation id="2517472476991765520">Bilatu</translation>
 <translation id="2523184218357549926">Bisitatzen dituzun orrien URLak bidaltzen dizkio Google-ri</translation>
@@ -1280,6 +1281,7 @@ Fidagarritasun-tokenek sareko pribatutasuna hobetzen dute eta ezin dira erabili 
 <translation id="7887334752153342268">Bikoiztu</translation>
 <translation id="789763218334337857">Chrome erabiltzeko argibideak</translation>
 <translation id="7903184275147100332">Minutu bat beharko da</translation>
+<translation id="7914399737746719723">Instalatu da aplikazioa</translation>
 <translation id="7919123827536834358">Itzuli automatikoki hizkuntza hauek</translation>
 <translation id="7926975587469166629">Txartelaren goitizena</translation>
 <translation id="7929962904089429003">Ireki menua</translation>

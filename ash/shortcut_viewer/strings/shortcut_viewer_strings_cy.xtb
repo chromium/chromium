@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Llusgwch y ddolen i far cyfeiriadau'r tab</translation>
 <translation id="1251638888133819822">Trowch y chwyddwydr sgrîn lawn ymlaen neu ei ddiffodd</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Argraffu'r dudalen bresennol</translation>
-<translation id="1383876407941801731">Chwilio</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> neu <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Ewch i ben y llinell</translation>
 <translation id="1499072997694708844">Caewch unrhyw ffenestr chwilio sydd ar agor neu stopiwch lwytho eich tudalen bresennol</translation>
-<translation id="1510238584712386396">Lansiwr</translation>
 <translation id="1516966594427080024">Agor ffenestr newydd yn y modd Anhysbys</translation>
 <translation id="152892567002884378">Codi'r sain</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, yna <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Symud i ddechrau'r gair blaenorol</translation>
 <translation id="1679841710523778799">Gwneud yn fwy llachar</translation>
 <translation id="168356808214100546">Pwyswch a daliwch <ph name="ALT" />, tapiwch <ph name="TAB" /> nes i chi gyrraedd y ffenestr rydych am ei hagor, yna rhyddhewch.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Ychwanegwch www. a .com i'ch mewnbwn yn y bar cyfeiriad, ac agorwch y dudalen</translation>
 <translation id="1768987374400973299">Tynnu sgrinlun/recordiad</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Troi ChromeVox (adborth ar lafar) ymlaen neu ei ddiffodd</translation>
 <translation id="2480851840841871861">Agor Google Assistant</translation>
 <translation id="2488661730534396940">Gweithredu'r ddesg ar y chwith</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Agor yr Ap Diagnostics</translation>
 <translation id="2530339807289914946">Sgrolio i lawr y dudalen we</translation>
 <translation id="2530896289327917474">Troi pori caret ymlaen neu ei ddiffodd</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Llwybrau byr</translation>
 <translation id="3084301071537457911">Amlygu'r eitem nesaf ar eich silff</translation>
 <translation id="309173601632226815">Amlygu'r botwm lansiwr ar eich silff</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Ffocysu ar y bar cyfeiriad</translation>
 <translation id="3256109297135787951">Tynnwch yr amlygu o eitem ar eich silff</translation>
 <translation id="3288816184963444640">Cau'r ffenestr bresennol</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Symud i ddiwedd y gair nesaf</translation>
 <translation id="4866066940972151697">Gweithredu'r ddesg ar y dde</translation>
 <translation id="4916163929714267752">Agor y ddolen mewn ffenestr newydd</translation>
-<translation id="492453977506755176">Bysell Modd Tynnu</translation>
 <translation id="5030659775136592441">Dangos y rheolwr nodau tudalen</translation>
 <translation id="5034421018520995080">Mynd i frig y dudalen</translation>
-<translation id="5042305953558921026">Bysell modd trosolwg</translation>
 <translation id="5104462712192763270">Cadw eich tudalen bresennol</translation>
 <translation id="5121628974188116412">Mynd i waelod y dudalen</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Tynnu sgrinlun sgrîn lawn</translation>
 <translation id="6022924867608035986">Clirio testun y blwch chwilio</translation>
 <translation id="6052614013050385269">De-glicio dolen</translation>
-<translation id="6129953537138746214">Bwlch</translation>
 <translation id="6143669479988153888">Chwyddo ar y dudalen</translation>
 <translation id="6185696379715117369">Tudalen i fyny</translation>
 <translation id="6228457605945141550">Gwneud yn llai llachar</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Dewiswch air neu lythyren flaenorol</translation>
 <translation id="8727232706774971183">Gweld eich hysbysiadau</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 hyd at 8</translation>
-<translation id="8855885154700222542">Bysell sgrîn lawn</translation>
 <translation id="8881584919399569791">Symud y ffenestr weithredol i'r ddesg ar y chwith</translation>
 <translation id="88986195241502842">I lawr y dudalen</translation>
 <translation id="8924883688469390268">Newid i'r defnyddiwr blaenorol</translation>

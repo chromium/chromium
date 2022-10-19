@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">將連結拖曳至該分頁的網址列</translation>
 <translation id="1251638888133819822">開啟或關閉全螢幕放大鏡</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">列印目前網頁</translation>
-<translation id="1383876407941801731">搜尋</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> 鍵或 <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /> 鍵</translation>
 <translation id="1477442857810932985">移到行尾</translation>
 <translation id="1499072997694708844">關閉所有已開啟的尋找視窗，或停止載入目前的頁面</translation>
-<translation id="1510238584712386396">啟動器</translation>
 <translation id="1516966594427080024">以無痕模式開啟新視窗</translation>
 <translation id="152892567002884378">調高音量</translation>
 <translation id="1560480564179555003">按下 <ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> 鍵，然後按下 <ph name="ESC" /> 鍵</translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">移至上一個字詞的開頭</translation>
 <translation id="1679841710523778799">調高亮度</translation>
 <translation id="168356808214100546">按住 <ph name="ALT" /> 鍵並輕觸 <ph name="TAB" /> 鍵，切換至你要開啟的視窗後放開按鍵。</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /> 鍵</translation>
 <translation id="1733525068429116555">為你在網址列中輸入的字串加上 www. 和 .com 並開啟網頁</translation>
 <translation id="1768987374400973299">擷取/錄製螢幕畫面</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">開啟或關閉 ChromeVox 互動朗讀功能</translation>
 <translation id="2480851840841871861">開啟 Google 助理</translation>
 <translation id="2488661730534396940">啟用左側的桌面</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">開啟診斷應用程式</translation>
 <translation id="2530339807289914946">向下捲動網頁</translation>
 <translation id="2530896289327917474">開啟或關閉鍵盤瀏覽功能</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">快速鍵</translation>
 <translation id="3084301071537457911">醒目顯示檔案櫃中的下一個項目</translation>
 <translation id="309173601632226815">醒目顯示檔案櫃中的啟動器按鈕</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">將焦點移至網址列</translation>
 <translation id="3256109297135787951">取消檔案櫃項目的醒目顯示狀態</translation>
 <translation id="3288816184963444640">關閉目前的視窗</translation>
@@ -116,10 +110,8 @@
 <translation id="4801989101741319327">移至下一個字詞的結尾</translation>
 <translation id="4866066940972151697">啟用右側的桌面</translation>
 <translation id="4916163929714267752">在新視窗開啟連結</translation>
-<translation id="492453977506755176">擷取模式鍵</translation>
 <translation id="5030659775136592441">顯示書籤管理員</translation>
 <translation id="5034421018520995080">前往頁面頂端</translation>
-<translation id="5042305953558921026">總覽模式按鍵</translation>
 <translation id="5104462712192763270">儲存目前網頁</translation>
 <translation id="5121628974188116412">前往頁面底部</translation>
 <translation id="5222676887888702881">登出</translation>
@@ -144,7 +136,6 @@
 <translation id="5926306472221400972">擷取全螢幕畫面</translation>
 <translation id="6022924867608035986">清除搜尋框文字</translation>
 <translation id="6052614013050385269">以滑鼠右鍵按一下連結</translation>
-<translation id="6129953537138746214">空格</translation>
 <translation id="6143669479988153888">放大網頁</translation>
 <translation id="6185696379715117369">Page Up 鍵</translation>
 <translation id="6228457605945141550">調低亮度</translation>
@@ -209,7 +200,6 @@
 <translation id="8717459106217102612">選取上一個字詞或字母</translation>
 <translation id="8727232706774971183">查看通知</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 到 8 鍵</translation>
-<translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8881584919399569791">將使用中的視窗移至左側桌面</translation>
 <translation id="88986195241502842">Page Down 鍵</translation>
 <translation id="8924883688469390268">切換至上一個使用者</translation>

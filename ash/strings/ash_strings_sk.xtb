@@ -72,6 +72,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1290982764014248209">Presuňte <ph name="DRAGGED_APP" /> do priečinka <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Zariadenie USB-C (port vľavo)</translation>
 <translation id="1293556467332435079">Súbory</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Zmeňte nastavenia upozornení na uzamknutej obrazovke</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ODPORÚČANÉ APLIKÁCIE</translation>
@@ -131,6 +132,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1677472565718498478">Zostávajúci čas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Funkcia <ph name="FEATURE_NAME" /> nie je pripojená.</translation>
 <translation id="1677582821739292812">Niekto sa pozerá na vašu obrazovku</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Časovač na <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresa IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktívne okno je ukotvené vľavo.</translation>
@@ -281,6 +283,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2484513351006226581">Stlačením klávesov <ph name="KEYBOARD_SHORTCUT" /> zmeníte rozloženie klávesnice.</translation>
 <translation id="2501920221385095727">Funkcia sticky keys</translation>
 <translation id="2509468283778169019">Kláves CAPS LOCK je zapnutý</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Klepnite na svoj profilový obrázok</translation>
 <translation id="255671100581129685">Asistent Google nie je k dispozícii vo verejnej relácii.</translation>
 <translation id="256712445991462162">ukotvená lupa</translation>
@@ -380,6 +383,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3105917916468784889">Nasnímať obrazovku</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Chcete zariadenie vypnúť?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reštartovaním vykonáte aktualizáciu</translation>
 <translation id="3139382871451988441">Vypnúť prístup ku kamere.</translation>
 <translation id="3139942575505304791">1. plocha</translation>
@@ -703,6 +707,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4917385247580444890">Silné</translation>
 <translation id="4918086044614829423">Prijať</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> momentálne používa kameru</translation>
+<translation id="492453977506755176">Kláves režimu snímania</translation>
 <translation id="4925542575807923399">Správca tohto účtu vyžaduje, aby sa tento účet v relácii viacnásobného prihlásenia prihlásil ako prvý.</translation>
 <translation id="4938176435186993759">Skryť všetky návrhy</translation>
 <translation id="4945196315133970626">Vypnúť upozornenia</translation>
@@ -723,6 +728,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5033299697334913360">Kliknutím na ľubovoľné miesto nahráte celú obrazovku</translation>
 <translation id="5035236842988137213">Zariadenie <ph name="DEVICE_NAME" /> bolo pripojené k novému telefónu</translation>
 <translation id="5035389544768382859">Potvrdenie konfigurácie zobrazenia</translation>
+<translation id="5042305953558921026">Kláves režimu prehľadu</translation>
 <translation id="504465286040788597">Predchádzajúci odsek</translation>
 <translation id="5045550434625856497">Nesprávne heslo</translation>
 <translation id="5071064518267176975">Určitá aplikácia chce používať mikrofón</translation>
@@ -914,6 +920,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potvrďte stiahnutie súboru <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google nie je k dispozícii v relácii hosťa.</translation>
+<translation id="6129953537138746214">Medzera</translation>
 <translation id="6134259848159370930">Vyhľadávajte v zariadení, aplikáciách, nastaveniach a na internete.</translation>
 <translation id="6137566720514957455">Otvoriť dialógové okno na odstránenie účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Potvrdenie sťahovania</translation>
@@ -1383,6 +1390,7 @@ Nová inštalácia</translation>
 <translation id="8843682306134542540">Prepnúť uzamknutie otočenia. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Hľadať+Esc</translation>
 <translation id="8853703225951107899">Váš kód PIN alebo heslo sa stále nepodarilo overiť. Poznámka: Ak ste nedávno zmenili svoje heslo, použite predchádzajúce. Nové heslo bude uplatnené až po odhlásení.</translation>
+<translation id="8855885154700222542">Kláves celej obrazovky</translation>
 <translation id="8870509716567206129">Aplikácia nepodporuje rozdelenú obrazovku.</translation>
 <translation id="8874184842967597500">Nepripojené</translation>
 <translation id="8876661425082386199">Skontrolujte pripojenie</translation>

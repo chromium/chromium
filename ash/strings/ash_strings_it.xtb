@@ -72,6 +72,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1290982764014248209">Sposta <ph name="DRAGGED_APP" /> nella cartella <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Dispositivo USB-C (porta a sinistra)</translation>
 <translation id="1293556467332435079">File</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Modifica le impostazioni per le notifiche della schermata di blocco</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APP CONSIGLIATE</translation>
@@ -131,6 +132,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
 <translation id="1677507110654891115">La funzionalità <ph name="FEATURE_NAME" /> non è connessa.</translation>
 <translation id="1677582821739292812">Qualcuno sta guardando il tuo schermo</translation>
+<translation id="169515659049020177">Maiusc</translation>
 <translation id="1698080062160024910">Timer: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Indirizzo IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Finestra attiva agganciata a sinistra.</translation>
@@ -251,6 +253,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2322173485024759474">Indietro per lettera</translation>
 <translation id="2339073806695260576">Tocca il pulsante dello stilo nella barra delle app per creare note, acquisire screenshot, usare il puntatore laser o la lente d'ingrandimento.</translation>
 <translation id="2341729377289034582">Bloccata in verticale</translation>
+<translation id="2345226652884463045">Premi Invio o il tasto per la ricerca + barra spaziatrice per selezionare il testo da modificare.</translation>
 <translation id="2350794187831162545">La lingua <ph name="LANGUAGE" /> adesso viene elaborata localmente e funziona offline. Puoi modificare la lingua di dettatura in Impostazioni &gt; Accessibilità.</translation>
 <translation id="2352467521400612932">Impostazioni di stilo</translation>
 <translation id="2354174487190027830">Attivazione di <ph name="NAME" /></translation>
@@ -281,6 +284,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2484513351006226581">Premi <ph name="KEYBOARD_SHORTCUT" /> per cambiare il layout della tastiera.</translation>
 <translation id="2501920221385095727">Tasti permanenti</translation>
 <translation id="2509468283778169019">BLOC MAIUSC è attivo</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Tocca la tua immagine del profilo</translation>
 <translation id="255671100581129685">L'Assistente Google non è disponibile in una sessione pubblica.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
@@ -380,6 +384,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3105917916468784889">Acquisisce uno screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Arrestare il dispositivo?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Riavvia per aggiornare</translation>
 <translation id="3139382871451988441">Disattiva l'accesso alla fotocamera.</translation>
 <translation id="3139942575505304791">Scrivania 1</translation>
@@ -704,6 +709,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> sta usando la fotocamera</translation>
+<translation id="492453977506755176">Tasto modalità di acquisizione</translation>
 <translation id="4925542575807923399">L'amministratore di questo account richiede che questo account sia il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="4938176435186993759">Nascondi tutti i suggerimenti</translation>
 <translation id="4945196315133970626">Disattiva le notifiche</translation>
@@ -724,6 +730,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5033299697334913360">Fai clic su un punto qualsiasi per acquisire l'intera schermata</translation>
 <translation id="5035236842988137213">Il dispositivo <ph name="DEVICE_NAME" /> si è connesso a un nuovo telefono</translation>
 <translation id="5035389544768382859">Conferma la configurazione del display</translation>
+<translation id="5042305953558921026">Tasto modalità panoramica</translation>
 <translation id="504465286040788597">Paragrafo precedente</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
 <translation id="5071064518267176975">Un'app vuole usare il microfono</translation>
@@ -915,6 +922,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Conferma download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
+<translation id="6129953537138746214">Spazio</translation>
 <translation id="6134259848159370930">Cerca sul dispositivo, nelle app, nelle impostazioni e sul Web.</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Conferma download</translation>
@@ -1384,6 +1392,7 @@ Nuova installazione</translation>
 <translation id="8843682306134542540">Attiva/disattiva blocco rotazione. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Tasto di ricerca+ESC</translation>
 <translation id="8853703225951107899">Non è stato di nuovo possibile verificare il PIN o la password. Nota: se hai modificato la password di recente, usa la password precedente. La nuova password verrà applicata quando uscirai dall'account.</translation>
+<translation id="8855885154700222542">Tasto schermo intero</translation>
 <translation id="8870509716567206129">L'app non supporta la modalità Schermo diviso.</translation>
 <translation id="8874184842967597500">Non connesso</translation>
 <translation id="8876661425082386199">Controlla la connessione</translation>

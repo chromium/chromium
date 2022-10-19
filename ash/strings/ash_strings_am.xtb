@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />ን ወደ አቃፊ <ph name="FOLDER_NAME" /> ይውሰዱ።</translation>
 <translation id="1293264513303784526">USB-C መሣሪያ (የግራ ወደብ)</translation>
 <translation id="1293556467332435079">ፋይሎች</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">የማያ ገጽ ቆልፍ ማሳወቂያ ቅንብሮቹን ይለውጡ</translation>
 <translation id="1301069673413256657">ጂኤስኤም</translation>
 <translation id="1306549533752902673">የሚመከሩ መተግበሪያዎች</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> ቀርቷል</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> አልተገናኘም።</translation>
 <translation id="1677582821739292812">አንድ ሰው የእርስዎን ማያ ገጽ እየተመለከቱ ነው።</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ሰዓት ቆጣሪ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">የIPv6 አድራሻ፦ <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ገባሪ መስኮት በግራ በኩል ተተክሏል።</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">የቁልፍ ሰሌዳ አቀማመጥን ለመቀየር <ph name="KEYBOARD_SHORTCUT" />ን ይጫኑ</translation>
 <translation id="2501920221385095727">ተጣባቂ ቁልፎች</translation>
 <translation id="2509468283778169019">CAPS LOCK በርቷል</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">የመገለጫ ምስልዎን መታ ያድርጉ</translation>
 <translation id="255671100581129685">የGoogle ረዳቱ በይፋዊ ክፍለ-ጊዜ ውስጥ አይገኝም።</translation>
 <translation id="256712445991462162">የተተከለው ማጉያ</translation>
@@ -378,6 +381,7 @@
 <translation id="3105917916468784889">ቅጽበታዊ ገጽ እይታን ያነሳል</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ብሉቱዝ)</translation>
 <translation id="3120421559657122717">መሣሪያ ይዘጋ?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">ለማዘመን ዳግም ያስጀምሩ</translation>
 <translation id="3139382871451988441">የካሜራ መዳረሻን አጥፋ።</translation>
 <translation id="3139942575505304791">ዴስክ 1</translation>
@@ -701,6 +705,7 @@
 <translation id="4917385247580444890">ጠንካራ</translation>
 <translation id="4918086044614829423">ይቀበሉ</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> አሁን ላይ ካሜራዎን እየተጠቀመ ነው</translation>
+<translation id="492453977506755176">የማንሳት ሁነታ ቁልፍ</translation>
 <translation id="4925542575807923399">የዚህ መለያ አስተዳዳሪ በአንድ ባለብዙ መለያ መግቢያ ክፍለ-ጊዜ ላይ ይህ መለያ መጀምሪያ እንዲገባ ይፈልጋል።</translation>
 <translation id="4938176435186993759">ሁሉንም የአስተያየት ጥቆማዎች ደብቅ</translation>
 <translation id="4945196315133970626">ማሳወቂያዎችን አጥፋ</translation>
@@ -721,6 +726,7 @@
 <translation id="5033299697334913360">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ ጠቅ ያድርጉ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ከአዲስ ስልክ ጋር ተገናኝቷል</translation>
 <translation id="5035389544768382859">የማሳያ ውቅረትን ያረጋግጡ</translation>
+<translation id="5042305953558921026">የአጠቃላይ ዕይታ ሁነታ ቁልፍ</translation>
 <translation id="504465286040788597">ቀዳሚ አንቀጽ</translation>
 <translation id="5045550434625856497">ትክክል ያልሆነ የይለፍ ቃል</translation>
 <translation id="5071064518267176975">አንድ መተግበሪያ ማይክሮፎኑን መጠቀም ይፈልጋል</translation>
@@ -908,6 +914,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />። <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ማውረድን ያረጋግጡ</translation>
 <translation id="612734058257491180">የGoogle ረዳቱ በእንግዳ ክፍለ-ጊዜ ውስጥ አይገኝም።</translation>
+<translation id="6129953537138746214">ባዶ ቦታ</translation>
 <translation id="6134259848159370930">የእርስዎን መሣሪያ፣ መተግበሪያዎች፣ ቅንብሮች እና ድር ይፈልጉ።</translation>
 <translation id="6137566720514957455">ለ<ph name="USER_EMAIL_ADDRESS" /> የአስወግድ መገናኛን ክፈት</translation>
 <translation id="6141988275892716286">ማውረድ ያረጋግጡ</translation>
@@ -1375,6 +1382,7 @@
 <translation id="8843682306134542540">የማሽከርከሪያ ቁልፍን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">የእርስዎ ፒን ወይም ይለፍ ቃል አሁንም ሊረጋገጥ አልቻለም። ማሳሰቢያ፦ በቅርቡ የይለፍ ቃልዎን ከቀየሩ፣ የድሮውን የይለፍ ቃል ይጠቀሙ። አዲስ የይለፍ ቃልዎ የሚተገበረው ሲወጡ ነው።</translation>
+<translation id="8855885154700222542">የሙሉ ማያ ገጽ እይታ ቁልፍ</translation>
 <translation id="8870509716567206129">መተግበሪያው የተከፈለ ማያ ገጽን አይደግፍም።</translation>
 <translation id="8874184842967597500">አልተገናኘም</translation>
 <translation id="8876661425082386199">ግንኙነትዎን ይፈትሹ</translation>

@@ -72,6 +72,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1290982764014248209">Move <ph name="DRAGGED_APP" /> to folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">USB-C device (left port)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Change the lock-screen notification settings</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">RECOMMENDED APPS</translation>
@@ -131,6 +132,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is not connected.</translation>
 <translation id="1677582821739292812">Someone is looking at your screen</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> timer · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 address: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Active window docked on left.</translation>
@@ -282,6 +284,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2484513351006226581">Hit <ph name="KEYBOARD_SHORTCUT" /> to switch keyboard layout.</translation>
 <translation id="2501920221385095727">Sticky keys</translation>
 <translation id="2509468283778169019">CAPS LOCK is on</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Tap your profile image</translation>
 <translation id="255671100581129685">The Google Assistant is not available in a public session.</translation>
 <translation id="256712445991462162">the docked magnifier</translation>
@@ -381,6 +384,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3105917916468784889">Take screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Shut down device?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Restart to update</translation>
 <translation id="3139382871451988441">Turn off camera access.</translation>
 <translation id="3139942575505304791">Desk 1</translation>
@@ -707,6 +711,7 @@ Connect your device to power.</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> is currently using your camera</translation>
+<translation id="492453977506755176">Capture mode key</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="4938176435186993759">Hide all suggestions</translation>
 <translation id="4945196315133970626">Turn off notifications</translation>
@@ -728,6 +733,7 @@ Connect your device to power.</translation>
 <translation id="5033299697334913360">Click anywhere to capture full screen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> connected to a new phone</translation>
 <translation id="5035389544768382859">Confirm display configuration</translation>
+<translation id="5042305953558921026">Overview mode key</translation>
 <translation id="504465286040788597">Previous paragraph</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="5071064518267176975">An app wants to use the microphone</translation>
@@ -921,6 +927,7 @@ Connect your device to power.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirm download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">The Google Assistant is not available in a guest session.</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6134259848159370930">Search your device, apps, settings and web.</translation>
 <translation id="6137566720514957455">Open remove dialogue for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirm download</translation>
@@ -1395,6 +1402,7 @@ New install</translation>
 <translation id="8843682306134542540">Toggle rotation lock. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you've signed out.</translation>
+<translation id="8855885154700222542">Full-screen key</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
 <translation id="8874184842967597500">Not connected</translation>
 <translation id="8876661425082386199">Check your connection</translation>

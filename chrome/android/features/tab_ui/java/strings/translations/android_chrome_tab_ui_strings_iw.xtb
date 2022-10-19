@@ -13,6 +13,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}many{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
 <translation id="2118649612461486615">פרטי החנות</translation>
 <translation id="2162620598375156287">עכשיו במחיר <ph name="CURRENT_PRICE" /> ב-<ph name="SOURCE_WEBSITE" /></translation>
+<translation id="22623456902492423">{TABS_COUNT,plural, =1{הסרת הכרטיסייה מהקבוצה}two{הסרת הכרטיסיות מהקבוצה}many{הסרת הכרטיסיות מהקבוצה}other{הסרת הכרטיסיות מהקבוצה}}</translation>
 <translation id="2277224997687551299">עריכת שם הקבוצה</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{הסרת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה מהקבוצה.}two{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}many{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}other{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}}</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
@@ -36,6 +37,7 @@
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}many{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="3882834874697329510">כדי לקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה, יש להפעיל את ההתראות בהגדרות.</translation>
 <translation id="3940195383040445971">מעקב אחר המחירים בכרטיסיות</translation>
+<translation id="3954615705217314756">{TABS_COUNT,plural, =1{יצירת קבוצה מהכרטיסייה}two{יצירת קבוצה מהכרטיסיות}many{יצירת קבוצה מהכרטיסיות}other{יצירת קבוצה מהכרטיסיות}}</translation>
 <translation id="3996880007329611795">לקבלת התראות</translation>
 <translation id="4133493477912226187">יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
 <translation id="4212246570487010370">המשך הגלישה</translation>
@@ -44,6 +46,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(ביקורת אחת ‒ <ph name="REVIEWS_COUNT_ONE" />)}two{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}many{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}other{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}}</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="4870911314065352661">לסגור את כל הכרטיסיות?</translation>
+<translation id="4895402777090717310">{TABS_COUNT,plural, =1{סגירת הכרטיסייה}two{סגירת הכרטיסיות}many{סגירת הכרטיסיות}other{סגירת הכרטיסיות}}</translation>
 <translation id="492284538114688557">זוהתה הנחה במחיר</translation>
 <translation id="5007392906805964215">עיון</translation>
 <translation id="5073204694187207510">הסתרת רשת מסך מלא</translation>
@@ -72,6 +75,7 @@
 <translation id="6615455863669487791">איך עושים את זה?</translation>
 <translation id="6840760312327750441">כדי לקבץ כרטיסיות, יש ללחוץ לחיצה ארוכה על כרטיסייה. בזמן הלחיצה, יש לגרור אותה אל כרטיסייה אחרת.</translation>
 <translation id="6856809498882026482">הסתרת מצב הבחירה המרובה</translation>
+<translation id="7100731960740376323">{TABS_COUNT,plural, =1{שיתוף הכרטיסייה}two{שיתוף הכרטיסיות}many{שיתוף הכרטיסיות}other{שיתוף הכרטיסיות}}</translation>
 <translation id="7129458170538955174">המידע על החנות הזו פתוח בחצי הגובה</translation>
 <translation id="7151209024774799310">הסרת כרטיסיות מהקבוצה</translation>
 <translation id="7204204600596740190">מצב בחירה מרובה</translation>

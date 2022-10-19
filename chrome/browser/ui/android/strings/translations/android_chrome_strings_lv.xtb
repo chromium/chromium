@@ -270,6 +270,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="2496180316473517155">Pārlūkošanas vēsture</translation>
 <translation id="2497852260688568942">Administrators ir atspējojis sinhronizēšanu.</translation>
 <translation id="250020030759455918">Tiks rādīts jūsu pierakstīšanās statuss vietnē <ph name="SITE_NAME" />, pārlūkošanas dati un vietnes dati pārlūkā Chrome.</translation>
+<translation id="2510106555128151389">Notiek lietotnes <ph name="WEBAPK_NAME" /> instalēšana...</translation>
 <translation id="2513403576141822879">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu apkopošanu, skatiet lapā <ph name="BEGIN_LINK" />Sinhronizēšana un Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="2517472476991765520">Meklēt</translation>
 <translation id="2523184218357549926">Nosūta Google serveriem apmeklēto lapu vietrāžus URL</translation>
@@ -1280,6 +1281,7 @@ Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, 
 <translation id="7887334752153342268">Izveidot dublikātu</translation>
 <translation id="789763218334337857">Padomi par Chrome lietošanu</translation>
 <translation id="7903184275147100332">Tas var ilgt kādu brīdi</translation>
+<translation id="7914399737746719723">Lietotne ir instalēta</translation>
 <translation id="7919123827536834358">Automātiski tulkot no šīm valodām</translation>
 <translation id="7926975587469166629">Kredītkartes apzīmējums</translation>
 <translation id="7929962904089429003">Atvērt izvēlni</translation>

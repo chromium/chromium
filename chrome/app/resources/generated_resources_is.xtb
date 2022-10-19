@@ -423,6 +423,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1397594434718759194">Þú ert skráð(ur) inn á Chrome í þessum tækjum og því geturðu notað þau sem öryggislykla.</translation>
 <translation id="1398853756734560583">Stækka</translation>
 <translation id="139911022479327130">Taktu símann úr lás og staðfestu að þetta sért þú</translation>
+<translation id="1401216725754314428">Nánar um tengd vefsvæði í nýjum flipa</translation>
 <translation id="1401308693935339022">Nota staðsetningu. Leyfa forritum og þjónustu sem hafa staðsetningarheimild að nota staðsetningu þessa tækis. Google gæti safnað staðsetningargögnum við og við og notað þau nafnlaust til að auka nákvæmni staðsetningar og bæta þjónustu sem styðst við staðsetningu.</translation>
 <translation id="1403222014593521787">Ekki tókst að tengjast staðgengilsþjóninum</translation>
 <translation id="1405779994569073824">Hrundi.</translation>
@@ -7699,6 +7700,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8206745257863499010">Blúsaður</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8207404892907560325">Veldu aðgangslykil</translation>
+<translation id="8208188204689616705">Þessi vefsvæði eru í hópi sem <ph name="FPS_OWNER" /> skilgreindi. Vefsvæði innan hóps geta séð virkni þína í hópnum.</translation>
 <translation id="8208216423136871611">Ekki vista</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ný tilkynning}one{# ný tilkynning}other{# nýjar tilkynningar}}</translation>
 <translation id="821119981794423735">Veldu CVS-skrá til að flytja aðgangsorð inn í Google aðgangsorðastjórnun fyrir <ph name="USER_EMAIL" /></translation>

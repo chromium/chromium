@@ -72,6 +72,7 @@
 <translation id="1290982764014248209">ย้าย <ph name="DRAGGED_APP" /> ไปที่โฟลเดอร์ <ph name="FOLDER_NAME" /></translation>
 <translation id="1293264513303784526">อุปกรณ์ USB-C (พอร์ตด้านซ้าย)</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">เปลี่ยนการตั้งค่าการแจ้งเตือนในหน้าจอล็อก</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">แอปแนะนำ</translation>
@@ -131,6 +132,7 @@
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ไม่เชื่อมต่อ</translation>
 <translation id="1677582821739292812">มีคนกำลังดูหน้าจอของคุณอยู่</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">ตัวจับเวลา <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">ที่อยู่ IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ตรึงหน้าต่างที่ใช้งานไว้ทางด้านซ้ายแล้ว</translation>
@@ -281,6 +283,7 @@
 <translation id="2484513351006226581">กด <ph name="KEYBOARD_SHORTCUT" /> เพื่อสลับรูปแบบแป้นพิมพ์</translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
 <translation id="2509468283778169019">Caps Lock เปิดอยู่</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">แตะรูปโปรไฟล์</translation>
 <translation id="255671100581129685">Google Assistant ไม่พร้อมใช้งานในเซสชันสาธารณะ</translation>
 <translation id="256712445991462162">แว่นขยายหน้าจอบางส่วน</translation>
@@ -380,6 +383,7 @@
 <translation id="3105917916468784889">จับภาพหน้าจอ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (บลูทูธ)</translation>
 <translation id="3120421559657122717">ปิดอุปกรณ์ใช่ไหม</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">รีสตาร์ทเพื่ออัปเดต</translation>
 <translation id="3139382871451988441">ปิดการเข้าถึงกล้อง</translation>
 <translation id="3139942575505304791">เดสก์ที่ 1</translation>
@@ -703,6 +707,7 @@
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
 <translation id="4919841137949306064">"<ph name="APP_NAME" />" กำลังใช้กล้อง</translation>
+<translation id="492453977506755176">แป้นสำหรับโหมดจับภาพ</translation>
 <translation id="4925542575807923399">ผู้ดูแลระบบต้องทำให้บัญชีนี้เป็นบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรก ในเซสชันการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
@@ -723,6 +728,7 @@
 <translation id="5033299697334913360">คลิกที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> เชื่อมต่อโทรศัพท์เครื่องใหม่แล้ว</translation>
 <translation id="5035389544768382859">ยืนยันการกำหนดค่าจอแสดงผล</translation>
+<translation id="5042305953558921026">แป้นโหมดภาพรวม</translation>
 <translation id="504465286040788597">ย่อหน้าก่อนหน้า</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="5071064518267176975">แอปหนึ่งต้องการใช้ไมโครโฟน</translation>
@@ -914,6 +920,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" /> <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">ยืนยันการดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">ใช้ Google Assistant ในเซสชันผู้เยี่ยมชมไม่ได้</translation>
+<translation id="6129953537138746214">ช่องว่าง</translation>
 <translation id="6134259848159370930">ค้นหาอุปกรณ์ แอป การตั้งค่า และเว็บ</translation>
 <translation id="6137566720514957455">เปิดกล่องโต้ตอบการนำออกของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">ยืนยันการดาวน์โหลด</translation>
@@ -1384,6 +1391,7 @@
 <translation id="8843682306134542540">เปิด/ปิดการล็อกการหมุน <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ หากคุณเพิ่งเปลี่ยนรหัสผ่านไปไม่นาน ให้ใช้รหัสผ่านเก่า รหัสผ่านใหม่จะมีผลเมื่อคุณออกจากระบบ</translation>
+<translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
 <translation id="8870509716567206129">แอปไม่สนับสนุนการแยกหน้าจอ</translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>
 <translation id="8876661425082386199">ตรวจสอบการเชื่อมต่อของคุณ</translation>

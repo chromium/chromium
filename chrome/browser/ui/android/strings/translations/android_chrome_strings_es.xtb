@@ -270,6 +270,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2497852260688568942">El administrador ha inhabilitado la sincronización</translation>
 <translation id="250020030759455918">Verás tu estado de inicio de sesión, datos de navegación y datos del sitio de <ph name="SITE_NAME" /> en Chrome.</translation>
+<translation id="2510106555128151389">Instalando <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Para ver más opciones relacionadas con la privacidad, la seguridad y la recogida de datos, accede a <ph name="BEGIN_LINK" />Sincronización y servicios de Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Escanear</translation>
 <translation id="2523184218357549926">Envía las URL de las páginas que visitas a Google</translation>
@@ -1280,6 +1281,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="7887334752153342268">Duplicar</translation>
 <translation id="789763218334337857">Cómo usar Chrome</translation>
 <translation id="7903184275147100332">Podría tardar un minuto</translation>
+<translation id="7914399737746719723">Aplicación instalada</translation>
 <translation id="7919123827536834358">Traducir estos idiomas automáticamente</translation>
 <translation id="7926975587469166629">Nombre de la tarjeta</translation>
 <translation id="7929962904089429003">Abre el menú</translation>

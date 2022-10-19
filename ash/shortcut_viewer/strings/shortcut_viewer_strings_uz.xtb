@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Havolani varaqning manzil qatoriga sudrang</translation>
 <translation id="1251638888133819822">Lupani butun ekranda ochish yoki yopish</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Joriy sahifani chop etish</translation>
-<translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> yoki <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Qator oxiriga borish</translation>
 <translation id="1499072997694708844">Ochiq turgan har qanday qidiruv oynasini yoping yoki joriy sahifani yuklashni toʻxtating</translation>
-<translation id="1510238584712386396">Ishga tushirish paneli</translation>
 <translation id="1516966594427080024">Yangi varaqni inkognito rejimida ochish</translation>
 <translation id="152892567002884378">Ovozni kuchaytirish</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, keyin <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Avvalgi so‘z boshiga o‘tish</translation>
 <translation id="1679841710523778799">Yorqinlikni ko‘tarish</translation>
 <translation id="168356808214100546"><ph name="ALT" /> tugmasini bosib turib <ph name="TAB" /> orqali oynalarni almashtiring va kerakli oynada qo‘yib yuboring.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Manzillar qatoridagi so‘rovga www. va .com qo‘shib ochish</translation>
 <translation id="1768987374400973299">Skrinshot/yozib olish</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">ChromeVox (ovozli ta’rif) funksiyasini yoqish va o‘chirish</translation>
 <translation id="2480851840841871861">Google Assistentni ochish</translation>
 <translation id="2488661730534396940">Chapdagi ish stolini yoqish</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Diagnostika ilovasini ochish</translation>
 <translation id="2530339807289914946">Veb sahifani pastga varaqlash</translation>
 <translation id="2530896289327917474">Faol kursor rejimini yoqish yoki oʻchirish</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Yorliqlar</translation>
 <translation id="3084301071537457911">Javondagi keyingi elementni ajratib belgilash</translation>
 <translation id="309173601632226815">Javondagi launcher tugmasini ajratib belgilash</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Kursorni manzil qatoriga qo‘yish</translation>
 <translation id="3256109297135787951">Javondagi narsaning ajratib belgilanishini bekor qilish</translation>
 <translation id="3288816184963444640">Joriy oynani yopish</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Keyingi so‘z oxiriga o‘tish</translation>
 <translation id="4866066940972151697">Oʻngdagi ish stolini yoqish</translation>
 <translation id="4916163929714267752">Havolani yangi oynada ochish</translation>
-<translation id="492453977506755176">Tasvirga olish rejimi kaliti</translation>
 <translation id="5030659775136592441">Xatcho‘plar menejerini ko‘rsatish</translation>
 <translation id="5034421018520995080">Sahifaning boshiga qaytish</translation>
-<translation id="5042305953558921026">Umumiy rejim tugmasi</translation>
 <translation id="5104462712192763270">Joriy sahifani saqlash</translation>
 <translation id="5121628974188116412">Sahifaning oxiriga o‘tish</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Butun ekrandan skrinshot olish</translation>
 <translation id="6022924867608035986">Qidiruv oynasidagi matnni tozalash</translation>
 <translation id="6052614013050385269">Havola ustida sichqonchaning o‘ng tugmasini bosish</translation>
-<translation id="6129953537138746214">Bo‘shliq</translation>
 <translation id="6143669479988153888">Sahifa masshtabini kattalashtirish</translation>
 <translation id="6185696379715117369">Yuqoriga</translation>
 <translation id="6228457605945141550">Yorqinlikni pasaytirish</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Avvalgi so‘z yoki harfni belgilash</translation>
 <translation id="8727232706774971183">Bildirishnomalarni ko‘rish</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 va 8 orasida</translation>
-<translation id="8855885154700222542">Butun ekran rejimi tugmasi</translation>
 <translation id="8881584919399569791">Faol oynani ish stolining chap tomoniga joylash</translation>
 <translation id="88986195241502842">Pastki sahifa</translation>
 <translation id="8924883688469390268">Avvalgi foydalanuvchiga qaytish</translation>

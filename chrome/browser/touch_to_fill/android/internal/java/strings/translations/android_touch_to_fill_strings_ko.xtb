@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1220509181886849806">저장된 비밀번호를 사용하시겠습니까?</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" />의 비밀번호입니다.</translation>
 <translation id="1717486229951421299">터치 시 작성되는 사용자 인증 정보 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="207576718733492531">터치 시 작성되는 사용자 인증 정보 목록이 닫혔습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">터치 시 작성되는 사용자 인증 정보 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="5591247451101092906">저장된 비밀번호 또는 패스키를 사용하시겠습니까?</translation>
 <translation id="5624120631404540903">비밀번호 관리</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" />의 패스키입니다. 화면 잠금을 사용하세요.</translation>
 <translation id="804577341878669140">계정을 사용하여 로그인</translation>
 </translationbundle>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1220509181886849806">Opgeslagen wachtwoord gebruiken?</translation>
+<translation id="1580351948163139119">Wachtwoord voor <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">De lijst met gegevens die moeten worden ingevuld als je tikt, is op halve hoogte geopend.</translation>
 <translation id="207576718733492531">De lijst met gegevens die moeten worden ingevuld als je tikt, is gesloten.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">De lijst met gegevens die moeten worden ingevuld als je tikt, is op volledige hoogte geopend.</translation>
 <translation id="5591247451101092906">Opgeslagen wachtwoord of toegangssleutel gebruiken?</translation>
 <translation id="5624120631404540903">Wachtwoorden beheren</translation>
+<translation id="7736236483645733578">Toegangscode voor <ph name="USERNAME" />, gebruik je schermvergrendeling.</translation>
 <translation id="804577341878669140">Doorgaan met dit account</translation>
 </translationbundle>

@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2497852260688568942">تم إيقاف المزامنة من قِبل المشرف</translation>
 <translation id="250020030759455918">‏ستظهر لك حالة تسجيل الدخول على <ph name="SITE_NAME" />، وبيانات التصفُّح وبيانات الموقع الإلكتروني في Chrome.</translation>
+<translation id="2510106555128151389">جارٍ تثبيت "<ph name="WEBAPK_NAME" />"...</translation>
 <translation id="2513403576141822879">‏لعرض مزيد من الإعدادات المتعلِّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطِّلاع على <ph name="BEGIN_LINK" />خدمات Google والمزامنة<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">فحص</translation>
 <translation id="2523184218357549926">‏يتم إرسال عناوين URL للصفحات التي تزورها إلى Google.</translation>
@@ -1281,6 +1282,7 @@
 <translation id="7887334752153342268">تكرار</translation>
 <translation id="789763218334337857">‏كيفية استخدام Chrome</translation>
 <translation id="7903184275147100332">يُرجى الانتظار قليلًا</translation>
+<translation id="7914399737746719723">تم تثبيت التطبيق.</translation>
 <translation id="7919123827536834358">ترجمة هذه اللغات تلقائيًا</translation>
 <translation id="7926975587469166629">لقب البطاقة</translation>
 <translation id="7929962904089429003">فتح القائمة</translation>

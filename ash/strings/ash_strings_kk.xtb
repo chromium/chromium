@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> қолданбасын <ph name="FOLDER_NAME" /> қалтасына жылжыту.</translation>
 <translation id="1293264513303784526">USB-C құрылғысы (сол жақ ұяшық)</translation>
 <translation id="1293556467332435079">Файлдар</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Құлып экранындағы хабарландыру параметрлерін өзгертіңіз</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ҰСЫНЫЛАТЫН ҚОЛДАНБАЛАР</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> қалды</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> қосылмады.</translation>
 <translation id="1677582821739292812">Әлдекім экраныңызға қарап тұр.</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> таймер · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 мекенжайы: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Белсенді терезе сол жаққа бекітілген.</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">Пернетақтаны ауыстыру үшін <ph name="KEYBOARD_SHORTCUT" /> пернелерін басыңыз.</translation>
 <translation id="2501920221385095727">Жабысқақ пернелер</translation>
 <translation id="2509468283778169019">CAPS LOCK қосулы</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Профиль суретіңізді түртіңіз.</translation>
 <translation id="255671100581129685">Google Assistant баршаға ашық сеанста жұмыс істемейді.</translation>
 <translation id="256712445991462162">бекітілген ұлғайтқыш</translation>
@@ -377,6 +380,7 @@
 <translation id="3105917916468784889">Скриншот түсіру</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Құрылғы өшірілсін бе?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Жаңарту үшін қайта іске қосу</translation>
 <translation id="3139382871451988441">Камера пайдалану рұқсатын өшіру.</translation>
 <translation id="3139942575505304791">1-ші жұмыс үстелі</translation>
@@ -700,6 +704,7 @@
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4918086044614829423">Қабылдау</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> қолданбасы камераны пайдаланып жатыр.</translation>
+<translation id="492453977506755176">Түсіру режимінің пернесі</translation>
 <translation id="4925542575807923399">Бұл аккаунтның әкімшісі аккаунтның көп кіру сеансында алғашқы жүйеге кірген аккаунт болуын талап етеді.</translation>
 <translation id="4938176435186993759">Барлық үсынысты жасыру</translation>
 <translation id="4945196315133970626">Хабарландыруларды өшіру</translation>
@@ -720,6 +725,7 @@
 <translation id="5033299697334913360">Толық экранды түсіру үшін кез келген жерді басыңыз.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> жаңа телефонға жалғанды</translation>
 <translation id="5035389544768382859">Дисплей конфигурациясын растау</translation>
+<translation id="5042305953558921026">Шолу режимінің пернесі</translation>
 <translation id="504465286040788597">Алдыңғы абзац</translation>
 <translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
 <translation id="5071064518267176975">Қолданба микрофонды пайдалануға рұқсат сұрайды</translation>
@@ -907,6 +913,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктеп алуды растау</translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
+<translation id="6129953537138746214">Бос орын</translation>
 <translation id="6134259848159370930">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеңіз.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын өшіру диалогтік терезесін ашу</translation>
 <translation id="6141988275892716286">Жүктеп алуды растау</translation>
@@ -1371,6 +1378,7 @@
 <translation id="8843682306134542540">Бұру құлпын ашу/жабу. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN кодыңыз не құпия сөзіңіз әлі расталмады. Ескертпе: құпия сөзіңізді жақында өзгерткен болсаңыз, бұрынғы құпия сөзіңізді пайдаланыңыз. Жаңа құпия сөз, аккаунттан шыққаннан кейін, күшіне енеді.</translation>
+<translation id="8855885154700222542">Толық экран пернесі</translation>
 <translation id="8870509716567206129">Қолданба бөлінген экранды қолдамайды.</translation>
 <translation id="8874184842967597500">Қосылмаған</translation>
 <translation id="8876661425082386199">Интернет байланысын тексеріңіз.</translation>

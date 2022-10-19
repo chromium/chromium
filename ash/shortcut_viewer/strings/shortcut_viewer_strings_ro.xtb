@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Trage linkul în bara de adrese a filei</translation>
 <translation id="1251638888133819822">Activează sau dezactivează lupa de ecran complet</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Printează pagina curentă</translation>
-<translation id="1383876407941801731">Caută</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> sau <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Treci la sfârșitul rândului</translation>
 <translation id="1499072997694708844">Închide orice fereastră de căutare deschisă sau oprește încărcarea paginii actuale</translation>
-<translation id="1510238584712386396">Lansator</translation>
 <translation id="1516966594427080024">Deschide o fereastră nouă în modul incognito</translation>
 <translation id="152892567002884378">Mărește volumul</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, apoi <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Mută cursorul la începutul cuvântului anterior</translation>
 <translation id="1679841710523778799">Mărește luminozitatea</translation>
 <translation id="168356808214100546">Apasă lung pe <ph name="ALT" />, apăsă pe <ph name="TAB" /> până când ajungi la fereastra pe care dorești să o deschizi, apoi eliberează.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Adăugă www. și .com la ce ai introdus în bara de adrese, apoi deschide pagina</translation>
 <translation id="1768987374400973299">Fă o captură de ecran / înregistrare</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Activează sau dezactivează ChromeVox (feedback rostit)</translation>
 <translation id="2480851840841871861">Deschide Asistentul Google</translation>
 <translation id="2488661730534396940">Activează desktopul din stânga</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Deschide aplicația Diagnostics</translation>
 <translation id="2530339807289914946">Derulează în jos pagina web</translation>
 <translation id="2530896289327917474">Activează sau dezactivează navigarea cu tastatura</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Comenzi rapide</translation>
 <translation id="3084301071537457911">Evidențiază elementul următor de pe raft</translation>
 <translation id="309173601632226815">Evidențiază butonul lansator de pe raft</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Focalizează pe bara de adrese</translation>
 <translation id="3256109297135787951">Elimină evidențierea de pe un element de pe raft</translation>
 <translation id="3288816184963444640">Închide fereastra curentă</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Mută cursorul la finalul următorului cuvânt</translation>
 <translation id="4866066940972151697">Activează desktopul din dreapta</translation>
 <translation id="4916163929714267752">Deschide linkul într-o fereastră nouă</translation>
-<translation id="492453977506755176">Tasta modului de capturare</translation>
 <translation id="5030659775136592441">Afișează managerul de marcaje</translation>
 <translation id="5034421018520995080">Navighează la începutul paginii</translation>
-<translation id="5042305953558921026">Tasta pentru modul de prezentare generală</translation>
 <translation id="5104462712192763270">Salvează pagina curentă</translation>
 <translation id="5121628974188116412">Navighează la sfârșitul paginii</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Capturează ecranul complet</translation>
 <translation id="6022924867608035986">Șterge textul din caseta de căutare</translation>
 <translation id="6052614013050385269">Dă clic dreapta pe un link</translation>
-<translation id="6129953537138746214">Spațiu</translation>
 <translation id="6143669479988153888">Mărește pagina</translation>
 <translation id="6185696379715117369">O pagină mai sus</translation>
 <translation id="6228457605945141550">Redu luminozitatea</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Selectează cuvântul anterior sau litera anterioară</translation>
 <translation id="8727232706774971183">Vezi notificările</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 până la 8</translation>
-<translation id="8855885154700222542">Tasta pentru ecran complet</translation>
 <translation id="8881584919399569791">Mută fereastra activă pe desktopul din stânga</translation>
 <translation id="88986195241502842">O pagină mai jos</translation>
 <translation id="8924883688469390268">Comută la utilizatorul anterior</translation>

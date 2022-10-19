@@ -72,6 +72,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1290982764014248209">Flytta <ph name="DRAGGED_APP" /> till mappen <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">USB-C-enhet (vänster port)</translation>
 <translation id="1293556467332435079">Filer</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Ändra aviseringsinställningarna för låsskärmen</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">REKOMMENDERADE APPAR</translation>
@@ -130,6 +131,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> har inte anslutits.</translation>
 <translation id="1677582821739292812">Någon tittar på din skärm</translation>
+<translation id="169515659049020177">Skift</translation>
 <translation id="1698080062160024910">Timer på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adress: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Det aktiva fönstret har dockats till vänster.</translation>
@@ -281,6 +283,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2484513351006226581">Tryck på <ph name="KEYBOARD_SHORTCUT" /> om du vill byta tangentbordslayout.</translation>
 <translation id="2501920221385095727">Tröga tangenter</translation>
 <translation id="2509468283778169019">CAPS LOCK är på</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Tryck på profilbilden</translation>
 <translation id="255671100581129685">Google-assistenten är inte tillgänglig i en offentlig session.</translation>
 <translation id="256712445991462162">den dockade skärmförstoraren</translation>
@@ -379,6 +382,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3105917916468784889">Ta en skärmbild</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Vill du stänga av enheten?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Starta om för att uppdatera</translation>
 <translation id="3139382871451988441">Inaktivera kameraåtkomst.</translation>
 <translation id="3139942575505304791">Skrivbord 1</translation>
@@ -702,6 +706,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4918086044614829423">Acceptera</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> använder just nu kameran</translation>
+<translation id="492453977506755176">Tangent för skärmbild/skärminspelning</translation>
 <translation id="4925542575807923399">Administratören för kontot kräver att kontot är det första i en session med multiinloggning.</translation>
 <translation id="4938176435186993759">Dölj alla förslag</translation>
 <translation id="4945196315133970626">Inaktivera aviseringar</translation>
@@ -722,6 +727,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5033299697334913360">Klicka var som helst för att ta en bild av hela skärmen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> har anslutits till en ny mobil</translation>
 <translation id="5035389544768382859">Bekräfta skärminställningarna</translation>
+<translation id="5042305953558921026">Tangent för översiktsläge</translation>
 <translation id="504465286040788597">Föregående stycke</translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
 <translation id="5071064518267176975">En app vill använda mikrofonen</translation>
@@ -909,6 +915,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
+<translation id="6129953537138746214">Blanksteg</translation>
 <translation id="6134259848159370930">Sök på enheten, i appar, inställningar och på webben.</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Bekräfta nedladdning</translation>
@@ -1376,6 +1383,7 @@ Nyligen installerad</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Sök+Escape</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
+<translation id="8855885154700222542">Tangent för helskärm</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8876661425082386199">Kontrollera anslutningen</translation>

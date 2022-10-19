@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> áthelyezése a következő mappába: <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">C típusú USB-vel kompatibilis eszköz (bal oldali port)</translation>
 <translation id="1293556467332435079">Fájlok</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">A lezárási képernyő értesítési beállításainak módosítása</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">AJÁNLOTT ALKALMAZÁSOK</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> van hátra</translation>
 <translation id="1677507110654891115">A(z) <ph name="FEATURE_NAME" /> nem csatlakozik.</translation>
 <translation id="1677582821739292812">Valaki az Ön képernyőjét nézi</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Időzítő a következő időtartamra: <ph name="TOTAL_TIME" />   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-cím: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Az aktív ablak a bal oldalon van dokkolva.</translation>
@@ -250,6 +252,7 @@
 <translation id="2322173485024759474">Visszalépés betűnként</translation>
 <translation id="2339073806695260576">Koppintson a polcon az érintőceruza gombra, ha jegyzetet vagy képernyőképet szeretne készíteni, illetve ha a lézermutatót vagy a nagyítót kívánja használni.</translation>
 <translation id="2341729377289034582">Függőleges helyzetben zárolva</translation>
+<translation id="2345226652884463045">Az Enter vagy a Keresés + Szóköz billentyűkombinációval kiválaszthatja a szerkeszteni kívánt szöveget.</translation>
 <translation id="2350794187831162545">A(z) <ph name="LANGUAGE" /> nyelvű beszéd feldolgozása helyben, offline történik. A diktálás nyelvét a Beállítások &gt; Kisegítő lehetőségek pontban módosíthatja.</translation>
 <translation id="2352467521400612932">Az érintőceruza beállításai</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktiválása</translation>
@@ -280,6 +283,7 @@
 <translation id="2484513351006226581">A billentyűzetkiosztás átváltásához nyomja meg a(z) <ph name="KEYBOARD_SHORTCUT" /> billentyűparancsot.</translation>
 <translation id="2501920221385095727">Beragadó billentyűk</translation>
 <translation id="2509468283778169019">A CAPS LOCK be van kapcsolva</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Koppintson a profilképre</translation>
 <translation id="255671100581129685">A Google Segéd nem áll rendelkezésre nyilvános munkamenetben.</translation>
 <translation id="256712445991462162">dokkolt nagyító</translation>
@@ -378,6 +382,7 @@
 <translation id="3105917916468784889">Képernyőkép készítése</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Leállítja az eszközt?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Indítsa újra a frissítéshez</translation>
 <translation id="3139382871451988441">A kamerához való hozzáférés kikapcsolása.</translation>
 <translation id="3139942575505304791">1. asztal</translation>
@@ -702,6 +707,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4917385247580444890">Erős</translation>
 <translation id="4918086044614829423">Elfogadás</translation>
 <translation id="4919841137949306064">A(z) <ph name="APP_NAME" /> jelenleg használja a kamerát</translation>
+<translation id="492453977506755176">Rögzítés mód billentyűje</translation>
 <translation id="4925542575807923399">A fiók rendszergazdája megköveteli, hogy ez a fiók legyen az első bejelentkezett fiók a többfiókos bejelentkezés munkamenete során.</translation>
 <translation id="4938176435186993759">Összes javaslat elrejtése</translation>
 <translation id="4945196315133970626">Az értesítések kikapcsolása</translation>
@@ -722,6 +728,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5033299697334913360">Kattintson bárhová a teljes képernyő rögzítéséhez</translation>
 <translation id="5035236842988137213">A(z) <ph name="DEVICE_NAME" /> új telefonhoz csatlakozott</translation>
 <translation id="5035389544768382859">Képernyő-beállítás megerősítése</translation>
+<translation id="5042305953558921026">Áttekintési mód billentyűje</translation>
 <translation id="504465286040788597">Előző bekezdés</translation>
 <translation id="5045550434625856497">Helytelen jelszó</translation>
 <translation id="5071064518267176975">Egy alkalmazás használni szeretné a mikrofont</translation>
@@ -909,6 +916,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">A(z) <ph name="FILENAME" /> fájl letöltésének megerősítése</translation>
 <translation id="612734058257491180">A Google Segéd nem áll rendelkezésre Vendég-munkafolyamatban.</translation>
+<translation id="6129953537138746214">Szóköz</translation>
 <translation id="6134259848159370930">Kereshet az eszközén, az alkalmazások és a beállítások között, valamint az interneten.</translation>
 <translation id="6137566720514957455">Eltávolítási párbeszédpanel megnyitása, <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Letöltés megerősítése</translation>
@@ -1376,6 +1384,7 @@ Frissen telepítve</translation>
 <translation id="8843682306134542540">Váltás a forgatás zárolásának állapotai közt. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Keresés+Esc</translation>
 <translation id="8853703225951107899">PIN-kódjának vagy jelszavának ellenőrzése még mindig nem sikerült. Megjegyzés: Ha nemrég módosította jelszavát, akkor használja a régit. Az új jelszó beállítása a kijelentkezés után lép érvénybe.</translation>
+<translation id="8855885154700222542">Teljes képernyő billentyű</translation>
 <translation id="8870509716567206129">Az alkalmazás nem támogatja az osztott képernyős nézetet.</translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>
 <translation id="8876661425082386199">Ellenőrizze az internetkapcsolatot</translation>

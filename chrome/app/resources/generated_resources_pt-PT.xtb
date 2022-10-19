@@ -592,6 +592,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1552752544932680961">Gerir extensão</translation>
 <translation id="1553538517812678578">ilimitado</translation>
 <translation id="1555130319947370107">Azul</translation>
+<translation id="1556127816860282890">A atividade em segundo plano e alguns efeitos visuais, como o deslocamento suave, podem ser limitados</translation>
 <translation id="1556537182262721003">Não foi possível mover o directório da extensão para o perfil.</translation>
 <translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -3269,7 +3270,7 @@ Pretende pará-lo?</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta traseira do lado direito)</translation>
 <translation id="3995963973192100066">Reproduzir animação</translation>
 <translation id="4001540981461989979">Realçar cursor do rato ao mover</translation>
-<translation id="4002329649066944389">Efetue a gestão das exceções específicas de sites</translation>
+<translation id="4002329649066944389">Faça a gestão das exceções específicas de sites</translation>
 <translation id="4002440992267487163">Configuração do PIN</translation>
 <translation id="4005817994523282006">Método de deteção do fuso horário</translation>
 <translation id="4007856537951125667">Ocultar atalhos</translation>
@@ -4143,6 +4144,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4852916668365817106">Cor do rato</translation>
 <translation id="4853020600495124913">Abrir numa &amp;nova janela</translation>
 <translation id="4854317507773910281">Escolhe a conta parental para aprovação</translation>
+<translation id="4854603338816296098">Endereço removido</translation>
 <translation id="485480310608090163">Mais definições e autorizações</translation>
 <translation id="4858792381671956233">Perguntaste aos teus pais se podes aceder a este site.</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -4963,7 +4965,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5637476008227280525">Ativar dados móveis</translation>
 <translation id="5638309510554459422">Encontre extensões e temas na <ph name="BEGIN_LINK" />Web Store do Chrome<ph name="END_LINK" />.</translation>
 <translation id="5639549361331209298">Atualizar esta página, premir sem soltar para ver mais opções</translation>
-<translation id="5640133431808313291">Efetue a gestão das chaves de segurança</translation>
+<translation id="5640133431808313291">Faça a gestão das chaves de segurança</translation>
 <translation id="5641608986289282154">Comece a utilizar o <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Editor de imagens de capturas de ecrã</translation>
 <translation id="5642508497713047">Signatário CRL</translation>
@@ -8433,7 +8435,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8930351635855238750">As novas definições de cookies terão efeito depois de atualizar a página.</translation>
 <translation id="8930622219860340959">Sem fios</translation>
 <translation id="8931076093143205651">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android ao enviar automaticamente dados de diagnóstico, de utilização do dispositivo e das apps para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Esta definição é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnóstico e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
-<translation id="8931475688782629595">Efetue a gestão do que sincroniza</translation>
+<translation id="8931475688782629595">Faça a gestão do que sincroniza</translation>
 <translation id="8932654652795262306">Detalhes da Ligação (à Internet) via telemóvel instantânea</translation>
 <translation id="893298445929867520">Carrinhos ocultos. Serão apresentados novamente quando fizer alterações.</translation>
 <translation id="8933960630081805351">Mo&amp;strar no Finder</translation>

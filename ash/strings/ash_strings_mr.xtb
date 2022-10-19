@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> फोल्डर <ph name="FOLDER_NAME" /> वर हलवा.</translation>
 <translation id="1293264513303784526">USB-C डिव्‍हाइस (डावे पोर्ट)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">लॉक स्क्रीन सूचना सेटिंग्ज बदला</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">शिफारस केलेले अ‍ॅप्स</translation>
@@ -131,6 +132,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> शिल्लक</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> कनेक्ट केलेले नाही.</translation>
 <translation id="1677582821739292812">एखादी व्यक्ती तुमच्या स्क्रीनकडे पाहत आहे</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टायमर· <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 पत्ता: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">अ‍ॅक्टिव्ह विंडो डावीकडे डॉक केली आहे.</translation>
@@ -281,6 +283,7 @@
 <translation id="2484513351006226581">कीबोर्डचा लेआउट स्विच करण्यासाठी <ph name="KEYBOARD_SHORTCUT" /> दाबा.</translation>
 <translation id="2501920221385095727">स्टिकी की</translation>
 <translation id="2509468283778169019">CAPS LOCK सुरू आहे</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">तुमच्या प्रोफाइल इमेजवर टॅप करा</translation>
 <translation id="255671100581129685">सार्वजनिक सेशनमध्ये Google असिस्टंट उपलब्ध नाही.</translation>
 <translation id="256712445991462162">डॉक केलेले मॅग्निफायर</translation>
@@ -380,6 +383,7 @@
 <translation id="3105917916468784889">स्क्रीनशॉट घ्या</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लूटूथ)</translation>
 <translation id="3120421559657122717">डिव्हाइस बंद करायचे का?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">अपडेटासाठी पुनर्सुरू करा</translation>
 <translation id="3139382871451988441">कॅमेराचा ॲक्सेस बंद करा.</translation>
 <translation id="3139942575505304791">डेस्‍क १</translation>
@@ -703,6 +707,7 @@
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> हे सध्या तुमचा कॅमेरा वापरत आहे</translation>
+<translation id="492453977506755176">कॅप्चर मोड की</translation>
 <translation id="4925542575807923399">या खात्याच्या ॲडमिनिस्ट्रेटरला हे खाते एका एकाहून अधिक साइन इन सेशनमधील प्रथम साइन इन केलेले खाते असणे आवश्यक आहे.</translation>
 <translation id="4938176435186993759">सर्व सूचना लपवा</translation>
 <translation id="4945196315133970626">सूचना बंद करा</translation>
@@ -723,6 +728,7 @@
 <translation id="5033299697334913360">फुल स्क्रीन कॅप्चर करण्यासाठी कुठेही क्लिक करा</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> नवीन फोनशी कनेक्ट केले</translation>
 <translation id="5035389544768382859">डिस्प्ले कॉंफिगरेशन निश्चित करा</translation>
+<translation id="5042305953558921026">पूर्वावलोकन मोड की</translation>
 <translation id="504465286040788597">मागील परिच्छेद</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="5071064518267176975">ॲपला मायक्रोफोन वापरायचा आहे</translation>
@@ -914,6 +920,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> डाउनलोड करण्याची खात्री करा</translation>
 <translation id="612734058257491180">अतिथी सत्रामध्ये Google असिस्टंट उपलब्ध नाही.</translation>
+<translation id="6129953537138746214">जागा</translation>
 <translation id="6134259848159370930">तुमच्या डिव्हाइस, अ‍ॅप्स, सेटिंग्ज, वेबवर शोधा.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> साठी काढून टाकणे डायलॉग उघडा</translation>
 <translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>
@@ -1384,6 +1391,7 @@
 <translation id="8843682306134542540">रोटेशन लॉक टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">तुमच्या पिन किंवा पासवर्डची अद्याप पडताळणी करता आली नाही. टीप: तुम्ही अलीकडेच तुमचा पासवर्ड बदलला असल्यास, जुना पासवर्ड वापरा. तुम्ही साइन आउट केल्यानंतर तुमचा नवीन पासवर्ड लागू केला जाईल.</translation>
+<translation id="8855885154700222542">क्षेत्रे की</translation>
 <translation id="8870509716567206129">अ‍ॅप विभाजित-स्क्रीनला सपोर्ट करत नाही.</translation>
 <translation id="8874184842967597500">कनेक्ट नाही</translation>
 <translation id="8876661425082386199">तुमचे कनेक्शन तपासा</translation>

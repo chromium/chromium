@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="DRAGGED_APP" /> നീക്കുക.</translation>
 <translation id="1293264513303784526">USB-C ഉപകരണം (ഇടത് പോർട്ട്)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">ലോക്ക് സ്ക്രീൻ അറിയിപ്പ് ക്രമീകരണം മാറ്റുക</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ശുപാർശിത ആപ്പുകൾ</translation>
@@ -131,6 +132,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല.</translation>
 <translation id="1677582821739292812">ആരോ നിങ്ങളുടെ സ്ക്രീനിലേക്ക് നോക്കുന്നു</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ടൈമർ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 വിലാസം: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">സജീവ വിൻഡോ ഇടതുവശത്ത് ഡോക്ക് ചെയ്‌തു.</translation>
@@ -281,6 +283,7 @@
 <translation id="2484513351006226581">കീബോര്‍‌ഡ് ലേഔട്ട് മാറാൻ <ph name="KEYBOARD_SHORTCUT" /> അമർത്തുക.</translation>
 <translation id="2501920221385095727">സ്‌റ്റിക്കി കീകൾ</translation>
 <translation id="2509468283778169019">CAPS LOCK ഓൺ ആണ്</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">നിങ്ങളുടെ പ്രൊഫൈൽ ചിത്രത്തിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="255671100581129685">പൊതു സെഷനില്‍ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
 <translation id="256712445991462162">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
@@ -380,6 +383,7 @@
 <translation id="3105917916468784889">സ്ക്രീന്‍ഷോട്ട് എടുക്കുക</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യണോ?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">അപ്‌ഡേറ്റ് ചെയ്യുന്നതിന് റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="3139382871451988441">ക്യാമറ ആക്‌സസ് ഓഫാക്കുക.</translation>
 <translation id="3139942575505304791">ഡെസ്‌ക് 1</translation>
@@ -703,6 +707,7 @@
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> നിലവിൽ നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
+<translation id="492453977506755176">ക്യാപ്‌ചർ മോഡ് കീ</translation>
 <translation id="4925542575807923399">ഈ അക്കൗണ്ട് ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട് ആയിരിക്കാൻ ഈ അക്കൗണ്ടിനായുള്ള അഡ്‌മിനിസ്‌ട്രേറ്റർ ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="4938176435186993759">എല്ലാ നിർദ്ദേശങ്ങളും മറയ്ക്കുക</translation>
 <translation id="4945196315133970626">അറിയിപ്പുകൾ ഓഫാക്കുക</translation>
@@ -723,6 +728,7 @@
 <translation id="5033299697334913360">പൂർണ്ണ സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യാൻ എവിടെയെങ്കിലും ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> പുതിയ ഫോണിലേക്ക് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5035389544768382859">ഡിസ്പ്ലേ കോൺഫിഗറേഷൻ സ്ഥിരീകരിക്കുക</translation>
+<translation id="5042305953558921026">ചുരുക്കവിവരണ മോഡ് കീ</translation>
 <translation id="504465286040788597">മുമ്പത്തെ പാരഗ്രാഫ്</translation>
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
 <translation id="5071064518267176975">ഒരു ആപ്പിന് മൈക്രോഫോൺ ഉപയോഗിക്കണം</translation>
@@ -914,6 +920,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">ഡൗൺലോഡ് സ്ഥിരീകരിക്കുക <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">അതിഥി സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
+<translation id="6129953537138746214">സ്പെയ്സ്</translation>
 <translation id="6134259848159370930">നിങ്ങളുടെ ഉപകരണവും ആപ്പുകളും ക്രമീകരണവും വെബും തിരയുക.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> -നുള്ള ഡയലോഗ് നീക്കം ചെയ്യുക തുറക്കുക</translation>
 <translation id="6141988275892716286">ഡൗൺലോഡ് സ്ഥിരീകരിക്കുക</translation>
@@ -1384,6 +1391,7 @@
 <translation id="8843682306134542540">റൊട്ടേഷൻ ലോക്ക് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">തിരയൽ+Esc</translation>
 <translation id="8853703225951107899">നിങ്ങളുടെ പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ് ഇപ്പോഴും പരിശോധിച്ചുറപ്പിക്കാനായില്ല. ശ്രദ്ധിക്കുക: നിങ്ങൾ അടുത്തിടെ പാസ്‌വേഡ് മാറ്റിയിട്ടുണ്ടെങ്കിൽ, നിങ്ങളുടെ പഴയ പാസ്‌വേഡ് ഉപയോഗിക്കുക. സൈൻ ഔട്ട് ചെയ്‌തുകഴിഞ്ഞാൽ നിങ്ങളുടെ പുതിയ പാസ്‍വേഡ് ബാധകമാകും.</translation>
+<translation id="8855885154700222542">പൂർണ്ണ സ്‌ക്രീൻ കീ</translation>
 <translation id="8870509716567206129">സ്പ്ലിറ്റ്-സ്ക്രീനിനെ ആപ്പ് പിന്തുണയ്ക്കുന്നില്ല.</translation>
 <translation id="8874184842967597500">കണക്റ്റല്ല</translation>
 <translation id="8876661425082386199">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിക്കുക</translation>

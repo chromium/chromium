@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />ને <ph name="FOLDER_NAME" /> ફોલ્ડરમાં ખસેડો.</translation>
 <translation id="1293264513303784526">USB-C ઉપકરણ (ડાબું પોર્ટ)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">લૉક સ્ક્રીન નોટિફિકેશન સેટિંગ બદલો</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ભલામણ કરેલ ઍપ</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> બાકી</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> કનેક્ટ કરેલું નથી.</translation>
 <translation id="1677582821739292812">કોઈ વ્યક્તિ તમારી સ્ક્રીન જોઈ રહી છે</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ટાઇમર · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 સરનામું: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">સક્રિય વિન્ડોને ડાબે ડૉક કરી.</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">કીબોર્ડ લેઆઉટ સ્વિચ કરવા માટે <ph name="KEYBOARD_SHORTCUT" />ને દબાવો.</translation>
 <translation id="2501920221385095727">સ્ટિકી કી</translation>
 <translation id="2509468283778169019">CAPS LOCK ચાલુ છે</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">તમારા પ્રોફાઇલ ફોટા પર ટૅપ કરો</translation>
 <translation id="255671100581129685">જાહેર સત્રમાં Google Assistant ઉપલબ્ધ હોતું નથી.</translation>
 <translation id="256712445991462162">ડૉક કરેલું મૅગ્નિફાયર</translation>
@@ -378,6 +381,7 @@
 <translation id="3105917916468784889">સ્ક્રીનશૉટ લો</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">શું ડિવાઇસને શટ ડાઉન કરીએ?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">અપડેટ કરવા માટે પુનઃપ્રારંભ કરો</translation>
 <translation id="3139382871451988441">કૅમેરાનો ઍક્સેસ બંધ કરો.</translation>
 <translation id="3139942575505304791">ડેસ્ક 1</translation>
@@ -701,6 +705,7 @@
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> હાલમાં તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
+<translation id="492453977506755176">કૅપ્ચર મોડવાળી કી</translation>
 <translation id="4925542575807923399">આ એકાઉન્ટના એડમિન માટે જરૂરી છે કે આ એકાઉન્ટ એકથી વધુ સાઇન ઇન સત્રમાં પ્રથમ સાઇન ઇન કરેલ એકાઉન્ટ હોય.</translation>
 <translation id="4938176435186993759">બધા સૂચનો છુપાવો</translation>
 <translation id="4945196315133970626">નોટિફિકેશન બંધ કરો</translation>
@@ -721,6 +726,7 @@
 <translation id="5033299697334913360">પૂર્ણ સ્ક્રીન કૅપ્ચર કરવા માટે સ્ક્રીન પર ગમે ત્યાં ક્લિક કરો</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />, નવા ફોન સાથે કનેક્ટ થયું</translation>
 <translation id="5035389544768382859">ડિસ્પ્લેની ગોઠવણને કન્ફર્મ કરો</translation>
+<translation id="5042305953558921026">ઝલક મોડ કી</translation>
 <translation id="504465286040788597">પહેલાંનો ફકરો</translation>
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
 <translation id="5071064518267176975">ઍપ માઇક્રોફોનનો ઉપયોગ કરવા માગે છે</translation>
@@ -908,6 +914,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> માટે ડાઉનલોડ કરવું કન્ફર્મ કરો</translation>
 <translation id="612734058257491180">અતિથિ સત્રમાં Google Assistant ઉપલબ્ધ હોતું નથી.</translation>
+<translation id="6129953537138746214">જગ્યા</translation>
 <translation id="6134259848159370930">તમારા ડિવાઇસ, ઍપ, સેટિંગ અને વેબ પર શોધો.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> માટે કાઢી નાખવાનો સંવાદ ખોલો</translation>
 <translation id="6141988275892716286">ડાઉનલોડની પુષ્ટિ કરો</translation>
@@ -1375,6 +1382,7 @@
 <translation id="8843682306134542540">રોટેશન લૉક ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. નોંધ: જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડનો ઉપયોગ કરો. એકવાર તમે સાઇન આઉટ કરો, તે પછી તમારો નવો પાસવર્ડ લાગુ કરવામાં આવશે.</translation>
+<translation id="8855885154700222542">પૂર્ણસ્ક્રીન કી</translation>
 <translation id="8870509716567206129">ઍપ સ્ક્રીન-વિભાજનને સહાય કરતી નથી.</translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>
 <translation id="8876661425082386199">તમારું કનેક્શન ચેક કરો</translation>

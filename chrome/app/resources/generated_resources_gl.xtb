@@ -420,6 +420,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1397594434718759194">Tes a sesión iniciada en Chrome nestes dispositivos, polo que podes usalos como chaves de seguranza.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="139911022479327130">Desbloquea o teléfono e confirma a túa identidade</translation>
+<translation id="1401216725754314428">Máis información sobre sitios relacionados nunha pestana nova</translation>
 <translation id="1401308693935339022">Usar a localización. Permite que as aplicacións e servizos con permiso de localización utilicen a localización deste dispositivo. Google pode recompilar datos de localización periodicamente e utilizalos de forma anónima para mellorar os servizos baseados na localización e a precisión da localización.</translation>
 <translation id="1403222014593521787">Non se puido establecer conexión co proxy</translation>
 <translation id="1405779994569073824">Produciuse un fallo.</translation>
@@ -7676,6 +7677,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8206745257863499010">Tipo blues</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8207404892907560325">Escolle unha clave de acceso</translation>
+<translation id="8208188204689616705">Estes sitios están nun grupo que definiu <ph name="FPS_OWNER" />. Os sitios dun grupo poden ver a túa actividade dese grupo.</translation>
 <translation id="8208216423136871611">Non gardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{1 notificación nova}other{# notificacións novas}}</translation>
 <translation id="821119981794423735">Para importar contrasinais ao xestor de contrasinais de Google de <ph name="USER_EMAIL" />, selecciona un ficheiro CSV</translation>

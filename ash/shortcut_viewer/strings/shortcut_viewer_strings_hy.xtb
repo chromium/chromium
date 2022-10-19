@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Քաշեք հղումը ներդիրի հասցեագոտի</translation>
 <translation id="1251638888133819822">Միացնել կամ անջատել լիաէկրան խոշորացույցը</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Տպել ընթացիկ էջը</translation>
-<translation id="1383876407941801731">Որոնում</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> կամ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Անցնել տողի վերջ</translation>
 <translation id="1499072997694708844">Փակել որոնման բոլոր պատուհանները կամ դադարեցնել ընթացիկ էջի բեռնումը</translation>
-<translation id="1510238584712386396">Գործարկիչ</translation>
 <translation id="1516966594427080024">Բացել նոր պատուհան ինկոգնիտո ռեժիմում</translation>
 <translation id="152892567002884378">Բարձրացնել ձայնը</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ապա <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Անցնել նախորդ բառի սկիզբ</translation>
 <translation id="1679841710523778799">Ավելացնել պայծառությունը</translation>
 <translation id="168356808214100546">Սեղմեք և պահեք <ph name="ALT" /> ստեղնը, հպեք <ph name="TAB" /> ներդիրին, մինչև անհրաժեշտ պատուհանը չբացվի, ապա բաց թողեք:</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Հասցեագոտում մուտքագրվածին ավելացնել www. և .com, ապա բացել էջը</translation>
 <translation id="1768987374400973299">Սքրինշոթ անել/տեսագրել</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Միացնել և անջատել ChromeVox-ը (ձայնային ուղեկցում)</translation>
 <translation id="2480851840841871861">Բացել Google Օգնականը</translation>
 <translation id="2488661730534396940">Ակտիվացնել ձախ աշխատասեղանը</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Բացել «Դիագնոստիկա» հավելվածը</translation>
 <translation id="2530339807289914946">Ոլորել կայքէջը ներքև</translation>
 <translation id="2530896289327917474">Միացրեք/անջատեք ստեղնային դիտարկումը</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Դյուրանցումներ</translation>
 <translation id="3084301071537457911">Նշել հաջորդ տարրը դարակում</translation>
 <translation id="309173601632226815">Նշել գործարկիչի կոճակը դարակում</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Կիզակետել հասցեագոտին</translation>
 <translation id="3256109297135787951">Չեղարկել տարրի նշումը դարակում</translation>
 <translation id="3288816184963444640">Փակել ընթացիկ պատուհանը</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Անցնել հաջորդ բառի վերջ</translation>
 <translation id="4866066940972151697">Ակտիվացնել աջ աշխատասեղանը</translation>
 <translation id="4916163929714267752">Հղումը բացել նոր պատուհանում</translation>
-<translation id="492453977506755176">Տեսագրման ռեժիմի ստեղն</translation>
 <translation id="5030659775136592441">Ցուցադրել էջանիշների կառավարիչը</translation>
 <translation id="5034421018520995080">Անցնել էջի սկիզբ</translation>
-<translation id="5042305953558921026">Համատեսքի ռեժիմի ստեղն</translation>
 <translation id="5104462712192763270">Պահել ընթացիկ էջը</translation>
 <translation id="5121628974188116412">Անցնել էջի ներքև</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Ամբողջ էկրանի պատկեր/տեսագրում</translation>
 <translation id="6022924867608035986">Մաքրել որոնման դաշտի տեքստը</translation>
 <translation id="6052614013050385269">Բացել հղումը մկնիկի աջ կոճակով</translation>
-<translation id="6129953537138746214">Բացատ</translation>
 <translation id="6143669479988153888">Մեծացնել էջի մասշտաբը</translation>
 <translation id="6185696379715117369">Էջը վեր</translation>
 <translation id="6228457605945141550">Նվազեցնել պայծառությունը</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Ընտրել նախորդ բառը կամ տառը</translation>
 <translation id="8727232706774971183">Դիտել ծանուցումները</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1-ից 8</translation>
-<translation id="8855885154700222542">Լիաէկրան ռեժիմի ստեղն</translation>
 <translation id="8881584919399569791">Ակտիվ պատուհանը տեղափոխել ձախ էկրան</translation>
 <translation id="88986195241502842">Էջը վար</translation>
 <translation id="8924883688469390268">Անցնել նախորդ պրոֆիլին</translation>

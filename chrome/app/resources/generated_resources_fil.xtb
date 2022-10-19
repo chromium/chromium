@@ -424,6 +424,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1397594434718759194">Naka-sign in ka sa Chrome sa mga device na ito, kaya magagamit mo ang mga ito bilang mga security key.</translation>
 <translation id="1398853756734560583">I-maximize</translation>
 <translation id="139911022479327130">I-unlock ang iyong telepono at kumpirmahing ikaw ito</translation>
+<translation id="1401216725754314428">Matuto pa tungkol sa mga kaugnay na site sa isang bagong tab</translation>
 <translation id="1401308693935339022">Gumamit ng lokasyon. Payagan ang mga app at serbisyong may pahintulot sa lokasyon na gamitin ang lokasyon ng device na ito. Posibleng pana-panahong mangolekta ang Google ng data ng lokasyon at gamitin nito ang data na ito sa anonymous na paraan para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon.</translation>
 <translation id="1403222014593521787">Hindi makakonekta sa proxy</translation>
 <translation id="1405779994569073824">Nag-crash.</translation>
@@ -596,6 +597,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1552752544932680961">Mamahala ng extension</translation>
 <translation id="1553538517812678578">walang limitasyon</translation>
 <translation id="1555130319947370107">Asul</translation>
+<translation id="1556127816860282890">Posibleng maging limitado ang aktibidad sa background at ilang visual effect, tulad ng maayos na pag-scroll</translation>
 <translation id="1556537182262721003">Hindi maililipat ang direktoryo ng extension papunta sa profile.</translation>
 <translation id="1558391695376153246">Isara ang mga Incognito tab</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -2533,6 +2535,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3308852433423051161">Nilo-load ang Google Assistant...</translation>
 <translation id="3309330461362844500">Profile ID ng Certificate</translation>
 <translation id="3311445899360743395">Posibleng alisin sa device na ito ang data na nauugnay sa app na ito.</translation>
+<translation id="3312470654018965389">Kino-configure ang Linux container</translation>
 <translation id="3312883087018430408">Para maghanap sa partikular na site o bahagi ng Chrome, i-type ang shortcut nito sa address bar, kasunod ang iyong gustong keyboard shortcut. Halimbawa, para maghanap lang sa Mga Bookmark, i-type ang "@bookmarks," at pagkatapos ay pindutin ang Tab o Space.</translation>
 <translation id="3313622045786997898">Certificate Signature Value</translation>
 <translation id="3313950410573257029">Suriin ang koneksyon</translation>
@@ -4161,6 +4164,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4852916668365817106">Kulay ng mouse</translation>
 <translation id="4853020600495124913">Buksan sa &amp;bagong window</translation>
 <translation id="4854317507773910281">Pumili ng account ng magulang para sa pag-apruba</translation>
+<translation id="4854603338816296098">Inalis ang address</translation>
 <translation id="485480310608090163">Higit pang setting at pahintulot</translation>
 <translation id="4858792381671956233">Tinanong mo sa iyong mga magulang kung maaari mong bisitahin ang site na ito</translation>
 <translation id="4858913220355269194">Azkals</translation>
@@ -7705,6 +7709,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8206745257863499010">Musika</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8207404892907560325">Pumili ng passkey</translation>
+<translation id="8208188204689616705">Ang mga site na ito ay nasa isang grupong tinukoy ng <ph name="FPS_OWNER" />. Makikita ng mga site sa isang grupo ang iyong aktibidad sa grupo.</translation>
 <translation id="8208216423136871611">Huwag mag-save</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Bagong notification}one{# bagong notification}other{# na bagong notification}}</translation>
 <translation id="821119981794423735">Para mag-import ng mga password sa Google Password Manager para sa <ph name="USER_EMAIL" />, pumili ng CSV file</translation>

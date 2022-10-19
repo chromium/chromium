@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Arrossega l'enllaç a la barra d'adreces de la pestanya</translation>
 <translation id="1251638888133819822">Activa o desactiva la lupa de pantalla completa</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Imprimeix la pàgina actual</translation>
-<translation id="1383876407941801731">Cerca</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> o <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Ves al final de la línia</translation>
 <translation id="1499072997694708844">Tanca les finestres de cerca que tinguis obertes o deixa de carregar la pàgina actual</translation>
-<translation id="1510238584712386396">Menú d'aplicacions</translation>
 <translation id="1516966594427080024">Obre una finestra nova en mode d'incògnit</translation>
 <translation id="152892567002884378">Apuja el volum</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> i després <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Mou el cursor a l'inici de la paraula anterior</translation>
 <translation id="1679841710523778799">Augmenta la brillantor</translation>
 <translation id="168356808214100546">Mantén premuda la tecla <ph name="ALT" />, toca <ph name="TAB" /> fins a arribar a la finestra que vulguis obrir i deixa anar la tecla.</translation>
-<translation id="169515659049020177">Maj</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Afegeix www. i .com al text de la barra d'adreces i obre la pàgina</translation>
 <translation id="1768987374400973299">Fes una gravació o una captura de pantalla</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Activa o desactiva ChromeVox (avisos de veu)</translation>
 <translation id="2480851840841871861">Obre l'Assistent de Google</translation>
 <translation id="2488661730534396940">Activa l'escriptori de l'esquerra</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Obre l'aplicació de diagnòstic</translation>
 <translation id="2530339807289914946">Desplaça la pàgina web cap avall</translation>
 <translation id="2530896289327917474">Activa o desactiva la navegació amb cursor de text</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Dreceres</translation>
 <translation id="3084301071537457911">Destaca l'element següent del prestatge</translation>
 <translation id="309173601632226815">Destaca el botó del menú d'aplicacions al prestatge</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Mou el focus a la barra d'adreces</translation>
 <translation id="3256109297135787951">Deixa de destacar un element del prestatge</translation>
 <translation id="3288816184963444640">Tanca la finestra actual</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Mou el cursor al final de la paraula següent</translation>
 <translation id="4866066940972151697">Activa l'escriptori de la dreta</translation>
 <translation id="4916163929714267752">Obre l'enllaç en una finestra nova</translation>
-<translation id="492453977506755176">Tecla del mode de captura</translation>
 <translation id="5030659775136592441">Mostra el gestor d'adreces d'interès</translation>
 <translation id="5034421018520995080">Ves a la part superior de la pàgina</translation>
-<translation id="5042305953558921026">Tecla del mode de visió general</translation>
 <translation id="5104462712192763270">Desa la pàgina actual</translation>
 <translation id="5121628974188116412">Ves a la part inferior de la pàgina</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Fes una captura de pantalla completa</translation>
 <translation id="6022924867608035986">Esborra el text del quadre de cerca</translation>
 <translation id="6052614013050385269">Fes clic amb el botó secundari del ratolí en un enllaç</translation>
-<translation id="6129953537138746214">Espai</translation>
 <translation id="6143669479988153888">Amplia la pàgina</translation>
 <translation id="6185696379715117369">Re Pàg</translation>
 <translation id="6228457605945141550">Disminueix la brillantor</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Selecciona la paraula o la lletra anterior</translation>
 <translation id="8727232706774971183">Mostra les notificacions</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> de l'1 al 8</translation>
-<translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8881584919399569791">Mou la finestra activa a l'escriptori de l'esquerra</translation>
 <translation id="88986195241502842">Av Pàg</translation>
 <translation id="8924883688469390268">Canvia a l'usuari anterior</translation>

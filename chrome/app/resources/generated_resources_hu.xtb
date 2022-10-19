@@ -594,6 +594,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1552752544932680961">Bővítmény kezelése</translation>
 <translation id="1553538517812678578">korlátlan</translation>
 <translation id="1555130319947370107">Kék</translation>
+<translation id="1556127816860282890">Lehetséges, hogy a háttértevékenységek és bizonyos vizuális effektek (például a finomgörgetés) korlátozottak.</translation>
 <translation id="1556537182262721003">Nem sikerült áthelyezni a bővítménykönyvtárat a profilba.</translation>
 <translation id="1558391695376153246">Inkognitó lapok bezárása</translation>
 <translation id="155865706765934889">Érintőpad</translation>
@@ -2528,6 +2529,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3308852433423051161">A Google Segéd betöltése…</translation>
 <translation id="3309330461362844500">Tanúsítványprofil azonosítója</translation>
 <translation id="3311445899360743395">Az alkalmazáshoz kapcsolódó adatok törlődhetnek erről az eszközről.</translation>
+<translation id="3312470654018965389">A Linux-tároló konfigurálása folyamatban van</translation>
 <translation id="3312883087018430408">Ha egy adott webhelyen vagy a Chrome egy részében szeretne keresni, gépelje be a kapcsolódó gyorsparancsot a címsávba, majd nyomja le az Ön által preferált billentyűparancsot. Ha például csak a könyvjelzők között szeretne keresni, írja be a „@bookmarks“ kifejezést, majd nyomja meg a Tab vagy a szóköz billentyűt.</translation>
 <translation id="3313622045786997898">Tanúsítvány aláírási értéke</translation>
 <translation id="3313950410573257029">Kapcsolat ellenőrzése</translation>
@@ -4155,6 +4157,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4852916668365817106">Egér színe</translation>
 <translation id="4853020600495124913">Megnyitás új &amp;ablakban</translation>
 <translation id="4854317507773910281">Szülői fiók kiválasztása a jóváhagyáshoz</translation>
+<translation id="4854603338816296098">Cím eltávolítva</translation>
 <translation id="485480310608090163">További beállítások és engedélyek</translation>
 <translation id="4858792381671956233">Megkérdezted a szüleidet, hogy meg szabad-e látogatnod ezt a webhelyet</translation>
 <translation id="4858913220355269194">Foci</translation>

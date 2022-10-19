@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />. sayfayı sil</translation>
 <translation id="1113173431709655881">Kamera modu</translation>
 <translation id="1153190633558910465">Izgara kapalı</translation>
@@ -21,6 +22,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Hiçbir şey kaydedilmedi</translation>
 <translation id="1838104802459806957">Kaldır</translation>
 <translation id="1843105061469674856">Başka sayfa tara</translation>
@@ -95,6 +97,7 @@
 <translation id="4705093842003735294">Tam çözünürlük</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Çoklu akış video kaydı</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Fotoğraf en boy oranı</translation>
 <translation id="5057360777601936059">Kameranız şu anda kullanılamıyor.
         Lütfen kameranın düzgün bir şekilde bağlanıp bağlanmadığını kontrol edin.</translation>
@@ -103,6 +106,7 @@
 <translation id="5266635337630551423">Dokümanın sol üst köşesi</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5320594929574852403">Sola doğru hareket ediyor</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Dokümanın tüm kenarlarını çerçevenin içine yerleştirin. Dokümanla arka plan farklı renklere sahip olduğunda tarama daha iyi sonuç verir.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />. sayfa taranıyor</translation>
 <translation id="5671277269877808209">Kare</translation>

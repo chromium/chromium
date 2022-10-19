@@ -5481,7 +5481,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Si se inhabilita esta política, los usuarios no podrán añadir cuentas de Kerberos. Solo se podrán añadir cuentas mediante la política "Configurar cuentas de Kerberos". Esta es una forma efectiva de bloquear cuentas.</translation>
 <translation id="6491139795995924304">Permitir Bluetooth en el dispositivo</translation>
 <translation id="6491305972928809525">No mostrar el menú de accesibilidad flotante en modo Kiosco</translation>
-<translation id="6491610602835998107">Inhabilitar los informes sobre datos del sistema y contenido de páginas para ayudar a mejorar la función Navegación segura</translation>
 <translation id="6491872498385040936">Esta política está obsoleta, pero puedes utilizar <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, que la anula y permite un ajuste más detallado.
 
       Permite forzar el modo restringido moderado de YouTube e impide que los usuarios cambien esta opción.
@@ -6982,6 +6981,10 @@ De forma predeterminada, una extensión o aplicación Android no puede utilizar 
 <translation id="7962093600142350905">Esta política controla si alguna de las impresoras disponibles en el protocolo Privet se muestran a los usuarios en el cuadro de diálogo de la vista previa de impresión.
       Si se habilita esta política, se mostrarán las impresoras disponibles en el protocolo Privet.
       Si se inhabilita esta política o no se le asigna ningún valor, las impresoras del protocolo Privet no se mostrarán en la vista previa de impresión, ya que este modo de impresión está obsoleto.</translation>
+<translation id="7967976640306183631">Si se habilita esta política, no se permitirá hacer capturas de pantalla mediante combinaciones de teclas ni APIs de extensión. Si se inhabilita esta política o no se establece, se permitirán las capturas de pantalla.
+
+      Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" /> esta política no impedirá que se hagan capturas de pantalla mediante aplicaciones del sistema operativo o de terceros.
+      </translation>
 <translation id="7970844378072291834">Habilitar por la fuerza el modo solo‑HTTPS (aún no se puede)</translation>
 <translation id="7972642710812569707">Volver a habilitar de forma forzosa WebSQL en contextos de terceros.</translation>
 <translation id="7973609468423251675">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.

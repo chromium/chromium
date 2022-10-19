@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />-ის გადატანა საქაღალდეში „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="1293264513303784526">USB-C მოწყობილობა (მარცხენა პორტი)</translation>
 <translation id="1293556467332435079">ფაილები</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">ჩაკეტილ ეკრანზე შეტყობინების პარამეტრების შეცვლა</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">რეკომენდებული აპები</translation>
@@ -131,6 +132,7 @@
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> არ არის დაკავშირებული.</translation>
 <translation id="1677582821739292812">ვიღაც უყურებს თქვენს ეკრანს</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-იანი ტაიმერი · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 მისამართი: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">აქტიური ფანჯარა ჩამაგრებულია მარცხნივ.</translation>
@@ -281,6 +283,7 @@
 <translation id="2484513351006226581">კლავიატურის განლაგების გადასართველად გამოიყენეთ კლავიშთა კომბინაცია: <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">კლავიშების ფიქსაცია</translation>
 <translation id="2509468283778169019">CAPS LOCK ჩართულია</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">შეეხეთ თქვენს პროფილის სურათს</translation>
 <translation id="255671100581129685">Google ასისტენტი მიუწვდომელია საჯარო სესიაში.</translation>
 <translation id="256712445991462162">ჩამაგრებული ლუპა</translation>
@@ -380,6 +383,7 @@
 <translation id="3105917916468784889">ეკრანის ანაბეჭდის გადაღება</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">გსურთ, გათიშოთ მოწყობილობა?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">გადატვირთეთ განახლებისთვის</translation>
 <translation id="3139382871451988441">კამერაზე წვდომის გამორთვა.</translation>
 <translation id="3139942575505304791">დესკტოპი 1</translation>
@@ -706,6 +710,7 @@
 <translation id="4917385247580444890">ძლიერი</translation>
 <translation id="4918086044614829423">მიღება</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს კამერას</translation>
+<translation id="492453977506755176">აღბეჭდვის რეჟიმის კლავიში</translation>
 <translation id="4925542575807923399">ამ ანგარიშის ადმინისტრატორს მოეთხოვება რომ ეს ანგარიში იყოს მრავალჯერადი შესვლის სესიის პირველი ანგარიში.</translation>
 <translation id="4938176435186993759">ყველა შემოთავაზების დამალვა</translation>
 <translation id="4945196315133970626">შეტყობინებების გამორთვა</translation>
@@ -727,6 +732,7 @@
 <translation id="5033299697334913360">სრული ეკრანის აღსაბეჭდად დააწკაპუნეთ ნებისმიერ ადგილზე</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> დაკავშირებულია ახალ ტელეფონთან</translation>
 <translation id="5035389544768382859">დაადასტურეთ ეკრანის კონფიგურაცია</translation>
+<translation id="5042305953558921026">მიმოხილვის რეჟიმის კლავიში</translation>
 <translation id="504465286040788597">წინა აბზაცი</translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
 <translation id="5071064518267176975">აპი მოითხოვს მიკროფონის გამოყენებას</translation>
@@ -920,6 +926,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">დაადასტურეთ ჩამოტვირთვა <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google ასისტენტი მიუწვდომელია სტუმრის სესიაში.</translation>
+<translation id="6129953537138746214">ინტერვალი</translation>
 <translation id="6134259848159370930">წამოიწყეთ ძიება თქვენს მოწყობილობაში, აპებში, პარამეტრებსა და ვებში.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-ის ამოშლის დიალოგის გახსნა</translation>
 <translation id="6141988275892716286">დაადასტურეთ ჩამოტვირთვა</translation>
@@ -1394,6 +1401,7 @@
 <translation id="8843682306134542540">ბრუნვის ჩაკეტვის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">თქვენი PIN-კოდის ან პაროლის დადასტურება კვლავ ვერ მოხერხდა. გაითვალისწინეთ: თუ ახლახან შეცვალეთ პაროლი, გამოიყენეთ თქვენი ძველი პაროლი. ახალი პაროლი ძალაში შევა, როცა სისტემიდან გახვალთ.</translation>
+<translation id="8855885154700222542">სრულეკრანიან რეჟიმზე გადართვის კლავიში</translation>
 <translation id="8870509716567206129">ეკრანის გაყოფა არ არის მხარდაჭერილი აპის მიერ.</translation>
 <translation id="8874184842967597500">არ არის დაკავშირებული</translation>
 <translation id="8876661425082386199">შეამოწმეთ კავშირი</translation>

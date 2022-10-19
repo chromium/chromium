@@ -72,6 +72,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1290982764014248209">Symud <ph name="DRAGGED_APP" /> i ffolder <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Dyfais USB-C (porth chwith)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Newid y gosodiadau hysbysiadau clo sgrîn</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APIAU A ARGYMHELLIR</translation>
@@ -130,6 +131,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ar ôl</translation>
 <translation id="1677507110654891115">Nid yw <ph name="FEATURE_NAME" /> wedi'i gysylltu.</translation>
 <translation id="1677582821739292812">Mae rhywun yn edrych ar eich sgrîn</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Amserydd <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Cyfeiriad IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Mae'r ffenestr weithredol wedi'i docio ar y chwith.</translation>
@@ -280,6 +282,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2484513351006226581">Pwyswch <ph name="KEYBOARD_SHORTCUT" /> i newid cynllun y bysellfwrdd.</translation>
 <translation id="2501920221385095727">Bysellau gludiog</translation>
 <translation id="2509468283778169019">Mae CAPS LOCK wedi'i droi ymlaen</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Tapiwch eich llun proffil</translation>
 <translation id="255671100581129685">Nid yw Google Assistant ar gael mewn sesiwn gyhoeddus.</translation>
 <translation id="256712445991462162">y chwyddwydr sydd wedi'i ddocio</translation>
@@ -378,6 +381,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3105917916468784889">Tynnu sgrinlun</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Diffodd y ddyfais?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Ailgychwynnwch i ddiweddaru</translation>
 <translation id="3139382871451988441">Diffoddwch fynediad at y camera</translation>
 <translation id="3139942575505304791">Desg 1</translation>
@@ -701,6 +705,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4917385247580444890">Cryf</translation>
 <translation id="4918086044614829423">Derbyn</translation>
 <translation id="4919841137949306064">Mae <ph name="APP_NAME" /> yn defnyddio'ch camera ar hyn o bryd</translation>
+<translation id="492453977506755176">Bysell Modd Tynnu</translation>
 <translation id="4925542575807923399">Mae gweinyddwr y cyfrif hwn yn ei gwneud yn ofynnol i'r cyfrif hwn fod y cyfrif mewngofnodi cyntaf mewn sesiwn mewngofnodi o sawl cyfrif.</translation>
 <translation id="4938176435186993759">Cuddio'r holl awgrymiadau</translation>
 <translation id="4945196315133970626">Diffodd hysbysiadau</translation>
@@ -721,6 +726,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5033299697334913360">Cliciwch unrhyw le i dynnu sgrinlun o'r sgrîn lawn</translation>
 <translation id="5035236842988137213">Mae <ph name="DEVICE_NAME" /> wedi cysylltu â ffôn newydd</translation>
 <translation id="5035389544768382859">Cadarnhau Ffurfweddiad y sgrîn</translation>
+<translation id="5042305953558921026">Bysell modd trosolwg</translation>
 <translation id="504465286040788597">Paragraff blaenorol</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
 <translation id="5071064518267176975">Mae ap eisiau defnyddio'r meicroffon</translation>
@@ -908,6 +914,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Cadarnhau lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Nid yw Google Assistant ar gael mewn sesiwn westai.</translation>
+<translation id="6129953537138746214">Bwlch</translation>
 <translation id="6134259848159370930">Chwilio eich dyfais, eich apiau, eich gosodiadau, a'r we.</translation>
 <translation id="6137566720514957455">Agor deialog tynnu ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Cadarnhau lawrlwytho</translation>
@@ -1375,6 +1382,7 @@ Gosodiad newydd</translation>
 <translation id="8843682306134542540">Toglo'r clo cylchdro. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Ni ellid dilysu eich PIN neu gyfrinair o hyd. Sylwer: Os gwnaethoch newid eich cyfrinair yn ddiweddar, defnyddiwch eich hen gyfrinair. Bydd eich cyfrinair newydd yn gweithio ar ôl i chi allgofnodi.</translation>
+<translation id="8855885154700222542">Bysell sgrîn lawn</translation>
 <translation id="8870509716567206129">Nid yw'r ap yn cefnogi sgrîn hollt.</translation>
 <translation id="8874184842967597500">Ni chysylltir</translation>
 <translation id="8876661425082386199">Gwiriwch eich cysylltiad</translation>

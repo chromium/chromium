@@ -72,6 +72,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1290982764014248209">Premesti aplikaciju <ph name="DRAGGED_APP" /> u direktorijum <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Uređaj sa USB priključkom tipa C (levi port)</translation>
 <translation id="1293556467332435079">Datoteke</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Promenite podešavanja obaveštenja na zaključanom ekranu</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">PREPORUČENE APLIKACIJE</translation>
@@ -131,6 +132,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
 <translation id="1677507110654891115">Funkcija <ph name="FEATURE_NAME" /> nije povezana.</translation>
 <translation id="1677582821739292812">Neko gleda vaš ekran</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Tajmer za <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresa: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktivni prozor je fiksiran na levoj strani.</translation>
@@ -281,6 +283,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da biste promenili raspored tastature.</translation>
 <translation id="2501920221385095727">Lepljivi tasteri</translation>
 <translation id="2509468283778169019">CAPS LOCK je uključen</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Dodirnite sliku profila</translation>
 <translation id="255671100581129685">Google pomoćnik nije dostupan u javnoj sesiji.</translation>
 <translation id="256712445991462162">montirana lupa ekrana</translation>
@@ -380,6 +383,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3105917916468784889">Snimi ekran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Želite da isključite uređaj?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Pokrenite ponovo da biste ažurirali</translation>
 <translation id="3139382871451988441">Isključi pristup kameri.</translation>
 <translation id="3139942575505304791">Radna površina 1</translation>
@@ -704,6 +708,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> trenutno koristi kameru</translation>
+<translation id="492453977506755176">Taster za režim snimanja</translation>
 <translation id="4925542575807923399">Administrator za ovaj nalog zahteva da ovaj nalog bude prvi prijavljeni nalog u sesiji sa višestrukim prijavljivanjem.</translation>
 <translation id="4938176435186993759">Sakrij sve predloge</translation>
 <translation id="4945196315133970626">Isključi obaveštenja</translation>
@@ -724,6 +729,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5033299697334913360">Kliknite bilo gde da biste snimili ceo ekran</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> se povezao sa novim telefonom</translation>
 <translation id="5035389544768382859">Potvrdite konfiguraciju ekrana</translation>
+<translation id="5042305953558921026">Taster za režim pregleda</translation>
 <translation id="504465286040788597">Prethodni pasus</translation>
 <translation id="5045550434625856497">Neispravna lozinka</translation>
 <translation id="5071064518267176975">Aplikacija želi da koristi mikrofon</translation>
@@ -915,6 +921,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potvrdite preuzimanje fajla <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google pomoćnik nije dostupan u sesiji gosta.</translation>
+<translation id="6129953537138746214">Razmak</translation>
 <translation id="6134259848159370930">Pretražujte uređaj, aplikacije, podešavanja i veb.</translation>
 <translation id="6137566720514957455">Otvara nalog za uklanjanje za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Potvrdite preuzimanje</translation>
@@ -1385,6 +1392,7 @@ Novo instaliranje</translation>
 <translation id="8843682306134542540">Uključite/isključite zaključavanje rotacije. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Verifikacija PIN-a ili lozinke još uvek nije uspela. Napomena: Ako ste nedavno promenili lozinku, koristite staru. Nova lozinka će biti primenjena kada se odjavite.</translation>
+<translation id="8855885154700222542">Taster za ceo ekran</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podeljeni ekran.</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8876661425082386199">Proverite vezu</translation>

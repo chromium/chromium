@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1220509181886849806">使用已儲存的密碼？</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" /> 的密碼。</translation>
 <translation id="1717486229951421299">輕觸即可填入的憑證清單已開啟，顯示在畫面下半部。</translation>
 <translation id="207576718733492531">輕觸即可填入的憑證清單已關閉。</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">輕觸即可填入的憑證清單已開啟，顯示於整個畫面。</translation>
 <translation id="5591247451101092906">要使用已儲存的密碼或密碼金鑰嗎？</translation>
 <translation id="5624120631404540903">管理密碼</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" /> 的密碼金鑰，使用螢幕鎖定。</translation>
 <translation id="804577341878669140">繼續使用帳戶登入</translation>
 </translationbundle>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1220509181886849806">使用已保存的密码？</translation>
+<translation id="1580351948163139119"><ph name="USERNAME" />的密码。</translation>
 <translation id="1717486229951421299">轻触即可填充的凭据的列表已半屏打开。</translation>
 <translation id="207576718733492531">轻触即可填充的凭据的列表已关闭。</translation>
 <translation id="2359808026110333948">继续</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">轻触即可填充的凭据的列表已全屏打开。</translation>
 <translation id="5591247451101092906">使用已保存的密码或通行密钥？</translation>
 <translation id="5624120631404540903">管理密码</translation>
+<translation id="7736236483645733578"><ph name="USERNAME" />的通行密钥，请使用您的屏幕锁定设置。</translation>
 <translation id="804577341878669140">请登录帐号以继续访问</translation>
 </translationbundle>

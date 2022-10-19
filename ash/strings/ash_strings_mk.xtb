@@ -72,6 +72,7 @@
 <translation id="1290982764014248209">Преместете ја <ph name="DRAGGED_APP" /> во папката <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">USB-Ц уред (лева порта)</translation>
 <translation id="1293556467332435079">Датотеки</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Променете ги поставките за известувања на заклучен екран</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ПРЕПОРАЧАНИ АПЛИКАЦИИ</translation>
@@ -131,6 +132,7 @@
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> не е поврзана.</translation>
 <translation id="1677582821739292812">Некој го гледа вашиот екран</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Тајмер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 адреса: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Активниот прозорец е приклучен на док на левата страна.</translation>
@@ -251,6 +253,7 @@
 <translation id="2322173485024759474">Назад за една буква</translation>
 <translation id="2339073806695260576">Допрете го копчето за пенкало на полицата за да напишете белешка, да направите слика од екранот, да го користите ласерскиот покажувач или лупата.</translation>
 <translation id="2341729377289034582">Заклучен вертикално</translation>
+<translation id="2345226652884463045">Притиснете Enter или Search + празно место за да го изберете текстот за изменување.</translation>
 <translation id="2350794187831162545">Говорот на <ph name="LANGUAGE" /> сега се обработува локално и функционира офлајн. Може да го промените јазикот на диктирање во „Поставки“ &gt; „Пристапност“.</translation>
 <translation id="2352467521400612932">Поставки за пенкало</translation>
 <translation id="2354174487190027830">Се активира <ph name="NAME" /></translation>
@@ -281,6 +284,7 @@
 <translation id="2484513351006226581">Притиснете <ph name="KEYBOARD_SHORTCUT" /> за да го префрлите распоредот на тастатурата.</translation>
 <translation id="2501920221385095727">Лепливи копчиња</translation>
 <translation id="2509468283778169019">Вклучено е CAPS LOCK</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Допрете ја сликата на профилот</translation>
 <translation id="255671100581129685">„Помошникот на Google“ не е достапен во јавна сесија.</translation>
 <translation id="256712445991462162">закотвена лупа</translation>
@@ -380,6 +384,7 @@
 <translation id="3105917916468784889">Сними слика од екранот</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Да се исклучи уредот?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Рестартирај за да се ажурира</translation>
 <translation id="3139382871451988441">Исклучете го пристапот до камерата.</translation>
 <translation id="3139942575505304791">Биро 1</translation>
@@ -707,6 +712,7 @@
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4918086044614829423">Прифати</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> ја користи камерата во моментов</translation>
+<translation id="492453977506755176">Копче за режим на снимање</translation>
 <translation id="4925542575807923399">Администраторот на оваа сметка бара таа да биде првата пријавена сметка во сесија со повеќе пријавувања.</translation>
 <translation id="4938176435186993759">Сокриј ги сите предлози</translation>
 <translation id="4945196315133970626">Исклучи известувања</translation>
@@ -728,6 +734,7 @@
 <translation id="5033299697334913360">Кликнете каде било за да го сликате целиот екран</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> е поврзан со нов телефон</translation>
 <translation id="5035389544768382859">Потврдете ја конфигурацијата на екранот</translation>
+<translation id="5042305953558921026">Клуч за режимот на преглед</translation>
 <translation id="504465286040788597">Претходен пасус</translation>
 <translation id="5045550434625856497">Погрешна лозинка</translation>
 <translation id="5071064518267176975">Дадена апликација сака да го користи микрофонот</translation>
@@ -921,6 +928,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Потврдете го преземањето на <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">„Помошникот на Google“ не е достапен во гостинска сесија.</translation>
+<translation id="6129953537138746214">Празно место</translation>
 <translation id="6134259848159370930">Пребарувајте низ уредот, апликациите, поставките и на интернет.</translation>
 <translation id="6137566720514957455">Отвори го дијалогот за отстранување за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Потврдете го преземањето</translation>
@@ -1395,6 +1403,7 @@
 <translation id="8843682306134542540">Заклучи/отклучи ротација. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Пребарај+Esc</translation>
 <translation id="8853703225951107899">Сѐ уште не може да се потврди PIN-кодот или лозинката. Забелешка: ако неодамна сте ја промениле лозинката, користете ја вашата стара лозинка. Новата лозинка ќе се примени откако ќе се одјавите.</translation>
+<translation id="8855885154700222542">Копче за цел екран</translation>
 <translation id="8870509716567206129">Апликацијата не поддржува поделен екран.</translation>
 <translation id="8874184842967597500">Не е поврзано</translation>
 <translation id="8876661425082386199">Проверете ја врската</translation>

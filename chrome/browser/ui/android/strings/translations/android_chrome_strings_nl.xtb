@@ -270,6 +270,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2497852260688568942">Synchronisatie is uitgezet door je beheerder</translation>
 <translation id="250020030759455918">Je ziet je inlogstatus, browsegegevens en sitegegevens van <ph name="SITE_NAME" /> in Chrome</translation>
+<translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> installeren...</translation>
 <translation id="2513403576141822879">Bekijk <ph name="BEGIN_LINK" />Synchronisatie en Google-services<ph name="END_LINK" /> voor meer instellingen die verband houden met privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2523184218357549926">Hiermee worden de URL's van pagina's die je bezoekt, verzonden naar Google</translation>
@@ -1280,6 +1281,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="7887334752153342268">Dupliceren</translation>
 <translation id="789763218334337857">Chrome gebruiken</translation>
 <translation id="7903184275147100332">Dit kan even duren</translation>
+<translation id="7914399737746719723">App geïnstalleerd</translation>
 <translation id="7919123827536834358">Deze talen automatisch vertalen</translation>
 <translation id="7926975587469166629">Bijnaam kaart</translation>
 <translation id="7929962904089429003">Het menu openen</translation>

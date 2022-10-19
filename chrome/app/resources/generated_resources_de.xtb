@@ -417,6 +417,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1397594434718759194">Du bist auf diesen Geräten in Chrome angemeldet und kannst sie als Sicherheitsschlüssel verwenden.</translation>
 <translation id="1398853756734560583">Maximieren</translation>
 <translation id="139911022479327130">Entsperre dein Smartphone, um deine Identität zu bestätigen</translation>
+<translation id="1401216725754314428">Weitere Informationen zu ähnlichen Websites in einem neuen Tab</translation>
 <translation id="1401308693935339022">Standort verwenden. Apps und Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Google kann Standortdaten in regelmäßigen Abständen erfassen und diese Daten auf anonyme Weise verwenden, um die Standortgenauigkeit und standortbezogene Dienste zu verbessern.</translation>
 <translation id="1403222014593521787">Verbindung zum Proxy kann nicht hergestellt werden</translation>
 <translation id="1405779994569073824">Abgestürzt.</translation>
@@ -7655,6 +7656,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="820568752112382238">Am häufigsten besuchte Websites</translation>
 <translation id="8206745257863499010">Blues</translation>
 <translation id="8206859287963243715">Mobil</translation>
+<translation id="8208188204689616705">Diese Websites sind in einer von <ph name="FPS_OWNER" /> definierten Gruppe enthalten. Websites in einer Gruppe können deine Aktivitäten in der Gruppe sehen.</translation>
 <translation id="8208216423136871611">Nicht speichern</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Neue Benachrichtigung}other{# neue Benachrichtigungen}}</translation>
 <translation id="821119981794423735">Wenn du Passwörter in den Google Passwortmanager für <ph name="USER_EMAIL" /> importieren möchtest, wähle eine CSV-Datei aus</translation>

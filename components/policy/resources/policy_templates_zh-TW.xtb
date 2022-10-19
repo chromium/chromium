@@ -5310,7 +5310,6 @@
           如果停用這項政策，使用者就無法新增 Kerberos 帳戶，只能透過「設定 Kerberos 帳戶」政策新增帳戶。這個方法可以有效地鎖定帳戶。</translation>
 <translation id="6491139795995924304">允許在裝置上使用藍牙功能</translation>
 <translation id="6491305972928809525">不要在 Kiosk 模式下顯示浮動式無障礙選單</translation>
-<translation id="6491610602835998107">停用系統資訊及頁面內容回報功能 (系統將無法根據這類資訊改善安全瀏覽服務)</translation>
 <translation id="6491872498385040936">這項政策已遭到淘汰。建議你使用 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> 來覆寫這項政策，即可進一步微調各項設定。
 
       強制執行中度的 YouTube 嚴格篩選模式，並禁止使用者變更這項設定。
@@ -6787,6 +6786,10 @@
 <translation id="7962093600142350905">這項政策可控管是否要在列印預覽對話方塊中向使用者顯示任何可用的 Privet 印表機。
       如果將這項政策設為啟用，列印預覽就會顯示可用的 Privet 印表機。
       如果將這項政策設為停用或不設定，列印預覽中則不會顯示 Privet 印表機，因為這種列印方式已經淘汰。</translation>
+<translation id="7967976640306183631">如果將這項政策設為啟用，使用者無法使用鍵盤快速鍵或擴充功能 API 擷取螢幕畫面。如果將這項政策設為停用或不設定，使用者將可擷取螢幕畫面。
+
+      請注意，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，這項政策無法防止透過作業系統或第三方應用程式擷取螢幕畫面。
+      </translation>
 <translation id="7970844378072291834">強制啟用僅限 HTTPS 模式 (尚不支援)</translation>
 <translation id="7972642710812569707">強制將第三方內容中的 WebSQL 重新啟用。</translation>
 <translation id="7973609468423251675">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。

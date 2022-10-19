@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">लिंक ड्रॅग करून टॅबच्या अ‍ॅड्रेस बारवर आणा</translation>
 <translation id="1251638888133819822">क्षेत्रे भिंग सुरू किंवा बंद करा</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">तुमचे हे पेज प्रिंट करा</translation>
-<translation id="1383876407941801731">शोधा</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> किंवा <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">ओळीच्या शेवटी जा</translation>
 <translation id="1499072997694708844">कोणतीही उघडी असलेली शोध विंडो बंद करा किंवा तुमचे सध्याचे पेज लोड करणे थांबवा</translation>
-<translation id="1510238584712386396">लाँचर</translation>
 <translation id="1516966594427080024">गुप्त मोडमध्ये नवीन विंडो उघडा</translation>
 <translation id="152892567002884378">आवाज मोठा करा</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, नंतर <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">&gt;मागील शब्दाच्या प्रारंभावर हलवा</translation>
 <translation id="1679841710523778799">उजळपणा वाढवा</translation>
 <translation id="168356808214100546"><ph name="ALT" /> दाबा आणि धरून ठेवा, तुम्हाला उघडायच्या असलेल्या विंडोवर जाईपर्यंत <ph name="TAB" /> टॅप करा, त्यानंतर सोडा.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">अ‍ॅड्रेस बारमधील तुमच्या इनपुटमध्ये www. आणि .com जोडा, त्यानंतर पेज उघडा</translation>
 <translation id="1768987374400973299">स्क्रीनशॉट घ्या/रेकॉर्डिंग करा</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">ChromeVox (वाचिक फीडबॅक) सुरू किंवा बंद करा</translation>
 <translation id="2480851840841871861">Google Assistant उघडा</translation>
 <translation id="2488661730534396940">डावीकडील डेस्क सुरू करा</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Diagnostics अ‍ॅप उघडा</translation>
 <translation id="2530339807289914946">वेब पेज खालच्या दिशेला स्क्रोल करा</translation>
 <translation id="2530896289327917474">कॅरेट ब्राउझिंग सुरू किंवा बंद करा</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">शॉर्टकट</translation>
 <translation id="3084301071537457911">तुमच्या शेल्फवरील पुढील आयटम हायलाइट करा</translation>
 <translation id="309173601632226815">तुमच्या शेल्फवरील लॉंचर बटण हायलाइट करा</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">अ‍ॅड्रेस बारवर फोकस करा</translation>
 <translation id="3256109297135787951">तुमच्या शेल्फवरील आयटमवरील हायलाइट काढून टाका</translation>
 <translation id="3288816184963444640">ही विंडो बंद करा</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">पुढील शब्दाच्या शेवटी हलवा</translation>
 <translation id="4866066940972151697">उजवीकडील डेस्क सुरू करा</translation>
 <translation id="4916163929714267752">लिंक एका नवीन विंडोमध्ये उघडा</translation>
-<translation id="492453977506755176">कॅप्चर मोड की</translation>
 <translation id="5030659775136592441">बुकमार्क व्यवस्थापक दाखवा</translation>
 <translation id="5034421018520995080">पेजच्या सर्वात वर जा</translation>
-<translation id="5042305953558921026">पूर्वावलोकन मोड की</translation>
 <translation id="5104462712192763270">तुमचे हे पेज सेव्ह करा</translation>
 <translation id="5121628974188116412">पेजच्या तळाशी जा</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">फुलस्क्रीनचा स्क्रीनशॉट घ्या</translation>
 <translation id="6022924867608035986">शोध बॉक्स मजकूर साफ करा</translation>
 <translation id="6052614013050385269">एखाद्या लिंकवर राइट क्लिक करा</translation>
-<translation id="6129953537138746214">जागा</translation>
 <translation id="6143669479988153888">पेजवर झूम इन करा</translation>
 <translation id="6185696379715117369">पृष्ठ वर</translation>
 <translation id="6228457605945141550">उजळपणा कमी करा</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">आधीचा शब्द किंवा अक्षर निवडा</translation>
 <translation id="8727232706774971183">तुमच्या सूचना पहा</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> एक ते आठ</translation>
-<translation id="8855885154700222542">क्षेत्रे की</translation>
 <translation id="8881584919399569791">सुरू असलेली विंडो डेस्कच्या डाव्या बाजूला हलवा</translation>
 <translation id="88986195241502842">पृष्ठ खाली</translation>
 <translation id="8924883688469390268">मागील वापरकर्त्यावर स्विच करा</translation>

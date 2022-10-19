@@ -72,6 +72,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1290982764014248209">Déplacer l'application <ph name="DRAGGED_APP" /> vers le dossier <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Appareil USB-C (port de gauche)</translation>
 <translation id="1293556467332435079">Fichiers</translation>
+<translation id="1293699935367580298">Échapp.</translation>
 <translation id="1294929383540927798">Modifier les paramètres de notification de l'écran de verrouillage</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APPLICATIONS RECOMMANDÉES</translation>
@@ -131,6 +132,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
 <translation id="1677507110654891115">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas connectée.</translation>
 <translation id="1677582821739292812">Quelqu'un regarde votre écran</translation>
+<translation id="169515659049020177">Maj</translation>
 <translation id="1698080062160024910">Minuterie de <ph name="TOTAL_TIME" /> : <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresse IPv6 : <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Fenêtre active ancrée à gauche.</translation>
@@ -281,6 +283,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
 <translation id="2509468283778169019">Touche VERR MAJ activée</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Touchez l'image de votre profil</translation>
 <translation id="255671100581129685">L'Assistant Google n'est pas disponible dans une session publique.</translation>
 <translation id="256712445991462162">la loupe en mode ancré</translation>
@@ -380,6 +383,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Éteindre l'appareil?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Redémarrer pour faire la mise à jour</translation>
 <translation id="3139382871451988441">Désactiver l'accès à l'appareil photo.</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
@@ -703,6 +707,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> utilise actuellement votre appareil photo</translation>
+<translation id="492453977506755176">Touche de mode de capture</translation>
 <translation id="4925542575807923399">L'administrateur pour ce compte l'a configuré de sorte qu'il doit être le premier compte à connecter lors de sessions de connexion multicompte.</translation>
 <translation id="4938176435186993759">Masquer toutes les suggestions</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
@@ -723,6 +728,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5033299697334913360">Cliquez n'importe où pour capturer la totalité de l'écran</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est connecté à un nouveau téléphone</translation>
 <translation id="5035389544768382859">Confirmer la configuration de l'écran</translation>
+<translation id="5042305953558921026">Clé du mode Aperçu</translation>
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="5071064518267176975">Une application demande l'autorisation d'utiliser le microphone</translation>
@@ -914,6 +920,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas accessible dans une session d'invité.</translation>
+<translation id="6129953537138746214">Espace</translation>
 <translation id="6134259848159370930">Recherchez dans votre appareil, dans vos applications, dans vos paramètres et sur le Web.</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de retrait pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirmer le téléchargement</translation>
@@ -1383,6 +1390,7 @@ Nouvelle installation</translation>
 <translation id="8843682306134542540">Activer/désactiver le verrouillage de la rotation. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Recherche+Échap</translation>
 <translation id="8853703225951107899">Votre NIP ou votre mot de passe n'a toujours pas pu être vérifié. Remarque : Si vous avez récemment changé votre mot de passe, servez-vous de votre ancien mot de passe. Votre nouveau mot de passe sera appliqué lorsque vous vous déconnecterez.</translation>
+<translation id="8855885154700222542">Touche mode Plein écran</translation>
 <translation id="8870509716567206129">L'application n'est pas compatible avec l'écran partagé.</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8876661425082386199">Vérifiez votre connexion</translation>

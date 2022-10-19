@@ -11,6 +11,7 @@
 <translation id="1300209025925956156">مسح المستند ضوئيًا</translation>
 <translation id="1309250603447638106">جارٍ تنزيل تحديثات ميزة المسح الضوئي للمستندات</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. انقر على زر البحث + السهم المتّجه لليمين للوصول إلى عناصر التحكم الجديدة.</translation>
+<translation id="1417314334557041815">تعديل الصفحة <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1467231725790366244">تم فصل كاميرا <ph name="CAMERA" /> عن الجهاز.</translation>
 <translation id="1473110567575736769">مؤقّت لمدة 3 ثوانٍ</translation>
@@ -22,6 +23,7 @@
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">لم يتمّ تسجيل أيّ بيانات.</translation>
 <translation id="1838104802459806957">إمالة إلى أعلى</translation>
+<translation id="1843105061469674856">مسح صفحة إضافية ضوئيًا</translation>
 <translation id="1851169887664797861">تتوفّر عناصر تحكُّم إضافية في الكاميرا.</translation>
 <translation id="1851616744363735765">متوقف مؤقتًا</translation>
 <translation id="1862930711583847113">تعذّر تصدير <ph name="FILE" /></translation>
@@ -79,6 +81,7 @@
 <translation id="414641094616694804">لا يمكن تغيير درجة الدقة في هذه الكاميرا.</translation>
 <translation id="4269820728363426813">نسخ عنوان الرابط</translation>
 <translation id="4281620174117014503">دقة متوسطة</translation>
+<translation id="428234092390943511">صورة مصغّرة للصفحة</translation>
 <translation id="4329152592498422850">التبديل لالتقاط صورة مربّعة</translation>
 <translation id="4340659173795395806">‏يمكنك الآن إنشاء ملف PDF متعدِّد الصفحات.</translation>
 <translation id="4383571725254449280">طباعة سجلّات الأداء</translation>

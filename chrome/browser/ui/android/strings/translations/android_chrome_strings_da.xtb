@@ -270,6 +270,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2496180316473517155">Browserhistorik</translation>
 <translation id="2497852260688568942">Synkronisering er deaktiveret af din administrator.</translation>
 <translation id="250020030759455918">Du kan se loginstatus, browserdata og websiteoplysninger for <ph name="SITE_NAME" /> i Chrome</translation>
+<translation id="2510106555128151389">Installerer <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling ved at gå til <ph name="BEGIN_LINK" />Synkronisering og Google-tjenester<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2523184218357549926">Sender webadresser på de sider, du besøger, til Google</translation>
@@ -1280,6 +1281,7 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="7887334752153342268">Dupliker</translation>
 <translation id="789763218334337857">Sådan bruger du Chrome</translation>
 <translation id="7903184275147100332">Dette kan tage et par minutter</translation>
+<translation id="7914399737746719723">Appen blev installeret</translation>
 <translation id="7919123827536834358">Oversæt disse sprog automatisk</translation>
 <translation id="7926975587469166629">Kortets kaldenavn</translation>
 <translation id="7929962904089429003">Åbn menuen</translation>

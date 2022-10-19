@@ -422,6 +422,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1397594434718759194">Te-ai conectat la Chrome pe aceste dispozitive, prin urmare le poți folosi drept chei de securitate.</translation>
 <translation id="1398853756734560583">Maximizează</translation>
 <translation id="139911022479327130">Deblochează telefonul și confirmă-ți identitatea</translation>
+<translation id="1401216725754314428">Află mai multe despre site-urile conexe într-o filă nouă</translation>
 <translation id="1401308693935339022">Folosește locația. Permite aplicațiilor și serviciilor cu permisiune pentru locație să folosească locația acestui dispozitiv. Google poate colecta periodic date despre locație și le poate folosi în mod anonim pentru a îmbunătăți precizia localizării și a serviciilor bazate pe locație.</translation>
 <translation id="1403222014593521787">Nu se poate conecta la proxy</translation>
 <translation id="1405779994569073824">S-a blocat.</translation>
@@ -2518,6 +2519,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3308852433423051161">Se încarcă Asistentul Google...</translation>
 <translation id="3309330461362844500">Codul profilului cu certificat</translation>
 <translation id="3311445899360743395">Datele asociate acestei aplicații pot fi eliminate de pe dispozitiv.</translation>
+<translation id="3312470654018965389">Se configurează containerul Linux</translation>
 <translation id="3312883087018430408">Pentru a căuta un anumit site sau o anumită parte din Chrome, introdu comanda rapidă respectivă în bara de adrese, urmată de comanda rapidă de la tastatură preferată. De exemplu, pentru a căuta numai Marcaje, tastează „@marcaje”, apoi apasă pe Tab sau pe tasta de spațiu.</translation>
 <translation id="3313622045786997898">Valoare a semnăturii certificatului</translation>
 <translation id="3313950410573257029">Verifică starea conexiunii</translation>
@@ -7689,6 +7691,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8206745257863499010">Albăstrel</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8207404892907560325">Alege o cheie de acces</translation>
+<translation id="8208188204689616705">Aceste site-uri fac parte dintr-un grup definit de <ph name="FPS_OWNER" />. Site-urile dintr-un grup îți pot vedea activitatea în grup.</translation>
 <translation id="8208216423136871611">Nu salva</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificare nouă}few{# notificări noi}other{# de notificări noi}}</translation>
 <translation id="821119981794423735">Pentru a importa parole în Managerul de parole Google pentru <ph name="USER_EMAIL" />, selectează un fișier CSV</translation>

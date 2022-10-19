@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1220509181886849806">Vil du bruge den gemte adgangskode?</translation>
+<translation id="1580351948163139119">Adgangskode for <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Listen over loginoplysninger, der udfyldes ved berøring, er åbnet i halv højde.</translation>
 <translation id="207576718733492531">Listen over loginoplysninger, der udfyldes ved berøring, er lukket.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Listen over loginoplysninger, der udfyldes ved berøring, er åbnet i fuld højde.</translation>
 <translation id="5591247451101092906">Vil du bruge din gemte adgangskode eller adgangsnøgle?</translation>
 <translation id="5624120631404540903">Administrer adgangskoder</translation>
+<translation id="7736236483645733578">Adgangsnøgle for <ph name="USERNAME" />. Brug din skærmlås.</translation>
 <translation id="804577341878669140">Fortsæt med konto</translation>
 </translationbundle>

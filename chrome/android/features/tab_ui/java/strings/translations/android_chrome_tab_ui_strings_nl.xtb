@@ -84,6 +84,7 @@
 <translation id="753732157349120914">Tabbladschakelaar</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review van Google}other{<ph name="REVIEWS_COUNT_MANY" /> reviews van Google}}</translation>
 <translation id="7559245342362162951">Tabbladen van groep bekijken in raster op volledig scherm</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad delen}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen delen}}</translation>
 <translation id="7792771145871471484">Bekijk de suggesties.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad groeperen}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen groeperen}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>

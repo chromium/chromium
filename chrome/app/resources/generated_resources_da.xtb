@@ -423,6 +423,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1397594434718759194">Da du er logget ind i Chrome på disse enheder, kan du bruge dem som sikkerhedsnøgler.</translation>
 <translation id="1398853756734560583">Maksimér</translation>
 <translation id="139911022479327130">Lås din telefon op, og bekræft din identitet</translation>
+<translation id="1401216725754314428">Få flere oplysninger om relaterede websites på en ny fane</translation>
 <translation id="1401308693935339022">Brug placering. Tillad, at apps og tjenester med placeringstilladelse kan bruge denne enheds lokation. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre lokationsnøjagtigheden og lokationsbaserede tjenester.</translation>
 <translation id="1403222014593521787">Der kunne ikke oprettes forbindelse til proxyserveren</translation>
 <translation id="1405779994569073824">Gået ned.</translation>
@@ -7699,6 +7700,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8206745257863499010">BB King</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8207404892907560325">Vælg en adgangsnøgle</translation>
+<translation id="8208188204689616705">Disse websites er i en gruppe, der er defineret af <ph name="FPS_OWNER" />. Websites i en gruppe kan se din aktivitet i gruppen.</translation>
 <translation id="8208216423136871611">Gem ikke</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny notifikation}one{# ny notifikation}other{# nye notifikationer}}</translation>
 <translation id="821119981794423735">Vælg en CSV-fil for at importere adgangskoder til Google Adgangskodeadministrator for <ph name="USER_EMAIL" /></translation>

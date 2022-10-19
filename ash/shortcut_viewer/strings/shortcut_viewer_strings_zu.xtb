@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Hudulela isixhumanisi kubha yethebhu lekheli</translation>
 <translation id="1251638888133819822">Vula noma vala isikhulisi sesikrini esigcwele</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">I-Esc</translation>
 <translation id="1299858300159559687">Phrintha ikhasi lakho lamanje</translation>
-<translation id="1383876407941801731">Sesha</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> noma u-<ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Iya ekupheleni komugqa</translation>
 <translation id="1499072997694708844">Vala noma iliphi iwindi elivuliwe lokutholakala noma misa ukulayishwa kwekhasi lakho lamanje</translation>
-<translation id="1510238584712386396">Isiqalisi</translation>
 <translation id="1516966594427080024">Vula iwindi elisha kumodi ye-incognito</translation>
 <translation id="152892567002884378">Ivolumu phezulu</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, bese u-<ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Hambisa ekuqaleni kwegama langaphambilini</translation>
 <translation id="1679841710523778799">Khuphula ukukhanya</translation>
 <translation id="168356808214100546">Cindezela uphinde ubambe u-<ph name="ALT" />, thepha u-<ph name="TAB" /> uze ufike kuwindi ofuna ukulivula, bese uyadedela.</translation>
-<translation id="169515659049020177">U-Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Engeza u-www. no-.com kokokufaka kwakho kubha yekheli, bese uvula ikhasi</translation>
 <translation id="1768987374400973299">Thatha isithombe-skrini/ukurekhoda</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Vula uphinde uvale i-ChromeVox (impendulo ekhulunywayo)</translation>
 <translation id="2480851840841871861">Vula umsizi we-Google</translation>
 <translation id="2488661730534396940">Sebenzisa ideski kwesokunxele</translation>
-<translation id="2515586267016047495">I-Alt</translation>
 <translation id="2516999188535378855">Vula Ukuxilongwa Kohlelo Lokusebenza</translation>
 <translation id="2530339807289914946">Skrolela phansi kukhasi lewebhu</translation>
 <translation id="2530896289327917474">Vula noma uvale ukuphequlula kwe-caret</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Izinqamuleli</translation>
 <translation id="3084301071537457911">Gqamisa into elandelayo kushelufu lakho</translation>
 <translation id="309173601632226815">Gqamisa inkinobho yesiqalisi kushelufu lakho</translation>
-<translation id="3126026824346185272">I-Ctrl</translation>
 <translation id="3140353188828248647">Gxilisa ibha yekheli</translation>
 <translation id="3256109297135787951">Susa ukugqamisa into kushelufu lakho</translation>
 <translation id="3288816184963444640">Vala iwindi lamanje</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Hamba ekupheleni kwegama elilandelayo</translation>
 <translation id="4866066940972151697">Sebenzisa ideski kwesokudla</translation>
 <translation id="4916163929714267752">Vula isixhumanisi kuwindi elisha</translation>
-<translation id="492453977506755176">Thatha ukhiye wemodi</translation>
 <translation id="5030659775136592441">Bonisa isiphathi sebhukhimakhi</translation>
 <translation id="5034421018520995080">Hamba phezulu kwekhasi</translation>
-<translation id="5042305953558921026">Ukhiye wemodi yokubuka konke</translation>
 <translation id="5104462712192763270">Londoloza ikhasi lakho lamanje</translation>
 <translation id="5121628974188116412">Hamba ngaphansi kwekhasi</translation>
 <translation id="5222676887888702881">Phuma ngemvume</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Thatha isithombe-skrini sesikrini esigcwele</translation>
 <translation id="6022924867608035986">Sula umbhalo webhokisi losesho</translation>
 <translation id="6052614013050385269">Chofoza ngakwesokudla isixhumanisi</translation>
-<translation id="6129953537138746214">Isikhala</translation>
 <translation id="6143669479988153888">Sondeza isithombe kukhasi</translation>
 <translation id="6185696379715117369">Hamba phezulu kwekhasi</translation>
 <translation id="6228457605945141550">Yehlisela phansi ukukhanya</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Khetha igama langaphambilini noma uhlamvu</translation>
 <translation id="8727232706774971183">Bona izaziso zakho</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 ukuya ku-8</translation>
-<translation id="8855885154700222542">Ukhiye wesikrini esigcwele</translation>
 <translation id="8881584919399569791">Hambisa iwindi elisebenzayo kudeski elingakwesokunxele</translation>
 <translation id="88986195241502842">Pheyija uye phansi</translation>
 <translation id="8924883688469390268">Shintshela kumsebenzisi wangaphambilini</translation>

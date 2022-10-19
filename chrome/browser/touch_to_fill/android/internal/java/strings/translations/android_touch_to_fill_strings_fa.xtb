@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1220509181886849806">از گذرواژه ذخیره‌شده استفاده شود؟</translation>
+<translation id="1580351948163139119">گذرواژه برای <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود، به‌صورت نیمه باز شده است.</translation>
 <translation id="207576718733492531">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود بسته شده است.</translation>
 <translation id="2359808026110333948">ادامه</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود کاملاً باز شد.</translation>
 <translation id="5591247451101092906">از گذرواژه یا گذرکلید ذخیره‌شده استفاده شود؟</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
+<translation id="7736236483645733578">گذرکلید برای <ph name="USERNAME" />، از قفل صفحه استفاده کنید.</translation>
 <translation id="804577341878669140">ادامه دادن با حساب</translation>
 </translationbundle>

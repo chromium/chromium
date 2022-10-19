@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
 <translation id="1220509181886849806">ប្រើ​ពាក្យសម្ងាត់​ដែលបានរក្សាទុកឬ?</translation>
+<translation id="1580351948163139119">ពាក្យ​សម្ងាត់​សម្រាប់ <ph name="USERNAME" />។</translation>
 <translation id="1717486229951421299">​បញ្ជី​ព័ត៌មាន​ផ្ទៀងផ្ទាត់ ដែលត្រូវ​បំពេញដោយ​ការប៉ះត្រូវបានបើកពាក់កណ្ដាល​អេក្រង់។</translation>
 <translation id="207576718733492531">បញ្ជី​ព័ត៌មាន​ផ្ទៀងផ្ទាត់ ដែលត្រូវ​បំពេញ​ដោយ​ការប៉ះ​ត្រូវបានបិទ។</translation>
 <translation id="2359808026110333948">បន្ត</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">បញ្ជី​ព័ត៌មាន​ផ្ទៀងផ្ទាត់ ដែលត្រូវ​បំពេញ​ដោយ​ការប៉ះ​ត្រូវបាន​បើក​ពេញ​អេក្រង់។</translation>
 <translation id="5591247451101092906">ប្រើប្រាស់​ពាក្យសម្ងាត់ ឬ​កូដសម្ងាត់​ដែល​បាន​រក្សាទុកឬ?</translation>
 <translation id="5624120631404540903">គ្រប់គ្រងពាក្យសម្ងាត់</translation>
+<translation id="7736236483645733578">កូដសម្ងាត់​សម្រាប់ <ph name="USERNAME" />, ប្រើប្រាស់ការចាក់សោអេក្រង់​របស់អ្នក។</translation>
 <translation id="804577341878669140">បន្ត​ដោយ​ប្រើគណនី</translation>
 </translationbundle>

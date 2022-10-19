@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿੱਚ ਲਿਜਾਓ।</translation>
 <translation id="1293264513303784526">USB-C ਡੀਵਾਈਸ (ਖੱਬਾ ਪੋਰਟ)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">ਲਾਕ-ਸਕ੍ਰੀਨ ਸੰਬੰਧੀ ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਬਦਲੋ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀਆਂ ਐਪਾਂ</translation>
@@ -131,6 +132,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> ਬਾਕੀ</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ਕਨੈਕਟ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1677582821739292812">ਕੋਈ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਵੱਲ ਦੇਖ ਰਿਹਾ ਹੈ</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ਟਾਈਮਰ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ਪਤਾ: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਡੌਕ ਕੀਤਾ ਗਿਆ।</translation>
@@ -281,6 +283,7 @@
 <translation id="2484513351006226581">ਕੀ-ਬੋਰਡ ਖਾਕਾ ਬਦਲਣ ਲਈ <ph name="KEYBOARD_SHORTCUT" /> ਦਬਾਓ।</translation>
 <translation id="2501920221385095727">ਸਟਿਕੀ ਕੁੰਜੀਆਂ</translation>
 <translation id="2509468283778169019">CAPS LOCK ਔਨ ਹੈ</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਚਿੱਤਰ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="255671100581129685">Google Assistant ਕਿਸੇ ਜਨਤਕ ਸੈਸ਼ਨ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="256712445991462162">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ</translation>
@@ -380,6 +383,7 @@
 <translation id="3105917916468784889">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ਬਲੂਟੁੱਥ)</translation>
 <translation id="3120421559657122717">ਕੀ ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="3139382871451988441">ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="3139942575505304791">ਡੈਸਕ 1</translation>
@@ -704,6 +708,7 @@
 <translation id="4917385247580444890">ਮਜ਼ਬੂਤ</translation>
 <translation id="4918086044614829423">ਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> ਐਪ ਫ਼ਿਲਹਾਲ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤ ਰਹੀ ਹੈ</translation>
+<translation id="492453977506755176">ਕੈਪਚਰ ਮੋਡ ਕੁੰਜੀ</translation>
 <translation id="4925542575807923399">ਇਸ ਖਾਤੇ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ ਇਹ ਜ਼ਰੂਰੀ ਹੈ ਕਿ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਸੈਸ਼ਨ ਵਿੱਚ ਇਹ ਖਾਤਾ ਸਭ ਤੋਂ ਪਹਿਲਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਵਾਲਾ ਖਾਤਾ ਹੋਵੇ।</translation>
 <translation id="4938176435186993759">ਸਾਰੇ ਸੁਝਾਵਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="4945196315133970626">ਸੂਚਨਾਵਾਂ ਬੰਦ ਕਰੋ</translation>
@@ -724,6 +729,7 @@
 <translation id="5033299697334913360">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />ਨੂੰ ਨਵੇਂ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5035389544768382859">ਡਿਸਪਲੇ ਸੰਰੂਪਣ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
+<translation id="5042305953558921026">ਰੂਪ-ਰੇਖਾ ਮੋਡ ਕੁੰਜੀ</translation>
 <translation id="504465286040788597">ਪਿਛਲਾ ਪੈਰਾ</translation>
 <translation id="5045550434625856497">ਗਲਤ ਪਾਸਵਰਡ</translation>
 <translation id="5071064518267176975">ਇੱਕ ਐਪ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
@@ -915,6 +921,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ਡਾਊਨਲੋਡ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="612734058257491180">Google Assistant ਮਹਿਮਾਨ ਸੈਸ਼ਨ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
+<translation id="6129953537138746214">ਸਪੇਸ</translation>
 <translation id="6134259848159370930">ਆਪਣਾ ਡੀਵਾਈਸ, ਐਪਾਂ, ਸੈਟਿੰਗਾਂ ਅਤੇ ਵੈੱਬ ਖੋਜੋ।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> ਲਈ 'ਹਟਾਓ' ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="6141988275892716286">ਡਾਊਨਲੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -1385,6 +1392,7 @@
 <translation id="8843682306134542540">ਘੁਮਾਅ ਸੰਬੰਧੀ ਲਾਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਹਾਲੇ ਵੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਨੋਟ ਕਰੋ: ਜੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਵਰਤੋ। ਇੱਕ ਵਾਰ ਸਾਈਨ-ਆਊਟ ਕਰਨ 'ਤੇ ਤੁਹਾਡਾ ਨਵਾਂ ਪਾਸਵਰਡ ਲਾਗੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="8855885154700222542">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਕੁੰਜੀ</translation>
 <translation id="8870509716567206129">ਐਪ ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ।</translation>
 <translation id="8874184842967597500">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="8876661425082386199">ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>

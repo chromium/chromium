@@ -426,6 +426,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1397594434718759194">V teh napravah ste prijavljeni v Chrome, torej jih lahko uporabljate kot varnostne ključe.</translation>
 <translation id="1398853756734560583">Povečaj</translation>
 <translation id="139911022479327130">Odklenite telefon in potrdite, da ste to res vi.</translation>
+<translation id="1401216725754314428">Preberite več o sorodnih spletnih mestih na novem zavihku</translation>
 <translation id="1401308693935339022">Uporaba lokacije. Aplikacijam in storitvam z dovoljenjem za lokacijo dovolite uporabo lokacije te naprave. Google morda redno pridobiva podatke o lokaciji in te podatke anonimno uporablja za izboljšanje natančnosti zaznavanja lokacije in storitev na podlagi lokacije.</translation>
 <translation id="1403222014593521787">Povezave z omrežjem proxy ni mogoče vzpostaviti</translation>
 <translation id="1405779994569073824">Zrušitev.</translation>
@@ -598,6 +599,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1552752544932680961">Upravljanje razširitve</translation>
 <translation id="1553538517812678578">neomejeno</translation>
 <translation id="1555130319947370107">Modra</translation>
+<translation id="1556127816860282890">Dejavnost v ozadju in nekateri vizualni učinki (denimo gladko drsenje) bodo morda omejeni.</translation>
 <translation id="1556537182262721003">Imenika razširitve ni bilo mogoče premakniti v profil.</translation>
 <translation id="1558391695376153246">Zapri anonimne zavihke</translation>
 <translation id="155865706765934889">Sledilna ploščica</translation>
@@ -4163,6 +4165,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4852916668365817106">Barva kazalca</translation>
 <translation id="4853020600495124913">Odpri v &amp;novem oknu</translation>
 <translation id="4854317507773910281">Izbira starševskega računa za odobritev</translation>
+<translation id="4854603338816296098">Naslov je bil odstranjen</translation>
 <translation id="485480310608090163">Več nastavitev in dovoljenj</translation>
 <translation id="4858792381671956233">Starše si vprašal(-a), ali smeš obiskati to spletno mesto</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -7713,6 +7716,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8206745257863499010">Glasbenik</translation>
 <translation id="8206859287963243715">Prenosni</translation>
 <translation id="8207404892907560325">Izbira ključa za dostop</translation>
+<translation id="8208188204689616705">Ta spletna mesta so v skupini, ki jo je definiral(-a) <ph name="FPS_OWNER" />. Spletna mesta v skupini lahko vidijo vašo dejavnost v skupini.</translation>
 <translation id="8208216423136871611">Ne shrani</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obvestilo}one{# novo obvestilo}two{# novi obvestili}few{# nova obvestila}other{# novih obvestil}}</translation>
 <translation id="821119981794423735">Če želite v Googlov upravitelj gesel uvoziti gesla za račun <ph name="USER_EMAIL" />, izberite datoteko CSV.</translation>

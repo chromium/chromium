@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">חיישני תנועה</translation>
 <translation id="1717494416764505390">תיבת דואר 3</translation>
 <translation id="1718029547804390981">המסמך גדול מדי ולא ניתן להוסיף לו הערות</translation>
+<translation id="1719434663396780149">ההתראות על הנחות מופעלות. אפשר לשנות זאת ב<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">סגירת המדריך</translation>
 <translation id="1721424275792716183">* זהו שדה חובה</translation>
 <translation id="1725591448053514783">‏מעטפה – You 6</translation>
@@ -979,6 +980,7 @@
 <translation id="3550112004925580947">תעשיית מלונאות ואירוח</translation>
 <translation id="3552297013052089404">‏גופן Sans-Serif</translation>
 <translation id="3558573058928565255">שעות היום</translation>
+<translation id="3560824484345057728">הצגת האתרים הקשורים</translation>
 <translation id="3566021033012934673">החיבור שלך אינו פרטי</translation>
 <translation id="3567778190852720481">לא ניתן להירשם באמצעות חשבון ארגוני (חשבון ארגוני לא עומד בקריטריונים).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@
 <translation id="4542971377163063093">מגש 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">יש לנסות להשבית את התוספים.</translation>
+<translation id="4559134504959026834">האתר הזה שייך לקבוצת אתרים שיש להם הרשאה לראות את הפעילות שלך. הקבוצה הוגדרה על ידי <ph name="SET_OWNER" /></translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">פעילות בחוץ</translation>
 <translation id="4567686777917670400">‏מנהל המערכת יכול לשנות את הגדרת הדפדפן שלך מרחוק. ניהול הפעילות במכשיר הזה אפשרי גם מחוץ ל-Chromium. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
@@ -2675,6 +2678,7 @@ Del</translation>
 <translation id="7995512525968007366">לא צוין</translation>
 <translation id="7998269595945679889">‏לחצן לפתיחת כרטיסייה פרטית, צריך להקיש על Enter כדי לפתוח כרטיסייה פרטית חדשה ולגלוש באופן פרטי</translation>
 <translation id="800218591365569300">מומלץ לסגור כרטיסיות או תוכניות אחרות וכך לפנות מקום בזיכרון.</translation>
+<translation id="8002230960325005199">הצגת האתרים הקשורים בכרטיסייה חדשה</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
 <translation id="8004582292198964060">דפדפן</translation>
 <translation id="8009225694047762179">ניהול סיסמאות</translation>
@@ -2778,6 +2782,7 @@ Del</translation>
 <translation id="8270242299912238708">‏מסמכי PDF</translation>
 <translation id="8275952078857499577">אין להציג את ההצעה לתרגם את האתר הזה</translation>
 <translation id="8277900682056760511">טופס פרטי התשלום פתוח</translation>
+<translation id="8279611986089885641">‏ההתראות של Chrome צריכות לפעול. אפשר להפעיל אותן ב<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">מגש 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">דילוג</translation>

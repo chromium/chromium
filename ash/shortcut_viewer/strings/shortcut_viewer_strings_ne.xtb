@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">लिंकलाई ट्याबको ठेगाना पट्टीमा ड्र्याग गर्नुहोस्</translation>
 <translation id="1251638888133819822">पूर्ण स्क्रिनसम्बन्धी म्याग्निफायरलाई अन गर्नुहोस्‌ वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">आफ्नो हालको पृष्ठ प्रिन्ट गर्नुहोस्</translation>
-<translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> वा <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">रेखाको अन्त्यमा जानुहोस्</translation>
 <translation id="1499072997694708844">खुला रहेका सबै खोज विन्डो बन्द गर्नुहोस् वा आफ्नो हालको पृष्ठ लोड हुन नदिनुहोस्</translation>
-<translation id="1510238584712386396">लन्चर</translation>
 <translation id="1516966594427080024">इन्कोग्निटो मोडमा नयाँ विन्डो खोलियोस्</translation>
 <translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यसपछि <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">अघिल्लो शब्दको सुरुमा सार्नुहोस्‌</translation>
 <translation id="1679841710523778799">उज्यालोपना बढाउनुहोस्‌</translation>
 <translation id="168356808214100546"><ph name="ALT" /> थिचिराख्नुहोस्, आफूले खोल्न चाहेको विन्डोमा नपुगुन्जेल <ph name="TAB" /> मा ट्याप गर्नुहोस्‌, त्यसपछि छाड्नुहोस्‌।</translation>
-<translation id="169515659049020177">सिफ्ट</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ठेगाना पट्टीको आफ्नो इनपुटमा www. तथा .com थप्नुहोस्‌, त्यसपछि पृष्ठ खोल्नुहोस्</translation>
 <translation id="1768987374400973299">स्क्रिनसट खिच्नुहोस्/रेकर्डिङ गर्नुहोस्</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">ChromeVox (बोली प्रतिक्रिया) अन गर्नुहोस् वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="2480851840841871861">Google सहायक खोल्नुहोस्</translation>
 <translation id="2488661730534396940">बायाँतिरको डेस्क अन गर्नुहोस्</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Diagnostics एप खोल्नुहोस्</translation>
 <translation id="2530339807289914946">वेब पृष्ठमा तलतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="2530896289327917474">क्यारेट ब्राउजिङ अन वा अफ गर्नुहोस्</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">सर्टकटहरू</translation>
 <translation id="3084301071537457911">आफ्नो सेल्फमा भएको अर्को वस्तुलाई हाइलाइट गर्नुहोस्</translation>
 <translation id="309173601632226815">आफ्नो सेल्फमा भएको लन्चर बटनलाई हाइलाइट गर्नुहोस्</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">फोकस ठेगाना पट्टी</translation>
 <translation id="3256109297135787951">आफ्नो सेल्फमा भएको कुनै वस्तुबाट हाइलाइट हटाउनुहोस्‌</translation>
 <translation id="3288816184963444640">हालको विन्डो बन्द गर्नुहोस्</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">अर्को शब्दको अन्त्यमा सार्नुहोस्</translation>
 <translation id="4866066940972151697">दायाँतिरको डेस्क अन गर्नुहोस्</translation>
 <translation id="4916163929714267752">यो लिंकलाई नयाँ विन्डोमा खोल्नुहोस्</translation>
-<translation id="492453977506755176">क्याप्चर मोड की</translation>
 <translation id="5030659775136592441">पुस्तक चिन्ह प्रबन्धक देखाउनुहोस्‌</translation>
 <translation id="5034421018520995080">पृष्ठको शीर्षभागमा जानुहोस्</translation>
-<translation id="5042305953558921026">परिदृश्य मोडको साँचो</translation>
 <translation id="5104462712192763270">आफ्नो हालको पृष्ठ सेभ गर्नुहोस्</translation>
 <translation id="5121628974188116412">पृष्ठको फेदमा जानुहोस्‌</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">फुल स्क्रिनको स्क्रिनसट खिच्नुहोस्</translation>
 <translation id="6022924867608035986">खोजबाकसको पाठ खाली गर्नुहोस्</translation>
 <translation id="6052614013050385269">कुनै लिंकमा दायाँ क्लिक गर्नुहोस्‌</translation>
-<translation id="6129953537138746214">क्षेत्र</translation>
 <translation id="6143669479988153888">पृष्ठमा जुम इन गर्नुहोस्</translation>
 <translation id="6185696379715117369">पृष्ठ माथि</translation>
 <translation id="6228457605945141550">उज्यालो कम गर्नुहोस्‌</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">अघिल्लो शब्द वा अक्षर चयन गर्नुहोस्</translation>
 <translation id="8727232706774971183">आफ्ना सूचनाहरू हेर्नुहोस्</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> १ देखि ८ सम्म</translation>
-<translation id="8855885154700222542">फुल स्क्रिन नामक कुञ्जी</translation>
 <translation id="8881584919399569791">सक्रिय विन्डो बायाँपट्टीको डेस्कमा सार्नुहोस्</translation>
 <translation id="88986195241502842">पृष्ठ तल</translation>
 <translation id="8924883688469390268">अघिल्लो प्रयोगकर्तामा बदल्नुहोस्‌</translation>

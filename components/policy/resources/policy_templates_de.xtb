@@ -5376,7 +5376,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
           Wenn die Richtlinie deaktiviert ist, können Nutzer keine Kerberos-Konten hinzufügen. Dies ist dann nur über die Richtlinie „Kerberos-Konten konfigurieren“ möglich. So lassen sich Konten effektiv sperren.</translation>
 <translation id="6491139795995924304">Bluetooth auf Gerät zulassen</translation>
 <translation id="6491305972928809525">Unverankertes Menü für Bedienungshilfen im Kioskmodus nicht anzeigen</translation>
-<translation id="6491610602835998107">Berichte zu Systeminformationen und Seiteninhalten deaktivieren, um Safe Browsing zu verbessern</translation>
 <translation id="6491872498385040936">Diese Richtlinie wurde eingestellt. Du kannst stattdessen "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />" verwenden. Damit wird diese Richtlinie überschrieben und eine bessere Feinabstimmung ermöglicht.
 
       Erzwingt den moderaten eingeschränkten Modus auf YouTube und verhindert, dass Nutzer diese Einstellung ändern.
@@ -6859,6 +6858,10 @@ werden abgelehnt.</translation>
 <translation id="7962093600142350905">Mit dieser Richtlinie wird festgelegt, ob Nutzern im Dialogfeld mit der Druckvorschau verfügbare Privet-Drucker angezeigt werden.
       Wenn diese Richtlinie aktiviert ist, werden verfügbare Privet-Drucker angezeigt.
       Ist sie deaktiviert oder nicht konfiguriert, erscheinen Privet-Drucker nicht in der Druckvorschau, weil diese Druckmethode veraltet ist.</translation>
+<translation id="7967976640306183631">Wenn die Richtlinie aktiviert ist, können keine Screenshots über Tastenkombinationen oder Erweiterungs-APIs aufgenommen werden. Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind Screenshots zulässig.
+
+      Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph name="LINUX_OS_NAME" /> Screenshots, die mit Betriebssystem- oder Drittanbieter-Apps aufgenommen wurden, weiterhin zulässig sind.
+      </translation>
 <translation id="7970844378072291834">Aktivieren des Nur-HTTPS-Modus erzwingen (noch keine Unterstützung)</translation>
 <translation id="7972642710812569707">Erzwingen, dass WebSQL im Zusammenhang mit Drittanbietern wieder aktiviert wird.</translation>
 <translation id="7973609468423251675">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".

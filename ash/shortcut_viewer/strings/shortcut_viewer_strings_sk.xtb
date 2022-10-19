@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Presunutie odkazu na panel s adresou na karte</translation>
 <translation id="1251638888133819822">Zapnutie alebo vypnutie lupy na celú obrazovku</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Tlač aktuálnej stránky</translation>
-<translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> alebo <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Prejsť na koniec riadka</translation>
 <translation id="1499072997694708844">Zatvoriť všetky otvorené okná vyhľadávania alebo zastaviť načítavanie aktuálnej stránky</translation>
-<translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1516966594427080024">Otvorenie nového okna v režime inkognito</translation>
 <translation id="152892567002884378">Zvýšenie hlasitosti</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, potom <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Posunutie kurzora na začiatok predchádzajúceho slova</translation>
 <translation id="1679841710523778799">Zvýšenie jasu</translation>
 <translation id="168356808214100546">Pridržanie klávesa <ph name="ALT" />. Následné klepnutie na kláves <ph name="TAB" />, kým neprejdete na okno, ktoré chcete otvoriť. Následné uvoľnenie klávesa.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Pridanie predpony www. a prípony .com k zadanému vstupu v paneli s adresou a následné otvorenie stránky</translation>
 <translation id="1768987374400973299">Vytvoriť snímku obrazovky alebo nahrávku</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Zapnutie alebo vypnutie funkcie ChromeVox (hovorená spätná väzba)</translation>
 <translation id="2480851840841871861">Otvoriť Asistenta Google</translation>
 <translation id="2488661730534396940">Aktivovať plochu vľavo</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Otvoriť diagnostickú aplikáciu</translation>
 <translation id="2530339807289914946">Posunutie nadol na webovej stránke</translation>
 <translation id="2530896289327917474">Vypnutie alebo zapnutie prehliadania Caret</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Skratky</translation>
 <translation id="3084301071537457911">Zvýraznenie ďalšej položky na poličke</translation>
 <translation id="309173601632226815">Zvýraznenie tlačidla spúšťača na poličke</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Zamerať na panel s adresou</translation>
 <translation id="3256109297135787951">Odstránenie zvýraznenia položky na poličke</translation>
 <translation id="3288816184963444640">Zavretie aktuálneho okna</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Posunutie kurzora na koniec ďalšieho slova</translation>
 <translation id="4866066940972151697">Aktivovať plochu vpravo</translation>
 <translation id="4916163929714267752">Otvorenie odkazu v novom okne</translation>
-<translation id="492453977506755176">Kláves režimu snímania</translation>
 <translation id="5030659775136592441">Zobrazenie správcu záložiek</translation>
 <translation id="5034421018520995080">Prechod na začiatok stránky</translation>
-<translation id="5042305953558921026">Kláves režimu prehľadu</translation>
 <translation id="5104462712192763270">Uloženie aktuálnej stránky</translation>
 <translation id="5121628974188116412">Prechod na koniec stránky</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Nasnímať celú obrazovku</translation>
 <translation id="6022924867608035986">Vymazať text vo vyhľadávacom poli</translation>
 <translation id="6052614013050385269">Kliknutie na odkaz pravým tlačidlom</translation>
-<translation id="6129953537138746214">Medzera</translation>
 <translation id="6143669479988153888">Priblíženie stránky</translation>
 <translation id="6185696379715117369">Posunúť o stránku nahor</translation>
 <translation id="6228457605945141550">Zníženie jasu</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Výber predchádzajúceho slova alebo písmena</translation>
 <translation id="8727232706774971183">Zobrazenie upozornení</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 až 8</translation>
-<translation id="8855885154700222542">Kláves celej obrazovky</translation>
 <translation id="8881584919399569791">Presunúť aktívne okno na plochu vľavo</translation>
 <translation id="88986195241502842">Posunúť stránku nadol</translation>
 <translation id="8924883688469390268">Prepnutie na predchádzajúceho používateľa</translation>

@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Arrastra a ligazón á barra de enderezos da pestana</translation>
 <translation id="1251638888133819822">Activa ou desactiva a lupa de pantalla completa</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Imprime a páxina actual</translation>
-<translation id="1383876407941801731">Buscar</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> ou <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Vai ao final da liña</translation>
 <translation id="1499072997694708844">Pecha as ventás de busca que teñas abertas ou detén a carga da páxina actual</translation>
-<translation id="1510238584712386396">Menú de aplicacións</translation>
 <translation id="1516966594427080024">Abre unha nova ventá no modo de incógnito</translation>
 <translation id="152892567002884378">Sube o volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e despois <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Retrocede ao comezo da palabra anterior</translation>
 <translation id="1679841710523778799">Aumenta o brillo</translation>
 <translation id="168356808214100546">Mantén premida a tecla <ph name="ALT" />, toca <ph name="TAB" /> ata chegar á ventá que queres abrir e despois solta as teclas.</translation>
-<translation id="169515659049020177">Maiús</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Engade www. e .com ao que introduciches na barra de enderezo e despois abre a páxina</translation>
 <translation id="1768987374400973299">Realizar unha gravación ou unha captura de pantalla</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Activa ou desactiva ChromeVox (comentarios de voz)</translation>
 <translation id="2480851840841871861">Abre o Asistente de Google</translation>
 <translation id="2488661730534396940">Activa o escritorio na parte esquerda</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Abre a aplicación Diagnósticos</translation>
 <translation id="2530339807289914946">Avanza cara abaixo pola páxina web</translation>
 <translation id="2530896289327917474">Activar ou desactivar a navegación por cursor de texto</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Atallos</translation>
 <translation id="3084301071537457911">Destaca o seguinte elemento do estante</translation>
 <translation id="309173601632226815">Destaca o botón do menú de aplicacións do estante</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Activar barra de enderezos</translation>
 <translation id="3256109297135787951">Deixa de destacar un elemento do estante</translation>
 <translation id="3288816184963444640">Pecha a ventá actual</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Avanza ao final da palabra seguinte</translation>
 <translation id="4866066940972151697">Activa o escritorio na parte dereita</translation>
 <translation id="4916163929714267752">Abre a ligazón nunha ventá nova</translation>
-<translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="5030659775136592441">Mostra o xestor de marcadores</translation>
 <translation id="5034421018520995080">Vai á parte superior da páxina</translation>
-<translation id="5042305953558921026">Tecla do modo de visión xeral</translation>
 <translation id="5104462712192763270">Garda a páxina actual</translation>
 <translation id="5121628974188116412">Vai á parte inferior da páxina</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Realizar unha captura da pantalla completa</translation>
 <translation id="6022924867608035986">Borrar texto da caixa de busca</translation>
 <translation id="6052614013050385269">Fai clic co botón dereito nunha ligazón</translation>
-<translation id="6129953537138746214">Espazo</translation>
 <translation id="6143669479988153888">Aumenta o zoom da páxina</translation>
 <translation id="6185696379715117369">Retroceder páxina</translation>
 <translation id="6228457605945141550">Reduce o brillo</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Selecciona a letra ou a palabra anterior</translation>
 <translation id="8727232706774971183">Consulta as túas notificacións</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 a 8</translation>
-<translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8881584919399569791">Move a ventá activa á parte esquerda do escritorio</translation>
 <translation id="88986195241502842">Avanzar páxina</translation>
 <translation id="8924883688469390268">Cambia ao usuario anterior</translation>

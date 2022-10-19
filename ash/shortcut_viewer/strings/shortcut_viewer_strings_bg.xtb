@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">Преместете с плъзгане връзката в адресната лента на раздела</translation>
 <translation id="1251638888133819822">Включване или изключване на лупата за увеличаване на целия екран</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /> <ph name="SEPARATOR1" /> <ph name="MODIFIER2" /> <ph name="SEPARATOR2" /> <ph name="MODIFIER3" /> <ph name="SEPARATOR3" /> <ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">Отпечатване на текущата страница</translation>
-<translation id="1383876407941801731">Търсене</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> или <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Преминаване в края на реда</translation>
 <translation id="1499072997694708844">Затваряне на всеки отворен прозорец за търсене или спиране на зареждането на текущата ви страница</translation>
-<translation id="1510238584712386396">Стартов панел</translation>
 <translation id="1516966594427080024">Отваряне на нов прозорец в режим „инкогнито“</translation>
 <translation id="152892567002884378">Увеличаване на силата на звука</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> и след това <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">Преместване в началото на предишната дума</translation>
 <translation id="1679841710523778799">Увеличаване на яркостта</translation>
 <translation id="168356808214100546">Натиснете и задръжте <ph name="ALT" />, използвайте <ph name="TAB" />, за да стигнете до желания прозорец, и освободете клавишите.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Добавяне на www. и .com към въведеното в адресната лента и отваряне на съответната страница</translation>
 <translation id="1768987374400973299">Създаване на екранна снимка/запис</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">Включване или изключване на ChromeVox (обратна връзка с говор)</translation>
 <translation id="2480851840841871861">Отваряне на Google Асистент</translation>
 <translation id="2488661730534396940">Активиране на работния кът отляво</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Отваряне на приложението за диагностика</translation>
 <translation id="2530339807289914946">Превъртане на уеб страницата надолу</translation>
 <translation id="2530896289327917474">Включване или изключване на Caret Browsing</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">Клавишни комбинации</translation>
 <translation id="3084301071537457911">Поставяне на фокуса върху следващия елемент в лавицата</translation>
 <translation id="309173601632226815">Поставяне на фокуса върху бутона на стартовия панел в лавицата</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Преместване на фокуса върху адресната лента</translation>
 <translation id="3256109297135787951">Премахване на фокуса от елемент в лавицата</translation>
 <translation id="3288816184963444640">Затваряне на текущия прозорец</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">Преместване в края на следващата дума</translation>
 <translation id="4866066940972151697">Активиране на работния кът отдясно</translation>
 <translation id="4916163929714267752">Отваряне на връзката в нов прозорец</translation>
-<translation id="492453977506755176">Клавиш за режима на заснемане</translation>
 <translation id="5030659775136592441">Показване на диспечера на отметките</translation>
 <translation id="5034421018520995080">Преминаване в началото на страницата</translation>
-<translation id="5042305953558921026">Клавиш за режима за общ преглед</translation>
 <translation id="5104462712192763270">Запазване на текущата страница</translation>
 <translation id="5121628974188116412">Преминаване към края на страницата</translation>
 <translation id="5222676887888702881">Изход</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">Създаване на екранна снимка на целия екран</translation>
 <translation id="6022924867608035986">Изчистване на текста от полето за търсене</translation>
 <translation id="6052614013050385269">Кликване с десния бутон на мишката върху връзка</translation>
-<translation id="6129953537138746214">Интервал</translation>
 <translation id="6143669479988153888">Увеличаване на мащаба на страницата</translation>
 <translation id="6185696379715117369">Страница нагоре</translation>
 <translation id="6228457605945141550">Намаляване на яркостта</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">Избиране на предишната дума или буква</translation>
 <translation id="8727232706774971183">Преглед на известията ви</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /> <ph name="SEPARATOR1" /> бутона „<ph name="SEARCH" />“ <ph name="SEPARATOR2" /> 1 до 8</translation>
-<translation id="8855885154700222542">Клавиш за цял екран</translation>
 <translation id="8881584919399569791">Преместване на активния прозорец към работния кът отляво</translation>
 <translation id="88986195241502842">Страница надолу</translation>
 <translation id="8924883688469390268">Превключване към предишния потребител</translation>

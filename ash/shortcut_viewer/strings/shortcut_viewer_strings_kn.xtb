@@ -7,13 +7,10 @@
 <translation id="1195667586424773550">ಟ್ಯಾಬ್‌ನ ವಿಳಾಸ ಪಟ್ಟಿಗೆ ಲಿಂಕ್‌ ಅನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="1251638888133819822">ಪೂರ್ಣಪರದೆ ವರ್ಧಕವನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
-<translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಮುದ್ರಿಸಿ</translation>
-<translation id="1383876407941801731">Search</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> ಅಥವಾ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">ಸಾಲಿನ ಅಂತ್ಯಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="1499072997694708844">ತೆರೆದಿರುವ ಹುಡುಕಾಟ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಿ ಅಥವಾ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪುಟದ ಲೋಡ್ ಮಾಡುವಿಕೆಯನ್ನು ನಿಲ್ಲಿಸಿ</translation>
-<translation id="1510238584712386396">ಲಾಂಚರ್</translation>
 <translation id="1516966594427080024">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋ ತೆರೆಯಿರಿ</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="ESC" /></translation>
@@ -21,7 +18,6 @@
 <translation id="1652741121070700329">ಹಿಂದಿನ ಪದದ ಆರಂಭಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1679841710523778799">ಪ್ರಖರತೆ ಹೆಚ್ಚು ಮಾಡುವಿಕೆಯನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="168356808214100546"><ph name="ALT" /> ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ, ನೀವು ತೆರೆಯಲು ಬಯಸುವ ವಿಂಡೋವನ್ನು ಪಡೆಯುವವರೆಗೂ <ph name="TAB" /> ಅನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ, ನಂತರ ಬಿಡುಗಡೆಗೊಳಿಸಿ.</translation>
-<translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ನಿಮ್ಮ ಇನ್‌ಪುಟ್‌ಗೆ www. ಮತ್ತು .com ಅನ್ನು ಸೇರಿಸಿ, ನಂತರ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1768987374400973299">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ/ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
@@ -48,7 +44,6 @@
 <translation id="2478303094958140141">ChromeVox (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ) ಆನ್‌ ಅಥವಾ ಆಫ್‌ ಮಾಡಿ</translation>
 <translation id="2480851840841871861">Google Assistant ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2488661730534396940">ಎಡಭಾಗದಲ್ಲಿರುವ ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
-<translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Diagnostics ಆ್ಯಪ್ ತೆರೆಯಿರಿ</translation>
 <translation id="2530339807289914946">ವೆಬ್‌ ಪುಟವನ್ನು ಸ್ಕ್ರಾಲ್ ಡೌನ್ ಮಾಡಿ</translation>
 <translation id="2530896289327917474">ಕೆರೆಟ್ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
@@ -67,7 +62,6 @@
 <translation id="3020183492814296499">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="3084301071537457911">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಮುಂದಿನ ಐಟಂ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="309173601632226815">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಲಾಂಚರ್ ಬಟನ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
-<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">ವಿಳಾಸ ಪಟ್ಟಿಯನ್ನು ಗಮನಿಸಿ</translation>
 <translation id="3256109297135787951">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಐಟಂನಿಂದ ಹೈಲೈಟ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="3288816184963444640">ಪ್ರಸ್ತುತ ವಿಂಡೋ ಮುಚ್ಚಿ</translation>
@@ -115,10 +109,8 @@
 <translation id="4801989101741319327">ಮುಂದಿನ ಅಕ್ಷರದ ಕೊನೆಗೆ ಸರಿಸಿ</translation>
 <translation id="4866066940972151697">ಬಲಭಾಗದಲ್ಲಿರುವ ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4916163929714267752">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
-<translation id="492453977506755176">ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್ ಕೀ</translation>
 <translation id="5030659775136592441">ಬುಕ್‌ಮಾರ್ಕ್ ನಿರ್ವಾಹಕವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5034421018520995080">ಪುಟದ ಮೇಲಿನ ಭಾಗಕ್ಕೆ ಹೋಗಿ</translation>
-<translation id="5042305953558921026">ಅವಲೋಕನ ಮೋಡ್‌ ಕೀ</translation>
 <translation id="5104462712192763270">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಉಳಿಸಿ</translation>
 <translation id="5121628974188116412">ಪುಟದ ಕೆಳಭಾಗಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
@@ -143,7 +135,6 @@
 <translation id="5926306472221400972">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="6022924867608035986">ಹುಡುಕಾಟ ಬಾಕ್ಸ್ ಪಠ್ಯವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6052614013050385269">ಲಿಂಕ್‌ ಅನ್ನು ರೈಟ್ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
-<translation id="6129953537138746214">ಸ್ಪೇಸ್</translation>
 <translation id="6143669479988153888">ಪುಟದಲ್ಲಿ ಝೂಮ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="6228457605945141550">ಪ್ರಖರತೆ ಕಡಿಮೆ ಮಾಡುವಿಕೆಯನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
@@ -208,7 +199,6 @@
 <translation id="8717459106217102612">ಹಿಂದಿನ ಪದ ಅಥವಾ ಅಕ್ಷರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="8727232706774971183">ನಿಮ್ಮ ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 ರಿಂದ 8</translation>
-<translation id="8855885154700222542">ಪೂರ್ಣಪರದೆ ಕೀ</translation>
 <translation id="8881584919399569791">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು, ಎಡಬದಿಯಲ್ಲಿರುವ ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8924883688469390268">ಹಿಂದಿನ ಬಳಕೆದಾರರಿಗೆ ಬದಲಿಸಿ</translation>

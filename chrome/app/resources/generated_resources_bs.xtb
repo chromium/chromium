@@ -278,6 +278,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1244303850296295656">Greška ekstenzije</translation>
 <translation id="1245628370644070008">Oporavak lokalnih podataka</translation>
 <translation id="1246863218384630739">Instaliranje virtualnog računara <ph name="VM_NAME" /> nije uspjelo: URL slike je rezultirao kodom greške <ph name="HTTP_ERROR" />. Kontaktirajte administratora.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{Obavještenja nisu dozvoljena za 1 web lokaciju}one{Obavještenja nisu dozvoljena za {NUM_SITES} web lokaciju}few{Obavještenja nisu dozvoljena za {NUM_SITES} web lokacije}other{Obavještenja nisu dozvoljena za {NUM_SITES} web lokacija}}</translation>
 <translation id="1251366534849411931">Očekivana početna vitičasta zagrada: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ovim će se obrisati <ph name="TOTAL_USAGE" /> podataka koje su pohranile web lokacije i instalirane aplikacije</translation>
 <translation id="1251578593170406502">Skeniranje mreža za prijenos podataka...</translation>
@@ -1656,6 +1657,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2476974672882258506">Isključite Windows da deinstalirate <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Pošto ste postavili više prekidača, automatsko skeniranje je isključeno.</translation>
 <translation id="2478176599153288112">Odobrenja medijskog fajla za ekstenziju "<ph name="EXTENSION" />"</translation>
+<translation id="24786041351753425">Omogućite uslugu za oporavak podataka.</translation>
 <translation id="2480868415629598489">Mijenjanje podataka koje kopirate i zalijepite</translation>
 <translation id="2482878487686419369">Obavještenja</translation>
 <translation id="2482895651873876648">Kartica je premještena u grupu <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -2271,6 +2273,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3024374909719388945">Koristi 24-satni format</translation>
 <translation id="3027296729579831126">Uključi Dijeljenje u blizini</translation>
 <translation id="3029466929721441205">Prikaži alate olovke na polici</translation>
+<translation id="3029808567601324798">Vrijeme za zaključavanje</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{Domena <ph name="MANAGER" /> zahtijeva da danas preuzmete ažuriranje. Ažuriranje će se automatski preuzeti kada se povežete s internetom.}one{Domena <ph name="MANAGER" /> zahtijeva da preuzmete ažuriranje prije isteka roka. Ažuriranje će se automatski preuzeti kada se povežete s internetom.}few{Domena <ph name="MANAGER" /> zahtijeva da preuzmete ažuriranje prije isteka roka. Ažuriranje će se automatski preuzeti kada se povežete s internetom.}other{Domena <ph name="MANAGER" /> zahtijeva da preuzmete ažuriranje prije isteka roka. Ažuriranje će se automatski preuzeti kada se povežete s internetom.}}</translation>
 <translation id="3030967311408872958">Od sutona do svitanja</translation>
 <translation id="3031417829280473749">Agent X</translation>
@@ -2529,6 +2532,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3308852433423051161">Učitavanje Google Asistenta...</translation>
 <translation id="3309330461362844500">ID profila certifikata</translation>
 <translation id="3311445899360743395">Podaci koji su povezani s ovom aplikacijom se mogu ukloniti s ovog uređaja.</translation>
+<translation id="3312470654018965389">Konfigurira se Linuxov spremnik</translation>
 <translation id="3312883087018430408">Da pretražite određenu web lokaciju ili dio Chromea, unesite prečicu tog sadržaja na traci za adresu, a zatim svoju željenu prečicu na tastaturi. Naprimjer, da pretražite samo Oznake, unesite "@oznake", a zatim pritisnite tipku Tab ili tipku za razmak.</translation>
 <translation id="3313622045786997898">Vrijednost potpisa potvrde</translation>
 <translation id="3313950410573257029">Provjerite vezu</translation>
@@ -4219,6 +4223,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4901154724271753917">Proširite nedavno zatvoreno</translation>
 <translation id="4901309472892185668">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Pravilo preuzeto sa servera je nevažeće: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">Ovim se produžava napajanje baterijom ograničavanjem pozadinske aktivnosti i vizuelnih efekta kao što je glatko klizanje.</translation>
 <translation id="4906490889887219338">Postavite dijeljenje fajlova na mreži ili upravljajte njime. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Odaberite kada ova ekstenzija može čitati i izmjenjivati vaše podatke web lokacije</translation>
 <translation id="4907161631261076876">Ovaj fajl se ne preuzima često i može biti opasan.</translation>
@@ -5325,6 +5330,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5971037678316050792">Kontrolira stanje Bluetooth adaptera i uparivanje</translation>
 <translation id="597235323114979258">Pogledajte više odredišta</translation>
 <translation id="5972543790327947908">Neki podržani linkovi će se i dalje otvarati u aplikaciji <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> ili <ph name="APP_NAME_3" />.</translation>
+<translation id="5972559880616357748">Više radnji za <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">Usluga bez funkcije</translation>
 <translation id="5972708806901999743">Premjesti na vrh</translation>
 <translation id="5972826969634861500">Pokreni <ph name="PRODUCT_NAME" /></translation>
@@ -8517,6 +8523,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8987927404178983737">Mjesec</translation>
 <translation id="8989359959810288806">Osvježi status dijeljenja internetske veze</translation>
 <translation id="8991520179165052608">Web lokacija može koristiti vaš mikrofon</translation>
+<translation id="8993059306046735527">Ako zaboravite lozinku za <ph name="DEVICE_TYPE" />, i dalje možete vratiti lokalne podatke. Trebat ćete se prijaviti na Google račun ili koristiti oporavak računa.</translation>
 <translation id="899384117894244799">Ukloni korisnika s ograničenjem</translation>
 <translation id="899403249577094719">Osnovni URL Netscape certifikata</translation>
 <translation id="899657321862108550">Vaš Chrome, svugdje</translation>
@@ -8616,6 +8623,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9078316009970372699">Onemogući Trenutno dijeljenje internetske veze</translation>
 <translation id="9078842827190780028">Pogledajte više rezultata pretraživanja u bočnoj ploči</translation>
 <translation id="9079267182985899251">Ova opcija uskoro više neće biti podržana. Da prikažete karticu, koristite <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080175821499742274">Ušteda memorije oslobađa memoriju od neaktivnih kartica da je mogu koristiti aktivne kartice i druge aplikacije.</translation>
 <translation id="9080971985541434310">procjenjuje vaša interesovanja – Chrome može procijeniti vaša interesovanja</translation>
 <translation id="9081543426177426948">Web lokacije koje posjećujete se ne pohranjuju u anonimnom načinu rada</translation>
 <translation id="9084064520949870008">Otvori u prozoru</translation>
@@ -8805,6 +8813,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="964790508619473209">Raspored na ekranu</translation>
 <translation id="965211523698323809">Šaljite i primajte SMS-ove s uređaja <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Prijavite problem s Google Castom</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Pregledajte 1 web lokaciju koja je nedavno poslala mnogo obavještenja}one{Pregledajte {NUM_SITES} web lokaciju koja je nedavno poslala mnogo obavještenja}few{Pregledajte {NUM_SITES} web lokacije koje su nedavno poslale mnogo obavještenja}other{Pregledajte {NUM_SITES} web lokacija koje su nedavno poslale mnogo obavještenja}}</translation>
 <translation id="967398046773905967">Onemogući svim web lokacijama pristup HID uređajima</translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>
 <translation id="96774243435178359">Upravljani štampači</translation>

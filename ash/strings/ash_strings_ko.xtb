@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> 앱을 <ph name="FOLDER_NAME" /> 폴더로 이동합니다.</translation>
 <translation id="1293264513303784526">USB-C 기기(왼쪽 포트)</translation>
 <translation id="1293556467332435079">파일</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">잠금 화면 알림 설정을 변경합니다.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">추천 앱</translation>
@@ -91,6 +92,7 @@
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. 화살표 키를 사용하여 날짜 간에 이동합니다.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, 설치된 앱</translation>
+<translation id="1415846719612499304">네트워크 목록을 표시합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">알림 작업을 실행하려면 기기의 잠금을 해제하세요.</translation>
 <translation id="1420408895951708260">야간 조명을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" />에서 휴대전화의 최근 사진 및 미디어를 봅니다.</translation>
@@ -130,6 +132,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" />이 연결되어 있지 않습니다.</translation>
 <translation id="1677582821739292812">누가 내 화면을 보고 있습니다.</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 타이머 · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 주소: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">활성 창이 왼쪽에 고정되었습니다.</translation>
@@ -280,6 +283,7 @@
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
 <translation id="2501920221385095727">고정키</translation>
 <translation id="2509468283778169019">CAPS LOCK이 켜져 있습니다.</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">프로필 이미지 탭</translation>
 <translation id="255671100581129685">공개 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
 <translation id="256712445991462162">고정 돋보기</translation>
@@ -305,6 +309,7 @@
 <translation id="2678852583403169292">텍스트 읽어주기 메뉴</translation>
 <translation id="2689613560355655046">데스크 8</translation>
 <translation id="2695305337569143674">웹</translation>
+<translation id="2697697418792422688">키보드 설정을 표시합니다. <ph name="KEYBOARD_NAME" />이(가) 선택되었습니다.</translation>
 <translation id="2700493154570097719">키보드 설정</translation>
 <translation id="2704781753052663061">다른 Wi-Fi 네트워크에 연결</translation>
 <translation id="2705001408393684014">마이크를 전환합니다. <ph name="STATE_TEXT" /></translation>
@@ -378,6 +383,7 @@
 <translation id="3105917916468784889">스크린샷 찍기</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />(블루투스)</translation>
 <translation id="3120421559657122717">기기를 종료할까요?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">업데이트하려면 다시 시작</translation>
 <translation id="3139382871451988441">카메라 액세스를 사용 중지합니다.</translation>
 <translation id="3139942575505304791">데스크 1</translation>
@@ -701,6 +707,7 @@
 <translation id="4917385247580444890">강함</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" />에서 카메라를 사용 중입니다.</translation>
+<translation id="492453977506755176">캡처 모드 키</translation>
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
 <translation id="4938176435186993759">모든 추천 숨기기</translation>
 <translation id="4945196315133970626">알림 사용 중지</translation>
@@ -721,6 +728,7 @@
 <translation id="5033299697334913360">전체 화면을 캡처하려면 아무 곳이나 클릭하세요</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />이(가) 새 휴대전화에 연결되었습니다.</translation>
 <translation id="5035389544768382859">화면 구성 확인</translation>
+<translation id="5042305953558921026">전체보기 모드 키</translation>
 <translation id="504465286040788597">이전 단락</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="5071064518267176975">앱에서 마이크를 사용하려고 함</translation>
@@ -771,6 +779,7 @@
 <translation id="5327248766486351172">이름</translation>
 <translation id="5329548388331921293">연결 중...</translation>
 <translation id="5331975486040154427">USB-C 기기(좌측 후면 포트)</translation>
+<translation id="533282197239610265">Cast 기기 표시</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%(오른쪽)</translation>
 <translation id="5352250171825660495">어두운 테마가 켜져 있습니다.</translation>
 <translation id="5356963482258194581">밝은 테마와 어두운 테마 간에 전환합니다. 바탕화면을 마우스 오른쪽 버튼으로 클릭하고 배경화면/스타일을 선택하세요.</translation>
@@ -802,10 +811,12 @@
 <translation id="553675580533261935">세션 종료</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="554893713779400387">음성기록 전환</translation>
+<translation id="5558091555391176027">Nearby Share 모든 기기에 공개 설정 전환</translation>
 <translation id="5560420195677022218">휴대전화의 앱을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
 <translation id="556042886152191864">버튼</translation>
 <translation id="5571066253365925590">블루투스를 사용함</translation>
 <translation id="557563299383177668">다음 단락</translation>
+<translation id="5577082622442191756">블루투스를 전환합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">휴대전화 허브를 사용하려면 휴대전화에 블루투스가 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="5580000943347215299">라이브러리</translation>
 <translation id="558849140439112033">드래그하여 캡처할 영역을 선택하세요.</translation>
@@ -874,6 +885,7 @@
 <translation id="595202126637698455">성능 추적 사용 중</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">관리 대상 사용자</translation>
+<translation id="5965524703725988602">어두운 테마를 전환합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">창을 녹화하려면 Enter를 누르세요</translation>
 <translation id="5977415296283489383">헤드폰</translation>
 <translation id="5978382165065462689">원격 지원을 통해 화면 제어 공유</translation>
@@ -908,6 +920,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />, <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> 다운로드 확인</translation>
 <translation id="612734058257491180">게스트 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6134259848159370930">기기, 앱, 설정, 웹에서 검색합니다.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> 삭제 대화상자 열기</translation>
 <translation id="6141988275892716286">다운로드 확인</translation>
@@ -1116,6 +1129,7 @@
 <translation id="7378889811480108604">절전 모드 사용 안함</translation>
 <translation id="7382680553121047388">사용 중지</translation>
 <translation id="7384028040782072252">앱을 재정렬하려면 아무 곳이나 마우스 오른쪽 버튼으로 클릭합니다</translation>
+<translation id="7386767620098596324">네트워크 연결을 전환합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">나중에 설정으로 이동하여 언제든지 설정할 수 있습니다.</translation>
 <translation id="7405710164030118432">기기의 잠금을 해제하려면 Family Link 부모 액세스 코드를 입력하세요.</translation>
 <translation id="7406608787870898861">모바일 네트워크 설정 완료</translation>
@@ -1255,6 +1269,7 @@
 <translation id="8142441511840089262">더블클릭</translation>
 <translation id="8142699993796781067">사설 네트워크</translation>
 <translation id="8144760705599030999"><ph name="NAME" /> 기기를 <ph name="EMAIL" />에 저장하여 다른 기기와 더 빠르게 페어링하세요.</translation>
+<translation id="8149413265954228307">블루투스 설정을 표시합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">닫으려면 Ctrl + W를 누릅니다.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, 자동 완성</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 관리자가 관리하는 설정입니다.</translation>
@@ -1315,6 +1330,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />에서 <ph name="FEATURE_NAME" /> 기능을 <ph name="FEATURE_STATE" /> 상태로 설정했습니다.</translation>
 <translation id="8477270416194247200">취소하려면 Alt+검색 또는 Shift 키를 누르세요.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
+<translation id="8496402167048257517">Nearby Share 설정 표시</translation>
 <translation id="85123341071060231">Chromebook의 블루투스가 꺼져 있습니다. Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>
 <translation id="8513108775083588393">자동 회전</translation>
 <translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>
@@ -1375,6 +1391,7 @@
 <translation id="8843682306134542540">회전 잠금을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">여전히 PIN 또는 비밀번호를 확인할 수 없습니다. 참고: 최근에 비밀번호를 변경한 경우 이전 비밀번호를 사용해 보세요. 로그아웃하고 나면 새로운 비밀번호가 적용됩니다.</translation>
+<translation id="8855885154700222542">전체화면 키</translation>
 <translation id="8870509716567206129">앱이 화면 분할을 지원하지 않습니다.</translation>
 <translation id="8874184842967597500">연결되지 않음</translation>
 <translation id="8876661425082386199">연결 상태 확인</translation>

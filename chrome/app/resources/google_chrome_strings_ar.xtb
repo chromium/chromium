@@ -259,6 +259,7 @@
 <translation id="608006075545470555">إضافة ملف شخصي للعمل على هذا المتصفِّح</translation>
 <translation id="6113794647360055231">‏Chrome أصبح أفضل</translation>
 <translation id="6145313976051292476">‏فتح ملفات PDF في متصفِّح Chrome</translation>
+<translation id="6155960517327665396">‏زيادة سرعة أداء Chrome بفضل ميزة "توفير الذاكرة"</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - الإصدار التجريبي من Google Chrome</translation>
 <translation id="6235018212288296708">‏قاعدة الوارد إلى Google Chrome للسماح بحركة مرور mDNS.</translation>
@@ -355,6 +356,7 @@
 <translation id="8286862437124483331">‏يحاول Google Chrome عرض كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="828798499196665338">‏أوقفَ أحد والدَيك "أذونات المواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chrome. ولا يمكن تفعيل <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">‏للأسف! تعطل Google Chrome. هل تريد إعادة التشغيل الآن؟</translation>
+<translation id="8341646175450781745">‏عند تفعيل هذا الوضع، يعمل Chrome على تفريغ الذاكرة من علامات التبويب غير النشطة. يوفّر هذا لعلامات التبويب النشطة والتطبيقات الأخرى مزيدًا من موارد الكمبيوتر للحفاظ على أداء Chrome السريع. وسيُعاد تلقائيًا تنشيط علامات التبويب غير النشطة عند رجوعك إليها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> أو <ph name="BEGIN_LINK_2" />إرسال ملاحظات<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">‏هذا الملف ضار، لذلك فقد حظره Chrome.</translation>
 <translation id="8349795646647783032">‏<ph name="BEGIN_BOLD" />آلية استخدامنا لهذه البيانات:<ph name="END_BOLD" /> يمكن أن تخزّن المواقع الإلكترونية معلومات عن اهتماماتك في متصفّح Chrome. على سبيل المثال، إذا انتقلت إلى موقع إلكتروني لشراء حذاء لاستخدامه في سباق ماراثون، قد يحدّد هذا الموقع الإلكتروني حسب تقديره أنك مهتم بسباقات الماراثون. وبعد ذلك، إذا انتقلت إلى موقع إلكتروني آخر للتسجيل في سباق ماراثون، يمكن أن يعرض لك هذا الموقع الإلكتروني إعلانًا عن الأحذية المخصّصة للجري بناءً على اهتماماتك.</translation>
 <translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>

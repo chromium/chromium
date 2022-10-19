@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1220509181886849806">Nota vistað aðgangsorð?</translation>
+<translation id="1580351948163139119">Aðgangsorð fyrir <ph name="USERNAME" />.</translation>
 <translation id="1717486229951421299">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu opinn í hálfri hæð.</translation>
 <translation id="207576718733492531">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu er lokaður.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
@@ -16,5 +17,6 @@
 <translation id="5441504010984421144">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu opinn í fullri hæð.</translation>
 <translation id="5591247451101092906">Nota vistað aðgangsorð eða aðgangslykil?</translation>
 <translation id="5624120631404540903">Stjórna aðgangsorðum</translation>
+<translation id="7736236483645733578">Aðgangslykill fyrir <ph name="USERNAME" />, notaðu skjálásinn.</translation>
 <translation id="804577341878669140">Halda áfram með reikning</translation>
 </translationbundle>

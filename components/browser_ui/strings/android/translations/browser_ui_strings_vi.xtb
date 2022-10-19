@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Nên chọn để có trải nghiệm tốt nhất</translation>
 <translation id="1818308510395330587">Để cho phép <ph name="APP_NAME" /> sử dụng công nghệ thực tế tăng cường (AR), hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Từ <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Các trang web liên quan có thể xem hoạt động của bạn trong nhóm</translation>
 <translation id="1887786770086287077">Đã tắt quyền truy cập vị trí đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1919345977826869612">Quảng cáo</translation>
@@ -159,6 +160,7 @@
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4428065317363009941">Cá nhân hoá quảng cáo</translation>
 <translation id="4434045419905280838">Cửa sổ bật lên và liên kết chuyển hướng</translation>
+<translation id="4440642537584213025">Mở rộng <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="445467742685312942">Cho phép trang web phát nội dung được bảo vệ</translation>
 <translation id="4468959413250150279">Tắt âm thanh trên một trang web cụ thể.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
@@ -175,6 +177,7 @@
 <translation id="483914009762354899">Bao gồm tất cả trang web trong miền này</translation>
 <translation id="4883854917563148705">Bạn không thể đặt lại các tùy chọn cài đặt được quản lý</translation>
 <translation id="4887024562049524730">Hỏi ý bạn trước khi cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn (khuyên dùng)</translation>
+<translation id="4955223779495905865">Trang web bạn truy cập có thể nhúng nội dung từ các trang web khác, chẳng hạn như hình ảnh, quảng cáo và văn bản. Mọi trang web này đều có thể lưu cookie và các dữ liệu khác để mang lại trải nghiệm phù hợp với bạn hơn.</translation>
 <translation id="4962975101802056554">Thu hồi tất cả các quyền đối với thiết bị</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
 <translation id="4976702386844183910">Lần truy cập gần đây nhất: <ph name="DATE" /></translation>
@@ -184,6 +187,7 @@
 <translation id="5048398596102334565">Cho phép trang web sử dụng cảm biến chuyển động (nên dùng)</translation>
 <translation id="5050380848339752099">Trang web này sắp chia sẻ thông tin với một ứng dụng bên ngoài chế độ Ẩn danh.</translation>
 <translation id="5063480226653192405">Mức sử dụng</translation>
+<translation id="5082281938627763039">Thao tác này sẽ xoá cookie và dữ liệu trang web khác của <ph name="FPS_MEMBER" /> cũng như các trang web trong nhóm trang web của <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Trang web dành cho thiết bị di động</translation>
 <translation id="509133520954049755">Yêu cầu chế độ xem trên máy tính để bàn</translation>
 <translation id="5100237604440890931">Đã thu gọn - nhấp để mở rộng.</translation>
@@ -220,6 +224,7 @@
 <translation id="5677928146339483299">Bị chặn</translation>
 <translation id="5689516760719285838">Vị trí</translation>
 <translation id="5690795753582697420">Bạn đã tắt máy ảnh trong phần cài đặt của Android</translation>
+<translation id="5706552988683188916">Thao tác này sẽ xoá cookie và dữ liệu khác của trang web <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính.</translation>
 <translation id="5771720122942595109">Đã chặn <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Quyền</translation>
@@ -320,6 +325,7 @@
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
 <translation id="789180354981963912">Chặn cookie của bên thứ ba ở chế độ Ẩn danh:</translation>
 <translation id="7940722705963108451">Nhắc tôi</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="FPS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}other{<ph name="FPS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="FPS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}}</translation>
 <translation id="7986741934819883144">Chọn một người liên hệ</translation>
 <translation id="7999064672810608036">Bạn có chắc chắn muốn xóa tất cả dữ liệu cục bộ, bao gồm cookie và đặt lại tất cả các quyền cho trang web này không?</translation>
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>
@@ -358,6 +364,7 @@
 <translation id="8499083585497694743">Bật micrô</translation>
 <translation id="851751545965956758">Chặn các trang web kết nối với thiết bị</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Đã cho phép cookie cho trang web của <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />}other{Đã cho phép cookie cho các trang web của <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Được phép (nên dùng)</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
@@ -383,6 +390,8 @@
 <translation id="8986362086234534611">Quên</translation>
 <translation id="9019902583201351841">Do cha mẹ của bạn quản lý</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Trang web này nằm trong nhóm có thể xem hoạt động của bạn. Nhóm này do <ph name="FPS_OWNER" /> xác định</translation>
+<translation id="9106233582039520022">Xoá cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="913657688200966289">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Đây là trang nguy hiểm</translation>

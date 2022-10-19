@@ -270,6 +270,7 @@
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2497852260688568942">同期は管理者により無効にされています</translation>
 <translation id="250020030759455918">Chrome での <ph name="SITE_NAME" /> のログイン ステータス、閲覧データ、サイトデータが表示されます。</translation>
+<translation id="2510106555128151389">「<ph name="WEBAPK_NAME" />」をインストールしています...</translation>
 <translation id="2513403576141822879">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />同期と Google サービス<ph name="END_LINK" />をご覧ください</translation>
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2523184218357549926">アクセスしたページの URL を Google に送信します</translation>
@@ -1280,6 +1281,7 @@
 <translation id="7887334752153342268">タブを複製</translation>
 <translation id="789763218334337857">Chrome の使い方</translation>
 <translation id="7903184275147100332">1 分ほどかかる場合があります</translation>
+<translation id="7914399737746719723">アプリをインストールしました</translation>
 <translation id="7919123827536834358">これらの言語を自動的に翻訳する</translation>
 <translation id="7926975587469166629">カードのニックネーム</translation>
 <translation id="7929962904089429003">メニューを開く</translation>

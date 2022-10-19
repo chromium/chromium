@@ -72,6 +72,7 @@
 <translation id="1290982764014248209">Переместить приложение "<ph name="DRAGGED_APP" />" в папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="1293264513303784526">Устройство USB-C (порт слева)</translation>
 <translation id="1293556467332435079">Файлы</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">Изменить настройки уведомлений на заблокированном экране</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена.</translation>
 <translation id="1677582821739292812">На ваш экран смотрит другой человек</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Адрес IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Активное окно прикреплено слева.</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">Чтобы переключить раскладку клавиатуры, нажмите клавиши <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
 <translation id="255671100581129685">Google Ассистент не работает в режиме открытого доступа.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
@@ -378,6 +381,7 @@
 <translation id="3105917916468784889">Скриншот</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Выключить устройство?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Перезагрузите, чтобы обновить</translation>
 <translation id="3139382871451988441">Запретить доступ к камерам</translation>
 <translation id="3139942575505304791">Рабочий стол 1</translation>
@@ -701,6 +705,7 @@
 <translation id="4917385247580444890">Сильный</translation>
 <translation id="4918086044614829423">Принять</translation>
 <translation id="4919841137949306064">Сейчас использует камеру: <ph name="APP_NAME" />.</translation>
+<translation id="492453977506755176">Клавиша режима съемки</translation>
 <translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
 <translation id="4938176435186993759">Скрыть все подсказки</translation>
 <translation id="4945196315133970626">Отключить уведомления</translation>
@@ -721,6 +726,7 @@
 <translation id="5033299697334913360">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
 <translation id="5035389544768382859">Подтвердите конфигурацию экрана</translation>
+<translation id="5042305953558921026">Клавиша режима обзора</translation>
 <translation id="504465286040788597">Предыдущий абзац</translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
 <translation id="5071064518267176975">Приложение запрашивает доступ к микрофону</translation>
@@ -908,6 +914,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Подтвердите скачивание файла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">В рамках гостевого сеанса Google Ассистент недоступен.</translation>
+<translation id="6129953537138746214">Пробел</translation>
 <translation id="6134259848159370930">Поиск на устройстве, в приложениях, настройках и Интернете…</translation>
 <translation id="6137566720514957455">Открыть диалоговое окно удаления аккаунта <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Подтвердите скачивание</translation>
@@ -1375,6 +1382,7 @@
 <translation id="8843682306134542540">Изменить настройки автоповорота экрана. <ph name="STATE_TEXT" />.</translation>
 <translation id="8850991929411075241">Клавиша поиска + Esc</translation>
 <translation id="8853703225951107899">Введенный PIN-код или пароль снова оказался недействительным. Если вы недавно меняли пароль, введите прежний. Новый пароль вступит в силу после того, как вы выйдете из аккаунта.</translation>
+<translation id="8855885154700222542">Клавиша полноэкранного режима</translation>
 <translation id="8870509716567206129">Приложение не поддерживает разделение экрана.j</translation>
 <translation id="8874184842967597500">Не подключено</translation>
 <translation id="8876661425082386199">Проверьте подключение</translation>

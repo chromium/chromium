@@ -1299,6 +1299,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="224750967938323855">Non mostrare il consenso alla sincronizzazione durante l'accesso</translation>
 <translation id="225340736558643885">Attiva avvisi per moduli non sicuri</translation>
 <translation id="2258126710006312594">Consenti l'accesso remoto agli utenti per trasferire file da/verso l'host</translation>
+<translation id="225830954785359083">Impedisci alle pagine di mostrare popup durante l'unload</translation>
 <translation id="2261648512244797294">Disattiva stampa Privet deprecata</translation>
 <translation id="2266422599396179941">Consenti agli utenti di inviare feedback</translation>
 <translation id="2269319728625047531">Abilita la visualizzazione del consenso alla sincronizzazione durante l'accesso</translation>
@@ -1358,6 +1359,9 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2309341709647905294">Non segnalare informazioni sulle periferiche collegate al dispositivo</translation>
 <translation id="2309390639296060546">Impostazione di geolocalizzazione predefinita</translation>
 <translation id="2318583605563438459">Consenti ai genitori di aggiungere account supervisionati</translation>
+<translation id="2326031114717677574">La frequenza di campionamento e raccolta dei dati audio. Il valore minimo consentito è 1 minuto.
+
+      Se il criterio non viene configurato, viene applicata la frequenza predefinita di 15 minuti.</translation>
 <translation id="2331354174913096226">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi.
 
       Se il criterio DnsOverHttpsMode viene impostato su <ph name="SECURE_DNS_MODE_SECURE" />, questo criterio deve essere impostato e non può essere vuoto.
@@ -1409,6 +1413,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2387469539700985783">Questo criterio non influisce sui report generati da Android.</translation>
 <translation id="238885588439957890">L'ora in cui il dispositivo userà la corrente alternata per ricaricare la batteria, nel fuso orario locale del dispositivo.</translation>
 <translation id="2393862222659066027">Apri un elenco di URL e ripristina l'ultima sessione</translation>
+<translation id="2394429297128584919">Non consentire alle pagine di inviare richieste XHR sincrone durante la chiusura delle pagine</translation>
 <translation id="2394674739523870144">Se per questo criterio viene impostato un elenco di stringhe, queste ultime vengono unite usando degli spazi e passate da <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> sotto forma di parametri della riga di comando. Se un parametro contiene <ph name="URL_PLACEHOLDER" />, il valore <ph name="URL_PLACEHOLDER" /> viene sostituito con l'URL della pagina da aprire. Se nessun parametro contiene <ph name="URL_PLACEHOLDER" />, l'URL viene aggiunto alla fine della riga di comando.
 
       Le variabili di ambiente vengono espanse. Su <ph name="MS_WIN_NAME" />, il valore <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> viene sostituito con il valore della variabile di ambiente <ph name="ENV_VARIABLE_VALUE" />.
@@ -1900,6 +1905,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2872098849906555324">Disattiva la sincronizzazione Google Drive</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2874209944580848064">Nota per i dispositivi <ph name="PRODUCT_OS_NAME" /> che supportano le app Android:</translation>
+<translation id="287474029350993681">Disattiva la trasmissione di contenuti al dispositivo</translation>
 <translation id="2875192972412983412">Consente di specificare il sottoinsieme di server di stampa a cui verranno inviate query sulle stampanti.
 
       Se viene usato questo criterio, gli utenti avranno a disposizione soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio.
@@ -2388,6 +2394,7 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
 <translation id="3255762580838224124">La configurazione del criterio comporta la rotazione di ogni display nell'orientamento specificato a ogni riavvio e la prima volta che viene eseguita la connessione del display dopo la modifica del valore del criterio. Gli utenti possono modificare la rotazione del display tramite la pagina delle impostazioni dopo aver effettuato l'accesso, ma la rotazione tornerà allo stato precedente al riavvio successivo. Questo criterio si applica ai display primari e secondari.
 
       Se non viene configurato, il valore predefinito è 0 e gli utenti sono liberi di modificarlo. In questo caso, il valore predefinito non viene applicato nuovamente al riavvio.</translation>
+<translation id="3256920103934729145">Impedisci il clickthrough degli utenti su pagine di avviso SSL</translation>
 <translation id="3257786863492892609">Controlla i criteri relativi alla funzionalità Registra schermo.</translation>
 <translation id="3258380413685430793">Esegui tutti i contenuti di <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">La configurazione del criterio consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
@@ -3668,6 +3675,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
 <translation id="4632566332417930481">Non consentire l'utilizzo degli Strumenti per sviluppatori per le estensioni installate in base a norme aziendali; consenti l'utilizzo degli Strumenti per sviluppatori in altri contesti</translation>
 <translation id="4635284822166984665">L'ora in cui iniziare la ricarica del dispositivo, nel fuso orario locale del dispositivo.</translation>
+<translation id="4636354638176939375">Disattiva la creazione di utenti supervisionati</translation>
 <translation id="4646626362889216307">L'impostazione di questo criterio consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello. L'unione avviene tra le chiavi di primo livello del dizionario di ogni origine. Avrà la priorità la chiave proveniente dall'origine con la priorità massima.
 
       Usa il carattere jolly "*" per consentire l'unione di tutti i criteri dei dizionari supportati.
@@ -4262,6 +4270,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se questo criterio non viene impostato, inizialmente l'evidenziazione del cursore è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="5279539586558702228">L'ora in cui il dispositivo userà la corrente alternata, nel fuso orario locale del dispositivo.</translation>
 <translation id="5283457834853986457">Disattiva la ricerca dei plug-in (ritirata)</translation>
+<translation id="5286579716704722323">Consenti il clickthrough degli utenti su pagine di avviso SSL</translation>
 <translation id="5288772341821359899">Se la norma viene impostata, l'intervallo di porte UDP utilizzato da WebRTC viene limitato all'intervallo di porte specificato (endpoint inclusi).
 
       Se la norma non viene impostata oppure è impostata sulla stringa vuota o su un intervallo di porte non valido, WebRTC è autorizzato a utilizzare qualsiasi porta UDP locale disponibile.</translation>
@@ -5409,7 +5418,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se questo criterio viene disattivato, gli utenti non possono aggiungere account Kerberos. Gli account possono essere aggiunti solo tramite il criterio "Configura account Kerberos". Si tratta di una soluzione efficace per bloccare gli account.</translation>
 <translation id="6491139795995924304">Consenti Bluetooth sul dispositivo</translation>
 <translation id="6491305972928809525">Non mostrare il menu Accessibilità mobile in modalità kiosk</translation>
-<translation id="6491610602835998107">Disattiva la segnalazione di informazioni di sistema e contenuti della pagina per migliorare Navigazione sicura</translation>
 <translation id="6491872498385040936">Questa norma è obsoleta. È possibile utilizzare la norma <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, che sostituisce questa norma e consente un perfezionamento più preciso.
 
       Consente di imporre il livello medio della Modalità con restrizioni di YouTube e di impedire agli utenti di modificare l'impostazione.
@@ -6784,6 +6792,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7824000841504721945">Disattiva gruppi atomici di criteri</translation>
 <translation id="782661371433719637">Non consentire a nessun sito di richiedere l'accesso di lettura di file e directory tramite l'API file system</translation>
 <translation id="7827127381981620448">App della piattaforma</translation>
+<translation id="7829436838673974723">Consenti alle pagine di inviare richieste XHR sincrone durante la chiusura delle pagine</translation>
 <translation id="7832225468415136704">Impedisci a Chrome Software Cleaner di eseguire scansioni periodiche del sistema e disattiva le scansioni manuali</translation>
 <translation id="7833148823006528332">Identificatore dell'app Android, ad esempio "com.google.android.gm" per Gmail.</translation>
 <translation id="7835218570504220753">Disattiva i clic automatici</translation>
@@ -8187,6 +8196,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Per impostazione predefinita, l'host browser esegue il rendering, ma in alternativa è possibile sostituire questa impostazione e far sì che <ph name="PRODUCT_FRAME_NAME" /> esegua il rendering delle pagine HTML per impostazione predefinita.</translation>
 <translation id="944817693306670849">Imposta dimensioni cache su disco</translation>
 <translation id="957778406002650056">L'URL da cui è possibile scaricare l'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="957920984193041197">Consenti alle pagine di mostrare popup durante l'unload</translation>
 <translation id="958285142322823422">Impedisci l'apertura di un'altra finestra del browser da un'app web kiosk</translation>
 <translation id="958577147847681221">Consente di stabilire se <ph name="PRODUCT_OS_NAME" /> permette la creazione di nuovi account utente.
 

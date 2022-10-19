@@ -414,6 +414,7 @@
 <translation id="1397594434718759194">以下のデバイスで Chrome にログインしており、セキュリティ キーとして使用できます。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="139911022479327130">スマートフォンのロックを解除して本人確認を行う</translation>
+<translation id="1401216725754314428">新しいタブで関連サイトの詳細を確認します</translation>
 <translation id="1401308693935339022">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがこのデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報に基づくサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。</translation>
 <translation id="1403222014593521787">プロキシに接続できませんでした</translation>
 <translation id="1405779994569073824">クラッシュしました。</translation>
@@ -7611,6 +7612,7 @@
 <translation id="820568752112382238">よくアクセスするサイト</translation>
 <translation id="8206745257863499010">ブルース</translation>
 <translation id="8206859287963243715">携帯電話</translation>
+<translation id="8208188204689616705">これらのサイトは、<ph name="FPS_OWNER" /> により定義されたグループに属しています。グループ内のサイトは、グループでのアクティビティを確認できます。</translation>
 <translation id="8208216423136871611">保存しない</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新しい通知}other{# 件の新しい通知}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> の Google パスワード マネージャーにパスワードをインポートするには、CSV ファイルを選択してください</translation>

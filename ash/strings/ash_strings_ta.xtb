@@ -72,6 +72,7 @@
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />ஐ <ph name="FOLDER_NAME" /> ஃபோல்டருக்கு நகர்த்தும்.</translation>
 <translation id="1293264513303784526">USB-C சாதனம் (இடது போர்ட்)</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1293699935367580298">Esc</translation>
 <translation id="1294929383540927798">பூட்டுத் திரை அறிவிப்பு அமைப்புகளை மாற்றும்</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">பரிந்துரைக்கப்படும் ஆப்ஸ்</translation>
@@ -130,6 +131,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> மணி நேரம்</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> இணைக்கப்படவில்லை.</translation>
 <translation id="1677582821739292812">வேறொருவர் உங்கள் திரையைப் பார்த்துக்கொண்டிருக்கிறார்</translation>
+<translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> டைமர் · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 முகவரி: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">செயலிலுள்ள சாளரம் இடதுபுறம் டாக் செய்யப்பட்டது.</translation>
@@ -280,6 +282,7 @@
 <translation id="2484513351006226581">கீபோர்டைத் தளவமைப்பை மாற்ற, <ph name="KEYBOARD_SHORTCUT" /> விசையை அழுத்தவும்.</translation>
 <translation id="2501920221385095727">ஸ்டிக்கி விசைகள்</translation>
 <translation id="2509468283778169019">CAPS LOCK இயக்கத்தில்</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2542089167727451762">உங்கள் சுயவிவரப் படத்தைத் தட்டவும்</translation>
 <translation id="255671100581129685">பொது அமர்வில் Google அசிஸ்டண்ட்டைப் பயன்படுத்த முடியாது.</translation>
 <translation id="256712445991462162">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
@@ -377,6 +380,7 @@
 <translation id="3105917916468784889">ஸ்கிரீன் ஷாட்டை எடுக்கும்</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (புளூடூத்)</translation>
 <translation id="3120421559657122717">சாதனத்தை ஷட் டவுன் செய்யவா?</translation>
+<translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">புதுப்பிக்க மீண்டும் தொடங்குக</translation>
 <translation id="3139382871451988441">கேமரா அணுகலை முடக்கு.</translation>
 <translation id="3139942575505304791">மேசை 1</translation>
@@ -428,6 +432,7 @@
 <translation id="3413817803639110246">பார்ப்பதற்கு எதுவுமில்லை</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />ல் இருந்து துண்டிக்கும்</translation>
 <translation id="3430396595145920809">பின்செல்ல, வலது பக்கத்திலிருந்து ஸ்வைப் செய்யவும்</translation>
+<translation id="3431517721463707585">டெஸ்க் 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">நினைவூட்டலைத் திருத்து</translation>
 <translation id="3435967511775410570">கைரேகை அங்கீகரிக்கப்பட்டது</translation>
@@ -668,6 +673,7 @@
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (இடதுபக்கம்)</translation>
 <translation id="4734965478015604180">கிடைமட்டம்</translation>
+<translation id="4735944890391795473">டெஸ்க் 12</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4740516757091333363">சேமிக்கப்பட்ட டெஸ்க்கை நீக்கவா?</translation>
 <translation id="4752784485658729358">6 டெஸ்க்குகளை மட்டுமே சேமிக்க முடியும். புதிதாக ஒன்றைச் சேமிக்க ஒரு டெஸ்கை அகற்றவும்.</translation>
@@ -688,6 +694,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்க, நெட்வொர்க் இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="486056901304535126">பின்னர் பதிவிறக்க முயலும். பதிவிறக்கம் முடியும் வரை பேசுபவை அனைத்தும் செயலாக்கத்திற்காக Googleளுக்கு அனுப்பப்படும்.</translation>
 <translation id="4864369630010738180">உள்நுழைகிறீர்கள்...</translation>
+<translation id="4864648187878336334">டெஸ்க் 15</translation>
 <translation id="4868492592575313542">செயல்படுத்தப்பட்டது</translation>
 <translation id="4872237917498892622">Alt+தேடல் அல்லது Shift</translation>
 <translation id="4881695831933465202">திற</translation>
@@ -700,6 +707,7 @@
 <translation id="4917385247580444890">வலிமையானது</translation>
 <translation id="4918086044614829423">ஏற்கிறேன்</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> தற்போது கேமராவைப் பயன்படுத்துகிறது</translation>
+<translation id="492453977506755176">படமெடுப்புப் பயன்முறைக்கான விசை</translation>
 <translation id="4925542575807923399">பல உள்நுழைவு அமர்வில் இந்தக் கணக்கு முதலில் உள்நுழைந்த கணக்காக இருக்க வேண்டிய தேவை இந்தக் கணக்கின் நிர்வாகிக்கு உள்ளது.</translation>
 <translation id="4938176435186993759">எல்லாப் பரிந்துரைகளையும் மறை</translation>
 <translation id="4945196315133970626">அறிவிப்புகளை முடக்கு</translation>
@@ -714,12 +722,14 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">டெஸ்க் 16</translation>
 <translation id="5003993274120026347">அடுத்த வாக்கியம்</translation>
 <translation id="5016558321564993266">மார்க்கரை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">நேரம் முடிந்தது</translation>
 <translation id="5033299697334913360">முழுத்திரையைப் படமெடுக்க, எங்கு வேண்டுமானாலும் கிளிக் செய்யவும்</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ஒரு புதிய ஃபோனுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="5035389544768382859">திரை உள்ளமைவை உறுதிசெய்யுங்கள்</translation>
+<translation id="5042305953558921026">மேலோட்டப் பயன்முறை விசை</translation>
 <translation id="504465286040788597">முந்தைய பத்தி</translation>
 <translation id="5045550434625856497">தவறான கடவுச்சொல்</translation>
 <translation id="5071064518267176975">மைக்ரோஃபோனை ஓர் ஆப்ஸ் பயன்படுத்த விரும்புகிறது</translation>
@@ -729,6 +739,7 @@
 <translation id="5098537242461068432">டெஸ்க் மற்றும் சாளரங்கள் மீண்டும் திறக்கப்பட்டன</translation>
 <translation id="5104236669533825617">ஸ்க்ரீன்காஸ்ட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5107522548814527560">இணையம்</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">அடுத்த மாதத்தைக் காட்டு</translation>
 <translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
 <translation id="5147567197700016471">அன்லாக் செய்யப்பட்டது</translation>
@@ -816,6 +827,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">மைக் ஜாக்</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ஆப்ஸில் புதிய அறிவிப்புகள் உள்ளன.</translation>
+<translation id="5662075790140998213">டெஸ்க் 10</translation>
 <translation id="5662709761327382534">மைக்ரோஃபோன் மூலம் ரெக்கார்டு செய்தல் <ph name="CURRENT_STATE" />, மைக்ரோஃபோன் ரெக்கார்டிங் நிலையை மாற்ற Enter விசையை அழுத்துங்கள் <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5673434351075758678">அமைப்புகளை ஒத்திசைத்த பின்னர், "<ph name="FROM_LOCALE" />" இலிருந்து "<ph name="TO_LOCALE" />"க்கு மாற்றப்பட்டது.</translation>
@@ -907,6 +919,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவதை உறுதிப்படுத்து</translation>
 <translation id="612734058257491180">கெஸ்ட் அமர்வில் Google அசிஸ்டண்ட்டைப் பயன்படுத்த இயலாது.</translation>
+<translation id="6129953537138746214">இடைவெளி</translation>
 <translation id="6134259848159370930">உங்கள் சாதனம், ஆப்ஸ், இணையம் ஆகியவற்றில் தேடவும்.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> என்ற கணக்கை அகற்றுவதற்கான உரையாடலைத் திறக்கும்</translation>
 <translation id="6141988275892716286">பதிவிறக்கத்தை உறுதிப்படுத்து</translation>
@@ -1015,6 +1028,8 @@
 <translation id="6753390234084146956">பக்கங்கள்</translation>
 <translation id="6757237461819837179">மீடியா எதுவும் பிளேயாகவில்லை</translation>
 <translation id="6777216307882431711">இணைக்கப்பட்ட USB-C சாதனங்களுக்கு சார்ஜ் ஏற்றப்படுகிறது</translation>
+<translation id="6781002679438061620">டெஸ்க் 9</translation>
+<translation id="6782182743534150858">டெஸ்க் 13</translation>
 <translation id="6786750046913594791">ஃபோல்டரை மூடு</translation>
 <translation id="6787595647772650851">கடைசி அமர்வை மீட்டெடு</translation>
 <translation id="6790428901817661496">இயக்கு</translation>
@@ -1075,6 +1090,7 @@
 <translation id="7098053464892629930">கிடைக்கக்கூடிய அனைத்து அம்சங்களையும் பார்க்க <ph name="NAME" /> ஆப்ஸை Google playயில் பதிவிறக்கவும்</translation>
 <translation id="7098389117866926363">USB-C சாதனம் (பின்பக்கம் உள்ள இடது போர்ட்)</translation>
 <translation id="7106330611027933926">டெஸ்க்பாரைக் காட்டு</translation>
+<translation id="7116969082764510092">டெஸ்க் 11</translation>
 <translation id="7118268675952955085">ஸ்கிரீன்ஷாட்</translation>
 <translation id="7126996685418858413">கடந்த வாரம் திறக்கப்பட்டது</translation>
 <translation id="7130207228079676353">அதிகச் சாத்தியமுள்ளவை</translation>
@@ -1172,6 +1188,7 @@
 <translation id="7662283695561029522">உள்ளமைக்க, தட்டவும்</translation>
 <translation id="7670953955701272011">Google Calendarரில் இந்தத் தேதியைத் திறக்கும்</translation>
 <translation id="7671610481353807627">வண்ணத்தின்படி ஆப்ஸ் வரிசைப்படுத்தப்பட்டுள்ளன</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> உடன் இணைக்கப்பட்டது, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">கேமரா உள்ளீடு <ph name="CAMERA_NAME" /> என அமைக்கப்பட்டுள்ளது.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">புதிய மொபைல் நெட்வொர்க்கைச் சேர்</translation>
@@ -1371,6 +1388,7 @@
 <translation id="8843682306134542540">சுழற்சிப் பூட்டை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">தேடல்+Esc</translation>
 <translation id="8853703225951107899">உங்கள் பின்னையோ கடவுச்சொல்லையோ இப்போதும் சரிபார்க்க முடியவில்லை. கவனத்திற்கு: நீங்கள் சமீபத்தில் கடவுச்சொல்லை மாற்றியிருந்தால் பழைய கடவுச்சொல்லைப் பயன்படுத்தவும். வெளியேறினால் மட்டுமே புதிய கடவுச்சொல்லைப் பயன்படுத்த முடியும்.</translation>
+<translation id="8855885154700222542">முழுத்திரை விசை</translation>
 <translation id="8870509716567206129">திரையைப் பிரிப்பதைப் ஆப்ஸ் ஆதரிக்கவில்லை.</translation>
 <translation id="8874184842967597500">இணைக்கப்படவில்லை</translation>
 <translation id="8876661425082386199">இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
@@ -1451,5 +1469,6 @@
 <translation id="974545358917229949"><ph name="QUERY" />க்கான <ph name="RESULT_COUNT" /> முடிவுகளைக் காட்டுகிறது</translation>
 <translation id="98515147261107953">லேண்ட்ஸ்கேப்</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> சாளரம் மூடப்பட்டது.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">சமீபத்திய அம்சங்களையும் பாதுகாப்பு மேம்பாடுகளையும் பெறலாம். புதுப்பித்தல் செயல்பாடு பின்னணியில் நடைபெறும்.</translation>
 </translationbundle>
