@@ -103,7 +103,7 @@ NSString* const kInfoCircleSymbol = @"info.circle";
 NSString* const kHistorySymbol = @"clock.arrow.circlepath";
 NSString* const kCheckmarkSealSymbol = @"checkmark.seal";
 NSString* const kWifiSymbol = @"wifi";
-NSString* const kBookmarksSymbol = @"star.fill";
+NSString* const kBookmarksSymbol = @"star";
 NSString* const kSyncErrorSymbol =
     @"exclamationmark.arrow.triangle.2.circlepath";
 NSString* const kMenuSymbol = @"ellipsis";
