@@ -827,23 +827,6 @@ public class ExternalNavigationHandler {
         return OverrideUrlLoadingResult.forClobberingTab();
     }
 
-    private static void loadUrlWithReferrer(
-            final GURL url, final GURL referrerUrl, ExternalNavigationDelegate delegate) {
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url, PageTransition.AUTO_TOPLEVEL);
-        if (!referrerUrl.isEmpty()) {
-            Referrer referrer = new Referrer(referrerUrl.getSpec(), ReferrerPolicy.ALWAYS);
-            loadUrlParams.setReferrer(referrer);
-        }
-        delegate.loadUrlIfPossible(loadUrlParams);
-    }
-
-    private boolean isTypedRedirectToExternalProtocol(
-            ExternalNavigationParams params, int pageTransitionCore, boolean isExternalProtocol) {
-        boolean isTyped = (pageTransitionCore == PageTransition.TYPED)
-                || ((params.getPageTransition() & PageTransition.FROM_ADDRESS_BAR) != 0);
-        return isTyped && params.isRedirect() && isExternalProtocol;
-    }
-
     // https://crbug.com/1232514: On Android S, since WebAPKs aren't verified apps they are
     // never launched as the result of a suitable Intent, the user's default browser will be
     // opened instead. As a temporary solution, have Chrome launch the WebAPK.
