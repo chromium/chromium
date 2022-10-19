@@ -1,0 +1,6 @@
+Tests that calling Page.captureScreenshot with invalid format returns an error
+{
+    code : -32602
+    message : Invalid image format
+}
+

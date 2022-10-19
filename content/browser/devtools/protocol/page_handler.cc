@@ -67,7 +67,6 @@
 #include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_util.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/snapshot/snapshot.h"
 
@@ -88,36 +87,39 @@ constexpr char kCommandIsOnlyAvailableAtTopTarget[] =
 constexpr char kErrorNotAttached[] = "Not attached to a page";
 constexpr char kErrorInactivePage[] = "Not attached to an active page";
 
-Binary EncodeImage(const gfx::Image& image,
-                   const std::string& format,
-                   int quality) {
-  DCHECK(!image.IsEmpty());
+using BitmapEncoder =
+    base::RepeatingCallback<bool(const SkBitmap& bitmap,
+                                 std::vector<uint8_t>& output)>;
 
-  scoped_refptr<base::RefCountedMemory> data;
-  if (format == protocol::Page::CaptureScreenshot::FormatEnum::Png) {
-    data = image.As1xPNGBytes();
-  } else if (format == Page::CaptureScreenshot::FormatEnum::Jpeg) {
-    auto bytes = base::MakeRefCounted<base::RefCountedBytes>();
-    if (gfx::JPEG1xEncodedDataFromImage(image, quality, &bytes->data()))
-      data = bytes;
-  } else if (format == Page::CaptureScreenshot::FormatEnum::Webp) {
-    auto bytes = base::MakeRefCounted<base::RefCountedBytes>();
-    if (gfx::WebpEncodedDataFromImage(image, quality, &bytes->data()))
-      data = bytes;
-  } else {
-    NOTREACHED();
-  }
-
-  if (!data || !data->front())
-    return protocol::Binary();
-
-  return Binary::fromRefCounted(data);
+bool EncodeBitmapAsPng(const SkBitmap& bitmap, std::vector<uint8_t>& output) {
+  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
 }
 
-Binary EncodeSkBitmap(const SkBitmap& image,
-                      const std::string& format,
-                      int quality) {
-  return EncodeImage(gfx::Image::CreateFrom1xBitmap(image), format, quality);
+bool EncodeBitmapAsJpeg(int quality,
+                        const SkBitmap& bitmap,
+                        std::vector<uint8_t>& output) {
+  return gfx::JPEGCodec::Encode(bitmap, quality, &output);
+}
+
+bool EncodeBitmapAsWebp(int quality,
+                        const SkBitmap& bitmap,
+                        std::vector<uint8_t>& output) {
+  return gfx::WebpCodec::Encode(bitmap, quality, &output);
+}
+
+absl::variant<protocol::Response, BitmapEncoder> GetEncoder(
+    const std::string& format,
+    int quality) {
+  if (quality < 0 || quality > 100)
+    quality = kDefaultScreenshotQuality;
+
+  if (format == protocol::Page::CaptureScreenshot::FormatEnum::Png)
+    return base::BindRepeating(&EncodeBitmapAsPng);
+  if (format == protocol::Page::CaptureScreenshot::FormatEnum::Jpeg)
+    return base::BindRepeating(&EncodeBitmapAsJpeg, quality);
+  if (format == protocol::Page::CaptureScreenshot::FormatEnum::Webp)
+    return base::BindRepeating(&EncodeBitmapAsWebp, quality);
+  return protocol::Response::InvalidParams("Invalid image format");
 }
 
 std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
@@ -207,8 +209,6 @@ PageHandler::PageHandler(
       navigation_initiator_origin_(navigation_initiator_origin),
       may_read_local_files_(may_read_local_files),
       enabled_(false),
-      screencast_enabled_(false),
-      screencast_quality_(kDefaultScreenshotQuality),
       screencast_max_width_(-1),
       screencast_max_height_(-1),
       capture_every_nth_frame_(1),
@@ -282,7 +282,7 @@ void PageHandler::Wire(UberDispatcher* dispatcher) {
 void PageHandler::RenderWidgetHostVisibilityChanged(
     RenderWidgetHost* widget_host,
     bool became_visible) {
-  if (!screencast_enabled_)
+  if (!screencast_encoder_)
     return;
   NotifyScreencastVisibility(became_visible);
 }
@@ -352,10 +352,9 @@ Response PageHandler::Enable() {
 
 Response PageHandler::Disable() {
   enabled_ = false;
-  screencast_enabled_ = false;
   bypass_csp_ = false;
 
-  video_consumer_->StopCapture();
+  StopScreencast();
 
   if (!pending_dialog_.is_null()) {
     ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
@@ -826,9 +825,13 @@ void PageHandler::CaptureScreenshot(
   }
 
   RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
-  std::string screenshot_format =
-      format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png);
-  int screenshot_quality = quality.fromMaybe(kDefaultScreenshotQuality);
+  auto encoder =
+      GetEncoder(format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png),
+                 quality.fromMaybe(kDefaultScreenshotQuality));
+  if (absl::holds_alternative<Response>(encoder)) {
+    callback->sendFailure(absl::get<Response>(encoder));
+    return;
+  }
 
   // We don't support clip/emulation when capturing from window, bail out.
   if (!from_surface.fromMaybe(true)) {
@@ -840,8 +843,8 @@ void PageHandler::CaptureScreenshot(
     widget_host->GetSnapshotFromBrowser(
         base::BindOnce(&PageHandler::ScreenshotCaptured,
                        weak_factory_.GetWeakPtr(), std::move(callback),
-                       screenshot_format, screenshot_quality, gfx::Size(),
-                       gfx::Size(), blink::DeviceEmulationParams(),
+                       std::move(absl::get<BitmapEncoder>(encoder)),
+                       gfx::Size(), gfx::Size(), blink::DeviceEmulationParams(),
                        absl::nullopt),
         false);
     return;
@@ -957,8 +960,8 @@ void PageHandler::CaptureScreenshot(
   widget_host->GetSnapshotFromBrowser(
       base::BindOnce(&PageHandler::ScreenshotCaptured,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     screenshot_format, screenshot_quality, original_view_size,
-                     requested_image_size, original_params,
+                     std::move(absl::get<BitmapEncoder>(encoder)),
+                     original_view_size, requested_image_size, original_params,
                      maybe_original_web_prefs),
       true);
 }
@@ -975,12 +978,14 @@ Response PageHandler::StartScreencast(Maybe<std::string> format,
   if (!widget_host)
     return Response::InternalError();
 
-  screencast_enabled_ = true;
-  screencast_format_ =
-      format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png);
-  screencast_quality_ = quality.fromMaybe(kDefaultScreenshotQuality);
-  if (screencast_quality_ < 0 || screencast_quality_ > 100)
-    screencast_quality_ = kDefaultScreenshotQuality;
+  auto encoder =
+      GetEncoder(format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png),
+                 quality.fromMaybe(kDefaultScreenshotQuality));
+  if (absl::holds_alternative<Response>(encoder))
+    return absl::get<Response>(encoder);
+
+  screencast_encoder_ = absl::get<BitmapEncoder>(encoder);
+
   screencast_max_width_ = max_width.fromMaybe(-1);
   screencast_max_height_ = max_height.fromMaybe(-1);
   ++session_id_;
@@ -1009,7 +1014,7 @@ Response PageHandler::StartScreencast(Maybe<std::string> format,
 }
 
 Response PageHandler::StopScreencast() {
-  screencast_enabled_ = false;
+  screencast_encoder_.Reset();
   if (video_consumer_)
     video_consumer_->StopCapture();
   return Response::FallThrough();
@@ -1158,27 +1163,33 @@ void PageHandler::ScreencastFrameCaptured(
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&EncodeSkBitmap, bitmap, screencast_format_,
-                     screencast_quality_),
+      base::BindOnce(
+          [](const SkBitmap& bitmap,
+             BitmapEncoder encoder) -> std::vector<uint8_t> {
+            std::vector<uint8_t> result;
+            encoder.Run(bitmap, result);
+            return result;
+          },
+          bitmap, screencast_encoder_),
       base::BindOnce(&PageHandler::ScreencastFrameEncoded,
                      weak_factory_.GetWeakPtr(), std::move(page_metadata)));
 }
 
 void PageHandler::ScreencastFrameEncoded(
     std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata,
-    const protocol::Binary& data) {
-  if (data.size() == 0) {
+    std::vector<uint8_t> data) {
+  if (data.empty()) {
     --frames_in_flight_;
     return;  // Encode failed.
   }
 
-  frontend_->ScreencastFrame(data, std::move(page_metadata), session_id_);
+  frontend_->ScreencastFrame(Binary::fromVector(std::move(data)),
+                             std::move(page_metadata), session_id_);
 }
 
 void PageHandler::ScreenshotCaptured(
     std::unique_ptr<CaptureScreenshotCallback> callback,
-    const std::string& format,
-    int quality,
+    BitmapEncoder encoder,
     const gfx::Size& original_view_size,
     const gfx::Size& requested_image_size,
     const blink::DeviceEmulationParams& original_emulation_params,
@@ -1202,18 +1213,21 @@ void PageHandler::ScreenshotCaptured(
     return;
   }
 
+  std::vector<uint8_t> encoded_bitmap;
+  const SkBitmap& bitmap = *image.ToSkBitmap();
+
   if (!requested_image_size.IsEmpty() &&
       (image.Width() != requested_image_size.width() ||
        image.Height() != requested_image_size.height())) {
-    const SkBitmap* bitmap = image.ToSkBitmap();
     SkBitmap cropped = SkBitmapOperations::CreateTiledBitmap(
-        *bitmap, 0, 0, requested_image_size.width(),
+        bitmap, 0, 0, requested_image_size.width(),
         requested_image_size.height());
-    gfx::Image croppedImage = gfx::Image::CreateFrom1xBitmap(cropped);
-    callback->sendSuccess(EncodeImage(croppedImage, format, quality));
+    encoder.Run(cropped, encoded_bitmap);
   } else {
-    callback->sendSuccess(EncodeImage(image, format, quality));
+    encoder.Run(bitmap, encoded_bitmap);
   }
+  // TODO(caseq): send failure if we fail to encode?
+  callback->sendSuccess(Binary::fromVector(std::move(encoded_bitmap)));
 }
 
 void PageHandler::GotManifest(std::unique_ptr<GetAppManifestCallback> callback,

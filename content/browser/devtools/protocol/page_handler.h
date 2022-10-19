@@ -87,7 +87,6 @@ class PageHandler : public DevToolsDomainHandler,
   // Instrumentation signals.
   void DidAttachInterstitialPage();
   void DidDetachInterstitialPage();
-  bool screencast_enabled() const { return enabled_ && screencast_enabled_; }
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
   void DidRunJavaScriptDialog(const GURL& url,
@@ -183,7 +182,9 @@ class PageHandler : public DevToolsDomainHandler,
   Response AssureTopLevelActiveFrame();
 
  private:
-  enum EncodingFormat { PNG, JPEG };
+  using BitmapEncoder =
+      base::RepeatingCallback<bool(const SkBitmap& bitmap,
+                                   std::vector<uint8_t>& output)>;
 
   void CaptureFullPageScreenshot(
       Maybe<std::string> format,
@@ -198,12 +199,11 @@ class PageHandler : public DevToolsDomainHandler,
       const SkBitmap& bitmap);
   void ScreencastFrameEncoded(
       std::unique_ptr<Page::ScreencastFrameMetadata> metadata,
-      const protocol::Binary& data);
+      std::vector<uint8_t> data);
 
   void ScreenshotCaptured(
       std::unique_ptr<CaptureScreenshotCallback> callback,
-      const std::string& format,
-      int quality,
+      BitmapEncoder encoder,
       const gfx::Size& original_view_size,
       const gfx::Size& requested_image_size,
       const blink::DeviceEmulationParams& original_params,
@@ -239,9 +239,7 @@ class PageHandler : public DevToolsDomainHandler,
   bool enabled_;
   bool bypass_csp_ = false;
 
-  bool screencast_enabled_;
-  std::string screencast_format_;
-  int screencast_quality_;
+  BitmapEncoder screencast_encoder_;
   int screencast_max_width_;
   int screencast_max_height_;
   int capture_every_nth_frame_;
