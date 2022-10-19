@@ -38,6 +38,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
     this.worker_ = null;
     /** @private {?PumpkinConstants.PumpkinLocale} */
     this.locale_ = null;
+    /** @private {boolean} */
+    this.requestedPumpkinInstall_ = false;
 
     this.init_();
   }
@@ -53,7 +55,10 @@ export class PumpkinParseStrategy extends ParseStrategy {
         return;
       }
 
+      this.requestedPumpkinInstall_ = true;
       chrome.accessibilityPrivate.installPumpkinForDictation(data => {
+        // TODO(crbug.comg/1258190): Consider retrying installation at a later
+        // time if it failed.
         this.onPumpkinInstalled_(data);
       });
     });
@@ -242,6 +247,11 @@ export class PumpkinParseStrategy extends ParseStrategy {
   refresh() {
     this.refreshLocale_();
     this.enabled = Boolean(this.locale_) && LocaleInfo.areCommandsSupported();
+    if (!this.requestedPumpkinInstall_) {
+      this.init_();
+      return;
+    }
+
     if (!this.isEnabled() || !this.locale_ || !this.pumpkinTaggerReady_) {
       return;
     }

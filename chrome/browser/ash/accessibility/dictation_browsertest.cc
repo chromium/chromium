@@ -10,12 +10,14 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/shell.h"
+#include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -95,6 +97,10 @@ const char* kMacroSucceededMetric =
     "Accessibility.CrosDictation.MacroSucceeded";
 const char* kMacroFailedMetric = "Accessibility.CrosDictation.MacroFailed";
 const int kInputTextViewMetricValue = 1;
+
+constexpr char kPumpkinTestFilePath[] =
+    "resources/chromeos/accessibility/accessibility_common/dictation/parse/"
+    "pumpkin";
 
 static const char* kEnglishDictationCommands[] = {
     "delete",
@@ -482,8 +488,8 @@ class DictationTestBase
     return Dictation::GetAllSupportedLocales();
   }
 
-  void ExecuteAccessibilityCommonScript(const std::string& script) {
-    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+  std::string ExecuteAccessibilityCommonScript(const std::string& script) {
+    return extensions::browsertest_util::ExecuteScriptInBackgroundPage(
         /*context=*/browser()->profile(),
         /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
         /*script=*/script);
@@ -1655,13 +1661,12 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterCommandExecuted) {
 }
 
 // Tests behavior of Dictation and installation of Pumpkin.
-class DictationPumpkinInstallTest : public DictationTest {
+class DictationPumpkinTest : public DictationTest {
  protected:
-  DictationPumpkinInstallTest() = default;
-  ~DictationPumpkinInstallTest() = default;
-  DictationPumpkinInstallTest(const DictationPumpkinInstallTest&) = delete;
-  DictationPumpkinInstallTest& operator=(const DictationPumpkinInstallTest&) =
-      delete;
+  DictationPumpkinTest() = default;
+  ~DictationPumpkinTest() = default;
+  DictationPumpkinTest(const DictationPumpkinTest&) = delete;
+  DictationPumpkinTest& operator=(const DictationPumpkinTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DictationTest::SetUpCommandLine(command_line);
@@ -1670,45 +1675,33 @@ class DictationPumpkinInstallTest : public DictationTest {
   }
 
   void SetUpOnMainThread() override {
-    // Initialize Pumpkin DLC directory.
+    // Set the path to the Pumpkin test files. For more details, see the
+    // `pumpkin_test_files` rule in the accessibility_common BUILD file.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(pumpkin_root_dir_.CreateUniqueTempDir());
-    // Create subdirectories for each locale supported by Pumpkin.
-    std::vector<std::string> locales{"en_us", "fr_fr", "it_it", "de_de",
-                                     "es_es"};
-    for (size_t i = 0; i < locales.size(); ++i) {
-      sub_dirs_.push_back(std::make_unique<base::ScopedTempDir>());
-      ASSERT_TRUE(
-          sub_dirs_[i]->Set(pumpkin_root_dir_.GetPath().Append(locales[i])));
-    }
-
-    // Create fake DLC files.
-    AccessibilityManager::Get()->SetDlcPathForTest(pumpkin_root_dir_.GetPath());
-    std::string content = "Fake DLC file content";
-    std::vector<base::FilePath> files{
-        pumpkin_root_dir_.GetPath().Append("js_pumpkin_tagger_bin.js"),
-        pumpkin_root_dir_.GetPath().Append("tagger_wasm_main.js"),
-        pumpkin_root_dir_.GetPath().Append("tagger_wasm_main.wasm"),
-    };
-    for (const auto& sub_dir : sub_dirs_) {
-      files.push_back(sub_dir->GetPath().Append("action_config.binarypb"));
-      files.push_back(sub_dir->GetPath().Append("pumpkin_config.binarypb"));
-    }
-    for (const auto& file : files) {
-      ASSERT_TRUE(base::WriteFile(file, content));
-    }
+    base::FilePath gen_root_dir;
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_root_dir));
+    base::FilePath pumpkin_test_file_path =
+        gen_root_dir.AppendASCII(kPumpkinTestFilePath);
+    ASSERT_TRUE(base::PathExists(pumpkin_test_file_path));
+    AccessibilityManager::Get()->SetDlcPathForTest(pumpkin_test_file_path);
 
     DictationTest::SetUpOnMainThread();
   }
 
-  void WaitForInstallToSucceed() {
-    std::string error_message = "Waiting for Pumpkin installation to succeed";
-    SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return AccessibilityManager::Get()
-                        ->is_pumpkin_installed_for_testing();
-                  }),
-                  error_message)
+  void WaitForPumpkinTaggerReady() {
+    std::string error_message = "Waiting for Pumpkin Tagger to initialize";
+    SuccessWaiter(
+        base::BindLambdaForTesting([&]() { return GetPumpkinTaggerReady(); }),
+        error_message)
         .Wait();
+  }
+
+  bool GetPumpkinTaggerReady() {
+    std::string script =
+        "window.domAutomationController.send(String(accessibilityCommon."
+        "dictation_.speechParser_.pumpkinParseStrategy_.pumpkinTaggerReady_));";
+    return "true" == ExecuteAccessibilityCommonScript(script);
   }
 
  private:
@@ -1719,22 +1712,29 @@ class DictationPumpkinInstallTest : public DictationTest {
 
 INSTANTIATE_TEST_SUITE_P(
     Network,
-    DictationPumpkinInstallTest,
+    DictationPumpkinTest,
     ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
 INSTANTIATE_TEST_SUITE_P(
     OnDevice,
-    DictationPumpkinInstallTest,
+    DictationPumpkinTest,
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
-// TODO(crbug.com/1368843): Test is flaky on MSAN builds. This test is
-// temporarily disabled to allow the SandboxedPumpkinTagger prototype to be
-// landed. It will be re-enabled when we can support Pumpkin from C++ tests
-// here: https://crrev.com/c/3938318
-IN_PROC_BROWSER_TEST_P(DictationPumpkinInstallTest, DISABLED_WaitForInstall) {
+// TODO(crbug.com/1368843): Test is flaky on MSAN builds.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_Input DISABLED_Input
+#else
+#define MAYBE_Input Input
+#endif
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, MAYBE_Input) {
   // Dictation will request a Pumpkin install when it starts up. Wait for
   // the install to succeed.
-  WaitForInstallToSucceed();
+  WaitForPumpkinTaggerReady();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("dictate hello", "Hello");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
 }
 
 // TODO(crbug.com/1264544): Test looking at gn args has pumpkin and does
