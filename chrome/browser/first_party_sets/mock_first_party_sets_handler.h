@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_FIRST_PARTY_SETS_SCOPED_MOCK_FIRST_PARTY_SETS_HANDLER_H_
-#define CHROME_BROWSER_FIRST_PARTY_SETS_SCOPED_MOCK_FIRST_PARTY_SETS_HANDLER_H_
+#ifndef CHROME_BROWSER_FIRST_PARTY_SETS_MOCK_FIRST_PARTY_SETS_HANDLER_H_
+#define CHROME_BROWSER_FIRST_PARTY_SETS_MOCK_FIRST_PARTY_SETS_HANDLER_H_
 
 #include <string>
 #include <utility>
@@ -30,13 +30,10 @@ namespace first_party_sets {
 
 // Used to create a dummy FirstPartySetsHandler implementation for testing
 // purposes. Enabled by default.
-//
-// Uses an RAII-pattern to install itself as the global singleton in the ctor,
-// and remove itself in the dtor.
-class ScopedMockFirstPartySetsHandler : public content::FirstPartySetsHandler {
+class MockFirstPartySetsHandler : public content::FirstPartySetsHandler {
  public:
-  ScopedMockFirstPartySetsHandler();
-  ~ScopedMockFirstPartySetsHandler() override;
+  MockFirstPartySetsHandler();
+  ~MockFirstPartySetsHandler() override;
 
   // FirstPartySetsHandler:
   bool IsEnabled() const override;
@@ -66,12 +63,11 @@ class ScopedMockFirstPartySetsHandler : public content::FirstPartySetsHandler {
   void SetGlobalSets(net::GlobalFirstPartySets global_sets);
 
  private:
-  content::FirstPartySetsHandler* previous_;
-  net::GlobalFirstPartySets global_sets_;
-  net::FirstPartySetsContextConfig config_;
-  net::FirstPartySetsCacheFilter cache_filter_;
+  absl::optional<net::GlobalFirstPartySets> global_sets_;
+  absl::optional<net::FirstPartySetsContextConfig> config_;
+  absl::optional<net::FirstPartySetsCacheFilter> cache_filter_;
 };
 
 }  // namespace first_party_sets
 
-#endif  // CHROME_BROWSER_FIRST_PARTY_SETS_SCOPED_MOCK_FIRST_PARTY_SETS_HANDLER_H_
+#endif  // CHROME_BROWSER_FIRST_PARTY_SETS_MOCK_FIRST_PARTY_SETS_HANDLER_H_
