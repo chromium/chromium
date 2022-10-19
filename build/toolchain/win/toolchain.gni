@@ -254,7 +254,7 @@ template("msvc_toolchain") {
           ml = "armasm64.exe"
         }
       } else {
-        if (toolchain_is_clang && !disable_llvm_ml) {
+        if (toolchain_is_clang) {
           prefix = rebase_path("$clang_base_path/bin", root_build_dir)
           ml = "$prefix/llvm-ml${_exe}"
           if (toolchain_args.current_cpu == "x64") {
@@ -279,7 +279,7 @@ template("msvc_toolchain") {
         if (toolchain_args.current_cpu != "arm64") {
           ml += " /c"
         }
-        if (use_lld && (!toolchain_is_clang || disable_llvm_ml)) {
+        if (use_lld && !toolchain_is_clang) {
           # Wrap ml(64).exe with a script that makes its output deterministic.
           # It's lld only because the script zaps obj Timestamp which
           # link.exe /incremental looks at.
