@@ -319926,11 +319926,11 @@
        []
       ],
       "gentestutils.py": [
-       "5a16cfc835bf0db0f190d42baa5192d213f73e7e",
+       "1206aa91bfbe737b55a1ba500713e18cbf8e07fd",
        []
       ],
       "gentestutilsunion.py": [
-       "f2abec53c72d0e5aefa4bda758aa707aa5a11c1b",
+       "c6fba8453d0ebbe389f6b9103f6272869076e641",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -319945,10 +319945,6 @@
        "15da6f88ad53c077e0a0a322ddf1b957b064a381",
        []
       ],
-      "spec.yaml": [
-       "4eb57e185b13a47ac71b2dc1b0aa738ee39458d2",
-       []
-      ],
       "templates-new.yaml": [
        "7742db88978dab0406b92db5f2ec3963bd602635",
        []
@@ -319960,112 +319956,112 @@
       "yaml": {
        "element": {
         "drawing-text-to-the-canvas.yaml": [
-         "e0f0d4f724288144a4f4e7e16b458299b531f4c5",
+         "880e3fb1a1f396e1ebd472a8d5df46c8d1b45916",
          []
         ],
         "fill-and-stroke-styles.yaml": [
-         "03870c7d3aad1858aef2614965b725403c87bae8",
+         "fe7b8841ae97ed4f55abef0f48fd684206d5a4aa",
          []
         ],
         "line-styles.yaml": [
-         "e6dc3205e727142a4363252ac2576409be8a7eea",
+         "604f4f3659a40b89b05f1bce3968f2580dce3c6f",
          []
         ],
         "meta.yaml": [
-         "f6902d07822b70bb560663aa9aee07f9e073a0b7",
+         "b8ffbd5075860d9b3600ed2bb794b5da9fa2de5e",
          []
         ],
         "path-objects.yaml": [
-         "f3306cd5bd08c168732d8a30d76fde49cd7904e7",
+         "eec142c7692bc5fd14478fedcd4ed95c66a546cd",
          []
         ],
         "pixel-manipulation.yaml": [
-         "ddacaf441ce7033efe7ece967c34864da7f61397",
+         "eca8e8b2bdad14b7b7b102be8a8c5aad25986810",
          []
         ],
         "shadows.yaml": [
-         "1d8da0edec5c74c22c4800b26fcf86a89c624440",
+         "7a7c115a7c44d450fc60d2e5bbb544cc5c75d225",
          []
         ],
         "text-styles.yaml": [
-         "c4d2caf007c86218c93c4933572b1b4aeb9263ad",
+         "344a5a0752ed991c5525812f22a88a2207d699fc",
          []
         ],
         "the-canvas-element.yaml": [
-         "5abee0300771f18fa648f5413bad6f2e7e8618d5",
+         "5c07375dd2ac4a6effb8b2e7eb72bb2feca7123e",
          []
         ],
         "the-canvas-state.yaml": [
-         "dda6dc314ddfe0af65927bbc6bba2753e1c854b8",
+         "045208615436efec1596a2f14cb62f02fa8e470a",
          []
         ],
         "transformations.yaml": [
-         "b6aaec73c5fac62fae3c716857f407aa17b306af",
+         "876c48f849cb1e111a0a1ead7a17945f443723eb",
          []
         ]
        },
        "offscreen": {
         "fill-and-stroke-styles.yaml": [
-         "a1f7b36fa819eebb15490296f417981aa6d94c00",
+         "9d34588c100cc47586bc1573de182f5b2a7eaf5b",
          []
         ],
         "line-styles.yaml": [
-         "762deeb84cbcd940ad2faf50c207d1dacb42368c",
+         "984949827db86ce0c071db266e399b617fc5c7f1",
          []
         ],
         "meta.yaml": [
-         "b257dc780aa7795e31a8a0e53e35db09aa3f3797",
+         "aa850d4e48f37d0231c2af35c6f4ac807c095ede",
          []
         ],
         "path-objects.yaml": [
-         "1e221f905fa8024637e2b7a2f21926250ef30265",
+         "9c70daf59fca7fd33ea0a2256b7d1ce19f1fb192",
          []
         ],
         "pixel-manipulation.yaml": [
-         "bc1191f9439590b452113d88d3f1f01aff7a8bd1",
+         "86f7940adda42700d736947b1bedf8f5d73dc9cd",
          []
         ],
         "shadows.yaml": [
-         "e336a13f8acf7aaae58096e7dc21eff430cd3dbc",
+         "06e2681c72c3d3832ce07fa85ff0362cd0bd5d03",
          []
         ],
         "text.yaml": [
-         "636d7f5e978069665967ccc209f83f6c3b58b806",
+         "80c54ca6b664e63b6f54e3978c6665f1c9ba2a24",
          []
         ],
         "the-canvas-state.yaml": [
-         "1ca9bf3610541a626cbf862dc07e70164a2e2f69",
+         "afb4cf956c6d564fc29b85ec7354361a123c9f5d",
          []
         ],
         "the-offscreen-canvas.yaml": [
-         "ba3ded9af85b5409daabc5b9838c96bd535f6226",
+         "0bef18bf9d56acccb5a747a791bc038c61857f48",
          []
         ],
         "transformations.yaml": [
-         "ab5e6d5a6245e381d90a0632a76ef14059db527d",
+         "efc00222bfc70ae08b1d03e2628ea87c76f15f48",
          []
         ]
        }
       },
       "yaml-new": {
        "color_space.yaml": [
-        "7b4af0d4d2f8e5988e1a1ddb906d001b84b63daa",
+        "ba5d93e0b02bcf72d4233b61b5b0093fadf4a301",
         []
        ],
        "compositing.yaml": [
-        "f70a3a9bf4ff2dc8b0d9c2b36e589b277428040a",
+        "c0b7b83e001a0e93f381f7773b76ed4485658f55",
         []
        ],
        "conformance_requirements.yaml": [
-        "89091d6e7c760c192650dbd8994304ceb4586287",
+        "3483d115f4616260e627926e2f4cc1c18f15dcc0",
         []
        ],
        "drawing-images-to-the-canvas.yaml": [
-        "8c6de99e0c54d02e32c45f4ed284d34518868ee0",
+        "83de88113f23a5051bed0296db4ce17c2bec9ebe",
         []
        ],
        "drawing-rectangles-to-the-canvas.yaml": [
-        "129fe95530a81b5b9fc5da74d19ba273e5dc28ca",
+        "408e932abe86b31ce3e8d88672e04abed12b74b2",
         []
        ],
        "filters.yaml": [
@@ -320077,11 +320073,11 @@
         []
        ],
        "scroll.yaml": [
-        "bf41bc7763579f003cea57b00adcb754eafc38b4",
+        "dd088aa396f47e70a6e66b0b9c7d8ffca0fa0e1e",
         []
        ],
        "video.yaml": [
-        "d0fa97175acd6da168caa6deba287844d6700988",
+        "f9b48fb8daa2a247e9e22a18b5e891be3351bda9",
         []
        ]
       }
@@ -492592,6 +492588,13 @@
          null,
          {}
         ]
+       ],
+       "video-intrinsic-width-height.html": [
+        "ad5b69db21ef30fd7444eccd3d82f9bdae67221c",
+        [
+         null,
+         {}
+        ]
        ]
       },
       "embedded-content": {
@@ -543978,7 +543981,7 @@
       ]
      ],
      "link.html": [
-      "c49576a8e650bc5525bf35c3c2ca07c6ec64009e",
+      "43367ac3d501e2ce8da1f2eafde9e5cdd69a4e67",
       [
        null,
        {}
@@ -578556,7 +578559,7 @@
      ]
     ],
     "videoFrame-construction.any.js": [
-     "9a8ae03327b752f22f5d733846d25ed998001735",
+     "bc909ea4c3239547023740f140a847f1b01b30d9",
      [
       "webcodecs/videoFrame-construction.any.html",
       {
