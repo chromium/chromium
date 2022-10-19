@@ -113,8 +113,9 @@ IceConfig::~IceConfig() = default;
 
 // static
 IceConfig IceConfig::Parse(const base::DictionaryValue& dictionary) {
-  const base::ListValue* ice_servers_list = nullptr;
-  if (!dictionary.GetList("iceServers", &ice_servers_list)) {
+  const base::Value::List* ice_servers_list =
+      dictionary.GetDict().FindList("iceServers");
+  if (!ice_servers_list) {
     return IceConfig();
   }
 
@@ -137,7 +138,7 @@ IceConfig IceConfig::Parse(const base::DictionaryValue& dictionary) {
   // Parse iceServers list and store them in |ice_config|.
   bool errors_found = false;
   ice_config.max_bitrate_kbps = 0;
-  for (const auto& server : ice_servers_list->GetListDeprecated()) {
+  for (const auto& server : *ice_servers_list) {
     if (!server.is_dict()) {
       errors_found = true;
       continue;

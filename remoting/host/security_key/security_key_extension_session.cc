@@ -192,7 +192,7 @@ void SecurityKeyExtensionSession::SendMessageToClient(
   request_dict.Set(kMessageType, kDataMessage);
   request_dict.Set(kConnectionId, connection_id);
 
-  base::ListValue bytes;
+  base::Value::List bytes;
   for (auto& byte : data) {
     bytes.Append(static_cast<unsigned char>(byte));
   }

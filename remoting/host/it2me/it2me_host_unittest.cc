@@ -205,8 +205,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   void StartHost();
   void ShutdownHost();
 
-  static base::ListValue MakeList(
-      std::initializer_list<base::StringPiece> values);
+  static base::Value MakeList(std::initializer_list<base::StringPiece> values);
 
   ChromotingHost* GetHost() { return it2me_host_->host_.get(); }
 
@@ -441,13 +440,13 @@ void It2MeHostTest::ShutdownHost() {
   }
 }
 
-base::ListValue It2MeHostTest::MakeList(
+base::Value It2MeHostTest::MakeList(
     std::initializer_list<base::StringPiece> values) {
-  base::ListValue result;
+  base::Value::List result;
   for (const auto& value : values) {
     result.Append(value);
   }
-  return result;
+  return base::Value(std::move(result));
 }
 
 // Callback to receive IceConfig from TransportContext
