@@ -111,6 +111,11 @@ class UiControllerObserver : public base::CheckedObserver {
 
   // Called when Tts Button State has changed.
   virtual void OnTtsButtonStateChanged(TtsButtonState state) = 0;
+
+  // Called when the disable_scrollbar_fading parameter has
+  // changed.
+  virtual void OnDisableScrollbarFadingChanged(
+      bool disable_scrollbar_fading) = 0;
 };
 }  // namespace autofill_assistant
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_UI_CONTROLLER_OBSERVER_H_

@@ -758,6 +758,7 @@ void UiControllerAndroid::RestoreUi() {
   OnOverlayColorsChanged(colors);
   OnTtsButtonVisibilityChanged(ui_delegate_->GetTtsButtonVisible());
   OnTtsButtonStateChanged(ui_delegate_->GetTtsButtonState());
+  OnDisableScrollbarFadingChanged(ui_delegate_->GetDisableScrollbarFading());
   SetVisible(true);
   Java_AutofillAssistantUiController_restoreBottomSheetState(
       AttachCurrentThread(), java_object_,
@@ -1129,6 +1130,12 @@ void UiControllerAndroid::OnTtsButtonVisibilityChanged(bool visible) {
 
 void UiControllerAndroid::OnTtsButtonStateChanged(TtsButtonState state) {
   header_model_->SetTtsButtonState(state);
+}
+
+void UiControllerAndroid::OnDisableScrollbarFadingChanged(
+    bool disable_scrollbar_fading) {
+  Java_AssistantModel_setDisableScrollbarFading(
+      AttachCurrentThread(), GetModel(), disable_scrollbar_fading);
 }
 
 void UiControllerAndroid::OnTouchableAreaChanged(

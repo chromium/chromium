@@ -26,7 +26,8 @@ public class AssistantModel extends PropertyModel {
     static final WritableBooleanPropertyKey ALLOW_SOFT_KEYBOARD = new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey ALLOW_TALKBACK_ON_WEBSITE =
             new WritableBooleanPropertyKey();
-
+    static final WritableBooleanPropertyKey DISABLE_SCROLLBAR_FADING =
+            new WritableBooleanPropertyKey();
     static final WritableObjectPropertyKey<AssistantBottomBarDelegate> BOTTOM_BAR_DELEGATE =
             new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey BOTTOM_SHEET_STATE = new WritableIntPropertyKey();
@@ -59,9 +60,9 @@ public class AssistantModel extends PropertyModel {
     }
 
     AssistantModel(AssistantOverlayModel overlayModel) {
-        super(ALLOW_SOFT_KEYBOARD, ALLOW_TALKBACK_ON_WEBSITE, BOTTOM_BAR_DELEGATE,
-                BOTTOM_SHEET_STATE, TALKBACK_SHEET_SIZE_FRACTION, VISIBLE, PEEK_MODE_DISABLED,
-                WEB_CONTENTS, HANDLE_BACK_PRESS);
+        super(ALLOW_SOFT_KEYBOARD, ALLOW_TALKBACK_ON_WEBSITE, DISABLE_SCROLLBAR_FADING,
+                BOTTOM_BAR_DELEGATE, BOTTOM_SHEET_STATE, TALKBACK_SHEET_SIZE_FRACTION, VISIBLE,
+                PEEK_MODE_DISABLED, WEB_CONTENTS, HANDLE_BACK_PRESS);
         mOverlayModel = overlayModel;
     }
 
@@ -134,6 +135,11 @@ public class AssistantModel extends PropertyModel {
     @CalledByNative
     private void setAllowTalkbackOnWebsite(boolean allowed) {
         set(ALLOW_TALKBACK_ON_WEBSITE, allowed);
+    }
+
+    @CalledByNative
+    private void setDisableScrollbarFading(boolean disableScrollbarFading) {
+        set(DISABLE_SCROLLBAR_FADING, disableScrollbarFading);
     }
 
     @CalledByNative

@@ -371,6 +371,10 @@ bool UiController::GetTtsButtonVisible() const {
   return tts_enabled_;
 }
 
+bool UiController::GetDisableScrollbarFading() const {
+  return disable_scrollbar_fading_;
+}
+
 TtsButtonState UiController::GetTtsButtonState() const {
   return tts_button_state_;
 }
@@ -1158,6 +1162,12 @@ void UiController::InitFromParameters(const TriggerContext& trigger_context) {
     for (UiControllerObserver& observer : observers_) {
       observer.OnTtsButtonVisibilityChanged(/* visible= */ true);
     }
+  }
+
+  disable_scrollbar_fading_ =
+      trigger_context.GetScriptParameters().GetDisableScrollbarFading();
+  for (UiControllerObserver& observer : observers_) {
+    observer.OnDisableScrollbarFadingChanged(disable_scrollbar_fading_);
   }
 }
 

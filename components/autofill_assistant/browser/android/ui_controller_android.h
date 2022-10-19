@@ -152,6 +152,7 @@ class UiControllerAndroid : public EmptyControllerObserver,
       const GenericUserInterfaceProto* generic_ui) override;
   void OnTtsButtonVisibilityChanged(bool visible) override;
   void OnTtsButtonStateChanged(TtsButtonState state) override;
+  void OnDisableScrollbarFadingChanged(bool disable_scrollbar_fading) override;
 
   // Called by AssistantOverlayDelegate:
   void OnUnexpectedTaps();

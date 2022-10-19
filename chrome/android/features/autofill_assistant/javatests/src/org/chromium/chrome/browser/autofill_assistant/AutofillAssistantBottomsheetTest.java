@@ -23,7 +23,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getAbsoluteBoundingRect;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.isScrollbarFadingEnabled;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistantWithParams;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
@@ -84,6 +86,7 @@ import org.chromium.components.autofill_assistant.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -347,6 +350,7 @@ public class AutofillAssistantBottomsheetTest {
                 new AutofillAssistantTestService(Collections.singletonList(script));
         startAutofillAssistant(mTestRule.getActivity(), testService);
         waitUntilViewMatchesCondition(withText("Continue"), isDisplayingAtLeast(90));
+        onView(is(withId(R.id.scrollable_content))).check(matches(isScrollbarFadingEnabled()));
         onView(withId(R.id.control_container)).check(matches(isDisplayingAtLeast(90)));
         onView(withText("Title 0")).perform(click());
         waitUntilViewMatchesCondition(
@@ -544,6 +548,53 @@ public class AutofillAssistantBottomsheetTest {
         waitUntilViewMatchesCondition(
                 allOf(withText("Done"), isDescendantOfA(withTagValue(is(RECYCLER_VIEW_TAG)))),
                 isDisplayingAtLeast(90));
+    }
+
+    @Test
+    @MediumTest
+    public void testWithDisableScrollbarFading() throws Exception {
+        // Adding sufficient text inputs so that the scrollbar is visible in the UI.
+        // This is needed to verify the fading behaviour of the scrollbar shown in the UI.
+        List<UserFormSectionProto> additionalSections = new ArrayList<>();
+        for (int i = 0; i < 20; ++i) {
+            additionalSections.add(
+                    UserFormSectionProto.newBuilder()
+                            .setTextInputSection(TextInputSectionProto.newBuilder().addInputFields(
+                                    TextInputProto.newBuilder()
+                                            .setHint("Text input " + i)
+                                            .setClientMemoryKey("input_" + i)
+                                            .setInputType(TextInputProto.InputType.INPUT_TEXT)))
+                            .setTitle("Title " + i)
+                            .build());
+        }
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .addAllAdditionalAppendedSections(additionalSections)
+                                         .setRequestTermsAndConditions(false))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("bottomsheet_behaviour_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.scheduleForInjection();
+
+        HashMap<String, Object> parameters = new HashMap();
+        parameters.put("DISABLE_SCROLLBAR_FADING", true);
+        parameters.put("START_IMMEDIATELY", true);
+
+        startAutofillAssistantWithParams(mTestRule.getActivity(),
+                mTestRule.getActivity().getInitialIntent().getDataString(), parameters);
+
+        waitUntilViewMatchesCondition(withText("Continue"), isDisplayed());
+        onView(is(withId(R.id.scrollable_content))).check(matches(not(isScrollbarFadingEnabled())));
     }
 
     private void checkElementIsCoveredByBottomsheet(String elementId, boolean shouldBeCovered) {

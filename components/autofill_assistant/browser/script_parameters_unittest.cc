@@ -107,6 +107,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
        {"PASSWORD_CHANGE_USERNAME", "fake_username"},
        {"OVERLAY_COLORS", "#123456"},
        {"ENABLE_TTS", "true"},
+       {"DISABLE_SCROLLBAR_FADING", "true"},
        {"CALLER", "3"},
        {"SOURCE", "4"},
        {"EXPERIMENT_IDS", "123,456,789"},
@@ -135,6 +136,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
   EXPECT_THAT(parameters.GetPasswordChangeUsername(), Eq("fake_username"));
   EXPECT_THAT(parameters.GetOverlayColors(), Eq("#123456"));
   EXPECT_THAT(parameters.GetEnableTts(), Eq(true));
+  EXPECT_THAT(parameters.GetDisableScrollbarFading(), Eq(true));
   EXPECT_THAT(parameters.GetCaller(), Eq(3));
   EXPECT_THAT(parameters.GetSource(), Eq(4));
   EXPECT_THAT(

@@ -726,6 +726,18 @@ TEST_F(UiControllerTest, EnableTts) {
   EXPECT_TRUE(ui_controller_->GetTtsButtonVisible());
 }
 
+TEST_F(UiControllerTest, DisableScrollbarFading) {
+  EXPECT_FALSE(ui_controller_->GetDisableScrollbarFading());
+  EXPECT_CALL(mock_observer_, OnDisableScrollbarFadingChanged(true));
+  ui_controller_->OnStart(
+      TriggerContext(std::make_unique<ScriptParameters>(
+                         base::flat_map<std::string, std::string>{
+                             {"DISABLE_SCROLLBAR_FADING", "true"}}),
+                     TriggerContext::Options()));
+
+  EXPECT_TRUE(ui_controller_->GetDisableScrollbarFading());
+}
+
 TEST_F(UiControllerTest, DoNotEnableTtsWhenAccessibilityEnabled) {
   EXPECT_CALL(mock_client_, IsSpokenFeedbackAccessibilityServiceEnabled())
       .WillOnce(Return(true));

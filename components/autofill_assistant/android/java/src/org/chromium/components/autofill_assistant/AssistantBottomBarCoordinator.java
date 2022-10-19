@@ -275,6 +275,9 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 mContent.setPeekModeDisabled(model.get(AssistantModel.PEEK_MODE_DISABLED));
             } else if (AssistantModel.HANDLE_BACK_PRESS == propertyKey) {
                 mContent.setHandleBackPress(model.get(AssistantModel.HANDLE_BACK_PRESS));
+            } else if (AssistantModel.DISABLE_SCROLLBAR_FADING == propertyKey) {
+                mScrollableContent.setScrollbarFadingEnabled(
+                        !model.get(AssistantModel.DISABLE_SCROLLBAR_FADING));
             }
         });
 

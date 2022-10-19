@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -432,6 +433,24 @@ class AutofillAssistantUiTestUtil {
     static Matcher<View> withTextId(int id) {
         return ViewMatchers.withText(
                 InstrumentationRegistry.getTargetContext().getResources().getString(id));
+    }
+
+    /** Checks whether the scrollbar fading is enabled. */
+    static TypeSafeMatcher<View> isScrollbarFadingEnabled() {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            protected boolean matchesSafely(View item) {
+                if (!(item instanceof ScrollView)) {
+                    return false;
+                }
+                return ((ScrollView) item).isScrollbarFadingEnabled();
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("isScrollbarFadingEnabled");
+            }
+        };
     }
 
     /**

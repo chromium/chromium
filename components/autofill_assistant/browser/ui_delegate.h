@@ -53,6 +53,9 @@ class UiDelegate {
   // Returns whether the TTS button is visible.
   virtual bool GetTtsButtonVisible() const = 0;
 
+  // Returns the disable_scrollbar_fading value.
+  virtual bool GetDisableScrollbarFading() const = 0;
+
   // Returns the current TTS button state.
   virtual TtsButtonState GetTtsButtonState() const = 0;
 

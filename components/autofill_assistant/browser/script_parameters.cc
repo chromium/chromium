@@ -71,6 +71,9 @@ const char kTriggerScriptExperimentParameterName[] =
 // Parameter that allows enabling Text-to-Speech functionality.
 const char kEnableTtsParameterName[] = "ENABLE_TTS";
 
+// Parameter that disables the scrollbar fading.
+const char kDisableScrollbarFading[] = "DISABLE_SCROLLBAR_FADING";
+
 // Allows enabling observer-based WaitForDOM.
 const char kEnableObserversParameter[] = "ENABLE_OBSERVER_WAIT_FOR_DOM";
 
@@ -240,6 +243,10 @@ absl::optional<std::string> ScriptParameters::GetCallerEmail() const {
 
 bool ScriptParameters::GetEnableTts() const {
   return GetBoolParameter(parameters_, kEnableTtsParameterName);
+}
+
+bool ScriptParameters::GetDisableScrollbarFading() const {
+  return GetBoolParameter(parameters_, kDisableScrollbarFading);
 }
 
 bool ScriptParameters::GetEnableObserverWaitForDom() const {

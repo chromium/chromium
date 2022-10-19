@@ -139,6 +139,7 @@ class UiController : public ScriptExecutorUiDelegate,
   int GetProgressActiveStep() const override;
   bool GetProgressVisible() const override;
   bool GetTtsButtonVisible() const override;
+  bool GetDisableScrollbarFading() const override;
   TtsButtonState GetTtsButtonState() const override;
   bool GetProgressBarErrorState() const override;
   ShowProgressBarProto::StepProgressBarConfiguration
@@ -348,6 +349,7 @@ class UiController : public ScriptExecutorUiDelegate,
   bool are_chips_visible_ = true;
 
   bool tts_enabled_ = false;
+  bool disable_scrollbar_fading_ = false;
   std::unique_ptr<AutofillAssistantTtsController> tts_controller_;
   TtsButtonState tts_button_state_ = TtsButtonState::DEFAULT;
 

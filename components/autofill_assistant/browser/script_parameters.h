@@ -63,6 +63,7 @@ class ScriptParameters {
   absl::optional<std::string> GetIntent() const;
   absl::optional<std::string> GetCallerEmail() const;
   bool GetEnableTts() const;
+  bool GetDisableScrollbarFading() const;
   bool GetEnableObserverWaitForDom() const;
   absl::optional<int> GetCaller() const;
   absl::optional<int> GetSource() const;
