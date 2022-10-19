@@ -9,8 +9,16 @@ import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
+# Exo is only used on ash.
+assert(is_chromeos_ash)
+
+# ash implies ozone.
+assert(use_ozone)
+
 source_set("wayland") {
   sources = [
+    "content_type.cc",
+    "content_type.h",
     "overlay_prioritizer.cc",
     "overlay_prioritizer.h",
     "scoped_wl.cc",
@@ -31,11 +39,16 @@ source_set("wayland") {
     "wayland_display_util.h",
     "wayland_input_delegate.cc",
     "wayland_input_delegate.h",
+    "wayland_keyboard_delegate.cc",
+    "wayland_keyboard_delegate.h",
     "wayland_pointer_delegate.cc",
     "wayland_pointer_delegate.h",
+    "wayland_positioner.cc",
+    "wayland_positioner.h",
     "wayland_touch_delegate.cc",
     "wayland_touch_delegate.h",
     "wayland_watcher.cc",
+    "weston_test.h",
     "wl_compositor.cc",
     "wl_compositor.h",
     "wl_data_device_manager.cc",
@@ -44,6 +57,8 @@ source_set("wayland") {
     "wl_output.h",
     "wl_seat.cc",
     "wl_seat.h",
+    "wl_shell.cc",
+    "wl_shell.h",
     "wl_shm.cc",
     "wl_shm.h",
     "wl_subcompositor.cc",
@@ -52,31 +67,86 @@ source_set("wayland") {
     "wp_presentation.h",
     "wp_viewporter.cc",
     "wp_viewporter.h",
+    "xdg_shell.cc",
+    "xdg_shell.h",
     "zaura_shell.cc",
     "zaura_shell.h",
     "zcr_alpha_compositing.cc",
     "zcr_alpha_compositing.h",
+    "zcr_color_manager.cc",
+    "zcr_color_manager.h",
+    "zcr_cursor_shapes.cc",
+    "zcr_cursor_shapes.h",
+    "zcr_extended_drag.cc",
+    "zcr_extended_drag.h",
+    "zcr_gaming_input.cc",
+    "zcr_gaming_input.h",
+    "zcr_keyboard_configuration.cc",
+    "zcr_keyboard_configuration.h",
+    "zcr_keyboard_extension.cc",
+    "zcr_keyboard_extension.h",
+    "zcr_notification_shell.cc",
+    "zcr_notification_shell.h",
+    "zcr_remote_shell.cc",
+    "zcr_remote_shell.h",
+    "zcr_remote_shell_event_mapping.h",
+    "zcr_remote_shell_impl.cc",
+    "zcr_remote_shell_impl.h",
+    "zcr_remote_shell_v2.cc",
+    "zcr_remote_shell_v2.h",
     "zcr_secure_output.cc",
     "zcr_secure_output.h",
     "zcr_stylus.cc",
     "zcr_stylus.h",
+    "zcr_stylus_tools.cc",
+    "zcr_stylus_tools.h",
+    "zcr_touchpad_haptics.cc",
+    "zcr_touchpad_haptics.h",
     "zcr_vsync_feedback.cc",
     "zcr_vsync_feedback.h",
+    "zwp_idle_inhibit_manager.cc",
+    "zwp_idle_inhibit_manager.h",
+    "zwp_input_timestamps_manager.cc",
+    "zwp_input_timestamps_manager.h",
+    "zwp_keyboard_shortcuts_inhibit_manager.cc",
+    "zwp_keyboard_shortcuts_inhibit_manager.h",
+    "zwp_linux_dmabuf.cc",
+    "zwp_linux_dmabuf.h",
     "zwp_linux_explicit_synchronization.cc",
     "zwp_linux_explicit_synchronization.h",
+    "zwp_pointer_constraints.cc",
+    "zwp_pointer_constraints.h",
+    "zwp_pointer_gestures.cc",
+    "zwp_pointer_gestures.h",
+    "zwp_relative_pointer_manager.cc",
+    "zwp_relative_pointer_manager.h",
+    "zwp_text_input_manager.cc",
+    "zwp_text_input_manager.h",
+    "zxdg_decoration_manager.h",
+    "zxdg_output_manager.cc",
+    "zxdg_output_manager.h",
+    "zxdg_shell.cc",
+    "zxdg_shell.h",
   ]
 
   defines = [ "EXO_IMPLEMENTATION" ]
 
   deps = [
+    "//ash",
+    "//ash:ash",
+    "//ash/public/cpp",
     "//base",
     "//build:chromeos_buildflags",
+    "//build/config/linux/libdrm",
+    "//chromeos/ui/base",
     "//components/exo",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//device/gamepad",
+    "//services/device/public/mojom",
+    "//services/device/wake_lock/power_save_blocker",
     "//services/viz/privileged/mojom/compositing",
     "//services/viz/public/mojom",
     "//skia",
@@ -87,10 +157,12 @@ source_set("wayland") {
     "//third_party/wayland-protocols:cursor_shapes_protocol",
     "//third_party/wayland-protocols:extended_drag",
     "//third_party/wayland-protocols:gaming_input_protocol",
+    "//third_party/wayland-protocols:idle_inhibit_protocol",
     "//third_party/wayland-protocols:input_timestamps_protocol",
     "//third_party/wayland-protocols:keyboard_configuration_protocol",
     "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:keyboard_shortcuts_inhibit_protocol",
+    "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:notification_shell_protocol",
     "//third_party/wayland-protocols:pointer_constraints_protocol",
@@ -111,111 +183,23 @@ source_set("wayland") {
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/aura",
     "//ui/base",
+    "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/dragdrop/mojom:mojom_shared",
+    "//ui/base/wayland:color_manager_util",
+    "//ui/base/wayland:wayland_server_input_types",
     "//ui/display/manager",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
     "//ui/events/devices:devices",
+    "//ui/events/ozone/layout",
+    "//ui/ozone",
     "//ui/views",
     "//ui/wm:wm",
     "//ui/wm/public",
   ]
 
-  if (use_ozone) {
-    sources += [
-      "zwp_linux_dmabuf.cc",
-      "zwp_linux_dmabuf.h",
-    ]
-
-    deps += [
-      "//build/config/linux/libdrm",
-      "//third_party/wayland-protocols:linux_dmabuf_protocol",
-      "//ui/ozone",
-    ]
-
-    if (is_chromeos_ash) {
-      deps += [
-        "//ash",
-        "//ash/public/cpp",
-        "//chromeos/ui/base",
-      ]
-    }
-  }
-
   if (use_xkbcommon) {
     deps += [ "//ui/events/keycodes:xkb" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "content_type.cc",
-      "content_type.h",
-      "wayland_keyboard_delegate.cc",
-      "wayland_keyboard_delegate.h",
-      "wayland_positioner.cc",
-      "wayland_positioner.h",
-      "weston_test.h",
-      "wl_shell.cc",
-      "wl_shell.h",
-      "xdg_shell.cc",
-      "xdg_shell.h",
-      "zcr_color_manager.cc",
-      "zcr_color_manager.h",
-      "zcr_cursor_shapes.cc",
-      "zcr_cursor_shapes.h",
-      "zcr_extended_drag.cc",
-      "zcr_extended_drag.h",
-      "zcr_gaming_input.cc",
-      "zcr_gaming_input.h",
-      "zcr_keyboard_configuration.cc",
-      "zcr_keyboard_configuration.h",
-      "zcr_keyboard_extension.cc",
-      "zcr_keyboard_extension.h",
-      "zcr_notification_shell.cc",
-      "zcr_notification_shell.h",
-      "zcr_remote_shell.cc",
-      "zcr_remote_shell.h",
-      "zcr_remote_shell_event_mapping.h",
-      "zcr_remote_shell_impl.cc",
-      "zcr_remote_shell_impl.h",
-      "zcr_remote_shell_v2.cc",
-      "zcr_remote_shell_v2.h",
-      "zcr_stylus_tools.cc",
-      "zcr_stylus_tools.h",
-      "zcr_touchpad_haptics.cc",
-      "zcr_touchpad_haptics.h",
-      "zwp_idle_inhibit_manager.cc",
-      "zwp_idle_inhibit_manager.h",
-      "zwp_input_timestamps_manager.cc",
-      "zwp_input_timestamps_manager.h",
-      "zwp_keyboard_shortcuts_inhibit_manager.cc",
-      "zwp_keyboard_shortcuts_inhibit_manager.h",
-      "zwp_pointer_constraints.cc",
-      "zwp_pointer_constraints.h",
-      "zwp_pointer_gestures.cc",
-      "zwp_pointer_gestures.h",
-      "zwp_relative_pointer_manager.cc",
-      "zwp_relative_pointer_manager.h",
-      "zwp_text_input_manager.cc",
-      "zwp_text_input_manager.h",
-      "zxdg_decoration_manager.h",
-      "zxdg_output_manager.cc",
-      "zxdg_output_manager.h",
-      "zxdg_shell.cc",
-      "zxdg_shell.h",
-    ]
-
-    deps += [
-      "//ash:ash",
-      "//components/exo/wayland/protocol:chrome_color_management_protocol",
-      "//services/device/public/mojom",
-      "//services/device/wake_lock/power_save_blocker",
-      "//third_party/wayland-protocols:idle_inhibit_protocol",
-      "//ui/base/cursor/mojom:cursor_type",
-      "//ui/base/wayland:color_manager_util",
-      "//ui/base/wayland:wayland_server_input_types",
-      "//ui/events/ozone/layout",
-    ]
   }
 }
 
@@ -224,6 +208,7 @@ static_library("weston_test") {
   defines = [ "WESTON_TEST_IMPLEMENTATION" ]
   deps = [
     ":wayland",
+    "//ash",
     "//base",
     "//components/exo",
     "//third_party/wayland:wayland_server",
@@ -233,9 +218,6 @@ static_library("weston_test") {
     "//ui/wm",
   ]
   sources = [ "weston_test.cc" ]
-  if (is_chromeos_ash) {
-    deps += [ "//ash" ]
-  }
 }
 
 static_library("weston_test_stub") {
@@ -264,11 +246,21 @@ source_set("unit_tests") {
     "test/wayland_server_test.h",
     "test/wayland_server_test_base.cc",
     "test/wayland_server_test_base.h",
+    "wayland_display_observer_unittest.cc",
+    "wayland_display_util_unittest.cc",
+    "wayland_keyboard_delegate_unittest.cc",
+    "wayland_positioner_unittest.cc",
+    "zaura_shell_unittest.cc",
+    "zcr_remote_shell_impl_unittest.cc",
+    "zcr_remote_shell_unittest.cc",
   ]
 
   deps = [
     ":client_support",
     ":wayland",
+    "//ash",
+    "//ash:test_support",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
@@ -282,32 +274,15 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/wayland:wayland_client",
+    "//third_party/wayland-protocols:remote_shell_protocol",
+    "//third_party/wayland-protocols:xdg_output_protocol",
+    "//third_party/wayland-protocols:xdg_shell_protocol",
+    "//ui/compositor",
+    "//ui/compositor:test_support",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/wm/public",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "wayland_display_observer_unittest.cc",
-      "wayland_display_util_unittest.cc",
-      "wayland_keyboard_delegate_unittest.cc",
-      "wayland_positioner_unittest.cc",
-      "zaura_shell_unittest.cc",
-      "zcr_remote_shell_impl_unittest.cc",
-      "zcr_remote_shell_unittest.cc",
-    ]
-    deps += [
-      "//ash",
-      "//ash:test_support",
-      "//ash/public/cpp",
-      "//third_party/wayland-protocols:remote_shell_protocol",
-      "//third_party/wayland-protocols:xdg_output_protocol",
-      "//third_party/wayland-protocols:xdg_shell_protocol",
-      "//ui/compositor",
-      "//ui/compositor:test_support",
-      "//ui/display",
-      "//ui/gfx",
-      "//ui/wm/public",
-    ]
-  }
 }
 
 config("client_support_config") {
@@ -583,6 +558,9 @@ source_set("wayland_client_test_helper") {
 
   deps = [
     ":wayland",
+    "//ash",
+    "//ash:test_support",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//cc:test_support",
@@ -598,14 +576,6 @@ source_set("wayland_client_test_helper") {
   ]
 
   data_deps = []
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash",
-      "//ash:test_support",
-      "//ash/public/cpp",
-    ]
-  }
 }
 
 test("wayland_client_tests") {
@@ -613,6 +583,8 @@ test("wayland_client_tests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "../../../ash/test/ash_test_suite.cc",
+    "../../../ash/test/ash_test_suite.h",
     "clients/interface_binding_test.cc",
     "clients/test/run_all_client_tests.cc",
   ]
@@ -621,6 +593,8 @@ test("wayland_client_tests") {
     ":client_support",
     ":client_version_test",
     ":wayland_client_test_helper",
+    "//ash:test_support",
+    "//base/test:test_support",
     "//components/exo",
     "//components/exo/wayland",
     "//ui/base",
@@ -628,31 +602,19 @@ test("wayland_client_tests") {
     "//ui/gl:test_support",
   ]
 
-  data_deps = []
-
-  if (is_chromeos_ash) {
-    sources += [
-      "../../../ash/test/ash_test_suite.cc",
-      "../../../ash/test/ash_test_suite.h",
-    ]
-
-    data_deps += [
-      "//ash/resources:ash_test_resources_100_percent",
-      "//ash/resources:ash_test_resources_200_percent",
-      "//ash/strings:ash_test_strings",
-    ]
-
-    deps += [
-      "//ash:test_support",
-      "//base/test:test_support",
-    ]
-  }
+  data_deps = [
+    "//ash/resources:ash_test_resources_100_percent",
+    "//ash/resources:ash_test_resources_200_percent",
+    "//ash/strings:ash_test_strings",
+  ]
 }
 
 test("wayland_client_perftests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "../../../ash/test/ash_test_suite.cc",
+    "../../../ash/test/ash_test_suite.h",
     "clients/perftests.cc",
     "clients/test/run_all_client_tests.cc",
   ]
@@ -663,6 +625,7 @@ test("wayland_client_perftests") {
     ":client_version_test",
     ":simple",
     ":wayland_client_test_helper",
+    "//ash:test_support",
     "//base/test:test_support",
     "//cc:test_support",
     "//components/viz/test:test_support",
@@ -676,22 +639,11 @@ test("wayland_client_perftests") {
     "//ui/gl:test_support",
   ]
 
-  data_deps = []
-
-  if (is_chromeos_ash) {
-    sources += [
-      "../../../ash/test/ash_test_suite.cc",
-      "../../../ash/test/ash_test_suite.h",
-    ]
-
-    data_deps += [
-      "//ash/resources:ash_test_resources_100_percent",
-      "//ash/resources:ash_test_resources_200_percent",
-      "//ash/strings:ash_test_strings",
-    ]
-
-    deps += [ "//ash:test_support" ]
-  }
+  data_deps = [
+    "//ash/resources:ash_test_resources_100_percent",
+    "//ash/resources:ash_test_resources_200_percent",
+    "//ash/strings:ash_test_strings",
+  ]
 }
 
 test("wayland_client_compatibility_tests") {
@@ -711,6 +663,7 @@ test("wayland_client_compatibility_tests") {
   deps = [
     ":wayland",
     ":wayland_client_test_helper",
+    "//ash:test_support",
     "//base",
     "//base/test:test_support",
     "//components/exo/wayland/compatibility_test",
@@ -720,10 +673,6 @@ test("wayland_client_compatibility_tests") {
     "//ui/color:color",
     "//ui/gl:test_support",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//ash:test_support" ]
-  }
 
   data_deps = []
 }
