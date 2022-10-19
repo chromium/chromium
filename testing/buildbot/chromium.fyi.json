@@ -10195,7 +10195,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -10237,7 +10237,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--step-name=blink-wpt-tests",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
@@ -11428,7 +11428,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -11470,7 +11470,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--step-name=blink-wpt-tests",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
@@ -81966,7 +81966,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -82004,7 +82004,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--step-name=blink-wpt-tests",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
@@ -98714,7 +98714,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -98752,7 +98752,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--step-name=blink-wpt-tests",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
@@ -104994,7 +104994,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -105032,7 +105032,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--step-name=blink-wpt-tests",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
@@ -105651,7 +105651,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}"
@@ -105689,7 +105689,7 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash",
+          "--flag-specific=dangling-pointer-detection",
           "--num-retries=3",
           "--step-name=blink-wpt-tests",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",

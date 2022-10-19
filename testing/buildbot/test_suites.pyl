@@ -1676,7 +1676,7 @@
         # passed, but 0 times when '--test-list' is passed. We want to always
         # retry 3 times, so we explicitly specify it.
         'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+          '--flag-specific=dangling-pointer-detection',
           '--num-retries=3',
         ],
         'isolate_name': 'blink_web_tests',
@@ -1705,7 +1705,7 @@
         # passed, but 0 times when '--test-list' is passed. We want to always
         # retry 3 times, so we explicitly specify it.
         'args': [
-          '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+          '--flag-specific=dangling-pointer-detection',
           '--num-retries=3',
           '--step-name=blink-wpt-tests',
         ],
