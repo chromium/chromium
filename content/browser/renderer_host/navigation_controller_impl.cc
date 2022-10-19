@@ -1436,13 +1436,22 @@ bool NavigationControllerImpl::RendererDidNavigate(
   }
 
   // If there is a pending entry at this point, it should have a SiteInstance,
-  // except for restored entries.
+  // except for restored entries. This should be true even if the current commit
+  // is not related to the pending entry.
   bool was_restored = false;
   DCHECK(pending_entry_index_ == -1 || pending_entry_->site_instance() ||
          pending_entry_->IsRestored());
-  if (pending_entry_ && pending_entry_->IsRestored()) {
-    pending_entry_->set_restore_type(RestoreType::kNotRestored);
-    was_restored = true;
+
+  // Only make changes based on the pending entry if the NavigationRequest
+  // matches it. Otherwise, the pending entry may be for a different request
+  // (e.g., if a slow history navigation is pending while an auto-subframe
+  // commit occurs).
+  if (PendingEntryMatchesRequest(navigation_request)) {
+    // It is no longer necessary to consider the pending entry as restored.
+    if (pending_entry_->IsRestored()) {
+      pending_entry_->set_restore_type(RestoreType::kNotRestored);
+      was_restored = true;
+    }
   }
 
   // If this is a navigation to a matching pending_entry_ and the SiteInstance

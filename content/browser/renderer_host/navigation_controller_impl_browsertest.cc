@@ -8758,6 +8758,96 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(about_blank_url, new_controller.GetLastCommittedEntry()->GetURL());
 }
 
+// Verify that the restore state of a pending entry doesn't change if an
+// unrelated subframe commits while the navigation is in progress.
+// Regression test for https://crbug.com/923423.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       RestoreAndAddSubframeDuringPendingBack) {
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+
+  // 1. Start in a tab with 2 NavigationEntries.
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  NavigationEntryImpl* entry1 = controller.GetLastCommittedEntry();
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  NavigationEntryImpl* entry2 = controller.GetLastCommittedEntry();
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(url_2, root->current_url());
+
+  // 2. Create NavigationEntries with the same PageState as the current entries.
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  std::unique_ptr<NavigationEntryImpl> restored_entry1 =
+      NavigationEntryImpl::FromNavigationEntry(
+          NavigationController::CreateNavigationEntry(
+              url_1, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD,
+              false, std::string(), controller.GetBrowserContext(),
+              nullptr /* blob_url_loader_factory */));
+  restored_entry1->SetPageState(entry1->GetPageState(), context.get());
+  std::unique_ptr<NavigationEntryImpl> restored_entry2 =
+      NavigationEntryImpl::FromNavigationEntry(
+          NavigationController::CreateNavigationEntry(
+              url_2, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD,
+              false, std::string(), controller.GetBrowserContext(),
+              nullptr /* blob_url_loader_factory */));
+  restored_entry2->SetPageState(entry2->GetPageState(), context.get());
+
+  // 3. Create a new tab and restore the entries.
+  Shell* new_shell = Shell::CreateNewWindow(
+      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  WebContentsImpl* new_web_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  NavigationControllerImpl& new_controller =
+      static_cast<NavigationControllerImpl&>(new_web_contents->GetController());
+  std::vector<std::unique_ptr<NavigationEntry>> entries;
+  entries.push_back(std::move(restored_entry1));
+  entries.push_back(std::move(restored_entry2));
+  new_controller.Restore(entries.size() - 1, RestoreType::kRestored, &entries);
+  {
+    TestNavigationObserver restore_observer(new_shell->web_contents());
+    new_controller.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+  NavigationEntryImpl* new_entry1 = new_controller.GetEntryAtIndex(0);
+  NavigationEntryImpl* new_entry2 = new_controller.GetEntryAtIndex(1);
+  EXPECT_EQ(new_entry2, new_controller.GetLastCommittedEntry());
+
+  // 4. Start and pause a back navigation in the new NavigationController, which
+  // will set the pending entry to `new_entry1`.
+  TestNavigationManager back_navigation_manager(new_shell->web_contents(),
+                                                url_1);
+  new_controller.GoBack();
+  EXPECT_TRUE(back_navigation_manager.WaitForRequestStart());
+  EXPECT_EQ(new_entry1, new_controller.GetPendingEntry());
+  EXPECT_TRUE(new_entry1->IsRestored());
+
+  // While waiting for the back navigation, add a new subframe and wait for it
+  // to commit. This should not change the restore status of new_entry1, which
+  // used to fail in https://crbug.com/923423 and caused a DCHECK crash. Note
+  // that passing true for `wait_for_navigation` does not work because it waits
+  // for load stop, which will not happen while the back navigation is pending.
+  TestNavigationObserver subframe_observer(new_web_contents);
+  CreateSubframe(new_web_contents, "child", url_2,
+                 false /* wait_for_navigation */);
+  subframe_observer.WaitForNavigationFinished();
+  EXPECT_EQ(new_entry2, new_controller.GetLastCommittedEntry());
+  EXPECT_EQ(new_entry1, new_controller.GetPendingEntry());
+  EXPECT_TRUE(new_entry1->IsRestored());
+
+  // Allow the back navigation to complete, clearing the restore status.
+  back_navigation_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(new_entry1->IsRestored());
+  EXPECT_EQ(new_entry1, new_controller.GetLastCommittedEntry());
+  EXPECT_EQ(2, new_controller.GetEntryCount());
+  EXPECT_EQ(0, new_controller.GetLastCommittedEntryIndex());
+}
+
 // Verifies that the |frame_unique_name| is set to the correct frame, so that we
 // can match subframe FrameNavigationEntries to newly created frames after
 // back/forward and restore.
