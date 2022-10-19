@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_LACROS_PROVIDER_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_LACROS_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_LACROS_PROVIDER_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_LACROS_PROVIDER_H_
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
@@ -51,4 +51,4 @@ class OmniboxLacrosProvider : public SearchProvider {
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_LACROS_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_LACROS_PROVIDER_H_

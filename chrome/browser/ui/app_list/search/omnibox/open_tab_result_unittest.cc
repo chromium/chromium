@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/open_tab_result.h"
+#include "chrome/browser/ui/app_list/search/omnibox/open_tab_result.h"
 
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/strcat.h"

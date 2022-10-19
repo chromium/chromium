@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OPEN_TAB_RESULT_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_OPEN_TAB_RESULT_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OPEN_TAB_RESULT_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OPEN_TAB_RESULT_H_
 
 #include <string>
 
@@ -69,4 +69,4 @@ class OpenTabResult : public ChromeSearchResult,
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_OPEN_TAB_RESULT_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OPEN_TAB_RESULT_H_

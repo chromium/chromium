@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_PROVIDER_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_PROVIDER_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_PROVIDER_H_
 
 #include <algorithm>
 #include <memory>
@@ -74,4 +74,4 @@ class OmniboxProvider : public SearchProvider,
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_PROVIDER_H_

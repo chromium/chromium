@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/omnibox_lacros_provider.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_lacros_provider.h"
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/app_list/search/omnibox_util.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/common/chrome_constants.h"

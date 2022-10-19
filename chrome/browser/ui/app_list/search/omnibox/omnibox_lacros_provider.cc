@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/omnibox_lacros_provider.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_lacros_provider.h"
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
@@ -13,10 +13,10 @@
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ui/app_list/search/omnibox_answer_result.h"
-#include "chrome/browser/ui/app_list/search/omnibox_result.h"
-#include "chrome/browser/ui/app_list/search/omnibox_util.h"
-#include "chrome/browser/ui/app_list/search/open_tab_result.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_answer_result.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_result.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_util.h"
+#include "chrome/browser/ui/app_list/search/omnibox/open_tab_result.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"

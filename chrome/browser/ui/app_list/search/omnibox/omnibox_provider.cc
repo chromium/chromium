@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/omnibox_provider.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_provider.h"
 
 #include <iterator>
 #include <string>
@@ -24,10 +24,10 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/types_util.h"
-#include "chrome/browser/ui/app_list/search/omnibox_answer_result.h"
-#include "chrome/browser/ui/app_list/search/omnibox_result.h"
-#include "chrome/browser/ui/app_list/search/omnibox_util.h"
-#include "chrome/browser/ui/app_list/search/open_tab_result.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_answer_result.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_result.h"
+#include "chrome/browser/ui/app_list/search/omnibox/omnibox_util.h"
+#include "chrome/browser/ui/app_list/search/omnibox/open_tab_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
