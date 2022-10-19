@@ -181,7 +181,8 @@ ACTIVE_INTERNAL_BUILDER_SUBQUERY = """\
 
 KNOWN_TEST_ID_PREFIXES = [
     'ninja://:blink_web_tests/',
-    'ninja://:webgpu_blink_web_tests',
+    'ninja://:blink_wpt_tests/',
+    'ninja://:webgpu_blink_web_tests/',
 ]
 
 # The default timeout of most web tests is 6 seconds, so use that if we happen

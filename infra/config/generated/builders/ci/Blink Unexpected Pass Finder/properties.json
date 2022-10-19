@@ -20,8 +20,11 @@
         "chrome-unexpected-pass-data",
         "--no-include-internal-builders",
         "--remove-stale-expectations",
+        "--large-query-mode",
         "--num-samples",
-        "200"
+        "200",
+        "--jobs",
+        "4"
       ],
       "cl_title": "Remove stale Blink expectations",
       "reviewer_list": {

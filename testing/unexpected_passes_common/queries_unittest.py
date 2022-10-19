@@ -97,6 +97,11 @@ class QueryBuilderUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       unittest_utils.CreateGenericQuerier(num_samples=-1)
 
+  def testInvalidNumJobs(self) -> None:
+    """Tests that the number of jobs is validated."""
+    with self.assertRaises(AssertionError):
+      unittest_utils.CreateGenericQuerier(num_jobs=0)
+
   def testNoResults(self) -> None:
     """Tests functionality if the query returns no results."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(stdout='[]')

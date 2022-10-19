@@ -77,6 +77,11 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
                             'intended for use in CL descriptions. If not '
                             'specified, will be printed to the terminal '
                             'instead.'))
+  parser.add_argument('--jobs',
+                      '-j',
+                      type=int,
+                      help=('How many parallel jobs to run. By default, runs '
+                            'all work in parallel.'))
   internal_group = parser.add_mutually_exclusive_group()
   internal_group.add_argument('--include-internal-builders',
                               action='store_true',

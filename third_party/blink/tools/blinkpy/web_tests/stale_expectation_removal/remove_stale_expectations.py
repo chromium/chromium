@@ -50,7 +50,7 @@ def main() -> int:
 
     querier = queries.WebTestBigQueryQuerier(None, args.project,
                                              args.num_samples,
-                                             args.large_query_mode)
+                                             args.large_query_mode, args.jobs)
     # Unmatched results are mainly useful for script maintainers, as they don't
     # provide any additional information for the purposes of finding
     # unexpectedly passing tests or unused expectations.

@@ -2434,8 +2434,14 @@ ci.builder(
                     "chrome-unexpected-pass-data",
                     "--no-include-internal-builders",
                     "--remove-stale-expectations",
+                    "--large-query-mode",
                     "--num-samples",
                     "200",
+                    # We need to limit the max number of parallel jobs in order
+                    # to avoid having large memory usage spikes that can kill
+                    # the bot due to swap space not being enabled.
+                    "--jobs",
+                    "4",
                 ],
             },
         ],

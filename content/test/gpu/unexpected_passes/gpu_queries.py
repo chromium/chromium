@@ -184,9 +184,8 @@ TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP = {
 
 
 class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
-  def __init__(self, suite: str, project: str, num_samples: int,
-               large_query_mode: bool):
-    super().__init__(suite, project, num_samples, large_query_mode)
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
 
     self._check_webgl_version = None
     self._webgl_version_tag = None
