@@ -16,15 +16,21 @@ BASE_FEATURE(kEnableOpenInDownload,
              "EnableFREDefaultBrowserScreenTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kOpenInDownloadParameterName[] = "default";
+
 const char kOpenInDownloadInShareButtonParam[] = "variant_with_openin_download";
 const char kOpenInDownloadWithWKDownloadParam[] = "variant_with_wkdownload";
 const char kOpenInDownloadWithV2Param[] = "variant_with_v2";
 
+std::string GetFeatureParameter() {
+  return base::GetFieldTrialParamValueByFeature(kEnableOpenInDownload,
+                                                kOpenInDownloadParameterName);
+}
+
 bool IsOpenInDownloadInShareButton() {
   if (@available(iOS 14.5, *)) {
     if (base::FeatureList::IsEnabled(kEnableOpenInDownload)) {
-      return base::GetFieldTrialParamByFeatureAsBool(
-          kEnableOpenInDownload, kOpenInDownloadInShareButtonParam, false);
+      return GetFeatureParameter() == kOpenInDownloadInShareButtonParam;
     }
   }
   return false;
@@ -33,8 +39,7 @@ bool IsOpenInDownloadInShareButton() {
 bool IsOpenInDownloadWithWKDownload() {
   if (@available(iOS 14.5, *)) {
     if (base::FeatureList::IsEnabled(kEnableOpenInDownload)) {
-      return base::GetFieldTrialParamByFeatureAsBool(
-          kEnableOpenInDownload, kOpenInDownloadWithWKDownloadParam, false);
+      return GetFeatureParameter() == kOpenInDownloadWithWKDownloadParam;
     }
   }
   return false;
@@ -43,8 +48,7 @@ bool IsOpenInDownloadWithWKDownload() {
 bool IsOpenInDownloadWithV2() {
   if (@available(iOS 14.5, *)) {
     if (base::FeatureList::IsEnabled(kEnableOpenInDownload)) {
-      return base::GetFieldTrialParamByFeatureAsBool(
-          kEnableOpenInDownload, kOpenInDownloadWithV2Param, false);
+      return GetFeatureParameter() == kOpenInDownloadWithV2Param;
     }
   }
   return false;

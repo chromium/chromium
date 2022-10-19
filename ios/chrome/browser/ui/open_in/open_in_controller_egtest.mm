@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/ui/open_in/open_in_controller_egtest.h"
+
 #import <UIKit/UIKit.h>
 
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/ui/open_in/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -23,6 +27,8 @@
 #error "This file requires ARC support."
 #endif
 
+NSString* kPNGFilename = @"chromium_logo";
+
 namespace {
 
 // Path which leads to a PDF file.
@@ -34,24 +40,35 @@ const char kPNGPath[] = "/chromium_logo.png";
 // Path wich leads to a MOV file.
 const char kMOVPath[] = "/video_sample.mov";
 
+// Accessibility ID of the Activity menu.
+NSString* kActivityMenuIdentifier = @"ActivityListView";
+
 // Matcher for the Cancel button.
 id<GREYMatcher> ShareMenuDismissButton() {
   return chrome_test_util::CloseButton();
 }
-
 }  // namespace
 
 using base::test::ios::kWaitForDownloadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
-// Tests Open in Feature.
-@interface OpenInManagerTestCase : ChromeTestCase
-@end
-
-@implementation OpenInManagerTestCase
+@implementation ZZZOpenInManagerTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+
+  config.additional_args.push_back(
+      "--enable-features=" + std::string(kEnableOpenInDownload.name) + "<" +
+      std::string(kEnableOpenInDownload.name));
+
+  config.additional_args.push_back(
+      "--force-fieldtrials=" + std::string(kEnableOpenInDownload.name) +
+      "/Test");
+
+  config.additional_args.push_back(
+      "--force-fieldtrial-params=" + std::string(kEnableOpenInDownload.name) +
+      ".Test:" + std::string(kOpenInDownloadParameterName) + "/" + _variant);
+
   return config;
 }
 
@@ -60,38 +77,99 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
-// Tests that open in button appears when opening a PDF, and that tapping on it
-// will open the activity view.
-- (void)testOpenInPDF {
-  // Apple is hiding UIActivityViewController's content from the host app on
-  // iPad.
-  if ([ChromeEarlGrey isIPadIdiom])
-    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+#pragma mark - Public
 
-  // Open the activity menu.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
+- (void)openActivityMenu {
+  // TODO(crbug.com/1357553): Remove when Open In download experiment is
+  // finished.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
+      assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
+}
 
-  // Wait for the dialog with filename label to appear.
+- (void)offlineAssertBehavior {
+  // TODO(crbug.com/1357553): Remove when Open In download experiment is
+  // finished.
+  // Wait for the dialog containing the error to appear.
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_text(@"testpage"),
-                                            grey_sufficientlyVisible(), nil)]
+        selectElementWithMatcher:grey_allOf(
+                                     grey_text(l10n_util::GetNSStringWithFixup(
+                                         IDS_IOS_OPEN_IN_FILE_DOWNLOAD_FAILED)),
+                                     grey_sufficientlyVisible(), nil)]
         assertWithMatcher:grey_notNil()
                     error:&error];
     return error == nil;
   };
   GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
+             @"Waiting for the error dialog to appear");
+}
+
+- (BOOL)shouldSkipIpad {
+  // Apple is hiding UIActivityViewController's content from the host app on
+  // iPad.
+  return YES;
+}
+
+- (void)closeActivityMenu {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Tap the share button to dismiss the popover.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:ShareMenuDismissButton()]
+        performAction:grey_tap()];
+  }
+}
+
+- (void)assertActivityServiceVisible {
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(kActivityMenuIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
              @"Waiting for the open in dialog to appear");
+}
+
+- (void)assertActivityMenuDismissed {
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(kActivityMenuIdentifier)]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
+             @"Waiting for the open in dialog to disappear");
+}
+
+#pragma mark - Tests
+
+// Tests that open in button appears when opening a PDF, and that tapping on it
+// will open the activity view.
+- (void)testOpenInPDF {
+  if ([ChromeEarlGrey isIPadIdiom] && [self shouldSkipIpad]) {
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
+  // Open the activity menu.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
+  [self openActivityMenu];
+
+  [self assertActivityServiceVisible];
 
   // Check that tapping on the Cancel button closes the activity menu and hides
   // the open in toolbar.
-  [[EarlGrey selectElementWithMatcher:ShareMenuDismissButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ShareMenuDismissButton()]
-      assertWithMatcher:grey_notVisible()];
+  [self closeActivityMenu];
+  [self assertActivityMenuDismissed];
+  // TODO(crbug.com/1357553): Remove when Open In download experiment is
+  // finished.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       assertWithMatcher:grey_notVisible()];
 }
@@ -99,35 +177,21 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 // Tests that open in button appears when opening a PNG, and that tapping on it
 // will open the activity view.
 - (void)testOpenInPNG {
-  // Apple is hiding UIActivityViewController's content from the host app on
-  // iPad.
-  if ([ChromeEarlGrey isIPadIdiom])
+  if ([ChromeEarlGrey isIPadIdiom] && [self shouldSkipIpad]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
 
   // Open the activity menu.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPNGPath)];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-      performAction:grey_tap()];
-
-  // Wait for the dialog with filename label to appear.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_text(@"chromium_logo"),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
-             @"Waiting for the open in dialog to appear");
+  [self openActivityMenu];
+  [self assertActivityServiceVisible];
 
   // Check that tapping on the Cancel button closes the activity menu and hides
   // the open in toolbar.
-  [[EarlGrey selectElementWithMatcher:ShareMenuDismissButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ShareMenuDismissButton()]
-      assertWithMatcher:grey_notVisible()];
+  [self closeActivityMenu];
+  [self assertActivityMenuDismissed];
+  // TODO(crbug.com/1357553): Remove when Open In download experiment is
+  // finished.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       assertWithMatcher:grey_notVisible()];
 }
@@ -143,31 +207,85 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 // the test server, the appropriate error message is displayed.
 - (void)testOpenInOfflineServer {
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPNGPath)];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-      assertWithMatcher:grey_notNil()];
-
   // Shutdown the test server.
   GREYAssertTrue(self.testServer->ShutdownAndWaitUntilComplete(),
                  @"Server did not shutdown.");
 
   // Open the activity menu.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-      performAction:grey_tap()];
+  [self openActivityMenu];
+  [self offlineAssertBehavior];
+}
 
-  // Wait for the dialog containing the error to appear.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(
-                                     grey_text(l10n_util::GetNSStringWithFixup(
-                                         IDS_IOS_OPEN_IN_FILE_DOWNLOAD_FAILED)),
-                                     grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
-             @"Waiting for the error dialog to appear");
+@end
+
+// Test using WKDownload.
+@interface OpenInWithWKDownloadTestCase : ZZZOpenInManagerTestCase
+@end
+
+@implementation OpenInWithWKDownloadTestCase
+
+- (void)setUp {
+  _variant = std::string(kOpenInDownloadWithWKDownloadParam);
+  [super setUp];
+}
+
+- (void)openActivityMenu {
+  [ChromeEarlGreyUI openShareMenu];
+}
+
+- (void)offlineAssertBehavior {
+  [self assertActivityServiceVisible];
+  // Ensure that the link is shared.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(kPNGFilename),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+  [self closeActivityMenu];
+  [self assertActivityMenuDismissed];
+}
+
+- (BOOL)shouldSkipIpad {
+  return NO;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
+}
+
+@end
+
+// Test using legacy download in share button.
+@interface OpenInWithLegacyTestCase : ZZZOpenInManagerTestCase
+@end
+
+@implementation OpenInWithLegacyTestCase
+
+- (void)setUp {
+  _variant = std::string(kOpenInDownloadInShareButtonParam);
+  [super setUp];
+}
+
+- (void)openActivityMenu {
+  [ChromeEarlGreyUI openShareMenu];
+}
+
+- (void)offlineAssertBehavior {
+  [self assertActivityServiceVisible];
+  // Ensure that the link is shared.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(kPNGFilename),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+  [self closeActivityMenu];
+  [self assertActivityMenuDismissed];
+}
+
+- (BOOL)shouldSkipIpad {
+  return NO;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end

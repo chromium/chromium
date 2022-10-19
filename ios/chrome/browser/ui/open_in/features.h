@@ -10,6 +10,10 @@
 // Feature flag that enables Open In download.
 BASE_DECLARE_FEATURE(kEnableOpenInDownload);
 
+// Feature parameters for Open In download. If no parameter is set, the  default
+// download and toolbar will be used.
+extern const char kOpenInDownloadParameterName[];
+
 // Indicates which Open In download variant to use.
 extern const char kOpenInDownloadInShareButtonParam[];
 extern const char kOpenInDownloadWithWKDownloadParam[];

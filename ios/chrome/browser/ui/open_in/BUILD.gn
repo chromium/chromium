@@ -100,8 +100,12 @@ source_set("eg2_tests") {
   ]
   testonly = true
 
-  sources = [ "open_in_controller_egtest.mm" ]
+  sources = [
+    "open_in_controller_egtest.h",
+    "open_in_controller_egtest.mm",
+  ]
   deps = [
+    ":features",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/test:eg_test_support+eg2",
