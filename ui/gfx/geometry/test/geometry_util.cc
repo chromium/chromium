@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/insets.h"
@@ -67,6 +68,14 @@ template <typename T>
          << rhs_expr << "\n    Which is: " << rhs.ToString() << "\nexceeds "
          << abs_error_expr << "\n    Which is: " << abs_error;
 }
+
+struct SkRectToString {
+  SkRect r;
+  std::string ToString() const {
+    return base::StringPrintf("SkRect::MakeLTRB(%g, %g, %g, %g)", r.left(),
+                              r.top(), r.right(), r.bottom());
+  }
+};
 
 }  // namespace
 
@@ -288,8 +297,14 @@ Transform InvertAndCheck(const Transform& transform) {
                                                   const char* rhs_expr,
                                                   const SkRect& lhs,
                                                   const SkRect& rhs) {
-  return AssertRectFloatEqual(lhs_expr, rhs_expr, SkRectToRectF(lhs),
-                              SkRectToRectF(rhs));
+  if (FloatAlmostEqual(lhs.x(), rhs.x()) &&
+      FloatAlmostEqual(lhs.y(), rhs.y()) &&
+      FloatAlmostEqual(lhs.right(), rhs.right()) &&
+      FloatAlmostEqual(lhs.bottom(), rhs.bottom())) {
+    return ::testing::AssertionSuccess();
+  }
+  return EqFailure(lhs_expr, rhs_expr, SkRectToString{lhs},
+                   SkRectToString{rhs});
 }
 
 ::testing::AssertionResult AssertSizeFloatEqual(const char* lhs_expr,
@@ -402,6 +417,10 @@ void PrintTo(const MaskFilterInfo& info, ::std::ostream* os) {
 
 void PrintTo(const SelectionBound& bound, ::std::ostream* os) {
   *os << bound.ToString();
+}
+
+void PrintTo(const SkRect& rect, ::std::ostream* os) {
+  *os << SkRectToString{rect}.ToString();
 }
 
 }  // namespace gfx

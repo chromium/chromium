@@ -24,6 +24,22 @@ TEST(SkiaConversionsTest, SkiaRectConversions) {
   EXPECT_EQ(fsrc.ToString(), SkRectToRectF(skrect).ToString());
 }
 
+TEST(SkiaConversionsTest, RectToSkRectAccuracy) {
+  // For a gfx::Rect with large negative x/y and large with/height, but small
+  // right/bottom, we expect the converted SkRect has accurate right/bottom,
+  // to make sure the right/bottom edge, which is likely to be visible, to be
+  // rendered correctly.
+  Rect r;
+  for (int i = 0; i < 50; i++) {
+    r.SetByBounds(-30000000, -28000000, i, i + 1);
+    EXPECT_EQ(i, r.right());
+    EXPECT_EQ(i + 1, r.bottom());
+    SkRect skrect = RectToSkRect(r);
+    EXPECT_EQ(i, skrect.right());
+    EXPECT_EQ(i + 1, skrect.bottom());
+  }
+}
+
 TEST(SkiaConversionsTest, SkIRectToRectClamping) {
   // This clamping only makes sense if SkIRect and gfx::Rect have the same size.
   // Otherwise, either other overflows can occur that we don't handle, or no

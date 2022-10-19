@@ -38,13 +38,13 @@ PointF SkPointToPointF(const SkPoint& point) {
 }
 
 SkRect RectToSkRect(const Rect& rect) {
-  return SkRect::MakeXYWH(SkIntToScalar(rect.x()), SkIntToScalar(rect.y()),
-                          SkIntToScalar(rect.width()),
-                          SkIntToScalar(rect.height()));
+  return SkRect::MakeLTRB(SkIntToScalar(rect.x()), SkIntToScalar(rect.y()),
+                          SkIntToScalar(rect.right()),
+                          SkIntToScalar(rect.bottom()));
 }
 
 SkIRect RectToSkIRect(const Rect& rect) {
-  return SkIRect::MakeXYWH(rect.x(), rect.y(), rect.width(), rect.height());
+  return SkIRect::MakeLTRB(rect.x(), rect.y(), rect.right(), rect.bottom());
 }
 
 Rect SkIRectToRect(const SkIRect& rect) {
@@ -54,9 +54,9 @@ Rect SkIRectToRect(const SkIRect& rect) {
 }
 
 SkRect RectFToSkRect(const RectF& rect) {
-  return SkRect::MakeXYWH(SkFloatToScalar(rect.x()), SkFloatToScalar(rect.y()),
-                          SkFloatToScalar(rect.width()),
-                          SkFloatToScalar(rect.height()));
+  return SkRect::MakeLTRB(SkFloatToScalar(rect.x()), SkFloatToScalar(rect.y()),
+                          SkFloatToScalar(rect.right()),
+                          SkFloatToScalar(rect.bottom()));
 }
 
 RectF SkRectToRectF(const SkRect& rect) {

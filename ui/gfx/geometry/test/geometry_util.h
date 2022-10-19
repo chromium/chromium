@@ -5,6 +5,8 @@
 #ifndef UI_GFX_GEOMETRY_TEST_GEOMETRY_UTIL_H_
 #define UI_GFX_GEOMETRY_TEST_GEOMETRY_UTIL_H_
 
+#include <iosfwd>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 struct SkRect;
@@ -200,6 +202,8 @@ Transform InvertAndCheck(const Transform& transform);
                                                   const char* rhs_expr,
                                                   const InsetsF& lhs,
                                                   const InsetsF& rhs);
+
+void PrintTo(const SkRect& rect, ::std::ostream* os);
 
 }  // namespace gfx
 
