@@ -52,37 +52,30 @@ if (is_win && use_allocator_shim) {
          "The allocator shim doesn't work for the component build on Windows.")
 }
 
-declare_args() {
-  # If we use PartitionAlloc as default allocator and enable its MTECheckedPtr
-  # support as default, we can use_mte_checked_ptr=true as default.
-  use_mte_checked_ptr =
-      enable_mte_checked_ptr_support_default && use_partition_alloc &&
-      enable_partition_alloc_as_malloc_support
-}
-
-# use_backup_ref_ptr=true compiles BackupRefPtrImpl as the implementation of
-# raw_ptr<T>.
+# |use_backup_ref_ptr| and |use_mte_checked_ptr|, if true, compile
+# BackupRefPtrImpl and MTECheckedPtrImp, respectively, as the implementation of
+# raw_ptr<T>. They're mutually exclusive.
 #
-# To do so, we need:
-# - PartitionAlloc to be compiled in to begin with
-# - BackupRefPtr (BRP) support to be compiled into PartitionAlloc
-# - PartitionAlloc-Everywhere to be enabled(*)
+# To enable them, we need:
+# - PartitionAlloc to be compiled in to begin with,
+# - BackupRefPtr/MTECheckedPtr support to be compiled into PartitionAlloc,
+# - PartitionAlloc-Everywhere to be enabled(*),
 # - not be built for NaCl, as it doesn't use PartitionAlloc-Everywhere (but is
-#   somehow part of the build process with all other non-NaCl goods)
+#   somehow part of the build process with all other non-NaCl goods); moreover,
+#   MTECheckedPtr works only with 64-bit pointers, which NaCl doesn't have.
 #
 # Note that making BackupRefPtrImpl the implementation of raw_ptr<T> doesn't
-# necessarily enable BRP protection. One has to additionally enable
-# PartitionAllocBackupRefPtr feature flag.
+# necessarily enable BackupRefPtr (BRP) protection. One has to additionally
+# enable PartitionAllocBackupRefPtr feature flag.
 #
-# (*) In theory, BRP will work just fine without PartitionAlloc-Everywhere,
-#     but its scope would be limited to partitions that are invoked explicitly
-#     (not via malloc). These are only Blink partition, where we currently don't
-#     even use raw_ptr<T>.
+# (*) In theory, BRP/MTECheckedPtr will work just fine without
+#     PartitionAlloc-Everywhere, but their scope would be limited to partitions
+#     that are invoked explicitly (not via malloc). These are only Blink
+#     partition, where we currently don't even use raw_ptr<T>.
 use_backup_ref_ptr = use_partition_alloc && enable_backup_ref_ptr_support &&
                      enable_partition_alloc_as_malloc_support && !is_nacl
-
-assert(!use_mte_checked_ptr || enable_mte_checked_ptr_support,
-       "MTECheckedPtr needs enable_mte_checked_ptr_support.")
+use_mte_checked_ptr = use_partition_alloc && enable_mte_checked_ptr_support &&
+                      enable_partition_alloc_as_malloc_support && !is_nacl
 
 assert(!(use_backup_ref_ptr && use_mte_checked_ptr),
        "MTECheckedPtr conflicts with BRP.")
