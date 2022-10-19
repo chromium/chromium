@@ -1260,6 +1260,19 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         _THIRD_PARTY_EXCEPT_BLINK,
       ],
     ),
+    BanRule(
+      r'\bchartorune\b',
+      (
+        'chartorune is not memory-safe, unless you can guarantee the input ',
+        'string is always null-terminated. Otherwise, please use charntorune ',
+        'from libphonenumber instead.'
+      ),
+      True,
+      [
+        _THIRD_PARTY_EXCEPT_BLINK,
+        # Exceptions to this rule should have a fuzzer.
+      ],
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
