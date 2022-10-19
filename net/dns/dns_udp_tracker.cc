@@ -63,9 +63,8 @@ DnsUdpTracker& DnsUdpTracker::operator=(DnsUdpTracker&&) = default;
 void DnsUdpTracker::RecordQuery(uint16_t port, uint16_t query_id) {
   PurgeOldRecords();
 
-  int reused_port_count = base::checked_cast<int>(std::count_if(
-      recent_queries_.cbegin(), recent_queries_.cend(),
-      [port](const auto& recent_query) { return port == recent_query.port; }));
+  int reused_port_count = base::checked_cast<int>(
+      base::ranges::count(recent_queries_, port, &QueryData::port));
 
   if (reused_port_count >= kPortReuseThreshold && !low_entropy_) {
     low_entropy_ = true;

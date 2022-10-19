@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -381,10 +381,6 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     return false;
   }
 
-  int CountInString(const std::string& str, char c) {
-    return std::count(str.begin(), str.end(), c);
-  }
-
   void TestHostGarbageCollectHelper() {
     const char kHistogramName[] = "Cookie.NumDomainPurgedKeys";
     int domain_max_cookies = CookieMonster::kDomainMaxCookies;
@@ -400,7 +396,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
         // Make sure we find it in the cookies.
         EXPECT_NE(cookies.find(cookie), std::string::npos);
         // Count the number of cookies.
-        EXPECT_LE(CountInString(cookies, '='), domain_max_cookies);
+        EXPECT_LE(base::ranges::count(cookies, '='), domain_max_cookies);
       }
       base::HistogramTester histogram_tester;
       EXPECT_TRUE(cm->DoRecordPeriodicStatsForTesting());
@@ -425,8 +421,8 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
         std::string cookies_specific =
             this->GetCookies(cm.get(), url_google_specific);
         EXPECT_NE(cookies_specific.find(cookie_specific), std::string::npos);
-        EXPECT_LE((CountInString(cookies_general, '=') +
-                   CountInString(cookies_specific, '=')),
+        EXPECT_LE((base::ranges::count(cookies_general, '=') +
+                   base::ranges::count(cookies_specific, '=')),
                   domain_max_cookies);
       }
       // After all this, there should be at least
@@ -435,8 +431,8 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
           this->GetCookies(cm.get(), http_www_foo_.url());
       std::string cookies_specific =
           this->GetCookies(cm.get(), url_google_specific);
-      int total_cookies = (CountInString(cookies_general, '=') +
-                           CountInString(cookies_specific, '='));
+      int total_cookies = (base::ranges::count(cookies_general, '=') +
+                           base::ranges::count(cookies_specific, '='));
       EXPECT_GE(total_cookies, domain_max_cookies - domain_purge_cookies);
       EXPECT_LE(total_cookies, domain_max_cookies);
 
@@ -460,7 +456,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
           // Make sure we find it in the cookies.
           EXPECT_NE(cookies.find(cookie), std::string::npos);
           // Count the number of cookies.
-          EXPECT_LE(CountInString(cookies, '='), domain_max_cookies);
+          EXPECT_LE(base::ranges::count(cookies, '='), domain_max_cookies);
         }
         base::HistogramTester histogram_tester;
         EXPECT_TRUE(cm->DoRecordPeriodicStatsForTesting());
@@ -478,7 +474,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
         // Make sure we find it in the cookies.
         EXPECT_NE(cookies.find(cookie), std::string::npos);
         // Count the number of cookies.
-        EXPECT_LE(CountInString(cookies, '='), domain_max_cookies);
+        EXPECT_LE(base::ranges::count(cookies, '='), domain_max_cookies);
       }
       base::HistogramTester histogram_tester;
       EXPECT_TRUE(cm->DoRecordPeriodicStatsForTesting());

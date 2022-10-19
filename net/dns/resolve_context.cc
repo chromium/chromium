@@ -19,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
@@ -171,8 +172,8 @@ size_t ResolveContext::NumAvailableDohServers(const DnsSession* session) const {
   if (!IsCurrentSession(session))
     return 0;
 
-  return std::count_if(doh_server_stats_.cbegin(), doh_server_stats_.cend(),
-                       &ServerStatsToDohAvailability);
+  return base::ranges::count_if(doh_server_stats_,
+                                &ServerStatsToDohAvailability);
 }
 
 void ResolveContext::RecordServerFailure(size_t server_index,

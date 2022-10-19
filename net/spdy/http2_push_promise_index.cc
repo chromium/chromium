@@ -4,9 +4,9 @@
 
 #include "net/spdy/http2_push_promise_index.h"
 
-#include <algorithm>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
 namespace net {
@@ -62,11 +62,8 @@ size_t Http2PushPromiseIndex::CountStreamsForSession(
     const Delegate* delegate) const {
   DCHECK(delegate);
 
-  return std::count_if(unclaimed_pushed_streams_.begin(),
-                       unclaimed_pushed_streams_.end(),
-                       [&delegate](const UnclaimedPushedStream& entry) {
-                         return entry.delegate == delegate;
-                       });
+  return base::ranges::count(unclaimed_pushed_streams_, delegate,
+                             &UnclaimedPushedStream::delegate);
 }
 
 spdy::SpdyStreamId Http2PushPromiseIndex::FindStream(
