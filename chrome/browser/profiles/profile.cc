@@ -463,7 +463,7 @@ void Profile::MaybeSendDestroyedNotification() {
   sent_destroyed_notification_ = true;
 
   // Instrumentation for https://crbug.com/1359689,
-  auto weak_this = weak_factory_.GetWeakPtr();
+  auto weak_this = GetWeakPtr();
 
   NotifyWillBeDestroyed();
   CHECK(weak_this);
@@ -545,4 +545,8 @@ variations::VariationsClient* Profile::GetVariationsClient() {
 
 content::ResourceContext* Profile::GetResourceContext() {
   return resource_context_.get();
+}
+
+base::WeakPtr<Profile> Profile::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
