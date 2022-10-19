@@ -109,8 +109,9 @@ void FakeDebugDaemonClient::StartAgentTracing(
 void FakeDebugDaemonClient::StopAgentTracing(
     StopAgentTracingCallback callback) {
   std::string trace_data = "# tracer: nop\n";
-  std::move(callback).Run(GetTracingAgentName(), GetTraceEventLabel(),
-                          base::RefCountedString::TakeString(&trace_data));
+  std::move(callback).Run(
+      GetTracingAgentName(), GetTraceEventLabel(),
+      base::MakeRefCounted<base::RefCountedString>(std::move(trace_data)));
 }
 
 void FakeDebugDaemonClient::SetStopAgentTracingTaskRunner(

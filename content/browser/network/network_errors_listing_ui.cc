@@ -64,7 +64,8 @@ void HandleWebUIRequestCallback(BrowserContext* current_context,
   data.Set(kErrorCodesDataName, GetNetworkErrorData());
   std::string json_string;
   base::JSONWriter::Write(data, &json_string);
-  std::move(callback).Run(base::RefCountedString::TakeString(&json_string));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(json_string)));
 }
 
 }  // namespace

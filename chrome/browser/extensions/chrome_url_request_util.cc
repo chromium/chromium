@@ -71,7 +71,7 @@ scoped_refptr<base::RefCountedMemory> GetResource(
                             bytes->size());
     std::string temp_str = ui::ReplaceTemplateExpressions(input, *replacements);
     DCHECK(!temp_str.empty());
-    return base::RefCountedString::TakeString(&temp_str);
+    return base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
   } else {
     return bytes;
   }

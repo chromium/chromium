@@ -276,8 +276,8 @@ void Shell::LoadDataWithBaseURLInternal(const GURL& url,
     params.url = GURL(data_url_header);
     std::string data_url_as_string = data_url_header + data;
 #if BUILDFLAG(IS_ANDROID)
-    params.data_url_as_string =
-        base::RefCountedString::TakeString(&data_url_as_string);
+    params.data_url_as_string = base::MakeRefCounted<base::RefCountedString>(
+        std::move(data_url_as_string));
 #endif
   } else {
     params.url = GURL(data_url_header + data);

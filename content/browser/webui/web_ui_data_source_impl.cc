@@ -382,7 +382,8 @@ void WebUIDataSourceImpl::SendLocalizedStringsAsJSON(
     bool from_js_module) {
   std::string template_data;
   webui::AppendJsonJS(localized_strings_, &template_data, from_js_module);
-  std::move(callback).Run(base::RefCountedString::TakeString(&template_data));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(template_data)));
 }
 
 const base::Value::Dict* WebUIDataSourceImpl::GetLocalizedStrings() const {

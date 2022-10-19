@@ -287,7 +287,8 @@ void HandleAccessibilityRequestCallback(
   std::string json_string;
   base::JSONWriter::Write(data, &json_string);
 
-  std::move(callback).Run(base::RefCountedString::TakeString(&json_string));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(json_string)));
 }
 
 std::string RecursiveDumpAXPlatformNodeAsString(

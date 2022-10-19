@@ -99,7 +99,8 @@ void OnTraceBufferUsageResult(WebUIDataSource::GotDataCallback callback,
                               float percent_full,
                               size_t approximate_event_count) {
   std::string str = base::NumberToString(percent_full);
-  std::move(callback).Run(base::RefCountedString::TakeString(&str));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(str)));
 }
 
 bool GetTraceBufferUsage(WebUIDataSource::GotDataCallback callback) {
@@ -121,7 +122,8 @@ bool GetTraceBufferUsage(WebUIDataSource::GotDataCallback callback) {
             usage = base::NumberToString(percent_full);
           }
           std::move(shared_callback->data)
-              .Run(base::RefCountedString::TakeString(&usage));
+              .Run(base::MakeRefCounted<base::RefCountedString>(
+                  std::move(usage)));
         });
     return true;
   }
@@ -219,7 +221,7 @@ void OnTracingRequest(const std::string& path,
   if (!OnBeginJSONRequest(path, std::move(split_callback.first))) {
     std::string error("##ERROR##");
     std::move(split_callback.second)
-        .Run(base::RefCountedString::TakeString(&error));
+        .Run(base::MakeRefCounted<base::RefCountedString>(std::move(error)));
   }
 }
 

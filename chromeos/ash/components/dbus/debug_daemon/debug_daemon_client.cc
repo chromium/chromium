@@ -939,8 +939,9 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     pipe_reader_.reset();
     std::string pipe_data =
         result.has_value() ? std::move(result).value() : std::string();
-    std::move(callback_).Run(GetTracingAgentName(), GetTraceEventLabel(),
-                             base::RefCountedString::TakeString(&pipe_data));
+    std::move(callback_).Run(
+        GetTracingAgentName(), GetTraceEventLabel(),
+        base::MakeRefCounted<base::RefCountedString>(std::move(pipe_data)));
   }
 
   void OnSetOomScoreAdj(SetOomScoreAdjCallback callback,

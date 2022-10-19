@@ -42,7 +42,7 @@ struct LazyDirectoryListerCacher {
             IDR_DIR_HEADER_HTML),
         value);
 
-    html_data = base::RefCountedString::TakeString(&str);
+    html_data = base::MakeRefCounted<base::RefCountedString>(std::move(str));
   }
 
   scoped_refptr<base::RefCountedMemory> html_data;

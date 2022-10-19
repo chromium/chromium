@@ -888,7 +888,7 @@ gfx::Image Create1xFaviconFromPNGFile(const std::string& path) {
   std::string contents;
   base::ReadFileToString(full_path, &contents);
   return gfx::Image::CreateFrom1xPNGBytes(
-      base::RefCountedString::TakeString(&contents));
+      base::MakeRefCounted<base::RefCountedString>(std::move(contents)));
 }
 
 std::string IndexedURL(size_t i) {

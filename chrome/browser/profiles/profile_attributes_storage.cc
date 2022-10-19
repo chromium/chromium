@@ -108,7 +108,7 @@ gfx::Image ReadBitmap(const base::FilePath& image_path) {
   }
 
   gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
-      base::RefCountedString::TakeString(&image_data));
+      base::MakeRefCounted<base::RefCountedString>(std::move(image_data)));
   if (image.IsEmpty())
     LOG(ERROR) << "Failed to decode PNG file.";
 

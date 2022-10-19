@@ -115,7 +115,8 @@ void MostVisitedIframeSource::SendJSWithOrigin(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           resource_id);
   base::ReplaceFirstSubstringAfterOffset(&response, 0, "{{ORIGIN}}", origin);
-  std::move(callback).Run(base::RefCountedString::TakeString(&response));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(response)));
 }
 
 bool MostVisitedIframeSource::GetOrigin(

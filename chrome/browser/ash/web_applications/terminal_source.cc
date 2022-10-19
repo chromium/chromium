@@ -92,10 +92,8 @@ void ReadFile(const base::FilePath downloads,
   }
 
   DCHECK(result) << path;
-
-  scoped_refptr<base::RefCountedString> response =
-      base::RefCountedString::TakeString(&content);
-  std::move(callback).Run(response.get());
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(content)));
 }
 }  // namespace
 

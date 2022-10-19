@@ -87,7 +87,7 @@ void ReadData(
     } else {
       temp_str = ui::ReplaceTemplateExpressions(input, *replacements);
     }
-    bytes = base::RefCountedString::TakeString(&temp_str);
+    bytes = base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
   }
 
   // The use of MojoCreateDataPipeOptions below means we'll be using uint32_t

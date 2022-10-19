@@ -308,7 +308,8 @@ NavigationControllerAndroid::LoadUrl(
     }
 #endif
     std::string s = data_url.spec();
-    params.data_url_as_string = base::RefCountedString::TakeString(&s);
+    params.data_url_as_string =
+        base::MakeRefCounted<base::RefCountedString>(std::move(s));
   }
 
   if (j_referrer_url) {
