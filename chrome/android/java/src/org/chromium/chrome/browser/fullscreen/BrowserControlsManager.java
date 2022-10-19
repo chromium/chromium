@@ -141,13 +141,20 @@ public class BrowserControlsManager
 
             try (TraceEvent e = TraceEvent.scoped(
                          "BrowserControlsManager.onAndroidVisibilityChanged")) {
-                // requestLayout is required to trigger a new gatherTransparentRegion(), which
-                // only occurs together with a layout and let's SurfaceFlinger trim overlays.
-                // This may be almost equivalent to using View.GONE, but we still use View.INVISIBLE
-                // since drawing caches etc. won't be destroyed, and the layout may be less
-                // expensive.
                 mControlContainer.getView().setVisibility(visibility);
-                mControlContainer.getView().requestLayout();
+                if (FeatureList.isInitialized()
+                        && !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+                    // requestLayout is required to trigger a new gatherTransparentRegion(), which
+                    // only occurs together with a layout and let's SurfaceFlinger trim overlays.
+                    // This may be almost equivalent to using View.GONE, but we still use
+                    // View.INVISIBLE since drawing caches etc. won't be destroyed, and the layout
+                    // may be less expensive. The overlay trimming optimization only works
+                    // pre-Android N (see https://crbug.com/725453), so this call should be removed
+                    // entirely once it's confirmed to be safe.
+                    mControlContainer.getView().requestLayout();
+                }
+
                 for (BrowserControlsStateProvider.Observer observer : mControlsObservers) {
                     observer.onAndroidVisibilityChanged(visibility);
                 }
