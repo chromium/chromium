@@ -777,6 +777,35 @@ AutofillWalletUsageData GetAutofillWalletUsageDataForVirtualCard() {
   return AutofillWalletUsageData::ForVirtualCard(virtual_card_usage_data);
 }
 
+std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
+    const std::vector<CardUnmaskChallengeOptionType>& types) {
+  std::vector<CardUnmaskChallengeOption> challenge_options;
+  for (CardUnmaskChallengeOptionType type : types) {
+    CardUnmaskChallengeOption card_unmask_challenge_option{.type = type};
+
+    switch (type) {
+      case CardUnmaskChallengeOptionType::kSmsOtp:
+        card_unmask_challenge_option.id = "123";
+        card_unmask_challenge_option.challenge_info = u"xxx-xxx-3547";
+        card_unmask_challenge_option.challenge_input_length = 6U;
+        break;
+      case CardUnmaskChallengeOptionType::kCvc:
+        card_unmask_challenge_option.id = "234";
+        card_unmask_challenge_option.challenge_info =
+            u"3 digit security code on the back of your card";
+        card_unmask_challenge_option.cvc_position = CvcPosition::kBackOfCard;
+        card_unmask_challenge_option.challenge_input_length = 3U;
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+
+    challenge_options.push_back(card_unmask_challenge_option);
+  }
+  return challenge_options;
+}
+
 void SetProfileInfo(AutofillProfile* profile,
                     const char* first_name,
                     const char* middle_name,

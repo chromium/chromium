@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -327,6 +328,11 @@ AutofillOfferData GetPromoCodeOfferData(
 // Return an Autofill Wallet Usage Data with dummy info specifically for a
 // Virtual Card.
 AutofillWalletUsageData GetAutofillWalletUsageDataForVirtualCard();
+
+// For each type in `types`, this function creates a challenge option with dummy
+// info that has the specific type.
+std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
+    const std::vector<CardUnmaskChallengeOptionType>& types);
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetProfileInfo| provides a quick way to populate a profile with
