@@ -61,7 +61,7 @@ void EncryptionModule::EncryptRecordImpl(
     base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) const {
   // Encryption key is available, encrypt.
   encryptor_->OpenRecord(base::BindOnce(
-      [](base::StringPiece record,
+      [](std::string record,
          base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
          StatusOr<Encryptor::Handle*> handle_result) {
         if (!handle_result.ok()) {
@@ -70,7 +70,7 @@ void EncryptionModule::EncryptRecordImpl(
         }
         base::ThreadPool::PostTask(
             FROM_HERE,
-            base::BindOnce(&AddToRecord, std::string(record),
+            base::BindOnce(&AddToRecord, record,
                            base::Unretained(handle_result.ValueOrDie()),
                            std::move(cb)));
       },

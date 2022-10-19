@@ -1428,7 +1428,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // Encrypt the result. The callback is partially bounded to include
     // compression information.
     storage_queue_->encryption_module_->EncryptRecord(
-        std::move(compressed_record_result),
+        compressed_record_result,
         base::BindOnce(&WriteContext::OnEncryptedRecordReady,
                        base::Unretained(this),
                        std::move(compression_information)));
