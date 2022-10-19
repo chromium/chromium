@@ -102,9 +102,8 @@ class WebSocketChannelImplTestBase : public PageTestBase {
     local_frame_client_ = MakeGarbageCollected<EmptyLocalFrameClient>();
     local_frame_client_->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::WebSocketConnector::Name_,
-        base::BindRepeating(
-            &WebSocketChannelImplTestBase::BindWebSocketConnector,
-            GetWeakPtr()));
+        WTF::BindRepeating(&WebSocketChannelImplTestBase::BindWebSocketConnector,
+                  GetWeakPtr()));
 
     PageTestBase::SetupPageWithClients(nullptr /* page_clients */,
                                        local_frame_client_.Get());

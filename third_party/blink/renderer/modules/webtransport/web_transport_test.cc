@@ -170,8 +170,8 @@ class WebTransportTest : public ::testing::Test {
         &scope.GetExecutionContext()->GetBrowserInterfaceBroker();
     interface_broker_->SetBinderForTesting(
         mojom::blink::WebTransportConnector::Name_,
-        base::BindRepeating(&WebTransportTest::BindConnector,
-                            weak_ptr_factory_.GetWeakPtr()));
+        WTF::BindRepeating(&WebTransportTest::BindConnector,
+                  weak_ptr_factory_.GetWeakPtr()));
   }
 
   static WebTransportOptions* EmptyOptions() {
