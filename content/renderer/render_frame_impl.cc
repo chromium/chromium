@@ -5259,7 +5259,11 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
   // https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context,
   // which sets the new Document's `referrer` member to the initiator frame's
   // full unredacted URL, in the case of new browsing context creation.
-  if (info->initiator_frame_token.has_value()) {
+  //
+  // The initiator might no longer exist however, in which case we cannot get
+  // its document's full URL to use as the referrer.
+  if (info->initiator_frame_token.has_value() &&
+      WebFrame::FromFrameToken(info->initiator_frame_token.value())) {
     WebFrame* initiator =
         WebFrame::FromFrameToken(info->initiator_frame_token.value());
     DCHECK(initiator->IsWebLocalFrame());

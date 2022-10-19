@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL A new frame's document.referrer is correct even if its initiator frame is gone assert_equals: expected "http://web-platform.test:8001/referrer-policy/generic/inheritance/resources/submit-form-and-remove-frame.html" but got ""
+Harness: the test ran to completion.
+
