@@ -252,7 +252,7 @@ enum class AppListState {
 ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
                                            AppListState state);
 
-// Sub-pages of the app list bubble (with ProductivityLauncher).
+// Sub-pages of the app list bubble.
 enum class AppListBubblePage {
   // Used at startup and when the app list bubble is not visible. Allows
   // detection of transitions like hidden -> apps or hidden -> assistant,
@@ -389,7 +389,7 @@ ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(
     AppListSearchResultType result_type);
 
 // Returns whether the result type is a type of result shown in launcher
-// continue section when productivity launcher is enabled.
+// continue section.
 ASH_PUBLIC_EXPORT bool IsContinueSectionResultType(
     AppListSearchResultType result_type);
 

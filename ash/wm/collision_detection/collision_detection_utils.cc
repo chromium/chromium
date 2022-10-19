@@ -202,8 +202,7 @@ std::vector<gfx::Rect> CollectCollisionRects(
 
   // Avoid clamshell-mode launcher bubble.
   auto* app_list_controller = Shell::Get()->app_list_controller();
-  if (features::IsProductivityLauncherEnabled() &&
-      !Shell::Get()->IsInTabletMode() &&
+  if (!Shell::Get()->IsInTabletMode() &&
       app_list_controller->GetTargetVisibility(display.id())) {
     aura::Window* window = app_list_controller->GetWindow();
     if (window) {

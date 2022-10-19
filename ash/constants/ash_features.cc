@@ -2639,8 +2639,7 @@ bool IsLanguagePacksEnabled() {
 }
 
 bool IsLauncherAppSortEnabled() {
-  return IsProductivityLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kLauncherAppSort);
+  return base::FeatureList::IsEnabled(kLauncherAppSort);
 }
 
 bool IsLauncherFolderRenameKeepsSortOrderEnabled() {
@@ -2655,13 +2654,11 @@ bool IsLauncherDismissButtonsOnSortNudgeAndToastEnabled() {
 }
 
 bool IsLauncherNudgeShortIntervalEnabled() {
-  return IsProductivityLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kLauncherNudgeShortInterval);
+  return base::FeatureList::IsEnabled(kLauncherNudgeShortInterval);
 }
 
 bool IsLauncherNudgeSessionResetEnabled() {
-  return IsProductivityLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kLauncherNudgeSessionReset);
+  return base::FeatureList::IsEnabled(kLauncherNudgeSessionReset);
 }
 
 bool IsLicensePackagedOobeFlowEnabled() {
@@ -2694,8 +2691,7 @@ bool IsLoginScreenDeviceTrustConnectorFeatureEnabled() {
 }
 
 bool IsProductivityLauncherImageSearchEnabled() {
-  return base::FeatureList::IsEnabled(kProductivityLauncher) &&
-         base::FeatureList::IsEnabled(kProductivityLauncherImageSearch);
+  return base::FeatureList::IsEnabled(kProductivityLauncherImageSearch);
 }
 
 bool IsMacAddressRandomizationEnabled() {
@@ -2975,8 +2971,7 @@ bool IsSettingsAppThemeChangeAnimationEnabled() {
 }
 
 bool IsShelfLauncherNudgeEnabled() {
-  return IsProductivityLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kShelfLauncherNudge);
+  return base::FeatureList::IsEnabled(kShelfLauncherNudge);
 }
 
 bool IsShelfPalmRejectionSwipeOffsetEnabled() {

@@ -493,8 +493,7 @@ void WorkspaceLayoutManager::OnAppListVisibilityChanged(bool shown,
       display_id) {
     return;
   }
-  if (features::IsProductivityLauncherEnabled() &&
-      !Shell::Get()->IsInTabletMode()) {
+  if (!Shell::Get()->IsInTabletMode()) {
     // Adjust PIP window if needed.
     NotifySystemUiAreaChanged();
   }

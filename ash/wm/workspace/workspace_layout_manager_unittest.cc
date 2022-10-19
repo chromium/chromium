@@ -2161,7 +2161,6 @@ TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
 // change event.
 TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
        SystemUiAreaChangeOnClamshellLauncherVisibilityChange) {
-  base::test::ScopedFeatureList feature_list(features::kProductivityLauncher);
   ASSERT_FALSE(Shell::Get()->IsInTabletMode());
 
   AppListController* app_list_controller = AppListController::Get();

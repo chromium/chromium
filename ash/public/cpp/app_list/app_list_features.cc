@@ -99,8 +99,7 @@ bool IsSearchResultInlineIconEnabled() {
 }
 
 bool IsQuickActionShowBubbleLauncherEnabled() {
-  return ash::features::IsProductivityLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kQuickActionShowBubbleLauncher);
+  return base::FeatureList::IsEnabled(kQuickActionShowBubbleLauncher);
 }
 
 bool IsDynamicSearchUpdateAnimationEnabled() {
@@ -128,8 +127,7 @@ bool IsCompactBubbleLauncherEnabled() {
 }
 
 bool IsLauncherPlayStoreSearchEnabled() {
-  return ash::features::IsProductivityLauncherEnabled() &&
-         base::FeatureList::IsEnabled(kLauncherPlayStoreSearch);
+  return base::FeatureList::IsEnabled(kLauncherPlayStoreSearch);
 }
 
 bool IsAnimateScaleOnTabletModeTransitionEnabled() {

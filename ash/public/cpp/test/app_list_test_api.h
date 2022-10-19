@@ -48,7 +48,7 @@ class ASH_EXPORT AppListTestApi {
   // `wait_for_opening_animation` indicates whether to wait for the bubble
   // launcher show animations (including the app list window animation, the
   // bubble apps page animation, the bubble view animation and apps grid
-  // animation). Only used with productivity launcher in clamshell mode.
+  // animation).
   void WaitForBubbleWindow(bool wait_for_opening_animation);
 
   // Waits until all the animations to show the app list become idle. No
