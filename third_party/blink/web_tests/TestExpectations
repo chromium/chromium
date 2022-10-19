@@ -7715,3 +7715,6 @@ crbug.com/1347831 http/tests/devtools/indexeddb/database-structure.js [ Skip ]
 crbug.com/1347831 http/tests/devtools/indexeddb/database-version-number.js [ Skip ]
 crbug.com/1347831 http/tests/devtools/indexeddb/track-valid-origin.js [ Skip ]
 crbug.com/1347831 http/tests/devtools/indexeddb/upgrade-events.js [ Skip ]
+
+# Sheriff 2022-10-19
+crbug.com/1376568 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/077.html [ Skip ]
