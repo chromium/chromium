@@ -524,8 +524,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (base::FeatureList::IsEnabled(
           permissions::features::kRecordPermissionExpirationTimestamps)) {
     auto* service = UnusedSitePermissionsServiceFactory::GetForProfile(profile);
-    permissions::UnusedSitePermissionsService::TabHelper::CreateForWebContents(
-        web_contents, service);
+    if (service) {
+      permissions::UnusedSitePermissionsService::TabHelper::
+          CreateForWebContents(web_contents, service);
+    }
   }
 #endif
 
