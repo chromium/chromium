@@ -18,7 +18,6 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
-#include "components/viz/service/surfaces/surface_saved_frame_storage.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
@@ -59,18 +58,16 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // necessary.
   void ReplaceSharedElementResources(Surface* surface);
 
-  SurfaceSavedFrameStorage* GetSurfaceSavedFrameStorageForTesting();
+  void CompleteSaveForTesting();
 
  private:
   friend class SurfaceAnimationManagerTest;
-  class StorageWithSurface;
 
   // Helpers to process specific directives.
   bool ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,
-                            StorageWithSurface& storage);
+                            Surface* surface);
   bool ProcessAnimateRendererDirective(
-      const CompositorFrameTransitionDirective& directive,
-      StorageWithSurface& storage);
+      const CompositorFrameTransitionDirective& directive);
   bool ProcessReleaseDirective();
 
   bool FilterSharedElementsWithRenderPassOrResource(
@@ -87,12 +84,11 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   uint32_t last_processed_sequence_id_ = 0;
 
   TransferableResourceTracker transferable_resource_tracker_;
-  SurfaceSavedFrameStorage surface_saved_frame_storage_;
-
   absl::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
 
   State state_ = State::kIdle;
 
+  std::unique_ptr<SurfaceSavedFrame> saved_frame_;
   base::flat_set<SharedElementResourceId> empty_resource_ids_;
 };
 

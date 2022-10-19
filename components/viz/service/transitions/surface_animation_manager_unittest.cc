@@ -18,7 +18,6 @@
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
-#include "components/viz/service/surfaces/surface_saved_frame_storage.h"
 #include "components/viz/service/transitions/surface_animation_manager.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,20 +69,13 @@ class SurfaceAnimationManagerTest : public testing::Test {
     manager_->SetDirectiveFinishedCallback(base::DoNothing());
   }
 
-  void TearDown() override {
-    storage()->ExpireForTesting();
-    manager_.reset();
-  }
+  void TearDown() override { manager_.reset(); }
 
   Surface* surface() {
     Surface* surface = surface_manager_->GetSurfaceForId(surface_id_);
     // Can't ASSERT in a non-void function, so just CHECK instead.
     CHECK(surface);
     return surface;
-  }
-
-  SurfaceSavedFrameStorage* storage() {
-    return manager().GetSurfaceSavedFrameStorageForTesting();
   }
 
   SurfaceAnimationManager& manager() { return *manager_; }
@@ -99,16 +91,6 @@ class SurfaceAnimationManagerTest : public testing::Test {
   absl::optional<SurfaceAnimationManager> manager_;
 };
 
-TEST_F(SurfaceAnimationManagerTest, SaveTimesOut) {
-  manager().ProcessTransitionDirectives(CreateSaveDirectiveAsVector(1),
-                                        surface());
-
-  storage()->ExpireForTesting();
-
-  manager().ProcessTransitionDirectives(
-      CreateAnimateRendererDirectiveAsVector(2), surface());
-}
-
 TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
   uint32_t sequence_id = 1;
   for (int i = 0; i < 200; ++i) {
@@ -116,7 +98,7 @@ TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
         CreateSaveDirectiveAsVector(sequence_id), surface());
   }
 
-  storage()->CompleteForTesting();
+  manager().CompleteSaveForTesting();
 
   manager().ProcessTransitionDirectives(
       CreateAnimateRendererDirectiveAsVector(sequence_id), surface());

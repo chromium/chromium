@@ -213,8 +213,6 @@ viz_component("service") {
     "surfaces/surface_reference.h",
     "surfaces/surface_saved_frame.cc",
     "surfaces/surface_saved_frame.h",
-    "surfaces/surface_saved_frame_storage.cc",
-    "surfaces/surface_saved_frame_storage.h",
     "transitions/surface_animation_manager.cc",
     "transitions/surface_animation_manager.h",
     "transitions/transferable_resource_tracker.cc",
