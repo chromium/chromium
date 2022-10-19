@@ -4651,38 +4651,6 @@
             ]
         }
     ],
-    "FenderScriptScheduling": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DelayAsyncExec_20220927",
-                    "params": {
-                        "delay_async_exec_delay_limit": "2s",
-                        "delay_async_exec_delay_type": "each_lcp_candidate",
-                        "delay_async_exec_feature_limit": "5s",
-                        "delay_async_exec_main_frame_only": "true",
-                        "delay_async_exec_target": "cross_site_only"
-                    },
-                    "enable_features": [
-                        "DelayAsyncScriptExecution"
-                    ],
-                    "disable_features": [
-                        "DOMContentLoadedWaitForAsyncScript",
-                        "LowPriorityAsyncScriptExecution",
-                        "LowPriorityScriptLoading"
-                    ]
-                }
-            ]
-        }
-    ],
     "FillingAcrossAffiliatedWebsites": [
         {
             "platforms": [
