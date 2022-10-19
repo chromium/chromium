@@ -227,7 +227,7 @@
 #include "ash/webui/face_ml_app_ui/mojom/face_ml_app_ui.mojom.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/file_manager/mojom/file_manager.mojom.h"
-#include "ash/webui/files_internals/files_internals.h"
+#include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/files_internals/mojom/files_internals.mojom.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"

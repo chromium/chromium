@@ -4,7 +4,7 @@
 
 #include "ash/webui/files_internals/files_internals_page_handler.h"
 
-#include "ash/webui/files_internals/files_internals.h"
+#include "ash/webui/files_internals/files_internals_ui.h"
 
 namespace ash {
 

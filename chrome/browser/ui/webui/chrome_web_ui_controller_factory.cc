@@ -191,7 +191,7 @@
 #include "ash/webui/eche_app_ui/url_constants.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/file_manager/url_constants.h"
-#include "ash/webui/files_internals/files_internals.h"
+#include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/files_internals/url_constants.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"

@@ -10,10 +10,10 @@ assert(is_chromeos_ash, "Files Internals is ash-chrome only")
 
 static_library("files_internals") {
   sources = [
-    "files_internals.cc",
-    "files_internals.h",
     "files_internals_page_handler.cc",
     "files_internals_page_handler.h",
+    "files_internals_ui.cc",
+    "files_internals_ui.h",
     "files_internals_ui_delegate.h",
     "url_constants.cc",
     "url_constants.h",

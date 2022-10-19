@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_FILES_INTERNALS_FILES_INTERNALS_H_
-#define ASH_WEBUI_FILES_INTERNALS_FILES_INTERNALS_H_
+#ifndef ASH_WEBUI_FILES_INTERNALS_FILES_INTERNALS_UI_H_
+#define ASH_WEBUI_FILES_INTERNALS_FILES_INTERNALS_UI_H_
 
 #include "ash/webui/files_internals/files_internals_page_handler.h"
 #include "ash/webui/files_internals/files_internals_ui_delegate.h"
@@ -44,4 +44,4 @@ class FilesInternalsUI : public ui::MojoWebUIController {
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_FILES_INTERNALS_FILES_INTERNALS_H_
+#endif  // ASH_WEBUI_FILES_INTERNALS_FILES_INTERNALS_UI_H_

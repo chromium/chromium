@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/files_internals/files_internals.h"
+#include "ash/webui/files_internals/files_internals_ui.h"
 
 #include "ash/webui/files_internals/url_constants.h"
 #include "ash/webui/grit/ash_files_internals_resources.h"
