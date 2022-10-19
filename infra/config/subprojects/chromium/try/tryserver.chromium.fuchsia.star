@@ -32,16 +32,6 @@ consoles.list_view(
     name = "tryserver.chromium.fuchsia",
 )
 
-# TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
-try_.builder(
-    name = "fuchsia-arm64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    main_list_view = "try",
-    mirrors = [
-        "ci/fuchsia-arm64-cast-receiver-rel",
-    ],
-)
-
 try_.builder(
     name = "fuchsia-arm64-cast-receiver-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
@@ -134,22 +124,6 @@ try_.builder(
     mirrors = ["ci/fuchsia-fyi-x64-dbg"],
 )
 
-# TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
-try_.builder(
-    name = "fuchsia-x64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    mirrors = [
-        "ci/fuchsia-x64-cast-receiver-rel",
-    ],
-    experiments = {
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-        "weetbix.enable_weetbix_exonerations": 100,
-    },
-)
-
 try_.builder(
     name = "fuchsia-x64-cast-receiver-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
@@ -192,36 +166,4 @@ try_.builder(
 try_.builder(
     name = "fuchsia-x64-workstation",
     mirrors = ["ci/fuchsia-x64-workstation"],
-)
-
-# TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
-try_.builder(
-    name = "fuchsia_arm64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    mirrors = [
-        "ci/fuchsia-arm64-rel",
-    ],
-    experiments = {
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-        "weetbix.enable_weetbix_exonerations": 100,
-    },
-)
-
-# TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
-try_.builder(
-    name = "fuchsia_x64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    mirrors = [
-        "ci/fuchsia-x64-rel",
-    ],
-    experiments = {
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-        "weetbix.enable_weetbix_exonerations": 100,
-    },
 )

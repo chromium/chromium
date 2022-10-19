@@ -43,10 +43,6 @@
         {
           "builder": "fuchsia-x64-rel",
           "group": "tryserver.chromium.fuchsia"
-        },
-        {
-          "builder": "fuchsia_x64",
-          "group": "tryserver.chromium.fuchsia"
         }
       ]
     }

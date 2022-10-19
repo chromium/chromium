@@ -1124,8 +1124,6 @@
     },
 
     'tryserver.chromium.fuchsia': {
-      # TODO(crbug.com/1294938): Remove this bot after the transition.
-      'fuchsia-arm64-cast': 'release_trybot_fuchsia_arm64_cast_legacy',
       'fuchsia-arm64-cast-receiver-rel': 'release_trybot_fuchsia_arm64_cast_receiver',
       'fuchsia-arm64-chrome-rel': 'release_trybot_fuchsia_arm64',
       'fuchsia-arm64-rel': 'release_trybot_fuchsia_arm64',
@@ -1134,16 +1132,10 @@
       'fuchsia-deterministic-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
-      # TODO(crbug.com/1294938): Remove this bot after the transition.
-      'fuchsia-x64-cast': 'release_trybot_fuchsia_cast_receiver',
       'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver',
       'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_cfv2_script_chrome',
       'fuchsia-x64-rel': 'release_trybot_fuchsia',
       'fuchsia-x64-workstation': 'release_trybot_fuchsia_workstation',
-      # TODO(crbug.com/1294938): Remove this bot after the transition.
-      'fuchsia_arm64': 'release_trybot_fuchsia_arm64',
-      # TODO(crbug.com/1294938): Remove this bot after the transition.
-      'fuchsia_x64': 'release_trybot_fuchsia',
     },
 
     'tryserver.chromium.linux': {
@@ -3591,11 +3583,6 @@
 
     'release_trybot_fuchsia_arm64': [
       'release_trybot', 'fuchsia', 'arm64', 'arm64_host',
-    ],
-
-    # TODO(crbug.com/1294938): Remove when removing the legacy bot.
-    'release_trybot_fuchsia_arm64_cast_legacy': [
-      'release_trybot', 'fuchsia', 'arm64', 'cast_receiver_size_optimized',
     ],
 
     'release_trybot_fuchsia_arm64_cast_receiver': [
