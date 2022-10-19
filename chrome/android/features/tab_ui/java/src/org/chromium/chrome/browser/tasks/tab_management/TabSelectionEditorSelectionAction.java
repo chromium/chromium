@@ -89,7 +89,7 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
     }
 
     @Override
-    public void performAction(List<Tab> tabs) {
+    public boolean performAction(List<Tab> tabs) {
         if (mActionState == ActionState.SELECT_ALL) {
             getActionDelegate().selectAll();
             RecordUserAction.record("TabMultiSelectV2.SelectAll");
@@ -99,6 +99,7 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         } else {
             assert false : "Invalid selection state";
         }
+        return true;
     }
 
     @Override

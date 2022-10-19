@@ -96089,6 +96089,12 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Switch to tab from filtered search tab list"/>
 </enum>
 
+<enum name="TabSelectionEditorShareActionState">
+  <int value="0" label="UNKNOWN_SHARE_STATE"/>
+  <int value="1" label="SUCCESSFULLY_SHARED_TABS"/>
+  <int value="2" label="FAILED_SHARE_ALL_TABS_FILTERED"/>
+</enum>
+
 <enum name="TabStatus">
   <int value="0" label="Memory resident"/>
   <int value="1" label="Evicted and reloaded"/>
