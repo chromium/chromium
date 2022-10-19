@@ -884,6 +884,9 @@ void ElementRuleCollector::DidMatchRule(
       if (!universal)
         style_->SetHasNonUniversalHighlightPseudoStyles(true);
 
+      if (!matching_ua_rules_)
+        style_->SetHasNonUaHighlightPseudoStyles(true);
+
       if (dynamic_pseudo == kPseudoIdHighlight) {
         DCHECK(result.custom_highlight_name);
         style_->SetHasCustomHighlightName(

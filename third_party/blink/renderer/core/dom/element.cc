@@ -4308,7 +4308,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   if (new_style && !ShouldStoreComputedStyle(*new_style))
     new_style = nullptr;
 
-  if (new_style && !CanSkipRecalcForHighlightPseudos(*new_style)) {
+  if (new_style && !TryToSkipHighlightPseudos(old_style.get(), *new_style)) {
     const StyleHighlightData* parent_highlights =
         parent_style ? parent_style->HighlightData().get() : nullptr;
 
@@ -4837,13 +4837,26 @@ void Element::PseudoStateChanged(
       affected_by_pseudo.ancestors_or_siblings);
 }
 
-bool Element::CanSkipRecalcForHighlightPseudos(
-    const ComputedStyle& new_style) const {
+bool Element::TryToSkipHighlightPseudos(const ComputedStyle* old_style,
+                                        ComputedStyle& new_style) const {
   // If we are a root element (our parent is a Document or ShadowRoot), we need
-  // to recalc iff there are any highlight rules for the pseudo in question,
-  // regardless of whether or not they are non-universal.
-  if (parentNode() == ContainingTreeScope().RootNode())
+  // to recalc if there are or were any non-UA highlight rules (regardless of
+  // whether or not they are non-universal). Otherwise we only need to recalc
+  // once for the UA highlight rules, since those won’t change. They could, if
+  // we ever changed the UA stylesheet dynamically, but we won’t.
+  if (parentNode() == ContainingTreeScope().RootNode()) {
+    if (new_style.HasNonUaHighlightPseudoStyles())
+      return false;
+    if (old_style && old_style->HasNonUaHighlightPseudoStyles())
+      return false;
+    if (old_style) {
+      // Neither the new style nor the old style has any non-UA highlight rules,
+      // so they will be equal. Let’s reuse the old styles for all highlights.
+      new_style.SetHighlightData(old_style->HighlightData());
+      return true;
+    }
     return false;
+  }
 
   // If the parent matched any non-universal highlight rules, then we need
   // to recalc, in case there are universal highlight rules.

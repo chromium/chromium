@@ -261,6 +261,18 @@
       custom_copy: true,
       custom_compare: true,
     },
+    // Whether any highlight pseudo selectors were found when collecting non-UA
+    // rules for the originating element. Stored in the *originating* style, and
+    // needs to be restored *non-monotonically* in ApplyMatchedCache.
+    {
+      name: "HasNonUaHighlightPseudoStyles",
+      field_template: "primitive",
+      field_group: "*",
+      default_value: "false",
+      type_name: "bool",
+      custom_copy: true,
+      custom_compare: true,
+    },
     // Used by ::highlight
     {
       name: "PseudoArgument",
@@ -490,7 +502,7 @@
       default_value: "nullptr",
       wrapper_pointer_name: "scoped_refptr",
       field_group: "*",
-      computed_style_custom_functions: ["setter"],
+      computed_style_custom_functions: [],
     },
     {
       name: "InitialData",

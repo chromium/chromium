@@ -1908,6 +1908,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     if (!IsForcedColorsModeEnabled() || is_inherited_cache_hit) {
       bool non_universal_highlights =
           state.Style()->HasNonUniversalHighlightPseudoStyles();
+      bool non_ua_highlights = state.Style()->HasNonUaHighlightPseudoStyles();
 
       state.Style()->CopyNonInheritedFromCached(
           *cached_matched_properties->computed_style);
@@ -1919,6 +1920,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
       // can remove the cache-busting for ::highlight() in IsStyleCacheable
       state.Style()->SetHasNonUniversalHighlightPseudoStyles(
           non_universal_highlights);
+      state.Style()->SetHasNonUaHighlightPseudoStyles(non_ua_highlights);
 
       // If the child style is a cache hit, we'll never reach StyleBuilder::
       // ApplyProperty, hence we'll never set the flag on the parent.
