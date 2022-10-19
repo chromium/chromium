@@ -292,7 +292,7 @@ TEST_F(LegacySigninScreenMediatorTest, TestSignIn) {
       });
   OCMExpect([performer_mock
                 shouldHandleMergeCaseForIdentity:identity_
-                                    browserState:browser_state_.get()])
+                               browserStatePrefs:browser_state_->GetPrefs()])
       .andReturn(NO);
 
   // Verify that there is no primary identity already signed in.

@@ -531,7 +531,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // The user just changed the account and chose to clear the previously
     // existing data. As browsing data is being cleared, it is fine to clear the
     // last username, as there will be no data to be merged.
-    browser_state_->GetPrefs()->ClearPref(prefs::kGoogleServicesLastAccountId);
+    browser_state_->GetPrefs()->ClearPref(prefs::kGoogleServicesLastGaiaId);
     browser_state_->GetPrefs()->ClearPref(prefs::kGoogleServicesLastUsername);
   }
 

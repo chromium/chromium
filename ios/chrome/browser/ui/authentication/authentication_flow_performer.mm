@@ -242,25 +242,21 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 }
 
 - (BOOL)shouldHandleMergeCaseForIdentity:(id<SystemIdentity>)identity
-                            browserState:(ChromeBrowserState*)browserState {
-  const std::string currentSignedInEmail =
-      base::SysNSStringToUTF8(identity.userEmail);
-  const CoreAccountId lastSignedInAccountId = CoreAccountId::FromString(
-      browserState->GetPrefs()->GetString(prefs::kGoogleServicesLastAccountId));
-  const CoreAccountId currentSignedInAccountId =
-      IdentityManagerFactory::GetForBrowserState(browserState)
-          ->PickAccountIdForAccount(base::SysNSStringToUTF8(identity.gaiaID),
-                                    currentSignedInEmail);
-  if (!lastSignedInAccountId.empty()) {
+                       browserStatePrefs:(PrefService*)prefs {
+  const std::string lastSignedInGaiaId =
+      prefs->GetString(prefs::kGoogleServicesLastGaiaId);
+  if (!lastSignedInGaiaId.empty()) {
     // Merge case exists if the id of the previously signed in account is
     // different from the one of the account being signed in.
-    return lastSignedInAccountId != currentSignedInAccountId;
+    return lastSignedInGaiaId != base::SysNSStringToUTF8(identity.gaiaID);
   }
 
-  // kGoogleServicesLastAccountId pref might not have been populated yet,
+  // kGoogleServicesLastGaiaId pref might not have been populated yet,
   // check the old kGoogleServicesLastUsername pref.
+  const std::string currentSignedInEmail =
+      base::SysNSStringToUTF8(identity.userEmail);
   const std::string lastSignedInEmail =
-      browserState->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
+      prefs->GetString(prefs::kGoogleServicesLastUsername);
   return !lastSignedInEmail.empty() &&
          !gaia::AreEmailsSame(currentSignedInEmail, lastSignedInEmail);
 }

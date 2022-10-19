@@ -386,9 +386,9 @@ enum AuthenticationState {
 }
 
 - (void)checkMergeCaseForUnsupervisedAccounts {
-  if (([_performer
-          shouldHandleMergeCaseForIdentity:_identityToSignIn
-                              browserState:_browser->GetBrowserState()])) {
+  if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
+                                  browserStatePrefs:_browser->GetBrowserState()
+                                                        ->GetPrefs()])) {
     [_performer promptMergeCaseForIdentity:_identityToSignIn
                                    browser:_browser
                             viewController:_presentingViewController];

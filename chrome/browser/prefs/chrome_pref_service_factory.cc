@@ -160,8 +160,11 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
 #endif
     {23, prefs::kGoogleServicesAccountId, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
-    {24, prefs::kGoogleServicesLastAccountId, EnforcementLevel::ENFORCE_ON_LOAD,
-     PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
+    // This is being migrated to `kGoogleServicesLastGaiaId` since 2022/10, and
+    // can be removed when the migration is complete.
+    {24, prefs::kGoogleServicesLastAccountIdDeprecated,
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::PERSONAL},
 #if BUILDFLAG(IS_WIN)
     {25, prefs::kSettingsResetPromptPromptWave,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,

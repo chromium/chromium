@@ -44,8 +44,9 @@ PrimaryAccountManager::~PrimaryAccountManager() {
 
 // static
 void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kGoogleServicesLastAccountId,
+  registry->RegisterStringPref(prefs::kGoogleServicesLastAccountIdDeprecated,
                                std::string());
+  registry->RegisterStringPref(prefs::kGoogleServicesLastGaiaId, std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesLastUsername,
                                std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesAccountId, std::string());
@@ -196,8 +197,8 @@ void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
   // Go ahead and update the last signed in account info here as well. Once a
   // user is signed in the corresponding preferences should match. Doing it here
   // as opposed to on signin allows us to catch the upgrade scenario.
-  client_->GetPrefs()->SetString(prefs::kGoogleServicesLastAccountId,
-                                 account_info.account_id.ToString());
+  client_->GetPrefs()->SetString(prefs::kGoogleServicesLastGaiaId,
+                                 account_info.gaia);
   client_->GetPrefs()->SetString(prefs::kGoogleServicesLastUsername,
                                  account_info.email);
 

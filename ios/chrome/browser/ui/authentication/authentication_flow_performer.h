@@ -13,6 +13,7 @@
 class Browser;
 @protocol BrowsingDataCommands;
 class ChromeBrowserState;
+class PrefService;
 @protocol SystemIdentity;
 
 // Performs the sign-in steps and user interactions as part of the sign-in flow.
@@ -63,9 +64,9 @@ class ChromeBrowserState;
               commandHandler:(id<BrowsingDataCommands>)handler;
 
 // Determines whether the user must decide what to do with `identity`'s browsing
-// data before signing into `browserState`.
+// data before signing in.
 - (BOOL)shouldHandleMergeCaseForIdentity:(id<SystemIdentity>)identity
-                            browserState:(ChromeBrowserState*)browserState;
+                       browserStatePrefs:(PrefService*)prefs;
 
 // Shows a confirmation dialog for signing in to an account managed by
 // `hostedDomain`.

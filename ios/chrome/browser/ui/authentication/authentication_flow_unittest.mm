@@ -161,7 +161,7 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
 
   [[[performer_ expect] andReturnBool:NO]
       shouldHandleMergeCaseForIdentity:identity1_
-                          browserState:browser_state_.get()];
+                     browserStatePrefs:browser_state_->GetPrefs()];
 
   SetSigninSuccessExpectations(identity1_, nil);
 
@@ -188,7 +188,7 @@ TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
 
   [[[performer_ expect] andReturnBool:NO]
       shouldHandleMergeCaseForIdentity:identity1_
-                          browserState:browser_state_.get()];
+                     browserStatePrefs:browser_state_->GetPrefs()];
 
   SetSigninSuccessExpectations(identity1_, nil);
 
@@ -219,7 +219,7 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
 
   [[[performer_ expect] andReturnBool:YES]
       shouldHandleMergeCaseForIdentity:identity1_
-                          browserState:browser_state_.get()];
+                     browserStatePrefs:browser_state_->GetPrefs()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_
@@ -264,7 +264,7 @@ TEST_F(AuthenticationFlowTest, TestCancel) {
 
   [[[performer_ expect] andReturnBool:YES]
       shouldHandleMergeCaseForIdentity:identity1_
-                          browserState:browser_state_.get()];
+                     browserStatePrefs:browser_state_->GetPrefs()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ cancelAndDismissAnimated:NO];
@@ -318,7 +318,7 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
 
   [[[performer_ expect] andReturnBool:NO]
       shouldHandleMergeCaseForIdentity:managed_identity_
-                          browserState:browser_state_.get()];
+                     browserStatePrefs:browser_state_->GetPrefs()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didAcceptManagedConfirmation];
@@ -372,7 +372,7 @@ TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
 
   [[[performer_ expect] andReturnBool:NO]
       shouldHandleMergeCaseForIdentity:managed_identity_
-                          browserState:browser_state_.get()];
+                     browserStatePrefs:browser_state_->GetPrefs()];
 
   SetSigninSuccessExpectations(managed_identity_, @"foo.com");
 
@@ -410,7 +410,7 @@ TEST_F(AuthenticationFlowTest,
 
   [[[performer_ expect] andReturnBool:NO]
       shouldHandleMergeCaseForIdentity:managed_identity_
-                          browserState:browser_state_.get()];
+                     browserStatePrefs:browser_state_->GetPrefs()];
 
   SetSigninSuccessExpectations(managed_identity_, @"foo.com");
 
@@ -460,7 +460,7 @@ TEST_F(AuthenticationFlowTest,
 
   [[[performer_ expect] andReturnBool:NO]
       shouldHandleMergeCaseForIdentity:managed_identity_
-                          browserState:browser_state_.get()];
+                     browserStatePrefs:browser_state_->GetPrefs()];
 
   SetSigninSuccessExpectations(managed_identity_, @"foo.com");
 
@@ -507,7 +507,7 @@ TEST_F(AuthenticationFlowTest, TestCanSyncWithUserPolicyFetchFailure) {
 
   [[[performer_ expect] andReturnBool:NO]
       shouldHandleMergeCaseForIdentity:managed_identity_
-                          browserState:browser_state_.get()];
+                     browserStatePrefs:browser_state_->GetPrefs()];
 
   SetSigninSuccessExpectations(managed_identity_, @"foo.com");
 

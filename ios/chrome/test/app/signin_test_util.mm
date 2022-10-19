@@ -86,7 +86,7 @@ void SignOutAndClearIdentities() {
     }
 
     // Clear last signed in user preference.
-    browser_state->GetPrefs()->ClearPref(prefs::kGoogleServicesLastAccountId);
+    browser_state->GetPrefs()->ClearPref(prefs::kGoogleServicesLastGaiaId);
     browser_state->GetPrefs()->ClearPref(prefs::kGoogleServicesLastUsername);
 
     // `SignOutAndClearIdentities()` is called during shutdown. Commit all pref

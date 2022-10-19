@@ -77,8 +77,7 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
     PrefRegistrySimple* registry = prefs->registry();
     registry->RegisterStringPref(prefs::kGoogleServicesLastUsername,
                                  kTestEmail);
-    registry->RegisterStringPref(prefs::kGoogleServicesLastAccountId,
-                                 kTestGaiaID);
+    registry->RegisterStringPref(prefs::kGoogleServicesLastGaiaId, kTestGaiaID);
     registry->RegisterBooleanPref(autofill::prefs::kAutofillWalletImportEnabled,
                                   false);
     return prefs;

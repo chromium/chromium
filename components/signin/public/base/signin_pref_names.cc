@@ -51,13 +51,21 @@ const char kGoogleServicesConsentedToSync[] =
 
 // Similar to kGoogleServicesLastUsername, this is the corresponding version of
 // kGoogleServicesAccountId that is not cleared on signout.
-const char kGoogleServicesLastAccountId[] = "google.services.last_account_id";
+// DEPRECATED: this preference is deprecated and is always empty. It will be
+// removed once all users are migrated to `kGoogleServicesLastGaiaId`.
+const char kGoogleServicesLastAccountIdDeprecated[] =
+    "google.services.last_account_id";
+
+// Similar to `kGoogleServicesLastUsername` that is not cleared on signout. Note
+// this is always a Gaia ID, as opposed to `kGoogleServicesAccountId` which may
+// be an email.
+const char kGoogleServicesLastGaiaId[] = "google.services.last_gaia_id";
 
 // String the identifies the last user that logged into sync and other
 // google services. This value is not cleared on signout.
 // This pref remains in order to pre-fill the sign in page when reconnecting a
 // profile, but programmatic checks to see if a given account is the same as the
-// last account should use kGoogleServicesLastAccountId instead.
+// last account should use `kGoogleServicesLastGaiaId` instead.
 const char kGoogleServicesLastUsername[] = "google.services.last_username";
 
 // Device id scoped to single signin. This device id will be regenerated if user

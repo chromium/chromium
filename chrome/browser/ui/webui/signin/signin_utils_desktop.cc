@@ -111,6 +111,6 @@ SigninUIError CanOfferSignin(Profile* profile,
 bool IsCrossAccountError(Profile* profile, const std::string& gaia_id) {
   DCHECK(!gaia_id.empty());
   std::string last_gaia_id =
-      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastAccountId);
+      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastGaiaId);
   return !last_gaia_id.empty() && gaia_id != last_gaia_id;
 }

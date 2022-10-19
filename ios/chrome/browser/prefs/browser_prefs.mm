@@ -371,4 +371,16 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 09/2022
   prefs->ClearPref(kDataSaverEnabled);
+
+  // Added 10/2022.
+  if (prefs->HasPrefPath(prefs::kGoogleServicesLastAccountIdDeprecated)) {
+    std::string account_id =
+        prefs->GetString(prefs::kGoogleServicesLastAccountIdDeprecated);
+    prefs->ClearPref(prefs::kGoogleServicesLastAccountIdDeprecated);
+    DCHECK_EQ(account_id.find('@'), std::string::npos)
+        << "kGoogleServicesLastAccountId is not expected to be an email: "
+        << account_id;
+    if (!account_id.empty())
+      prefs->SetString(prefs::kGoogleServicesLastGaiaId, account_id);
+  }
 }

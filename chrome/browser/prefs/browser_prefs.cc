@@ -144,6 +144,7 @@
 #include "components/services/storage/public/cpp/storage_prefs.h"
 #include "components/sessions/core/session_id_generator.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -1990,10 +1991,22 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 09/2022.
   profile_prefs->ClearPref(kFirstPartySetsEnabled);
 
-#if BUILDFLAG(IS_ANDROID)
   // Added 10/2022
+#if BUILDFLAG(IS_ANDROID)
   feed::MigrateObsoleteProfilePrefsOct_2022(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Once this migration is complete, the tracked preference
+  // `kGoogleServicesLastAccountIdDeprecated` can be removed.
+  if (profile_prefs->HasPrefPath(
+          prefs::kGoogleServicesLastAccountIdDeprecated)) {
+    std::string account_id =
+        profile_prefs->GetString(prefs::kGoogleServicesLastAccountIdDeprecated);
+    profile_prefs->ClearPref(prefs::kGoogleServicesLastAccountIdDeprecated);
+    bool is_email = account_id.find('@') != std::string::npos;
+    if (!is_email && !account_id.empty())
+      profile_prefs->SetString(prefs::kGoogleServicesLastGaiaId, account_id);
+  }
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
