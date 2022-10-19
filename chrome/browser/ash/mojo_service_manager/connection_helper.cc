@@ -16,7 +16,7 @@
 
 namespace {
 
-namespace service_manager = chromeos::mojo_service_manager;
+namespace service_manager = ::ash::mojo_service_manager;
 
 base::ScopedClosureRunner CreateRealConnectionAndPassCloser() {
   CHECK(service_manager::BootstrapServiceManagerConnection())

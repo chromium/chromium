@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos::mojo_service_manager {
+namespace ash::mojo_service_manager {
 
 // Provides fake implementation of the service manager for testing.
 //
@@ -29,7 +29,7 @@ namespace chromeos::mojo_service_manager {
 // * The ServiceObserver can receive all the event (no permission checking).
 //
 class COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER) FakeMojoServiceManager
-    : public mojom::ServiceManager {
+    : public chromeos::mojo_service_manager::mojom::ServiceManager {
  public:
   FakeMojoServiceManager();
   FakeMojoServiceManager(FakeMojoServiceManager&) = delete;
@@ -38,8 +38,8 @@ class COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER) FakeMojoServiceManager
 
   // Adds a new pipe and pass the pending remote. The identity of remote will
   // be bound to |security_context|.
-  mojo::PendingRemote<mojom::ServiceManager> AddNewPipeAndPassRemote(
-      const std::string& security_context);
+  mojo::PendingRemote<chromeos::mojo_service_manager::mojom::ServiceManager>
+  AddNewPipeAndPassRemote(const std::string& security_context);
 
  private:
   // Keeps all the objects related to a mojo service.
@@ -49,40 +49,48 @@ class COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER) FakeMojoServiceManager
 
     // The pending requests to be sent after the service is available.
     std::vector<
-        std::pair<mojom::ProcessIdentityPtr, mojo::ScopedMessagePipeHandle>>
+        std::pair<chromeos::mojo_service_manager::mojom::ProcessIdentityPtr,
+                  mojo::ScopedMessagePipeHandle>>
         pending_requests;
     // The owner of the service.
-    mojom::ProcessIdentityPtr owner;
+    chromeos::mojo_service_manager::mojom::ProcessIdentityPtr owner;
     // The mojo remote to the service provider.
-    mojo::Remote<mojom::ServiceProvider> service_provider;
+    mojo::Remote<chromeos::mojo_service_manager::mojom::ServiceProvider>
+        service_provider;
   };
 
-  // mojom::ServiceManager overrides.
-  void Register(
-      const std::string& service_name,
-      mojo::PendingRemote<mojom::ServiceProvider> service_provider) override;
+  // chromeos::mojo_service_manager::mojom::ServiceManager overrides.
+  void Register(const std::string& service_name,
+                mojo::PendingRemote<
+                    chromeos::mojo_service_manager::mojom::ServiceProvider>
+                    service_provider) override;
   void Request(const std::string& service_name,
                absl::optional<base::TimeDelta> timeout,
                mojo::ScopedMessagePipeHandle receiver) override;
   void Query(const std::string& service_name, QueryCallback callback) override;
   void AddServiceObserver(
-      mojo::PendingRemote<mojom::ServiceObserver> observer) override;
+      mojo::PendingRemote<
+          chromeos::mojo_service_manager::mojom::ServiceObserver> observer)
+      override;
 
   // Handles disconnection from service providers.
   void ServiceProviderDisconnectHandler(const std::string& service_name);
 
   // Sends service event to all the observers.
-  void SendServiceEvent(mojom::ServiceEventPtr event);
+  void SendServiceEvent(
+      chromeos::mojo_service_manager::mojom::ServiceEventPtr event);
 
   // The receiver set to provide the fake service manager.
-  mojo::ReceiverSet<mojom::ServiceManager, mojom::ProcessIdentityPtr>
+  mojo::ReceiverSet<chromeos::mojo_service_manager::mojom::ServiceManager,
+                    chromeos::mojo_service_manager::mojom::ProcessIdentityPtr>
       receiver_set_;
   // The map of the service name to the service state.
   std::map<std::string, ServiceState> service_map_;
   // The remote set for the service observer.
-  mojo::RemoteSet<mojom::ServiceObserver> service_observers_;
+  mojo::RemoteSet<chromeos::mojo_service_manager::mojom::ServiceObserver>
+      service_observers_;
 };
 
-}  // namespace chromeos::mojo_service_manager
+}  // namespace ash::mojo_service_manager
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MOJO_SERVICE_MANAGER_FAKE_MOJO_SERVICE_MANAGER_H_

@@ -40,8 +40,8 @@ NetworkDiagnostics::NetworkDiagnostics(DebugDaemonClient* debug_daemon_client) {
   if (debug_daemon_client) {
     debug_daemon_client_ = debug_daemon_client;
   }
-  if (chromeos::mojo_service_manager::IsServiceManagerBound()) {
-    chromeos::mojo_service_manager::GetServiceManagerProxy()->Register(
+  if (mojo_service_manager::IsServiceManagerBound()) {
+    mojo_service_manager::GetServiceManagerProxy()->Register(
         chromeos::mojo_services::kChromiumNetworkDiagnosticsRoutines,
         provider_receiver_.BindNewPipeAndPassRemote());
   }

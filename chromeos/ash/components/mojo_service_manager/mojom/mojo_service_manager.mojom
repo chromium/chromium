@@ -7,6 +7,9 @@
 // NOTE: This mojom should be kept in sync with the copy in ChromeOS's repo in
 // src/platform2/mojo_service_manager/lib/mojom/service_manager.mojom
 
+// Namespace of this mojom should be migrated to namespace ash once we confirms
+// Lacros won't use mojo service manager in the future.
+
 module chromeos.mojo_service_manager.mojom;
 
 import "mojo/public/mojom/base/time.mojom";

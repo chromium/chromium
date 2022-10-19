@@ -126,8 +126,8 @@ void GetTouchscreenDevicesOnUIThread(
 }  // namespace
 
 DataCollector::DataCollector() : DataCollector(GetDataCollectorDelegate()) {
-  if (chromeos::mojo_service_manager::IsServiceManagerBound()) {
-    chromeos::mojo_service_manager::GetServiceManagerProxy()->Register(
+  if (mojo_service_manager::IsServiceManagerBound()) {
+    mojo_service_manager::GetServiceManagerProxy()->Register(
         chromeos::mojo_services::kChromiumCrosHealthdDataCollector,
         provider_receiver_.BindNewPipeAndPassRemote());
   }

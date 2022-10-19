@@ -26,7 +26,10 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 
-namespace chromeos::mojo_service_manager {
+namespace ash::mojo_service_manager {
+
+namespace mojom = chromeos::mojo_service_manager::mojom;
+
 namespace {
 
 // The socket path to connect to the service manager.
@@ -155,4 +158,4 @@ void SetServiceManagerRemoteForTesting(  // IN-TEST
   GetRemote().set_disconnect_with_reason_handler(base::BindOnce(&OnDisconnect));
 }
 
-}  // namespace chromeos::mojo_service_manager
+}  // namespace ash::mojo_service_manager

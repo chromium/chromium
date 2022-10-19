@@ -8,7 +8,9 @@
 
 #include "base/check.h"
 
-namespace chromeos::mojo_service_manager {
+namespace ash::mojo_service_manager {
+
+namespace mojom = ::chromeos::mojo_service_manager::mojom;
 
 FakeMojoServiceManager::ServiceState::ServiceState() = default;
 
@@ -135,4 +137,4 @@ void FakeMojoServiceManager::SendServiceEvent(mojom::ServiceEventPtr event) {
   }
 }
 
-}  // namespace chromeos::mojo_service_manager
+}  // namespace ash::mojo_service_manager

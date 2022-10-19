@@ -106,10 +106,10 @@ bool SensorHalDispatcher::AuthenticateClient(
 void SensorHalDispatcher::TryToEstablishMojoChannelByServiceManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(mojo_service_manager::IsServiceManagerBound());
+  DCHECK(ash::mojo_service_manager::IsServiceManagerBound());
   DCHECK(!receiver_.is_bound());
 
-  auto* proxy = mojo_service_manager::GetServiceManagerProxy();
+  auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
   proxy->AddServiceObserver(receiver_.BindNewPipeAndPassRemote());
   proxy->Query(mojo_services::kIioSensor,
                base::BindOnce(&SensorHalDispatcher::QueryCallback,
@@ -204,9 +204,9 @@ void SensorHalDispatcher::EstablishMojoChannel(
 
   mojo::PendingRemote<mojom::SensorService> service_remote;
   if (iio_sensor_available_) {
-    DCHECK(mojo_service_manager::IsServiceManagerBound());
+    DCHECK(ash::mojo_service_manager::IsServiceManagerBound());
 
-    mojo_service_manager::GetServiceManagerProxy()->Request(
+    ash::mojo_service_manager::GetServiceManagerProxy()->Request(
         mojo_services::kIioSensor, kRequestSensorServiceTimeout,
         service_remote.InitWithNewPipeAndPassReceiver().PassPipe());
   } else {

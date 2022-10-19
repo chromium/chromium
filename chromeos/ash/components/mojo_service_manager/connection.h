@@ -9,7 +9,7 @@
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos::mojo_service_manager {
+namespace ash::mojo_service_manager {
 
 // Connects to the mojo service manager. Returns false if cannot connect.
 // This will will block until connects to the socket of service manager.
@@ -29,13 +29,21 @@ void ResetServiceManagerConnection();
 
 // Returns the interface to access the service manager.
 COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER)
-mojom::ServiceManagerProxy* GetServiceManagerProxy();
+chromeos::mojo_service_manager::mojom::ServiceManagerProxy*
+GetServiceManagerProxy();
 
 // Sets the mojo remote for testing.
 COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER)
 void SetServiceManagerRemoteForTesting(
-    mojo::PendingRemote<mojom::ServiceManager> remote);
+    mojo::PendingRemote<chromeos::mojo_service_manager::mojom::ServiceManager>
+        remote);
 
+}  // namespace ash::mojo_service_manager
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::mojo_service_manager {
+using ::ash::mojo_service_manager::GetServiceManagerProxy;
+using ::ash::mojo_service_manager::IsServiceManagerBound;
 }  // namespace chromeos::mojo_service_manager
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MOJO_SERVICE_MANAGER_CONNECTION_H_

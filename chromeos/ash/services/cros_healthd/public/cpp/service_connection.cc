@@ -669,7 +669,7 @@ void ServiceConnectionImpl::GetDiagnosticsService(
     mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (use_service_manager_) {
-    chromeos::mojo_service_manager::GetServiceManagerProxy()->Request(
+    mojo_service_manager::GetServiceManagerProxy()->Request(
         chromeos::mojo_services::kCrosHealthdDiagnostics, absl::nullopt,
         std::move(service).PassPipe());
   } else {
@@ -781,7 +781,7 @@ void ServiceConnectionImpl::GetProbeService(
     mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (use_service_manager_) {
-    chromeos::mojo_service_manager::GetServiceManagerProxy()->Request(
+    mojo_service_manager::GetServiceManagerProxy()->Request(
         chromeos::mojo_services::kCrosHealthdProbe, absl::nullopt,
         std::move(service).PassPipe());
   } else {
@@ -826,7 +826,7 @@ void ServiceConnectionImpl::BindCrosHealthdEventServiceIfNeeded() {
     return;
 
   if (use_service_manager_) {
-    chromeos::mojo_service_manager::GetServiceManagerProxy()->Request(
+    mojo_service_manager::GetServiceManagerProxy()->Request(
         chromeos::mojo_services::kCrosHealthdEvent, absl::nullopt,
         cros_healthd_event_service_.BindNewPipeAndPassReceiver().PassPipe());
   } else {
