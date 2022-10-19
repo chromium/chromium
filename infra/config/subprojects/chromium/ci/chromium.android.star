@@ -798,11 +798,11 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
-            target_bits = 32,
+            target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder",
+            config = "x64_builder",
         ),
         build_gs_bucket = "chromium-android-archive",
     ),

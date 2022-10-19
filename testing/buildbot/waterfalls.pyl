@@ -779,9 +779,11 @@
       },
       'android-bfcache-rel': {
         'mixins': [
+          '12-x64-emulator',
+          'emulator-4-cores',
           'has_native_resultdb_integration',
-          'marshmallow',
-          'bullhead',
+          'linux-bionic',
+          'x86-64',
         ],
         'os_type': 'android',
         'test_suites': {
