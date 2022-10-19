@@ -577,6 +577,15 @@ void ChromeBrowserMainPartsWin::ShowMissingLocaleMessageBox() {
                  MB_OK | MB_ICONERROR | MB_TOPMOST);
 }
 
+void ChromeBrowserMainPartsWin::PreProfileInit() {
+  ChromeBrowserMainParts::PreProfileInit();
+
+  // Create the module database and hook up the in-process module watcher. This
+  // needs to be done before any child processes are initialized as the
+  // `ModuleDatabase` is an endpoint for IPC from child processes.
+  SetupModuleDatabase(&module_watcher_);
+}
+
 void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
                                                 bool is_initial_profile) {
   ChromeBrowserMainParts::PostProfileInit(profile, is_initial_profile);
@@ -584,31 +593,6 @@ void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
   // The setup below is intended to run for only the initial profile.
   if (!is_initial_profile)
     return;
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Explicitly disable the third-party modules blocking.
-  //
-  // Because the blocking code lives in chrome_elf, it is not possible to check
-  // the feature (via the FeatureList API) or the policy to control whether it
-  // is enabled or not.
-  //
-  // What truly controls if the blocking is enabled is the presence of the
-  // module blocklist cache file. This means that to disable the feature, the
-  // cache must be deleted and the browser relaunched.
-  if (!ModuleDatabase::IsThirdPartyBlockingPolicyEnabled() ||
-      !ModuleBlocklistCacheUpdater::IsBlockingEnabled())
-    ThirdPartyConflictsManager::DisableThirdPartyModuleBlocking(
-        base::ThreadPool::CreateTaskRunner(
-            {base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
-             base::MayBlock()})
-            .get());
-#endif
-
-  // Create the module database and hook up the in-process module watcher. This
-  // needs to be done before any child processes are initialized as the
-  // ModuleDatabase is an endpoint for IPC from child processes.
-  SetupModuleDatabase(&module_watcher_);
 
   // If Chrome was launched by a Progressive Web App launcher that needs to be
   // updated, update all launchers for this profile.
@@ -936,6 +920,26 @@ void ChromeBrowserMainPartsWin::SetupModuleDatabase(
     std::unique_ptr<ModuleWatcher>* module_watcher) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(module_watcher);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Explicitly disable the third-party modules blocking.
+  //
+  // Because the blocking code lives in chrome_elf, it is not possible to check
+  // the feature (via the FeatureList API) or the policy to control whether it
+  // is enabled or not.
+  //
+  // What truly controls if the blocking is enabled is the presence of the
+  // module blocklist cache file. This means that to disable the feature, the
+  // cache must be deleted and the browser relaunched.
+  if (!ModuleDatabase::IsThirdPartyBlockingPolicyEnabled() ||
+      !ModuleBlocklistCacheUpdater::IsBlockingEnabled())
+    ThirdPartyConflictsManager::DisableThirdPartyModuleBlocking(
+        base::ThreadPool::CreateTaskRunner(
+            {base::TaskPriority::BEST_EFFORT,
+             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+             base::MayBlock()})
+            .get());
+#endif
 
   bool third_party_blocking_policy_enabled =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
