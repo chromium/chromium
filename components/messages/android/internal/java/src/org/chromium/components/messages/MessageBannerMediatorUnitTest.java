@@ -137,13 +137,33 @@ public class MessageBannerMediatorUnitTest {
 
         assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
-        animator = mMediator.hide(true, mHiddenRunnable);
+        animator = mMediator.hide(Position.FRONT, Position.INVISIBLE, true, mHiddenRunnable);
         verify(mHiddenRunnable, times(0)).run();
 
         animator.start();
         shadowOf(getMainLooper()).idle();
 
         assertModelState(0, -100, 0, DEFAULT_MARGIN, "after hidden.");
+        verify(mHiddenRunnable, times(1)).run();
+    }
+
+    @Test
+    public void testHideMessageFromBack() {
+        Animator animator = mMediator.show(Position.FRONT, Position.BACK, mShownRunnable);
+        animator.start();
+
+        shadowOf(getMainLooper()).idle();
+
+        assertModelState(0, 0, 1, PEEKING_MARGIN, "fully shown.");
+
+        animator = mMediator.hide(Position.BACK, Position.FRONT, true, mHiddenRunnable);
+        verify(mHiddenRunnable, times(0)).run();
+
+        animator.start();
+        shadowOf(getMainLooper()).idle();
+
+        // because of it is hidden, marginTop is not reset to default margin top
+        assertModelState(0, 0, 0, PEEKING_MARGIN, "after hidden.");
         verify(mHiddenRunnable, times(1)).run();
     }
 
@@ -156,7 +176,7 @@ public class MessageBannerMediatorUnitTest {
 
         assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
-        mMediator.hide(false, mHiddenRunnable);
+        mMediator.hide(Position.FRONT, Position.INVISIBLE, false, mHiddenRunnable);
 
         assertModelState(0, -100, 0, DEFAULT_MARGIN, "after hidden.");
         verify(mHiddenRunnable, times(1)).run();

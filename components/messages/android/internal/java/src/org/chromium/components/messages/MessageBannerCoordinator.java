@@ -115,11 +115,14 @@ class MessageBannerCoordinator {
 
     /**
      * Hides the message banner.
+     * @param fromIndex The initial position.
+     * @param toIndex The target position the message is moving to.
      * @param animate Whether to hide with an animation.
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
      * @return The animator which hides the message view.
      */
-    Animator hide(boolean animate, Runnable messageHidden) {
+    Animator hide(@Position int fromIndex, @Position int toIndex, boolean animate,
+            Runnable messageHidden) {
         mView.dismissSecondaryMenuIfShown();
         mTimer.cancelTimer();
         // Skip animation if animation has been globally disabled.
@@ -128,7 +131,7 @@ class MessageBannerCoordinator {
         var isAnimationDisabled = Settings.Global.getFloat(mView.getContext().getContentResolver(),
                                           Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
                 == 0;
-        return mMediator.hide(animate && !isAnimationDisabled, () -> {
+        return mMediator.hide(fromIndex, toIndex, animate && !isAnimationDisabled, () -> {
             setOnTouchRunnable(null);
             setOnTitleChanged(null);
             messageHidden.run();

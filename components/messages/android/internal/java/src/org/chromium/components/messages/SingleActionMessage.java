@@ -130,7 +130,8 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     @Nullable
     @Override
     public Animator hide(int fromIndex, int toIndex, boolean animate) {
-        return mMessageBanner.hide(animate, () -> mContainer.removeMessage(mView));
+        return mMessageBanner.hide(
+                fromIndex, toIndex, animate, () -> mContainer.removeMessage(mView));
     }
 
     /**

@@ -5,6 +5,7 @@
 package org.chromium.components.messages;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.animation.Animator;
@@ -24,7 +25,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -75,6 +75,8 @@ public class SingleActionMessageTest {
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock
     private Callback<Animator> mAnimatorStartCallback;
+    @Mock
+    private MessageBannerCoordinator mMessageBanner;
 
     private CallbackHelper mPrimaryActionCallback;
     private CallbackHelper mSecondaryActionCallback;
@@ -112,10 +114,9 @@ public class SingleActionMessageTest {
         SingleActionMessage message =
                 new SingleActionMessage(container, model, mEmptyDismissCallback,
                         () -> 0, new MockDurationProvider(0L), mAnimatorStartCallback);
-        final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         final MessageBannerView view = createMessageBannerView(container);
         view.setId(R.id.message_banner);
-        message.setMessageBannerForTesting(messageBanner);
+        message.setMessageBannerForTesting(mMessageBanner);
         message.setViewForTesting(view);
         message.show(Position.INVISIBLE, Position.FRONT);
         Assert.assertEquals(
@@ -124,7 +125,9 @@ public class SingleActionMessageTest {
         message.hide(Position.FRONT, Position.INVISIBLE, true);
         // Let's pretend the animation ended, and the mediator called the callback as a result.
         final ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(messageBanner).hide(anyBoolean(), runnableCaptor.capture());
+        verify(mMessageBanner)
+                .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean(),
+                        runnableCaptor.capture());
         runnableCaptor.getValue().run();
         Assert.assertEquals(
                 "Message container should not have any view after the message is hidden.", 0,
@@ -290,10 +293,9 @@ public class SingleActionMessageTest {
         SingleActionMessage message =
                 new SingleActionMessage(container, model, mEmptyDismissCallback,
                         () -> 0, new MockDurationProvider(0L), mAnimatorStartCallback);
-        final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         view.setId(R.id.message_banner);
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
-        message.setMessageBannerForTesting(messageBanner);
+        message.setMessageBannerForTesting(mMessageBanner);
         message.setViewForTesting(view);
         message.show(from, to);
         return message;
