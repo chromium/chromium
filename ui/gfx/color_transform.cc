@@ -150,16 +150,12 @@ float ToLinear(ColorSpace::TransferID id, float v) {
 bool ComputePQToneMapConstants(const gfx::ColorTransform::Options& options,
                                float& a,
                                float& b) {
-  // Compute the maximum luminance to be used for tone mapping a PQ signal, with
-  // the indicated metadata.
-  float src_max_lum_nits = 10000.f;
-  if (const auto& hdr_metadata = options.src_hdr_metadata) {
-    if (hdr_metadata->max_content_light_level > 0) {
-      src_max_lum_nits = hdr_metadata->max_content_light_level;
-    } else if (hdr_metadata->color_volume_metadata.luminance_max > 0.f) {
-      src_max_lum_nits = hdr_metadata->color_volume_metadata.luminance_max;
-    }
-  }
+  const auto hdr_metadata = gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
+      options.src_hdr_metadata);
+  const float src_max_lum_nits =
+      hdr_metadata.max_content_light_level > 0
+          ? hdr_metadata.max_content_light_level
+          : hdr_metadata.color_volume_metadata.luminance_max;
   const float src_max_lum_relative =
       src_max_lum_nits / options.sdr_max_luminance_nits;
 

@@ -278,11 +278,8 @@ API_AVAILABLE(macos(10.15))
       case gfx::ColorSpace::TransferID::PQ: {
         base::ScopedCFTypeRef<CFDataRef> display_info;
         base::ScopedCFTypeRef<CFDataRef> content_info;
-        if (hdr_metadata) {
-          display_info =
-              gfx::GenerateMasteringDisplayColorVolume(*hdr_metadata);
-          content_info = gfx::GenerateContentLightLevelInfo(*hdr_metadata);
-        }
+        display_info = gfx::GenerateMasteringDisplayColorVolume(hdr_metadata);
+        content_info = gfx::GenerateContentLightLevelInfo(hdr_metadata);
         edr_metadata = [CAEDRMetadata
             HDR10MetadataWithDisplayInfo:base::mac::CFToNSCast(display_info)
                              contentInfo:base::mac::CFToNSCast(content_info)
@@ -298,6 +295,7 @@ API_AVAILABLE(macos(10.15))
     }
     [self setEDRMetadata:edr_metadata];
     _color_space = color_space;
+    _hdr_metadata = hdr_metadata;
   }
 
   // Migrate to the MTLDevice on which the CAMetalLayer is being composited, if

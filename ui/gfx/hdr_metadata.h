@@ -7,8 +7,11 @@
 
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point_f.h"
+
+struct SkColorSpacePrimaries;
 
 namespace gfx {
 
@@ -24,6 +27,9 @@ struct COLOR_SPACE_EXPORT ColorVolumeMetadata {
 
   ColorVolumeMetadata();
   ColorVolumeMetadata(const ColorVolumeMetadata& rhs);
+  ColorVolumeMetadata(const SkColorSpacePrimaries& primaries,
+                      float luminance_max,
+                      float luminance_min);
   ColorVolumeMetadata& operator=(const ColorVolumeMetadata& rhs);
 
   std::string ToString() const;
@@ -47,6 +53,9 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   unsigned max_frame_average_light_level = 0;
 
   HDRMetadata();
+  HDRMetadata(const ColorVolumeMetadata& color_volume_metadata,
+              unsigned max_content_light_level,
+              unsigned max_frame_average_light_level);
   HDRMetadata(const HDRMetadata& rhs);
   HDRMetadata& operator=(const HDRMetadata& rhs);
 
@@ -55,6 +64,15 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
              (max_frame_average_light_level == 0) &&
              (color_volume_metadata == ColorVolumeMetadata()));
   }
+
+  // Return a copy of `hdr_metadata` with its `color_volume_metadata` fully
+  // populated. Any unspecified values are set to default values (in particular,
+  // the gamut is set to rec2020, minimum luminance to 0 nits, and maximum
+  // luminance to 10,000 nits). The `max_content_light_level` and
+  // `max_frame_average_light_level` values are not changed (they may stay
+  // zero).
+  static HDRMetadata PopulateUnspecifiedWithDefaults(
+      const absl::optional<gfx::HDRMetadata>& hdr_metadata);
 
   std::string ToString() const;
 

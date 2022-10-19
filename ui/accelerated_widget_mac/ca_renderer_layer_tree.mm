@@ -177,29 +177,29 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
       CVBufferSetAttachment(cv_pixel_buffer, kCVImageBufferYCbCrMatrixKey,
                             kCVImageBufferYCbCrMatrix_ITU_R_2020,
                             kCVAttachmentMode_ShouldPropagate);
-      CVBufferSetAttachment(
-          cv_pixel_buffer, kCVImageBufferTransferFunctionKey,
-          io_surface_color_space.GetTransferID() ==
-                  gfx::ColorSpace::TransferID::HLG
-              ? kCVImageBufferTransferFunction_ITU_R_2100_HLG
-              : kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
-          kCVAttachmentMode_ShouldPropagate);
-
-      if (hdr_metadata) {
-        if (!(hdr_metadata->color_volume_metadata ==
-              gfx::ColorVolumeMetadata())) {
+      switch (io_surface_color_space.GetTransferID()) {
+        case gfx::ColorSpace::TransferID::HLG:
+          CVBufferSetAttachment(cv_pixel_buffer,
+                                kCVImageBufferTransferFunctionKey,
+                                kCVImageBufferTransferFunction_ITU_R_2100_HLG,
+                                kCVAttachmentMode_ShouldPropagate);
+          break;
+        case gfx::ColorSpace::TransferID::PQ:
+          CVBufferSetAttachment(cv_pixel_buffer,
+                                kCVImageBufferTransferFunctionKey,
+                                kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
+                                kCVAttachmentMode_ShouldPropagate);
           CVBufferSetAttachment(
               cv_pixel_buffer, kCVImageBufferMasteringDisplayColorVolumeKey,
-              gfx::GenerateMasteringDisplayColorVolume(*hdr_metadata),
+              gfx::GenerateMasteringDisplayColorVolume(hdr_metadata),
               kCVAttachmentMode_ShouldPropagate);
-        }
-        if (hdr_metadata->max_content_light_level ||
-            hdr_metadata->max_frame_average_light_level) {
           CVBufferSetAttachment(
               cv_pixel_buffer, kCVImageBufferContentLightLevelInfoKey,
-              gfx::GenerateContentLightLevelInfo(*hdr_metadata),
+              gfx::GenerateContentLightLevelInfo(hdr_metadata),
               kCVAttachmentMode_ShouldPropagate);
-        }
+          break;
+        default:
+          break;
       }
     }
   }

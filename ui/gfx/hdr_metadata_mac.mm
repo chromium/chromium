@@ -10,7 +10,12 @@
 namespace gfx {
 
 base::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
-    const gfx::HDRMetadata& hdr_metadata) {
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+  if (!hdr_metadata || hdr_metadata->max_content_light_level == 0.f ||
+      hdr_metadata->max_frame_average_light_level == 0.f) {
+    return base::ScopedCFTypeRef<CFDataRef>();
+  }
+
   // This is a SMPTEST2086 Content Light Level Information box.
   struct ContentLightLevelInfoSEI {
     uint16_t max_content_light_level;
@@ -21,16 +26,16 @@ base::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
   // Values are stored in big-endian...
   ContentLightLevelInfoSEI sei;
   sei.max_content_light_level =
-      __builtin_bswap16(hdr_metadata.max_content_light_level);
+      __builtin_bswap16(hdr_metadata->max_content_light_level);
   sei.max_frame_average_light_level =
-      __builtin_bswap16(hdr_metadata.max_frame_average_light_level);
+      __builtin_bswap16(hdr_metadata->max_frame_average_light_level);
 
   return base::ScopedCFTypeRef<CFDataRef>(
       CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 4));
 }
 
 base::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
-    const gfx::HDRMetadata& hdr_metadata) {
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
   // This is a SMPTEST2086 Mastering Display Color Volume box.
   struct MasteringDisplayColorVolumeSEI {
     vector_ushort2 primaries[3];  // GBR
@@ -41,8 +46,9 @@ base::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
   static_assert(sizeof(MasteringDisplayColorVolumeSEI) == 24,
                 "Must be 24 bytes");
 
-  // Make a copy which we can manipulate.
-  auto md = hdr_metadata.color_volume_metadata;
+  // Make a copy with all values populated, and which we can manipulate.
+  auto md = HDRMetadata::PopulateUnspecifiedWithDefaults(hdr_metadata)
+                .color_volume_metadata;
 
   constexpr float kColorCoordinateUpperBound = 50000.0f;
   md.primary_r.Scale(kColorCoordinateUpperBound);

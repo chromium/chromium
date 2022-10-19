@@ -14,6 +14,7 @@
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/hdr_metadata_mac.h"
 
 namespace {
 
@@ -109,19 +110,30 @@ gfx::ColorSpace ToBT709_APPLE(gfx::ColorSpace cs) {
                          cs.GetMatrixID(), cs.GetRangeID());
 }
 
-void AssertHasEmptyHDRMetadata(CFDictionaryRef fmt) {
-  // We constructed with an empty HDRMetadata, so all values should be zero.
+void AssertHasDefaultHDRMetadata(CFDictionaryRef fmt) {
+  // We constructed with an invalid HDRMetadata, so all values should be
+  // overridden to the default.
+  auto mdcv_expected = gfx::GenerateMasteringDisplayColorVolume(absl::nullopt);
+  auto clli_expected = gfx::GenerateContentLightLevelInfo(absl::nullopt);
+
   auto mdcv = GetDataValue(
       fmt, kCMFormatDescriptionExtension_MasteringDisplayColorVolume);
   ASSERT_EQ(24u, mdcv.size());
-  for (size_t i = 0; i < mdcv.size(); ++i)
-    EXPECT_EQ(0u, mdcv[i]);
+  ASSERT_EQ(24u, CFDataGetLength(mdcv_expected));
+  EXPECT_EQ(0, memcmp(mdcv.data(), CFDataGetBytePtr(mdcv_expected), 24u));
 
   auto clli =
       GetDataValue(fmt, kCMFormatDescriptionExtension_ContentLightLevelInfo);
-  ASSERT_EQ(4u, clli.size());
-  for (size_t i = 0; i < clli.size(); ++i)
-    EXPECT_EQ(0u, clli[i]);
+  ASSERT_EQ(0u, clli.size());
+}
+
+void AssertHasNoHDRMetadata(CFDictionaryRef fmt) {
+  auto mdcv = GetDataValue(
+      fmt, kCMFormatDescriptionExtension_MasteringDisplayColorVolume);
+  auto clli =
+      GetDataValue(fmt, kCMFormatDescriptionExtension_ContentLightLevelInfo);
+  EXPECT_TRUE(mdcv.empty());
+  EXPECT_TRUE(clli.empty());
 }
 
 constexpr char kBitDepthKey[] = "BitsPerComponent";
@@ -172,7 +184,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
   EXPECT_EQ(kCMFormatDescriptionYCbCrMatrix_ITU_R_2020,
             GetCFStrValue(fmt, kCMFormatDescriptionExtension_YCbCrMatrix));
   EXPECT_TRUE(GetBoolValue(fmt, kCMFormatDescriptionExtension_FullRangeVideo));
-  AssertHasEmptyHDRMetadata(fmt);
+  AssertHasDefaultHDRMetadata(fmt);
 }
 
 TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_HLG) {
@@ -193,7 +205,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_HLG) {
   EXPECT_EQ(kCMFormatDescriptionYCbCrMatrix_ITU_R_2020,
             GetCFStrValue(fmt, kCMFormatDescriptionExtension_YCbCrMatrix));
   EXPECT_TRUE(GetBoolValue(fmt, kCMFormatDescriptionExtension_FullRangeVideo));
-  AssertHasEmptyHDRMetadata(fmt);
+  AssertHasNoHDRMetadata(fmt);
 }
 
 TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
