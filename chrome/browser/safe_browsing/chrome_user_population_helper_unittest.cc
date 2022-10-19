@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 
-#include "base/feature_list.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -12,7 +11,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/model_type.h"
@@ -177,26 +175,11 @@ TEST(GetUserPopulationForProfileTest, PopulatesAdvancedProtection) {
 TEST(GetUserPopulationForProfileTest, PopulatesUserAgent) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /* enabled_features = */ {},
-        /* disabled_features = */ {kBetterTelemetryAcrossReports});
-    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
-    EXPECT_EQ(population.user_agent(), "");
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /* enabled_features = */ {kBetterTelemetryAcrossReports},
-        /* disabled_features = */ {});
-    std::string user_agent =
-        version_info::GetProductNameAndVersionForUserAgent() + "/" +
-        version_info::GetOSType();
-    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
-    EXPECT_EQ(population.user_agent(), user_agent);
-  }
+  std::string user_agent =
+      version_info::GetProductNameAndVersionForUserAgent() + "/" +
+      version_info::GetOSType();
+  ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
+  EXPECT_EQ(population.user_agent(), user_agent);
 }
 
 }  // namespace safe_browsing

@@ -325,19 +325,9 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
   }
 }
 
-TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureDisabled) {
-  feature_list_.InitAndDisableFeature(kSafeBrowsingPageLoadToken);
-  auto request = FillRequestProto(GURL(kTestUrl), GURL(), /*is_mainframe=*/true,
-                                  /*is_sampled_report=*/false);
-  // Page load tokens should not be attached because the feature flag is
-  // disabled.
-  ASSERT_EQ(0, request->population().page_load_tokens_size());
-}
-
 TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureEnabled) {
   GURL url(kTestUrl);
   GURL subframe_url(kTestSubframeUrl);
-  feature_list_.InitAndEnableFeature(kSafeBrowsingPageLoadToken);
 
   // mainframe URL
   {
@@ -1244,21 +1234,6 @@ TEST_F(RealTimeUrlLookupServiceTest,
   // Enable extended reporting.
   EnableExtendedReporting();
   rt_service()->set_bypass_probability_for_tests(true);
-  feature_list_.InitAndEnableFeature(
-      safe_browsing::kSendSampledPingsForProtegoAllowlistDomains);
-  // After enabling the feature, a sampled ping should be sent.
   EXPECT_TRUE(CanSendRTSampleRequest());
 }
-
-TEST_F(RealTimeUrlLookupServiceTest,
-       TestCanSendRTSampleRequest_FeatureDisabled) {
-  // Enable extended reporting.
-  EnableExtendedReporting();
-  rt_service()->set_bypass_probability_for_tests(true);
-  feature_list_.InitAndDisableFeature(
-      safe_browsing::kSendSampledPingsForProtegoAllowlistDomains);
-  // After enabling the feature, a sampled ping should be sent.
-  EXPECT_FALSE(CanSendRTSampleRequest());
-}
-
 }  // namespace safe_browsing

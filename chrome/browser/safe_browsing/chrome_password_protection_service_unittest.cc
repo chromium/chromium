@@ -1482,32 +1482,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
   }
 }
 
-class ChromePasswordProtectionServiceWithSBPageLoadTokenDisabledTest
-    : public ChromePasswordProtectionServiceTest {
- public:
-  ChromePasswordProtectionServiceWithSBPageLoadTokenDisabledTest() {
-    feature_list_.InitAndDisableFeature(kSafeBrowsingPageLoadToken);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ChromePasswordProtectionServiceWithSBPageLoadTokenDisabledTest,
-       VerifyPageLoadToken) {
-  auto request = std::make_unique<LoginReputationClientRequest>();
-  service_->FillUserPopulation(GURL("https:www.example.com/"), request.get());
-  ASSERT_EQ(0, request->population().page_load_tokens_size());
-}
-
-class ChromePasswordProtectionServiceWithSBPageLoadTokenEnabledTest
-    : public ChromePasswordProtectionServiceTest {
- private:
-  base::test::ScopedFeatureList feature_list_{kSafeBrowsingPageLoadToken};
-};
-
-TEST_F(ChromePasswordProtectionServiceWithSBPageLoadTokenEnabledTest,
-       VerifyPageLoadToken) {
+TEST_F(ChromePasswordProtectionServiceTest, VerifyPageLoadToken) {
   auto request = std::make_unique<LoginReputationClientRequest>();
   service_->FillUserPopulation(GURL("https:www.example.com/"), request.get());
   ASSERT_EQ(1, request->population().page_load_tokens_size());

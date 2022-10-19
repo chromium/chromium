@@ -18,7 +18,6 @@
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/unified_consent/pref_names.h"
 #include "net/base/ip_address.h"
@@ -135,7 +134,7 @@ int RealTimeUrlLookupService::GetReferrerUserGestureLimit() const {
 }
 
 bool RealTimeUrlLookupService::CanSendPageLoadToken() const {
-  return base::FeatureList::IsEnabled(kSafeBrowsingPageLoadToken);
+  return true;
 }
 
 bool RealTimeUrlLookupService::CanCheckSubresourceURL() const {
@@ -157,8 +156,6 @@ bool RealTimeUrlLookupService::CanCheckSafeBrowsingHighConfidenceAllowlist()
 
 bool RealTimeUrlLookupService::CanSendRTSampleRequest() const {
   return IsExtendedReportingEnabled(*pref_service_) &&
-         base::FeatureList::IsEnabled(
-             safe_browsing::kSendSampledPingsForProtegoAllowlistDomains) &&
          (bypass_protego_probability_for_tests_ ||
           base::RandDouble() <= kProbabilityForSendingSampledRequests);
 }

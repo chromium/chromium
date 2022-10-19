@@ -1491,9 +1491,6 @@ void ChromePasswordProtectionService::FillUserPopulation(
     LoginReputationClientRequest* request_proto) {
   *request_proto->mutable_population() = GetUserPopulationForProfile(profile_);
 
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingPageLoadToken)) {
-    return;
-  }
   ChromeUserPopulation::PageLoadToken token =
       cache_manager_->GetPageLoadToken(main_frame_url);
   if (RealTimePolicyEngine::CanPerformFullURLLookup(

@@ -687,11 +687,6 @@ void ChromePasswordProtectionService::FillUserPopulation(
   *request_proto->mutable_population() =
       GetUserPopulationForBrowserState(browser_state_);
 
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingPageLoadToken)) {
-    return;
-  }
-
   safe_browsing::VerdictCacheManager* cache_manager =
       VerdictCacheManagerFactory::GetForBrowserState(browser_state_);
   ChromeUserPopulation::PageLoadToken token =

@@ -445,12 +445,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                            VerifyPersistPhishedSavedPasswordCredential);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyGetPingNotSentReason);
-  FRIEND_TEST_ALL_PREFIXES(
-      ChromePasswordProtectionServiceWithSBPageLoadTokenEnabledTest,
-      VerifyPageLoadToken);
-  FRIEND_TEST_ALL_PREFIXES(
-      ChromePasswordProtectionServiceWithSBPageLoadTokenDisabledTest,
-      VerifyPageLoadToken);
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifyPageLoadToken);
   // Browser tests
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceBrowserTest,
                            VerifyCheckGaiaPasswordChange);

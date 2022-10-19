@@ -161,83 +161,33 @@ TEST(GetUserPopulationTest, PopulatesAdvancedProtection) {
 TEST(GetUserPopulationTest, PopulatesUserAgent) {
   base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /* enabled_features = */ {},
-        /* disabled_features = */ {kBetterTelemetryAcrossReports});
-    ChromeUserPopulation population =
-        GetUserPopulation(pref_service.get(), false, false, false, false,
-                          nullptr, absl::optional<size_t>(),
-                          absl::optional<size_t>(), absl::optional<size_t>());
-    EXPECT_EQ(population.user_agent(), "");
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /* enabled_features = */ {kBetterTelemetryAcrossReports},
-        /* disabled_features = */ {});
-    std::string user_agent =
-        version_info::GetProductNameAndVersionForUserAgent() + "/" +
-        version_info::GetOSType();
-    ChromeUserPopulation population =
-        GetUserPopulation(pref_service.get(), false, false, false, false,
-                          nullptr, absl::optional<size_t>(),
-                          absl::optional<size_t>(), absl::optional<size_t>());
-    EXPECT_EQ(population.user_agent(), user_agent);
-  }
+  std::string user_agent =
+      version_info::GetProductNameAndVersionForUserAgent() + "/" +
+      version_info::GetOSType();
+  ChromeUserPopulation population =
+      GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
+                        absl::optional<size_t>(), absl::optional<size_t>(),
+                        absl::optional<size_t>());
+  EXPECT_EQ(population.user_agent(), user_agent);
 }
 
 TEST(GetUserPopulationTest, PopulatesProfileRelatedFields) {
   base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
+  ChromeUserPopulation population =
+      GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
+                        absl::optional<size_t>(), absl::optional<size_t>(),
+                        absl::optional<size_t>());
+  EXPECT_EQ(population.number_of_profiles(), 0);
+  EXPECT_EQ(population.number_of_loaded_profiles(), 0);
+  EXPECT_EQ(population.number_of_open_profiles(), 0);
 
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /* enabled_features = */ {},
-        /* disabled_features = */ {kBetterTelemetryAcrossReports});
-    ChromeUserPopulation population =
-        GetUserPopulation(pref_service.get(), false, false, false, false,
-                          nullptr, absl::optional<size_t>(),
-                          absl::optional<size_t>(), absl::optional<size_t>());
-    EXPECT_EQ(population.number_of_profiles(), 0);
-    EXPECT_EQ(population.number_of_loaded_profiles(), 0);
-    EXPECT_EQ(population.number_of_open_profiles(), 0);
-
-    // If |kBetterTelemetryAcrossReports| is disabled, these fields should not
-    // be populated even if the caller passes values for them.
-    population = GetUserPopulation(
-        pref_service.get(), false, false, false, false, nullptr,
-        /*num_profiles=*/3, /*num_loaded_profiles=*/2, /*num_open_profiles=*/1);
-    EXPECT_EQ(population.number_of_profiles(), 0);
-    EXPECT_EQ(population.number_of_loaded_profiles(), 0);
-    EXPECT_EQ(population.number_of_open_profiles(), 0);
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /* enabled_features = */ {kBetterTelemetryAcrossReports},
-        /* disabled_features = */ {});
-
-    ChromeUserPopulation population =
-        GetUserPopulation(pref_service.get(), false, false, false, false,
-                          nullptr, absl::optional<size_t>(),
-                          absl::optional<size_t>(), absl::optional<size_t>());
-    EXPECT_EQ(population.number_of_profiles(), 0);
-    EXPECT_EQ(population.number_of_loaded_profiles(), 0);
-    EXPECT_EQ(population.number_of_open_profiles(), 0);
-
-    // If |kBetterTelemetryAcrossReports| is enabled, these fields should be
-    // populated if the caller passes values for them.
-    population = GetUserPopulation(
-        pref_service.get(), false, false, false, false, nullptr,
-        /*num_profiles=*/3, /*num_loaded_profiles=*/2, /*num_open_profiles=*/1);
-    EXPECT_EQ(population.number_of_profiles(), 3);
-    EXPECT_EQ(population.number_of_loaded_profiles(), 2);
-    EXPECT_EQ(population.number_of_open_profiles(), 1);
-  }
+  population = GetUserPopulation(
+      pref_service.get(), false, false, false, false, nullptr,
+      /*num_profiles=*/3, /*num_loaded_profiles=*/2, /*num_open_profiles=*/1);
+  EXPECT_EQ(population.number_of_profiles(), 3);
+  EXPECT_EQ(population.number_of_loaded_profiles(), 2);
+  EXPECT_EQ(population.number_of_open_profiles(), 1);
 }
 
 }  // namespace safe_browsing

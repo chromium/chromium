@@ -56,21 +56,19 @@ ChromeUserPopulation GetUserPopulation(
   population.set_profile_management_status(
       GetProfileManagementStatus(browser_policy_connector));
 
-  if (base::FeatureList::IsEnabled(kBetterTelemetryAcrossReports)) {
-    std::string user_agent =
-        version_info::GetProductNameAndVersionForUserAgent() + "/" +
-        version_info::GetOSType();
-    population.set_user_agent(user_agent);
+  std::string user_agent =
+      version_info::GetProductNameAndVersionForUserAgent() + "/" +
+      version_info::GetOSType();
+  population.set_user_agent(user_agent);
 
-    if (num_profiles)
-      population.set_number_of_profiles(*num_profiles);
+  if (num_profiles)
+    population.set_number_of_profiles(*num_profiles);
 
-    if (num_loaded_profiles)
-      population.set_number_of_loaded_profiles(*num_loaded_profiles);
+  if (num_loaded_profiles)
+    population.set_number_of_loaded_profiles(*num_loaded_profiles);
 
-    if (num_open_profiles)
-      population.set_number_of_open_profiles(*num_open_profiles);
-  }
+  if (num_open_profiles)
+    population.set_number_of_open_profiles(*num_open_profiles);
 
   population.set_is_signed_in(is_signed_in);
 

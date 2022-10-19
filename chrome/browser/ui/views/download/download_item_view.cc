@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -53,7 +52,6 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -185,23 +183,11 @@ class TransparentButton : public views::Button {
 BEGIN_METADATA(TransparentButton, views::Button)
 END_METADATA
 
-bool UseNewWarnings() {
-  return base::FeatureList::IsEnabled(safe_browsing::kUseNewDownloadWarnings);
-}
-
 int GetFilenameStyle(const views::Label& label) {
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-  if (UseNewWarnings())
-    return views::style::STYLE_EMPHASIZED;
-#endif
   return label.GetTextStyle();
 }
 
 int GetFilenameStyle(const views::StyledLabel& label) {
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-  if (UseNewWarnings())
-    return views::style::STYLE_EMPHASIZED;
-#endif
   return label.GetDefaultTextStyle();
 }
 
@@ -620,8 +606,6 @@ void DownloadItemView::OnPaintBackground(gfx::Canvas* canvas) {
 void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
   OnPaintBackground(canvas);
 
-  const bool use_new_warnings = UseNewWarnings();
-
   const gfx::Image* const file_icon_image =
       g_browser_process->icon_manager()->LookupIconFromFilepath(
           model_->GetTargetFilePath(), IconLoader::SMALL, current_scale_);
@@ -670,8 +654,6 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
         static_cast<uint8_t>(gfx::Tween::IntValueBetween(opacity, 0, 255)));
     PaintDownloadProgress(canvas, GetIconBounds(), base::TimeDelta(), 100);
     canvas->Restore();
-  } else if (use_new_warnings) {
-    file_icon = &file_icon_;
   }
 
   // Draw the file icon.
@@ -1066,15 +1048,12 @@ ui::ImageModel DownloadItemView::GetIcon() const {
   // TODO(pkasting): Use a child view (ImageView subclass?) to display the icon
   // instead of recomputing this and drawing manually.
 
-  // TODO(drubery): Replace these sizes with layout provider constants when the
-  // new UX is fully launched.
-  const int non_error_icon_size = UseNewWarnings() ? 20 : 27;
+  const int non_error_icon_size = 27;
   const auto kWarning = ui::ImageModel::FromVectorIcon(
       vector_icons::kWarningIcon, ui::kColorAlertMediumSeverity,
       non_error_icon_size);
   const auto kError = ui::ImageModel::FromVectorIcon(
-      vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
-      UseNewWarnings() ? 20 : 24);
+      vector_icons::kErrorIcon, ui::kColorAlertHighSeverity, 24);
 
   const auto danger_type = model_->GetDangerType();
   const auto kInfo = ui::ImageModel::FromVectorIcon(
@@ -1134,13 +1113,9 @@ ui::ImageModel DownloadItemView::GetIcon() const {
 }
 
 gfx::RectF DownloadItemView::GetIconBounds() const {
-  // TODO(drubery): When launching the new warnings, turn these numbers into
-  // appropriately named constants.
-  const int offset = UseNewWarnings() ? 8 : 0;
   const gfx::Size size = GetIcon().Size();
-  const int icon_x =
-      GetMirroredXWithWidthInView(kStartPadding, size.width()) + offset;
-  const int icon_y = CenterY(size.height()) + offset;
+  const int icon_x = GetMirroredXWithWidthInView(kStartPadding, size.width());
+  const int icon_y = CenterY(size.height());
   return gfx::RectF(icon_x, icon_y, size.width(), size.height());
 }
 
