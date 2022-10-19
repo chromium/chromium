@@ -13,6 +13,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -149,7 +150,11 @@ class CartHandlerTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  void TearDown() override {}
+  void TearDown() override {
+    testing::Test::TearDown();
+    auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+    data.PopulateDataFromComponent("{}", "{}", "", "");
+  }
 
  protected:
   // This needs to be declared before |task_environment_|, so that it will be
@@ -430,13 +435,20 @@ class CartHandlerNtpModuleDiscountTest : public CartHandlerTest {
     feature_list_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
         {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
-         {"partner-merchant-pattern", "(foo.com)"},
          {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
           "false"}});
   }
 
   void SetUp() override {
     CartHandlerTest::SetUp();
+
+    auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+    ASSERT_TRUE(data.PopulateDataFromComponent("{}", R"###(
+        {
+          "rule_discount_partner_merchant_regex": "(foo.com)"
+        }
+    )###",
+                                               "", ""));
 
     // Mock that welcome surface has already finished showing.
     for (int i = 0; i < CartService::kWelcomSurfaceShowLimit; i++) {
@@ -634,9 +646,19 @@ class CartHandlerCartURLUTMTest : public CartHandlerTest {
     feature_list_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
         {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
-         {"partner-merchant-pattern", "(foo.com)"},
          {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
           "true"}});
+  }
+
+  void SetUp() override {
+    CartHandlerTest::SetUp();
+    auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+    ASSERT_TRUE(data.PopulateDataFromComponent("{}", R"###(
+        {
+          "rule_discount_partner_merchant_regex": "(foo.com)"
+        }
+    )###",
+                                               "", ""));
   }
 
  private:
@@ -694,7 +716,6 @@ class CartHandlerNtpModuleDiscountConsentV2Test : public CartHandlerTest {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     base::FieldTrialParams consent_v2_params, cart_params;
     cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
-    cart_params["partner-merchant-pattern"] = "(foo.com)";
     enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
                                   cart_params);
     consent_v2_params["discount-consent-ntp-reshow-time"] = "1m";
@@ -707,6 +728,13 @@ class CartHandlerNtpModuleDiscountConsentV2Test : public CartHandlerTest {
 
   void SetUp() override {
     CartHandlerTest::SetUp();
+    auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+    ASSERT_TRUE(data.PopulateDataFromComponent("{}", R"###(
+        {
+          "rule_discount_partner_merchant_regex": "(foo.com)"
+        }
+    )###",
+                                               "", ""));
     // Simulate that the welcome surface has been shown.
     profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
                                      CartService::kWelcomSurfaceShowLimit);

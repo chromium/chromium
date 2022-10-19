@@ -392,6 +392,9 @@ class FetchDiscountWorkerTestBase : public testing::Test {
   void TearDown() override {
     FakeCartDiscountFetcher::ClearFetchCount();
     is_signin_and_sync_ = false;
+
+    auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+    data.PopulateDataFromComponent("{}", "{}", "", "");
   }
 
   // This method transfers mock_fetcher_ ownership. Set all expectations for
@@ -459,14 +462,25 @@ class FetchDiscountWorkerTest : public FetchDiscountWorkerTestBase {
     base::FieldTrialParams cart_params, coupon_params;
     cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
     cart_params["discount-fetch-delay"] = "6h";
-    cart_params["partner-merchant-pattern"] = "(foo.com)";
     enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
                                   cart_params);
-    coupon_params["coupon-partner-merchant-pattern"] = "(qux.com)";
     coupon_params[commerce::kRetailCouponsWithCodeParam] = "true";
     enabled_features.emplace_back(commerce::kRetailCoupons, coupon_params);
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             /*disabled_features*/ {});
+  }
+
+  void SetUp() override {
+    FetchDiscountWorkerTestBase::SetUp();
+
+    auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+    ASSERT_TRUE(data.PopulateDataFromComponent("{}", R"###(
+        {
+          "rule_discount_partner_merchant_regex": "(foo.com)",
+          "coupon_discount_partner_merchant_regex": "(qux.com)"
+        }
+    )###",
+                                               "", ""));
   }
 };
 
