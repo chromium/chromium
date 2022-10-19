@@ -44,6 +44,7 @@ mojom("mojom") {
     },
   ]
   blink_cpp_typemaps = cpp_typemaps
+  webui_module_path = "chrome://resources/mojo/ui/latency/mojom"
 }
 
 mojom("test_interfaces") {

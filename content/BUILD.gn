@@ -101,6 +101,7 @@ grit("content_resources") {
     "//ui/gfx/geometry/mojom:mojom_js",
     "//ui/gfx/image/mojom:mojom_js",
     "//ui/gfx/range/mojom:mojom_js",
+    "//ui/latency/mojom:mojom_webui_js",
     "//url/mojom:url_mojom_origin_js",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
