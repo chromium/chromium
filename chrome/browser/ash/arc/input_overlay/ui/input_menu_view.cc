@@ -361,7 +361,14 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
     // side.
     x = std::max(0, (parent_size.width() - width()) / 2);
   }
-  SetPosition(gfx::Point(x, entry_view_->y()));
+  int y = entry_view_->y();
+  if (display_overlay_controller_->touch_injector()->beta() &&
+      (y + height() > parent_size.height())) {
+    // Set the menu at the bottom if there is not enough margin on the bottom
+    // side.
+    y = parent_size.height() - height();
+  }
+  SetPosition(gfx::Point(x, y));
 }
 
 std::unique_ptr<views::View> InputMenuView::BuildSeparator() {

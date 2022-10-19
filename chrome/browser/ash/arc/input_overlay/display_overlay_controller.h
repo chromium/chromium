@@ -11,11 +11,11 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/layout_types.h"
 
 namespace views {
@@ -97,6 +97,7 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class EducationalView;
   friend class InputMenuView;
   friend class InputMappingView;
+  friend class MenuEntryViewTest;
 
   // Display overlay is added for starting |display_mode|.
   void AddOverlay(DisplayMode display_mode);
@@ -153,13 +154,15 @@ class DisplayOverlayController : public ui::EventHandler,
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();
   void DismissEducationalViewForTesting();
+  InputMenuView* GetInputMenuView() { return input_menu_view_; }
+  MenuEntryView* GetMenuEntryView() { return menu_entry_; }
 
   const raw_ptr<TouchInjector> touch_injector_;
 
   // References to UI elements owned by the overlay widget.
   raw_ptr<InputMappingView> input_mapping_view_ = nullptr;
   raw_ptr<InputMenuView> input_menu_view_ = nullptr;
-  raw_ptr<views::ImageButton> menu_entry_ = nullptr;
+  raw_ptr<MenuEntryView> menu_entry_ = nullptr;
   raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
   raw_ptr<EditFinishView> edit_finish_view_ = nullptr;
   raw_ptr<MessageView> message_ = nullptr;

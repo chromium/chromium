@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/widget/widget.h"
@@ -191,7 +192,7 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
       vector_icons::kVideogameAssetOutlineIcon, SK_ColorBLACK);
 
   // Create and position entry point for |InputMenuView|.
-  auto menu_entry = std::make_unique<views::ImageButton>(base::BindRepeating(
+  auto menu_entry = std::make_unique<MenuEntryView>(base::BindRepeating(
       &DisplayOverlayController::OnMenuEntryPressed, base::Unretained(this)));
   menu_entry->SetImage(views::Button::STATE_NORMAL, game_icon);
   menu_entry->SetBackground(views::CreateRoundedRectBackground(

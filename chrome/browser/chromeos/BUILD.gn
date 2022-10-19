@@ -1221,6 +1221,7 @@ source_set("unit_tests") {
     "../ash/arc/input_overlay/touch_id_manager_unittest.cc",
     "../ash/arc/input_overlay/touch_injector_unittest.cc",
     "../ash/arc/input_overlay/ui/action_view_unittest.cc",
+    "../ash/arc/input_overlay/ui/menu_entry_view_unittest.cc",
     "../ash/arc/instance_throttle/arc_active_window_throttle_observer_unittest.cc",
     "../ash/arc/instance_throttle/arc_app_launch_throttle_observer_unittest.cc",
     "../ash/arc/instance_throttle/arc_boot_phase_throttle_observer_unittest.cc",
