@@ -14,7 +14,6 @@
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_nudge_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "base/logging.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -69,10 +68,6 @@ DarkLightModeControllerImpl::DarkLightModeControllerImpl()
       nudge_controller_(std::make_unique<DarkLightModeNudgeController>()) {
   DCHECK(!g_instance);
   g_instance = this;
-
-  // TODO(crbug/1339004): Remove after fixing the crashes.
-  LOG(WARNING) << "Initial theme is "
-               << (IsDarkModeEnabled() ? "dark" : "light");
 
   // May be null in unit tests.
   if (Shell::HasInstance()) {
@@ -286,10 +281,6 @@ const char* DarkLightModeControllerImpl::GetFeatureName() const {
 
 void DarkLightModeControllerImpl::NotifyColorModeChanges() {
   const bool is_enabled = IsDarkModeEnabled();
-
-  // TODO(crbug/1339004): Remove after fixing the crashes.
-  LOG(WARNING) << "Theme is " << (is_enabled ? "dark" : "light");
-
   cros_styles::SetDarkModeEnabled(is_enabled);
   for (auto& observer : observers_)
     observer.OnColorModeChanged(is_enabled);
