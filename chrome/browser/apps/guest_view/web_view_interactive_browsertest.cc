@@ -1255,20 +1255,18 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, TextSelection) {
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, WordLookup) {
   SetupTest("web_view/text_selection",
             "/extensions/platform_apps/web_view/text_selection/guest.html");
-  ASSERT_TRUE(DeprecatedGuestWebContents());
+  ASSERT_TRUE(GetGuestView());
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow()));
 
   content::TextInputTestLocalFrame text_input_local_frame;
-  text_input_local_frame.SetUp(
-      DeprecatedGuestWebContents()->GetPrimaryMainFrame());
+  text_input_local_frame.SetUp(GetGuestRenderFrameHost());
 
   // Lookup some string through context menu.
   ContextMenuNotificationObserver menu_observer(IDC_CONTENT_CONTEXT_LOOK_UP);
   // Simulating a mouse click at a position to highlight text in guest and
   // showing the context menu.
-  SimulateRWHMouseClick(
-      DeprecatedGuestWebContents()->GetRenderViewHost()->GetWidget(),
-      blink::WebMouseEvent::Button::kRight, 20, 20);
+  SimulateRWHMouseClick(GetGuestRenderFrameHost()->GetRenderWidgetHost(),
+                        blink::WebMouseEvent::Button::kRight, 20, 20);
   // Wait for the response form the guest renderer.
   text_input_local_frame.WaitForGetStringForRange();
 
