@@ -13951,9 +13951,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_BATTERY_SAVER_BUBBLE_TITLE" desc="The title of the battery saver bubble dialog">
         Energy Saver is on
       </message>
-      <message name="IDS_BATTERY_SAVER_BUBBLE_DESCRIPTION" desc="The description text of the battery saver bubble dialog">
-        Background activity and some visual effects, like smooth scrolling, may be limited.
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_BATTERY_SAVER_BUBBLE_DESCRIPTION" desc="The description text of the battery saver bubble dialog">
+          Background activity and some visual effects, like smooth scrolling, may be limited.
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_BATTERY_SAVER_BUBBLE_DESCRIPTION" desc="The description text of the battery saver bubble dialog">
+          Background activity and some visual effects, like smooth scrolling, may be limited
+        </message>
+      </if>
       <if expr="use_titlecase">
         <message name="IDS_BATTERY_SAVER_SESSION_TURN_OFF" desc="In Title Case: The label for the turn off battery saver for current session button in battery saver bubble dialog">
           Turn Off Now
