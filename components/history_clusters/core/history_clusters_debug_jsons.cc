@@ -28,6 +28,10 @@ std::string GetDebugJSONForVisits(
     debug_visit.Set("title", visit.url_row.title());
     debug_visit.Set(
         "foregroundTimeSecs",
+        base::NumberToString(
+            visit.context_annotations.total_foreground_duration.InSeconds()));
+    debug_visit.Set(
+        "visitDurationSecs",
         base::NumberToString(visit.visit_row.visit_duration.InSeconds()));
     debug_visit.Set("navigationTimeMs",
                     base::NumberToString(
