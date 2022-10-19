@@ -7,17 +7,11 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
-import("//components/exo/buildflags.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
 assert(use_ozone)
 assert(is_chromeos_ash)
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "ENABLE_COLOR_MANAGER=$enable_color_manager" ]
-}
 
 if (use_xkbcommon) {
   pkg_config("xkbcommon") {

@@ -5,7 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
-import("//components/exo/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
@@ -73,7 +72,6 @@ source_set("wayland") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/exo",
-    "//components/exo:buildflags",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
@@ -161,6 +159,8 @@ source_set("wayland") {
       "wl_shell.h",
       "xdg_shell.cc",
       "xdg_shell.h",
+      "zcr_color_manager.cc",
+      "zcr_color_manager.h",
       "zcr_cursor_shapes.cc",
       "zcr_cursor_shapes.h",
       "zcr_extended_drag.cc",
@@ -205,23 +205,14 @@ source_set("wayland") {
       "zxdg_shell.h",
     ]
 
-    if (enable_color_manager) {
-      deps += [
-        "//ash:ash",
-        "//components/exo/wayland/protocol:chrome_color_management_protocol",
-        "//ui/base/wayland:color_manager_util",
-      ]
-      sources += [
-        "zcr_color_manager.cc",
-        "zcr_color_manager.h",
-      ]
-    }
-
     deps += [
+      "//ash:ash",
+      "//components/exo/wayland/protocol:chrome_color_management_protocol",
       "//services/device/public/mojom",
       "//services/device/wake_lock/power_save_blocker",
       "//third_party/wayland-protocols:idle_inhibit_protocol",
       "//ui/base/cursor/mojom:cursor_type",
+      "//ui/base/wayland:color_manager_util",
       "//ui/base/wayland:wayland_server_input_types",
       "//ui/events/ozone/layout",
     ]

@@ -177,7 +177,7 @@ class ColorManagerObserver : public WaylandDisplayObserver {
   ColorManagerObserver(const ColorManagerObserver&) = delete;
   ColorManagerObserver& operator=(const ColorManagerObserver&) = delete;
 
-  ~ColorManagerObserver() {
+  ~ColorManagerObserver() override {
     if (wayland_display_handler_)
       wayland_display_handler_->RemoveObserver(this);
   }

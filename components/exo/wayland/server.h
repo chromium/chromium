@@ -14,7 +14,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "components/exo/buildflags.h"
 #include "components/exo/wayland/scoped_wl.h"
 #include "ui/display/display_observer.h"
 
