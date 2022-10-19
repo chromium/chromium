@@ -4,6 +4,7 @@
 
 #include "content/browser/back_forward_cache_browsertest.h"
 
+#include <climits>
 #include <unordered_map>
 
 #include "base/callback_helpers.h"
@@ -165,13 +166,14 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
   EnableFeatureAndSetParams(
       blink::features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
       "delay_before_tracking_ms", "0");
+  // Allow unlimited network during tests. Override this if you want to test the
+  // network limiting.
   EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
                             "max_buffered_bytes_per_process",
-                            base::NumberToString(kMaxBufferedBytesPerProcess));
-  EnableFeatureAndSetParams(
-      blink::features::kLoadingTasksUnfreezable,
-      "grace_period_to_finish_loading_in_seconds",
-      base::NumberToString(kGracePeriodToFinishLoading.InSeconds()));
+                            base::NumberToString(INT_MAX));
+  EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
+                            "grace_period_to_finish_loading_in_seconds",
+                            base::NumberToString(INT_MAX));
 #if BUILDFLAG(IS_ANDROID)
   EnableFeatureAndSetParams(features::kBackForwardCache,
                             "process_binding_strength", "NORMAL");

@@ -116,6 +116,9 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
     : public BackForwardCacheBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
+  const int kMaxBufferedBytesPerProcess = 10000;
+  const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
+
   BackForwardCacheWithDedicatedWorkerBrowserTest() { server_.Start(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -124,6 +127,13 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
     if (IsPlzDedicatedWorkerEnabled())
       EnableFeatureAndSetParams(blink::features::kPlzDedicatedWorker, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kLoadingTasksUnfreezable,
+          {{"max_buffered_bytes_per_process",
+            base::NumberToString(kMaxBufferedBytesPerProcess)},
+           {"grace_period_to_finish_loading_in_seconds",
+            base::NumberToString(kGracePeriodToFinishLoading.InSeconds())}}}},
+        {});
 
     server_.SetUpCommandLine(command_line);
   }
@@ -143,6 +153,7 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   WebTransportSimpleTestServer server_;
 };
 

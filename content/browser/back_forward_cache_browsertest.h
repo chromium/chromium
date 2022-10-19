@@ -166,9 +166,6 @@ class BackForwardCacheBrowserTest
   const ukm::TestAutoSetUkmRecorder& ukm_recorder() override;
   const base::HistogramTester& histogram_tester() override;
 
-  const int kMaxBufferedBytesPerProcess = 10000;
-  const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
-
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
 
