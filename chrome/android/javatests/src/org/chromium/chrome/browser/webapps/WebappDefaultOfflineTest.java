@@ -65,7 +65,7 @@ public class WebappDefaultOfflineTest {
         assertEquals("\"shortname\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.title;"));
-        assertEquals("\"No internet\"",
+        assertEquals("\"You're offline\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
                         "document.getElementById('default-web-app-msg').textContent;"));
         assertEquals("\"data:image/png;base64," + WebappActivityTestRule.TEST_ICON + "\"",

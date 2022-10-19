@@ -275,9 +275,8 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
   base::Value::Dict dict;
   dict.Set(default_offline::kAppShortName,
            web_app_registrar.GetAppShortName(*app_id));
-  dict.Set(
-      default_offline::kMessage,
-      l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
+  dict.Set(default_offline::kMessage,
+           l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_YOU_ARE_OFFLINE));
   // TODO(crbug.com/1285723): The FavIcon is not the right icon to use here, as
   // the design calls for showing an icon around ten times that size. This will
   // probably need to be changed to fetch the right icon asynchronously.

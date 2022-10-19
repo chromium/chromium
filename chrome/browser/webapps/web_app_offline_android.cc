@@ -79,9 +79,8 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
     }
   }
 
-  dict.Set(
-      default_offline::kMessage,
-      l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
+  dict.Set(default_offline::kMessage,
+           l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_YOU_ARE_OFFLINE));
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
   alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
   return alternative_error_page_info;

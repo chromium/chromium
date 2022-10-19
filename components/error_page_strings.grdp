@@ -118,6 +118,9 @@
   <message name="IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED" desc="Heading of the error page when the network connection failed.">
     No internet
   </message>
+  <message name="IDS_ERRORPAGES_HEADING_YOU_ARE_OFFLINE" desc="Heading of the error page for when a PWA/TWA is offline.">
+    You're offline
+  </message>
   <message name="IDS_ERRORPAGES_HEADING_CACHE_READ_FAILURE" desc="Heading in the error page when we encountered an error reading from the cache.  Generally this happens when the disk cache is corrupted from improper shutdown.">
     This site can’t be loaded from the cache
   </message>

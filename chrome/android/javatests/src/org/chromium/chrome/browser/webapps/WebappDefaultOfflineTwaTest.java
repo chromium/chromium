@@ -153,7 +153,7 @@ public class WebappDefaultOfflineTwaTest {
         assertEquals("\"shortname\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.title;"));
-        assertEquals("\"No internet\"",
+        assertEquals("\"You're offline\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
                         "document.getElementById('default-web-app-msg').textContent;"));
 
