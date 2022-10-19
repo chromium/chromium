@@ -50,10 +50,8 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
   ~ReplyProxyImpl() override = default;
 
   // WebMessageReplyProxy:
-  void PostWebMessage(std::unique_ptr<WebMessage> message) override {
-    JsWebMessage js_message;
-    js_message.string = std::move(message->message);
-    java_to_js_messaging_->OnPostMessage(std::move(js_message));
+  void PostWebMessage(JsWebMessage message) override {
+    java_to_js_messaging_->OnPostMessage(std::move(message));
   }
   bool IsInBackForwardCache() override {
     return render_frame_host_->GetLifecycleState() ==
@@ -134,7 +132,7 @@ void JsToBrowserMessaging::PostMessage(
             web_contents->GetPrimaryMainFrame() == render_frame_host_);
 #endif
   std::unique_ptr<WebMessage> web_message = std::make_unique<WebMessage>();
-  web_message->message = std::move(message.string);
+  web_message->message = std::move(message);
   web_message->ports = std::move(ports);
   host_->OnPostMessage(std::move(web_message));
 }

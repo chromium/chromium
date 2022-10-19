@@ -20,7 +20,7 @@ bool UnionTraits<js_injection::mojom::JsWebMessageDataView,
   if (!r.ReadStringValue(&string_value))
     return false;
 
-  out->string = std::move(string_value);
+  out->payload = std::move(string_value);
 
   return true;
 }

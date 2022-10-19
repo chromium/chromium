@@ -17,7 +17,7 @@ struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
                    js_injection::JsWebMessage> {
   static std::u16string string_value(
       const js_injection::JsWebMessage& message) {
-    return message.string;
+    return absl::get<std::u16string>(message.payload);
   }
 
   static js_injection::mojom::JsWebMessageDataView::Tag GetTag(

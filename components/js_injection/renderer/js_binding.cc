@@ -4,6 +4,7 @@
 
 #include "components/js_injection/renderer/js_binding.h"
 
+#include <string>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -112,7 +113,9 @@ void JsBinding::OnPostMessage(JsWebMessage message) {
   // Simulate MessageEvent's data property. See
   // https://html.spec.whatwg.org/multipage/comms.html#messageevent
   v8::Local<v8::Object> event =
-      gin::DataObjectBuilder(isolate).Set("data", message.string).Build();
+      gin::DataObjectBuilder(isolate)
+          .Set("data", absl::get<std::u16string>(message.payload))
+          .Build();
   v8::Local<v8::Value> argv[] = {event};
 
   v8::Local<v8::Object> self = GetWrapper(isolate).ToLocalChecked();
@@ -184,7 +187,7 @@ void JsBinding::PostMessage(gin::Arguments* args) {
                         : nullptr;
   if (js_to_java_messaging) {
     JsWebMessage js_message;
-    js_message.string = std::move(message);
+    js_message.payload = std::move(message);
     js_to_java_messaging->PostMessage(
         std::move(js_message),
         blink::MessagePortChannel::ReleaseHandles(ports));

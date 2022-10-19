@@ -4,6 +4,8 @@
 
 #include "weblayer/browser/js_communication/web_message_host_factory_wrapper.h"
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
@@ -36,7 +38,7 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
   void OnPostMessage(
       std::unique_ptr<js_injection::WebMessage> message) override {
     std::unique_ptr<WebMessage> m = std::make_unique<WebMessage>();
-    m->message = message->message;
+    m->message = std::move(absl::get<std::u16string>(message->message.payload));
     connection_->OnPostMessage(std::move(m));
   }
   void OnBackForwardCacheStateChanged() override {
@@ -45,10 +47,9 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
 
   // WebMessageReplyProxy:
   void PostWebMessage(std::unique_ptr<WebMessage> message) override {
-    std::unique_ptr<js_injection::WebMessage> w =
-        std::make_unique<js_injection::WebMessage>();
-    w->message = std::move(message->message);
-    proxy_->PostWebMessage(std::move(w));
+    js_injection::JsWebMessage js_message;
+    js_message.payload = std::move(message->message);
+    proxy_->PostWebMessage(std::move(js_message));
   }
   bool IsInBackForwardCache() override {
     return proxy_->IsInBackForwardCache();

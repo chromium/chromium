@@ -6,18 +6,20 @@
 #define COMPONENTS_JS_INJECTION_COMMON_WEB_MESSAGE_H_
 
 #include <string>
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace js_injection {
 
 // A struct representing mojo type `js_injection.mojom.JsWebMessage`.
 struct JsWebMessage {
   JsWebMessage();
+  ~JsWebMessage();
   JsWebMessage(JsWebMessage&) = delete;
   JsWebMessage(JsWebMessage&&);
   JsWebMessage& operator=(JsWebMessage&) = delete;
   JsWebMessage& operator=(JsWebMessage&&);
 
-  std::u16string string;
+  absl::variant<std::u16string> payload;
 };
 }  // namespace js_injection
 

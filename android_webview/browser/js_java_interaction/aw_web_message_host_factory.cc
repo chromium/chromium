@@ -4,6 +4,8 @@
 
 #include "android_webview/browser/js_java_interaction/aw_web_message_host_factory.h"
 
+#include <string>
+
 #include "android_webview/browser/js_java_interaction/js_reply_proxy.h"
 #include "android_webview/browser_jni_headers/WebMessageListenerHolder_jni.h"
 #include "android_webview/browser_jni_headers/WebMessageListenerInfo_jni.h"
@@ -41,7 +43,8 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
         content::android::CreateJavaMessagePort(std::move(message->ports));
     Java_WebMessageListenerHolder_onPostMessage(
         env, listener_,
-        base::android::ConvertUTF16ToJavaString(env, message->message),
+        base::android::ConvertUTF16ToJavaString(
+            env, absl::get<std::u16string>(message->message.payload)),
         base::android::ConvertUTF8ToJavaString(env, origin_string_),
         is_main_frame_, jports, reply_proxy_.GetJavaPeer());
   }

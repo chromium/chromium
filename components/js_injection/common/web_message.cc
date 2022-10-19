@@ -10,6 +10,8 @@ namespace js_injection {
 
 JsWebMessage::JsWebMessage() = default;
 
+JsWebMessage::~JsWebMessage() = default;
+
 JsWebMessage::JsWebMessage(JsWebMessage&&) = default;
 
 JsWebMessage& JsWebMessage::operator=(JsWebMessage&&) = default;
