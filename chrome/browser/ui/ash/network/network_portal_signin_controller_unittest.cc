@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -28,6 +29,7 @@
 #include "components/proxy_config/proxy_prefs.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -87,11 +89,19 @@ class NetworkPortalSigninControllerTest : public testing::Test {
   void SetUp() override {
     network_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     controller_ = std::make_unique<TestSigninController>();
-    base::RunLoop().RunUntilIdle();
+
+    CHECK(test_profile_manager_.SetUp());
+    user_manager_ = std::make_unique<FakeChromeUserManager>();
+    user_manager_->Initialize();
+    ProfileHelper::Get()->Initialize();
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
-    user_manager_enabler_.reset();
+    user_manager_->Shutdown();
+    user_manager_->Destroy();
+    user_manager_.reset();
+    test_profile_manager_.DeleteAllTestingProfiles();
     network_helper_.reset();
   }
 
@@ -99,23 +109,26 @@ class NetworkPortalSigninControllerTest : public testing::Test {
   void SimulateLogin() {
     const AccountId test_account_id(
         AccountId::FromUserEmail("test_user@gmail.com"));
-    user_manager_ = new FakeChromeUserManager;
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_));
-
-    test_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(test_profile_manager_->SetUp());
-    test_profile_manager_->CreateTestingProfile(test_account_id.GetUserEmail());
+    test_profile_manager_.CreateTestingProfile(test_account_id.GetUserEmail());
 
     user_manager_->AddUser(test_account_id);
     user_manager_->LoginUser(test_account_id);
     user_manager_->SwitchActiveUser(test_account_id);
   }
 
+  void SimulateLoginAsGuest() {
+    user_manager::User* user = user_manager_->AddGuestUser();
+    Profile* profile = test_profile_manager_.CreateTestingProfile(
+        user->GetAccountId().GetUserEmail());
+
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
+    user_manager_->LoginUser(user->GetAccountId());
+    user_manager_->SwitchActiveUser(user->GetAccountId());
+    task_environment_.RunUntilIdle();
+  }
+
   PrefService* GetPrefs() {
-    DCHECK(test_profile_manager_);
-    PrefService* prefs = test_profile_manager_->profile_manager()
+    PrefService* prefs = test_profile_manager_.profile_manager()
                              ->GetActiveUserProfile()
                              ->GetPrefs();
     DCHECK(prefs);
@@ -162,10 +175,10 @@ class NetworkPortalSigninControllerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> network_helper_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  FakeChromeUserManager* user_manager_;
-  std::unique_ptr<TestingProfileManager> test_profile_manager_;
   std::unique_ptr<TestSigninController> controller_;
+  std::unique_ptr<FakeChromeUserManager> user_manager_;
+  TestingProfileManager test_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -308,6 +321,14 @@ TEST_F(NetworkPortalSigninControllerTest2022Update, IsNewOTRProfile) {
   EXPECT_NE(profile, default_otr_profile);
   EXPECT_NE(controller_->profile(), profile);
   EXPECT_NE(controller_->profile(), default_otr_profile);
+  EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
+}
+
+TEST_F(NetworkPortalSigninControllerTest2022Update, GuestLogin) {
+  SimulateLoginAsGuest();
+  std::string expected_url = SetProbeUrl(kTestPortalUrl);
+  controller_->ShowSignin();
+  EXPECT_EQ(controller_->tab_url(), expected_url);
   EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
 }
 
