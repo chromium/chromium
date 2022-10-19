@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/cloud/message_util.h"
@@ -23,8 +24,13 @@ UserPolicyStatusProviderLacros::~UserPolicyStatusProviderLacros() = default;
 
 base::Value::Dict UserPolicyStatusProviderLacros::GetStatus() {
   enterprise_management::PolicyData* policy = loader_->GetPolicyData();
-  if (!policy)
-    return {};
+  if (!policy) {
+    base::Value::Dict error_dict;
+    if (profile_->GetProfilePolicyConnector()->IsManaged()) {
+      error_dict.Set("error", true);
+    }
+    return error_dict;
+  }
   base::Value::Dict dict = GetStatusFromPolicyData(policy);
   ExtractDomainFromUsername(&dict);
   GetUserAffiliationStatus(&dict, profile_);

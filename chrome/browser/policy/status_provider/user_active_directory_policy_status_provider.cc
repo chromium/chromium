@@ -43,6 +43,9 @@ base::Value::Dict UserActiveDirectoryPolicyStatusProvider::GetStatus() {
   dict.Set(policy::kUsernameKey, username);
   dict.Set(policy::kClientIdKey, client_id);
 
+  if (!policy && policy_manager_->store()->is_managed())
+    dict.Set("error", true);
+
   const base::TimeDelta refresh_interval =
       policy_manager_->scheduler()->interval();
   dict.Set(

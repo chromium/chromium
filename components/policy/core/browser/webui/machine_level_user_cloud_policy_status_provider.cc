@@ -86,6 +86,10 @@ base::Value::Dict MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
                    refresh_scheduler ? refresh_scheduler->last_refresh()
                                      : base::Time()));
       dict.Set(kDomainKey, gaia::ExtractDomainName(policy->username()));
+    } else {
+      if (store->is_managed()) {
+        dict.Set("error", true);
+      }
     }
   }
   dict.Set(kMachineKey, GetMachineName());
