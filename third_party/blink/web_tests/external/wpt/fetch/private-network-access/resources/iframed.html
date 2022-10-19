@@ -2,5 +2,6 @@
 <meta charset="utf-8">
 <title>Iframed</title>
 <script>
-  top.postMessage("loaded", "*");
+  const uuid = new URL(window.location).searchParams.get("iframe-uuid");
+  top.postMessage({ uuid, message: "loaded" }, "*");
 </script>
