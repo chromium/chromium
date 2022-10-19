@@ -110,6 +110,9 @@ class FvdlTarget(emu_target.EmuTarget):
     fvm_image = common.EnsurePathExists(
         boot_data.GetTargetFile('storage-full.blk', self._image_arch,
                                 self._image_type))
+    aemu_path = common.EnsurePathExists(
+        os.path.join(common.GetHostToolPathFromPlatform('aemu_internal'),
+                     'emulator'))
     emu_command = [
         self._FVDL_PATH,
         '--sdk',
@@ -125,6 +128,10 @@ class FvdlTarget(emu_target.EmuTarget):
         self._vdl_output_file.name,
         '-c',
         ' '.join(boot_data.GetKernelArgs()),
+
+        # Use an existing emulator checked out by Chromium.
+        '--aemu-path',
+        aemu_path,
 
         # Use existing images instead of downloading new ones.
         '--kernel-image',
