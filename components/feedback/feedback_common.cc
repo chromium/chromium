@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
@@ -45,7 +46,7 @@ constexpr char kArbitraryMimeType[] = "application/octet-stream";
 bool BelowCompressionThreshold(const std::string& content) {
   if (content.length() > kFeedbackMaxLength)
     return false;
-  const size_t line_count = std::count(content.begin(), content.end(), '\n');
+  const size_t line_count = base::ranges::count(content, '\n');
   if (line_count > kFeedbackMaxLineCount)
     return false;
   return true;

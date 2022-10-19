@@ -4,7 +4,7 @@
 
 #include "components/permissions/permission_request_queue.h"
 
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 
@@ -23,7 +23,7 @@ size_t PermissionRequestQueue::Count() const {
 }
 
 size_t PermissionRequestQueue::Count(PermissionRequest* request) const {
-  return base::STLCount(queued_requests_, request);
+  return base::ranges::count(queued_requests_, request);
 }
 
 void PermissionRequestQueue::PushInternal(PermissionRequest* request) {

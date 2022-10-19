@@ -13,6 +13,7 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
@@ -173,11 +174,10 @@ bool NoStatePrefetchLinkManager::TriggerIsRunningForTesting(
 }
 
 size_t NoStatePrefetchLinkManager::CountRunningTriggers() const {
-  return std::count_if(triggers_.begin(), triggers_.end(),
-                       [](const std::unique_ptr<LinkTrigger>& trigger) {
-                         return trigger->handle &&
-                                trigger->handle->IsPrefetching();
-                       });
+  return base::ranges::count_if(
+      triggers_, [](const std::unique_ptr<LinkTrigger>& trigger) {
+        return trigger->handle && trigger->handle->IsPrefetching();
+      });
 }
 
 void NoStatePrefetchLinkManager::StartLinkTriggers() {

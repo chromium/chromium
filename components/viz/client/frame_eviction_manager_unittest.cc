@@ -4,10 +4,10 @@
 
 #include "components/viz/client/frame_eviction_manager.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/viz/common/features.h"
@@ -65,19 +65,14 @@ TEST_F(FrameEvictionManagerTest, ScopedPause) {
       manager->AddFrame(&frame, /*locked=*/false);
 
     // All frames stays because |scoped_pause| holds off frame eviction.
-    EXPECT_EQ(kFrames,
-              std::count_if(frames.begin(), frames.end(),
-                            [](const TestFrameEvictionManagerClient& frame) {
-                              return frame.has_frame();
-                            }));
+    EXPECT_EQ(kFrames, base::ranges::count_if(
+                           frames, &TestFrameEvictionManagerClient::has_frame));
   }
 
   // Frame eviction happens when |scoped_pause| goes out of scope.
   EXPECT_EQ(kMaxSavedFrames,
-            std::count_if(frames.begin(), frames.end(),
-                          [](const TestFrameEvictionManagerClient& frame) {
-                            return frame.has_frame();
-                          }));
+            base::ranges::count_if(frames,
+                                   &TestFrameEvictionManagerClient::has_frame));
 }
 
 TEST_F(FrameEvictionManagerTest, PeriodicCulling) {

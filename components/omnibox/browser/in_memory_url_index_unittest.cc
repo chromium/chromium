@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <fstream>
 #include <memory>
 #include <numeric>
@@ -21,6 +20,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -678,7 +678,7 @@ TEST_F(InMemoryURLIndexTest, TrimHistoryIds) {
 
   auto CountGroupElementsInIds = [](const ItemGroup& group,
                                     const HistoryIDVector& ids) {
-    return std::count_if(ids.begin(), ids.end(), [&](history::URLID id) {
+    return base::ranges::count_if(ids, [&](history::URLID id) {
       return group.min_id <= id && id < group.max_id;
     });
   };

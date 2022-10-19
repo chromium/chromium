@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble.h"
@@ -279,8 +280,8 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
 
   // Last step doesn't have a progress counter.
   const int max_progress =
-      std::count_if(description.steps.begin(), description.steps.end(),
-                    [](const auto& step) { return step.ShouldShowBubble(); }) -
+      base::ranges::count_if(description.steps,
+                             &TutorialDescription::Step::ShouldShowBubble) -
       1;
 
   int current_step = 0;

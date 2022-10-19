@@ -1226,8 +1226,8 @@ void AutocompleteResult::LimitNumberOfURLsShown(
     size_t max_matches,
     size_t max_url_count,
     const CompareWithDemoteByType<AutocompleteMatch>& comparing_object) {
-  size_t search_count = std::count_if(
-      matches_.begin(), matches_.end(), [&](const AutocompleteMatch& m) {
+  size_t search_count =
+      base::ranges::count_if(matches_, [&](const AutocompleteMatch& m) {
         return AutocompleteMatch::IsSearchType(m.type) &&
                // Don't count if would be removed.
                comparing_object.GetDemotedRelevance(m) > 0;

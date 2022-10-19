@@ -58,7 +58,7 @@ class TestAddressTranslator : public AddressTranslator {
       };
       auto count_non_special = [](const std::string& t) {
         auto is_special = [](char ch) { return ch == '.' || ch == '!'; };
-        return t.size() - std::count_if(t.begin(), t.end(), is_special);
+        return t.size() - base::ranges::count_if(t, is_special);
       };
       units.push_back({static_cast<offset_t>(first_non_blank(s1)),
                        static_cast<offset_t>(count_non_special(s1)),

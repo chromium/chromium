@@ -108,8 +108,7 @@ class CookieHelperTest : public testing::Test {
 
     // Check that each expectation has been matched.
     unsigned long match_count =
-        std::count_if(cookie_expectations_.begin(), cookie_expectations_.end(),
-                      ExpectationIsMatched);
+        base::ranges::count_if(cookie_expectations_, ExpectationIsMatched);
     EXPECT_EQ(cookie_expectations_.size(), match_count);
 
     cookie_expectations_.clear();

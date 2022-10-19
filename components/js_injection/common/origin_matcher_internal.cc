@@ -4,6 +4,7 @@
 
 #include "components/js_injection/common/origin_matcher_internal.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -17,7 +18,7 @@ namespace {
 
 // Returns false if |host| has too many wildcards.
 inline bool HostWildcardSanityCheck(const std::string& host) {
-  size_t wildcard_count = std::count(host.begin(), host.end(), '*');
+  size_t wildcard_count = base::ranges::count(host, '*');
   if (wildcard_count == 0)
     return true;
 

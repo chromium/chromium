@@ -7,12 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -284,7 +284,7 @@ TEST_F(ResourceMetadataStorageTest, GetChildren) {
     storage_->GetChildren(parents_id[i], &children);
     EXPECT_EQ(children_name_id[i].size(), children.size());
     for (const auto& id : children_name_id[i]) {
-      EXPECT_EQ(1, std::count(children.begin(), children.end(), id.second));
+      EXPECT_EQ(1, base::ranges::count(children, id.second));
     }
   }
 }

@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_simple_task_runner.h"
@@ -73,7 +73,7 @@ class DeviceEventLogTest : public testing::Test {
   }
 
   size_t CountLines(const std::string& input) {
-    return std::count(input.begin(), input.end(), '\n');
+    return base::ranges::count(input, '\n');
   }
 
   std::string GetAsString(StringOrder order,

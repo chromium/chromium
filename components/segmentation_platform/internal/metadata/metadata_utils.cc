@@ -8,6 +8,7 @@
 
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -150,8 +151,7 @@ ValidationResult ValidateMetadataSqlFeature(const proto::SqlFeature& feature) {
     total_tensor_length += bind_value.value().tensor_length();
   }
 
-  if (total_tensor_length !=
-      std::count(feature.sql().begin(), feature.sql().end(), '?')) {
+  if (total_tensor_length != base::ranges::count(feature.sql(), '?')) {
     return ValidationResult::kFeatureBindValuesInvalid;
   }
 

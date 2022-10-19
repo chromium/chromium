@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -106,7 +107,7 @@ LoadOverrideListFromFile(const base::FilePath& path) {
 int MeaninglessPrefixLength(const std::string& host) {
   size_t len = host.size();
 
-  int dots = std::count(host.begin(), host.end(), '.');
+  int dots = base::ranges::count(host, '.');
   if (dots < 2) {
     return 0;
   }

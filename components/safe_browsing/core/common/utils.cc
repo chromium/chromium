@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -99,7 +99,7 @@ bool CanGetReputationOfUrl(const GURL& url) {
   const std::string hostname = url.host();
   // A valid hostname should be longer than 3 characters and have at least 1
   // dot.
-  if (hostname.size() < 4 || base::STLCount(hostname, '.') < 1) {
+  if (hostname.size() < 4 || base::ranges::count(hostname, '.') < 1) {
     return false;
   }
 

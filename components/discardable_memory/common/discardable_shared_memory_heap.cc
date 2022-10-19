@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/memory/aligned_memory.h"
@@ -116,7 +117,7 @@ bool DiscardableSharedMemoryHeap::ScopedMemorySegment::ContainsSpan(
 
 size_t DiscardableSharedMemoryHeap::ScopedMemorySegment::CountMarkedPages()
     const {
-  return std::count(dirty_pages_.begin(), dirty_pages_.end(), true);
+  return base::ranges::count(dirty_pages_, true);
 }
 
 base::trace_event::MemoryAllocatorDump*
@@ -152,11 +153,7 @@ DiscardableSharedMemoryHeap::~DiscardableSharedMemoryHeap() {
   memory_segments_.clear();
   DCHECK_EQ(num_blocks_, 0u);
   DCHECK_EQ(num_free_blocks_, 0u);
-  DCHECK_EQ(std::count_if(free_spans_, free_spans_ + std::size(free_spans_),
-                          [](const base::LinkedList<Span>& free_spans) {
-                            return !free_spans.empty();
-                          }),
-            0);
+  DCHECK(!base::Contains(free_spans_, false, &base::LinkedList<Span>::empty));
 }
 
 std::unique_ptr<DiscardableSharedMemoryHeap::Span>

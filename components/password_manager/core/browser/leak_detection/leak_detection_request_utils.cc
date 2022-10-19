@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -102,13 +103,12 @@ AnalyzeResponseResult CheckIfCredentialWasLeaked(
   std::string hash_username_password =
       crypto::SHA256HashString(*decrypted_username_password);
 
-  const ptrdiff_t matched_prefixes =
-      std::count_if(response->encrypted_leak_match_prefixes.begin(),
-                    response->encrypted_leak_match_prefixes.end(),
-                    [&hash_username_password](const std::string& prefix) {
-                      return base::StartsWith(hash_username_password, prefix,
-                                              base::CompareCase::SENSITIVE);
-                    });
+  const ptrdiff_t matched_prefixes = base::ranges::count_if(
+      response->encrypted_leak_match_prefixes,
+      [&hash_username_password](const std::string& prefix) {
+        return base::StartsWith(hash_username_password, prefix,
+                                base::CompareCase::SENSITIVE);
+      });
   switch (matched_prefixes) {
     case 0:
       return AnalyzeResponseResult::kNotLeaked;

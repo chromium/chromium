@@ -353,8 +353,8 @@ std::vector<base::StringPiece> SQLTableBuilder::AllPrimaryKeyNames() const {
 
 size_t SQLTableBuilder::NumberOfColumns() const {
   DCHECK(IsVersionLastAndSealed(sealed_version_));
-  return base::checked_cast<size_t>(std::count_if(
-      columns_.begin(), columns_.end(),
+  return base::checked_cast<size_t>(base::ranges::count_if(
+      columns_,
       [this](const Column& column) { return IsColumnInLastVersion(column); }));
 }
 
