@@ -107,14 +107,19 @@ InMemoryURLIndex::~InMemoryURLIndex() {
 }
 
 void InMemoryURLIndex::Init() {
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("omnibox", "InMemoryURLIndex::Init",
+                                    TRACE_ID_LOCAL(this));
+
   if (!history_service_)
     return;
 
-  if (history_service_->backend_loaded()) {
-    ScheduleRebuildFromHistory();
-  } else {
-    listen_to_history_service_loaded_ = true;
-  }
+  // If the HistoryService backend is not initialized yet, that's okay. We're
+  // scheduled to process our task once it's initialized.
+  history_service_->ScheduleDBTask(
+      FROM_HERE,
+      std::make_unique<InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask>(
+          this, scheme_allowlist_),
+      &private_data_tracker_);
 }
 
 void InMemoryURLIndex::ClearPrivateData() {
@@ -171,13 +176,6 @@ void InMemoryURLIndex::OnURLsDeleted(
   }
 }
 
-void InMemoryURLIndex::OnHistoryServiceLoaded(
-    history::HistoryService* history_service) {
-  if (listen_to_history_service_loaded_)
-    ScheduleRebuildFromHistory();
-  listen_to_history_service_loaded_ = false;
-}
-
 bool InMemoryURLIndex::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* process_memory_dump) {
@@ -227,25 +225,11 @@ void InMemoryURLIndex::Shutdown() {
 
 // Restoring from the History DB -----------------------------------------------
 
-void InMemoryURLIndex::ScheduleRebuildFromHistory() {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "omnibox", "InMemoryURLIndex::ScheduleRebuildFromHistory",
-      TRACE_ID_LOCAL(this));
-  DCHECK(history_service_);
-  history_service_->ScheduleDBTask(
-      FROM_HERE,
-      std::unique_ptr<history::HistoryDBTask>(
-          new InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask(
-              this, scheme_allowlist_)),
-      &private_data_tracker_);
-}
-
 void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
     bool succeeded,
     scoped_refptr<URLIndexPrivateData> private_data) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "omnibox", "InMemoryURLIndex::ScheduleRebuildFromHistory",
-      TRACE_ID_LOCAL(this));
+  TRACE_EVENT_NESTABLE_ASYNC_END0("omnibox", "InMemoryURLIndex::Init",
+                                  TRACE_ID_LOCAL(this));
   DCHECK(thread_checker_.CalledOnValidThread());
   if (succeeded) {
     private_data_tracker_.TryCancelAll();

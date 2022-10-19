@@ -148,14 +148,13 @@ class InMemoryURLIndex : public KeyedService,
         const RebuildPrivateDataFromHistoryDBTask&) = delete;
     RebuildPrivateDataFromHistoryDBTask& operator=(
         const RebuildPrivateDataFromHistoryDBTask&) = delete;
+    ~RebuildPrivateDataFromHistoryDBTask() override;
 
     bool RunOnDBThread(history::HistoryBackend* backend,
                        history::HistoryDatabase* db) override;
     void DoneRunOnMainThread() override;
 
    private:
-    ~RebuildPrivateDataFromHistoryDBTask() override;
-
     raw_ptr<InMemoryURLIndex> index_;  // Call back to this index at completion.
     SchemeSet scheme_allowlist_;  // Schemes to be indexed.
     bool succeeded_;  // Indicates if the rebuild was successful.
@@ -192,8 +191,6 @@ class InMemoryURLIndex : public KeyedService,
                       const history::URLRows& changed_urls) override;
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
-  void OnHistoryServiceLoaded(
-      history::HistoryService* history_service) override;
 
   // MemoryDumpProvider:
   bool OnMemoryDump(
@@ -241,10 +238,6 @@ class InMemoryURLIndex : public KeyedService,
 
   // Set to true once the index restoration is complete.
   bool restored_ = false;
-
-  // This flag is set to true if we want to listen to the
-  // HistoryServiceLoaded Notification.
-  bool listen_to_history_service_loaded_ = false;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
