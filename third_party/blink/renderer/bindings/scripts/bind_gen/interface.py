@@ -5564,9 +5564,19 @@ def _make_install_prototype_object(cg_context):
     interface = cg_context.interface
 
     unscopables = []
-    is_unscopable = lambda member: "Unscopable" in member.extended_attributes
-    unscopables.extend(filter(is_unscopable, class_like.attributes))
-    unscopables.extend(filter(is_unscopable, class_like.operations))
+    if interface:
+        # Iff the interface has an unscopable member, then collect all
+        # unscopable members including ones in inherited interfaces.
+        # Otherwise, do not create an @@unscopables object.
+        is_unscopable = lambda member: "Unscopable" in member.extended_attributes
+        unscopables.extend(filter(is_unscopable, interface.attributes))
+        unscopables.extend(filter(is_unscopable, interface.operations))
+        if unscopables:
+            for i in interface.inclusive_inherited_interfaces:
+                if i == interface:
+                    continue
+                unscopables.extend(filter(is_unscopable, i.attributes))
+                unscopables.extend(filter(is_unscopable, i.operations))
     if unscopables:
         nodes.extend([
             TextNode("""\
@@ -5580,8 +5590,8 @@ def _make_install_prototype_object(cg_context):
                 TextNode("static constexpr const char* "
                          "kUnscopablePropertyNames[] = {"),
                 ListNode([
-                    TextNode("\"{}\", ".format(member.identifier))
-                    for member in unscopables
+                    TextNode("\"{}\", ".format(name)) for name in sorted(
+                        map(lambda member: member.identifier, unscopables))
                 ]),
                 TextNode("};"),
             ]),
