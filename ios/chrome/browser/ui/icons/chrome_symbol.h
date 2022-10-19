@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/icons/buildflags.h"
+
 // Custom symbol names.
 extern NSString* const kArrowClockWiseSymbol;
 extern NSString* const kIncognitoSymbol;
@@ -26,6 +28,10 @@ extern NSString* const kPasswordSymbol;
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
 extern NSString* const kIncognitoCircleFilliOS14Symbol;
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+extern NSString* const kGoogleShieldSymbol;
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+extern NSString* const kShieldSymbol;
 
 // Custom symbol names which can be configured a "palette".
 extern NSString* const kIncognitoCircleFillSymbol;

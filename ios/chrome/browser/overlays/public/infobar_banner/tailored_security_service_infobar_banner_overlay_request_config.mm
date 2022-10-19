@@ -8,18 +8,11 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_service_infobar_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// TODO(crbug.com/1358296): Replace placeholder when icon png is added.
-// The name of the icon image for the tailored security service banner.
-NSString* const kIconImageName = @"legacy_password_key";
-}  // namespace
 
 namespace tailored_security_service_infobar_overlays {
 
@@ -35,7 +28,7 @@ TailoredSecurityServiceBannerRequestConfig::
   message_text_ = delegate->GetMessageText();
   button_label_text_ = delegate->GetMessageActionText();
   description_ = delegate->GetDescription();
-  icon_image_name_ = kIconImageName;
+  message_state_ = delegate->message_state();
 }
 
 TailoredSecurityServiceBannerRequestConfig::

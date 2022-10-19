@@ -10,7 +10,11 @@ source_set("tailored_security") {
   ]
   deps = [
     "//base",
+    "//components/infobars/core",
     "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/safe_browsing/tailored_security:infobar_delegates",
+    "//ios/chrome/browser/ui/icons:buildflags",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
   ]
@@ -26,6 +30,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/safe_browsing/tailored_security/test",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/banners/test",
     "//testing/gmock",
     "//testing/gtest",

@@ -65,6 +65,10 @@ NSString* const kCameraLensSymbol = @"camera_lens";
 NSString* const kDownTrendSymbol = @"line_downtrend";
 NSString* const kIncognitoCircleFilliOS14Symbol =
     @"incognito_circle_fill_ios14";
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+NSString* const kGoogleShieldSymbol = @"google_shield";
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+NSString* const kShieldSymbol = @"shield";
 
 // Custom symbol names which can be configured a "palette".
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";

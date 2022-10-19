@@ -61,7 +61,7 @@ std::u16string TailoredSecurityServiceInfobarDelegate::GetDescription() const {
     case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
       return test_consent_disabled_string;
     case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
-      return nil;
+      return std::u16string();
   }
 }
 
@@ -74,16 +74,6 @@ std::u16string TailoredSecurityServiceInfobarDelegate::GetMessageActionText()
       return test_consent_disabled_string;
     case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
       return test_unconsent_enabled_string;
-  }
-}
-
-bool TailoredSecurityServiceInfobarDelegate::IsConsented() const {
-  switch (message_state_) {
-    case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
-    case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
-      return true;
-    case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
-      return false;
   }
 }
 

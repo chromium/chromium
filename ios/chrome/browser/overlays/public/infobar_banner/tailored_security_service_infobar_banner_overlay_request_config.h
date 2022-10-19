@@ -11,6 +11,7 @@
 
 #import "ios/chrome/browser/overlays/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_user_data.h"
+#import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_service_infobar_delegate.h"
 
 namespace infobars {
 class InfoBar;
@@ -34,11 +35,13 @@ class TailoredSecurityServiceBannerRequestConfig
   // The description.
   std::u16string description() const { return description_; }
 
-  // The name of the icon image.
-  NSString* icon_image_name() const { return icon_image_name_; }
-
   // The badge of the infobar.
   bool has_badge() const { return has_badge_; }
+
+  // The message state.
+  safe_browsing::TailoredSecurityServiceMessageState message_state() const {
+    return message_state_;
+  }
 
  private:
   OVERLAY_USER_DATA_SETUP(TailoredSecurityServiceBannerRequestConfig);
@@ -54,7 +57,7 @@ class TailoredSecurityServiceBannerRequestConfig
   std::u16string message_text_;
   std::u16string description_;
   std::u16string button_label_text_;
-  NSString* icon_image_name_ = nil;
+  safe_browsing::TailoredSecurityServiceMessageState message_state_;
   // Determines if the banner should show the gear icon.
   bool has_badge_ = false;
 };

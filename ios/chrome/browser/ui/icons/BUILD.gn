@@ -109,6 +109,7 @@ source_set("symbols") {
     "chrome_symbol.mm",
   ]
   deps = [
+    ":buildflags",
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/icons/resources:arrow_clockwise",
@@ -126,6 +127,7 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:photo_badge_plus",
     "//ios/chrome/browser/ui/icons/resources:plus_circle_fill",
     "//ios/chrome/browser/ui/icons/resources:popup_badge_minus",
+    "//ios/chrome/browser/ui/icons/resources:shield",
     "//ios/chrome/browser/ui/icons/resources:square_bullet_square",
     "//ios/chrome/browser/ui/icons/resources:square_number",
     "//ios/chrome/browser/ui/icons/resources:translate",

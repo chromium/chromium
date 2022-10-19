@@ -7,6 +7,8 @@
 
 #import "components/infobars/core/confirm_infobar_delegate.h"
 
+#import <Foundation/Foundation.h>
+
 #import <string>
 
 #import "base/memory/weak_ptr.h"
@@ -51,8 +53,10 @@ class TailoredSecurityServiceInfobarDelegate : public ConfirmInfoBarDelegate {
   // Returns the subtitle text to be displayed in the banner.
   std::u16string GetDescription() const;
 
-  // Returns the consent status of the user.
-  bool IsConsented() const;
+  // Returns the message state.
+  TailoredSecurityServiceMessageState message_state() const {
+    return message_state_;
+  }
 
   // ConfirmInfoBarDelegate
   std::u16string GetMessageText() const override;
