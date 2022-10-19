@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -81,7 +80,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -117,9 +115,6 @@ enum class CommitResult : int32_t;
 namespace {
 struct SameSizeAsDocumentLoader;
 }  // namespace
-
-// Enables code caching for inline scripts.
-BASE_DECLARE_FEATURE(kCacheInlineScriptCode);
 
 // The DocumentLoader fetches a main resource and handles the result.
 // TODO(https://crbug.com/855189). This was originally structured to have a
