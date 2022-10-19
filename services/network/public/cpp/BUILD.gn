@@ -524,6 +524,7 @@ fuzzer_test("xfo_fuzzer") {
 fuzzer_test("cors_fuzzer") {
   sources = [ "cors/cors_fuzzer.cc" ]
   deps = [ ":cpp" ]
+  seed_corpus = "//services/network/public/cpp/cors/corpus"
 }
 
 fuzzer_test("client_hints_fuzzer") {
