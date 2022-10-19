@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,101 +13,86 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import '../../settings_shared.css.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {getTemplate} from './crostini_extra_containers_create_dialog.html.js';
 
-/** @polymer */
+interface ExtraContainersCreateDialog {
+  $: {
+    dialog: CrDialogElement,
+    containerFileInput: CrInputElement,
+    containerNameInput: CrInputElement,
+    imageAliasInput: CrInputElement,
+    imageServerInput: CrInputElement,
+    vmNameInput: CrInputElement,
+  };
+}
+
 class ExtraContainersCreateDialog extends PolymerElement {
   static get is() {
     return 'settings-crostini-create-container-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * List of container properties that are already stored in settings.
-       * @type {!Array<!ContainerInfo>}
        */
       allContainers: {
         type: Array,
         value: [],
       },
 
-      /**
-       * @private {string}
-       */
       containerFile_: {
         type: String,
         value: '',
       },
 
-      /**
-       * @private {string}
-       */
       inputVmName_: {
         type: String,
         value: DEFAULT_CROSTINI_VM,
       },
 
-      /**
-       * @private {string}
-       */
       inputContainerName_: {
         type: String,
         value: '',
       },
 
-      /**
-       * @private {string}
-       */
       inputImageServer_: {
         type: String,
         value: '',
       },
 
-      /**
-       * @private {string}
-       */
       inputImageAlias_: {
         type: String,
         value: '',
       },
 
-      /**
-       * @private {boolean}
-       */
       advancedToggleExpanded_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @private {boolean}
-       */
       disableCreateButton_: {
         type: Boolean,
         value: true,
       },
 
-      /**
-       * @private {boolean}
-       */
       validContainerName_: {
         type: Boolean,
         value: true,
       },
 
-      /**
-       * @private {string}
-       */
       containerNameError_: {
         type: String,
         value: '',
@@ -115,15 +100,25 @@ class ExtraContainersCreateDialog extends PolymerElement {
     };
   }
 
+  allContainers: ContainerInfo[];
+  private advancedToggleExpanded_: boolean;
+  private browserProxy_: CrostiniBrowserProxy;
+  private containerFile_: string;
+  private containerNameError_: string;
+  private disableCreateButton_: boolean;
+  private inputContainerName_: string;
+  private inputImageAlias_: string;
+  private inputImageServer_: string;
+  private inputVmName_: string;
+  private validContainerName_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!CrostiniBrowserProxy} */
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
     this.$.vmNameInput.value = this.inputVmName_;
@@ -134,16 +129,15 @@ class ExtraContainersCreateDialog extends PolymerElement {
   }
 
   /**
-   * @param {string} input The vm name to verify.
-   * @return {?boolean} if the input string is a valid vm name.
+   * @param input The vm name to verify.
+   * @return if the input string is a valid vm name.
    */
-  isValidVmName(input) {
+  isValidVmName(_input: string): boolean {
     // TODO(crbug:1261319) Allowing non a non-default VM based on policy (TBD).
     return true;
   }
 
-  /** @private */
-  validateNames_() {
+  private validateNames_() {
     this.inputVmName_ = this.$.vmNameInput.value.length === 0 ?
         DEFAULT_CROSTINI_VM :
         this.$.vmNameInput.value;
@@ -167,13 +161,11 @@ class ExtraContainersCreateDialog extends PolymerElement {
         !this.validContainerName_ || !this.isValidVmName(this.inputVmName_);
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onCreateTap_() {
+  private onCreateTap_() {
     if (this.advancedToggleExpanded_) {
       // These elements are part of a dom-if on |advancedToggleExpanded_|
       this.inputImageServer_ = this.$.imageServerInput.value;
@@ -188,35 +180,33 @@ class ExtraContainersCreateDialog extends PolymerElement {
     this.$.dialog.close();
   }
 
-  /** @private */
-  async onSelectContainerFileClick_() {
+  private async onSelectContainerFileClick_() {
     this.$.containerFileInput.value =
         await this.browserProxy_.openContainerFileSelector();
   }
 
-  /** @private */
-  advancedToggleClicked_() {
+  private advancedToggleClicked_() {
     this.advancedToggleExpanded_ = !this.advancedToggleExpanded_;
     // Force repaint.
     this.$.dialog.getBoundingClientRect();
   }
 
   /**
-   * @param {boolean} opened Whether the menu is expanded.
-   * @return {string} Icon name.
-   * @private
+   * @param opened Whether the menu is expanded.
+   * @return Icon name.
    */
-  getArrowIcon_(opened) {
+  private getArrowIcon_(opened: boolean): string {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
   }
 
-  /**
-   * @param {boolean} bool
-   * @return {string}
-   * @private
-   */
-  boolToString_(bool) {
+  private boolToString_(bool: boolean): string {
     return bool.toString();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-create-container-dialog': ExtraContainersCreateDialog;
   }
 }
 

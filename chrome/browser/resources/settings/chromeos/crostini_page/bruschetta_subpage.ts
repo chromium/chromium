@@ -11,29 +11,29 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../../settings_shared.css.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Router} from '../../router.js';
+import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.js';
 import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteOriginBehaviorInterface}
- */
-const BruschettaSubpageElementBase =
-    mixinBehaviors([RouteOriginBehavior], PolymerElement);
+import {getTemplate} from './bruschetta_subpage.html.js';
 
-/** @polymer */
+const BruschettaSubpageElementBase =
+    mixinBehaviors([RouteOriginBehavior], PolymerElement) as {
+      new (): PolymerElement & RouteOriginBehaviorInterface,
+    };
+
 class BruschettaSubpageElement extends BruschettaSubpageElementBase {
   static get is() {
     return 'settings-bruschetta-subpage';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
+
+  private route_: Route;
 
   constructor() {
     super();
@@ -42,16 +42,20 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
     this.route_ = routes.BRUSCHETTA_DETAILS;
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.addFocusConfig(
         routes.BRUSCHETTA_SHARED_USB_DEVICES, '#bruschetta-shared-usb-devices');
   }
 
-  /** @private */
-  onSharedUsbDevicesClick_() {
+  private onSharedUsbDevicesClick_() {
     Router.getInstance().navigateTo(routes.BRUSCHETTA_SHARED_USB_DEVICES);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-bruschetta-subpage': BruschettaSubpageElement;
   }
 }
 

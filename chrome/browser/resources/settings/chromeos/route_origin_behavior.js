@@ -109,4 +109,11 @@ export class RouteOriginBehaviorInterface {
    * @param {string} value
    */
   addFocusConfig(route, value) {}
+
+  /**
+   * @param {!Route} newRoute
+   * @param {!Route=} prevRoute
+   * @protected
+   */
+  currentRouteChanged(newRoute, prevRoute) {}
 }

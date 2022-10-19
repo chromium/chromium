@@ -7,7 +7,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 /**
  * @typedef {{guid: string,
  *            label: string,
- *            guestId: ?GuestId,
+ *            guestId: (?GuestId|undefined),
  *            vendorId: string,
  *            productId: string,
  *            promptBeforeSharing: boolean}}
@@ -15,7 +15,10 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 export let GuestOsSharedUsbDevice;
 
 export const CROSTINI_TYPE = 'crostini';
+export const BRUSCHETTA_TYPE = 'bruschetta';
+export const ARC_VM_TYPE = 'arcvm';
 export const PLUGIN_VM_TYPE = 'pluginVm';
+export const TERMINA_VM_TYPE = 'termina';
 
 /**
  * Non-js key names are kept to match c++ style keys in prefs.

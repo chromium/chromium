@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,17 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+import {getTemplate} from './crostini_disk_resize_confirmation_dialog.html.js';
+
+interface SettingsCrostiniDiskResizeConfirmationDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class SettingsCrostiniDiskResizeConfirmationDialogElement extends
     PolymerElement {
   static get is() {
@@ -21,32 +29,32 @@ class SettingsCrostiniDiskResizeConfirmationDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.getDialog_().showModal();
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.getDialog_().cancel();
   }
 
-  /** @private */
-  onReserveSizeTap_() {
+  private onReserveSizeTap_() {
     this.getDialog_().close();
   }
 
-  /**
-   * @private
-   * @return {!CrDialogElement}
-   */
-  getDialog_() {
-    return /** @type{!CrDialogElement} */ (this.$.dialog);
+  private getDialog_(): CrDialogElement {
+    return this.$.dialog;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-disk-resize-confirmation-dialog':
+        SettingsCrostiniDiskResizeConfirmationDialogElement;
   }
 }
 

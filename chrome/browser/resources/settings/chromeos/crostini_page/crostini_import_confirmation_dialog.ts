@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,54 +11,66 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GuestId} from '../guest_os/guest_os_browser_proxy.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import {getTemplate} from './crostini_import_confirmation_dialog.html.js';
 
-/** @polymer */
+interface SettingsCrostiniImportConfirmationDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class SettingsCrostiniImportConfirmationDialogElement extends PolymerElement {
   static get is() {
     return 'settings-crostini-import-confirmation-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {!GuestId} */
       importContainerId: {
         type: Object,
       },
     };
   }
 
+  importContainerId: GuestId;
+  private browserProxy_: CrostiniBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!CrostiniBrowserProxy} */
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onContinueTap_() {
+  private onContinueTap_() {
     this.browserProxy_.importCrostiniContainer(this.importContainerId);
     this.$.dialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-import-confirmation-dialog':
+        SettingsCrostiniImportConfirmationDialogElement;
   }
 }
 

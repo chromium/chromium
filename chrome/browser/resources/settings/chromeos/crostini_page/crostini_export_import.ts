@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,31 +12,27 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './crostini_import_confirmation_dialog.js';
 import '../../settings_shared.css.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {equalContainerId} from '../guest_os/guest_os_container_select.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {getTemplate} from './crostini_export_import.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsCrostiniExportImportElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, RouteObserverBehavior, WebUIListenerBehavior],
-    PolymerElement);
+const SettingsCrostiniExportImportElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior],
+        RouteObserverMixin(WebUiListenerMixin(PolymerElement))) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          RouteObserverMixinInterface & WebUiListenerMixinInterface,
+    };
 
-/** @polymer */
 class SettingsCrostiniExportImportElement extends
     SettingsCrostiniExportImportElementBase {
   static get is() {
@@ -44,12 +40,11 @@ class SettingsCrostiniExportImportElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private */
       showImportConfirmationDialog_: {
         type: Boolean,
         value: false,
@@ -58,7 +53,6 @@ class SettingsCrostiniExportImportElement extends
       /**
        * Whether the export import buttons should be enabled. Initially false
        * until status has been confirmed.
-       * @private {boolean}
        */
       enableButtons_: {
         type: Boolean,
@@ -68,20 +62,17 @@ class SettingsCrostiniExportImportElement extends
 
       /**
        * Whether the container select element is displayed.
-       * @private {boolean}
        */
       showContainerSelect_: {
         type: Boolean,
         computed: 'isMultiContainer_(allContainers_)',
       },
 
-      /** @private */
       installerShowing_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       exportImportInProgress_: {
         type: Boolean,
         value: false,
@@ -89,7 +80,6 @@ class SettingsCrostiniExportImportElement extends
 
       /**
        * The known containers for display in the UI.
-       * @private {!Array<!ContainerInfo>}
        */
       allContainers_: {
         type: Array,
@@ -101,7 +91,6 @@ class SettingsCrostiniExportImportElement extends
 
       /**
        * The GuestId of the container to be exported.
-       * @private {!GuestId}
        */
       exportContainerId_: {
         type: Object,
@@ -113,7 +102,6 @@ class SettingsCrostiniExportImportElement extends
       /**
        * The GuestId of the container to be overwritten by an imported
        * container file.
-       * @private {!GuestId}
        */
       importContainerId_: {
         type: Object,
@@ -122,7 +110,6 @@ class SettingsCrostiniExportImportElement extends
         },
       },
 
-      /** @private {string} */
       defaultVmName_: {
         type: String,
         value: DEFAULT_CROSTINI_VM,
@@ -130,7 +117,6 @@ class SettingsCrostiniExportImportElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -142,37 +128,44 @@ class SettingsCrostiniExportImportElement extends
     };
   }
 
+  private allContainers_: ContainerInfo[];
+  private browserProxy_: CrostiniBrowserProxy;
+  private defaultVmName_: string;
+  private enableButtons_: boolean;
+  private exportContainerId_: GuestId;
+  private exportImportInProgress_: boolean;
+  private importContainerId_: GuestId;
+  private installerShowing_: boolean;
+  private showContainerSelect_: boolean;
+  private showImportConfirmationDialog_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!CrostiniBrowserProxy} */
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
-        'crostini-export-import-operation-status-changed', inProgress => {
+        'crostini-export-import-operation-status-changed',
+        (inProgress: boolean) => {
           this.exportImportInProgress_ = inProgress;
         });
     this.addWebUIListener(
-        'crostini-installer-status-changed', installerShowing => {
+        'crostini-installer-status-changed', (installerShowing: boolean) => {
           this.installerShowing_ = installerShowing;
         });
     this.addWebUIListener(
-        'crostini-container-info', (infos) => this.onContainerInfo_(infos));
+        'crostini-container-info',
+        (infos: ContainerInfo[]) => this.onContainerInfo_(infos));
 
     this.browserProxy_.requestCrostiniExportImportOperationStatus();
     this.browserProxy_.requestCrostiniInstallerStatus();
     this.browserProxy_.requestContainerInfo();
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.CROSTINI_EXPORT_IMPORT) {
       return;
@@ -181,11 +174,7 @@ class SettingsCrostiniExportImportElement extends
     this.attemptDeepLink();
   }
 
-  /**
-   * @param {!Array<!ContainerInfo>} containerInfos
-   * @private
-   */
-  onContainerInfo_(containerInfos) {
+  private onContainerInfo_(containerInfos: ContainerInfo[]) {
     this.allContainers_ = containerInfos;
     if (!this.isMultiContainer_(containerInfos)) {
       this.exportContainerId_ = DEFAULT_CROSTINI_GUEST_ID;
@@ -193,44 +182,37 @@ class SettingsCrostiniExportImportElement extends
     }
   }
 
-  /** @private */
-  onExportClick_() {
+  private onExportClick_() {
     this.browserProxy_.exportCrostiniContainer(this.exportContainerId_);
   }
 
-  /** @private */
-  onImportClick_() {
+  private onImportClick_() {
     this.showImportConfirmationDialog_ = true;
   }
 
-  /** @private */
-  onImportConfirmationDialogClose_() {
+  private onImportConfirmationDialogClose_() {
     this.showImportConfirmationDialog_ = false;
   }
 
-  /**
-   * @param {!Boolean} installerShowing
-   * @param {!Boolean} exportImportInProgress
-   * @private
-   */
-  isEnabledButtons_(installerShowing, exportImportInProgress) {
+  private isEnabledButtons_(
+      installerShowing: boolean, exportImportInProgress: boolean): boolean {
     return !(installerShowing || exportImportInProgress);
   }
 
-
-  /**
-   * @param {!Array<!ContainerInfo>} allContainers
-   * @return boolean
-   * @private
-   */
-  isMultiContainer_(allContainers) {
+  private isMultiContainer_(allContainers: ContainerInfo[]): boolean {
     return !(
         allContainers.length === 1 &&
         equalContainerId(allContainers[0].id, DEFAULT_CROSTINI_GUEST_ID));
   }
 
-  getSettingsBoxClass_(allContainers) {
+  private getSettingsBoxClass_(allContainers: ContainerInfo[]): string {
     return this.isMultiContainer_(allContainers) ? 'two-line-settings-box' : '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-export-import': SettingsCrostiniExportImportElement;
   }
 }
 

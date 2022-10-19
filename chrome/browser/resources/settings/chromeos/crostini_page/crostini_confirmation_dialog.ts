@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,17 +16,25 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+import {getTemplate} from './crostini_confirmation_dialog.html.js';
+
+interface SettingsCrostiniConfirmationDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class SettingsCrostiniConfirmationDialogElement extends PolymerElement {
   static get is() {
     return 'settings-crostini-confirmation-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -39,35 +47,40 @@ class SettingsCrostiniConfirmationDialogElement extends PolymerElement {
     };
   }
 
+  private accepted_: boolean;
+
   constructor() {
     super();
 
     this.accepted_ = true;
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.cancel();
   }
 
-  /** @private */
-  onAcceptTap_() {
+  private onAcceptTap_() {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onDialogCancel_(e) {
+  private onDialogCancel_() {
     this.accepted_ = false;
   }
 
-  /** @private */
-  onDialogClose_(e) {
+  private onDialogClose_(e: Event) {
     e.stopPropagation();
 
     const closeEvent = new CustomEvent(
         'close',
         {bubbles: true, composed: true, detail: {'accepted': this.accepted_}});
     this.dispatchEvent(closeEvent);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-confirmation-dialog':
+        SettingsCrostiniConfirmationDialogElement;
   }
 }
 

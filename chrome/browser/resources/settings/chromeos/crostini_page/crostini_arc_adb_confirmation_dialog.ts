@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,22 +11,28 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
 
+import {getTemplate} from './crostini_arc_adb_confirmation_dialog.html.js';
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 
+interface SettingsCrostiniArcAdbConfirmationDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
 class SettingsCrostiniArcAdbConfirmationDialogElement extends PolymerElement {
   static get is() {
     return 'settings-crostini-arc-adb-confirmation-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -38,43 +44,34 @@ class SettingsCrostiniArcAdbConfirmationDialogElement extends PolymerElement {
     };
   }
 
+  action: string;
+  private browserProxy_: CrostiniBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!CrostiniBrowserProxy} */
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  isEnabling_() {
+  private isEnabling_(): boolean {
     return this.action === 'enable';
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  isDisabling_() {
+  private isDisabling_(): boolean {
     return this.action === 'disable';
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onRestartTap_() {
+  private onRestartTap_() {
     if (this.isEnabling_()) {
       this.browserProxy_.enableArcAdbSideload();
       recordSettingChange();
@@ -84,6 +81,13 @@ class SettingsCrostiniArcAdbConfirmationDialogElement extends PolymerElement {
     } else {
       assertNotReached();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-arc-adb-confirmation-dialog':
+        SettingsCrostiniArcAdbConfirmationDialogElement;
   }
 }
 

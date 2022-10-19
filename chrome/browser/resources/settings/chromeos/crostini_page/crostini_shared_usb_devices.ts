@@ -9,28 +9,26 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {GuestId} from '../guest_os/guest_os_browser_proxy.js';
+import {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
 import {SettingsGuestOsSharedUsbDevicesElement} from '../guest_os/guest_os_shared_usb_devices.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_GUEST_ID} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_GUEST_ID} from './crostini_browser_proxy.js';
 
-/** @polymer */
 class CrostiniSharedUsbDevicesElement extends
     SettingsGuestOsSharedUsbDevicesElement {
-  static get is() {
+  static override get is() {
     return 'settings-crostini-shared-usb-devices';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
+      ...SettingsGuestOsSharedUsbDevicesElement.properties,
+
       guestOsType: {
         type: String,
         value: 'crostini',
       },
 
-      /**
-       * @type {!GuestId}
-       */
       defaultGuestId: {
         type: Object,
         value() {
@@ -50,17 +48,19 @@ class CrostiniSharedUsbDevicesElement extends
     };
   }
 
-  constructor() {
-    super();
-  }
-
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
-        'crostini-container-info', (infos) => this.onContainerInfo_(infos));
+        'crostini-container-info',
+        (infos: ContainerInfo[]) => this.onContainerInfo_(infos));
     CrostiniBrowserProxyImpl.getInstance().requestContainerInfo();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-shared-usb-devices': CrostiniSharedUsbDevicesElement;
   }
 }
 

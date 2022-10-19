@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,55 +8,55 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import './crostini_arc_adb_confirmation_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared.css.js';
 
 import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_policy_indicator_behavior.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
+import {getTemplate} from './crostini_arc_adb.html.js';
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsCrostiniArcAdbElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      RouteObserverBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+interface SettingsCrostiniArcAdbElement {
+  $: {
+    arcAdbEnabledButton: CrToggleElement,
+  };
+}
 
-/** @polymer */
+const SettingsCrostiniArcAdbElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+        ],
+        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          I18nMixinInterface & RouteObserverMixinInterface &
+          WebUiListenerMixinInterface,
+    };
+
 class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
   static get is() {
     return 'settings-crostini-arc-adb';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private {boolean} */
       arcAdbEnabled_: {
         type: Boolean,
         value: false,
@@ -66,14 +66,12 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
        * Whether the device requires a powerwash first (to define nvram for boot
        * lockbox). This happens to devices initialized through OOBE flow before
        * M74.
-       * @private {boolean}
        */
       arcAdbNeedPowerwash_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       isOwnerProfile_: {
         type: Boolean,
         value() {
@@ -81,7 +79,6 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
         },
       },
 
-      /** @private {boolean} */
       isEnterpriseManaged_: {
         type: Boolean,
         value() {
@@ -89,13 +86,11 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
         },
       },
 
-      /** @private {boolean} */
       canChangeAdbSideloading_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       showConfirmationDialog_: {
         type: Boolean,
         value: false,
@@ -103,7 +98,6 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -112,27 +106,34 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
     };
   }
 
+  private arcAdbEnabled_: boolean;
+  private arcAdbNeedPowerwash_: boolean;
+  private browserProxy_: CrostiniBrowserProxy;
+  private canChangeAdbSideloading_: boolean;
+  private isEnterpriseManaged_: boolean;
+  private isOwnerProfile_: boolean;
+  private showConfirmationDialog_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!CrostiniBrowserProxy} */
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
         'crostini-arc-adb-sideload-status-changed',
-        (enabled, need_powerwash) => {
+        (enabled: boolean, needPowerwash: boolean) => {
           this.arcAdbEnabled_ = enabled;
-          this.arcAdbNeedPowerwash_ = need_powerwash;
+          this.arcAdbNeedPowerwash_ = needPowerwash;
         });
 
     this.addWebUIListener(
         'crostini-can-change-arc-adb-sideload-changed',
-        (can_change_arc_adb_sideloading) => {
-          this.canChangeAdbSideloading_ = can_change_arc_adb_sideloading;
+        (canChangeArcAdbSideloading: boolean) => {
+          this.canChangeAdbSideloading_ = canChangeArcAdbSideloading;
         });
 
     this.browserProxy_.requestArcAdbSideloadStatus();
@@ -140,11 +141,7 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
     this.browserProxy_.getCanChangeArcAdbSideloading();
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.CROSTINI_ANDROID_ADB) {
       return;
@@ -158,18 +155,16 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
    * CrostiniFeatures::CanChangeAdbSideloading(). Note that the actual
    * guard should be in the browser, otherwise a user may bypass this check by
    * inspecting Settings with developer tools.
-   * @return {boolean} Whether the control should be disabled.
-   * @private
+   * @return Whether the control should be disabled.
    */
-  shouldDisable_() {
+  private shouldDisable_(): boolean {
     return !this.canChangeAdbSideloading_ || this.arcAdbNeedPowerwash_;
   }
 
   /**
-   * @return {CrPolicyIndicatorType} Which policy indicator to show (if any).
-   * @private
+   * @return Which policy indicator to show (if any).
    */
-  getPolicyIndicatorType_() {
+  private getPolicyIndicatorType_(): CrPolicyIndicatorType {
     if (this.isEnterpriseManaged_) {
       if (this.canChangeAdbSideloading_) {
         return CrPolicyIndicatorType.NONE;
@@ -184,22 +179,25 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
   }
 
   /**
-   * @return {string} Which action to perform when the toggle is changed.
-   * @private
+   * @return Which action to perform when the toggle is changed.
    */
-  getToggleAction_() {
+  private getToggleAction_(): string {
     return this.arcAdbEnabled_ ? 'disable' : 'enable';
   }
 
-  /** @private */
-  onArcAdbToggleChanged_() {
+  private onArcAdbToggleChanged_() {
     this.showConfirmationDialog_ = true;
   }
 
-  /** @private */
-  onConfirmationDialogClose_() {
+  private onConfirmationDialogClose_() {
     this.showConfirmationDialog_ = false;
     this.$.arcAdbEnabledButton.checked = this.arcAdbEnabled_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-arc-adb': SettingsCrostiniArcAdbElement;
   }
 }
 

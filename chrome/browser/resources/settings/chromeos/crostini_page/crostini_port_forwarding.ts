@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,45 +8,58 @@
  * Crostini.
  */
 import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './crostini_port_forwarding_add_port_dialog.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_section.js';
 import '../../settings_page_styles.css.js';
 import '../../settings_shared.css.js';
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {containerLabel, equalContainerId} from '../guest_os/guest_os_container_select.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {getTemplate} from './crostini_port_forwarding.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {PrefsBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
+type HtmlElementWithData<T extends HTMLElement = HTMLElement> = T&{
+  'dataContainerId': GuestId,
+};
+
+interface CrostiniPortForwardingElement {
+  $: {
+    errorToast: CrToastElement,
+    removeAllPortsMenu: CrLazyRenderElement<CrActionMenuElement>,
+  };
+}
+
 const CrostiniPortForwardingBase =
-    mixinBehaviors([PrefsBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([PrefsBehavior], WebUiListenerMixin(PolymerElement)) as {
+      new (): PolymerElement & PrefsBehaviorInterface &
+          WebUiListenerMixinInterface,
+    };
 
-/** @polymer */
 class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   static get is() {
     return 'settings-crostini-port-forwarding';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -57,7 +70,6 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
         notify: true,
       },
 
-      /** @private */
       showAddPortDialog_: {
         type: Boolean,
         value: false,
@@ -65,7 +77,6 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
 
       /**
        * The forwarded ports for display in the UI.
-       * @private {!Array<!CrostiniPortSetting>}
        */
       allPorts_: {
         type: Array,
@@ -77,7 +88,6 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
 
       /**
        * The known ContainerIds for display in the UI.
-       * @private {!Array<!ContainerInfo>}
        */
       allContainers_: {
         type: Array,
@@ -95,58 +105,47 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     ];
   }
 
+  private activePorts_: CrostiniPortActiveSetting[];
+  private allContainers_: ContainerInfo[];
+  private allPorts_: CrostiniPortSetting[];
+  private browserProxy_: CrostiniBrowserProxy;
+  private lastMenuOpenedPort_: CrostiniPortActiveSetting|null;
+  private showAddPortDialog_: boolean;
+
   constructor() {
     super();
     /**
      * List of ports are currently being forwarded.
-     * @private {!Array<?CrostiniPortActiveSetting>}
      */
     this.activePorts_ = [];
 
     /**
      * Tracks the last port that was selected for removal.
-     * @private {?CrostiniPortActiveSetting}
      */
     this.lastMenuOpenedPort_ = null;
 
-    /** @private {!CrostiniBrowserProxy} */
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
         'crostini-port-forwarder-active-ports-changed',
-        (ports) => this.onCrostiniPortsActiveStateChanged_(ports));
+        (ports: CrostiniPortActiveSetting[]) =>
+            this.onCrostiniPortsActiveStateChanged_(ports));
     this.addWebUIListener(
-        'crostini-container-info', (infos) => this.onContainerInfo_(infos));
+        'crostini-container-info',
+        (infos: ContainerInfo[]) => this.onContainerInfo_(infos));
     this.browserProxy_.getCrostiniActivePorts().then(
         (ports) => this.onCrostiniPortsActiveStateChanged_(ports));
     this.browserProxy_.requestContainerInfo();
   }
 
-  /**
-   * @param {!CrostiniPortProtocol} protocol
-   * @private
-   */
-  getProtocolName(protocol) {
-    return Object.keys(CrostiniPortProtocol)
-        .find(k => CrostiniPortProtocol[k] === protocol);
-  }
-
-  /**
-   * @param {!Array<!ContainerInfo>} containerInfos
-   */
-  onContainerInfo_(containerInfos) {
+  private onContainerInfo_(containerInfos: ContainerInfo[]) {
     this.set('allContainers_', containerInfos);
   }
 
-  /**
-   * @param {!Array<!CrostiniPortSetting>} ports List of ports.
-   * @private
-   */
-  onCrostiniPortsChanged_(ports) {
+  private onCrostiniPortsChanged_(ports: CrostiniPortSetting[]) {
     this.splice('allPorts_', 0, this.allPorts_.length);
     for (const port of ports) {
       port.is_active = this.activePorts_.some(
@@ -161,12 +160,8 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     this.notifyPath('allContainers_');
   }
 
-  /**
-   * @param {!Array<!CrostiniPortActiveSetting>} ports List of ports that are
-   *     active.
-   * @private
-   */
-  onCrostiniPortsActiveStateChanged_(ports) {
+  private onCrostiniPortsActiveStateChanged_(ports:
+                                                 CrostiniPortActiveSetting[]) {
     this.activePorts_ = ports;
     for (let i = 0; i < this.allPorts_.length; i++) {
       this.set(
@@ -179,60 +174,34 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onAddPortClick_(event) {
+  private onAddPortClick_() {
     this.showAddPortDialog_ = true;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onAddPortDialogClose_(event) {
+  private onAddPortDialogClose_() {
     this.showAddPortDialog_ = false;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onShowRemoveAllPortsMenuClick_(event) {
-    const menu = /** @type {!CrActionMenuElement} */
-        (this.$.removeAllPortsMenu.get());
-    menu.showAt(/** @type {!HTMLElement} */ (event.target));
+  private onShowRemoveAllPortsMenuClick_(event: Event) {
+    const menu = this.$.removeAllPortsMenu.get();
+    menu.showAt(event.target as HTMLElement);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onRemoveSinglePortClick_(event) {
-    const dataSet = /** @type {{portNumber: string, protocolType: string}} */
-        (event.currentTarget.dataset);
-    const containerId = /** @type {GuestId} */
-        (event.currentTarget['dataContainerId']);
-    const protocolType = /** @type {!CrostiniPortProtocol} */
-        (Number(dataSet.protocolType));
-
+  private onRemoveSinglePortClick_(event: Event) {
+    const target = event.currentTarget as HtmlElementWithData;
+    const containerId = target['dataContainerId'];
+    const portNumber = Number(target.dataset['portNumber']);
+    const protocolType = Number(target.dataset['protocolType']);
     this.browserProxy_
-        .removeCrostiniPortForward(
-            containerId, Number(dataSet.portNumber), protocolType)
-        .then(result => {
+        .removeCrostiniPortForward(containerId, portNumber, protocolType)
+        .then((_result) => {
           // TODO(crbug.com/848127): Error handling for result
           recordSettingChange();
         });
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onRemoveAllPortsClick_(event) {
-    const menu = /** @type {!CrActionMenuElement} */
-        (this.$.removeAllPortsMenu.get());
+  private onRemoveAllPortsClick_() {
+    const menu = this.$.removeAllPortsMenu.get();
     assert(menu.open);
     for (const container of this.allContainers_) {
       this.browserProxy_.removeAllCrostiniPortForwards(container.id);
@@ -241,22 +210,16 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     menu.close();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onPortActivationChange_(event) {
-    const dataSet = /** @type {{portNumber: string, protocolType: string}} */
-        (event.currentTarget.dataset);
-    const id = /** @type {GuestId} */
-        (event.currentTarget['dataContainerId']);
-    const portNumber = Number(dataSet.portNumber);
-    const protocolType = /** @type {!CrostiniPortProtocol} */
-        (Number(dataSet.protocolType));
-    if (event.target.checked) {
-      event.target.checked = false;
+  private onPortActivationChange_(event: Event) {
+    const target = event.currentTarget as HtmlElementWithData<CrToggleElement>;
+    const containerId = target['dataContainerId'];
+    const portNumber = Number(target.dataset['portNumber']);
+    const protocolType = Number(target.dataset['protocolType']);
+
+    if (target.checked) {
+      target.checked = false;
       this.browserProxy_
-          .activateCrostiniPortForward(id, portNumber, protocolType)
+          .activateCrostiniPortForward(containerId, portNumber, protocolType)
           .then(result => {
             if (!result) {
               this.$.errorToast.show();
@@ -265,53 +228,39 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
           });
     } else {
       this.browserProxy_
-          .deactivateCrostiniPortForward(id, portNumber, protocolType)
+          .deactivateCrostiniPortForward(containerId, portNumber, protocolType)
           .then(
-              result => {
+              (_result) => {
                   // TODO(crbug.com/848127): Error handling for result
               });
     }
   }
 
-  /**
-   * @param {!Array<!CrostiniPortSetting>} allPorts
-   * @param {!GuestId} id
-   * @return boolean
-   * @private
-   */
-  showContainerId_(allPorts, id) {
+  private showContainerId_(allPorts: CrostiniPortSetting[], id: GuestId):
+      boolean {
     return allPorts.some(port => equalContainerId(port.container_id, id)) &&
         allPorts.some(
             port => !equalContainerId(
                 port.container_id, DEFAULT_CROSTINI_GUEST_ID));
   }
 
-  /**
-   * @param {!GuestId} id
-   * @return string
-   * @private
-   */
-  containerLabel_(id) {
+  private containerLabel_(id: GuestId): string {
     return containerLabel(id, DEFAULT_CROSTINI_VM);
   }
 
-  /**
-   * @param {!Array<!CrostiniPortSetting>} allPorts
-   * @param {!GuestId} id
-   * @return boolean
-   * @private
-   */
-  hasContainerPorts_(allPorts, id) {
+  private hasContainerPorts_(allPorts: CrostiniPortSetting[], id: GuestId):
+      boolean {
     return allPorts.some(port => equalContainerId(port.container_id, id));
   }
 
-  /**
-   * @param {!GuestId} id
-   * @return function
-   * @private
-   */
-  byContainerId_(id) {
+  private byContainerId_(id: GuestId): (port: CrostiniPortSetting) => boolean {
     return port => equalContainerId(port.container_id, id);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-port-forwarding': CrostiniPortForwardingElement;
   }
 }
 

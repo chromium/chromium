@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,25 +11,26 @@
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import './guest_os_shared_usb_devices_add_dialog.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertExists, cast} from '../assert_extras.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
-import {ContainerInfo, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
+import {ARC_VM_TYPE, BRUSCHETTA_TYPE, ContainerInfo, CROSTINI_TYPE, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os_browser_proxy.js';
 import {containerLabel, equalContainerId} from './guest_os_container_select.js';
+import {getTemplate} from './guest_os_shared_usb_devices.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
+interface SharedUsbDevice {
+  shared: boolean;
+  device: GuestOsSharedUsbDevice;
+}
+
 const SettingsGuestOsSharedUsbDevicesElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    I18nMixin(WebUiListenerMixin(PolymerElement));
 
-/** @polymer */
 export class SettingsGuestOsSharedUsbDevicesElement extends
     SettingsGuestOsSharedUsbDevicesElementBase {
   static get is() {
@@ -37,7 +38,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -45,11 +46,13 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
       /**
        * The type of Guest OS to share with. Should be 'crostini' or 'pluginVm'.
        */
-      guestOsType: String,
+      guestOsType: {
+        type: String,
+        value: '',
+      },
 
       /**
        * The USB Devices available for connection to a VM.
-       * @private {!Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
        */
       sharedUsbDevices_: {
         type: Array,
@@ -58,9 +61,6 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
         },
       },
 
-      /**
-       * @type {!GuestId}
-       */
       defaultGuestId: {
         type: Object,
         value() {
@@ -74,7 +74,6 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
       /**
        * The USB device which was toggled to be shared, but is already shared
        * with another VM. When non-null the reassign dialog is shown.
-       * @private {?GuestOsSharedUsbDevice}
        */
       reassignDevice_: {
         type: Object,
@@ -86,10 +85,11 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
        */
       hasContainers: {
         type: Boolean,
-        value: false,
+        value() {
+          return false;
+        },
       },
 
-      /** @private */
       showAddUsbDialog_: {
         type: Boolean,
         value: false,
@@ -97,7 +97,6 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
 
       /**
        * The known ContainerIds for display in the UI.
-       * @private {!Array<!ContainerInfo>}
        */
       allContainers_: {
         type: Array,
@@ -109,15 +108,23 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     };
   }
 
+  defaultGuestId: GuestId;
+  guestOsType: typeof CROSTINI_TYPE|typeof BRUSCHETTA_TYPE|typeof ARC_VM_TYPE|
+      typeof PLUGIN_VM_TYPE;
+  hasContainers: boolean;
+  private allContainers_: ContainerInfo[];
+  private browserProxy_: GuestOsBrowserProxy;
+  private reassignDevice_: GuestOsSharedUsbDevice|null;
+  private sharedUsbDevices_: SharedUsbDevice[];
+  private showAddUsbDialog_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!GuestOsBrowserProxy} */
     this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
@@ -126,77 +133,54 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     this.browserProxy_.notifyGuestOsSharedUsbDevicesPageReady();
   }
 
-  /**
-   * @param {!Array<!ContainerInfo>} containerInfos
-   * @protected
-   */
-  onContainerInfo_(containerInfos) {
+  protected onContainerInfo_(containerInfos: ContainerInfo[]) {
     this.set('allContainers_', containerInfos);
   }
 
-  /**
-   * @param {!Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
-   *     sharedUsbDevices
-   * @param {!GuestId} id
-   * @return boolean
-   * @private
-   */
-  showGuestId_(sharedUsbDevices, id) {
+  private showGuestId_(sharedUsbDevices: SharedUsbDevice[], id: GuestId):
+      boolean {
     return sharedUsbDevices.some(this.byGuestId_(id));
   }
 
-  /**
-   * @param {!Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
-   *     sharedUsbDevices
-   * @param {!Array<!ContainerInfo>} containerInfos
-   * @return boolean
-   * @private
-   */
-  hasSharedDevices_(sharedUsbDevices, containerInfos) {
+  private hasSharedDevices_(
+      sharedUsbDevices: SharedUsbDevice[],
+      containerInfos: ContainerInfo[]): boolean {
     return sharedUsbDevices.some(
         dev => containerInfos.some(
             info => dev.device.guestId &&
                 equalContainerId(dev.device.guestId, info.id)));
   }
 
-  /**
-   * @param {!Array<GuestOsSharedUsbDevice>} devices
-   * @private
-   */
-  onGuestOsSharedUsbDevicesChanged_(devices) {
+  private onGuestOsSharedUsbDevicesChanged_(devices: GuestOsSharedUsbDevice[]) {
     this.sharedUsbDevices_ = devices.map((device) => {
       return {
-        shared: device.guestId && device.guestId.vm_name === this.vmName_(),
+        shared: !!device.guestId && device.guestId.vm_name === this.vmName_(),
         device: device,
       };
     });
   }
 
-  /**
-   * @param {!CustomEvent<!GuestOsSharedUsbDevice>} event
-   * @private
-   */
-  onDeviceSharedChange_(event) {
+  private onDeviceSharedChange_(event: DomRepeatEvent<SharedUsbDevice>) {
     const device = event.model.item.device;
     // Show reassign dialog if device is already shared with another VM.
-    if (event.target.checked && device.promptBeforeSharing) {
-      event.target.checked = false;
+    const target = cast(event.target, CrToggleElement);
+    if (target.checked && device.promptBeforeSharing) {
+      target.checked = false;
       this.reassignDevice_ = device;
       return;
     }
     this.browserProxy_.setGuestOsUsbDeviceShared(
         this.vmName_(), this.defaultGuestId.container_name, device.guid,
-        event.target.checked);
+        target.checked);
     recordSettingChange();
   }
 
-  /** @private */
-  onReassignCancel_() {
+  private onReassignCancel_() {
     this.reassignDevice_ = null;
   }
 
-  /** @private */
-  onReassignContinueClick_() {
+  private onReassignContinueClick_() {
+    assertExists(this.reassignDevice_);
     this.browserProxy_.setGuestOsUsbDeviceShared(
         this.vmName_(), this.defaultGuestId.container_name,
         this.reassignDevice_.guid, true);
@@ -204,11 +188,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     recordSettingChange();
   }
 
-  /**
-   * @private
-   * @return {string} The name of the VM to share devices with.
-   */
-  vmName_() {
+  private vmName_(): string {
     return {
       crostini: 'termina',
       pluginVm: 'PvmDefault',
@@ -217,69 +197,45 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     }[this.guestOsType];
   }
 
-  /**
-   * @private
-   * @return {string} Description for the page.
-   */
-  getDescriptionText_() {
+  private getDescriptionText_(): string {
     return this.i18n(this.guestOsType + 'SharedUsbDevicesDescription');
   }
 
-  /**
-   * @param {!GuestOsSharedUsbDevice} device USB device.
-   * @private
-   * @return {string} Confirmation prompt text.
-   */
-  getReassignDialogText_(device) {
+  private getReassignDialogText_(device: GuestOsSharedUsbDevice): string {
     return this.i18n('guestOsSharedUsbDevicesReassign', device.label);
   }
 
-  /**
-   * @param {!GuestId} id
-   * @return function({shared: boolean, device: !GuestOsSharedUsbDevice}):
-   *     boolean
-   * @private
-   */
-  byGuestId_(id) {
-    return dev =>
-               dev.device.guestId && equalContainerId(dev.device.guestId, id);
+  private byGuestId_(id: GuestId): (device: SharedUsbDevice) => boolean {
+    return (dev: SharedUsbDevice) =>
+               (!!dev.device.guestId &&
+                equalContainerId(dev.device.guestId, id));
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onAddUsbClick_(event) {
+  private onAddUsbClick_() {
     this.showAddUsbDialog_ = true;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onAddUsbDialogClose_(event) {
+  private onAddUsbDialogClose_() {
     this.showAddUsbDialog_ = false;
   }
 
-  /**
-   * @param {!GuestId} id
-   * @return string
-   * @private
-   */
-  guestLabel_(id) {
+  private guestLabel_(id: GuestId): string {
     return containerLabel(id, this.vmName_());
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onRemoveUsbClick_(event) {
+  private onRemoveUsbClick_(event: DomRepeatEvent<SharedUsbDevice>) {
     const device = event.model.item.device;
-    if (device.guestId != null) {
+    if (device.guestId) {
       this.browserProxy_.setGuestOsUsbDeviceShared(
           device.guestId.vm_name, '', device.guid, false);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-guest-os-shared-usb-devices':
+        SettingsGuestOsSharedUsbDevicesElement;
   }
 }
 

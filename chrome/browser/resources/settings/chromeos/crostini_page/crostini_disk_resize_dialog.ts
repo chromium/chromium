@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,82 +14,83 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import {castExists} from '../assert_extras.js';
+import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, SliderTick} from './crostini_browser_proxy.js';
+import {getTemplate} from './crostini_disk_resize_dialog.html.js';
 
 /**
  * Which overall dialogue view should be shown e.g. loading, unsupported.
- * @enum {string}
  */
-const DisplayState = {
-  LOADING: 'loading',
-  UNSUPPORTED: 'unsupported',
-  ERROR: 'error',
-  RESIZE: 'resize',
-};
+enum DisplayState {
+  LOADING = 'loading',
+  UNSUPPORTED = 'unsupported',
+  ERROR = 'error',
+  RESIZE = 'resize',
+}
 
 /**
  * The current resizing state.
- * @enum {string}
  */
-const ResizeState = {
-  INITIAL: 'initial',
-  RESIZING: 'resizing',
-  ERROR: 'error',
-  DONE: 'done',
-};
+enum ResizeState {
+  INITIAL = 'initial',
+  RESIZING = 'resizing',
+  ERROR = 'error',
+  DONE = 'done',
+}
 
-/** @polymer */
+interface SettingsCrostiniDiskResizeDialogElement {
+  $: {
+    diskResizeDialog: CrDialogElement,
+  };
+}
+
 class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
   static get is() {
     return 'settings-crostini-disk-resize-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private */
       minDiskSize_: {
         type: String,
       },
 
-      /** @private */
       maxDiskSize_: {
         type: String,
       },
 
-      /** @private {Array<!SliderTick>} */
       diskSizeTicks_: {
         type: Array,
       },
 
-      /** @private */
       defaultDiskSizeTick_: {
         type: Number,
       },
 
-      /** @private */
       maxDiskSizeTick_: {
         type: Number,
       },
 
-      /** @private */
       isLowSpaceAvailable_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!DisplayState} */
       displayState_: {
         type: String,
         value: DisplayState.LOADING,
       },
 
-      /** @private {!ResizeState} */
       resizeState_: {
         type: String,
         value: ResizeState.INITIAL,
@@ -97,7 +98,6 @@ class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
 
       /**
        * Enable the html template to use DisplayState.
-       * @private
        */
       DisplayState: {
         type: Object,
@@ -106,7 +106,6 @@ class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
 
       /**
        * Enable the html template to use ResizeState.
-       * @private
        */
       ResizeState: {
         type: Object,
@@ -115,15 +114,23 @@ class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
     };
   }
 
+  private browserProxy_: CrostiniBrowserProxy;
+  private minDiskSize_: string;
+  private maxDiskSize_: string;
+  private diskSizeTicks_: SliderTick[];
+  private defaultDiskSizeTick_: number;
+  private maxDiskSizeTick_: number;
+  private isLowSpaceAvailable_: boolean;
+  private displayState_: DisplayState;
+  private resizeState_: ResizeState;
+
   constructor() {
     super();
 
-    /** @private {!CrostiniBrowserProxy} */
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.displayState_ = DisplayState.LOADING;
@@ -132,14 +139,12 @@ class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
   }
 
   /**
-   * @private
    * Requests info for the current VM disk, then populates the disk info and
    * current state once the call completes.
    */
-  loadDiskInfo_() {
-    // TODO(davidmunro): No magic 'termina' string.
-    const vmName = 'termina';
-    this.browserProxy_.getCrostiniDiskInfo(vmName, /*requestFullInfo=*/ true)
+  private loadDiskInfo_() {
+    this.browserProxy_
+        .getCrostiniDiskInfo(TERMINA_VM_TYPE, /*requestFullInfo=*/ true)
         .then(
             diskInfo => {
               if (!diskInfo.succeeded) {
@@ -164,20 +169,19 @@ class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
             });
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_() {
     this.$.diskResizeDialog.close();
   }
 
-  /** @private */
-  onRetryClick_() {
+  private onRetryClick_() {
     this.displayState_ = DisplayState.LOADING;
     this.loadDiskInfo_();
   }
 
-  /** @private */
-  onResizeClick_() {
-    const selectedIndex = this.shadowRoot.querySelector('#diskSlider').value;
+  private onResizeClick_() {
+    const slider = castExists(
+        this.shadowRoot!.querySelector<CrSliderElement>('#diskSlider'));
+    const selectedIndex = slider.value;
     const size = this.diskSizeTicks_[selectedIndex].value;
     this.resizeState_ = ResizeState.RESIZING;
     this.browserProxy_.resizeCrostiniDisk('termina', size)
@@ -196,17 +200,20 @@ class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
             });
   }
 
-  /**
-   * @private
-   */
-  eq_(a, b) {
+  private eq_(a: string, b: string): boolean {
     return a === b;
   }
 
-  /** @private */
-  resizeDisabled_(displayState, resizeState) {
+  private resizeDisabled_(displayState: string, resizeState: string): boolean {
     return displayState !== DisplayState.RESIZE ||
         resizeState === ResizeState.RESIZING;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-disk-resize-dialog':
+        SettingsCrostiniDiskResizeDialogElement;
   }
 }
 

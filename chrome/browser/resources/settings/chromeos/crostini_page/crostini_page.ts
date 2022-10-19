@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,58 +26,48 @@ import './crostini_shared_usb_devices.js';
 import './crostini_subpage.js';
 import './bruschetta_subpage.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import {getTemplate} from './crostini_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsCrostiniPageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      PrefsBehavior,
-      RouteObserverBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+const SettingsCrostiniPageElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+          PrefsBehavior,
+        ],
+        RouteObserverMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          I18nMixinInterface & PrefsBehaviorInterface &
+          RouteObserverMixinInterface & WebUiListenerMixinInterface,
+    };
 
-/** @polymer */
 class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
   static get is() {
     return 'settings-crostini-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** Preferences state. */
       prefs: {
         type: Object,
         notify: true,
       },
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -126,7 +116,6 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
 
       /**
        * Whether the install option should be enabled.
-       * @private {boolean}
        */
       disableCrostiniInstall_: {
         type: Boolean,
@@ -134,7 +123,6 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -148,14 +136,17 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
     };
   }
 
+  private browserProxy_: CrostiniBrowserProxy;
+  private disableCrostiniInstall_: boolean;
+  private enableBruschetta_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!CrostiniBrowserProxy} */
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     if (!loadTimeData.getBoolean('allowCrostini')) {
@@ -163,17 +154,13 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
       return;
     }
     this.addWebUIListener(
-        'crostini-installer-status-changed', (installerShowing) => {
+        'crostini-installer-status-changed', (installerShowing: boolean) => {
           this.disableCrostiniInstall_ = installerShowing;
         });
     this.browserProxy_.requestCrostiniInstallerStatus();
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.CROSTINI) {
       return;
@@ -182,19 +169,14 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
     this.attemptDeepLink();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onEnableTap_(event) {
+  private onEnableTap_(event: Event) {
     this.browserProxy_.requestCrostiniInstallerView();
     event.stopPropagation();
   }
 
-  /** @private */
-  onSubpageTap_(event) {
+  private onSubpageTap_(event: Event) {
     // We do not open the subpage if the click was on a link.
-    if (event.target && event.target.tagName === 'A') {
+    if (event.target && (event.target as HTMLElement).tagName === 'A') {
       event.stopPropagation();
       return;
     }
@@ -204,11 +186,16 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
     }
   }
 
-  /** @private */
-  onBruschettaSubpageTap_(event) {
+  private onBruschettaSubpageTap_() {
     if (this.enableBruschetta_) {
       Router.getInstance().navigateTo(routes.BRUSCHETTA_DETAILS);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-crostini-page': SettingsCrostiniPageElement;
   }
 }
 
