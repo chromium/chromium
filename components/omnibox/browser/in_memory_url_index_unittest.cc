@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -190,48 +191,55 @@ void InMemoryURLIndexTest::SetUp() {
   history_service_ =
       history::CreateHistoryService(history_dir_.GetPath(), true);
   ASSERT_TRUE(history_service_);
-  BlockUntilInMemoryURLIndexIsRefreshed(url_index_.get());
 
   history::HistoryBackend* backend = history_service_->history_backend_.get();
   history_database_ = backend->db();
 
-  // TODO(shess): If/when this code gets refactored, consider including the
-  // schema in the golden file (as sqlite3 .dump would generate) and using
-  // sql::test::CreateDatabaseFromSQL() to load it.  The code above which
-  // creates the database can change in ways which may not reliably represent
-  // user databases on disks in the fleet.
+  // Mutating the History database should only happen on the backend sequence.
+  history_service_->ScheduleTask(
+      history::HistoryService::PRIORITY_NORMAL, base::BindLambdaForTesting([&] {
+        // TODO(shess): If/when this code gets refactored, consider including
+        // the schema in the golden file (as sqlite3 .dump would generate) and
+        // using sql::test::CreateDatabaseFromSQL() to load it.  The code above
+        // which creates the database can change in ways which may not reliably
+        // represent user databases on disks in the fleet.
 
-  // Execute the contents of a golden file to populate the [urls] and [visits]
-  // tables.
-  base::FilePath golden_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &golden_path);
-  golden_path = golden_path.AppendASCII("components/test/data/omnibox");
-  golden_path = golden_path.Append(TestDBName());
-  ASSERT_TRUE(base::PathExists(golden_path));
-  std::string sql;
-  ASSERT_TRUE(base::ReadFileToString(golden_path, &sql));
-  sql::Database& db(GetDB());
-  ASSERT_TRUE(db.is_open());
-  ASSERT_TRUE(db.Execute(sql.c_str()));
+        // Execute the contents of a golden file to populate the [urls] and
+        // [visits] tables.
+        base::FilePath golden_path;
+        base::PathService::Get(base::DIR_SOURCE_ROOT, &golden_path);
+        golden_path = golden_path.AppendASCII("components/test/data/omnibox");
+        golden_path = golden_path.Append(TestDBName());
+        ASSERT_TRUE(base::PathExists(golden_path));
+        std::string sql;
+        ASSERT_TRUE(base::ReadFileToString(golden_path, &sql));
+        sql::Database& db(GetDB());
+        ASSERT_TRUE(db.is_open());
+        ASSERT_TRUE(db.Execute(sql.c_str()));
 
-  // Update [urls.last_visit_time] and [visits.visit_time] to represent a time
-  // relative to 'now'.
-  base::Time time_right_now = base::Time::NowFromSystemTime();
-  base::TimeDelta day_delta = base::Days(1);
-  {
-    sql::Statement s(db.GetUniqueStatement(
-        "UPDATE urls SET last_visit_time = ? - ? * last_visit_time"));
-    s.BindInt64(0, time_right_now.ToInternalValue());
-    s.BindInt64(1, day_delta.ToInternalValue());
-    ASSERT_TRUE(s.Run());
-  }
-  {
-    sql::Statement s(db.GetUniqueStatement(
-        "UPDATE visits SET visit_time = ? - ? * visit_time"));
-    s.BindInt64(0, time_right_now.ToInternalValue());
-    s.BindInt64(1, day_delta.ToInternalValue());
-    ASSERT_TRUE(s.Run());
-  }
+        // Update [urls.last_visit_time] and [visits.visit_time] to represent a
+        // time relative to 'now'.
+        base::Time time_right_now = base::Time::NowFromSystemTime();
+        base::TimeDelta day_delta = base::Days(1);
+        {
+          sql::Statement s(db.GetUniqueStatement(
+              "UPDATE urls SET last_visit_time = ? - ? * last_visit_time"));
+          s.BindInt64(0, time_right_now.ToInternalValue());
+          s.BindInt64(1, day_delta.ToInternalValue());
+          ASSERT_TRUE(s.Run());
+        }
+        {
+          sql::Statement s(db.GetUniqueStatement(
+              "UPDATE visits SET visit_time = ? - ? * visit_time"));
+          s.BindInt64(0, time_right_now.ToInternalValue());
+          s.BindInt64(1, day_delta.ToInternalValue());
+          ASSERT_TRUE(s.Run());
+        }
+      }));
+  // Block for the above lambda to run, otherwise the captured variables will
+  // go out of scope. And moreover, subsequent parts of this function need to
+  // have the test data already pre-populated.
+  BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
   // Set up a simple template URL service with a default search engine.
   template_url_service_ = std::make_unique<TemplateURLService>(
@@ -269,7 +277,9 @@ void InMemoryURLIndexTest::InitializeInMemoryURLIndex() {
       nullptr, history_service_.get(), template_url_service_.get(),
       base::FilePath(), client_schemes_to_allowlist);
   url_index_->Init();
-  BlockUntilInMemoryURLIndexIsRefreshed(url_index_.get());
+
+  BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  ASSERT_TRUE(url_index_->restored());
 }
 
 void InMemoryURLIndexTest::CheckTerm(
