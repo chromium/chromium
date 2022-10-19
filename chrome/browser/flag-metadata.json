@@ -691,7 +691,7 @@
   {
     "name": "block-insecure-private-network-requests",
     "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 110
   },
   {
     "name": "block-migrated-default-chrome-app-sync",
@@ -5628,17 +5628,17 @@
   {
     "name": "private-network-access-preflight-short-timeout",
     "owners": [ "lyf", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 113
   },
   {
     "name": "private-network-access-respect-preflight-results",
     "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 113
   },
   {
     "name": "private-network-access-send-preflights",
     "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 113
   },
   {
     "name": "productivity-launcher",
