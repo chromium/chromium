@@ -158,6 +158,9 @@ class SettingsPowerElement extends SettingsPowerElementBase {
         },
       },
 
+      /** @private {boolean} Whether adaptive charging is managed by policy. */
+      adaptiveChargingManaged_: Boolean,
+
       /** @private {!chrome.settingsPrivate.PrefObject} */
       lidClosedPref_: {
         type: Object,
@@ -471,12 +474,21 @@ class SettingsPowerElement extends SettingsPowerElementBase {
     this.updateLidClosedLabelAndPref_(
         powerManagementSettings.lidClosedBehavior,
         powerManagementSettings.lidClosedControlled);
+    this.adaptiveChargingManaged_ =
+        powerManagementSettings.adaptiveChargingManaged;
     // Use an atomic assign to trigger UI change.
-    this.adaptiveChargingPref_ = {
+    const adaptiveChargingPref = {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: powerManagementSettings.adaptiveCharging,
     };
+    if (this.adaptiveChargingManaged_) {
+      adaptiveChargingPref.enforcement =
+          chrome.settingsPrivate.Enforcement.ENFORCED;
+      adaptiveChargingPref.controlledBy =
+          chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+    }
+    this.adaptiveChargingPref_ = adaptiveChargingPref;
   }
 
   /**

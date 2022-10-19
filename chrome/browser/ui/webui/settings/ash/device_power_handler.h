@@ -51,6 +51,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   static const char kLidClosedControlledKey[];
   static const char kHasLidKey[];
   static const char kAdaptiveChargingKey[];
+  static const char kAdaptiveChargingManagedKey[];
 
   // Class used by tests to interact with PowerHandler internals.
   class TestAPI {
@@ -183,6 +184,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   bool last_lid_closed_controlled_ = false;
   bool last_has_lid_ = true;
   bool last_adaptive_charging_ = false;
+  bool last_adaptive_charging_managed_ = false;
 
   base::WeakPtrFactory<PowerHandler> weak_ptr_factory_{this};
 };

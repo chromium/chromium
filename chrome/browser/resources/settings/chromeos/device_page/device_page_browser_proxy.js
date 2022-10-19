@@ -84,6 +84,7 @@ export const LidClosedBehavior = {
  *   lidClosedControlled: boolean,
  *   hasLid: boolean,
  *   adaptiveCharging: boolean,
+ *   adaptiveChargingManaged: boolean,
  * }}
  */
 export let PowerManagementSettings;

@@ -77,6 +77,7 @@ class PowerHandlerTest : public InProcessBrowserTest {
     bool lid_closed_controlled = false;
     bool has_lid = true;
     bool adaptive_charging = true;
+    bool adaptive_charging_managed = false;
   };
 
   PowerHandlerTest() = default;
@@ -161,6 +162,8 @@ class PowerHandlerTest : public InProcessBrowserTest {
     dict.SetBoolKey(PowerHandler::kHasLidKey, settings.has_lid);
     dict.SetBoolKey(PowerHandler::kAdaptiveChargingKey,
                     settings.adaptive_charging);
+    dict.SetBoolKey(PowerHandler::kAdaptiveChargingManagedKey,
+                    settings.adaptive_charging_managed);
     std::string out;
     EXPECT_TRUE(base::JSONWriter::Write(dict, &out));
     return out;
@@ -243,6 +246,13 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendSettingsForControlledPrefs) {
   SetPolicyForPolicyKey(&policy_map, policy::key::kLidCloseAction,
                         base::Value(PowerPolicyController::ACTION_SUSPEND));
   settings.lid_closed_controlled = true;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+
+  // Ditto for making the adaptive charging pref managed.
+  SetPolicyForPolicyKey(&policy_map,
+                        policy::key::kDevicePowerAdaptiveChargingEnabled,
+                        base::Value(true));
+  settings.adaptive_charging_managed = true;
   EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
 
