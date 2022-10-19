@@ -216,9 +216,15 @@ export function shareDataPageTestSuite() {
     const userEmailElement = getElement('#userEmail');
     assertTrue(!!userEmailElement);
     assertTrue(isVisible(userEmailElement));
+
+    // The user user consent checkbox should be visible.
+    const consentCheckbox = getElement('#userConsent');
+    assertTrue(!!consentCheckbox);
+    assertTrue(isVisible(consentCheckbox));
   });
 
-  // Test that the email section is hidden when there is no email.
+  // Test that the email section and consent checkbox is hidden
+  // when there is no email.
   test('emailSectionHiddenWithoutEmail', async () => {
     await initializePage();
     page.feedbackContext = fakeEmptyFeedbackContext;
@@ -227,6 +233,11 @@ export function shareDataPageTestSuite() {
     const userEmailElement = getElement('#userEmail');
     assertTrue(!!userEmailElement);
     assertFalse(isVisible(userEmailElement));
+
+    // The user consent checkbox should be hidden.
+    const consentCheckbox = getElement('#userConsent');
+    assertTrue(!!consentCheckbox);
+    assertFalse(isVisible(consentCheckbox));
   });
 
   test('pageUrlPopulated', async () => {

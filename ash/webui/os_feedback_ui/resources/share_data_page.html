@@ -287,7 +287,8 @@
         </select>
       </div>
       <!-- User consent -->
-      <div id="userConsent" class="checkbox-field-container">
+      <div id="userConsent" class="checkbox-field-container"
+          hidden$="[[!hasEmail_(feedbackContext)]]">
         <cr-checkbox id="userConsentCheckbox" aria-labelledby="userConsentLabel">
           <div id="userConsentLabel" class="checkbox-label">[[i18n('userConsentLabel')]]</div>
         </cr-checkbox>
