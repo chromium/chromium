@@ -11,8 +11,10 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
@@ -373,6 +375,14 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
 
   // Add CA certificates.
   AddOncCaCertsToPolicies(policy_map, &filtered_policies);
+
+  // If kForceDevToolsAvailable is set, then force debugging features to be
+  // available for ARC as well. This must be after the initial writing of
+  // "debuggingFeaturesDisabled".
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kForceDevToolsAvailable)) {
+    filtered_policies.SetBoolKey("debuggingFeaturesDisabled", false);
+  }
 
   // Always enable APK Cache for affiliated users, and always disable it for not
   // affiliated ones.

@@ -16,6 +16,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_policy_instance.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -23,6 +24,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/arc_data_snapshotd_delegate.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
@@ -601,6 +603,22 @@ TEST_F(ArcPolicyBridgeTest, DeveloperToolsPolicyDisallowedTest) {
       "{\"apkCacheEnabled\":true,\"debuggingFeaturesDisabled\":true,"
       "\"guid\":\"" +
       instance_guid() + "\"," + kMountPhysicalMediaDisabledPolicySetting + "}");
+}
+
+TEST_F(ArcPolicyBridgeTest, ForceDevToolsAvailabilityTest) {
+  profile()->GetTestingPrefService()->SetManagedPref(
+      ::prefs::kDevToolsAvailability,
+      std::make_unique<base::Value>(static_cast<int>(
+          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed)));
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kForceDevToolsAvailable);
+  GetPoliciesAndVerifyResult(
+      "{\"apkCacheEnabled\":true,\"debuggingFeaturesDisabled\":false,"
+      "\"guid\":\"" +
+      instance_guid() + "\"," + kMountPhysicalMediaDisabledPolicySetting + "}");
+  command_line.GetProcessCommandLine()->RemoveSwitch(
+      ash::switches::kForceDevToolsAvailable);
 }
 
 TEST_F(ArcPolicyBridgeTest, ManagedConfigurationVariablesTest) {
