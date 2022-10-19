@@ -6,7 +6,7 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 
@@ -124,8 +124,12 @@ void AgentGroupSchedulerImpl::AddAgent(Agent* agent) {
 }
 
 void AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint() {
-  HeapHashSet<WeakMember<Agent>> agents(*agents_);
-  ClearCollectionScope<HeapHashSet<WeakMember<Agent>>> clear_scope(&agents);
+  // This code is performance sensitive so we do not wish to allocate
+  // memory, use an inline vector of 10.
+  HeapVector<Member<Agent>, 10> agents;
+  for (Agent* agent : *agents_) {
+    agents.push_back(agent);
+  }
   for (Agent* agent : agents) {
     DCHECK(agents_->Contains(agent));
     agent->PerformMicrotaskCheckpoint();

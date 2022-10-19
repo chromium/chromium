@@ -57,6 +57,7 @@ include_rules = [
   "+third_party/blink/renderer/platform/bindings/parkable_string_manager.h",
   "+third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h",
   "+third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h",
+  "+third_party/blink/renderer/platform/heap/collection_support/heap_vector.h",
   "+third_party/blink/renderer/platform/heap/garbage_collected.h",
   "+third_party/blink/renderer/platform/heap/persistent.h",
   "+third_party/blink/renderer/platform/instrumentation",
