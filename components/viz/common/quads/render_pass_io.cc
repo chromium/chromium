@@ -676,13 +676,11 @@ base::Value FilterOperationsToList(const cc::FilterOperations& filters) {
   return list;
 }
 
-bool FilterOperationsFromList(const base::Value& list,
+bool FilterOperationsFromList(const base::Value::List& list,
                               cc::FilterOperations* filters) {
   DCHECK(filters);
-  if (!list.is_list())
-    return false;
   cc::FilterOperations data;
-  for (const auto& entry : list.GetList()) {
+  for (const auto& entry : list) {
     cc::FilterOperation filter;
     if (!FilterOperationFromDict(entry, &filter))
       return false;
@@ -1118,11 +1116,8 @@ struct DrawQuadCommon {
 };
 
 absl::optional<DrawQuadCommon> GetDrawQuadCommonFromDict(
-    const base::Value& dict_value,
+    const base::Value::Dict& dict,
     const SharedQuadStateList& shared_quad_state_list) {
-  if (!dict_value.is_dict())
-    return absl::nullopt;
-  const base::Value::Dict& dict = dict_value.GetDict();
   const std::string* material = dict.FindString("material");
   const base::Value::Dict* rect = dict.FindDict("rect");
   const base::Value::Dict* visible_rect = dict.FindDict("visible_rect");
@@ -1703,7 +1698,7 @@ bool QuadListFromList(const base::Value::List& list,
     if (!list[ii].is_dict())
       return false;
     absl::optional<DrawQuadCommon> common =
-        GetDrawQuadCommonFromDict(list[ii], shared_quad_state_list);
+        GetDrawQuadCommonFromDict(list[ii].GetDict(), shared_quad_state_list);
     if (!common)
       return false;
     switch (common->material) {
@@ -1857,19 +1852,17 @@ base::Value SharedQuadStateListToList(
   return list;
 }
 
-bool SharedQuadStateListFromList(const base::Value& list,
+bool SharedQuadStateListFromList(const base::Value::List& list,
                                  SharedQuadStateList* shared_quad_state_list) {
   DCHECK(shared_quad_state_list);
-  if (!list.is_list())
-    return false;
-  size_t size = list.GetList().size();
+  size_t size = list.size();
   SharedQuadStateList states(alignof(SharedQuadState), sizeof(SharedQuadState),
                              size);
   for (size_t ii = 0; ii < size; ++ii) {
-    if (!list.GetList()[ii].is_dict())
+    if (!list[ii].is_dict())
       return false;
     SharedQuadState* sqs = states.AllocateAndConstruct<SharedQuadState>();
-    if (!SharedQuadStateFromDict(list.GetList()[ii].GetDict(), sqs))
+    if (!SharedQuadStateFromDict(list[ii].GetDict(), sqs))
       return false;
   }
   shared_quad_state_list->swap(states);
@@ -2069,7 +2062,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassFilters)) {
-    const base::Value* filters = dict_value.FindListKey("filters");
+    const base::Value::List* filters = dict.FindList("filters");
     if (!filters)
       return nullptr;
     if (!FilterOperationsFromList(*filters, &(pass->filters)))
@@ -2077,8 +2070,8 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassBackdropFilters)) {
-    const base::Value* backdrop_filters =
-        dict_value.FindListKey("backdrop_filters");
+    const base::Value::List* backdrop_filters =
+        dict.FindList("backdrop_filters");
     if (!backdrop_filters)
       return nullptr;
     if (!FilterOperationsFromList(*backdrop_filters,
@@ -2156,8 +2149,8 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
 
   // shared_quad_state_list has to be processed before quad_list.
   if (ProcessRenderPassField(kRenderPassSharedQuadStateList)) {
-    const base::Value* shared_quad_state_list =
-        dict_value.FindListKey("shared_quad_state_list");
+    const base::Value::List* shared_quad_state_list =
+        dict.FindList("shared_quad_state_list");
     if (!shared_quad_state_list)
       return nullptr;
     if (!SharedQuadStateListFromList(*shared_quad_state_list,
@@ -2167,8 +2160,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassQuadList)) {
-    const base::Value::List* quad_list =
-        dict_value.GetDict().FindList("quad_list");
+    const base::Value::List* quad_list = dict.FindList("quad_list");
     if (!quad_list)
       return nullptr;
     if (!QuadListFromList(*quad_list, &(pass->quad_list),
