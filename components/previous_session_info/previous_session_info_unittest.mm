@@ -516,6 +516,8 @@ TEST_F(PreviousSessionInfoTest, ReportParameters) {
       dictionaryForKey:previous_session_info_constants::
                            kPreviousSessionInfoParams];
   EXPECT_NSEQ(@{kKey0 : @"https://example2.test/"}, URLs);
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_NSEQ(URLs, [[PreviousSessionInfo sharedInstance] reportParameters]);
 
   // Add second URL.
   NSString* const kKey1 = @"url1";
@@ -530,9 +532,13 @@ TEST_F(PreviousSessionInfoTest, ReportParameters) {
     kKey1 : @"https://example3.test/",
   };
   EXPECT_NSEQ(expected, URLs);
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_NSEQ(URLs, [[PreviousSessionInfo sharedInstance] reportParameters]);
 
   // Removing non-existing key does not crash.
   [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:@"url2"];
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_NSEQ(URLs, [[PreviousSessionInfo sharedInstance] reportParameters]);
 
   // Remove first URL.
   [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:kKey0];
@@ -540,6 +546,8 @@ TEST_F(PreviousSessionInfoTest, ReportParameters) {
       dictionaryForKey:previous_session_info_constants::
                            kPreviousSessionInfoParams];
   EXPECT_NSEQ(@{kKey1 : @"https://example3.test/"}, URLs);
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  EXPECT_NSEQ(URLs, [[PreviousSessionInfo sharedInstance] reportParameters]);
 
   // Remove second URL.
   [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:kKey1];
