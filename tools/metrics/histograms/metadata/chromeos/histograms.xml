@@ -1213,7 +1213,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Intents.LinkCapturingEvent2.{AppType}App"
-    enum="LinkCapturingEvent" expires_after="2022-12-01">
+    enum="LinkCapturingEvent" expires_after="2023-03-12">
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
