@@ -42,6 +42,14 @@ enum Actions {
 const SettingsReviewNotificationPermissionsElementBase =
     WebUiListenerMixin(BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))));
 
+/**
+ * Corresponds to the animation-duration CSS parameter defined
+ * in review_notification_permissions.html. Set to be slightly higher, as we
+ * want to ensure that the animation is finished before updating the model for
+ * the right visual effect.
+ */
+const MODEL_UPDATE_DELAY_MS = 300;
+
 export class SettingsReviewNotificationPermissionsElement extends
     SettingsReviewNotificationPermissionsElementBase {
   static get is() {
@@ -99,6 +107,7 @@ export class SettingsReviewNotificationPermissionsElement extends
   private lastUserAction_: Actions|null;
   private headerString_: string;
   private sitesLoaded_: boolean = false;
+  private modelUpdateDelayMsForTesting_: number|null = null;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -133,32 +142,52 @@ export class SettingsReviewNotificationPermissionsElement extends
       event: DomRepeatEvent<NotificationPermission>) {
     event.stopPropagation();
     const item = event.model.item;
-    this.browserProxy_.blockNotificationPermissionForOrigin(item.origin);
     this.lastUserAction_ = Actions.BLOCK;
     this.lastOrigin_ = item.origin;
     this.showUndoToast_();
+    this.hideItem_(this.lastOrigin_);
+    setTimeout(
+        this.browserProxy_.blockNotificationPermissionForOrigin.bind(
+            this.browserProxy_, this.lastOrigin_),
+        this.getModelUpdateDelayMs_());
   }
 
   private onIgnoreClick_(e: DomRepeatEvent<NotificationPermission>) {
     e.stopPropagation();
-    this.browserProxy_.ignoreNotificationPermissionForOrigin(this.lastOrigin_);
     this.lastUserAction_ = Actions.IGNORE;
     this.showUndoToast_();
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
+    this.hideItem_(this.lastOrigin_);
+    setTimeout(
+        this.browserProxy_.ignoreNotificationPermissionForOrigin.bind(
+            this.browserProxy_, this.lastOrigin_),
+        this.getModelUpdateDelayMs_());
   }
 
   private onResetClick_(e: DomRepeatEvent<NotificationPermission>) {
     e.stopPropagation();
-    this.browserProxy_.resetNotificationPermissionForOrigin(this.lastOrigin_);
     this.lastUserAction_ = Actions.RESET;
     this.showUndoToast_();
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
+    this.hideItem_(this.lastOrigin_);
+    setTimeout(
+        this.browserProxy_.resetNotificationPermissionForOrigin.bind(
+            this.browserProxy_, this.lastOrigin_),
+        this.getModelUpdateDelayMs_());
   }
 
   /* Repopulate the list when notification permission list is updated. */
   private onReviewNotificationPermissionListChanged_(
       sites: NotificationPermission[]) {
     this.sites_ = sites;
+
+    // The already rendered <cr-row>s are reused as the model is updated,
+    // so we need to reset their CSS classes.
+    const rows = this.shadowRoot!.querySelectorAll(
+        '.notification-permissions-list .cr-row');
+    for (const row of rows) {
+      row.classList.remove('removed');
+    }
   }
 
   private onShowTooltip_(e: Event) {
@@ -256,6 +285,22 @@ export class SettingsReviewNotificationPermissionsElement extends
     }
   }
 
+  private hideItem_(origin?: string) {
+    const rows = this.shadowRoot!.querySelectorAll(
+        '.notification-permissions-list .cr-row');
+
+    // Remove the row that corresponds to |origin|. If no origin is specified,
+    // remove all rows.
+    for (let i = 0; i < this.sites_!.length; ++i) {
+      if (!origin || this.sites_![i]!.origin === origin) {
+        rows[i]!.classList.add('removed');
+        if (origin) {
+          break;
+        }
+      }
+    }
+  }
+
   /**
    * Retrieve the list of domains that send lots of notification and implicitly
    * trigger the update of the display list.
@@ -279,6 +324,18 @@ export class SettingsReviewNotificationPermissionsElement extends
   /** Show info that review is completed when there are no permissions left. */
   private computeShouldShowCompletionInfo_(): boolean {
     return this.sitesLoaded_ && this.sites_.length === 0;
+  }
+
+  private getModelUpdateDelayMs_() {
+    if (this.modelUpdateDelayMsForTesting_ === null) {
+      return MODEL_UPDATE_DELAY_MS;
+    } else {
+      return this.modelUpdateDelayMsForTesting_;
+    }
+  }
+
+  setModelUpdateDelayMsForTesting(delayMs: number) {
+    this.modelUpdateDelayMsForTesting_ = delayMs;
   }
 }
 
