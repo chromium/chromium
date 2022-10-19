@@ -952,6 +952,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.Payload.FuseBox.Open.Success"
+    enum="BooleanSuccess" expires_after="2023-04-18">
+  <owner>alanding@google.com</owner>
+  <owner>cros-sharesheet@google.com</owner>
+  <summary>
+    Records the success/failure of a Nearby Share file open where the file path
+    is created by the FuseBox service. Emitted when the open operation on
+    FuseBox moniker file(s) complete successfully or with failure.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.Payload.Medium" enum="NearbyShareUpgradedMedium"
     expires_after="2023-04-16">
   <owner>pushi@google.com</owner>

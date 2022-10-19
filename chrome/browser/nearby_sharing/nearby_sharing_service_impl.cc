@@ -12,18 +12,21 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
@@ -222,7 +225,7 @@ absl::optional<std::string> ToFourDigitString(
   return base::StringPrintf("%04d", std::abs(hash));
 }
 
-bool IsOutOfStorage(base::FilePath file_path,
+bool IsOutOfStorage(const base::FilePath& file_path,
                     int64_t storage_required,
                     absl::optional<int64_t> free_disk_space_for_testing) {
   int64_t free_space = free_disk_space_for_testing.value_or(
@@ -234,6 +237,17 @@ int64_t GeneratePayloadId() {
   int64_t payload_id = 0;
   crypto::RandBytes(&payload_id, sizeof(payload_id));
   return payload_id;
+}
+
+// FuseBox (go/fuse-box) makes virtual file systems (e.g. ARC ContentProvider)
+// visible on the Linux native file system through a FUSE (Filesystem in
+// USErspace) abstraction layer.
+bool IsFuseBoxFilePath(const base::FilePath& file_path) {
+  if (file_path.empty()) {
+    return false;
+  }
+  return base::StartsWith(file_path.value(),
+                          file_manager::util::kFuseBoxMediaPath);
 }
 
 // Wraps a call to OnTransferUpdate() to filter any updates after receiving a
@@ -2769,11 +2783,15 @@ void NearbySharingServiceImpl::CreatePayloads(
     file_paths.push_back(*attachment.file_path());
   }
 
+  // If the first attachment file has a fusebox path, it is expected that all
+  // file attachments from the same volume will be using fusebox (e.g. MTP).
+  const bool is_fusebox_path =
+      file_paths.size() ? IsFuseBoxFilePath(file_paths[0]) : false;
   file_handler_.OpenFiles(
       std::move(file_paths),
       base::BindOnce(&NearbySharingServiceImpl::OnOpenFiles,
                      weak_ptr_factory_.GetWeakPtr(), std::move(share_target),
-                     std::move(callback)));
+                     std::move(callback), is_fusebox_path));
 }
 
 void NearbySharingServiceImpl::OnCreatePayloads(
@@ -2815,9 +2833,16 @@ void NearbySharingServiceImpl::OnCreatePayloads(
 void NearbySharingServiceImpl::OnOpenFiles(
     ShareTarget share_target,
     base::OnceCallback<void(ShareTarget, bool)> callback,
+    bool is_fusebox_file_path,
     std::vector<NearbyFileHandler::FileInfo> files) {
   OutgoingShareTargetInfo* info = GetOutgoingShareTargetInfo(share_target);
-  if (!info || files.size() != share_target.file_attachments.size()) {
+  bool files_open_success =
+      (files.size() == share_target.file_attachments.size());
+  if (is_fusebox_file_path) {
+    base::UmaHistogramBoolean("Nearby.Share.Payload.FuseBox.Open.Success",
+                              files_open_success);
+  }
+  if (!info || !files_open_success) {
     std::move(callback).Run(std::move(share_target), /*success=*/false);
     return;
   }
