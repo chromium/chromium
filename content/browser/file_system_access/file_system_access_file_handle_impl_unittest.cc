@@ -11,18 +11,19 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
-#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "file_system_access_directory_handle_impl.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -50,6 +51,9 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+
     SetupHelper(storage::kFileSystemTypeTest, /*is_incognito=*/false);
   }
 
@@ -80,6 +84,23 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     auto url = manager_->CreateFileSystemURLFromPath(
         FileSystemAccessEntryFactory::PathType::kLocal, path);
     auto handle = std::make_unique<FileSystemAccessFileHandleImpl>(
+        manager_.get(),
+        FileSystemAccessManagerImpl::BindingContext(
+            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
+        url,
+        FileSystemAccessManagerImpl::SharedHandleState(
+            /*read_grant=*/read ? allow_grant_ : deny_grant_,
+            /*write_grant=*/write ? allow_grant_ : deny_grant_));
+    return handle;
+  }
+
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl>
+  GetDirectoryHandleWithPermissions(const base::FilePath& path,
+                                    bool read,
+                                    bool write) {
+    auto url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kLocal, path);
+    auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
             test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
@@ -293,7 +314,7 @@ TEST_F(FileSystemAccessFileHandleImplTest, GetSwapURL) {
   const auto bucket_handle = std::make_unique<FileSystemAccessFileHandleImpl>(
       manager_.get(),
       FileSystemAccessManagerImpl::BindingContext(
-          test_src_storage_key_, test_src_url_, /*worker_process_id=J*/ 1),
+          test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
       base_url,
       FileSystemAccessManagerImpl::SharedHandleState(
           /*read_grant=*/allow_grant_,
@@ -342,6 +363,128 @@ TEST_F(FileSystemAccessAccessHandleIncognitoTest, OpenAccessHandle) {
   EXPECT_TRUE(file->is_incognito_file_delegate());
   EXPECT_TRUE(file->get_incognito_file_delegate().is_valid());
   EXPECT_TRUE(access_handle_remote.is_valid());
+}
+
+TEST_F(FileSystemAccessFileHandleImplTest, Rename_NoWriteAccess) {
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+  base::FilePath renamed_file = file.DirName().AppendASCII("new_name.txt");
+
+  auto handle = GetHandleWithPermissions(file, /*read=*/true, /*write=*/false);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Rename(renamed_file.BaseName().AsUTF8Unsafe(), future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied);
+  EXPECT_TRUE(base::PathExists(file));
+  EXPECT_FALSE(base::PathExists(renamed_file));
+}
+
+TEST_F(FileSystemAccessFileHandleImplTest, Rename_HasWriteAccess) {
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+  base::FilePath renamed_file = file.DirName().AppendASCII("new_name.txt");
+
+  auto handle = GetHandleWithPermissions(file, /*read=*/true, /*write=*/true);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Rename(renamed_file.BaseName().AsUTF8Unsafe(), future.GetCallback());
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(file));
+  EXPECT_TRUE(base::PathExists(renamed_file));
+}
+
+TEST_F(FileSystemAccessFileHandleImplTest, Rename_NoParentAccessSucceeds) {
+  base::FilePath parent;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      dir_.GetPath(), FILE_PATH_LITERAL("parent"), &parent));
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(parent, &file));
+  base::FilePath renamed_file = file.DirName().AppendASCII("new_name.txt");
+
+  auto parent_handle = GetDirectoryHandleWithPermissions(parent, /*read=*/false,
+                                                         /*write=*/false);
+  auto handle = GetHandleWithPermissions(file, /*read=*/true, /*write=*/true);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Rename(renamed_file.BaseName().AsUTF8Unsafe(), future.GetCallback());
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(file));
+  EXPECT_TRUE(base::PathExists(renamed_file));
+}
+
+TEST_F(FileSystemAccessFileHandleImplTest, Move_NoWriteAccess) {
+  base::FilePath dest_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      dir_.GetPath(), FILE_PATH_LITERAL("dest"), &dest_dir));
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+  base::FilePath renamed_file = dest_dir.AppendASCII("new_name.txt");
+
+  auto dest_handle = GetDirectoryHandleWithPermissions(dest_dir, /*read=*/true,
+                                                       /*write=*/true);
+  auto handle = GetHandleWithPermissions(file, /*read=*/true, /*write=*/false);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;
+  manager_->CreateTransferToken(*dest_handle,
+                                dir_remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Move(std::move(dir_remote), renamed_file.BaseName().AsUTF8Unsafe(),
+               future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied);
+  EXPECT_TRUE(base::PathExists(file));
+  EXPECT_FALSE(base::PathExists(renamed_file));
+}
+
+TEST_F(FileSystemAccessFileHandleImplTest, Move_NoDestWriteAccess) {
+  base::FilePath dest_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      dir_.GetPath(), FILE_PATH_LITERAL("dest"), &dest_dir));
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+  base::FilePath renamed_file = dest_dir.AppendASCII("new_name.txt");
+
+  auto dest_handle = GetDirectoryHandleWithPermissions(dest_dir, /*read=*/true,
+                                                       /*write=*/false);
+  auto handle = GetHandleWithPermissions(file, /*read=*/true, /*write=*/true);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;
+  manager_->CreateTransferToken(*dest_handle,
+                                dir_remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Move(std::move(dir_remote), renamed_file.BaseName().AsUTF8Unsafe(),
+               future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied);
+  EXPECT_TRUE(base::PathExists(file));
+  EXPECT_FALSE(base::PathExists(renamed_file));
+}
+
+TEST_F(FileSystemAccessFileHandleImplTest, Move_HasDestWriteAccess) {
+  base::FilePath dest_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      dir_.GetPath(), FILE_PATH_LITERAL("dest"), &dest_dir));
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+  base::FilePath renamed_file = dest_dir.AppendASCII("new_name.txt");
+
+  auto dest_handle = GetDirectoryHandleWithPermissions(dest_dir, /*read=*/true,
+                                                       /*write=*/true);
+  auto handle = GetHandleWithPermissions(file, /*read=*/true, /*write=*/true);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;
+  manager_->CreateTransferToken(*dest_handle,
+                                dir_remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Move(std::move(dir_remote), renamed_file.BaseName().AsUTF8Unsafe(),
+               future.GetCallback());
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(file));
+  EXPECT_TRUE(base::PathExists(renamed_file));
 }
 
 }  // namespace content

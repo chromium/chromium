@@ -245,6 +245,8 @@ void FileSystemAccessHandleBase::DoRename(
     bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Must have write access to the entry being moved. However, write access to
+  // the parent directory is not required for renames.
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
@@ -299,6 +301,14 @@ void FileSystemAccessHandleBase::DidResolveTokenToMove(
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
       resolved_destination_directory->CreateDirectoryHandle(context_);
 
+  // Must have write access to the target directory for cross-directory moves.
+  if (dir_handle->GetWritePermissionStatus() !=
+      blink::mojom::PermissionStatus::GRANTED) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kPermissionDenied));
+    return;
+  }
+
   DidCreateDestinationDirectoryHandle(new_entry_name, std::move(dir_handle),
                                       has_transient_user_activation,
                                       std::move(callback));
@@ -310,14 +320,6 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     bool has_transient_user_activation,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Must have write access to the target directory.
-  if (dir_handle->GetWritePermissionStatus() !=
-      blink::mojom::PermissionStatus::GRANTED) {
-    std::move(callback).Run(file_system_access_error::FromStatus(
-        blink::mojom::FileSystemAccessStatus::kPermissionDenied));
-    return;
-  }
 
   storage::FileSystemURL dest_url;
   blink::mojom::FileSystemAccessErrorPtr error =
@@ -337,8 +339,8 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     }
   }
 
-  // The file can only be moved if we can acquire exclusive write locks to
-  // both the source or destination URLs.
+  // The file can only be moved if we can acquire exclusive write locks to both
+  // the source and destination URLs.
   std::vector<scoped_refptr<WriteLock>> locks;
   auto source_write_lock =
       manager()->TakeWriteLock(url(), WriteLockType::kExclusive);
