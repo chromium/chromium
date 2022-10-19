@@ -291,8 +291,23 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * @return True if the intent or session are trusted.
      */
     public static boolean isTrustedCustomTab(Intent intent, CustomTabsSessionToken session) {
-        return IntentHandler.wasIntentSenderChrome(intent)
-                || CustomTabsConnection.getInstance().isSessionFirstParty(session);
+        if (IntentHandler.wasIntentSenderChrome(intent)) return true;
+        String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
+        return CustomTabsConnection.getInstance().isFirstParty(packageName);
+    }
+
+    @Nullable
+    private static String getClientPackageNameFromSessionOrCallingActivity(
+            Intent intent, CustomTabsSessionToken session) {
+        String packageNameFromSession =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
+        if (!TextUtils.isEmpty(packageNameFromSession)) return packageNameFromSession;
+
+        String packageNameFromIntent = IntentUtils.safeGetStringExtra(
+                intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
+        if (!TextUtils.isEmpty(packageNameFromIntent)) return packageNameFromIntent;
+
+        return null;
     }
 
     public static void configureIntentForResizableCustomTab(Context context, Intent intent) {
@@ -696,15 +711,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     @Nullable
     public String getClientPackageName() {
-        String packageNameForSession =
-                CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
-        if (!TextUtils.isEmpty(packageNameForSession)) return packageNameForSession;
-
-        String packageNameFromIntent = IntentUtils.safeGetStringExtra(
-                mIntent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
-        if (!TextUtils.isEmpty(packageNameFromIntent)) return packageNameFromIntent;
-
-        return null;
+        return getClientPackageNameFromSessionOrCallingActivity(mIntent, mSession);
     }
 
     @Override

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -393,6 +394,20 @@ public class CustomTabIntentDataProviderTest {
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
         Assert.assertNull(dataProvider.getClientPackageName());
+    }
+
+    @Test
+    public void testIsTrustedCustomTab_NoServiceConnection() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
+        when(connection.isFirstParty(eq("com.foo.bar"))).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new Intent();
+        Assert.assertFalse(CustomTabIntentDataProvider.isTrustedCustomTab(intent, null));
+
+        intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "com.foo.bar");
+        Assert.assertTrue(CustomTabIntentDataProvider.isTrustedCustomTab(intent, null));
     }
 
     private Bundle createActionButtonInToolbarBundle() {

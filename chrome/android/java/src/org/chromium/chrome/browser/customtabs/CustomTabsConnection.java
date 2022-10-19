@@ -1093,9 +1093,8 @@ public class CustomTabsConnection {
         return mClientManager.getClientPackageNameForSession(session);
     }
 
-    /** @return Whether the client of the {@code session} is a first-party application. */
-    public boolean isSessionFirstParty(CustomTabsSessionToken session) {
-        String packageName = getClientPackageNameForSession(session);
+    /** @return Whether the given package name is that of a first-party application. */
+    public boolean isFirstParty(String packageName) {
         if (packageName == null) return false;
         return ExternalAuthUtils.getInstance().isGoogleSigned(packageName);
     }
