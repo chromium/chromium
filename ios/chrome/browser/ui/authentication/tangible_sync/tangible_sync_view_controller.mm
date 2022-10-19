@@ -9,6 +9,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -21,8 +22,40 @@
 
 namespace {
 
+// Icon size including the white square around it.
+constexpr CGFloat kIconSquareSize = 30;
+// Margin between the icon and the square around it.
+constexpr CGFloat kIconPointSize = 17;
+// White square corner radius .
+constexpr CGFloat kIconSquareCornerRadius = 7;
+
 // URL for the Settings link.
 const char* const kSettingsSyncURL = "internal://settings-sync";
+
+// Returns a UIView with a SFSymbol based on `image_name`.
+UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
+  UIImage* icon_image = nil;
+  if (custom_symbol) {
+    icon_image = CustomSymbolTemplateWithPointSize(image_name, kIconPointSize);
+  } else {
+    icon_image = DefaultSymbolTemplateWithPointSize(image_name, kIconPointSize);
+  }
+  DCHECK(icon_image);
+  UIImageView* icon_view = [[UIImageView alloc] initWithImage:icon_image];
+  icon_view.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView* full_view = [[UIView alloc] init];
+  full_view.backgroundColor = UIColor.whiteColor;
+  full_view.layer.cornerRadius = kIconSquareCornerRadius;
+  full_view.layer.masksToBounds = YES;
+  [full_view addSubview:icon_view];
+  [NSLayoutConstraint activateConstraints:@[
+    [full_view.widthAnchor constraintEqualToConstant:kIconSquareSize],
+    [full_view.heightAnchor constraintEqualToConstant:kIconSquareSize],
+    [icon_view.centerXAnchor constraintEqualToAnchor:full_view.centerXAnchor],
+    [icon_view.centerYAnchor constraintEqualToAnchor:full_view.centerYAnchor],
+  ]];
+  return full_view;
+}
 
 }  // namespace
 
@@ -88,16 +121,29 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
     l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_AUTOFILL),
     l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_DATA_TYPE_HISTORY),
   ];
-  // TODO(crbug.com/1363812): Need to icon version with custom symbols.
-  NSArray<UIImage*>* dataTypeIcons = @[
-    [UIImage imageNamed:@"tangible_sync_bookmarks"],
-    [UIImage imageNamed:@"tangible_sync_autofill"],
-    [UIImage imageNamed:@"tangible_sync_history"],
-  ];
-  InstructionView* instructionView =
-      [[InstructionView alloc] initWithList:dataTypeNames
-                                      style:InstructionViewStyleDefault
-                                      icons:dataTypeIcons];
+  InstructionView* instructionView = nil;
+  if (UseSymbols()) {
+    NSArray<UIView*>* imageViews = @[
+      IconViewWithImage(kBookmarksSymbol, /*custom_symbol=*/NO),
+      IconViewWithImage(kPasswordSymbol, /*custom_symbol=*/YES),
+      IconViewWithImage(kRecentTabsSymbol, /*custom_symbol=*/YES),
+    ];
+    instructionView =
+        [[InstructionView alloc] initWithList:dataTypeNames
+                                        style:InstructionViewStyleDefault
+                                    iconViews:imageViews];
+  } else {
+    NSArray<UIImage*>* dataTypeIcons = @[
+      [UIImage imageNamed:@"tangible_sync_bookmarks"],
+      [UIImage imageNamed:@"tangible_sync_autofill"],
+      [UIImage imageNamed:@"tangible_sync_history"],
+    ];
+    instructionView =
+        [[InstructionView alloc] initWithList:dataTypeNames
+                                        style:InstructionViewStyleDefault
+                                        icons:dataTypeIcons];
+  }
+  DCHECK(instructionView);
   instructionView.tapListener = self;
   instructionView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.specificContentView addSubview:instructionView];

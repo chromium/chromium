@@ -55,6 +55,7 @@ source_set("signin_ui") {
     "//ios/chrome/browser/ui/authentication/tangible_sync/resources:tangible_sync_history",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/first_run:field_trial",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
     "//net",

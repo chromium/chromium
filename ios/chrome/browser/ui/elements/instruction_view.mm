@@ -27,6 +27,17 @@ constexpr CGFloat kSeparatorLeadingMargin = 60;
 constexpr CGFloat kSeparatorHeight = 0.5;
 constexpr CGFloat kIconLabelWidth = 30;
 
+// Creates a view with `icon` in it.
+UIView* CreateIconView(UIImage* icon) {
+  UIImageView* icon_image_view = [[UIImageView alloc] initWithImage:icon];
+  icon_image_view.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [icon_image_view.widthAnchor constraintEqualToConstant:kIconLabelWidth],
+    [icon_image_view.heightAnchor constraintEqualToConstant:kIconLabelWidth],
+  ]];
+  return icon_image_view;
+}
+
 }  // namespace
 
 @interface InstructionView ()
@@ -45,12 +56,12 @@ constexpr CGFloat kIconLabelWidth = 30;
 
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList
                        style:(InstructionViewStyle)style
-                       icons:(NSArray<UIImage*>*)icons {
+                   iconViews:(NSArray<UIView*>*)iconViews {
   self = [super initWithFrame:CGRectZero];
   if (self) {
-    BOOL useIcon = icons != nil;
+    BOOL useIcon = iconViews != nil;
     if (useIcon) {
-      DCHECK(icons.count == instructionList.count);
+      DCHECK(iconViews.count == instructionList.count);
     }
 
     _style = style;
@@ -60,14 +71,16 @@ constexpr CGFloat kIconLabelWidth = 30;
     UIStackView* stackView = [[UIStackView alloc] init];
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
     stackView.axis = UILayoutConstraintAxisVertical;
-    UIView* firstBulletPoint = useIcon ? [self createIconView:icons[0]]
-                                       : [self createStepNumberView:1];
+    UIView* firstBulletPoint =
+        useIcon ? iconViews[0] : [self createStepNumberView:1];
+    firstBulletPoint.translatesAutoresizingMaskIntoConstraints = NO;
     [stackView addArrangedSubview:[self createLineInstruction:instructionList[0]
                                               bulletPointView:firstBulletPoint
                                                         index:0]];
     for (NSUInteger i = 1; i < [instructionList count]; i++) {
-      UIView* bulletPoint = useIcon ? [self createIconView:icons[i]]
-                                    : [self createStepNumberView:i + 1];
+      UIView* bulletPoint =
+          useIcon ? iconViews[i] : [self createStepNumberView:i + 1];
+      bulletPoint.translatesAutoresizingMaskIntoConstraints = NO;
       [stackView addArrangedSubview:[self createLineSeparator]];
       [stackView
           addArrangedSubview:[self createLineInstruction:instructionList[i]
@@ -88,6 +101,20 @@ constexpr CGFloat kIconLabelWidth = 30;
     self.layer.cornerRadius = kCornerRadius;
   }
   return self;
+}
+
+- (instancetype)initWithList:(NSArray<NSString*>*)instructionList
+                       style:(InstructionViewStyle)style
+                       icons:(NSArray<UIImage*>*)icons {
+  NSMutableArray<UIView*>* iconViews = nil;
+  if (icons) {
+    iconViews = [NSMutableArray array];
+    for (UIImage* icon in icons) {
+      UIView* iconView = CreateIconView(icon);
+      [iconViews addObject:iconView];
+    }
+  }
+  return [self initWithList:instructionList style:style iconViews:iconViews];
 }
 
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList
@@ -252,17 +279,6 @@ constexpr CGFloat kIconLabelWidth = 30;
   ]];
 
   return labelContainer;
-}
-
-// Creates a view with icon in it.
-- (UIView*)createIconView:(UIImage*)icon {
-  UIImageView* iconImageView = [[UIImageView alloc] initWithImage:icon];
-  iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [iconImageView.widthAnchor constraintEqualToConstant:kIconLabelWidth],
-    [iconImageView.heightAnchor constraintEqualToConstant:kIconLabelWidth],
-  ]];
-  return iconImageView;
 }
 
 // Sets and update the background color of the step number label on

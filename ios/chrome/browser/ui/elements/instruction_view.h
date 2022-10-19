@@ -29,13 +29,19 @@ typedef NS_ENUM(NSInteger, InstructionViewStyle) {
 // contains instructions strings. Strings can have bold part in it.
 // `instructionList` must have at least one step.
 // `style` should be one of InstructionViewStyle.
-// `icons` optional, should be supplied if an icon should be used instead of
+// `iconViews` optional, should be supplied if a view should be used instead of
 // step number. If provided, the number of icons should be the same as the
 // number of steps in instructionList.
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList
                        style:(InstructionViewStyle)style
-                       icons:(NSArray<UIImage*>*)icons
+                   iconViews:(NSArray<UIView*>*)iconViews
     NS_DESIGNATED_INITIALIZER;
+
+// Creates icon views and calls -[InstructionView
+// initWithList:style:iconViews:].
+- (instancetype)initWithList:(NSArray<NSString*>*)instructionList
+                       style:(InstructionViewStyle)style
+                       icons:(NSArray<UIImage*>*)icons;
 
 // Creates the numbered instructions without icons.
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList
