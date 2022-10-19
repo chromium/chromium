@@ -31,18 +31,11 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.text.Spanned;
-import android.text.style.ClickableSpan;
-import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import androidx.test.espresso.NoMatchingViewException;
-import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -67,7 +60,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo.OwnedState;
@@ -1159,40 +1151,10 @@ public class SigninFirstRunFragmentTest {
     }
 
     private ViewAction clickOnUmaDialogLink() {
-        return clickOnFooterLink(1);
+        return ViewUtils.clickOnClickableSpan(1);
     }
 
     private ViewAction clickOnTosLink() {
-        return clickOnFooterLink(0);
-    }
-
-    private ViewAction clickOnFooterLink(int spanIndex) {
-        return new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return Matchers.instanceOf(TextView.class);
-            }
-
-            @Override
-            public String getDescription() {
-                return "Clicks on the specified clickable span in the signin FRE footer";
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                TextView textView = (TextView) view;
-                Spanned spannedString = (Spanned) textView.getText();
-                ClickableSpan[] spans =
-                        spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
-                if (spans.length == 0) {
-                    throw new NoMatchingViewException.Builder()
-                            .includeViewHierarchy(true)
-                            .withRootView(textView)
-                            .build();
-                }
-                Assert.assertTrue("Span index out of bounds", spans.length > spanIndex);
-                spans[spanIndex].onClick(view);
-            }
-        };
+        return ViewUtils.clickOnClickableSpan(0);
     }
 }

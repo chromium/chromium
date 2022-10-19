@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 package org.chromium.ui.test.util;
-
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -14,14 +14,19 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.BoundedMatcher;
@@ -228,6 +233,41 @@ public class ViewUtils {
                 }
 
                 description.appendText("has background color with ID " + colorId);
+            }
+        };
+    }
+
+    /**
+     * Creates a {@link ViewAction} to click on a text view with one or more clickable spans.
+     * @param spanIndex Index of clickable span to click on.
+     * @return A {@link ViewAction} on the matching view.
+     */
+    public static ViewAction clickOnClickableSpan(int spanIndex) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return instanceOf(TextView.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "Clicks on a specified link in a text view with clickable spans";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                TextView textView = (TextView) view;
+                Spanned spannedString = (Spanned) textView.getText();
+                ClickableSpan[] spans =
+                        spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
+                if (spans.length == 0) {
+                    throw new NoMatchingViewException.Builder()
+                            .includeViewHierarchy(true)
+                            .withRootView(textView)
+                            .build();
+                }
+                Assert.assertTrue("Span index out of bounds", spans.length > spanIndex);
+                spans[spanIndex].onClick(view);
             }
         };
     }

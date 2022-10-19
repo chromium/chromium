@@ -26,19 +26,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
-import android.text.Spanned;
-import android.text.style.ClickableSpan;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.test.espresso.NoMatchingViewException;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -58,7 +50,6 @@ import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
@@ -86,6 +77,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -539,7 +531,7 @@ public class SyncConsentFragmentTest {
                             accountInfo.getEmail());
                 });
         onView(withText(accountInfo.getEmail())).check(matches(isDisplayed()));
-        onView(withId(R.id.signin_details_description)).perform(clickOnClickableSpan());
+        onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
         // Wait for sign in process to finish.
         CriteriaHelper.pollUiThread(() -> {
             return IdentityServicesProvider.get()
@@ -567,7 +559,8 @@ public class SyncConsentFragmentTest {
                             mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
                             accountInfo.getEmail());
                 });
-        onView(withId(R.id.sync_consent_details_description)).perform(clickOnClickableSpan());
+        onView(withId(R.id.sync_consent_details_description))
+                .perform(ViewUtils.clickOnClickableSpan(0));
         // Wait for sign in process to finish.
         CriteriaHelper.pollUiThread(() -> {
             return IdentityServicesProvider.get()
@@ -601,7 +594,7 @@ public class SyncConsentFragmentTest {
                             mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
                             accountInfo.getEmail());
                 });
-        onView(withId(R.id.signin_details_description)).perform(clickOnClickableSpan());
+        onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
         // Wait for the sync consent to be set.
         CriteriaHelper.pollUiThread(() -> {
             return IdentityServicesProvider.get()
@@ -1015,36 +1008,6 @@ public class SyncConsentFragmentTest {
         assertEquals(3,
                 mHistogramTestRule.getHistogramTotalCount(
                         "Signin.SyncConsentScreen.DataRowClicked"));
-    }
-
-    private ViewAction clickOnClickableSpan() {
-        return new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return Matchers.instanceOf(TextView.class);
-            }
-
-            @Override
-            public String getDescription() {
-                return "Clicks on the one and only clickable span in the view";
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                TextView textView = (TextView) view;
-                Spanned spannedString = (Spanned) textView.getText();
-                ClickableSpan[] spans =
-                        spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
-                if (spans.length == 0) {
-                    throw new NoMatchingViewException.Builder()
-                            .includeViewHierarchy(true)
-                            .withRootView(textView)
-                            .build();
-                }
-                assertEquals("There should be only one clickable link", 1, spans.length);
-                spans[0].onClick(view);
-            }
-        };
     }
 
     private void launchActivityWithFragment(Fragment fragment) {
