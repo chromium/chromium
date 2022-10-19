@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for navigation_utils.js.
@@ -12,11 +12,11 @@ SelectToSpeakNodeNavigationUtilsUnitTest = class extends SelectToSpeakE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule(
-        'NodeNavigationUtils', '/select_to_speak/node_navigation_utils.js');
-    await importModule('ParagraphUtils', '/select_to_speak/paragraph_utils.js');
+        'NodeNavigationUtils', '/common/node_navigation_utils.js');
+    await importModule('ParagraphUtils', '/common/paragraph_utils.js');
     await importModule(
         ['createMockNode', 'generateTestNodeGroup'],
-        '/select_to_speak/test_node_generator.js');
+        '/common/testing/test_node_generator.js');
   }
 };
 

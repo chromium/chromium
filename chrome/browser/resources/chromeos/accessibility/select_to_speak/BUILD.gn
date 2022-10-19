@@ -31,23 +31,17 @@ run_jsbundler("select_to_speak_copied_files") {
     "earcons/null_selection.ogg",
     "input_handler.js",
     "metrics_utils.js",
-    "node_navigation_utils.js",
-    "node_utils.js",
     "options.css",
     "options.html",
-    "paragraph_utils.js",
     "prefs_manager.js",
     "select_to_speak-2x.svg",
     "select_to_speak.js",
     "select_to_speak_constants.js",
     "select_to_speak_main.js",
     "select_to_speak_options.js",
-    "sentence_utils.js",
-    "test_node_generator.js",
     "tts_manager.js",
     "ui_manager.js",
     "unchecked.png",
-    "word_utils.js",
   ]
   rewrite_rules = [
     rebase_path(".", root_build_dir) + ":",
@@ -81,7 +75,6 @@ js2gtest("select_to_speak_extjs_tests") {
   test_type = "extension"
   sources = [
     # These are end-to-end tests.
-    "paragraph_utils_overflow_test.js",
     "select_to_speak_enhanced_voices_test.js",
     "select_to_speak_keystroke_selection_test.js",
     "select_to_speak_mouse_selection_test.js",
@@ -92,14 +85,9 @@ js2gtest("select_to_speak_extjs_tests") {
 
   # These are unit tests run under an extension environment to get ES6 module support.
   sources += [
-    "node_navigation_utils_unittest.js",
-    "node_utils_unittest.js",
-    "paragraph_utils_unittest.js",
     "select_to_speak_unittest.js",
-    "sentence_utils_unittest.js",
     "tts_manager_unittest.js",
     "ui_manager_unittest.js",
-    "word_utils_unittest.js",
   ]
   gen_include_files = [
     "../common/testing/accessibility_test_base.js",
@@ -129,24 +117,24 @@ js_type_check("closure_compile") {
   deps = [
     ":input_handler",
     ":metrics_utils",
-    ":node_navigation_utils",
-    ":node_utils",
-    ":paragraph_utils",
     ":prefs_manager",
     ":select_to_speak",
     ":select_to_speak_constants",
     ":select_to_speak_options",
-    ":sentence_utils",
     ":tts_manager",
     ":ui_manager",
-    ":word_utils",
     "../common:automation_predicate",
     "../common:automation_util",
     "../common:closure_shim",
     "../common:constants",
     "../common:key_code",
+    "../common:node_navigation_utils",
+    "../common:node_utils",
+    "../common:paragraph_utils",
     "../common:rect_util",
+    "../common:sentence_utils",
     "../common:tree_walker",
+    "../common:word_utils",
   ]
 }
 
@@ -154,17 +142,17 @@ js_library("select_to_speak") {
   deps = [
     ":input_handler",
     ":metrics_utils",
-    ":node_navigation_utils",
-    ":node_utils",
-    ":paragraph_utils",
     ":prefs_manager",
-    ":sentence_utils",
     ":tts_manager",
     ":ui_manager",
-    ":word_utils",
     "../common:automation_util",
     "../common:constants",
+    "../common:node_navigation_utils",
+    "../common:node_utils",
+    "../common:paragraph_utils",
     "../common:rect_util",
+    "../common:sentence_utils",
+    "../common:word_utils",
   ]
   externs_list = [
     "$externs_path/accessibility_private.js",
@@ -183,39 +171,6 @@ js_library("select_to_speak_options") {
     "$externs_path/automation.js",
     "$externs_path/metrics_private.js",
     "$externs_path/tts.js",
-  ]
-}
-
-js_library("node_navigation_utils") {
-  deps = [
-    ":node_utils",
-    ":paragraph_utils",
-  ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("node_utils") {
-  deps = [
-    ":paragraph_utils",
-    "../common:rect_util",
-  ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("sentence_utils") {
-  deps = [ ":paragraph_utils" ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("word_utils") {
-  deps = [ ":paragraph_utils" ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("paragraph_utils") {
-  externs_list = [
-    "$externs_path/accessibility_private.js",
-    "$externs_path/automation.js",
   ]
 }
 
@@ -240,8 +195,8 @@ js_library("select_to_speak_constants") {
 
 js_library("ui_manager") {
   deps = [
-    ":paragraph_utils",
     ":prefs_manager",
+    "../common:paragraph_utils",
   ]
   externs_list = [ "$externs_path/accessibility_private.js" ]
 }

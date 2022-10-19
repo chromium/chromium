@@ -94,9 +94,9 @@ SelectToSpeakUiManagerUnitTest = class extends SelectToSpeakE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+    await importModule('ParagraphUtils', '/common/paragraph_utils.js');
     await importModule('UiManager', '/select_to_speak/ui_manager.js');
     await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
-    await importModule('ParagraphUtils', '/select_to_speak/paragraph_utils.js');
 
     this.mockPrefsManager = new MockPrefsManager();
     this.mockListener = new MockUiListener();

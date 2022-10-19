@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for word_utils.js.
@@ -10,7 +10,7 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
 SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('WordUtils', '/select_to_speak/word_utils.js');
+    await importModule('WordUtils', '/common/word_utils.js');
   }
 };
 

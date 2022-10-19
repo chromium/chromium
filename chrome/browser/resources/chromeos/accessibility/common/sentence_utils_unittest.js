@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for sentence_utils.js.
@@ -11,7 +11,7 @@ SelectToSpeakSentenceUtilsUnitTest = class extends SelectToSpeakE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('SentenceUtils', '/select_to_speak/sentence_utils.js');
+    await importModule('SentenceUtils', '/common/sentence_utils.js');
   }
 };
 
@@ -209,32 +209,31 @@ AX_TEST_F(
               constants.Dir.BACKWARD /* direction */));
     });
 
-AX_TEST_F(
-    'SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStart', function() {
-      // The text of the test node group is "Hello. New. World."
-      const nodeGroup = getTestNodeGroupWithOneNode();
+AX_TEST_F('SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStart', function() {
+  // The text of the test node group is "Hello. New. World."
+  const nodeGroup = getTestNodeGroupWithOneNode();
 
-      assertEquals(
-          true,
-          SentenceUtils.isSentenceStart(
-              nodeGroup /* nodeGroup */, 0 /* startCharIndex */));
-      assertEquals(
-          false,
-          SentenceUtils.isSentenceStart(
-              nodeGroup /* nodeGroup */, 3 /* startCharIndex */));
-      assertEquals(
-          true,
-          SentenceUtils.isSentenceStart(
-              nodeGroup /* nodeGroup */, 7 /* startCharIndex */));
-      assertEquals(
-          false,
-          SentenceUtils.isSentenceStart(
-              nodeGroup /* nodeGroup */, 11 /* startCharIndex */));
-      assertEquals(
-          true,
-          SentenceUtils.isSentenceStart(
-              nodeGroup /* nodeGroup */, 12 /* startCharIndex */));
-    });
+  assertEquals(
+      true,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 0 /* startCharIndex */));
+  assertEquals(
+      false,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 3 /* startCharIndex */));
+  assertEquals(
+      true,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 7 /* startCharIndex */));
+  assertEquals(
+      false,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 11 /* startCharIndex */));
+  assertEquals(
+      true,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 12 /* startCharIndex */));
+});
 
 AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStartMultiNodes',

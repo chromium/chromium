@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
 
 /**
  * Browser tests for select-to-speak's feature to filter out overflow text.
@@ -11,7 +11,7 @@ SelectToSpeakParagraphOverflowTest = class extends SelectToSpeakE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('ParagraphUtils', '/select_to_speak/paragraph_utils.js');
+    await importModule('ParagraphUtils', '/common/paragraph_utils.js');
   }
 
   generateHorizentalOverflowText(text) {

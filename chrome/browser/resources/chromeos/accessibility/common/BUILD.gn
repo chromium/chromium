@@ -42,12 +42,18 @@ run_jsbundler("accessibility_common_copied_files") {
     "gdocs_script.js",
     "instance_checker.js",
     "key_code.js",
+    "node_navigation_utils.js",
+    "node_utils.js",
+    "paragraph_utils.js",
     "rect_util.js",
     "repeated_event_handler.js",
     "repeated_tree_change_handler.js",
+    "sentence_utils.js",
     "string_util.js",
     "testing/accessibility_test_base.js",
+    "testing/test_node_generator.js",
     "tree_walker.js",
+    "word_utils.js",
   ]
   rewrite_rules = [ rebase_path(".", root_build_dir) + ":" ]
 }
@@ -116,6 +122,29 @@ js_library("instance_checker") {
   deps = [ ":closure_shim" ]
 }
 
+js_library("node_navigation_utils") {
+  deps = [
+    ":node_utils",
+    ":paragraph_utils",
+  ]
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("node_utils") {
+  deps = [
+    ":paragraph_utils",
+    ":rect_util",
+  ]
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("paragraph_utils") {
+  externs_list = [
+    "$externs_path/accessibility_private.js",
+    "$externs_path/automation.js",
+  ]
+}
+
 js_library("rect_util") {
   externs_list = [ "$externs_path/accessibility_private.js" ]
 }
@@ -125,6 +154,16 @@ js_library("repeated_event_handler") {
 }
 
 js_library("repeated_tree_change_handler") {
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("sentence_utils") {
+  deps = [ ":paragraph_utils" ]
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("word_utils") {
+  deps = [ ":paragraph_utils" ]
   externs_list = [ "$externs_path/automation.js" ]
 }
 
@@ -162,11 +201,22 @@ js2gtest("accessibility_tests") {
     "cursors/cursors_test.js",
     "cursors/recovery_strategy_test.js",
     "event_generator_test.js",
+    "paragraph_utils_overflow_test.js",
     "rect_util_test.js",
     "repeated_event_handler_test.js",
     "repeated_tree_change_handler_test.js",
     "tree_walker_test.js",
   ]
+
+  # These are unit tests run under an extension environment to get ES6 module support.
+  sources += [
+    "node_navigation_utils_unittest.js",
+    "node_utils_unittest.js",
+    "paragraph_utils_unittest.js",
+    "sentence_utils_unittest.js",
+    "word_utils_unittest.js",
+  ]
+
   gen_include_files = [
     "../select_to_speak/select_to_speak_e2e_test_base.js",
     "testing/accessibility_test_base.js",

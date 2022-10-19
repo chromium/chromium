@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {AutomationUtil} from '../common/automation_util.js';
+import {ParagraphUtils} from '../common/paragraph_utils.js';
 
-import {ParagraphUtils} from './paragraph_utils.js';
 import {PrefsManager} from './prefs_manager.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;

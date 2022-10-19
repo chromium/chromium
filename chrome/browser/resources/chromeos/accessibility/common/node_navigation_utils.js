@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AutomationUtil} from '../common/automation_util.js';
-import {constants} from '../common/constants.js';
-
+import {AutomationUtil} from './automation_util.js';
+import {constants} from './constants.js';
 import {NodeUtils} from './node_utils.js';
 import {ParagraphUtils} from './paragraph_utils.js';
 import {SentenceUtils} from './sentence_utils.js';

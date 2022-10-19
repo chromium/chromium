@@ -5,17 +5,17 @@
 import {AutomationPredicate} from '../common/automation_predicate.js';
 import {AutomationUtil} from '../common/automation_util.js';
 import {constants} from '../common/constants.js';
+import {NodeNavigationUtils} from '../common/node_navigation_utils.js';
+import {NodeUtils} from '../common/node_utils.js';
+import {ParagraphUtils} from '../common/paragraph_utils.js';
+import {WordUtils} from '../common/word_utils.js';
 
 import {InputHandler} from './input_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
-import {NodeNavigationUtils} from './node_navigation_utils.js';
-import {NodeUtils} from './node_utils.js';
-import {ParagraphUtils} from './paragraph_utils.js';
 import {PrefsManager} from './prefs_manager.js';
 import {SelectToSpeakConstants} from './select_to_speak_constants.js';
 import {TtsManager} from './tts_manager.js';
 import {SelectToSpeakUiListener, UiManager} from './ui_manager.js';
-import {WordUtils} from './word_utils.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const AutomationEvent = chrome.automation.AutomationEvent;
