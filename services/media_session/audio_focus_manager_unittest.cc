@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
@@ -238,11 +239,9 @@ class AudioFocusManagerTest
  private:
   int GetCountForType(mojom::AudioFocusType type) {
     const auto audio_focus_requests = GetRequests();
-    return std::count_if(audio_focus_requests.begin(),
-                         audio_focus_requests.end(),
-                         [type](const auto& session) {
-                           return session->audio_focus_type == type;
-                         });
+    return base::ranges::count(
+        audio_focus_requests, type,
+        &mojom::AudioFocusRequestState::audio_focus_type);
   }
 
   std::vector<mojom::AudioFocusRequestStatePtr> GetRequests() {

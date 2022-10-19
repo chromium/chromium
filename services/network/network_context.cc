@@ -22,6 +22,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -2209,10 +2210,7 @@ NetworkServiceMemoryCache* NetworkContext::GetMemoryCache() {
 }
 
 size_t NetworkContext::NumOpenWebTransports() const {
-  return std::count_if(web_transports_.begin(), web_transports_.end(),
-                       [](const std::unique_ptr<WebTransport>& transport) {
-                         return !transport->torn_down();
-                       });
+  return base::ranges::count(web_transports_, false, &WebTransport::torn_down);
 }
 
 void NetworkContext::OnHttpAuthDynamicParamsChanged(
