@@ -362,6 +362,7 @@ void NetworkFetcher::RequestError(DWORD error) {
 
 void NetworkFetcher::WriteDataToFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(3) << __func__;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
       base::BindOnce(&NetworkFetcher::WriteDataToFileBlocking, this),
@@ -370,6 +371,8 @@ void NetworkFetcher::WriteDataToFile() {
 
 // Returns true if EOF is reached.
 bool NetworkFetcher::WriteDataToFileBlocking() {
+  VLOG(3) << __func__;
+
   if (read_buffer_.empty()) {
     file_.Close();
     net_error_ = S_OK;
@@ -402,6 +405,7 @@ bool NetworkFetcher::WriteDataToFileBlocking() {
 
 void NetworkFetcher::WriteDataToFileComplete(bool is_eof) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(3) << __func__;
 
   fetch_progress_callback_.Run(base::saturated_cast<int64_t>(content_size_));
 
