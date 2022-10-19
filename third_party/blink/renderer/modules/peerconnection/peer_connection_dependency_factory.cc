@@ -134,7 +134,7 @@ class ProxyAsyncResolverFactory final : public webrtc::AsyncResolverFactory {
 std::string WorkerThreadName() {
   if (base::FeatureList::IsEnabled(
           features::kWebRtcCombinedNetworkAndWorkerThread)) {
-    return "WebRTC_CombinedNetworkAndWorker";
+    return "WebRTC_W_and_N";
   }
   return "WebRTC_Worker";
 }
