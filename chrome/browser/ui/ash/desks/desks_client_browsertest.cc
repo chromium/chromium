@@ -1012,6 +1012,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   ClickFirstTemplateItem();
 
+  // Exit overview.
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
   // Wait for the tabs to load.
   content::RunAllTasksUntilIdle();
 
@@ -1051,6 +1055,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchBrowserWithPinnedTabs) {
   ClickSaveDeskAsTemplateButton();
 
   ClickFirstTemplateItem();
+
+  // Exit overview.
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
 
   // Wait for tabs to load.
   content::RunAllTasksUntilIdle();
@@ -1353,6 +1361,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUILaunchBrowser) {
   ClickSaveDeskAsTemplateButton();
 
   ClickFirstTemplateItem();
+
+  // Exit overview.
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
 
   // Wait for the tabs to load.
   content::RunAllTasksUntilIdle();
