@@ -1273,6 +1273,12 @@ static void HandleNetworkDidReceiveResponseEvent(const base::DictionaryValue& in
   event.Set("responseStatus", std::unique_ptr<base::Value>(
     info.FindPath("responseStatus")->DeepCopy()
   ));
+  event.Set("responseStatusText", std::unique_ptr<base::Value>(
+    info.FindPath("responseStatusText")->DeepCopy()
+  ));
+  event.Set("responseFromCache", std::unique_ptr<base::Value>(
+    info.FindPath("responseFromCache")->DeepCopy()
+  ));
   uint64_t identifier =
     *info.FindPath("identifier")->GetIfDouble();
   char request_id[64];
