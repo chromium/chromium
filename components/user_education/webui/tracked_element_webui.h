@@ -29,6 +29,8 @@ class TrackedElementWebUI : public ui::TrackedElement {
   friend class HelpBubbleHandlerBase;
 
   void SetVisible(bool visible);
+  void Activate();
+  void CustomEvent(ui::CustomElementEventType event_type);
   bool visible() const { return visible_; }
 
   const base::raw_ptr<HelpBubbleHandlerBase> handler_;

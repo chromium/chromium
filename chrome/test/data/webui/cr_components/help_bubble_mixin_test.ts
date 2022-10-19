@@ -19,6 +19,8 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 const TITLE_NATIVE_ID: string = 'kHelpBubbleMixinTestTitleElementId';
 const PARAGRAPH_NATIVE_ID: string = 'kHelpBubbleMixinTestParagraphElementId';
 const LIST_NATIVE_ID: string = 'kHelpBubbleMixinTestListElementId';
+const EVENT1_NAME: string = 'kFirstExampleCustomEvent';
+const EVENT2_NAME: string = 'kSecondExampleCustomEvent';
 const CLOSE_BUTTON_ALT_TEXT: string = 'Close help bubble.';
 const BODY_ICON_ALT_TEXT: string = 'Icon help bubble.';
 
@@ -81,6 +83,8 @@ class TestHelpBubbleHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'helpBubbleAnchorVisibilityChanged',
+      'helpBubbleAnchorActivated',
+      'helpBubbleAnchorCustomEvent',
       'helpBubbleButtonPressed',
       'helpBubbleClosed',
     ]);
@@ -90,6 +94,15 @@ class TestHelpBubbleHandler extends TestBrowserProxy implements
       nativeIdentifier: string, visible: boolean) {
     this.methodCalled(
         'helpBubbleAnchorVisibilityChanged', nativeIdentifier, visible);
+  }
+
+  helpBubbleAnchorActivated(nativeIdentifier: string) {
+    this.methodCalled('helpBubbleAnchorActivated', nativeIdentifier);
+  }
+
+  helpBubbleAnchorCustomEvent(nativeIdentifier: string, eventName: string) {
+    this.methodCalled(
+        'helpBubbleAnchorCustomEvent', nativeIdentifier, eventName);
   }
 
   helpBubbleButtonPressed(nativeIdentifier: string, button: number) {
@@ -407,6 +420,31 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
           [LIST_NATIVE_ID, false],
         ],
         testProxy.getHandler().getArgs('helpBubbleAnchorVisibilityChanged'));
+  });
+
+  test('help bubble mixin sends event on element activated', async () => {
+    await waitAfterNextRender(container);
+    container.notifyHelpBubbleAnchorActivated('bulletList');
+    container.notifyHelpBubbleAnchorActivated('title');
+    assertEquals(
+        2, testProxy.getHandler().getCallCount('helpBubbleAnchorActivated'));
+    assertDeepEquals(
+        [LIST_NATIVE_ID, TITLE_NATIVE_ID],
+        testProxy.getHandler().getArgs('helpBubbleAnchorActivated'));
+  });
+
+  test('help bubble mixin sends custom events', async () => {
+    await waitAfterNextRender(container);
+    container.notifyHelpBubbleAnchorCustomEvent('p1', EVENT1_NAME);
+    container.notifyHelpBubbleAnchorCustomEvent('title', EVENT2_NAME);
+    assertEquals(
+        2, testProxy.getHandler().getCallCount('helpBubbleAnchorCustomEvent'));
+    assertDeepEquals(
+        [
+          [PARAGRAPH_NATIVE_ID, EVENT1_NAME],
+          [TITLE_NATIVE_ID, EVENT2_NAME],
+        ],
+        testProxy.getHandler().getArgs('helpBubbleAnchorCustomEvent'));
   });
 
   test(

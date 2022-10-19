@@ -210,6 +210,47 @@ export const HelpBubbleMixin = dedupingMixin(
           return true;
         }
 
+        /**
+         * Sends an "activated" event to the ElementTracker system for the
+         * element with id `anchorId`, which must have been registered as a help
+         * bubble anchor. This event will be processed in the browser and may
+         * e.g. cause a Tutorial or interactive test to advance to the next
+         * step.
+         *
+         * TODO(crbug.com/1376262): Figure out how to automatically send the
+         * activated event when an anchor element is clicked.
+         */
+        notifyHelpBubbleAnchorActivated(anchorId: string): boolean {
+          if (!this.targetVisibility_.get(anchorId)) {
+            return false;
+          }
+          const nativeId = this.getNativeIdForAnchor_(anchorId);
+          assert(nativeId);
+          this.helpBubbleHandler_.helpBubbleAnchorActivated(nativeId);
+          return true;
+        }
+
+        /**
+         * Sends a custom event to the ElementTracker system for the element
+         * with id `anchorId`, which must have been registered as a help bubble
+         * anchor. This event will be processed in the browser and may e.g.
+         * cause a Tutorial or interactive test to advance to the next step.
+         *
+         * The `customEvent` string should correspond to the name of a
+         * ui::CustomElementEventType declared in the browser code.
+         */
+        notifyHelpBubbleAnchorCustomEvent(
+            anchorId: string, customEvent: string): boolean {
+          if (!this.targetVisibility_.get(anchorId)) {
+            return false;
+          }
+          const nativeId = this.getNativeIdForAnchor_(anchorId);
+          assert(nativeId);
+          this.helpBubbleHandler_.helpBubbleAnchorCustomEvent(
+              nativeId, customEvent);
+          return true;
+        }
+
         private onTargetVisibilityChanged_(
             target: Element, isVisible: boolean) {
           if (isVisible === this.targetVisibility_.get(target.id)) {
@@ -331,4 +372,7 @@ export interface HelpBubbleMixinInterface {
   isHelpBubbleShowingFor(anchorId: string): boolean;
   showHelpBubble(anchorId: string, params: HelpBubbleParams): void;
   hideHelpBubble(anchorId: string): boolean;
+  notifyHelpBubbleAnchorActivated(anchorId: string): boolean;
+  notifyHelpBubbleAnchorCustomEvent(anchorId: string, customEvent: string):
+      boolean;
 }

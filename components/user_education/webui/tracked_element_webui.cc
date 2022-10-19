@@ -5,6 +5,7 @@
 #include "components/user_education/webui/tracked_element_webui.h"
 
 #include "base/check.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 
 namespace user_education {
@@ -31,6 +32,17 @@ void TrackedElementWebUI::SetVisible(bool visible) {
   } else {
     delegate->NotifyElementHidden(this);
   }
+}
+
+void TrackedElementWebUI::Activate() {
+  DCHECK(visible_);
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(this);
+}
+
+void TrackedElementWebUI::CustomEvent(ui::CustomElementEventType event_type) {
+  DCHECK(visible_);
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(this,
+                                                                event_type);
 }
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementWebUI)

@@ -20,6 +20,7 @@
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom-shared.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
@@ -239,6 +240,51 @@ void HelpBubbleHandlerBase::HelpBubbleAnchorVisibilityChanged(
   }
 }
 
+void HelpBubbleHandlerBase::HelpBubbleAnchorActivated(
+    const std::string& identifier_name) {
+  ui::ElementIdentifier id;
+  ElementData* const data = GetDataByName(identifier_name, &id);
+  if (!data)
+    return;
+
+  if (!data->element->visible()) {
+    ReportBadMessage(
+        base::StringPrintf("HelpBubbleAnchorActivated message received for "
+                           "anchor element \"%s\" but element was not visible.",
+                           identifier_name.c_str()));
+    return;
+  }
+
+  data->element->Activate();
+}
+
+void HelpBubbleHandlerBase::HelpBubbleAnchorCustomEvent(
+    const std::string& identifier_name,
+    const std::string& event_name) {
+  ui::ElementIdentifier id;
+  ElementData* const data = GetDataByName(identifier_name, &id);
+  if (!data)
+    return;
+
+  if (!data->element->visible()) {
+    ReportBadMessage(
+        base::StringPrintf("HelpBubbleAnchorCustomEvent message received for "
+                           "anchor element \"%s\" but element was not visible.",
+                           identifier_name.c_str()));
+    return;
+  }
+
+  // Because names of events are lazily loaded the first time someone tries to
+  // listen for them, the name of a valid event may not be registered. So it's
+  // okay if this query comes up empty.
+  const ui::CustomElementEventType event_type =
+      ui::CustomElementEventType::FromName(event_name.c_str());
+  if (!event_type)
+    return;
+
+  data->element->CustomEvent(event_type);
+}
+
 void HelpBubbleHandlerBase::HelpBubbleButtonPressed(
     const std::string& identifier_name,
     uint8_t button_index) {
@@ -247,8 +293,9 @@ void HelpBubbleHandlerBase::HelpBubbleButtonPressed(
     return;
   if (!data->params) {
     ReportBadMessage(
-        "HelpBubbleButtonPressed message received for anchor element \"%s\" "
-        "but no help bubble was open.");
+        base::StringPrintf("HelpBubbleButtonPressed message received for "
+                           "anchor element \"%s\" but no help bubble was open.",
+                           identifier_name.c_str()));
     return;
   }
   if (button_index >= data->params->buttons.size()) {

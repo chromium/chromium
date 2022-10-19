@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/user_education/webui/help_bubble_handler.h"
+
 #include <memory>
 #include <vector>
 
@@ -9,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "components/vector_icons/vector_icons.h"
@@ -172,6 +173,38 @@ TEST_F(HelpBubbleHandlerTest, ElementHiddenOnEvent) {
       kHelpBubbleHandlerTestElementIdentifier));
   EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
       kHelpBubbleHandlerTestElementIdentifier2));
+}
+
+TEST_F(HelpBubbleHandlerTest, ElementActivatedOnEvent) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, activated);
+  const std::string name = kHelpBubbleHandlerTestElementIdentifier.GetName();
+  handler()->HelpBubbleAnchorVisibilityChanged(name, true);
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kHelpBubbleHandlerTestElementIdentifier);
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementActivatedCallback(
+          element->identifier(), element->context(), activated.Get());
+  EXPECT_CALL_IN_SCOPE(activated, Run(element),
+                       handler()->HelpBubbleAnchorActivated(name));
+}
+
+TEST_F(HelpBubbleHandlerTest, ElementCustomEventOnEvent) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEvent);
+  const std::string event_name = kCustomEvent.GetName();
+  const std::string element_name =
+      kHelpBubbleHandlerTestElementIdentifier.GetName();
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, custom_event);
+  handler()->HelpBubbleAnchorVisibilityChanged(element_name, true);
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kHelpBubbleHandlerTestElementIdentifier);
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kCustomEvent, element->context(), custom_event.Get());
+  EXPECT_CALL_IN_SCOPE(
+      custom_event, Run(element),
+      handler()->HelpBubbleAnchorCustomEvent(element_name, event_name));
 }
 
 TEST_F(HelpBubbleHandlerTest, MultipleIdentifiers) {

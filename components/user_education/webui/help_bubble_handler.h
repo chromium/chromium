@@ -85,6 +85,9 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   // mojom::HelpBubbleHandler:
   void HelpBubbleAnchorVisibilityChanged(const std::string& identifier_name,
                                          bool visible) final;
+  void HelpBubbleAnchorActivated(const std::string& identifier_name) final;
+  void HelpBubbleAnchorCustomEvent(const std::string& identifier_name,
+                                   const std::string& event_name) final;
   void HelpBubbleButtonPressed(const std::string& identifier_name,
                                uint8_t button) final;
   void HelpBubbleClosed(
