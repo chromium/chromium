@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/sync/os_sync_handler.h"
+#include "chrome/browser/ui/webui/ash/sync/os_sync_handler.h"
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -22,6 +22,8 @@ using syncer::SyncService;
 using syncer::SyncUserSettings;
 using syncer::UserSelectableOsType;
 using syncer::UserSelectableOsTypeSet;
+
+namespace ash {
 
 namespace {
 const char kWallpaperEnabledKey[] = "wallpaperEnabled";
@@ -91,7 +93,7 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
 
   // Wallpaper sync status is stored directly to the profile's prefs.
   bool wallpaper_synced = result.FindBoolPath(kWallpaperEnabledKey).value();
-  profile_->GetPrefs()->SetBoolean(chromeos::settings::prefs::kSyncOsWallpaper,
+  profile_->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
                                    wallpaper_synced);
 
   // Start configuring the SyncService using the configuration passed to us from
@@ -150,10 +152,9 @@ void OSSyncHandler::PushSyncPrefs() {
 
   // Wallpaper sync status is fetched from prefs and is considered enabled if
   // all OS types are enabled; this mimics behavior of GetSelectedOsTypes().
-  args.Set(kWallpaperEnabledKey,
-           user_settings->IsSyncAllOsTypesEnabled() ||
-               profile_->GetPrefs()->GetBoolean(
-                   chromeos::settings::prefs::kSyncOsWallpaper));
+  args.Set(kWallpaperEnabledKey, user_settings->IsSyncAllOsTypesEnabled() ||
+                                     profile_->GetPrefs()->GetBoolean(
+                                         settings::prefs::kSyncOsWallpaper));
 
   FireWebUIListener("os-sync-prefs-changed", args);
 }
@@ -176,3 +177,5 @@ void OSSyncHandler::RemoveSyncServiceObserver() {
   if (service)
     service->RemoveObserver(this);
 }
+
+}  // namespace ash

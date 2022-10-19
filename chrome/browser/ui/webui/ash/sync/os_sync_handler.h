@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SYNC_OS_SYNC_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SYNC_OS_SYNC_HANDLER_H_
 
 #include "base/values.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -14,6 +14,8 @@ class Profile;
 namespace syncer {
 class SyncService;
 }  // namespace syncer
+
+namespace ash {
 
 // WebUI handler for JS/C++ communication for Chrome OS settings sync controls
 // page.
@@ -56,4 +58,6 @@ class OSSyncHandler : public content::WebUIMessageHandler,
   Profile* const profile_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SYNC_OS_SYNC_HANDLER_H_

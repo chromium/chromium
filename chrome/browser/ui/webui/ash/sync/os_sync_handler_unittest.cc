@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/sync/os_sync_handler.h"
+#include "chrome/browser/ui/webui/ash/sync/os_sync_handler.h"
 
 #include <memory>
 #include <string>
@@ -33,6 +33,8 @@ using syncer::UserSelectableTypeSet;
 namespace content {
 class BrowserContext;
 }
+
+namespace ash {
 
 namespace {
 
@@ -153,13 +155,12 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
   void NotifySyncStateChanged() { handler_->OnStateChanged(sync_service_); }
 
   bool GetWallperEnabledPref() {
-    return profile()->GetPrefs()->GetBoolean(
-        chromeos::settings::prefs::kSyncOsWallpaper);
+    return profile()->GetPrefs()->GetBoolean(settings::prefs::kSyncOsWallpaper);
   }
 
   void SetWallperEnabledPref(bool enabled) {
-    return profile()->GetPrefs()->SetBoolean(
-        chromeos::settings::prefs::kSyncOsWallpaper, enabled);
+    return profile()->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
+                                             enabled);
   }
 
   syncer::TestSyncService* sync_service_ = nullptr;
@@ -306,3 +307,5 @@ TEST_F(OsSyncHandlerTest, ShowSetupSyncForAllTypesIndividually) {
 }
 
 }  // namespace
+
+}  // namespace ash

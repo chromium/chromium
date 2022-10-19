@@ -26,7 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/chromeos/sync/os_sync_handler.h"
+#include "chrome/browser/ui/webui/ash/sync/os_sync_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/account_manager_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/fingerprint_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
