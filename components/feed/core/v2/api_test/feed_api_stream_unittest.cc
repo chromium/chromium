@@ -3754,23 +3754,33 @@ TEST_F(FeedApiTest, FeedCloseRefresh_RequestType) {
 }
 TEST_F(FeedApiTest, ChannelFeed_AttachMultiple) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+
+  StreamType stream_type_A(StreamKind::kChannel, "A");
+  StreamType stream_type_B(StreamKind::kChannel, "B");
 
   TestChannelSurface channel_surface_a(stream_.get(), "A");
   TestChannelSurface channel_surface_b(stream_.get(), "B");
 
   WaitForIdleTaskQueue();
 
+  ASSERT_EQ("loading -> [user@foo] 2 slices",
+            channel_surface_a.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices",
+            channel_surface_b.DescribeUpdates());
+
+  ASSERT_EQ(stream_->GetModel(stream_type_A)->DumpStateForTesting(),
+            ModelStateFor(stream_type_A, store_.get()));
+  ASSERT_EQ(stream_->GetModel(stream_type_B)->DumpStateForTesting(),
+            ModelStateFor(stream_type_B, store_.get()));
+
   channel_surface_b.Detach();
 
   WaitForModelToAutoUnload();
   WaitForIdleTaskQueue();
 
-  EXPECT_TRUE(stream_->GetModel(StreamType(StreamKind::kChannel, "A")));
-  EXPECT_FALSE(stream_->GetModel(StreamType(StreamKind::kChannel, "B")));
-  EXPECT_TRUE(
-      stream_->GetStreamPresentForTest(StreamType(StreamKind::kChannel, "A")));
-  EXPECT_FALSE(
-      stream_->GetStreamPresentForTest(StreamType(StreamKind::kChannel, "B")));
+  EXPECT_TRUE(stream_->GetModel(stream_type_A));
+  EXPECT_FALSE(stream_->GetModel(stream_type_B));
 }
 
 TEST_F(FeedApiTest, CheckDuplicatedContents) {
@@ -3808,6 +3818,82 @@ TEST_F(FeedApiTest, CheckDuplicatedContents) {
       "ContentSuggestions.Feed.ContentDuplication.First10", 50, 1);
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.ContentDuplication.All", 42, 1);
+}
+
+TEST_F(FeedApiTest, ChannelFeed_DelayedDeletion) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  StreamType stream_type(StreamKind::kChannel, "A");
+
+  TestChannelSurface channel_surface(stream_.get(), "A");
+
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ("loading -> [user@foo] 2 slices",
+            channel_surface.DescribeUpdates());
+
+  ASSERT_EQ(stream_->GetModel(stream_type)->DumpStateForTesting(),
+            ModelStateFor(stream_type, store_.get()));
+
+  channel_surface.Detach();
+
+  WaitForModelToAutoUnload();
+  EXPECT_TRUE(stream_->GetStreamPresentForTest(stream_type));
+  task_environment_.FastForwardBy(base::Seconds(70));
+  WaitForIdleTaskQueue();
+
+  EXPECT_FALSE(stream_->GetModel(stream_type));
+  EXPECT_FALSE(stream_->GetStreamPresentForTest(stream_type));
+
+  ASSERT_EQ("{Failed to load model from store}",
+            ModelStateFor(stream_type, store_.get()));
+
+  EXPECT_FALSE(stream_->GetStreamPresentForTest(stream_type));
+}
+
+TEST_F(FeedApiTest, ChannelFeed_DataRemovedOnStartup) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  StreamType stream_type(StreamKind::kChannel, "A");
+
+  TestChannelSurface channel_feed_surface(stream_.get(), "A");
+  WaitForIdleTaskQueue();
+
+  ASSERT_NE("{Failed to load model from store}",
+            ModelStateFor(stream_type, store_.get()));
+  // Creating a stream should init database.
+  CreateStream();
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ("{Failed to load model from store}",
+            ModelStateFor(stream_type, store_.get()));
+}
+
+TEST_F(FeedApiTest, ChannelFeed_ReattachedChannelStreamFetches) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  StreamType stream_type(StreamKind::kChannel, "A");
+
+  EXPECT_EQ(0, prefetch_image_call_count_);
+
+  TestChannelSurface channel_feed_surface(stream_.get(), "A");
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ(stream_->GetModel(stream_type)->DumpStateForTesting(),
+            ModelStateFor(stream_type, store_.get()));
+
+  EXPECT_EQ("loading -> [user@foo] 2 slices",
+            channel_feed_surface.DescribeUpdates());
+  channel_feed_surface.Detach();
+
+  WaitForModelToAutoUnload();
+  WaitForIdleTaskQueue();
+
+  EXPECT_FALSE(stream_->GetModel(stream_type));
+
+  task_environment_.FastForwardBy(base::Seconds(40));
+
+  channel_feed_surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
+  // verify no new fetches were required to populate reattach.
+  EXPECT_EQ("loading -> 2 slices", channel_feed_surface.DescribeUpdates());
 }
 
 // Keep instantiations at the bottom.

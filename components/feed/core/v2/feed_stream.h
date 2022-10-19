@@ -282,6 +282,10 @@ class FeedStream : public FeedApi,
   // memory.
   void FinishClearAll();
 
+  // Only to be called by ClearStreamTask. This clears other stream data stored
+  // in memory.
+  void FinishClearStream(const StreamType& stream_type);
+
   // Returns the model if it is loaded, or null otherwise.
   StreamModel* GetModel(const StreamType& stream_type);
 
@@ -388,6 +392,7 @@ class FeedStream : public FeedApi,
   void LoadTaskComplete(const LoadStreamTask::Result& result);
   void UploadActionsComplete(UploadActionsTask::Result result);
   void ClearAll();
+  void ClearStream(const StreamType& stream_type, int sequence_number);
 
   bool IsFeedEnabledByEnterprisePolicy();
   bool IsFeedEnabled();

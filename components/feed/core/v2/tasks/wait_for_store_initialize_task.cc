@@ -6,6 +6,8 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/test/proto_printer.h"
 
 namespace feed {
 
@@ -39,8 +41,28 @@ void WaitForStoreInitializeTask::ReadStartupDataDone(
                                    base::Unretained(this)));
     return;
   }
+  // Channel Feed Data is actively pruned and does not need to persist across
+  // startups, and is being removed proactively here in the case that there
+  // wasn't a chance to clean it up before the previous shutdown.
+  const auto orig_size = startup_data.stream_data.size();
+  startup_data.stream_data.erase(
+      std::remove_if(
+          startup_data.stream_data.begin(), startup_data.stream_data.end(),
+          [&](const feedstore::StreamData& e) {
+            return feedstore::StreamTypeFromId(e.stream_id()).IsChannelFeed();
+          }),
+      startup_data.stream_data.end());
+
   result_.startup_data = std::move(startup_data);
-  MaybeUpgradeStreamSchema();
+
+  if (result_.startup_data.stream_data.size() != orig_size) {
+    store_.ClearAllStreamData(
+        StreamKind::kChannel,
+        base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
+                       base::Unretained(this)));
+  } else {
+    MaybeUpgradeStreamSchema();
+  }
 }
 
 void WaitForStoreInitializeTask::ClearAllDone(bool clear_ok) {

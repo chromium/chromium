@@ -94,6 +94,8 @@ class FeedStore {
   void ClearStreamData(const StreamType& stream_type,
                        base::OnceCallback<void(bool)> callback);
 
+  void ClearAllStreamData(StreamKind stream_kind,
+                          base::OnceCallback<void(bool)> callback);
   void WriteOperations(const StreamType& stream_type,
                        int32_t sequence_number,
                        std::vector<feedstore::DataOperation> operations);

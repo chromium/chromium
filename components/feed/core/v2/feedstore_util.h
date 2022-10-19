@@ -27,7 +27,9 @@ constexpr base::StringPiece kChannelStreamKeyPrefix = "c";
 const int kMaxMostRecentContentHashes = 50;
 
 std::string StreamKey(const feed::StreamType& stream_type);
-feed::StreamType StreamTypeFromKey(base::StringPiece key);
+feed::StreamType StreamTypeFromId(base::StringPiece key);
+
+base::StringPiece StreamPrefix(feed::StreamKind stream_type);
 
 ///////////////////////////////////////////////////
 // Functions that operate on feedstore proto types.

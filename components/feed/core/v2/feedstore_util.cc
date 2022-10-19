@@ -4,7 +4,7 @@
 
 #include "components/feed/core/v2/feedstore_util.h"
 
-#include "base/base64.h"
+#include "base/base64url.h"
 #include "base/hash/hash.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/consistency_token.pb.h"
@@ -23,20 +23,31 @@ std::string StreamKey(const StreamType& stream_type) {
     return kFollowStreamKey;
   DCHECK(stream_type.IsChannelFeed());
   std::string encoding;
-  base::Base64Encode(stream_type.GetWebFeedId(), &encoding);
+  base::Base64UrlEncode(stream_type.GetWebFeedId(),
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &encoding);
   return std::string(kChannelStreamKeyPrefix) + encoding;
 }
 
-StreamType StreamTypeFromKey(base::StringPiece key) {
-  if (key == kForYouStreamKey)
+base::StringPiece StreamPrefix(feed::StreamKind stream_kind) {
+  if (stream_kind == feed::StreamKind::kForYou)
+    return kForYouStreamKey;
+  if (stream_kind == feed::StreamKind::kFollowing)
+    return kFollowStreamKey;
+  DCHECK(stream_kind == feed::StreamKind::kChannel);
+  return kChannelStreamKeyPrefix;
+}
+StreamType StreamTypeFromId(base::StringPiece id) {
+  if (id == kForYouStreamKey)
     return StreamType(feed::StreamKind::kForYou);
-  if (key == kFollowStreamKey)
+  if (id == kFollowStreamKey)
     return StreamType(feed::StreamKind::kFollowing);
-  if (base::StartsWith(key, kChannelStreamKeyPrefix,
+  if (base::StartsWith(id, kChannelStreamKeyPrefix,
                        base::CompareCase::SENSITIVE)) {
     std::string channel_key;
-    if (base::Base64Decode(key.substr(kChannelStreamKeyPrefix.size()),
-                           &channel_key)) {
+    if (base::Base64UrlDecode(id.substr(kChannelStreamKeyPrefix.size()),
+                              base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                              &channel_key)) {
       return StreamType(feed::StreamKind::kChannel, channel_key);
     }
   }

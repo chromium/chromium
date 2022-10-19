@@ -932,4 +932,22 @@ TEST_F(FeedStoreTest, ReadRecommendedWebFeedInfoNotPresent) {
   ASSERT_FALSE(*callback.GetResult());
 }
 
+TEST_F(FeedStoreTest, ClearAllStreamData) {
+  // Write stream records to store.
+  MakeFeedStore({});
+  store_->OverwriteStream(StreamType(StreamKind::kChannel, "A"),
+                          MakeTypicalInitialModelState(), base::DoNothing());
+  fake_db_->UpdateCallback(true);
+  ASSERT_NE("", StoreToString());
+
+  // ClearAll() and verify the DB is empty.
+  CallbackReceiver<bool> receiver;
+  store_->ClearAllStreamData(StreamKind::kChannel, receiver.Bind());
+  fake_db_->UpdateCallback(true);
+
+  ASSERT_TRUE(receiver.GetResult());
+  EXPECT_TRUE(*receiver.GetResult());
+  EXPECT_EQ("", StoreToString());
+}
+
 }  // namespace feed

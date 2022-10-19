@@ -43,6 +43,8 @@ constexpr char kMetadataKey[] = "m";
 constexpr char kSubscribedFeedsKey[] = "subs";
 constexpr char kRecommendedIndexKey[] = "recommendedIndex";
 constexpr char kPendingWebFeedOperationPrefix[] = "W/";
+constexpr char kStreamDataPrefix[] = "S/";
+constexpr char kChannelStreamDataPrefix[] = "S/c";
 
 leveldb::ReadOptions CreateReadOptions() {
   leveldb::ReadOptions opts;
@@ -56,7 +58,7 @@ leveldb::ReadOptions CreateReadOptions() {
       ",", base::NumberToString(content_id.id())
 
 std::string StreamDataKey(const base::StringPiece stream_id) {
-  return base::StrCat({"S/", stream_id});
+  return base::StrCat({kStreamDataPrefix, stream_id});
 }
 std::string StreamDataKey(const StreamType& stream_type) {
   return StreamDataKey(feedstore::StreamKey(stream_type));
@@ -121,6 +123,32 @@ class StreamKeyMatcher {
  private:
   std::string stream_id_;
   std::string stream_id_plus_slash_;
+};
+
+// For matching keys that belong to a specific stream type.
+class StreamPrefixMatcher {
+ public:
+  explicit StreamPrefixMatcher(StreamKind stream_kind) {
+    stream_prefix_ = std::string(feedstore::StreamPrefix(stream_kind));
+  }
+
+  // Returns true if `key` is a key specific to `stream_kind`.
+  bool IsKeyForStream(base::StringPiece key) const {
+    if (key.size() < 2 || key[1] != '/')
+      return false;
+    const base::StringPiece key_suffix = key.substr(2);
+    switch (key[0]) {
+      case 'S':
+      case 'T':
+      case 'c':
+      case 's':
+        return base::StartsWith(key_suffix, stream_prefix_);
+    }
+    return false;
+  }
+
+ private:
+  std::string stream_prefix_;
 };
 
 bool IsLocalActionKey(const std::string& key) {
@@ -494,6 +522,24 @@ void FeedStore::ClearStreamData(const StreamType& stream_type,
       std::move(callback));
 }
 
+void FeedStore::ClearAllStreamData(StreamKind stream_kind,
+                                   base::OnceCallback<void(bool)> callback) {
+  auto updates = std::make_unique<
+      std::vector<std::pair<std::string, feedstore::Record>>>();
+  // Set up a filter to delete all stream-related data.
+  // But we need to exclude keys being written right now.
+  StreamPrefixMatcher key_matcher(stream_kind);
+  auto filter = [](const StreamPrefixMatcher& key_matcher,
+                   const std::string& key) {
+    return key_matcher.IsKeyForStream(key);
+  };
+
+  database_->UpdateEntriesWithRemoveFilter(
+      std::move(updates), base::BindRepeating(filter, key_matcher),
+      base::BindOnce(&FeedStore::OnSaveStreamEntriesUpdated, GetWeakPtr(),
+                     std::move(callback)));
+}
+
 void FeedStore::OnSaveStreamEntriesUpdated(
     base::OnceCallback<void(bool)> complete_callback,
     bool ok) {
@@ -710,10 +756,24 @@ void FeedStore::OnReadWebFeedStartupDataFinished(
 
 void FeedStore::ReadStartupData(
     base::OnceCallback<void(StartupData)> callback) {
-  ReadMany({StreamDataKey(StreamType(StreamKind::kFollowing)),
-            StreamDataKey(StreamType(StreamKind::kForYou)), kMetadataKey},
-           base::BindOnce(&FeedStore::OnReadStartupDataFinished, GetWeakPtr(),
-                          std::move(callback)));
+  if (!IsInitialized()) {
+    OnReadStartupDataFinished(std::move(callback), false, nullptr);
+    return;
+  }
+  const base::flat_set<std::string>& key_set = {
+      StreamDataKey(StreamType(StreamKind::kFollowing)),
+      StreamDataKey(StreamType(StreamKind::kForYou)), kMetadataKey};
+
+  auto is_startup_data_filter = [](const base::flat_set<std::string>& key_set,
+                                   const std::string& key) {
+    return key_set.contains(key) ||
+           base::StartsWith(key, kChannelStreamDataPrefix);
+  };
+
+  database_->LoadEntriesWithFilter(
+      base::BindRepeating(is_startup_data_filter, std::move(key_set)),
+      base::BindOnce(&FeedStore::OnReadStartupDataFinished, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void FeedStore::OnReadStartupDataFinished(

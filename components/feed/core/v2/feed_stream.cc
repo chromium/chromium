@@ -51,6 +51,7 @@
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/surface_updater.h"
 #include "components/feed/core/v2/tasks/clear_all_task.h"
+#include "components/feed/core/v2/tasks/clear_stream_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/prefetch_images_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
@@ -249,7 +250,7 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   for (const feedstore::StreamData& stream_data :
        result.startup_data.stream_data) {
     StreamType stream_type =
-        feedstore::StreamTypeFromKey(stream_data.stream_id());
+        feedstore::StreamTypeFromId(stream_data.stream_id());
     if (stream_type.IsValid()) {
       GetStream(stream_type).content_ids =
           feedstore::GetContentIds(stream_data);
@@ -265,7 +266,7 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   for (const feedstore::StreamData& stream_data :
        result.startup_data.stream_data) {
     StreamType stream_type =
-        feedstore::StreamTypeFromKey(stream_data.stream_id());
+        feedstore::StreamTypeFromId(stream_data.stream_id());
     if (stream_type.IsValid())
       MaybeNotifyHasUnreadContent(stream_type);
   }
@@ -495,6 +496,14 @@ void FeedStream::AddUnloadModelIfNoSurfacesAttachedTask(
       FROM_HERE, std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
                      &FeedStream::UnloadModelIfNoSurfacesAttachedTask,
                      base::Unretained(this), stream_type)));
+  // If this is a channel stream, remove it and delete stream data on a delay.
+  if (stream_type.IsChannelFeed()) {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FeedStream::ClearStream, GetWeakPtr(), stream_type,
+                       sequence_number),
+        GetFeedConfig().channel_stream_clear_timeout);
+  }
 }
 
 void FeedStream::UnloadModelIfNoSurfacesAttachedTask(
@@ -1180,6 +1189,13 @@ void FeedStream::FinishClearAll() {
   web_feed_subscription_coordinator_->ClearAllFinished();
 }
 
+void FeedStream::FinishClearStream(const StreamType& stream_type) {
+  Stream* stream = FindStream(stream_type);
+  if (stream && stream_type.IsChannelFeed()) {
+    streams_.erase(stream_type);
+  }
+}
+
 ImageFetchId FeedStream::FetchImage(
     const GURL& url,
     base::OnceCallback<void(NetworkResponse)> callback) {
@@ -1253,10 +1269,16 @@ void FeedStream::UnloadModel(const StreamType& stream_type) {
     stream->surface_updater->SetModel(nullptr);
     stream->model.reset();
   }
-  // If this is a channel stream remove it from streams_ as well
-  if (stream_type.IsChannelFeed()) {
-    streams_.erase(stream_type);
+}
+
+void FeedStream::ClearStream(const StreamType& stream_type,
+                             int sequence_number) {
+  Stream* stream = FindStream(stream_type);
+  if (!stream || stream->unload_on_detach_sequence_number != sequence_number) {
+    return;
   }
+  task_queue_.AddTask(FROM_HERE,
+                      std::make_unique<ClearStreamTask>(this, stream_type));
 }
 
 void FeedStream::UnloadModels() {
