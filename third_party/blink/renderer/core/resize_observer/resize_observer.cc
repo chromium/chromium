@@ -73,7 +73,7 @@ void ResizeObserver::observeInternal(Element* target,
 
   if (observer_map.Contains(this)) {
     auto observation = observer_map.find(this);
-    if ((*observation).value->observedBox() == box_option)
+    if ((*observation).value->ObservedBox() == box_option)
       return;
 
     // Unobserve target if box_option has changed and target already existed. If

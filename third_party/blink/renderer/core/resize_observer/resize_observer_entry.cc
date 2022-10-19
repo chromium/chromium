@@ -21,7 +21,7 @@
 namespace blink {
 
 ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
-  if (LayoutObject* layout_object = target->GetLayoutObject()) {
+  if (const LayoutObject* layout_object = target->GetLayoutObject()) {
     const ComputedStyle& style = layout_object->StyleRef();
 
     if (auto* svg_graphics_element = DynamicTo<SVGGraphicsElement>(target)) {
@@ -36,13 +36,12 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
       bounding_box_size.Scale(style.EffectiveZoom());
       gfx::SizeF snapped_device_pixel_content_box =
           ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
-              bounding_box_size, layout_object, style);
+              bounding_box_size, *layout_object, style);
       ResizeObserverSize* device_pixel_content_box_size =
           ResizeObserverSize::Create(snapped_device_pixel_content_box.width(),
                                      snapped_device_pixel_content_box.height());
       device_pixel_content_box_size_.push_back(device_pixel_content_box_size);
-    } else if (layout_object->IsBox()) {
-      LayoutBox* layout_box = target->GetLayoutBox();
+    } else if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
       LayoutRect content_rect(
           LayoutPoint(layout_box->PaddingLeft(), layout_box->PaddingTop()),
           layout_box->ContentSize());
@@ -50,12 +49,12 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
           ResizeObserverUtilities::ZoomAdjustedLayoutRect(content_rect, style);
 
       gfx::SizeF content_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
-          ResizeObserverBoxOptions::kContentBox, layout_object, style);
+          ResizeObserverBoxOptions::kContentBox, *layout_box, style);
       gfx::SizeF border_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
-          ResizeObserverBoxOptions::kBorderBox, layout_object, style);
+          ResizeObserverBoxOptions::kBorderBox, *layout_box, style);
       gfx::SizeF device_pixel_content_box =
           ResizeObserverUtilities::ComputeZoomAdjustedBox(
-              ResizeObserverBoxOptions::kDevicePixelContentBox, layout_object,
+              ResizeObserverBoxOptions::kDevicePixelContentBox, *layout_box,
               style);
 
       ResizeObserverSize* device_pixel_content_box_size =

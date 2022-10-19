@@ -59,7 +59,7 @@ size_t ResizeObservation::TargetDepth() {
 
 LayoutSize ResizeObservation::ComputeTargetSize() const {
   if (target_) {
-    if (LayoutObject* layout_object = target_->GetLayoutObject()) {
+    if (const LayoutObject* layout_object = target_->GetLayoutObject()) {
       const ComputedStyle& style = layout_object->StyleRef();
       if (auto* svg_graphics_element =
               DynamicTo<SVGGraphicsElement>(target_.Get())) {
@@ -73,17 +73,16 @@ LayoutSize ResizeObservation::ComputeTargetSize() const {
             bounding_box_size.Scale(style.EffectiveZoom());
             LayoutSize snapped_device_pixel_content_box_size = LayoutSize(
                 ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
-                    bounding_box_size, layout_object, style));
+                    bounding_box_size, *layout_object, style));
 
             return snapped_device_pixel_content_box_size;
           }
         }
       }
-      if (!layout_object->IsBox())
-        return LayoutSize();
-
-      return LayoutSize(ResizeObserverUtilities::ComputeZoomAdjustedBox(
-          observed_box_, layout_object, style));
+      if (const auto* layout_box = DynamicTo<LayoutBox>(*layout_object)) {
+        return LayoutSize(ResizeObserverUtilities::ComputeZoomAdjustedBox(
+            observed_box_, *layout_box, style));
+      }
     }
   }
   return LayoutSize();
