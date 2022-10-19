@@ -1641,9 +1641,11 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
   DCHECK_GE(overallocation, 0)
       << "An Access Handle should not use more capacity than allocated.";
 
-  context_->quota_manager_proxy()->NotifyStorageModified(
-      storage::QuotaClientType::kFileSystem, url.storage_key(),
-      storage::FileSystemTypeToQuotaStorageType(url.type()), -overallocation,
+  DCHECK(url.bucket().has_value())
+      << "Capacity allocation is only relevant for sandboxed file systems, "
+         "which should have an associated bucket.";
+  context_->quota_manager_proxy()->NotifyBucketModified(
+      storage::QuotaClientType::kFileSystem, url.bucket()->id, -overallocation,
       base::Time::Now(),
       /*callback_task_runner=*/base::SequencedTaskRunnerHandle::Get(),
       std::move(callback));

@@ -113,9 +113,8 @@ void FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota(
     return;
   }
   granted_capacity_ += capacity_delta;
-  quota_manager_proxy()->NotifyStorageModified(
-      storage::QuotaClientType::kFileSystem, url_.storage_key(),
-      storage::FileSystemTypeToQuotaStorageType(url_.type()), capacity_delta,
+  quota_manager_proxy()->NotifyBucketModified(
+      storage::QuotaClientType::kFileSystem, url_.bucket()->id, capacity_delta,
       base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
       base::DoNothing());
   std::move(callback).Run(capacity_delta);
