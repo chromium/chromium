@@ -108,6 +108,12 @@ const char kContentLanguagesInLanguagePickerDescription[] =
     "Enables bringing user's content languages that are translatable to the "
     "top of the list with all languages shown in the translate menu";
 
+const char kCustomizeChromeColorExtractionName[] =
+    "Customize Chrome Color Extraction";
+const char kCustomizeChromeColorExtractionDescription[] =
+    "Enables setting theme color based on background image color when "
+    "background image is changed in New Tab Page Customize Chrome.";
+
 const char kCustomizeChromeSidePanelName[] = "Customize Chrome Side Panel";
 const char KCustomizeChromeSidePanelDescription[] =
     "Enables the ability to use Customize Chrome functionality from the "

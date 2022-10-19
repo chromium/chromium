@@ -24,6 +24,12 @@ BASE_FEATURE(kCacheOneGoogleBar,
              "CacheOneGoogleBar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chrome theme color will be set to match the NTP background
+// on NTP Customize Chrome background change.
+BASE_FEATURE(kCustomizeChromeColorExtraction,
+             "CustomizeChromeColorExtraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Customize Chrome will be an option in the Unified Side Panel
 // when on the New Tab Page.
 BASE_FEATURE(kCustomizeChromeSidePanel,

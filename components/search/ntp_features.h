@@ -22,6 +22,7 @@ namespace ntp_features {
 
 BASE_DECLARE_FEATURE(kConfirmSuggestionRemovals);
 BASE_DECLARE_FEATURE(kCacheOneGoogleBar);
+BASE_DECLARE_FEATURE(kCustomizeChromeColorExtraction);
 BASE_DECLARE_FEATURE(kCustomizeChromeSidePanel);
 BASE_DECLARE_FEATURE(kCwsScrimRemoval);
 BASE_DECLARE_FEATURE(kDismissPromos);

@@ -86,6 +86,9 @@ extern const char kClipboardUnsanitizedContentDescription[];
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 
+extern const char kCustomizeChromeColorExtractionName[];
+extern const char kCustomizeChromeColorExtractionDescription[];
+
 extern const char kCustomizeChromeSidePanelName[];
 extern const char KCustomizeChromeSidePanelDescription[];
 

@@ -62977,6 +62977,7 @@ from previous Chrome versions.
   <int value="1514951731" label="ReduceGpuPriorityOnBackground:disabled"/>
   <int value="1515196403" label="fast-user-switching"/>
   <int value="1515334367" label="ToolbarMicIphAndroid:disabled"/>
+  <int value="1515434814" label="CustomizeChromeColorExtraction:disabled"/>
   <int value="1515472077" label="VirtualKeyboardRoundCorners:disabled"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
   <int value="1517988103" label="FilesBannerFramework:disabled"/>
@@ -63393,6 +63394,7 @@ from previous Chrome versions.
   <int value="1789793147" label="HTTPSServerPreviewsUsingURLLoader:disabled"/>
   <int value="1789795039"
       label="AllowDefaultWebAppMigrationForChromeOsManagedUsers:disabled"/>
+  <int value="1790111294" label="CustomizeChromeColorExtraction:enabled"/>
   <int value="1792609232" label="NTPShortcuts:enabled"/>
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>
