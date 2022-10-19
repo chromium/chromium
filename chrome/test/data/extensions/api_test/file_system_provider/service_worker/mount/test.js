@@ -219,8 +219,7 @@ async function main() {
       await promisifyWithLastError(
           chrome.fileManagerPrivate.addProvidedFileSystem, chrome.runtime.id);
 
-      chrome.test.assertEq(
-          1, await remoteProvider.getEventCount('onMountRequested'));
+      await remoteProvider.waitForEvent('onMountRequested');
       chrome.test.succeed();
     }
   ]);
