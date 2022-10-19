@@ -32,7 +32,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // ancestor chain of 'starting_element'.
   static Element* FindContainer(Element* starting_element,
                                 const ContainerSelector&);
-  static bool EvalAndAdd(const Element& matching_element,
+  static bool EvalAndAdd(Element* style_container_candidate,
                          const StyleRecalcContext&,
                          const ContainerQuery&,
                          ContainerSelectorCache&,

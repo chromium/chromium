@@ -83,7 +83,7 @@ Element* ContainerQueryEvaluator::FindContainer(
 }
 
 bool ContainerQueryEvaluator::EvalAndAdd(
-    const Element& matching_element,
+    Element* style_container_candidate,
     const StyleRecalcContext& context,
     const ContainerQuery& query,
     ContainerSelectorCache& container_selector_cache,
@@ -95,8 +95,7 @@ bool ContainerQueryEvaluator::EvalAndAdd(
     return false;
 
   Element* starting_element =
-      selects_size ? context.container
-                   : matching_element.ParentOrShadowHostElement();
+      selects_size ? context.container : style_container_candidate;
   Element* container = CachedContainer(starting_element, query.Selector(),
                                        container_selector_cache);
   if (!container)
