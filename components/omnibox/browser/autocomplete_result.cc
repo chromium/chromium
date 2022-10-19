@@ -249,7 +249,8 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   // `SetAllowedToBeDefault()` here is only intended to make
   // `allowed_to_be_default` more conservative (true -> false, not vice versa).
   static bool prevent_default_previous_matches =
-      OmniboxFieldTrial::kPreventDefaultPreviousMatches.Get();
+      OmniboxFieldTrial::kAutocompleteStabilityPreventDefaultPreviousMatches
+          .Get();
   for (auto& m : matches_) {
     if (!m.from_previous)
       continue;
@@ -321,7 +322,8 @@ void AutocompleteResult::SortAndCull(
             // Don't preserve suggestions that are not default-able; e.g.,
             // typing 'xy' shouldn't preserve default 'xz.com/xy'.
             static bool prevent_default_previous_matches =
-                OmniboxFieldTrial::kPreventDefaultPreviousMatches.Get();
+                OmniboxFieldTrial::
+                    kAutocompleteStabilityPreventDefaultPreviousMatches.Get();
             return default_match_fields == GetMatchComparisonFields(match) &&
                    preserve_default_match->fill_into_edit ==
                        match.fill_into_edit &&
