@@ -53,11 +53,10 @@ class ReportQueueProvider::CreateReportQueueRequest {
                                 "Provider has been shut down"));
                 return;
               }
-              DCHECK_CALLED_ON_VALID_SEQUENCE(provider->sequence_checker_);
-              provider->create_request_queue_.push(std::move(request));
+              provider->state_->PushRequest(std::move(request));
               provider->CheckInitializationState();
             },
-            provider->GetWeakPtr(), std::move(request)));
+            provider->state_->GetWeakPtr(), std::move(request)));
   }
 
   CreateReportQueueRequest(const CreateReportQueueRequest& other) = delete;
@@ -85,6 +84,62 @@ class ReportQueueProvider::CreateReportQueueRequest {
   CreateReportQueueCallback create_cb_;
 };
 
+// Provider creation state implementation.
+
+ReportQueueProvider::ProviderState::ProviderState(ReportQueueProvider* provider)
+    : weak_ptr_factory_(provider) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+ReportQueueProvider::ProviderState::~ProviderState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  while (!create_request_queue_.empty()) {
+    auto& report_queue_request = create_request_queue_.front();
+    std::move(report_queue_request->release_create_cb())
+        .Run(Status(error::UNAVAILABLE, "Unable to build a ReportQueue"));
+    create_request_queue_.pop();
+  }
+}
+
+base::WeakPtr<ReportQueueProvider>
+ReportQueueProvider::ProviderState::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+size_t ReportQueueProvider::ProviderState::CountRequests() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return create_request_queue_.size();
+}
+
+void ReportQueueProvider::ProviderState::PushRequest(
+    std::unique_ptr<ReportQueueProvider::CreateReportQueueRequest> request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  create_request_queue_.push(std::move(request));
+}
+
+std::unique_ptr<ReportQueueProvider::CreateReportQueueRequest>
+ReportQueueProvider::ProviderState::PopRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (create_request_queue_.empty()) {
+    return nullptr;
+  }
+  auto request = std::move(create_request_queue_.front());
+  create_request_queue_.pop();
+  return request;
+}
+
+scoped_refptr<StorageModuleInterface>
+ReportQueueProvider::ProviderState::storage() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return storage_;
+}
+
+void ReportQueueProvider::ProviderState::set_storage(
+    scoped_refptr<StorageModuleInterface> storage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  storage_ = storage;
+}
+
 // ReportQueueProvider core implementation.
 
 // static
@@ -101,19 +156,14 @@ ReportQueueProvider::ReportQueueProvider(
     StorageModuleCreateCallback storage_create_cb)
     : storage_create_cb_(storage_create_cb),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
+      state_(new ProviderState(this),
+             base::OnTaskRunnerDeleter(sequenced_task_runner_)) {}
 
 ReportQueueProvider::~ReportQueueProvider() = default;
 
-base::WeakPtr<ReportQueueProvider> ReportQueueProvider::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 scoped_refptr<StorageModuleInterface> ReportQueueProvider::storage() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return storage_;
+  return state_->storage();
 }
 
 scoped_refptr<base::SequencedTaskRunner>
@@ -137,7 +187,6 @@ void ReportQueueProvider::CreateNewQueue(
             }
             // Configure report queue config with an appropriate DM token and
             // proceed to create the queue if configuration was successful.
-            DCHECK_CALLED_ON_VALID_SEQUENCE(provider->sequence_checker_);
             auto report_queue_configured_cb = base::BindOnce(
                 [](scoped_refptr<StorageModuleInterface> storage,
                    CreateReportQueueCallback cb,
@@ -157,12 +206,12 @@ void ReportQueueProvider::CreateNewQueue(
                                      std::move(config_result.ValueOrDie()),
                                      storage, std::move(cb)));
                 },
-                provider->storage_, std::move(cb));
+                provider->state_->storage(), std::move(cb));
 
             provider->ConfigureReportQueue(
                 std::move(config), std::move(report_queue_configured_cb));
           },
-          GetWeakPtr(), std::move(config), std::move(cb)));
+          state_->GetWeakPtr(), std::move(config), std::move(cb)));
 }
 
 StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
@@ -210,11 +259,11 @@ ReportQueueProvider::CreateSpeculativeQueue(
 }
 
 void ReportQueueProvider::CheckInitializationState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!storage_) {
+  if (!state_->storage()) {
     // Provider not ready.
-    DCHECK(!create_request_queue_.empty()) << "Request queue cannot be empty";
-    if (create_request_queue_.size() > 1) {
+    const auto count = state_->CountRequests();
+    DCHECK_GT(count, 0u) << "Request queue cannot be empty";
+    if (count > 1u) {
       // More than one request in the queue - it means Storage creation has
       // already been started.
       return;
@@ -232,44 +281,37 @@ void ReportQueueProvider::CheckInitializationState() {
             base::BindPostTask(
                 sequenced_task_runner_,
                 base::BindOnce(&ReportQueueProvider::OnStorageModuleConfigured,
-                               GetWeakPtr()))));
+                               state_->GetWeakPtr()))));
     return;
   }
 
   // Storage ready, create all report queues that were submitted.
   // Note that `CreateNewQueue` call offsets heavy work to arbitrary threads.
-  while (!create_request_queue_.empty()) {
-    auto& report_queue_request = create_request_queue_.front();
+  while (auto report_queue_request = state_->PopRequest()) {
     CreateNewQueue(report_queue_request->release_config(),
                    report_queue_request->release_create_cb());
-    create_request_queue_.pop();
   }
 }
 
 void ReportQueueProvider::OnStorageModuleConfigured(
     StatusOr<scoped_refptr<StorageModuleInterface>> storage_result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!storage_result.ok()) {
     // Storage creation failed, kill all requests.
-    while (!create_request_queue_.empty()) {
-      auto& report_queue_request = create_request_queue_.front();
+    while (auto report_queue_request = state_->PopRequest()) {
       std::move(report_queue_request->release_create_cb())
           .Run(Status(error::UNAVAILABLE, "Unable to build a ReportQueue"));
-      create_request_queue_.pop();
     }
     return;
   }
 
   // Storage ready, create all report queues that were submitted.
   // Note that `CreateNewQueue` call offsets heavy work to arbitrary threads.
-  DCHECK(!storage_) << "Storage module already recorded";
+  DCHECK(!state_->storage()) << "Storage module already recorded";
   OnInitCompleted();
-  storage_ = storage_result.ValueOrDie();
-  while (!create_request_queue_.empty()) {
-    auto& report_queue_request = create_request_queue_.front();
+  state_->set_storage(storage_result.ValueOrDie());
+  while (auto report_queue_request = state_->PopRequest()) {
     CreateNewQueue(report_queue_request->release_config(),
                    report_queue_request->release_create_cb());
-    create_request_queue_.pop();
   }
 }
 }  // namespace reporting
