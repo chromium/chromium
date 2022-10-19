@@ -33,7 +33,7 @@
 #include "chrome/browser/ash/smb_client/smb_share_info.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_credentials_dialog.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"

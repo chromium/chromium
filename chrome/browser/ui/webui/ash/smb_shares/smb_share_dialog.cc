@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_share_dialog.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_handler.h"
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_shares_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,8 +19,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-namespace chromeos {
-namespace smb_dialog {
+namespace ash::smb_dialog {
 namespace {
 
 constexpr int kSmbShareDialogHeight = 515;
@@ -72,13 +71,13 @@ SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
 
   Profile* const profile = Profile::FromWebUI(web_ui);
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ProfileHelper::Get()->GetUserByProfile(profile);
 
   source->AddBoolean("isActiveDirectoryUser",
                      user && user->IsActiveDirectoryUser());
 
-  const ash::smb_client::SmbService* const smb_service =
-      ash::smb_client::SmbServiceFactory::Get(profile);
+  const smb_client::SmbService* const smb_service =
+      smb_client::SmbServiceFactory::Get(profile);
   bool is_kerberos_enabled =
       smb_service && smb_service->IsKerberosEnabledViaPolicy();
   source->AddBoolean("isKerberosEnabled", is_kerberos_enabled);
@@ -103,5 +102,4 @@ bool SmbShareDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-}  // namespace smb_dialog
-}  // namespace chromeos
+}  // namespace ash::smb_dialog

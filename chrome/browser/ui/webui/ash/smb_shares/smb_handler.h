@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SMB_SHARES_SMB_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SMB_SHARES_SMB_HANDLER_H_
 
 #include <string>
 
@@ -14,8 +14,7 @@
 
 class Profile;
 
-namespace chromeos {
-namespace smb_dialog {
+namespace ash::smb_dialog {
 
 class SmbHandler : public content::WebUIMessageHandler {
  public:
@@ -62,7 +61,6 @@ class SmbHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<SmbHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace smb_dialog
-}  // namespace chromeos
+}  // namespace ash::smb_dialog
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SMB_SHARES_SMB_HANDLER_H_

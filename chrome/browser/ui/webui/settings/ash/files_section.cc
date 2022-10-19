@@ -7,8 +7,8 @@
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_handler.h"
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_shares_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -96,7 +96,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  chromeos::smb_dialog::AddLocalizedStrings(html_source);
+  smb_dialog::AddLocalizedStrings(html_source);
 
   html_source->AddString("smbSharesLearnMoreURL",
                          GetHelpUrlWithBoard(chrome::kSmbSharesLearnMoreURL));
@@ -108,8 +108,8 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 void FilesSection::AddHandlers(content::WebUI* web_ui) {
-  web_ui->AddMessageHandler(std::make_unique<chromeos::smb_dialog::SmbHandler>(
-      profile(), base::DoNothing()));
+  web_ui->AddMessageHandler(
+      std::make_unique<smb_dialog::SmbHandler>(profile(), base::DoNothing()));
 }
 
 int FilesSection::GetSectionNameMessageId() const {

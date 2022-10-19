@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_handler.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 
 #include <string>
 #include <utility>
@@ -13,8 +13,7 @@
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
-namespace smb_dialog {
+namespace ash::smb_dialog {
 
 namespace {
 
@@ -138,5 +137,4 @@ void SmbHandler::HandleUpdateCredentials(const base::Value::List& args) {
   std::move(update_cred_callback_).Run(username, password);
 }
 
-}  // namespace smb_dialog
-}  // namespace chromeos
+}  // namespace ash::smb_dialog

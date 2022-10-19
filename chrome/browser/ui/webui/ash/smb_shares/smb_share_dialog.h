@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_SHARE_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_SHARE_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SMB_SHARES_SMB_SHARE_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SMB_SHARES_SMB_SHARE_DIALOG_H_
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace chromeos {
-namespace smb_dialog {
+namespace ash::smb_dialog {
 
 class SmbShareDialog : public SystemWebDialogDelegate {
  public:
@@ -38,14 +37,6 @@ class SmbShareDialogUI : public ui::WebDialogUI {
   ~SmbShareDialogUI() override;
 };
 
-}  // namespace smb_dialog
-}  // namespace chromeos
+}  // namespace ash::smb_dialog
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace smb_dialog {
-using ::chromeos::smb_dialog::SmbShareDialog;
-}  // namespace smb_dialog
-}  // namespace ash
-
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_SHARE_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SMB_SHARES_SMB_SHARE_DIALOG_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_credentials_dialog.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -11,8 +11,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace chromeos {
-namespace smb_dialog {
+namespace ash::smb_dialog {
 
 const char kMountId[] = "mount-id";
 const char kSharePath[] = "//test/share";
@@ -101,5 +100,4 @@ dialog.$$('.action-button').click();
   run_loop.Run();
 }
 
-}  // namespace smb_dialog
-}  // namespace chromeos
+}  // namespace ash::smb_dialog

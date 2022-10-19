@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_credentials_dialog.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "chrome/browser/ui/webui/chromeos/smb_shares/smb_handler.h"
+#include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -16,8 +16,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-namespace chromeos {
-namespace smb_dialog {
+namespace ash::smb_dialog {
 namespace {
 
 constexpr int kSmbCredentialsDialogHeight = 230;
@@ -141,5 +140,4 @@ bool SmbCredentialsDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-}  // namespace smb_dialog
-}  // namespace chromeos
+}  // namespace ash::smb_dialog
