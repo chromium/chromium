@@ -540,12 +540,8 @@ TEST_F(StatisticsProviderImplTest, RecordsErrorIfVpdFileIsMissing) {
       kMetricVpdCacheReadResult,
       StatisticsProviderImpl::VpdCacheReadResult::KMissing,
       /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kMetricVpdCacheReadResult,
-      StatisticsProviderImpl::VpdCacheReadResult::kParseFailed,
-      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
-                                    /*count=*/2);
+                                    /*count=*/1);
 }
 
 // Test that the provider records correct metrics when VPD file has incorrect

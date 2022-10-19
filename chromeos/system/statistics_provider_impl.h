@@ -108,6 +108,15 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
   // Loads the machine statistics off of disk. Runs on the file thread.
   void LoadMachineStatistics(bool load_oem_manifest);
 
+  // Loads calls the crossystem tool and loads statistics from its output.
+  void LoadCrossystemTool();
+
+  // Loads the machine info statistics off of disk. Runs on the file thread.
+  void LoadMachineInfoFile();
+
+  // Loads the VPD statistics off of disk. Runs on the file thread.
+  void LoadVpdFiles();
+
   // Loads the OEM statistics off of disk. Runs on the file thread.
   void LoadOemManifestFromFile(const base::FilePath& file);
 

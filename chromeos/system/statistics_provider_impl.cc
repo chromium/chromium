@@ -364,19 +364,13 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
   if (cancellation_flag_.IsSet())
     return;
 
-  std::string crossystem_wpsw;
-  NameValuePairsParser parser(&machine_info_);
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    // Parse all of the key/value pairs from the crossystem tool.
-    if (!parser.ParseNameValuePairsFromTool(
-            sources_.crossystem_tool, NameValuePairsFormat::kCrossystem)) {
-      LOG(ERROR) << "Errors parsing output from: "
-                 << sources_.crossystem_tool.GetProgram();
-    }
-    // Drop useless "(error)" values so they don't displace valid values
-    // supplied later by other tools: https://crbug.com/844258
-    parser.DeletePairsWithValue(kCrosSystemValueError);
+  LoadCrossystemTool();
 
+  std::string crossystem_wpsw;
+
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    // If available, the key should be taken from machine info or VPD instead of
+    // the tool. If not available, the tool's value will be restored.
     auto it = machine_info_.find(kFirmwareWriteProtectCurrentKey);
     if (it != machine_info_.end()) {
       crossystem_wpsw = it->second;
@@ -384,55 +378,8 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     }
   }
 
-  const base::FilePath& machine_info_path = sources_.machine_info_filepath;
-  if (!base::SysInfo::IsRunningOnChromeOS() &&
-      !base::PathExists(machine_info_path)) {
-    // Use time value to create an unique stub serial because clashes of the
-    // same serial for the same domain invalidate earlier enrollments. Persist
-    // to disk to keep it constant across restarts (required for re-enrollment
-    // testing).
-    std::string stub_contents =
-        "\"serial_number\"=\"stub_" +
-        base::NumberToString(base::Time::Now().ToJavaTime()) + "\"\n";
-    int bytes_written = base::WriteFile(
-        machine_info_path, stub_contents.c_str(), stub_contents.size());
-    if (bytes_written < static_cast<int>(stub_contents.size())) {
-      PLOG(ERROR) << "Error writing machine info stub "
-                  << machine_info_path.value();
-    }
-  }
-
-  const base::FilePath& vpd_path = sources_.vpd_filepath;
-  if (!base::PathExists(vpd_path)) {
-    if (base::SysInfo::IsRunningOnChromeOS()) {
-      ReportVpdCacheReadResult(VpdCacheReadResult::KMissing);
-      LOG(ERROR) << "Missing FILE_VPD: " << vpd_path;
-    } else {
-      std::string stub_contents = "\"ActivateDate\"=\"2000-01\"\n";
-      int bytes_written = base::WriteFile(vpd_path, stub_contents.c_str(),
-                                          stub_contents.size());
-      if (bytes_written < static_cast<int>(stub_contents.size())) {
-        PLOG(ERROR) << "Error writing VPD stub " << vpd_path.value();
-      }
-    }
-  }
-
-  // The machine-info file is generated only for OOBE and enterprise enrollment
-  // and may not be present. See login-manager/init/machine-info.conf.
-  parser.ParseNameValuePairsFromFile(machine_info_path,
-                                     NameValuePairsFormat::kMachineInfo);
-  parser.ParseNameValuePairsFromFile(sources_.vpd_echo_filepath,
-                                     NameValuePairsFormat::kVpdDump);
-  bool vpd_parse_result = parser.ParseNameValuePairsFromFile(
-      vpd_path, NameValuePairsFormat::kVpdDump);
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    if (vpd_parse_result) {
-      ReportVpdCacheReadResult(VpdCacheReadResult::kSuccess);
-    } else {
-      ReportVpdCacheReadResult(VpdCacheReadResult::kParseFailed);
-      LOG(ERROR) << "Failed to parse FILE_VPD: " << vpd_path;
-    }
-  }
+  LoadMachineInfoFile();
+  LoadVpdFiles();
 
   // Ensure that the hardware class key is present with the expected
   // key name, and if it couldn't be retrieved, that the value is "unknown".
@@ -488,6 +435,85 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
   LoadRegionsFile(sources_.cros_regions_filepath);
 
   SignalStatisticsLoaded();
+}
+
+void StatisticsProviderImpl::LoadCrossystemTool() {
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    return;
+  }
+
+  NameValuePairsParser parser(&machine_info_);
+  // Parse all of the key/value pairs from the crossystem tool.
+  if (!parser.ParseNameValuePairsFromTool(sources_.crossystem_tool,
+                                          NameValuePairsFormat::kCrossystem)) {
+    LOG(ERROR) << "Errors parsing output from: "
+               << sources_.crossystem_tool.GetProgram();
+  }
+
+  // Drop useless "(error)" values so they don't displace valid values
+  // supplied later by other tools: https://crbug.com/844258
+  parser.DeletePairsWithValue(kCrosSystemValueError);
+}
+
+void StatisticsProviderImpl::LoadMachineInfoFile() {
+  if (!base::SysInfo::IsRunningOnChromeOS() &&
+      !base::PathExists(sources_.machine_info_filepath)) {
+    // Use time value to create an unique stub serial because clashes of the
+    // same serial for the same domain invalidate earlier enrollments. Persist
+    // to disk to keep it constant across restarts (required for re-enrollment
+    // testing).
+    std::string stub_contents =
+        "\"serial_number\"=\"stub_" +
+        base::NumberToString(base::Time::Now().ToJavaTime()) + "\"\n";
+    int bytes_written =
+        base::WriteFile(sources_.machine_info_filepath, stub_contents.c_str(),
+                        stub_contents.size());
+    if (bytes_written < static_cast<int>(stub_contents.size())) {
+      PLOG(ERROR) << "Error writing machine info stub "
+                  << sources_.machine_info_filepath;
+    }
+  }
+
+  // The machine-info file is generated only for OOBE and enterprise enrollment
+  // and may not be present. See login-manager/init/machine-info.conf.
+  NameValuePairsParser(&machine_info_)
+      .ParseNameValuePairsFromFile(sources_.machine_info_filepath,
+                                   NameValuePairsFormat::kMachineInfo);
+}
+
+void StatisticsProviderImpl::LoadVpdFiles() {
+  NameValuePairsParser parser(&machine_info_);
+
+  parser.ParseNameValuePairsFromFile(sources_.vpd_echo_filepath,
+                                     NameValuePairsFormat::kVpdDump);
+
+  if (!base::PathExists(sources_.vpd_filepath)) {
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      // The actual VPD file is missing and there's nothing to load. Record the
+      // metric and continue with loading the next source.
+      ReportVpdCacheReadResult(VpdCacheReadResult::KMissing);
+      LOG(ERROR) << "Missing FILE_VPD: " << sources_.vpd_filepath;
+      return;
+    } else {
+      std::string stub_contents = "\"ActivateDate\"=\"2000-01\"\n";
+      int bytes_written = base::WriteFile(
+          sources_.vpd_filepath, stub_contents.c_str(), stub_contents.size());
+      if (bytes_written < static_cast<int>(stub_contents.size())) {
+        PLOG(ERROR) << "Error writing VPD stub " << sources_.vpd_filepath;
+      }
+    }
+  }
+
+  const bool vpd_parse_result = parser.ParseNameValuePairsFromFile(
+      sources_.vpd_filepath, NameValuePairsFormat::kVpdDump);
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    if (vpd_parse_result) {
+      ReportVpdCacheReadResult(VpdCacheReadResult::kSuccess);
+    } else {
+      ReportVpdCacheReadResult(VpdCacheReadResult::kParseFailed);
+      LOG(ERROR) << "Failed to parse FILE_VPD: " << sources_.vpd_filepath;
+    }
+  }
 }
 
 void StatisticsProviderImpl::LoadOemManifestFromFile(
