@@ -2121,9 +2121,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   bool IsDisplayTableType() const { return IsDisplayTableType(Display()); }
-  bool IsDisplayTableInternalType() const {
-    return IsDisplayTableInternalType(Display());
-  }
 
   bool IsDisplayMathType() const { return IsDisplayMathBox(Display()); }
 
@@ -2911,14 +2908,6 @@ class ComputedStyle : public ComputedStyleBase,
            display == EDisplay::kTableColumn ||
            display == EDisplay::kTableCell ||
            display == EDisplay::kTableCaption;
-  }
-  static bool IsDisplayTableInternalType(EDisplay display) {
-    return display == EDisplay::kTableRowGroup ||
-           display == EDisplay::kTableHeaderGroup ||
-           display == EDisplay::kTableFooterGroup ||
-           display == EDisplay::kTableRow ||
-           display == EDisplay::kTableColumnGroup ||
-           display == EDisplay::kTableColumn;
   }
 
   // Color accessors are all private to make sure callers use
