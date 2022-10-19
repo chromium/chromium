@@ -541,6 +541,10 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
+  if (!IsOmniboxActionsEnabled() &&
+      !base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+    return FLT_MIN;
+  }
   return self.currentResult[section].title ? 29.0f : FLT_MIN;
 }
 
