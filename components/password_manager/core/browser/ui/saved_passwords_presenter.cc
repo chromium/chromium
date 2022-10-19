@@ -448,25 +448,7 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
 
 std::vector<AffiliatedGroup> SavedPasswordsPresenter::GetAffiliatedGroups()
     const {
-  std::vector<AffiliatedGroup> affiliated_groups;
-  // Key: Group id | Value: map of vectors of password forms.
-  for (auto const& it : map_group_id_to_forms_) {
-    AffiliatedGroup affiliated_group = AffiliatedGroup();
-
-    // Add branding information to the affiliated group.
-    auto it2 = map_group_id_to_branding_info_.find(it.first);
-    if (it2 != map_group_id_to_branding_info_.end()) {
-      affiliated_group.branding_info = it2->second;
-    }
-
-    // Key: Username-password key | Value: vector of password forms.
-    for (auto const& it3 : it.second) {
-      CredentialUIEntry entry = CredentialUIEntry(it3.second);
-      affiliated_group.credential_groups.push_back(std::move(entry));
-    }
-    affiliated_groups.push_back(std::move(affiliated_group));
-  }
-  return affiliated_groups;
+  return GetAffiliatedGroupsWithGroupingInfo(password_grouping_info_);
 }
 
 std::vector<PasswordForm>
@@ -568,46 +550,9 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
 
 void SavedPasswordsPresenter::OnGetAllGroupsResultsFrom(
     const std::vector<GroupedFacets>& groups) {
-  // Clear caches.
-  map_group_id_to_branding_info_.clear();
-  map_signon_realm_to_group_id_.clear();
-  map_group_id_to_forms_.clear();
+  // Call grouping algorithm.
+  password_grouping_info_ = GroupPasswords(groups, sort_key_to_password_forms_);
 
-  // Construct map to keep track of facet URI to group id mapping.
-  int group_id_int = 1;
-  std::map<std::string, GroupId> map_facet_to_group_id;
-  for (const GroupedFacets& grouped_facets : groups) {
-    GroupId unique_group_id(group_id_int);
-    for (const Facet& facet : grouped_facets.facets) {
-      map_facet_to_group_id[facet.uri.canonical_spec()] = unique_group_id;
-    }
-
-    // Store branding information for the affiliated group.
-    map_group_id_to_branding_info_[unique_group_id] =
-        grouped_facets.branding_info;
-
-    // Increment so it is a new id for the next group.
-    group_id_int++;
-  }
-
-  // Construct a map to keep track of group id to a map of credential groups
-  // to password form.
-  for (auto const& element : sort_key_to_password_forms_) {
-    PasswordForm form = element.second;
-    FacetURI uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
-    GroupId group_id = map_facet_to_group_id[uri.canonical_spec()];
-
-    // TODO(crbug.com/1354196): If group_id == 0, the password form is not
-    // part of an affiliated group that has branding information. Add fallback
-    // code here.
-
-    UsernamePasswordKey key(CreateUsernamePasswordSortKey(form));
-    map_group_id_to_forms_[group_id][key].push_back(std::move(form));
-
-    // Store group id for sign-on realm.
-    SignonRealm signon_realm(uri.canonical_spec());
-    map_signon_realm_to_group_id_[signon_realm] = group_id;
-  }
   NotifySavedPasswordsChanged();
 }
 

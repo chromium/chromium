@@ -57,7 +57,7 @@ struct CredentialFacet {
 // Simple struct that represents an entry inside Settings UI. Allows implicit
 // construction from PasswordForm for convenience. A single entry might
 // correspond to multiple PasswordForms.
-// TODO(crbug.com/1354196): Use class here instead of struct.
+// TODO(crbug.com/1374029): Use class here instead of struct.
 struct CredentialUIEntry {
   struct Less {
     bool operator()(const CredentialUIEntry& lhs,
@@ -134,6 +134,8 @@ struct CredentialUIEntry {
 };
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
+bool operator!=(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
+bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 
 }  // namespace password_manager
 

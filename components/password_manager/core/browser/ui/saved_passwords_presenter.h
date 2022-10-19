@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/ui/password_grouping_util.h"
 
 namespace password_manager {
 
@@ -98,10 +99,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   using AddCredentialsCallback =
       base::OnceCallback<void(const std::vector<AddResult>&)>;
-  using SignonRealm = base::StrongAlias<class SignonRealmTag, std::string>;
-  using GroupId = base::StrongAlias<class GroupIdTag, int>;
-  using UsernamePasswordKey =
-      base::StrongAlias<class UsernamePasswordKeyTag, std::string>;
+  using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
 
   SavedPasswordsPresenter(
       AffiliationService* affiliation_service,
@@ -181,7 +179,6 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                           password_manager::PasswordForm::Type type,
                           base::OnceClosure completion);
 
-  using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
   // PasswordStoreInterface::Observer
   void OnLoginsChanged(PasswordStoreInterface* store,
                        const PasswordStoreChangeList& changes) override;
@@ -237,18 +234,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Structure used to deduplicate list of passwords.
   DuplicatePasswordsMap sort_key_to_password_forms_;
 
-  // Structure used to keep track of the mapping between the credential's
-  // sign-on realm and the group id.
-  std::map<SignonRealm, GroupId> map_signon_realm_to_group_id_;
-
-  // Structure used to keep track of the mapping between the group id and the
-  // grouped facet's branding information.
-  std::map<GroupId, FacetBrandingInfo> map_group_id_to_branding_info_;
-
-  // Structure used to keep track of the mapping between a group id and the
-  // grouped by username-password key password forms.
-  std::map<GroupId, std::map<UsernamePasswordKey, std::vector<PasswordForm>>>
-      map_group_id_to_forms_;
+  // Structure used to keep track of password grouping data structures.
+  PasswordGroupingInfo password_grouping_info_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
