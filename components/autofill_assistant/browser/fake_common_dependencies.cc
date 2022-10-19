@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/fake_common_dependencies.h"
+#include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 
 namespace autofill_assistant {
 
