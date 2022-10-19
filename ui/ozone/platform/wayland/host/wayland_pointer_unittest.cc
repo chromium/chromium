@@ -334,6 +334,37 @@ TEST_P(WaylandPointerTest, AxisSourceTypes) {
   ASSERT_TRUE(event4->IsMouseWheelEvent());
 }
 
+// This test ensures Ozone/Wayland does not crash when spurious
+// `stylus tool` and `axis source` events are sent by the Compositor, prior
+// to a pointer clicking event.
+// In practice, this might happen with specific compositors, eg Exo, when a
+// device wakes up from sleeping.
+TEST_P(WaylandPointerTest, SpuriusAxisSourceAndStylusToolEvents) {
+  wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(), 0, 0);
+  wl_pointer_send_frame(pointer_->resource());
+  Sync();  // We're interested only in checking axis source types events in this
+           // test case, so skip Enter event here.
+
+  // Stylus data.
+  zcr_pointer_stylus_v2_send_tool(pointer_->pointer_stylus()->resource(),
+                                  ZCR_POINTER_STYLUS_V2_TOOL_TYPE_NONE);
+  wl_pointer_send_frame(pointer_->resource());
+
+  // Wheel data.
+  wl_pointer_send_axis_source(pointer_->resource(),
+                              WL_POINTER_AXIS_SOURCE_WHEEL);
+
+  // Button press.
+  std::unique_ptr<Event> event;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
+
+  uint32_t time = 0;
+  wl_pointer_send_button(pointer_->resource(), 2, ++time, BTN_LEFT,
+                         WL_POINTER_BUTTON_STATE_PRESSED);
+  wl_pointer_send_frame(pointer_->resource());
+  Sync();
+}
+
 TEST_P(WaylandPointerTest, Axis) {
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(),
                         wl_fixed_from_int(0), wl_fixed_from_int(0));

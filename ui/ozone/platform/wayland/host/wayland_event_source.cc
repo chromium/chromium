@@ -676,6 +676,17 @@ bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
 
 void WaylandEventSource::OnPointerStylusToolChanged(
     EventPointerType pointer_type) {
+  // When the reported pointer stylus type is `mouse`, handle it as a regular
+  // pointer event.
+  //
+  // TODO(https://crbug.com/1298504): Better handle the `touch` type, which
+  // seems mis-specified in
+  // //t_p/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml.
+  if (pointer_type == ui::EventPointerType::kMouse) {
+    last_pointer_stylus_tool_.reset();
+    return;
+  }
+
   last_pointer_stylus_tool_ = {
       .type = pointer_type,
       .tilt = gfx::Vector2dF(),
