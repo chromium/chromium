@@ -6,6 +6,9 @@
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
@@ -38,6 +41,8 @@ NSString* const kTableViewNavigationDismissButtonId =
 // The coordinator used for What's New feature.
 @property(nonatomic, strong)
     WhatsNewDetailCoordinator* whatsNewDetailCoordinator;
+// The starting time of What's New.
+@property(nonatomic, assign) base::TimeTicks whatsNewStartTime;
 
 @end
 
@@ -65,6 +70,7 @@ NSString* const kTableViewNavigationDismissButtonId =
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
+  self.whatsNewStartTime = base::TimeTicks::Now();
 
   [super start];
 }
@@ -80,6 +86,10 @@ NSString* const kTableViewNavigationDismissButtonId =
                          completion:nil];
   self.tableViewController = nil;
   self.navigationController = nil;
+
+  base::RecordAction(base::UserMetricsAction("WhatsNew.Dismissed"));
+  UmaHistogramMediumTimes("IOS.WhatsNew.TimeSpent",
+                          base::TimeTicks::Now() - self.whatsNewStartTime);
 
   [super stop];
 }

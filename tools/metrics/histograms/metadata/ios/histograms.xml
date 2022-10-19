@@ -1942,6 +1942,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.WhatsNew.TableViewDidScroll" enum="Boolean"
+    expires_after="2023-04-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@google.com</owner>
+  <summary>
+    Whether or not the table view of the What's New feature was scrolled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WhatsNew.TimeSpent" units="ms" expires_after="2023-04-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@google.com</owner>
+  <summary>Logs the time a user spent on What's New.</summary>
+</histogram>
+
 <histogram name="IOS.WidgetKit.Action" enum="IOSWidgetKitAction"
     expires_after="2023-02-26">
   <owner>rkgibson@google.com</owner>

@@ -19,7 +19,7 @@ class GURL;
 
 // Invoked when a user interacts with the learn more button for a specific
 // `WhatsNewEntryId`, which will open a new tab with the learn more url loaded.
-- (void)didTapLearnMoreButton:(const GURL&)learnMoreURL;
+- (void)didTapLearnMoreButton:(const GURL&)learnMoreURL type:(WhatsNewType)type;
 
 @end
 
