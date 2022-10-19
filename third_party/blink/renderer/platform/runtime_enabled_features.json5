@@ -733,7 +733,8 @@
     },
     {
       name: "CSSLhUnit",
-      status: "experimental",
+      status: "stable",
+      base_feature: "CSSLhUnit",
     },
     {
       name: "CSSLogical",
