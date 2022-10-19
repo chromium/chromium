@@ -23,6 +23,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -380,8 +381,8 @@ void ShowDiceSigninError(Profile* profile,
   Browser* browser = web_contents
                          ? chrome::FindBrowserWithWebContents(web_contents)
                          : chrome::FindBrowserWithProfile(profile);
-  LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(browser,
-                                                                    error);
+  LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(
+      browser, error, /*from_profile_picker=*/false);
 }
 
 void ProcessDiceHeader(

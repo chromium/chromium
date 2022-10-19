@@ -166,7 +166,7 @@ void TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     const SigninUIError& error,
     Browser* browser) {
   LoginUIServiceFactory::GetForProfile(browser->profile())
-      ->DisplayLoginResult(browser, error);
+      ->DisplayLoginResult(browser, error, /*from_profile_picker=*/false);
 }
 
 TurnSyncOnHelper::TurnSyncOnHelper(

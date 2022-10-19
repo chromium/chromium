@@ -676,6 +676,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        MAYBE_CreateForceSignedInProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, g_browser_process->profile_manager()->GetNumberOfProfiles());
 
   // Note: Observed some rare flakiness on some bots. Inclusing some logs to
   // understand it.
@@ -709,11 +710,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       profile_picker_view->dialog_host_.GetDialogDelegateViewForTesting());
 
   // A new profile should have been created for the forced sign-in flow.
-  base::FilePath force_signin_profile_path =
-      profile_picker_view->dialog_host_.GetForceSigninProfilePath();
-  EXPECT_NE(browser()->profile()->GetPath(), force_signin_profile_path);
-  EXPECT_TRUE(g_browser_process->profile_manager()->GetProfileByPath(
-      force_signin_profile_path));
+  EXPECT_EQ(2u, g_browser_process->profile_manager()->GetNumberOfProfiles());
 
   // The tail end of the flow is handled by inline_login_*
 }

@@ -232,10 +232,6 @@ class ProfilePicker {
   // Hides the dialog if it is showing.
   static void HideDialog();
 
-  // Getter of the path of profile which is selected in profile picker for force
-  // signin.
-  static base::FilePath GetForceSigninProfilePath();
-
   // Getter of the target page  url. If not empty and is valid, it opens on
   // profile selection instead of the new tab page.
   static GURL GetOnSelectProfileTargetUrl();

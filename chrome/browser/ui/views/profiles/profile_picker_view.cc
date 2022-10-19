@@ -218,15 +218,6 @@ void ProfilePicker::HideDialog() {
 }
 
 // static
-base::FilePath ProfilePicker::GetForceSigninProfilePath() {
-  if (g_profile_picker_view) {
-    return g_profile_picker_view->GetForceSigninProfilePath();
-  }
-
-  return base::FilePath();
-}
-
-// static
 void ProfilePicker::Hide() {
   if (g_profile_picker_view)
     g_profile_picker_view->Clear();
@@ -874,10 +865,6 @@ void ProfilePickerView::HideDialog() {
   dialog_host_.HideDialog();
 }
 
-base::FilePath ProfilePickerView::GetForceSigninProfilePath() const {
-  return dialog_host_.GetForceSigninProfilePath();
-}
-
 GURL ProfilePickerView::GetOnSelectProfileTargetUrl() const {
   return params_.on_select_profile_target_url();
 }
@@ -905,7 +892,3 @@ void ProfilePicker::NotifyAccountSelected(const std::string& gaia_id) {
   g_profile_picker_view->NotifyAccountSelected(gaia_id);
 }
 #endif
-
-BEGIN_METADATA(ProfilePickerView, views::WidgetDelegateView)
-ADD_READONLY_PROPERTY_METADATA(base::FilePath, ForceSigninProfilePath)
-END_METADATA

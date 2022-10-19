@@ -779,8 +779,8 @@ void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
   if (!error.IsOk()) {
     Browser* browser = GetDesktopBrowser();
     Profile* profile = Profile::FromWebUI(web_ui());
-    LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(browser,
-                                                                      error);
+    LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(
+        browser, error, HasFromProfilePickerURLParameter(current_url));
   }
 }
 

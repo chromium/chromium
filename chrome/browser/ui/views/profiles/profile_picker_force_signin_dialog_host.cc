@@ -17,7 +17,6 @@ void ProfilePickerForceSigninDialogHost::ShowDialog(Profile* profile,
                                                     const GURL& url,
                                                     gfx::NativeView parent) {
   HideDialog();
-  force_signin_profile_path_ = profile->GetPath();
   auto delegate = std::make_unique<ProfilePickerForceSigninDialogDelegate>(
       this, std::make_unique<views::WebView>(profile), url);
   delegate_ = delegate.get();
@@ -31,17 +30,10 @@ void ProfilePickerForceSigninDialogHost::HideDialog() {
     delegate_->CloseDialog();
     DCHECK(!delegate_);
   }
-  force_signin_profile_path_.clear();
-}
-
-base::FilePath ProfilePickerForceSigninDialogHost::GetForceSigninProfilePath()
-    const {
-  return force_signin_profile_path_;
 }
 
 void ProfilePickerForceSigninDialogHost::OnDialogDestroyed() {
   delegate_ = nullptr;
-  force_signin_profile_path_.clear();
 }
 
 void ProfilePickerForceSigninDialogHost::DisplayErrorMessage() {

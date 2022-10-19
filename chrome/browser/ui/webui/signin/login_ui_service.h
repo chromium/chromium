@@ -87,13 +87,16 @@ class LoginUIService : public KeyedService {
   // option chosen by the user in the confirmation UI.
   void SyncConfirmationUIClosed(SyncConfirmationUIClosedResult result);
 
-  // Displays login results. This is either the Modal Signin Error dialog if
-  // |error.message()| is a non-empty string, or the User Menu with a blue
-  // header toast otherwise.
-  virtual void DisplayLoginResult(Browser* browser, const SigninUIError& error);
+  // If `error.message()` is not empty, displays login error message:
+  // - in the Modal Signin Error dialog if `browser` is not null, otherwise
+  // - in a dialog shown on top of the profile picker if `from_profile_picker`
+  //   is true.
+  void DisplayLoginResult(Browser* browser,
+                          const SigninUIError& error,
+                          bool from_profile_picker);
 
   // Set the profile blocking modal error dialog message.
-  virtual void SetProfileBlockingErrorMessage();
+  void SetProfileBlockingErrorMessage();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets the last error set through |DisplayLoginResult|.

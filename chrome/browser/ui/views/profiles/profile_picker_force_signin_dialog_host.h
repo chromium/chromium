@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_HOST_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_HOST_H_
 
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -42,10 +41,6 @@ class ProfilePickerForceSigninDialogHost {
   // nothing.
   void DisplayErrorMessage();
 
-  // Getter of the path of profile which is selected in profile picker for force
-  // signin.
-  base::FilePath GetForceSigninProfilePath() const;
-
   views::DialogDelegateView* GetDialogDelegateViewForTesting() const;
 
  private:
@@ -56,9 +51,6 @@ class ProfilePickerForceSigninDialogHost {
 
   // Owned by the view hierarchy.
   raw_ptr<ProfilePickerForceSigninDialogDelegate> delegate_ = nullptr;
-
-  // The path of profile that is being force signed in.
-  base::FilePath force_signin_profile_path_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_HOST_H_

@@ -32,10 +32,6 @@ class ScopedProfileKeepAlive;
 class ProfileManagementFlowController;
 class ProfilePickerFlowController;
 
-namespace base {
-class FilePath;
-}
-
 namespace content {
 struct ContextMenuParams;
 class NavigationHandle;
@@ -47,8 +43,6 @@ class WebContents;
 class ProfilePickerView : public views::WidgetDelegateView,
                           public ProfilePickerWebContentsHost {
  public:
-  METADATA_HEADER(ProfilePickerView);
-
   ProfilePickerView(const ProfilePickerView&) = delete;
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
 
@@ -193,10 +187,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Hides the dialog if it is showing.
   void HideDialog();
-
-  // Getter of the path of profile which is selected in profile picker for force
-  // signin.
-  base::FilePath GetForceSigninProfilePath() const;
 
   // Getter of the target page url. If not empty and is valid, it opens on
   // profile selection instead of the new tab page.
