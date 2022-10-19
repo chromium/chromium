@@ -27,17 +27,23 @@ TextClassifierModelService::TextClassifierModelService(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 }
 
-TextClassifierModelService::~TextClassifierModelService() {}
+TextClassifierModelService::~TextClassifierModelService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 const base::FilePath& TextClassifierModelService::GetModelPath() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return model_path_;
 }
 
 bool TextClassifierModelService::HasValidModelPath() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !model_path_.empty();
 }
 
-void TextClassifierModelService::Shutdown() {}
+void TextClassifierModelService::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void TextClassifierModelService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
