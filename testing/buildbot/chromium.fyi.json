@@ -26094,7 +26094,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "merge": {
@@ -26147,7 +26149,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "merge": {
@@ -26200,7 +26204,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "merge": {
@@ -26253,7 +26259,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "merge": {
@@ -26307,7 +26315,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "merge": {
@@ -26361,7 +26371,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "merge": {
@@ -26415,7 +26427,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "merge": {
@@ -26469,7 +26483,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "merge": {
@@ -26523,7 +26539,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "merge": {
@@ -26577,7 +26595,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "merge": {
@@ -26631,7 +26651,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "merge": {
@@ -26685,7 +26707,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "merge": {
@@ -26739,7 +26763,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "merge": {
@@ -26792,7 +26818,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "merge": {
@@ -26845,7 +26873,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "merge": {
@@ -26898,7 +26928,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "merge": {
@@ -26952,7 +26984,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "merge": {
@@ -27006,7 +27040,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "merge": {
@@ -27268,7 +27304,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "merge": {
@@ -27321,7 +27359,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "merge": {
@@ -27374,7 +27414,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "merge": {
@@ -27584,7 +27626,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
         "merge": {
@@ -27637,7 +27681,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
         "merge": {
@@ -27690,7 +27736,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
         "merge": {
@@ -28003,7 +28051,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
         "merge": {
@@ -28056,7 +28106,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
         "merge": {
@@ -28109,7 +28161,9 @@
           "--xcode-build-version",
           "14a309",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
         "merge": {
@@ -64107,7 +64161,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "merge": {
@@ -64160,7 +64216,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "merge": {
@@ -64213,7 +64271,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "merge": {
@@ -64266,7 +64326,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "merge": {
@@ -64319,7 +64381,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "merge": {
@@ -64372,7 +64436,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "merge": {
@@ -64426,7 +64492,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "merge": {
@@ -64480,7 +64548,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "merge": {
@@ -64534,7 +64604,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_integration_eg2tests_module",
         "merge": {
@@ -64588,7 +64660,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "merge": {
@@ -64642,7 +64716,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "merge": {
@@ -64696,7 +64772,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "merge": {
@@ -64750,7 +64828,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "merge": {
@@ -64804,7 +64884,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_settings_eg2tests_module",
         "merge": {
@@ -64858,7 +64940,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "merge": {
@@ -64912,7 +64996,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "merge": {
@@ -64966,7 +65052,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "merge": {
@@ -65020,7 +65108,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_signin_eg2tests_module",
         "merge": {
@@ -65074,7 +65164,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "merge": {
@@ -65127,7 +65219,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "merge": {
@@ -65180,7 +65274,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "merge": {
@@ -65233,7 +65329,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "merge": {
@@ -65286,7 +65384,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "merge": {
@@ -65339,7 +65439,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "merge": {
@@ -65393,7 +65495,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "merge": {
@@ -65447,7 +65551,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "merge": {
@@ -65501,7 +65607,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_ui_eg2tests_module",
         "merge": {
@@ -65763,7 +65871,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "merge": {
@@ -65816,7 +65926,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "merge": {
@@ -65869,7 +65981,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "merge": {
@@ -65922,7 +66036,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "merge": {
@@ -65975,7 +66091,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_chrome_web_eg2tests_module",
         "merge": {
@@ -66238,7 +66356,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
         "merge": {
@@ -66291,7 +66411,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
         "merge": {
@@ -66344,7 +66466,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
         "merge": {
@@ -66397,7 +66521,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
         "merge": {
@@ -66450,7 +66576,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_showcase_eg2tests_module",
         "merge": {
@@ -66763,7 +66891,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
         "merge": {
@@ -66816,7 +66946,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
         "merge": {
@@ -66869,7 +67001,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
         "merge": {
@@ -66922,7 +67056,9 @@
           "--xcode-build-version",
           "14b5024i",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcode-parallelization",
+          "--record-video",
+          "failed_only"
         ],
         "isolate_name": "ios_web_shell_eg2tests_module",
         "merge": {
