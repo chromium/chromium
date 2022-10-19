@@ -33,6 +33,7 @@
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -650,11 +651,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
              "  };"
              "});"));
 
-  content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetActiveWebContents()->GetMainFrame());
-  user_activation_interceptor.UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kNotifyActivation,
-      blink::mojom::UserActivationNotificationType::kTest);
+  content::SimulateMouseClick(GetActiveWebContents(), 0,
+                              blink::WebPointerProperties::Button::kLeft);
 
   // Send paste event and wait till the notification is displayed.
   base::RunLoop run_loop;
@@ -743,12 +741,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
              "      resolve(clipboardDataText);});"
              "  };"
              "});"));
-
-  content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetActiveWebContents()->GetMainFrame());
-  user_activation_interceptor.UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kNotifyActivation,
-      blink::mojom::UserActivationNotificationType::kTest);
+  content::SimulateMouseClick(GetActiveWebContents(), 0,
+                              blink::WebPointerProperties::Button::kLeft);
 
   // Send paste event and wait till the notification is displayed.
   base::RunLoop run_loop;
@@ -835,11 +829,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
              "  };"
              "});"));
 
-  content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetActiveWebContents()->GetMainFrame());
-  user_activation_interceptor.UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kNotifyActivation,
-      blink::mojom::UserActivationNotificationType::kTest);
+  content::SimulateMouseClick(GetActiveWebContents(), 0,
+                              blink::WebPointerProperties::Button::kLeft);
 
   dlp_controller_->force_paste_on_warn_ = true;
   GetActiveWebContents()->Paste();
@@ -919,11 +910,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
              "  };"
              "});"));
 
-  content::UpdateUserActivationStateInterceptor user_activation_interceptor(
-      GetActiveWebContents()->GetMainFrame());
-  user_activation_interceptor.UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kNotifyActivation,
-      blink::mojom::UserActivationNotificationType::kTest);
+  content::SimulateMouseClick(GetActiveWebContents(), 0,
+                              blink::WebPointerProperties::Button::kLeft);
 
   GetActiveWebContents()->Paste();
   EXPECT_FALSE(dlp_controller_->ObserveWidget());

@@ -6079,8 +6079,10 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
   DCHECK(render_frame_host);
 
   // Paste requires either (1) user activation, ...
-  if (render_frame_host->HasTransientUserActivation())
+  if (WebContents::FromRenderFrameHost(render_frame_host)
+          ->HasRecentInteractiveInputEvent()) {
     return true;
+  }
 
   // (2) granted web permission, ...
   content::BrowserContext* browser_context =
