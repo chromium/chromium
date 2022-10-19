@@ -6,4 +6,7 @@ package org.chromium.browserfragment.interfaces;
 
 oneway interface IBooleanCallback {
     void onResult(in boolean result) = 1;
+
+    // TODO(swestphal): Replace parameters with actual Exception when supported to also propagate stacktrace.
+    void onException(in int type, in String msg) = 2;
 }

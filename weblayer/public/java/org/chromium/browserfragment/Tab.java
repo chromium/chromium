@@ -13,6 +13,7 @@ import androidx.concurrent.futures.CallbackToFutureAdapter;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.browserfragment.interfaces.ExceptionType;
 import org.chromium.browserfragment.interfaces.IStringCallback;
 import org.chromium.browserfragment.interfaces.ITabParams;
 import org.chromium.browserfragment.interfaces.ITabProxy;
@@ -96,13 +97,11 @@ public class Tab {
                 mTabProxy.executeScript(script, useSeparateIsolate, new IStringCallback.Stub() {
                     @Override
                     public void onResult(String result) {
-                        if (result != null) {
-                            completer.set(result);
-                        } else {
-                            // TODO(rayankans): Improve exception reporting.
-                            completer.setException(
-                                    new IllegalStateException("Failed to execute script"));
-                        }
+                        completer.set(result);
+                    }
+                    @Override
+                    public void onException(@ExceptionType int type, String msg) {
+                        completer.setException(ExceptionHelper.createException(type, msg));
                     }
                 });
             } catch (RemoteException e) {

@@ -12,6 +12,7 @@ import androidx.concurrent.futures.CallbackToFutureAdapter;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.browserfragment.interfaces.ExceptionType;
 import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.ICookieManagerDelegate;
 import org.chromium.browserfragment.interfaces.IStringCallback;
@@ -51,13 +52,17 @@ public class CookieManager {
             try {
                 mDelegate.setCookie(uri, value, new IBooleanCallback.Stub() {
                     @Override
-                    public void onResult(boolean result) {
-                        if (result) {
-                            completer.set(null);
-                        } else {
-                            // TODO(rayankans): Improve exception reporting.
-                            completer.setException(new IllegalArgumentException("Invalid cookie"));
+                    public void onResult(boolean set) {
+                        if (!set) {
+                            completer.setException(
+                                    new IllegalArgumentException("Cookie not set: " + value));
                         }
+                        completer.set(null);
+                        mPendingSetCompleters.remove(completer);
+                    }
+                    @Override
+                    public void onException(@ExceptionType int type, String msg) {
+                        completer.setException(ExceptionHelper.createException(type, msg));
                         mPendingSetCompleters.remove(completer);
                     }
                 });
@@ -94,6 +99,11 @@ public class CookieManager {
                             completer.setException(
                                     new IllegalArgumentException("Failed to get cookie"));
                         }
+                        mPendingGetCompleters.remove(completer);
+                    }
+                    @Override
+                    public void onException(@ExceptionType int type, String msg) {
+                        completer.setException(ExceptionHelper.createException(type, msg));
                         mPendingGetCompleters.remove(completer);
                     }
                 });

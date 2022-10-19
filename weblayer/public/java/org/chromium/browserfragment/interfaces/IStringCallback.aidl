@@ -6,4 +6,7 @@ package org.chromium.browserfragment.interfaces;
 
 oneway interface IStringCallback {
     void onResult(in String result) = 1;
+
+    // TODO(swestphal): Replace parameters with actual Exception when supported to also propagate stacktrace.
+    void onException(in int type, in String msg) = 2;
 }

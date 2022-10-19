@@ -16,6 +16,7 @@ import org.chromium.weblayer_private.interfaces.ICookieChangedCallbackClient;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
+import org.chromium.weblayer_private.interfaces.RestrictedAPIException;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 import java.lang.ref.WeakReference;
@@ -40,7 +41,7 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
     }
 
     @Override
-    public boolean setCookie(String url, String value, IObjectWrapper callback) {
+    public void setCookie(String url, String value, IObjectWrapper callback) {
         StrictModeWorkaround.apply();
 
         WebLayerOriginVerificationScheduler originVerifier =
@@ -51,15 +52,12 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
 
         originVerifier.verify(url, mProfile, (verified) -> {
             if (!verified) {
-                valueCallback.onReceiveValue(false);
-                return;
+                throw new RestrictedAPIException();
             }
             Callback<Boolean> baseCallback =
                     (Boolean result) -> valueCallback.onReceiveValue(result);
             CookieManagerImplJni.get().setCookie(mNativeCookieManager, url, value, baseCallback);
         });
-
-        return true;
     }
 
     @Override
@@ -74,8 +72,7 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
 
         originVerifier.verify(url, mProfile, (verified) -> {
             if (!verified) {
-                valueCallback.onReceiveValue(null);
-                return;
+                throw new RestrictedAPIException();
             }
             Callback<String> baseCallback = (String result) -> valueCallback.onReceiveValue(result);
             CookieManagerImplJni.get().getCookie(mNativeCookieManager, url, baseCallback);

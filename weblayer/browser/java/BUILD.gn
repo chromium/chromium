@@ -566,6 +566,7 @@ android_library("interfaces_java") {
     "org/chromium/weblayer_private/interfaces/NavigationState.java",
     "org/chromium/weblayer_private/interfaces/NewTabType.java",
     "org/chromium/weblayer_private/interfaces/RemoteMediaServiceConstants.java",
+    "org/chromium/weblayer_private/interfaces/RestrictedAPIException.java",
     "org/chromium/weblayer_private/interfaces/ScrollNotificationType.java",
     "org/chromium/weblayer_private/interfaces/SettingType.java",
     "org/chromium/weblayer_private/interfaces/SettingsFragmentArgs.java",

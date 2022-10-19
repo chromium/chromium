@@ -8,7 +8,7 @@ import org.chromium.weblayer_private.interfaces.ICookieChangedCallbackClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
 interface ICookieManager {
-  boolean setCookie(in String url, in String value, in IObjectWrapper callback) = 0;
+  void setCookie(in String url, in String value, in IObjectWrapper callback) = 0;
 
   void getCookie(in String url, in IObjectWrapper callback) = 1;
 

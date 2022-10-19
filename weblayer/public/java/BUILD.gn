@@ -66,6 +66,7 @@ android_library("java") {
     "org/chromium/weblayer/DownloadState.java",
     "org/chromium/weblayer/ErrorPage.java",
     "org/chromium/weblayer/ErrorPageCallback.java",
+    "org/chromium/weblayer/ExceptionHelper.java",
     "org/chromium/weblayer/ExternalIntentInIncognitoCallback.java",
     "org/chromium/weblayer/ExternalIntentInIncognitoUserDecision.java",
     "org/chromium/weblayer/FaviconCallback.java",
@@ -211,8 +212,13 @@ android_aidl("browserfragment_aidl") {
 }
 
 android_library("browserfragment_interfaces_java") {
+  sources = [
+    "org/chromium/browserfragment/interfaces/ExceptionType.java",
+    "org/chromium/browserfragment/interfaces/RestrictedAPIException.java",
+  ]
   deps = [
     "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_jvm_java",
     "//weblayer/browser/java:base_module_interfaces_java",
   ]
   srcjar_deps = [ ":browserfragment_aidl" ]
@@ -223,6 +229,7 @@ android_library("browserfragment_java") {
     "org/chromium/browserfragment/Browser.java",
     "org/chromium/browserfragment/BrowserFragment.java",
     "org/chromium/browserfragment/CookieManager.java",
+    "org/chromium/browserfragment/ExceptionHelper.java",
     "org/chromium/browserfragment/FragmentParams.java",
     "org/chromium/browserfragment/Navigation.java",
     "org/chromium/browserfragment/NavigationObserver.java",

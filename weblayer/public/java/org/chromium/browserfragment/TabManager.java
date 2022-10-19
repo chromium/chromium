@@ -15,6 +15,7 @@ import androidx.concurrent.futures.CallbackToFutureAdapter;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.browserfragment.interfaces.ExceptionType;
 import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.ITabCallback;
@@ -39,6 +40,10 @@ public class TabManager {
         @Override
         public void onResult(boolean didNavigate) {
             mCompleter.set(didNavigate);
+        }
+        @Override
+        public void onException(@ExceptionType int type, String msg) {
+            mCompleter.setException(ExceptionHelper.createException(type, msg));
         }
     }
 

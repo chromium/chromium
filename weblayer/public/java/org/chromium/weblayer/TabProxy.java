@@ -8,10 +8,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 
+import org.chromium.browserfragment.interfaces.ExceptionType;
 import org.chromium.browserfragment.interfaces.IStringCallback;
 import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 import org.chromium.browserfragment.interfaces.IWebMessageCallback;
+import org.chromium.weblayer_private.interfaces.RestrictedAPIException;
 
 import java.util.List;
 
@@ -76,12 +78,19 @@ class TabProxy extends ITabProxy.Stub {
     @Override
     public void executeScript(String script, boolean useSeparateIsolate, IStringCallback callback) {
         mHandler.post(() -> {
-            getTab().executeScript(script, useSeparateIsolate, (String result) -> {
+            try {
+                getTab().executeScript(script, useSeparateIsolate, (String result) -> {
+                    try {
+                        callback.onResult(result);
+                    } catch (RemoteException e) {
+                    }
+                });
+            } catch (RestrictedAPIException e) {
                 try {
-                    callback.onResult(result);
-                } catch (RemoteException e) {
+                    callback.onException(ExceptionType.RESTRICTED_API, e.getMessage());
+                } catch (RemoteException re) {
                 }
-            });
+            }
         });
     }
 

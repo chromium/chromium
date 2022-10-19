@@ -260,7 +260,9 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Throwable thrown) {}
+                    public void onFailure(Throwable thrown) {
+                        Log.w(TAG, "setCookie failed: " + thrown);
+                    }
                 }, mContext.getMainExecutor());
             }
 

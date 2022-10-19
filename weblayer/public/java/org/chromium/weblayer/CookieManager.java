@@ -63,11 +63,11 @@ class CookieManager {
                     callback.onResult(result);
                 }
             };
-            if (!mImpl.setCookie(uri.toString(), value, ObjectWrapper.wrap(valueCallback))) {
-                throw new IllegalArgumentException("Invalid cookie: " + value);
-            }
+            mImpl.setCookie(uri.toString(), value, ObjectWrapper.wrap(valueCallback));
         } catch (RemoteException e) {
             throw new APICallException(e);
+        } catch (RuntimeException e) {
+            ExceptionHelper.reraise(e);
         }
     }
 
@@ -87,6 +87,8 @@ class CookieManager {
             mImpl.getCookie(uri.toString(), ObjectWrapper.wrap(valueCallback));
         } catch (RemoteException e) {
             throw new APICallException(e);
+        } catch (RuntimeException e) {
+            ExceptionHelper.reraise(e);
         }
     }
 

@@ -12,6 +12,7 @@ import androidx.concurrent.futures.CallbackToFutureAdapter;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.browserfragment.interfaces.ExceptionType;
 import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 
@@ -33,6 +34,10 @@ public class TabNavigationController {
         @Override
         public void onResult(boolean possible) {
             mCompleter.set(possible);
+        }
+        @Override
+        public void onException(@ExceptionType int type, String msg) {
+            mCompleter.setException(ExceptionHelper.createException(type, msg));
         }
     };
 

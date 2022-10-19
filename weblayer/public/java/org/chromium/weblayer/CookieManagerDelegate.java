@@ -9,9 +9,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 
+import org.chromium.browserfragment.interfaces.ExceptionType;
 import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.ICookieManagerDelegate;
 import org.chromium.browserfragment.interfaces.IStringCallback;
+import org.chromium.weblayer_private.interfaces.RestrictedAPIException;
 
 /**
  * This class acts as a proxy between the embedding app's BrowserFragment and
@@ -28,24 +30,38 @@ class CookieManagerDelegate extends ICookieManagerDelegate.Stub {
     @Override
     public void setCookie(String uri, String value, IBooleanCallback callback) {
         mHandler.post(() -> {
-            mCookieManager.setCookie(Uri.parse(uri), value, (Boolean v) -> {
+            try {
+                mCookieManager.setCookie(Uri.parse(uri), value, (Boolean v) -> {
+                    try {
+                        callback.onResult(v);
+                    } catch (RemoteException e) {
+                    }
+                });
+            } catch (RestrictedAPIException e) {
                 try {
-                    callback.onResult(v);
-                } catch (RemoteException e) {
+                    callback.onException(ExceptionType.RESTRICTED_API, e.getMessage());
+                } catch (RemoteException re) {
                 }
-            });
+            }
         });
     }
 
     @Override
     public void getCookie(String uri, IStringCallback callback) {
         mHandler.post(() -> {
-            mCookieManager.getCookie(Uri.parse(uri), (String result) -> {
+            try {
+                mCookieManager.getCookie(Uri.parse(uri), (String result) -> {
+                    try {
+                        callback.onResult(result);
+                    } catch (RemoteException e) {
+                    }
+                });
+            } catch (RestrictedAPIException e) {
                 try {
-                    callback.onResult(result);
-                } catch (RemoteException e) {
+                    callback.onException(ExceptionType.RESTRICTED_API, e.getMessage());
+                } catch (RemoteException re) {
                 }
-            });
+            }
         });
     }
 }
