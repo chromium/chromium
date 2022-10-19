@@ -61611,6 +61611,7 @@ from previous Chrome versions.
   <int value="693545401"
       label="AutofillEnableInfoBarAccountIndicationFooter:enabled"/>
   <int value="694016981" label="query-tiles-more-trending"/>
+  <int value="694165544" label="NtpComprehensiveTheming:disabled"/>
   <int value="694985670" label="OmniboxUIExperimentNarrowDropdown:disabled"/>
   <int value="695385040" label="enable-external-drive-rename"/>
   <int value="696261973" label="GaiaActionButtons:enabled"/>
@@ -61913,6 +61914,7 @@ from previous Chrome versions.
   <int value="868009556" label="AutofillUpstream:enabled"/>
   <int value="869531646" label="enable-session-crashed-bubble"/>
   <int value="869770301" label="MessagesForAndroidPasswords:enabled"/>
+  <int value="869946821" label="NtpComprehensiveTheming:enabled"/>
   <int value="870299555" label="ThreadingOptimizationsOnIo:enabled"/>
   <int value="870568550" label="LimitAltTabToActiveDesk:disabled"/>
   <int value="870664435" label="DownloadProgressInfoBar:disabled"/>

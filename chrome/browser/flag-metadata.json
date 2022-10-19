@@ -4837,6 +4837,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "ntp-comprehensive-theming",
+    "owners": [ "romanarora", "tiborg", "tluk" ],
+    "expiry_milestone": 113
+  },
+  {
     "name": "ntp-desktop-lens",
     "owners": [ "yowakita", "tiborg" ],
     "expiry_milestone": 112
