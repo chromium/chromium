@@ -1369,7 +1369,11 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
 static bool MayContainNestedRules(const String& text,
                                   wtf_size_t offset,
                                   wtf_size_t length) {
-  DCHECK_GE(length, 2u);  // {} is the shortest possible block.
+  if (length < 2u) {
+    // {} is the shortest possible block (but if there's
+    // a lone { and then EOF, we will be called with length 1).
+    return false;
+  }
 
   size_t char_size = text.Is8Bit() ? sizeof(LChar) : sizeof(UChar);
 
