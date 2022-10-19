@@ -4,11 +4,14 @@
 
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
+#include "components/web_package/web_bundle_utils.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -90,6 +93,16 @@ ScriptWebBundle::ScriptWebBundle(ScriptElementBase& element,
                                  const ScriptWebBundleRule& rule)
     : element_(&element), element_document_(&element_document), rule_(rule) {
   UseCounter::Count(element_document_, WebFeature::kScriptWebBundle);
+  if (IsSameOriginBundle()) {
+    base::UmaHistogramEnumeration(
+        "SubresourceWebBundles.OriginType",
+        web_package::ScriptWebBundleOriginType::kSameOrigin);
+  } else {
+    base::UmaHistogramEnumeration(
+        "SubresourceWebBundles.OriginType",
+        web_package::ScriptWebBundleOriginType::kCrossOrigin);
+  }
+
   CreateBundleLoaderAndRegister();
 }
 
@@ -181,6 +194,17 @@ bool ScriptWebBundle::WillBeReleased() const {
 
 network::mojom::CredentialsMode ScriptWebBundle::GetCredentialsMode() const {
   return rule_.credentials_mode();
+}
+
+bool ScriptWebBundle::IsSameOriginBundle() const {
+  DCHECK(element_document_);
+  DCHECK(element_document_->GetFrame());
+  DCHECK(element_document_->GetFrame()->GetSecurityContext());
+  const SecurityOrigin* frame_security_origin =
+      element_document_->GetFrame()->GetSecurityContext()->GetSecurityOrigin();
+  auto bundle_origin = SecurityOrigin::Create(rule_.source_url());
+  return frame_security_origin &&
+         frame_security_origin->IsSameOriginWith(bundle_origin.get());
 }
 
 void ScriptWebBundle::CreateBundleLoaderAndRegister() {

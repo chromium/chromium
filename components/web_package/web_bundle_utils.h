@@ -14,6 +14,14 @@ class GURL;
 
 namespace web_package {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ScriptWebBundleOriginType {
+  kSameOrigin = 0,
+  kCrossOrigin = 1,
+  kMaxValue = kCrossOrigin,
+};
+
 // The max memory limit per process of subrsource web bundles.
 //
 // Note: Currently the network service keeps the binary of the subresource web

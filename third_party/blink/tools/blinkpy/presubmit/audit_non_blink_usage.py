@@ -952,6 +952,14 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.cc'
+        ],
+        'allowed': [
+            'web_package::ScriptWebBundleOriginType',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/paint'],
         'allowed': [
             # cc painting types.

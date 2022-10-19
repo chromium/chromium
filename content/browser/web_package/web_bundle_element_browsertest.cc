@@ -387,6 +387,30 @@ IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest, SubframeLoadError) {
             *finish_navigation_observer.error_code());
 }
 
+IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest, HistogramSameOriginCount) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(https_server()->GetURL("/web_bundle/same_origin_web_bundle.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.OriginType",
+      web_package::ScriptWebBundleOriginType::kSameOrigin, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest, HistogramCrossOriginCount) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(https_server()->GetURL("/web_bundle/cross_origin_web_bundle.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.OriginType",
+      web_package::ScriptWebBundleOriginType::kCrossOrigin, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest, BundleFetchError) {
   base::HistogramTester histogram_tester;
 
