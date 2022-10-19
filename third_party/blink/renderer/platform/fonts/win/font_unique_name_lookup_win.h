@@ -46,6 +46,8 @@ class FontUniqueNameLookupWin : public FontUniqueNameLookup {
   sk_sp<SkTypeface> InstantiateFromPathAndTtcIndex(
       base::FilePath font_file_path,
       uint32_t ttc_index);
+  sk_sp<SkTypeface> InstantiateFromFileAndTtcIndex(base::File file_handle,
+                                                   uint32_t ttc_index);
 
   void InitWithLookupMode(blink::mojom::UniqueFontLookupMode lookup_mode);
 

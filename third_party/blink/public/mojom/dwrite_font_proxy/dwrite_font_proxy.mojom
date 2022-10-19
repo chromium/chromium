@@ -74,14 +74,15 @@ interface DWriteFontProxy {
   GetUniqueFontLookupMode() => (UniqueFontLookupMode lookup_mode);
 
   // On supported Windows versions, matches a unique PostScript or full font
-  // name against the installed fonts using DirectWrite API. Returns a file path
-  // and ttc_index from which the unique font can be instantiated.  Check which
-  // mode is supported using GetFontUniqueNameLookupMode().  Returns empty path
-  // and 0 ttc index if no font is found. Must not be called if
-  // GetUniqueFontLookupMode() returned kRetrieveTable.
+  // name against the installed fonts using DirectWrite API. Returns a
+  // pre-opened file handle and ttc_index from which the unique font can be
+  // instantiated.  Check which mode is supported using
+  // GetFontUniqueNameLookupMode().  Returns null handle and 0 ttc index
+  // if no font is found. Must not be called if GetUniqueFontLookupMode()
+  // returned kRetrieveTable.
   [Sync]
   MatchUniqueFont(mojo_base.mojom.String16 font_unique_name)
-      => (mojo_base.mojom.FilePath file_path, uint32 ttc_index);
+      => (mojo_base.mojom.ReadOnlyFile? file_handle, uint32 ttc_index);
 
   // Synchronously returns a protobuf structured lookup list of
   // (full_font_name|postscript_name) => (font_file + ttc_index) to the

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "mojo/public/mojom/base/shared_memory.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
 
 namespace blink {
@@ -33,19 +35,16 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::MatchUniqueName(
 sk_sp<SkTypeface> FontUniqueNameLookupWin::MatchUniqueNameSingleLookup(
     const String& font_unique_name) {
   DCHECK(lookup_mode_ == blink::mojom::UniqueFontLookupMode::kSingleLookups);
-  base::FilePath font_file_path;
+  base::File font_file;
   uint32_t ttc_index = 0;
 
   EnsureServiceConnected();
 
   bool matching_mojo_success =
-      service_->MatchUniqueFont(font_unique_name, &font_file_path, &ttc_index);
+      service_->MatchUniqueFont(font_unique_name, &font_file, &ttc_index);
   DCHECK(matching_mojo_success);
 
-  if (!font_file_path.value().size())
-    return nullptr;
-
-  return InstantiateFromPathAndTtcIndex(font_file_path, ttc_index);
+  return InstantiateFromFileAndTtcIndex(std::move(font_file), ttc_index);
 }
 
 sk_sp<SkTypeface> FontUniqueNameLookupWin::MatchUniqueNameLookupTable(
@@ -65,11 +64,28 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::MatchUniqueNameLookupTable(
   return InstantiateFromPathAndTtcIndex(file_path, match_result->ttc_index);
 }
 
+// Used for font matching with table lookup case only.
 sk_sp<SkTypeface> FontUniqueNameLookupWin::InstantiateFromPathAndTtcIndex(
     base::FilePath font_file_path,
     uint32_t ttc_index) {
   return SkTypeface::MakeFromFile(font_file_path.AsUTF8Unsafe().c_str(),
                                   ttc_index);
+}
+
+// Used for font matching with single lookup case only.
+sk_sp<SkTypeface> FontUniqueNameLookupWin::InstantiateFromFileAndTtcIndex(
+    base::File file_handle,
+    uint32_t ttc_index) {
+  FILE* cfile = base::FileToFILE(std::move(file_handle), "rb");
+  if (!cfile) {
+    return nullptr;
+  }
+  auto data = SkData::MakeFromFILE(cfile);
+  base::CloseFile(cfile);
+  if (!data) {
+    return nullptr;
+  }
+  return SkTypeface::MakeFromData(std::move(data), ttc_index);
 }
 
 bool FontUniqueNameLookupWin::IsFontUniqueNameLookupReadyForSyncLookup() {

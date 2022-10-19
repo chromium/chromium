@@ -332,16 +332,13 @@ TEST_F(DWriteFontProxyLocalMatchingTest, TestSingleLookup) {
   if (!SupportsSingleLookups())
     return;
   for (auto& test_font_name_index : kExpectedTestFonts) {
-    base::FilePath result_path;
+    base::File result_handle;
     uint32_t ttc_index;
     dwrite_font_proxy().MatchUniqueFont(
-        base::UTF8ToUTF16(test_font_name_index.font_name), &result_path,
+        base::UTF8ToUTF16(test_font_name_index.font_name), &result_handle,
         &ttc_index);
-    ASSERT_GT(result_path.value().size(), 0u);
-    base::File unique_font_file(result_path,
-                                base::File::FLAG_OPEN | base::File::FLAG_READ);
-    ASSERT_TRUE(unique_font_file.IsValid());
-    ASSERT_GT(unique_font_file.GetLength(), 0);
+    ASSERT_TRUE(result_handle.IsValid());
+    ASSERT_GT(result_handle.GetLength(), 0);
     ASSERT_EQ(test_font_name_index.ttc_index, ttc_index);
   }
 }
@@ -350,13 +347,13 @@ TEST_F(DWriteFontProxyLocalMatchingTest, TestSingleLookupUnavailable) {
   // Do not run this test on unsupported Windows versions.
   if (!SupportsSingleLookups())
     return;
-  base::FilePath result_path;
+  base::File result_handle;
   uint32_t ttc_index;
   std::u16string unavailable_font_name =
       u"Unavailable_Font_Name_56E7EA7E-2C69-4E23-99DC-750BC19B250E";
-  dwrite_font_proxy().MatchUniqueFont(unavailable_font_name, &result_path,
+  dwrite_font_proxy().MatchUniqueFont(unavailable_font_name, &result_handle,
                                       &ttc_index);
-  ASSERT_EQ(result_path.value().size(), 0u);
+  ASSERT_FALSE(result_handle.IsValid());
   ASSERT_EQ(ttc_index, 0u);
 }
 

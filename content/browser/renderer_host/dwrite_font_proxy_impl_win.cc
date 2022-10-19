@@ -417,7 +417,7 @@ void DWriteFontProxyImpl::MatchUniqueFont(
 
   DCHECK(base::FeatureList::IsEnabled(features::kFontSrcLocalMatching));
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                         base::FilePath(), 0);
+                                                         base::File(), 0);
   InitializeDirectWrite();
 
   // We must not get here if this version of DWrite can't handle performing the
@@ -482,7 +482,21 @@ void DWriteFontProxyImpl::MatchUniqueFont(
   }
 
   base::FilePath path(font_file_pathname);
-  std::move(callback).Run(path, ttc_index);
+
+  // Have the Browser process open the font file and send the handle to the
+  // Renderer Process to access the font. Otherwise, user-installed local font
+  // files outside of Windows fonts system directory wouldn't be accessible by
+  // Renderer due to Windows sandboxing rules.
+
+  // Specify FLAG_WIN_EXCLUSIVE_WRITE to prevent base::File from opening the
+  // file with FILE_SHARE_WRITE access. FLAG_WIN_EXCLUSIVE_WRITE doesn't
+  // actually open the file for write access.
+  base::File font_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  if (!font_file.IsValid() || !font_file.GetLength()) {
+    return;
+  }
+  std::move(callback).Run(std::move(font_file), ttc_index);
 }
 
 void DWriteFontProxyImpl::GetUniqueFontLookupMode(
