@@ -65,19 +65,12 @@ class SignedWebBundleReader {
     enum class Type {
       kAbort,
       kContinueAndVerifySignatures,
-#if BUILDFLAG(IS_CHROMEOS)
-      // On ChromeOS, we only verify integrity at install-time. On other OSes,
-      // we verify integrity once per session, so skipping integrity
-      // verification is not an option for other OSes.
       kContinueAndSkipSignatureVerification,
-#endif
     };
 
     static SignatureVerificationAction Abort(const std::string& abort_message);
     static SignatureVerificationAction ContinueAndVerifySignatures();
-#if BUILDFLAG(IS_CHROMEOS)
     static SignatureVerificationAction ContinueAndSkipSignatureVerification();
-#endif
 
     SignatureVerificationAction(const SignatureVerificationAction&);
     ~SignatureVerificationAction();

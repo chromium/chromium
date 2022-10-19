@@ -176,12 +176,10 @@ void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
     case SignatureVerificationAction::Type::kContinueAndVerifySignatures:
       VerifySignatures(std::move(integrity_block), std::move(callback));
       return;
-#if BUILDFLAG(IS_CHROMEOS)
     case SignatureVerificationAction::Type::
         kContinueAndSkipSignatureVerification:
       ReadMetadata(std::move(callback));
       return;
-#endif
   }
 }
 
@@ -501,16 +499,12 @@ SignedWebBundleReader::SignatureVerificationAction SignedWebBundleReader::
                                      absl::nullopt);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-
 // static
 SignedWebBundleReader::SignatureVerificationAction SignedWebBundleReader::
     SignatureVerificationAction::ContinueAndSkipSignatureVerification() {
   return SignatureVerificationAction(
       Type::kContinueAndSkipSignatureVerification, absl::nullopt);
 }
-
-#endif
 
 SignedWebBundleReader::SignatureVerificationAction::SignatureVerificationAction(
     Type type,

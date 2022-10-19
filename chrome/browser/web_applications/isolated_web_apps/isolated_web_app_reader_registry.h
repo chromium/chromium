@@ -12,6 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
@@ -133,16 +135,23 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
                       ReadResponseCallback callback);
 
   void OnResponseRead(
-      SignedWebBundleReader& reader,
+      base::WeakPtr<SignedWebBundleReader> reader,
       ReadResponseCallback callback,
       base::expected<web_package::mojom::BundleResponsePtr,
                      SignedWebBundleReader::ReadResponseError> response_head);
+
+  void StartCacheCleanupTimerIfNotRunning();
+
+  void StopCacheCleanupTimerIfCacheIsEmpty();
+
+  void CleanupOldCacheEntries();
 
   // A `CacheEntry` has two states: In its initial `kPending` state, it caches
   // requests made to a Signed Web Bundle until the `SignedWebBundleReader` is
   // ready. Once the `SignedWebBundleReader` is ready to serve responses, all
   // queued requests are run and the state is updated to `kReady`.
-  struct CacheEntry {
+  class CacheEntry {
+   public:
     explicit CacheEntry(std::unique_ptr<SignedWebBundleReader> reader);
     ~CacheEntry();
 
@@ -154,13 +163,30 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
 
     enum class State { kPending, kReady };
 
+    SignedWebBundleReader& GetReader() {
+      last_access_ = base::TimeTicks::Now();
+      return *reader_;
+    }
+
+    const base::TimeTicks last_access() const { return last_access_; }
+
     State state = State::kPending;
     std::vector<std::pair<network::ResourceRequest, ReadResponseCallback>>
         pending_requests;
-    std::unique_ptr<SignedWebBundleReader> reader;
+
+   private:
+    std::unique_ptr<SignedWebBundleReader> reader_;
+    // The point in time when the `reader_` was last accessed.
+    base::TimeTicks last_access_;
   };
 
   base::flat_map<base::FilePath, CacheEntry> reader_cache_;
+
+  // A set of files whose signatures have been verified successfully during the
+  // current browser session. Signatures of these files are not re-verified even
+  // if their corresponding `CacheEntry` is cleaned up and later re-created.
+  base::flat_set<base::FilePath> verified_files_;
+  base::RepeatingTimer cache_cleanup_timer_;
 
   std::unique_ptr<IsolatedWebAppValidator> validator_;
   base::RepeatingCallback<std::unique_ptr<SignedWebBundleSignatureVerifier>()>

@@ -6,18 +6,21 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
@@ -59,27 +62,28 @@ class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
 class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
  public:
   explicit FakeSignatureVerifier(
-      absl::optional<SignedWebBundleSignatureVerifier::Error> error)
-      : error_(error) {}
+      absl::optional<SignedWebBundleSignatureVerifier::Error> error,
+      base::RepeatingClosure on_verify_signatures = base::DoNothing())
+      : error_(error), on_verify_signatures_(on_verify_signatures) {}
 
   void VerifySignatures(scoped_refptr<web_package::SharedFile> file,
                         SignedWebBundleIntegrityBlock integrity_block,
                         SignatureVerificationCallback callback) override {
+    on_verify_signatures_.Run();
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), error_));
   }
 
  private:
   absl::optional<SignedWebBundleSignatureVerifier::Error> error_;
+  base::RepeatingClosure on_verify_signatures_;
 };
 
 }  // namespace
 
-class IsolatedWebAppReaderRegistryTest : public WebAppTest {
+class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    WebAppTest::SetUp();
-
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
 
     parser_factory_ =
@@ -139,10 +143,7 @@ class IsolatedWebAppReaderRegistryTest : public WebAppTest {
             base::Unretained(parser_factory_.get())));
   }
 
-  void TearDown() override {
-    registry_.reset();
-    WebAppTest::TearDown();
-  }
+  void TearDown() override { registry_.reset(); }
 
   void FulfillIntegrityBlock() {
     parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
@@ -160,6 +161,8 @@ class IsolatedWebAppReaderRegistryTest : public WebAppTest {
         response_->Clone());
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
@@ -282,6 +285,123 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
             "The Web Bundle does not contain a response for the provided URL: "
             "isolated-app://"
             "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/foo");
+}
+
+TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
+  network::ResourceRequest resource_request;
+  resource_request.url = kPrimaryUrl;
+
+  size_t num_signature_verifications = 0;
+  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
+      std::make_unique<FakeIsolatedWebAppValidator>(absl::nullopt),
+      base::BindLambdaForTesting(
+          [&]() -> std::unique_ptr<SignedWebBundleSignatureVerifier> {
+            return std::make_unique<FakeSignatureVerifier>(
+                absl::nullopt, base::BindLambdaForTesting(
+                                   [&]() { ++num_signature_verifications; }));
+          }));
+
+  // Verify that the cache cleanup timer has not yet started.
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0ul)
+      << (task_environment_.DescribeCurrentTasks(),
+          "Pending Tasks have been logged.");
+
+  {
+    base::test::TestFuture<Result> read_response_future;
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                            read_response_future.GetCallback());
+
+    // `SignedWebBundleReader`s should not be evicted from the cache while they
+    // are still parsing integrity block and metadata, thus the following two
+    // calls to fast forward time should not have any effect.
+    task_environment_.FastForwardBy(base::Hours(1));
+
+    FulfillIntegrityBlock();
+
+    task_environment_.FastForwardBy(base::Hours(1));
+
+    FulfillMetadata();
+    FulfillResponse(resource_request);
+
+    Result result = read_response_future.Take();
+    ASSERT_TRUE(result.has_value()) << result.error().message;
+    EXPECT_EQ(result->head()->response_code, 200);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(num_signature_verifications, 0ul);
+#else
+  EXPECT_EQ(num_signature_verifications, 1ul);
+#endif
+
+  // Verify that the cache cleanup timer has started.
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1ul)
+      << (task_environment_.DescribeCurrentTasks(),
+          "Pending Tasks have been logged.");
+
+  {
+    base::test::TestFuture<Result> read_response_future;
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                            read_response_future.GetCallback());
+
+    // Notably, no `FulfillIntegrityBlock` or `FulfillMetadata` here, since the
+    // `SignedWebBundleReader` should still be cached.
+    FulfillResponse(resource_request);
+
+    Result result = read_response_future.Take();
+    ASSERT_TRUE(result.has_value()) << result.error().message;
+    EXPECT_EQ(result->head()->response_code, 200);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(num_signature_verifications, 0ul);
+#else
+  EXPECT_EQ(num_signature_verifications, 1ul);
+#endif
+
+  // Verify that the cache cleanup timer is still running.
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1ul)
+      << (task_environment_.DescribeCurrentTasks(),
+          "Pending Tasks have been logged.");
+
+  // After some time has passed, the `SignedWebBundleReader` should be evicted
+  // from the cache.
+  task_environment_.FastForwardBy(base::Hours(1));
+
+  // Verify that the cache cleanup timer has stopped, given that the cache is
+  // now empty again.
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0ul)
+      << (task_environment_.DescribeCurrentTasks(),
+          "Pending Tasks have been logged.");
+
+  {
+    base::test::TestFuture<Result> read_response_future;
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                            read_response_future.GetCallback());
+
+    // Since the SignedWebBundleReader has been evicted from cache, integrity
+    // block and metadata have to be read again.
+    FulfillIntegrityBlock();
+    FulfillMetadata();
+    FulfillResponse(resource_request);
+
+    Result result = read_response_future.Take();
+    ASSERT_TRUE(result.has_value()) << result.error().message;
+    EXPECT_EQ(result->head()->response_code, 200);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(num_signature_verifications, 0ul);
+#else
+  // Signatures should not have been verified again, since we only verify them
+  // once per session per file path.
+  EXPECT_EQ(num_signature_verifications, 1ul);
+#endif
+
+  // Verify that the cache cleanup timer has started again.
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1ul)
+      << (task_environment_.DescribeCurrentTasks(),
+          "Pending Tasks have been logged.");
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlock) {

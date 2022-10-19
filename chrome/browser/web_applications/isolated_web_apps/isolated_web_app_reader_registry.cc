@@ -10,7 +10,9 @@
 #include "base/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -19,6 +21,25 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
+
+namespace {
+
+// References to `SignedWebBundleReader`s that are not used for the provided
+// time interval will be removed from the cache. This is important so that the
+// cache doesn't grow forever, given that each `SignedWebBundleReader` requires
+// some memory and an open file handle.
+//
+// Note: Depending on when during the interval a new `SignedWebBundleReader` is
+// accessed, the worst-case time until it is cleaned up can be up to two times
+// `kCleanupInterval`, since the logic for cleaning up `SignedWebBundleReader`s
+// is as follows: Every `kCleanupInterval`, remove references to all
+// `SignedWebBundleReader`s that haven't been accessed for at least
+// `kCleanupInterval`.
+// We could run a separate timer per `SignedWebBundleReader` to more accurately
+// respect `kCleanupInterval`, but this feels like unnecessary overhead.
+base::TimeDelta kCleanupInterval = base::Minutes(10);
+
+}  // namespace
 
 IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
     std::unique_ptr<IsolatedWebAppValidator> validator,
@@ -51,7 +72,7 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
       case CacheEntry::State::kReady:
         // If integrity block and metadata have already been read, read the
         // response from the cached `SignedWebBundleReader`.
-        DoReadResponse(*cache_entry_it->second.reader, resource_request,
+        DoReadResponse(cache_entry_it->second.GetReader(), resource_request,
                        std::move(callback));
         return;
     }
@@ -75,6 +96,7 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
   auto [cache_entry_it, was_insertion] =
       reader_cache_.emplace(web_bundle_path, CacheEntry(std::move(reader)));
   DCHECK(was_insertion);
+  StartCacheCleanupTimerIfNotRunning();
   cache_entry_it->second.pending_requests.emplace_back(resource_request,
                                                        std::move(callback));
 }
@@ -102,9 +124,18 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
       .Run(SignedWebBundleReader::SignatureVerificationAction::
                ContinueAndSkipSignatureVerification());
 #else
-  std::move(integrity_callback)
-      .Run(SignedWebBundleReader::SignatureVerificationAction::
-               ContinueAndVerifySignatures());
+  if (verified_files_.contains(web_bundle_path)) {
+    // If we already verified the signatures of this Signed Web Bundle during
+    // the current browser session, we trust that the Signed Web Bundle has not
+    // been tampered with and don't re-verify signatures.
+    std::move(integrity_callback)
+        .Run(SignedWebBundleReader::SignatureVerificationAction::
+                 ContinueAndSkipSignatureVerification());
+  } else {
+    std::move(integrity_callback)
+        .Run(SignedWebBundleReader::SignatureVerificationAction::
+                 ContinueAndVerifySignatures());
+  }
 #endif
 }
 
@@ -118,8 +149,8 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
   DCHECK(cache_entry_it != reader_cache_.end());
   DCHECK_EQ(cache_entry_it->second.state, CacheEntry::State::kPending);
 
-  // Get all pending callbacks and set the pending callbacks of the cache
-  // entry to an empty vector.
+  // Get all pending requests and set the pending requests of the cache entry to
+  // an empty vector.
   std::vector<std::pair<network::ResourceRequest, ReadResponseCallback>>
       pending_requests;
   cache_entry_it->second.pending_requests.swap(pending_requests);
@@ -151,28 +182,31 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
           base::unexpected(ReadResponseError::ForOtherError(error_message)));
     }
     reader_cache_.erase(cache_entry_it);
+    StopCacheCleanupTimerIfCacheIsEmpty();
     return;
   }
 
+  SignedWebBundleReader& reader = cache_entry_it->second.GetReader();
+
   if (auto error = validator_->ValidateMetadata(
-          web_bundle_id, cache_entry_it->second.reader->GetPrimaryURL(),
-          cache_entry_it->second.reader->GetEntries());
+          web_bundle_id, reader.GetPrimaryURL(), reader.GetEntries());
       error.has_value()) {
     for (auto& [resource_request, callback] : pending_requests) {
       std::move(callback).Run(
           base::unexpected(ReadResponseError::ForOtherError(*error)));
     }
     reader_cache_.erase(cache_entry_it);
+    StopCacheCleanupTimerIfCacheIsEmpty();
     return;
   }
 
   // The `SignedWebBundleReader` is now ready to read responses. Inform all
   // consumers that were waiting for this `SignedWebBundleReader` to become
   // available.
+  verified_files_.insert(cache_entry_it->first);
   cache_entry_it->second.state = CacheEntry::State::kReady;
   for (auto& [resource_request, callback] : pending_requests) {
-    DoReadResponse(*cache_entry_it->second.reader, resource_request,
-                   std::move(callback));
+    DoReadResponse(reader, resource_request, std::move(callback));
   }
 }
 
@@ -205,11 +239,11 @@ void IsolatedWebAppReaderRegistry::DoReadResponse(
       base::BindOnce(
           &IsolatedWebAppReaderRegistry::OnResponseRead,
           // `base::Unretained` can be used here since `this` owns `reader`.
-          base::Unretained(this), std::ref(reader), std::move(callback)));
+          base::Unretained(this), reader.AsWeakPtr(), std::move(callback)));
 }
 
 void IsolatedWebAppReaderRegistry::OnResponseRead(
-    SignedWebBundleReader& reader,
+    base::WeakPtr<SignedWebBundleReader> reader,
     ReadResponseCallback callback,
     base::expected<web_package::mojom::BundleResponsePtr,
                    SignedWebBundleReader::ReadResponseError> response_head) {
@@ -232,8 +266,51 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
   // Since `this` owns `reader`, we only pass a weak reference to it to the
   // `Response` object. If `this` deletes `reader`, it makes sense that the
   // reference contained in `Response` also becomes invalid.
-  std::move(callback).Run(
-      Response(std::move(*response_head), reader.AsWeakPtr()));
+  std::move(callback).Run(Response(std::move(*response_head), reader));
+}
+
+void IsolatedWebAppReaderRegistry::StartCacheCleanupTimerIfNotRunning() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!reader_cache_.empty());
+
+  if (cache_cleanup_timer_.IsRunning()) {
+    return;
+  }
+  cache_cleanup_timer_.Start(
+      FROM_HERE, kCleanupInterval,
+      base::BindRepeating(
+          &IsolatedWebAppReaderRegistry::CleanupOldCacheEntries,
+          // It is safe to use `base::Unretained` here, because
+          // `cache_cleanup_timer_` will be deleted before `this` is deleted.
+          base::Unretained(this)));
+}
+
+void IsolatedWebAppReaderRegistry::StopCacheCleanupTimerIfCacheIsEmpty() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (reader_cache_.empty()) {
+    cache_cleanup_timer_.AbandonAndStop();
+  }
+}
+
+void IsolatedWebAppReaderRegistry::CleanupOldCacheEntries() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  reader_cache_.erase(
+      base::ranges::remove_if(
+          reader_cache_,
+          [&now](const CacheEntry& cache_entry) -> bool {
+            // If a `SignedWebBundleReader` is ready to read responses and has
+            // not been used for at least `kCleanupInterval`, remove it from the
+            // cache.
+            return cache_entry.state == CacheEntry::State::kReady &&
+                   now - cache_entry.last_access() > kCleanupInterval;
+          },
+          [](const std::pair<base::FilePath, CacheEntry>& entry)
+              -> const CacheEntry& { return entry.second; }),
+      reader_cache_.end());
+  StopCacheCleanupTimerIfCacheIsEmpty();
 }
 
 IsolatedWebAppReaderRegistry::Response::Response(
@@ -263,7 +340,7 @@ void IsolatedWebAppReaderRegistry::Response::ReadBody(
 
 IsolatedWebAppReaderRegistry::CacheEntry::CacheEntry(
     std::unique_ptr<SignedWebBundleReader> reader)
-    : reader(std::move(reader)) {}
+    : reader_(std::move(reader)) {}
 
 IsolatedWebAppReaderRegistry::CacheEntry::~CacheEntry() = default;
 
