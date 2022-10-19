@@ -309,10 +309,6 @@ WebViewPasswordManagerClient::GetPasswordRequirementsService() {
   return requirements_service_;
 }
 
-void WebViewPasswordManagerClient::UpdateFormManagers() {
-  bridge_.passwordManager->UpdateFormManagers();
-}
-
 bool WebViewPasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
   return false;
 }

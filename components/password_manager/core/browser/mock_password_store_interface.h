@@ -71,6 +71,10 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               CreateSyncControllerDelegate,
               (),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddSyncEnabledOrDisabledCallback,
+              (base::RepeatingClosure),
+              (override));
   MOCK_METHOD(PasswordStoreBackend*, GetBackendForTesting, (), (override));
   MOCK_METHOD(void,
               OnSyncServiceInitialized,

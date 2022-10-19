@@ -46,7 +46,6 @@
 #include "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
 #include "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
-#import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
 #include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
@@ -138,12 +137,6 @@ using UserDecision =
     _passwordManager = std::move(passwordManager);
     _passwordController = passwordController;
     _passwordController.delegate = self;
-
-    [NSNotificationCenter.defaultCenter
-        addObserver:self
-           selector:@selector(handlePasswordStoreSyncToggledNotification:)
-               name:CWVPasswordStoreSyncToggledNotification
-             object:nil];
   }
   return self;
 }
@@ -718,20 +711,6 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
 - (void)sharedPasswordController:(SharedPasswordController*)controller
              didAcceptSuggestion:(FormSuggestion*)suggestion {
   // No op.
-}
-
-#pragma mark - Private Methods
-
-- (void)handlePasswordStoreSyncToggledNotification:
-    (NSNotification*)notification {
-  NSValue* wrappedBrowserState =
-      notification.userInfo[CWVPasswordStoreNotificationBrowserStateKey];
-  ios_web_view::WebViewBrowserState* browserState =
-      static_cast<ios_web_view::WebViewBrowserState*>(
-          wrappedBrowserState.pointerValue);
-  if (_webState->GetBrowserState() == browserState) {
-    _passwordManagerClient->UpdateFormManagers();
-  }
 }
 
 @end

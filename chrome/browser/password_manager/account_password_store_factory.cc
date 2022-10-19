@@ -53,38 +53,6 @@ using password_manager::UnsyncedCredentialsDeletionNotifier;
 
 namespace {
 
-void SyncEnabledOrDisabled(Profile* profile) {
-  // Update all form managers. Incognito tabs originated from this profile
-  // can also fill passwords, so they should be included.
-#if BUILDFLAG(IS_ANDROID)
-  for (TabModel* tab_model : TabModelList::models()) {
-    for (int index = 0; index < tab_model->GetTabCount(); index++) {
-      content::WebContents* web_contents = tab_model->GetWebContentsAt(index);
-      ChromePasswordManagerClient::FromWebContents(web_contents)
-          ->UpdateFormManagers();
-    }
-  }
-#else
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->GetOriginalProfile() !=
-        profile->GetOriginalProfile()) {
-      continue;
-    }
-    TabStripModel* tabs = browser->tab_strip_model();
-    for (int index = 0; index < tabs->count(); index++) {
-      content::WebContents* web_contents = tabs->GetWebContentsAt(index);
-      ChromePasswordManagerClient::FromWebContents(web_contents)
-          ->UpdateFormManagers();
-    }
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  password_manager::PasswordReuseManager* reuse_manager =
-      PasswordReuseManagerFactory::GetForProfile(profile);
-  if (reuse_manager)
-    reuse_manager->AccountStoreStateChanged();
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 class UnsyncedCredentialsDeletionNotifierImpl
     : public UnsyncedCredentialsDeletionNotifier {
@@ -187,9 +155,7 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
                   profile)));
 #endif
 
-  ps->Init(profile->GetPrefs(),
-           /*affiliated_match_helper=*/nullptr,
-           base::BindRepeating(&SyncEnabledOrDisabled, profile));
+  ps->Init(profile->GetPrefs(), /*affiliated_match_helper=*/nullptr);
 
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {

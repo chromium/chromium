@@ -71,14 +71,10 @@ class PasswordStore : public PasswordStoreInterface {
   PasswordStore(const PasswordStore&) = delete;
   PasswordStore& operator=(const PasswordStore&) = delete;
 
-  // Always call this too on the UI thread. |sync_enabled_or_disabled_cb| is
-  // invoked in UI thread (or sequence used to invoke Init()) when sync is
-  // enabled or disabled. It is no longer invoked after ShutdownOnUIThread().
+  // Always call this too on the UI thread.
   // TODO(crbug.com/1218413): Move initialization into the core interface, too.
-  void Init(
-      PrefService* prefs,
-      std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper,
-      base::RepeatingClosure sync_enabled_or_disabled_cb = base::DoNothing());
+  void Init(PrefService* prefs,
+            std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper);
 
   // RefcountedKeyedService:
   void ShutdownOnUIThread() override;
@@ -122,6 +118,8 @@ class PasswordStore : public PasswordStoreInterface {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
+      base::RepeatingClosure sync_enabled_or_disabled_cb) override;
   PasswordStoreBackend* GetBackendForTesting() override;
 
  protected:
@@ -208,8 +206,11 @@ class PasswordStore : public PasswordStoreInterface {
   // TODO(crbug.com/1217071): Move into backend_.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
-  // Closure passed during Init().
-  base::RepeatingClosure sync_enabled_or_disabled_cb_ = base::DoNothing();
+  // See PasswordStoreInterface::AddSyncEnabledOrDisabledCallback(). Wrapped in
+  // unique_ptr so it can be destroyed earlier, in ShutdownOnUIThread(),
+  // cancelling the existing callbacks.
+  std::unique_ptr<base::RepeatingClosureList> sync_enabled_or_disabled_cbs_ =
+      std::make_unique<base::RepeatingClosureList>();
 
   // The observers.
   base::ObserverList<Observer, /*check_empty=*/true> observers_;

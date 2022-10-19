@@ -18,39 +18,12 @@
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-NSNotificationName const CWVPasswordStoreSyncToggledNotification =
-    @"CWVPasswordStoreSyncToggledNotification";
-NSString* const CWVPasswordStoreNotificationBrowserStateKey =
-    @"CWVPasswordStoreNotificationBrowserStateKey";
-
 namespace ios_web_view {
-
-namespace {
-
-void UpdateFormManager(WebViewBrowserState* browser_state) {
-  NSValue* wrapped_browser_state = [NSValue valueWithPointer:browser_state];
-  [NSNotificationCenter.defaultCenter
-      postNotificationName:CWVPasswordStoreSyncToggledNotification
-                    object:nil
-                  userInfo:@{
-                    CWVPasswordStoreNotificationBrowserStateKey :
-                        wrapped_browser_state
-                  }];
-}
-
-void SyncEnabledOrDisabled(WebViewBrowserState* browser_state) {
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&UpdateFormManager, browser_state));
-}
-
-}  // namespace
 
 // static
 scoped_refptr<password_manager::PasswordStoreInterface>
@@ -105,9 +78,7 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db)));
-  ps->Init(browser_state->GetPrefs(),
-           /*affiliated_match_helper=*/nullptr,
-           base::BindRepeating(&SyncEnabledOrDisabled, browser_state));
+  ps->Init(browser_state->GetPrefs(), /*affiliated_match_helper=*/nullptr);
 
   return ps;
 }

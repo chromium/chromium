@@ -80,13 +80,11 @@ PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
 
 void PasswordStore::Init(
     PrefService* prefs,
-    std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper,
-    base::RepeatingClosure sync_enabled_or_disabled_cb) {
+    std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper) {
   main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
   DCHECK(main_task_runner_);
   prefs_ = prefs;
   affiliated_match_helper_ = std::move(affiliated_match_helper);
-  sync_enabled_or_disabled_cb_ = std::move(sync_enabled_or_disabled_cb);
 
   DCHECK(backend_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
@@ -330,7 +328,7 @@ void PasswordStore::ShutdownOnUIThread() {
 
   // Prevent in-flight tasks posted from the backend to invoke the callback
   // after shutdown.
-  sync_enabled_or_disabled_cb_ = base::DoNothing();
+  sync_enabled_or_disabled_cbs_.reset();
 
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
@@ -352,6 +350,13 @@ void PasswordStore::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   if (backend_)
     backend_->OnSyncServiceInitialized(sync_service);
+}
+
+base::CallbackListSubscription PasswordStore::AddSyncEnabledOrDisabledCallback(
+    base::RepeatingClosure sync_enabled_or_disabled_cb) {
+  DCHECK(sync_enabled_or_disabled_cbs_);
+  return sync_enabled_or_disabled_cbs_->Add(
+      std::move(sync_enabled_or_disabled_cb));
 }
 
 PasswordStoreBackend* PasswordStore::GetBackendForTesting() {
@@ -444,7 +449,9 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
 
 void PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  sync_enabled_or_disabled_cb_.Run();
+  if (sync_enabled_or_disabled_cbs_) {
+    sync_enabled_or_disabled_cbs_->Notify();
+  }
 }
 
 void PasswordStore::UnblocklistInternal(

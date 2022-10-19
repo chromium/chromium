@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -376,6 +377,8 @@ class PasswordManager : public PasswordManagerInterface {
 
   // The embedder-level client. Must outlive this class.
   const raw_ptr<PasswordManagerClient> client_;
+
+  const base::CallbackListSubscription account_store_cb_list_subscription_;
 
   // Records all visible forms seen during a page load, in all frames of the
   // page. When the page stops loading, the password manager checks if one of

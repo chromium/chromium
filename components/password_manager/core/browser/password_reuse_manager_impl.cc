@@ -132,6 +132,11 @@ void PasswordReuseManagerImpl::Init(PrefService* prefs,
     account_store_->AddObserver(this);
     account_store_->GetAutofillableLogins(
         /*consumer=*/weak_ptr_factory_.GetWeakPtr());
+    // base::Unretained() is safe because `this` outlives the subscription.
+    account_store_cb_list_subscription_ =
+        account_store_->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
+            &PasswordReuseManagerImpl::AccountStoreStateChanged,
+            base::Unretained(this)));
   }
 }
 

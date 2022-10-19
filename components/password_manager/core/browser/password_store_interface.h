@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
@@ -165,6 +166,10 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // dependency during PasswordStore creation. |sync_service| may not
   // have started yet but its preferences can already be queried.
   virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service) = 0;
+
+  // The passed callback will be invoked whenever sync is enabled/disabled.
+  virtual base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
+      base::RepeatingClosure sync_enabled_or_disabled_cb) = 0;
 
   // Tests only can retrieve the backend.
   virtual PasswordStoreBackend* GetBackendForTesting() = 0;

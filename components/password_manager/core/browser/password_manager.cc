@@ -222,6 +222,20 @@ bool IsSingleUsernameSubmission(const PasswordForm& submitted_form) {
   return true;
 }
 
+// A helper just so the subscription field in PasswordManager can be const.
+// `manager` must outlive the returned subscription.
+base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
+    PasswordManager* manager,
+    PasswordManagerClient* client) {
+  if (PasswordStoreInterface* account_store =
+          client->GetAccountPasswordStore()) {
+    // base::Unretained() safe because of the precondition.
+    return account_store->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
+        &PasswordManager::UpdateFormManagers, base::Unretained(manager)));
+  }
+  return {};
+}
+
 }  // namespace
 
 // static
@@ -324,7 +338,10 @@ void PasswordManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
 }
 
 PasswordManager::PasswordManager(PasswordManagerClient* client)
-    : client_(client), leak_delegate_(client) {
+    : client_(client),
+      account_store_cb_list_subscription_(
+          AddSyncEnabledOrDisabledCallback(this, client)),
+      leak_delegate_(client) {
   DCHECK(client_);
 }
 
