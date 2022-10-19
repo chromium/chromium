@@ -70,6 +70,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private static final int CHANGING_SHORTNAME = 1 << 3;
     private static final int HISTOGRAM_SCOPE = 1 << 4;
 
+    private static final String PARAM_SHELL_VERSION = "shell_version";
+
     private final ActivityTabProvider mTabProvider;
 
     /** Whether updates are enabled. Some tests disable updates. */
@@ -165,7 +167,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             if (!nameUpdateDialogEnabled()) {
                 mFetchedInfo.setUseOldName(true);
             }
-            if (!iconUpdateDialogEnabled()) {
+            if (!iconUpdateDialogEnabled()
+                    && !allowIconUpdateForShellVersion(mInfo.shellApkVersion())) {
                 mFetchedInfo.setUseOldIcon(true);
                 // Forces recreation of the primary icon during proto construction.
                 mFetchedPrimaryIconUrl = "";
@@ -239,7 +242,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 && TextUtils.equals(hash, mStorage.getLastWebApkUpdateHashAccepted());
         boolean showDialogForName =
                 (nameChanging || shortNameChanging) && nameUpdateDialogEnabled();
-        boolean showDialogForIcon = iconChanging && iconUpdateDialogEnabled();
+        boolean showDialogForIcon = iconChanging && iconUpdateDialogEnabled()
+                && !allowIconUpdateForShellVersion(mInfo.shellApkVersion());
 
         if ((!showDialogForName && !showDialogForIcon) || alreadyUserApproved) {
             if (alreadyUserApproved) {
@@ -273,6 +277,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     protected boolean nameUpdateDialogEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UPDATE_DIALOG_FOR_NAME);
+    }
+
+    private boolean allowIconUpdateForShellVersion(int shellVersion) {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                       ChromeFeatureList.WEB_APK_ALLOW_ICON_UPDATA, PARAM_SHELL_VERSION, 0)
+                >= shellVersion;
     }
 
     protected void showIconOrNameUpdateDialog(

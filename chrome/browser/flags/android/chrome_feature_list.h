@@ -192,6 +192,7 @@ BASE_DECLARE_FEATURE(kVoiceSearchAudioCapturePolicy);
 BASE_DECLARE_FEATURE(kVoiceButtonInTopToolbar);
 BASE_DECLARE_FEATURE(kVrBrowsingFeedback);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
+BASE_DECLARE_FEATURE(kWebApkAllowIconUpdate);
 BASE_DECLARE_FEATURE(kWebApkInstallService);
 BASE_DECLARE_FEATURE(kWebApkTrampolineOnInitialIntent);
 

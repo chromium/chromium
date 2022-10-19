@@ -337,6 +337,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebOtpCrossDeviceSimpleString,
     &content_creation::kWebNotesDynamicTemplates,
     &content_creation::kWebNotesStylizeEnabled,
+    &kWebApkAllowIconUpdate,
     &kWebApkInstallService,
     &kWebApkTrampolineOnInitialIntent,
     &features::kDnsOverHttps,
@@ -1141,6 +1142,10 @@ BASE_FEATURE(kVrBrowsingFeedback,
 // a descriptive text.
 BASE_FEATURE(kWebOtpCrossDeviceSimpleString,
              "WebOtpCrossDeviceSimpleString",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebApkAllowIconUpdate,
+             "WebApkAllowIconUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Chrome Android WebAPK-install service.

@@ -630,6 +630,7 @@ public abstract class ChromeFeatureList {
     public static final String WEB_FILTER_INTERSTITIAL_REFRESH = "WebFilterInterstitialRefresh";
     public static final String WEBNOTES_DYNAMIC_TEMPLATES = "WebNotesDynamicTemplates";
     public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
+    public static final String WEB_APK_ALLOW_ICON_UPDATA = "WebApkAllowIconUpdate";
     public static final String WEB_APK_INSTALL_COMPLETE_NOTIFICATION =
             "WebApkInstallCompleteNotification";
     public static final String WEB_APK_INSTALL_SERVICE = "WebApkInstallService";
