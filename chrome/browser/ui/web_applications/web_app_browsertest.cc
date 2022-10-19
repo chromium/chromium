@@ -27,7 +27,6 @@
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
@@ -1332,9 +1331,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  content::CreateAndLoadWebContentsObserver app_loaded_observer;
   const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   app_loaded_observer.Wait();
@@ -1425,9 +1422,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenuSuccess) {
             BucketsAre(base::Bucket(true, 1)));
         run_loop_install.Quit();
       }));
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  content::CreateAndLoadWebContentsObserver app_loaded_observer;
   const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   app_loaded_observer.Wait();
@@ -1508,9 +1503,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
             BucketsAre(base::Bucket(false, 1)));
         run_loop_install.Quit();
       }));
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  content::CreateAndLoadWebContentsObserver app_loaded_observer;
   const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   app_loaded_observer.Wait();
@@ -1551,9 +1544,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  content::CreateAndLoadWebContentsObserver app_loaded_observer;
   const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   app_loaded_observer.Wait();
