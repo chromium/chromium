@@ -716,6 +716,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 positionAtHeight(mDisplayHeight - window.getAttributes().y);
                 maybeInvokeResizeCallback();
                 mStatus = mTargetStatus;
+                if (mFinishRunnable != null) {
+                    Runnable oldFinishRunnable = mFinishRunnable;
+                    mFinishRunnable = null;
+                    handleCloseAnimation(oldFinishRunnable);
+                    return;
+                }
             }, NAVBAR_BUTTON_RESTORE_DELAY_MS);
 
             // Temporarily disables user input until the window is restored.
@@ -1006,6 +1012,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (mFinishRunnable != null) return;
 
         mFinishRunnable = finishRunnable;
+
+        // Tapping the close button while in transition state should be ignored.
+        // Delay it till the height settles in to either top/initial state.
+        if (mStatus == HeightStatus.TRANSITION) return;
+
         Window window = mActivity.getWindow();
         WindowManager.LayoutParams attrs = window.getAttributes();
         if (attrs.gravity == Gravity.BOTTOM || isFullHeight()) {
