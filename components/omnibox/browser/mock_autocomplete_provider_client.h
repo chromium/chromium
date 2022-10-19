@@ -11,12 +11,15 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
+#include "components/omnibox/browser/keyword_extensions_delegate.h"
 #include "components/omnibox/browser/mock_tab_matcher.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
+#include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
