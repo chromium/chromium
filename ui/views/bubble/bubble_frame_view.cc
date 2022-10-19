@@ -53,26 +53,6 @@ namespace views {
 
 namespace {
 
-// Returns an image of `size` that contains as much of `image` as possible
-// without distorting the `image`. That result is clipped to a roundrect with
-// radius `border_radius`.
-gfx::ImageSkia CreateMainImage(const gfx::Size& size,
-                               int border_radius,
-                               const gfx::ImageSkia& image) {
-  float scale = std::min(static_cast<float>(image.width()) / size.width(),
-                         static_cast<float>(image.height()) / size.height());
-  gfx::Size scaled_size = {base::ClampFloor(scale * size.width()),
-                           base::ClampFloor(scale * size.height())};
-  gfx::Rect bounds{{0, 0}, image.size()};
-  bounds.ClampToCenteredSize(scaled_size);
-  auto scaled_and_cropped_image = gfx::ImageSkiaOperations::CreateTiledImage(
-      image, bounds.x(), bounds.y(), bounds.width(), bounds.height());
-  auto resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
-      scaled_and_cropped_image, skia::ImageOperations::RESIZE_LANCZOS3, size);
-  return gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(border_radius,
-                                                                resized_image);
-}
-
 // Get the |vertical| or horizontal amount that |available_bounds| overflows
 // |window_bounds|.
 int GetOverflowLength(const gfx::Rect& available_bounds,
@@ -408,9 +388,10 @@ void BubbleFrameView::UpdateMainImage() {
     const int border_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
         Emphasis::kHigh, gfx::Size());
     main_image_->SetImage(
-        CreateMainImage(gfx::Size(kMainImageDimension, kMainImageDimension),
-                        border_radius - 2 * kBorderStrokeThickness,
-                        model.GetImage().AsImageSkia()));
+        gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
+            gfx::Size(kMainImageDimension, kMainImageDimension),
+            border_radius - 2 * kBorderStrokeThickness,
+            model.GetImage().AsImageSkia()));
     main_image_->SetBorder(views::CreateRoundedRectBorder(
         kBorderStrokeThickness, border_radius,
         gfx::Insets(kBorderInsets - kBorderStrokeThickness),

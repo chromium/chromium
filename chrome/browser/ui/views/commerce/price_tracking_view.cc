@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -30,11 +31,12 @@ namespace {
 constexpr int kProductImageSize = 56;
 constexpr int kLableSpacing = 4;
 constexpr int kHorizontalSpacing = 16;
+constexpr int kImageBorderRadius = 4;
 }  // namespace
 
 PriceTrackingView::PriceTrackingView(Profile* profile,
                                      GURL page_url,
-                                     ui::ImageModel product_image,
+                                     gfx::ImageSkia product_image,
                                      bool is_price_track_enabled)
     : profile_(profile), is_price_track_enabled_(is_price_track_enabled) {
   // image column
@@ -51,8 +53,11 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
           .SetPreferredSize(gfx::Size(kProductImageSize, kProductImageSize))
           // TODO(meiliang@): Verify color and corner radius with UX.
           .SetBorder(views::CreateRoundedRectBorder(
-              1, 4, SkColorSetA(gfx::kGoogleGrey900, 0x24)))
-          .SetImage(product_image)
+              1, kImageBorderRadius, SkColorSetA(gfx::kGoogleGrey900, 0x24)))
+          .SetImage(
+              gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
+                  gfx::Size(kProductImageSize, kProductImageSize),
+                  kImageBorderRadius, product_image))
           .Build());
 
   // Text column

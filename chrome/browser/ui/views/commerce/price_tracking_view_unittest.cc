@@ -82,8 +82,8 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
     const auto valid_product_image =
         gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
     auto price_tracking_View = std::make_unique<PriceTrackingView>(
-        profile(), GURL(kTestURL),
-        ui::ImageModel::FromImage(valid_product_image), is_price_track_enabled);
+        profile(), GURL(kTestURL), *valid_product_image.ToImageSkia(),
+        is_price_track_enabled);
     price_tracking_View_ =
         anchor_widget_->SetContentsView(std::move(price_tracking_View));
     anchor_widget_->Show();

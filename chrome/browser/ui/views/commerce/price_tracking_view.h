@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -16,7 +17,7 @@ class PriceTrackingView : public views::FlexLayoutView {
  public:
   PriceTrackingView(Profile* profile,
                     GURL page_url,
-                    ui::ImageModel product_image,
+                    gfx::ImageSkia product_image,
                     bool is_price_track_enabled);
   ~PriceTrackingView() override;
 
