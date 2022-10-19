@@ -30,7 +30,8 @@ enum class KAnonymityServiceQuerySetAction {
   kSendQuerySetRequest = 4,
   kQuerySetRequestFailed = 5,
   kQuerySetQueueFull = 6,
-  kMaxValue = 6,
+  kQuerySetRequestParseError = 7,
+  kMaxValue = 7,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -59,6 +60,13 @@ void RecordQuerySetSize(size_t size);
 
 void RecordTrustTokenGetterAction(KAnonymityTrustTokenGetterAction action);
 
-void RecordTrustTokenGet(base::Time request_start, base::Time request_end);
+void RecordJoinSetLatency(base::TimeTicks request_start,
+                          base::TimeTicks request_end);
+
+void RecordQuerySetLatency(base::TimeTicks request_start,
+                           base::TimeTicks request_end);
+
+void RecordTrustTokenGet(base::TimeTicks request_start,
+                         base::TimeTicks request_end);
 
 #endif  // CHROME_BROWSER_K_ANONYMITY_SERVICE_K_ANONYMITY_SERVICE_METRICS_H_

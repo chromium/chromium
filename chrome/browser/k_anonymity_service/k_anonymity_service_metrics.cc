@@ -23,7 +23,20 @@ void RecordTrustTokenGetterAction(KAnonymityTrustTokenGetterAction action) {
                             action);
 }
 
-void RecordTrustTokenGet(base::Time request_start, base::Time request_end) {
+void RecordJoinSetLatency(base::TimeTicks request_start,
+                          base::TimeTicks request_end) {
+  UMA_HISTOGRAM_TIMES("Chrome.KAnonymityService.JoinSet.Latency",
+                      request_end - request_start);
+}
+
+void RecordQuerySetLatency(base::TimeTicks request_start,
+                           base::TimeTicks request_end) {
+  UMA_HISTOGRAM_TIMES("Chrome.KAnonymityService.QuerySet.Latency",
+                      request_end - request_start);
+}
+
+void RecordTrustTokenGet(base::TimeTicks request_start,
+                         base::TimeTicks request_end) {
   UMA_HISTOGRAM_TIMES("Chrome.KAnonymityService.TrustTokenGetter.Latency",
                       request_end - request_start);
 }

@@ -86,10 +86,9 @@ class KAnonymityTrustTokenGetter {
     ~PendingRequest();
     PendingRequest(PendingRequest&&) noexcept;
     PendingRequest& operator=(PendingRequest&&) noexcept;
-    base::Time request_start;
+    base::TimeTicks request_start;
     TryGetTrustTokenAndKeyCallback callback;
   };
-
   // Entry point for processing the request on the front of the queue.
   void TryGetTrustTokenAndKeyInternal();
 

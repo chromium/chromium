@@ -53807,6 +53807,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="4" label="SendQuerySetRequest"/>
   <int value="5" label="QuerySetRequestFailed"/>
   <int value="6" label="QuerySetQueueFull"/>
+  <int value="7" label="QuerySetRequestParseError"/>
 </enum>
 
 <enum name="KAnonymityTrustTokenGetterAction">

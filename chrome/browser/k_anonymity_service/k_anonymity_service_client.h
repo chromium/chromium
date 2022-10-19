@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,13 +18,17 @@
 #include "chrome/browser/k_anonymity_service/remote_trust_token_query_answerer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 
-// This class will implement the KAnonymityServiceDelegate by sending requests
-// to the Chrome k-anonymity Service. For now this class only requests the
-// trust token. In the future this class will send requests over OHTTP in order
-// to anonymize the source of the requests. The requests are internally queued
-// and performed serially.
+// This class implements the KAnonymityServiceDelegate by sending requests
+// to the Chrome k-anonymity Service. This class will eventually send requests
+// over OHTTP in order to anonymize the source of the requests. The requests are
+// internally queued and performed serially.
 //
 // In the case of JoinSet this is necessary because we need
 // to ensure that there is a trust token available to attach to the call, and
@@ -48,8 +53,7 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // JoinSet corresponds directly to the JoinSet endpoint provided by the
   // K-anonymity Service endpoint. The endpoint requires us to provide a trust
   // token for rate limiting for each call, so we need to check that before
-  // performing the OHTTP request (assuming we have the key). For now this
-  // function only fetches the trust token without performing the request.
+  // performing the OHTTP request (assuming we have the key).
   //
   // The trust token interface (and network isolation configuration) assume
   // there exists both a "top frame" and a "current frame" for any requests.
@@ -62,9 +66,8 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   // third-party frame.
   void JoinSet(std::string id,
                base::OnceCallback<void(bool)> callback) override;
-  // QuerySets will be implemented as multiple calls to the QuerySet endpoint of
-  // the K-anonymity Service. For now no requests are made and this function
-  // just marks all of the requested sets as not k-anonymous.
+  // QuerySets is implemented as multiple calls to the QuerySet endpoint of
+  // the K-anonymity Service.
   void QuerySets(std::vector<std::string> set_ids,
                  base::OnceCallback<void(std::vector<bool>)> callback) override;
 
@@ -77,12 +80,40 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
                        base::OnceCallback<void(bool)> callback);
     ~PendingJoinRequest();
     std::string id;
-    base::Time request_start;
+    base::TimeTicks request_start;
+    int retries = 0;
     base::OnceCallback<void(bool)> callback;
+  };
+
+  struct PendingQueryRequest {
+    PendingQueryRequest(std::vector<std::string> set_id,
+                        base::OnceCallback<void(std::vector<bool>)> callback);
+    ~PendingQueryRequest();
+    std::vector<std::string> ids;
+    base::TimeTicks request_start;
+    base::OnceCallback<void(std::vector<bool>)> callback;
+  };
+
+  struct OHTTPKeyAndExpiration {
+    // The OHTTP key in this struct is formatted as described in
+    // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-02.html#name-key-configuration-encoding
+    std::string key;  // OHTTP key
+    base::Time expiration;
   };
 
   // Starts processing items in the queue by calling JoinSetCheckTrustTokens()
   void JoinSetStartNextQueued();
+  // Checks that the cached OHTTP Key is still valid and if not calls
+  // RequestJoinSetOHTTPKey to refresh it.
+  void JoinSetCheckOHTTPKey();
+  // Starts the HTTP fetch to obtain the OHTTP key from the JoinSet endpoint.
+  void RequestJoinSetOHTTPKey();
+  // Asynchronously called by the join_url_loader_ with a response containing
+  // the OHTTP key for the JoinSet endpoint. The key is cached and then
+  // JoinSetCheckTrustTokens is called to continue processing the current
+  // request.
+  void OnGotJoinSetOHTTPKey(std::unique_ptr<std::string> response);
+
   // Calls the token_getter_ to ensure there is a trust token for the request.
   void JoinSetCheckTrustTokens();
   // Asynchronous callback from token_getter_ which is passed the key commitment
@@ -91,27 +122,77 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   void OnMaybeHasTrustTokens(
       absl::optional<KAnonymityTrustTokenGetter::KeyAndNonUniqueUserId>
           maybe_key_and_id);
-  // In the future, this will start the OHTTP JoinSet request for the
-  // join_queue_.front() request, but for now just calls CompleteJoinSetRequest.
+  // Starts the OHTTP JoinSet request for the join_queue_.front() request.
   void JoinSetSendRequest(
       KAnonymityTrustTokenGetter::KeyAndNonUniqueUserId key_and_id);
+  // Handle the response to the JoinSet request and call CompleteJoinSetRequest
+  // if successful.
+  void JoinSetOnGotResponse(scoped_refptr<net::HttpResponseHeaders> headers);
   // Calls DoJoinSetCallback indicating the current request completed
   // successfully. If there are other items in the queue calls
   // JoinSetStartNextQueued to start processing them.
-  void FailJoinSetRequests();
+  void CompleteJoinSetRequest();
   // Calls DoJoinSetCallback for each of the requests in the join_queue_
   // indicating the requests were unsuccessful.
-  void CompleteJoinSetRequest();
+  void FailJoinSetRequests();
   // Asynchronously calls the callback for the join_queue_.front() request with
   // the provided status and removes it from the queue.
   void DoJoinSetCallback(bool status);
 
-  base::circular_deque<std::unique_ptr<PendingJoinRequest>> join_queue_;
+  // Checks that the cached OHTTP Key is still valid and if not calls
+  // RequestQuerySetOHTTPKey to refresh it.
+  void QuerySetsCheckOHTTPKey();
+  // Starts the HTTP fetch to obtain the OHTTP key from the QuerySet endpoint.
+  void RequestQuerySetOHTTPKey();
+  // Asynchronous response containing the OHTTP key for the QuerySet endpoint.
+  // The key is cached and then QuerySetsSendRequests is called to continue
+  // processing the current request.
+  void OnGotQuerySetOHTTPKey(std::unique_ptr<std::string> response);
+  // Handles failures in fetching the OHTTP key. Schedules callbacks indicating
+  // failure for all requests on the query_queue_.
+  void FailFetchingQueryOHTTPKey();
+  // Starts the OHTTP QuerySet request for the current QueryRequest.
+  void QuerySetsSendRequest();
+  // Called as an asynchronous response to the OHTTP request started by
+  // QuerySetsSendRequest. Passes the JSON response received to be decoded and
+  // handled in QuerySetsOnParsedResponse.
+  void QuerySetsOnGotResponse(std::unique_ptr<std::string> response);
+  // Called asynchronously when the QuerySet response from
+  // QuerySetsOnGotResponse has been decoded.
+  void QuerySetsOnParsedResponse(
+      data_decoder::DataDecoder::ValueOrError result);
+  // Calls DoQuerySetsCallback indicating the current request completed
+  // successfully. If there are other items in the queue calls
+  // QuerySetsCheckOHTTPKey to start processing them.
+  void CompleteQuerySetsRequest(std::vector<bool> result);
+  // Called when the request started by QuerySetsSendRequest fails
+  // either because of network errors are parse failure. Calls
+  // DoQuerySetsCallback for each of the requests in the query_queue_ indicating
+  // the requests were unsuccessful.
+  void FailQuerySetsRequests();
+  // Called by QuerySetsOnParsedResponse and FailQuerySetRequest. Schedules
+  // a callback containing the result and starts work on the next request in the
+  // query_queue_.
+  void DoQuerySetsCallback(std::vector<bool> result);
 
-  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const bool enable_ohttp_requests_;
+  // cached data
+  OHTTPKeyAndExpiration joinset_ohttp_key_with_expiration_;
+  OHTTPKeyAndExpiration queryset_ohttp_key_with_expiration_;
+
+  // queues
+  base::circular_deque<std::unique_ptr<PendingJoinRequest>> join_queue_;
+  base::circular_deque<std::unique_ptr<PendingQueryRequest>> query_queue_;
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  std::unique_ptr<network::SimpleURLLoader> join_url_loader_;
+  std::unique_ptr<network::SimpleURLLoader> query_url_loader_;
+  bool enable_ohttp_requests_;
+  net::IsolationInfo isolation_info_;
   RemoteTrustTokenQueryAnswerer trust_token_answerer_;
   KAnonymityTrustTokenGetter token_getter_;
+
+  url::Origin join_origin_;
+  url::Origin query_origin_;
 
   base::WeakPtrFactory<KAnonymityServiceClient> weak_ptr_factory_{this};
 };
