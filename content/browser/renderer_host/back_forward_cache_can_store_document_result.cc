@@ -271,12 +271,22 @@ bool BackForwardCacheCanStoreDocumentResult::CanRestore() const {
 
 namespace {
 std::string DisabledReasonsToString(
-    const std::set<BackForwardCache::DisabledReason>& reasons) {
+    const std::set<BackForwardCache::DisabledReason>& reasons,
+    bool for_not_restored_reasons = false) {
   std::vector<std::string> descriptions;
   for (const auto& reason : reasons) {
-    descriptions.push_back(
-        base::StringPrintf("%d:%d:%s:%s", reason.source, reason.id,
-                           reason.description.c_str(), reason.context.c_str()));
+    std::string string_to_add;
+    if (for_not_restored_reasons) {
+      // When |for_not_restored_reasons| is true, prepare a string to report to
+      // NotRestoredReasons API. For this we report brief strings, and we mask
+      // extension related reasons saying "Extensions".
+      string_to_add = reason.report_string;
+    } else {
+      string_to_add = base::StringPrintf("%d:%d:%s:%s", reason.source,
+                                         reason.id, reason.description.c_str(),
+                                         reason.context.c_str());
+    }
+    descriptions.push_back(string_to_add);
   }
   return base::JoinString(descriptions, ", ");
 }
@@ -517,12 +527,12 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kCacheControlNoStoreCookieModified:
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
       return "Cache-control:no-store";
+    case Reason::kDisableForRenderFrameHostCalled:
+      return DisabledReasonsToString(disabled_reasons_,
+                                     /*for_not_restored_reasons=*/true);
     case Reason::kBackForwardCacheDisabledForDelegate:
     case Reason::kBrowsingInstanceNotSwapped:
     case Reason::kConflictingBrowsingInstance:
-    case Reason::kDisableForRenderFrameHostCalled:
-    // DisabledForRenderFrameHost contains reasons related to extensions. Mask
-    // all the reasons as "Internal error".
     case Reason::kDomainNotAllowed:
     case Reason::kIgnoreEventAndEvict:
     case Reason::kRendererProcessKilled:

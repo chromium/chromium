@@ -1828,9 +1828,10 @@ void WebTestControlHost::PrepareRendererForNextWebTest() {
   BackForwardCache::DisableForRenderFrameHost(
       web_contents->GetPrimaryMainFrame(),
       BackForwardCache::DisabledReason(
-          {BackForwardCache::DisabledSource::kTesting, 0,
-           "disabled for web_test not to cache the test page after the test "
-           "ends."}));
+          BackForwardCache::DisabledSource::kTesting, 0,
+          "disabled for web_test not to cache the test page after the test "
+          "ends.",
+          /*context=*/"", "disabled"));
 
   // Flush all the back/forward cache to avoid side effects in the next test.
   for (auto* shell : Shell::windows()) {
