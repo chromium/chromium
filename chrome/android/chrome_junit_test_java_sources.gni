@@ -124,6 +124,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/explore_sites/ExploreSitesBackgroundTaskUnitTest.java",
   "junit/src/org/chromium/chrome/browser/explore_sites/ExploreSitesCategoryUnitTest.java",
   "junit/src/org/chromium/chrome/browser/explore_sites/ExploreSitesPageStateUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/feed/FeedActionDelegateImplTest.java",
   "junit/src/org/chromium/chrome/browser/feedback/ChromeFeedbackCollectorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/feedback/FeedFeedbackCollectorTest.java",
   "junit/src/org/chromium/chrome/browser/findinpage/FindToolbarManagerTest.java",

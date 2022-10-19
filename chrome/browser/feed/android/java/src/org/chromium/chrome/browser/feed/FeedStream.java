@@ -340,6 +340,11 @@ public class FeedStream implements Stream {
                         -> FeedServiceBridge.reportOpenVisitComplete(visitResult.visitTimeMs));
             });
         }
+
+        @Override
+        public void showSignInPrompt() {
+            mActionDelegate.showSignInActivity();
+        }
     }
 
     /**

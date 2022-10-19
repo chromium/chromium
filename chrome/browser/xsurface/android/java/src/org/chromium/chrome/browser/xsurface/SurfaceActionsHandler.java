@@ -188,4 +188,9 @@ public interface SurfaceActionsHandler {
      */
     @Deprecated
     default void navigateNewTabInGroup(String url, View actionSourceView) {}
+
+    /**
+     * Requests that a sign-in prompt be shown.
+     */
+    default void showSignInPrompt() {}
 }

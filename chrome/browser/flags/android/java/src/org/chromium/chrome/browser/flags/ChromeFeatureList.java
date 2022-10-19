@@ -642,6 +642,7 @@ public abstract class ChromeFeatureList {
     public static final String FEED_ABLATION = "FeedAblation";
     public static final String FEED_NO_VIEW_CACHE = "FeedNoViewCache";
     public static final String FEED_REPLACE_ALL = "FeedReplaceAll";
+    public static final String FEED_SHOW_SIGN_IN_COMMAND = "FeedShowSignInCommand";
     public static final String SKIP_SERVICE_WORKER_FOR_INSTALL_PROMPT =
             "SkipServiceWorkerForInstallPromot";
 

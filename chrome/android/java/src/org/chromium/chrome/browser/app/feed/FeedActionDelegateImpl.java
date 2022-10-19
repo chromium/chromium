@@ -18,11 +18,13 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.PageTransition;
@@ -122,6 +124,14 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void onStreamCreated() {}
+
+    @Override
+    public void showSignInActivity() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
+            SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
+                    mActivityContext, SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
+        }
+    }
 
     /**
      * A {@link TabObserver} that observes navigation related events that originate from Feed

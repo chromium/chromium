@@ -173,6 +173,9 @@ extern const base::FeatureParam<double> kSliceVisibleCoverageThreshold;
 // When enabled, allow tagging experiments with only an experiment ID.
 BASE_DECLARE_FEATURE(kFeedExperimentIDTagging);
 
+// When enabled, allow show sign in command to request a user signs in / syncs.
+BASE_DECLARE_FEATURE(kFeedShowSignInCommand);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

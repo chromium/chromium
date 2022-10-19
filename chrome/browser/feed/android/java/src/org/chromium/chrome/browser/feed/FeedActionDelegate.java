@@ -63,4 +63,9 @@ public interface FeedActionDelegate {
      * Informs that the stream was created.
      */
     void onStreamCreated();
+
+    /**
+     * Shows a sign in activity as a result of a feed user action.
+     */
+    void showSignInActivity();
 }
