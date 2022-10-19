@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
@@ -128,12 +129,13 @@ NSString* const kActiveDaysInPastWeek = @"ActiveDaysInPastWeek";
       promos_manager::Promo::AppStoreRating);
 }
 
-// Updates kTotalDaysOnChrome and kActiveDaysInPastWeek in NSUserDefaults.
+// Updates `kTotalDaysOnChrome` and `kActiveDaysInPastWeek` in NSUserDefaults.
+// This method is destructive and may modify `kActiveDaysInPastWeek`.
 - (void)updateUserDefaults {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   NSCalendar* calendar = [NSCalendar currentCalendar];
 
-  // Add kActiveDaysInPastWeek to NSUserDefaults if it doesn't already exist.
+  // Add `kActiveDaysInPastWeek` to NSUserDefaults if it doesn't already exist.
   if ([defaults objectForKey:kActiveDaysInPastWeek] == nil) {
     [defaults setObject:[[NSMutableArray alloc] init]
                  forKey:kActiveDaysInPastWeek];
@@ -149,18 +151,18 @@ NSString* const kActiveDaysInPastWeek = @"ActiveDaysInPastWeek";
 
   NSDate* today = [NSDate date];
 
-  // Remove dates longer than 7 days ago from kActiveDaysInPastWeek.
-  for (NSDate* day in activeDaysInPastWeek) {
-    NSDateComponents* dayComponents = [calendar components:NSCalendarUnitDay
-                                                  fromDate:day
-                                                    toDate:today
-                                                   options:0];
-    if (dayComponents.day > 7) {
-      [activeDaysInPastWeek removeObject:day];
-    }
-  }
-  
-  // Update kTotalDaysOnChrome and kActiveDaysInPastWeek.
+  // Remove dates longer than 7 days ago from `kActiveDaysInPastWeek`.
+  // TODO(crbug.com/1376577): Move `oneWeekAgoInterval` to constants file
+  // once the file is merged.
+  base::TimeDelta oneWeekAgoInterval = base::Days(-7);
+  NSDate* oneWeekAgo =
+      [[NSDate alloc] initWithTimeInterval:oneWeekAgoInterval.InSecondsF()
+                                 sinceDate:today];
+  NSPredicate* greaterThan =
+      [NSPredicate predicateWithFormat:@"SELF > %@", oneWeekAgo];
+  [activeDaysInPastWeek filterUsingPredicate:greaterThan];
+
+  // Update `kTotalDaysOnChrome` and `kActiveDaysInPastWeek`.
   [defaults setInteger:[defaults integerForKey:kTotalDaysOnChrome] + 1
                 forKey:kTotalDaysOnChrome];
   [activeDaysInPastWeek addObject:today];
