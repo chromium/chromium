@@ -33,6 +33,16 @@ namespace blink {
 class ExceptionState;
 class CSSRuleList;
 
+// Utility function also used by CSSStyleRule, which can have child rules
+// just like CSSGroupingRule can (we share insertRule() / deleteRule()
+// implementation). Returns nullptr if an exception was raised.
+StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
+                                  const String& rule_string,
+                                  unsigned index,
+                                  size_t num_child_rules,
+                                  const CSSRule& parent_rule,
+                                  ExceptionState& exception_state);
+
 class CORE_EXPORT CSSGroupingRule : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 

@@ -35,6 +35,7 @@ class ExecutionContext;
 class StyleRuleCSSStyleDeclaration;
 class StyleRule;
 
+// CSSOM wrapper for StyleRule.
 class CORE_EXPORT CSSStyleRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -52,6 +53,18 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
 
   StylePropertyMap* styleMap() const { return style_map_.Get(); }
 
+  // [css-nesting-1]
+  CSSRuleList* cssRules() const override;
+  unsigned insertRule(const ExecutionContext* execution_context,
+                      const String& rule,
+                      unsigned index,
+                      ExceptionState&);
+  void deleteRule(unsigned index, ExceptionState&);
+
+  // For CSSRuleList.
+  unsigned length() const;
+  CSSRule* Item(unsigned index) const;
+
   // FIXME: Not CSSOM. Remove.
   StyleRule* GetStyleRule() const { return style_rule_.Get(); }
 
@@ -68,6 +81,9 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
   // May be wrong if indexes have moved around or the rule has been
   // deleted from the style sheet.
   wtf_size_t position_hint_;
+
+  mutable HeapVector<Member<CSSRule>> child_rule_cssom_wrappers_;
+  mutable Member<CSSRuleList> rule_list_cssom_wrapper_;
 };
 
 template <>

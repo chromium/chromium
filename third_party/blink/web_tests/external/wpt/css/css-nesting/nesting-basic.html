@@ -2,7 +2,7 @@
 <title>@nest | basic</title>
 <link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
 <link rel="help" href="https://drafts.csswg.org/css-nesting-1/">
-<link rel="match" href="nesting-ref.html">
+<link rel="match" href="nesting-basic-ref.html">
 <style>
   .test {
     background-color: red;
@@ -42,12 +42,6 @@
     }
   }
 
-  .test-5 {
-    @media (min-width: 50px) {
-      background-color: green;
-    }
-  }
-
   .test-6 {
     &.test {
       background-color: green;
@@ -72,12 +66,6 @@
     }
   }
 
-  .test-10 {
-    @supports (display: grid) {
-      background-color: green;
-    }
-  }
-
   body * + * {
     margin-top: 8px;
   }
@@ -92,10 +80,8 @@
       <span><b></b></span>
     </section>
   </div>
-  <div class="test test-5"><div></div></div>
   <div class="test test-6"><div></div></div>
   <div class="test t7- t7--"><div class="test-7-child"></div></div>
   <div class="test test-8"><div></div></div>
   <div class="test test-9 t9-- t9-"><div></div></div>
-  <div class="test test-10"><div></div></div>
 </body>

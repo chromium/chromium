@@ -6,7 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <style id="test-sheet"></style>
-<script type="module">
+<script>
   let [ss] = document.styleSheets
 
   const beforeEach = () => {
@@ -15,18 +15,19 @@
   }
 
   const testRules = [
-    `.foo { & { color: green; } }`, // 🐰
-    `.foo { &.bar { color: green; } }`,
-    `.foo { & .bar { color: green; } }`,
-    `.foo { & > .bar { color: green; } }`,
-    `.foo { &:is(.bar, &.baz) { color: green; } }`,
-    `.foo { @nest .bar& { color: green; } }`,
-    `.foo { @nest .bar & { color: green; } }`,
-    `.foo { @nest .bar > & { color: green; } }`,
-    `.foo, .bar { & + .baz, &.qux { color: green; } }`,
-    `.foo { & .bar & .baz & .qux { color: green; } }`,
-    `.foo { @media (min-width: 50px) { color: green; } }`,
-    `main { & > section, & > article { & > header { color: green; } } }`,
+    `.foo {\n  & { color: green; }\n}`, // 🐰
+    `.foo {\n  &.bar { color: green; }\n}`,
+    `.foo {\n  & .bar { color: green; }\n}`,
+    `.foo {\n  & > .bar { color: green; }\n}`,
+    `.foo {\n  &:is(.bar, &.baz) { color: green; }\n}`,
+    `.foo {\n  @nest .bar& { color: green; }\n}`,
+    `.foo {\n  @nest .bar & { color: green; }\n}`,
+    `.foo {\n  @nest .bar > & { color: green; }\n}`,
+    `.foo, .bar {\n  & + .baz, &.qux { color: green; }\n}`,
+    `.foo {\n  & .bar & .baz & .qux { color: green; }\n}`,
+    `.foo {\n  @media (min-width: 50px) {\n  & { color: green; }\n}\n}`,
+    `.foo {\n  @media (min-width: 50px) { color: green; }\n}`,
+    `main {\n  & > section, & > article {\n  & > header { color: green; }\n}\n}`,
   ]
 
   testRules.forEach(testRule => {

@@ -2010,7 +2010,7 @@ crbug.com/891944 external/wpt/css/css-scrollbars/transparent-on-root.html [ Fail
 crbug.com/891944 [ Mac ] external/wpt/css/css-scrollbars/scrollbar-width-paint-001.html [ Failure ]
 
 # css-nesting
-crbug.com/1095675 external/wpt/css/selectors/nesting.html [ Failure ]
+crbug.com/1095675 external/wpt/css/css-nesting/conditional-properties.html [ Failure ]
 
 # Failures on specific Mac bots
 crbug.com/1319399 [ Mac11 ] external/wpt/css/selectors/focus-visible-025.html [ Failure ]

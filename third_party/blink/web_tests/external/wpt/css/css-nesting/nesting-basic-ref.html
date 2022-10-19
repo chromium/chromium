@@ -29,12 +29,6 @@
     height: 100%;
   }
 
-  @media (min-width: 50px) {
-    .test-5 > div {
-      background-color: green;
-    }
-  }
-
   .test-6.test {
     background-color: green;
   }
@@ -52,12 +46,6 @@
     background-color: green;
   }
 
-  @supports (display: grid) {
-    .test-10 {
-      background-color: green;
-    }
-  }
-
   body * + * {
     margin-top: 8px;
   }
@@ -72,10 +60,8 @@
       <span><b></b></span>
     </section>
   </div>
-  <div class="test test-5"><div></div></div>
   <div class="test test-6"><div></div></div>
   <div class="test t7- t7--"><div class="test-7-child"></div></div>
   <div class="test test-8"><div></div></div>
   <div class="test test-9 t9-- t9-"><div></div></div>
-  <div class="test test-10"><div></div></div>
 </body>

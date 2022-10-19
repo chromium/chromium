@@ -1,0 +1,46 @@
+This is a testharness.js-based test.
+PASS .foo {
+  & { color: green; }
+}
+PASS .foo {
+  &.bar { color: green; }
+}
+PASS .foo {
+  & .bar { color: green; }
+}
+PASS .foo {
+  & > .bar { color: green; }
+}
+PASS .foo {
+  &:is(.bar, &.baz) { color: green; }
+}
+FAIL .foo {
+  @nest .bar& { color: green; }
+} assert_equals: expected ".foo {\n  @nest .bar& { color: green; }\n}" but got ".foo {\n  .bar& { color: green; }\n}"
+FAIL .foo {
+  @nest .bar & { color: green; }
+} assert_equals: expected ".foo {\n  @nest .bar & { color: green; }\n}" but got ".foo {\n  .bar & { color: green; }\n}"
+FAIL .foo {
+  @nest .bar > & { color: green; }
+} assert_equals: expected ".foo {\n  @nest .bar > & { color: green; }\n}" but got ".foo {\n  .bar > & { color: green; }\n}"
+PASS .foo, .bar {
+  & + .baz, &.qux { color: green; }
+}
+PASS .foo {
+  & .bar & .baz & .qux { color: green; }
+}
+PASS .foo {
+  @media (min-width: 50px) {
+  & { color: green; }
+}
+}
+FAIL .foo {
+  @media (min-width: 50px) { color: green; }
+} assert_equals: expected ".foo {\n  @media (min-width: 50px) { color: green; }\n}" but got ".foo {\n  @media (min-width: 50px) {\n}\n}"
+PASS main {
+  & > section, & > article {
+  & > header { color: green; }
+}
+}
+Harness: the test ran to completion.
+

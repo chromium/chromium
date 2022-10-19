@@ -36,10 +36,56 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
+                                  const String& rule_string,
+                                  unsigned index,
+                                  size_t num_child_rules,
+                                  const CSSRule& parent_rule,
+                                  ExceptionState& exception_state) {
+  if (index > num_child_rules) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        "the index " + String::Number(index) +
+            " must be less than or equal to the length of the rule list.");
+    return nullptr;
+  }
+
+  CSSStyleSheet* style_sheet = parent_rule.parentStyleSheet();
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      parent_rule.ParserContext(execution_context->GetSecureContextMode()),
+      style_sheet);
+  StyleRuleBase* new_rule = CSSParser::ParseRule(
+      context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
+  if (!new_rule) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "the rule '" + rule_string + "' is invalid and cannot be parsed.");
+    return nullptr;
+  }
+
+  if (new_rule->IsNamespaceRule()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kHierarchyRequestError,
+        "'@namespace' rules cannot be inserted inside a group rule.");
+    return nullptr;
+  }
+
+  if (new_rule->IsImportRule()) {
+    // FIXME: an HierarchyRequestError should also be thrown for a nested @media
+    // rule. They are currently not getting parsed, resulting in a SyntaxError
+    // to get raised above.
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kHierarchyRequestError,
+        "'@import' rules cannot be inserted inside a group rule.");
+    return nullptr;
+  }
+
+  return new_rule;
+}
 
 CSSGroupingRule::CSSGroupingRule(StyleRuleGroup* group_rule,
                                  CSSStyleSheet* parent)
@@ -56,48 +102,19 @@ unsigned CSSGroupingRule::insertRule(const ExecutionContext* execution_context,
   DCHECK_EQ(child_rule_cssom_wrappers_.size(),
             group_rule_->ChildRules().size());
 
-  if (index > group_rule_->ChildRules().size()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        "the index " + String::Number(index) +
-            " must be less than or equal to the length of the rule list.");
+  StyleRuleBase* new_rule = ParseRuleForInsert(
+      execution_context, rule_string, index, group_rule_->ChildRules().size(),
+      *this, exception_state);
+
+  if (new_rule == nullptr) {
+    // Already raised an exception above.
     return 0;
+  } else {
+    CSSStyleSheet::RuleMutationScope mutation_scope(this);
+    group_rule_->WrapperInsertRule(index, new_rule);
+    child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
+    return index;
   }
-
-  CSSStyleSheet* style_sheet = parentStyleSheet();
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      ParserContext(execution_context->GetSecureContextMode()), style_sheet);
-  StyleRuleBase* new_rule = CSSParser::ParseRule(
-      context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
-  if (!new_rule) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "the rule '" + rule_string + "' is invalid and cannot be parsed.");
-    return 0;
-  }
-
-  if (new_rule->IsNamespaceRule()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kHierarchyRequestError,
-        "'@namespace' rules cannot be inserted inside a group rule.");
-    return 0;
-  }
-
-  if (new_rule->IsImportRule()) {
-    // FIXME: an HierarchyRequestError should also be thrown for a nested @media
-    // rule. They are currently not getting parsed, resulting in a SyntaxError
-    // to get raised above.
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kHierarchyRequestError,
-        "'@import' rules cannot be inserted inside a group rule.");
-    return 0;
-  }
-  CSSStyleSheet::RuleMutationScope mutation_scope(this);
-
-  group_rule_->WrapperInsertRule(index, new_rule);
-
-  child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
-  return index;
 }
 
 void CSSGroupingRule::deleteRule(unsigned index,

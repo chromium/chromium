@@ -250,13 +250,23 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   const HeapVector<Member<StyleRuleBase>>* ChildRules() const {
     return child_rules_.Get();
   }
-  void AddChildRule(StyleRuleBase* child) {
+  void EnsureChildRules() {
     // Allocate the child rule vector only when we need it,
     // since most rules won't have children (almost by definition).
     if (child_rules_ == nullptr) {
       child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRuleBase>>>();
     }
+  }
+  void AddChildRule(StyleRuleBase* child) {
+    EnsureChildRules();
     child_rules_->push_back(child);
+  }
+  void WrapperInsertRule(unsigned index, StyleRuleBase* rule) {
+    EnsureChildRules();
+    child_rules_->insert(index, rule);
+  }
+  void WrapperRemoveRule(unsigned index) {
+    child_rules_->erase(child_rules_->begin() + index);
   }
 
  private:
