@@ -35,7 +35,8 @@ enum class TrayBackgroundViewCatalogName {
   kVirtualKeyboardStatusArea = 19,
   kVirtualKeyboardAccessibilityWindow = 20,
   kWmMode = 21,
-  kMaxValue = kWmMode,
+  kVcTray = 22,
+  kMaxValue = kVcTray,
 };
 
 }  // namespace ash
