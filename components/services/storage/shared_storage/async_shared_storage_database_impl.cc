@@ -218,6 +218,26 @@ void AsyncSharedStorageDatabaseImpl::GetCreationTime(
       .Then(std::move(callback));
 }
 
+void AsyncSharedStorageDatabaseImpl::GetMetadata(
+    url::Origin context_origin,
+    base::OnceCallback<void(SharedStorageDatabase::MetadataResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_.AsyncCall(&SharedStorageDatabase::GetMetadata)
+      .WithArgs(std::move(context_origin))
+      .Then(std::move(callback));
+}
+
+void AsyncSharedStorageDatabaseImpl::GetEntriesForDevTools(
+    url::Origin context_origin,
+    base::OnceCallback<void(EntriesResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_.AsyncCall(&SharedStorageDatabase::GetEntriesForDevTools)
+      .WithArgs(std::move(context_origin))
+      .Then(std::move(callback));
+}
+
 base::SequenceBound<SharedStorageDatabase>*
 AsyncSharedStorageDatabaseImpl::GetSequenceBoundDatabaseForTesting() {
   return database_ ? &database_ : nullptr;

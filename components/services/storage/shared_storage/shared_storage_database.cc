@@ -10,6 +10,7 @@
 #include <climits>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -135,6 +136,25 @@ SharedStorageDatabase::TimeResult::~TimeResult() = default;
 
 SharedStorageDatabase::TimeResult& SharedStorageDatabase::TimeResult::operator=(
     TimeResult&&) = default;
+
+SharedStorageDatabase::MetadataResult::MetadataResult() = default;
+
+SharedStorageDatabase::MetadataResult::MetadataResult(MetadataResult&&) =
+    default;
+
+SharedStorageDatabase::MetadataResult::~MetadataResult() = default;
+
+SharedStorageDatabase::MetadataResult&
+SharedStorageDatabase::MetadataResult::operator=(MetadataResult&&) = default;
+
+SharedStorageDatabase::EntriesResult::EntriesResult() = default;
+
+SharedStorageDatabase::EntriesResult::EntriesResult(EntriesResult&&) = default;
+
+SharedStorageDatabase::EntriesResult::~EntriesResult() = default;
+
+SharedStorageDatabase::EntriesResult&
+SharedStorageDatabase::EntriesResult::operator=(EntriesResult&&) = default;
 
 SharedStorageDatabase::SharedStorageDatabase(
     base::FilePath db_path,
@@ -867,6 +887,65 @@ SharedStorageDatabase::TimeResult SharedStorageDatabase::GetCreationTime(
       GetOriginInfo(SerializeOrigin(context_origin), &length, &result.time);
 
   return result;
+}
+
+SharedStorageDatabase::MetadataResult SharedStorageDatabase::GetMetadata(
+    url::Origin context_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MetadataResult metadata;
+
+  metadata.length = Length(context_origin);
+
+  TimeResult time_result = GetCreationTime(context_origin);
+  metadata.time_result = time_result.result;
+  if (time_result.result == OperationResult::kSuccess)
+    metadata.creation_time = time_result.time;
+
+  BudgetResult budget_result = GetRemainingBudget(context_origin);
+  metadata.budget_result = budget_result.result;
+  if (budget_result.result == OperationResult::kSuccess)
+    metadata.remaining_budget = budget_result.bits;
+
+  return metadata;
+}
+
+SharedStorageDatabase::EntriesResult
+SharedStorageDatabase::GetEntriesForDevTools(url::Origin context_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EntriesResult entries;
+
+  if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
+    // We do not return an error if the database doesn't exist, but only if it
+    // pre-exists on disk and yet fails to initialize.
+    if (db_status_ == InitStatus::kUnattempted) {
+      entries.result = OperationResult::kSuccess;
+      return entries;
+    } else {
+      entries.result = OperationResult::kInitFailure;
+      return entries;
+    }
+  }
+
+  static constexpr char kSelectSql[] =
+      "SELECT key,value FROM values_mapping WHERE context_origin=? "
+      "ORDER BY key";
+
+  sql::Statement select_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  std::string origin_str(SerializeOrigin(context_origin));
+  select_statement.BindString(0, origin_str);
+
+  while (select_statement.Step()) {
+    entries.entries.emplace_back(
+        base::UTF16ToUTF8(select_statement.ColumnString16(0)),
+        base::UTF16ToUTF8(select_statement.ColumnString16(1)));
+  }
+
+  if (!select_statement.Succeeded())
+    return entries;
+
+  entries.result = OperationResult::kSuccess;
+  return entries;
 }
 
 bool SharedStorageDatabase::IsOpenForTesting() const {

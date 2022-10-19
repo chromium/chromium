@@ -42,6 +42,8 @@ class SharedStorageManager {
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
   using TimeResult = SharedStorageDatabase::TimeResult;
+  using MetadataResult = SharedStorageDatabase::MetadataResult;
+  using EntriesResult = SharedStorageDatabase::EntriesResult;
 
   // A callback type to check if a given StorageKey matches a storage policy.
   // Can be passed empty/null where used, which means the StorageKey will always
@@ -237,6 +239,19 @@ class SharedStorageManager {
   // to indicate whether or not there were errors.
   void GetCreationTime(url::Origin context_origin,
                        base::OnceCallback<void(TimeResult)> callback);
+
+  // Calls `SharedStorageDatabase::Length()`,
+  // `SharedStorageDatabase::GetRemainingBudget()`, and
+  // `SharedStorageDatabase::GetCreationTime()`, then bundles this info along
+  // with the accompanying `OperationResult`s into a struct to send to the
+  // DevTools `StorageHandler` via `callback`.
+  void GetMetadata(url::Origin context_origin,
+                   base::OnceCallback<void(MetadataResult)> callback);
+
+  // Calls `callback` with an origin's entries in a vector bundled with an
+  // `OperationResult`. To only be used by DevTools.
+  void GetEntriesForDevTools(url::Origin context_origin,
+                             base::OnceCallback<void(EntriesResult)> callback);
 
   void SetOnDBDestroyedCallbackForTesting(
       base::OnceCallback<void(bool)> callback);

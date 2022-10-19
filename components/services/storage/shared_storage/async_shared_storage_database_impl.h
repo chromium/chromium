@@ -41,6 +41,8 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
   using TimeResult = SharedStorageDatabase::TimeResult;
+  using MetadataResult = SharedStorageDatabase::MetadataResult;
+  using EntriesResult = SharedStorageDatabase::EntriesResult;
 
   // A callback type to check if a given StorageKey matches a storage policy.
   // Can be passed empty/null where used, which means the StorageKey will always
@@ -125,6 +127,11 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
       base::OnceCallback<void(BudgetResult)> callback) override;
   void GetCreationTime(url::Origin context_origin,
                        base::OnceCallback<void(TimeResult)> callback) override;
+  void GetMetadata(url::Origin context_origin,
+                   base::OnceCallback<void(MetadataResult)> callback) override;
+  void GetEntriesForDevTools(
+      url::Origin context_origin,
+      base::OnceCallback<void(EntriesResult)> callback) override;
 
   // Gets the underlying database for tests.
   base::SequenceBound<SharedStorageDatabase>*

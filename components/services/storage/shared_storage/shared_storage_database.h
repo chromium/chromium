@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
@@ -153,6 +154,34 @@ class SharedStorageDatabase {
     ~TimeResult();
     TimeResult& operator=(const TimeResult&) = delete;
     TimeResult& operator=(TimeResult&&);
+  };
+
+  // Bundles info about an origin's shared storage for DevTools integration.
+  struct MetadataResult {
+    int length = -1;
+    base::Time creation_time = base::Time::Min();
+    double remaining_budget = 0;
+    OperationResult time_result = OperationResult::kSqlError;
+    OperationResult budget_result = OperationResult::kSqlError;
+    MetadataResult();
+    MetadataResult(const MetadataResult&) = delete;
+    MetadataResult(MetadataResult&&);
+    ~MetadataResult();
+    MetadataResult& operator=(const MetadataResult&) = delete;
+    MetadataResult& operator=(MetadataResult&&);
+  };
+
+  // Bundles an origin's shared storage entries with an `OperationResult` for
+  // DevTools integration.
+  struct EntriesResult {
+    std::vector<std::pair<std::string, std::string>> entries;
+    OperationResult result = OperationResult::kSqlError;
+    EntriesResult();
+    EntriesResult(const EntriesResult&) = delete;
+    EntriesResult(EntriesResult&&);
+    ~EntriesResult();
+    EntriesResult& operator=(const EntriesResult&) = delete;
+    EntriesResult& operator=(EntriesResult&&);
   };
 
   // When `db_path` is empty, the database will be opened in memory only.
@@ -310,6 +339,15 @@ class SharedStorageDatabase {
   // Retrieves the most recent creation time (currently in the schema as
   // `last_used_time`) for `context_origin`.
   [[nodiscard]] TimeResult GetCreationTime(url::Origin context_origin);
+
+  // Calls `Length()`, `GetRemainingBudget()`, and `GetCreationTime()`, then
+  // bundles this info along with the accompanying `OperationResult`s into a
+  // struct to send to the DevTools `StorageHandler`.
+  [[nodiscard]] MetadataResult GetMetadata(url::Origin context_origin);
+
+  // Returns an origin's entries in a vector bundled with an `OperationResult`.
+  // To only be used by DevTools.
+  [[nodiscard]] EntriesResult GetEntriesForDevTools(url::Origin context_origin);
 
   // Returns whether the SQLite database is open.
   [[nodiscard]] bool IsOpenForTesting() const;

@@ -43,12 +43,15 @@ namespace storage {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::Pair;
 using InitStatus = SharedStorageDatabase::InitStatus;
 using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
 using BudgetResult = SharedStorageDatabase::BudgetResult;
 using TimeResult = SharedStorageDatabase::TimeResult;
+using MetadataResult = SharedStorageDatabase::MetadataResult;
+using EntriesResult = SharedStorageDatabase::EntriesResult;
 using StorageKeyPolicyMatcherFunction =
     SharedStorageDatabase::StorageKeyPolicyMatcherFunction;
 using DBOperation = TestDatabaseOperationReceiver::DBOperation;
@@ -122,6 +125,24 @@ class MockResultQueue {
     DCHECK(!result_queue_.empty());
     result_queue_.pop();
     return std::vector<mojom::StorageUsageInfoPtr>();
+  }
+
+  MetadataResult NextMetadata() {
+    DCHECK(!result_queue_.empty());
+    MetadataResult metadata;
+    metadata.time_result = result_queue_.front();
+    metadata.budget_result = result_queue_.front();
+    result_queue_.pop();
+    return metadata;
+  }
+
+  EntriesResult NextEntries() {
+    DCHECK(!result_queue_.empty());
+
+    EntriesResult entries;
+    entries.result = result_queue_.front();
+    result_queue_.pop();
+    return entries;
   }
 
  private:
@@ -225,6 +246,15 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
                        base::OnceCallback<void(TimeResult)> callback) override {
     Run(std::move(callback));
   }
+  void GetMetadata(url::Origin context_origin,
+                   base::OnceCallback<void(MetadataResult)> callback) override {
+    Run(std::move(callback));
+  }
+  void GetEntriesForDevTools(
+      url::Origin context_origin,
+      base::OnceCallback<void(EntriesResult)> callback) override {
+    Run(std::move(callback));
+  }
 
   void SetResultsForTesting(std::queue<OperationResult> result_queue,
                             base::OnceClosure callback) {
@@ -291,6 +321,18 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
                callback) {
     DCHECK(callback);
     mock_result_queue_.AsyncCall(&MockResultQueue::NextInfos)
+        .Then(std::move(callback));
+  }
+
+  void Run(base::OnceCallback<void(MetadataResult)> callback) {
+    DCHECK(callback);
+    mock_result_queue_.AsyncCall(&MockResultQueue::NextMetadata)
+        .Then(std::move(callback));
+  }
+
+  void Run(base::OnceCallback<void(EntriesResult)> callback) {
+    DCHECK(callback);
+    mock_result_queue_.AsyncCall(&MockResultQueue::NextEntries)
         .Then(std::move(callback));
   }
 
@@ -761,6 +803,23 @@ class SharedStorageManagerTest : public testing::Test {
     return future.Take();
   }
 
+  MetadataResult GetMetadataSync(const url::Origin& context_origin) {
+    DCHECK(GetManager());
+
+    base::test::TestFuture<MetadataResult> future;
+    GetManager()->GetMetadata(std::move(context_origin), future.GetCallback());
+    return future.Take();
+  }
+
+  EntriesResult GetEntriesForDevToolsSync(const url::Origin& context_origin) {
+    DCHECK(GetManager());
+
+    base::test::TestFuture<EntriesResult> future;
+    GetManager()->GetEntriesForDevTools(std::move(context_origin),
+                                        future.GetCallback());
+    return future.Take();
+  }
+
  protected:
   static constexpr int kBudgetIntervalHours_ =
       kInitialPurgeIntervalHours + 2 * kRecurringPurgeIntervalHours;
@@ -795,6 +854,11 @@ TEST_F(SharedStorageManagerFromFileV1Test, Version1_LoadFromFile) {
   url::Origin youtube_com = url::Origin::Create(GURL("http://youtube.com/"));
   EXPECT_EQ(1L, LengthSync(youtube_com));
 
+  EntriesResult youtube_com_entries = GetEntriesForDevToolsSync(youtube_com);
+  EXPECT_EQ(OperationResult::kSuccess, youtube_com_entries.result);
+  EXPECT_THAT(youtube_com_entries.entries,
+              ElementsAre(Pair("visited", "1111111")));
+
   url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
   EXPECT_EQ(GetSync(chromium_org, u"a").data, u"");
 
@@ -815,12 +879,17 @@ TEST_F(SharedStorageManagerFromFileV1Test, Version1_LoadFromFile) {
             EntriesSync(chromium_org,
                         listener_utility.BindNewPipeAndPassRemoteForId(id2)));
   listener_utility.FlushForId(id2);
-  EXPECT_THAT(
-      listener_utility.TakeEntriesForId(id2),
-      ElementsAre(std::make_pair(u"a", u""), std::make_pair(u"b", u"hello"),
-                  std::make_pair(u"c", u"goodbye")));
+  EXPECT_THAT(listener_utility.TakeEntriesForId(id2),
+              ElementsAre(Pair(u"a", u""), Pair(u"b", u"hello"),
+                          Pair(u"c", u"goodbye")));
   EXPECT_EQ(1U, listener_utility.BatchCountForId(id2));
   listener_utility.VerifyNoErrorForId(id2);
+
+  EntriesResult chromium_org_entries = GetEntriesForDevToolsSync(chromium_org);
+  EXPECT_EQ(OperationResult::kSuccess, chromium_org_entries.result);
+  EXPECT_THAT(
+      chromium_org_entries.entries,
+      ElementsAre(Pair("a", ""), Pair("b", "hello"), Pair("c", "goodbye")));
 
   url::Origin google_org = url::Origin::Create(GURL("http://google.org/"));
   EXPECT_EQ(
@@ -866,12 +935,30 @@ TEST_F(SharedStorageManagerFromFileV1Test, Version1_LoadFromFile) {
   EXPECT_EQ(13269481776356965, GetCreationTimeSync(abc_xyz)
                                    .time.ToDeltaSinceWindowsEpoch()
                                    .InMicroseconds());
+  auto abc_xyz_metadata = GetMetadataSync(abc_xyz);
+  EXPECT_EQ(OperationResult::kSuccess, abc_xyz_metadata.time_result);
+  EXPECT_EQ(OperationResult::kSuccess, abc_xyz_metadata.budget_result);
+  EXPECT_EQ(13269481776356965,
+            abc_xyz_metadata.creation_time.ToDeltaSinceWindowsEpoch()
+                .InMicroseconds());
+  EXPECT_EQ(2, abc_xyz_metadata.length);
+  EXPECT_DOUBLE_EQ(kBitBudget - 5.3, abc_xyz_metadata.remaining_budget);
 
   url::Origin growwithgoogle_com =
       url::Origin::Create(GURL("http://growwithgoogle.com"));
   EXPECT_EQ(13269546593856733, GetCreationTimeSync(growwithgoogle_com)
                                    .time.ToDeltaSinceWindowsEpoch()
                                    .InMicroseconds());
+  auto growwithgoogle_com_metadata = GetMetadataSync(growwithgoogle_com);
+  EXPECT_EQ(OperationResult::kSuccess, growwithgoogle_com_metadata.time_result);
+  EXPECT_EQ(OperationResult::kSuccess,
+            growwithgoogle_com_metadata.budget_result);
+  EXPECT_EQ(13269546593856733,
+            growwithgoogle_com_metadata.creation_time.ToDeltaSinceWindowsEpoch()
+                .InMicroseconds());
+  EXPECT_EQ(3, growwithgoogle_com_metadata.length);
+  EXPECT_DOUBLE_EQ(kBitBudget - 1.2,
+                   growwithgoogle_com_metadata.remaining_budget);
 
   std::vector<mojom::StorageUsageInfoPtr> infos = FetchOriginsSync();
   std::vector<url::Origin> origins;
@@ -924,10 +1011,9 @@ TEST_F(SharedStorageManagerFromFileV1NoBudgetTableTest,
             EntriesSync(chromium_org,
                         listener_utility.BindNewPipeAndPassRemoteForId(id2)));
   listener_utility.FlushForId(id2);
-  EXPECT_THAT(
-      listener_utility.TakeEntriesForId(id2),
-      ElementsAre(std::make_pair(u"a", u""), std::make_pair(u"b", u"hello"),
-                  std::make_pair(u"c", u"goodbye")));
+  EXPECT_THAT(listener_utility.TakeEntriesForId(id2),
+              ElementsAre(Pair(u"a", u""), Pair(u"b", u"hello"),
+                          Pair(u"c", u"goodbye")));
   EXPECT_EQ(1U, listener_utility.BatchCountForId(id2));
   listener_utility.VerifyNoErrorForId(id2);
 
@@ -1146,8 +1232,7 @@ TEST_P(SharedStorageManagerParamTest, Entries) {
                         listener_utility.BindNewPipeAndPassRemoteForId(id1)));
   listener_utility.FlushForId(id1);
   EXPECT_THAT(listener_utility.TakeEntriesForId(id1),
-              ElementsAre(std::make_pair(u"key1", u"value1"),
-                          std::make_pair(u"key2", u"value2")));
+              ElementsAre(Pair(u"key1", u"value1"), Pair(u"key2", u"value2")));
   EXPECT_EQ(1U, listener_utility.BatchCountForId(id1));
   listener_utility.VerifyNoErrorForId(id1);
 
@@ -1171,9 +1256,8 @@ TEST_P(SharedStorageManagerParamTest, Entries) {
                         listener_utility.BindNewPipeAndPassRemoteForId(id3)));
   listener_utility.FlushForId(id3);
   EXPECT_THAT(listener_utility.TakeEntriesForId(id3),
-              ElementsAre(std::make_pair(u"key1", u"value1"),
-                          std::make_pair(u"key2", u"value2"),
-                          std::make_pair(u"key3", u"value3")));
+              ElementsAre(Pair(u"key1", u"value1"), Pair(u"key2", u"value2"),
+                          Pair(u"key3", u"value3")));
   EXPECT_EQ(1U, listener_utility.BatchCountForId(id3));
   listener_utility.VerifyNoErrorForId(id3);
 
@@ -1185,8 +1269,7 @@ TEST_P(SharedStorageManagerParamTest, Entries) {
                         listener_utility.BindNewPipeAndPassRemoteForId(id4)));
   listener_utility.FlushForId(id4);
   EXPECT_THAT(listener_utility.TakeEntriesForId(id4),
-              ElementsAre(std::make_pair(u"key1", u"value1"),
-                          std::make_pair(u"key3", u"value3")));
+              ElementsAre(Pair(u"key1", u"value1"), Pair(u"key3", u"value3")));
   EXPECT_EQ(1U, listener_utility.BatchCountForId(id4));
   listener_utility.VerifyNoErrorForId(id4);
 }
@@ -1259,6 +1342,63 @@ TEST_P(SharedStorageManagerParamTest,
                 /*perform_storage_cleanup=*/true));
 
   EXPECT_TRUE(FetchOriginsSync().empty());
+}
+
+TEST_P(SharedStorageManagerParamTest, DevTools) {
+  url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
+
+  EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key1", u"value1"));
+  EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key2", u"value2"));
+  EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key3", u"value3"));
+
+  EXPECT_EQ(3, LengthSync(kOrigin1));
+
+  url::Origin kOrigin2 = url::Origin::Create(GURL("http://www.example2.test"));
+  EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin2, u"key1", u"value1"));
+  EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin2, u"key2", u"value2"));
+
+  EXPECT_EQ(2, LengthSync(kOrigin2));
+
+  EntriesResult origin1_entries = GetEntriesForDevToolsSync(kOrigin1);
+  EXPECT_EQ(OperationResult::kSuccess, origin1_entries.result);
+  EXPECT_THAT(origin1_entries.entries,
+              ElementsAre(Pair("key1", "value1"), Pair("key2", "value2"),
+                          Pair("key3", "value3")));
+
+  MetadataResult origin1_metadata = GetMetadataSync(kOrigin1);
+  EXPECT_EQ(OperationResult::kSuccess, origin1_metadata.time_result);
+  EXPECT_EQ(OperationResult::kSuccess, origin1_metadata.budget_result);
+  EXPECT_EQ(3, origin1_metadata.length);
+  EXPECT_GT(origin1_metadata.creation_time.ToDeltaSinceWindowsEpoch()
+                .InMicroseconds(),
+            0);
+  EXPECT_DOUBLE_EQ(kBitBudget, origin1_metadata.remaining_budget);
+
+  EntriesResult origin2_entries = GetEntriesForDevToolsSync(kOrigin2);
+  EXPECT_EQ(OperationResult::kSuccess, origin2_entries.result);
+  EXPECT_THAT(origin2_entries.entries,
+              ElementsAre(Pair("key1", "value1"), Pair("key2", "value2")));
+
+  MetadataResult origin2_metadata = GetMetadataSync(kOrigin2);
+  EXPECT_EQ(OperationResult::kSuccess, origin2_metadata.time_result);
+  EXPECT_EQ(OperationResult::kSuccess, origin2_metadata.budget_result);
+  EXPECT_EQ(2, origin2_metadata.length);
+  EXPECT_GT(origin2_metadata.creation_time.ToDeltaSinceWindowsEpoch()
+                .InMicroseconds(),
+            0);
+  EXPECT_DOUBLE_EQ(kBitBudget, origin2_metadata.remaining_budget);
+
+  url::Origin kOrigin3 = url::Origin::Create(GURL("http://www.example3.test"));
+
+  EntriesResult origin3_entries = GetEntriesForDevToolsSync(kOrigin3);
+  EXPECT_EQ(OperationResult::kSuccess, origin3_entries.result);
+  EXPECT_TRUE(origin3_entries.entries.empty());
+
+  MetadataResult origin3_metadata = GetMetadataSync(kOrigin3);
+  EXPECT_EQ(OperationResult::kNotFound, origin3_metadata.time_result);
+  EXPECT_EQ(OperationResult::kSuccess, origin3_metadata.budget_result);
+  EXPECT_EQ(0, origin3_metadata.length);
+  EXPECT_DOUBLE_EQ(kBitBudget, origin3_metadata.remaining_budget);
 }
 
 TEST_P(SharedStorageManagerParamTest, AdvanceTime_StaleOriginsPurged) {
@@ -1723,9 +1863,9 @@ TEST_P(SharedStorageManagerParamTest, AsyncOperations) {
   listener_utility.FlushForId(id2);
 
   EXPECT_EQ(OperationResult::kSuccess, result8);
-  EXPECT_THAT(listener_utility.TakeEntriesForId(id2),
-              ElementsAre(std::make_pair(u"key1", u"value1value1"),
-                          std::make_pair(u"key2", u"value1")));
+  EXPECT_THAT(
+      listener_utility.TakeEntriesForId(id2),
+      ElementsAre(Pair(u"key1", u"value1value1"), Pair(u"key2", u"value1")));
   EXPECT_EQ(1U, listener_utility.BatchCountForId(id2));
   listener_utility.VerifyNoErrorForId(id2);
 

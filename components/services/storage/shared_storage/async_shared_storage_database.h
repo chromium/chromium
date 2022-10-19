@@ -40,6 +40,8 @@ class AsyncSharedStorageDatabase {
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
   using TimeResult = SharedStorageDatabase::TimeResult;
+  using MetadataResult = SharedStorageDatabase::MetadataResult;
+  using EntriesResult = SharedStorageDatabase::EntriesResult;
 
   // A callback type to check if a given origin matches a storage policy.
   // Can be passed empty/null where used, which means the origin will always
@@ -60,12 +62,13 @@ class AsyncSharedStorageDatabase {
 
   // `TrimMemory()`, `Get()`, `Set()`, `Append()`, `Delete()`, `Clear()`,
   // `Length()`, `Keys()`, `Entries()`, `PurgeMatchingOrigins()`,
-  // `PurgeStaleOrigins()`, `FetchOrigins()`, `MakeBudgetWithdrawal()`, and
-  // `GetRemainingBudget()` are all async versions of the corresponding methods
-  // in `storage::SharedStorageDatabase`, with the modification that `Set()` and
-  // `Append()` take a boolean callback to indicate that a value was set or
-  // appended, rather than a long integer callback with the row number for the
-  // next available row.
+  // `PurgeStaleOrigins()`, `FetchOrigins()`, `MakeBudgetWithdrawal()`,
+  // `GetRemainingBudget()`, `GetCreationTime()`, `GetMetadata()`, and
+  // `GetEntriesForDevTools()` are all async versions of the corresponding
+  // methods in `storage::SharedStorageDatabase`, with the modification that
+  // `Set()` and `Append()` take a boolean callback to indicate that a value was
+  // set or appended, rather than a long integer callback with the row number
+  // for the next available row.
   //
   // It is OK to call these async methods even if the database has failed to
   // initialize, as there is an alternate code path to handle this case that
@@ -224,6 +227,21 @@ class AsyncSharedStorageDatabase {
   virtual void GetCreationTime(
       url::Origin context_origin,
       base::OnceCallback<void(TimeResult)> callback) = 0;
+
+  // Calls `SharedStorageDatabase::Length()`,
+  // `SharedStorageDatabase::GetRemainingBudget()`, and
+  // `SharedStorageDatabase::GetCreationTime()`, then bundles this info along
+  // with the accompanying `OperationResult`s into a struct to send to the
+  // DevTools `StorageHandler` via `callback`.
+  virtual void GetMetadata(
+      url::Origin context_origin,
+      base::OnceCallback<void(MetadataResult)> callback) = 0;
+
+  // Calls `callback` with an origin's entries in a vector bundled with an
+  // `OperationResult`. To only be used by DevTools.
+  virtual void GetEntriesForDevTools(
+      url::Origin context_origin,
+      base::OnceCallback<void(EntriesResult)> callback) = 0;
 };
 
 }  // namespace storage

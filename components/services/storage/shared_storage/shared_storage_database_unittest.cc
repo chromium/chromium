@@ -401,6 +401,12 @@ TEST_F(SharedStorageDatabaseTest, Version1_DestroyTooNew) {
                                       base::Time::Min(), base::Time::Max(),
                                       /*perform_storage_cleanup=*/false));
   EXPECT_EQ(OperationResult::kInitFailure, db_->PurgeStaleOrigins());
+  EXPECT_EQ(OperationResult::kInitFailure,
+            db_->GetEntriesForDevTools(kOrigin).result);
+
+  auto metadata = db_->GetMetadata(kOrigin);
+  EXPECT_EQ(OperationResult::kInitFailure, metadata.time_result);
+  EXPECT_EQ(OperationResult::kInitFailure, metadata.budget_result);
 
   // Test that it is still OK to Destroy() the database.
   EXPECT_TRUE(db_->Destroy());
