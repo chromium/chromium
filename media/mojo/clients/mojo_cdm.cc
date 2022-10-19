@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "media/base/callback_timeout_helpers.h"
 #include "media/base/cdm_context.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
@@ -34,6 +35,13 @@ void RecordConnectionError(bool connection_error_happened) {
   UMA_HISTOGRAM_BOOLEAN("Media.EME.MojoCdm.ConnectionError",
                         connection_error_happened);
 }
+
+void RecordTimeoutError(bool /*called_on_destruction*/) {
+  // TODO(b/253527777): Report UMA here.
+  DLOG(ERROR) << "Mojo CDM operation timeout";
+}
+
+constexpr auto kMojoCdmTimeout = base::Seconds(20);
 
 }  // namespace
 
@@ -166,8 +174,10 @@ void MojoCdm::CreateSessionAndGenerateRequest(
   uint32_t promise_id = cdm_promise_adapter_.SavePromise(std::move(promise));
   remote_cdm_->CreateSessionAndGenerateRequest(
       session_type, init_data_type, init_data,
-      base::BindOnce(&MojoCdm::OnNewSessionCdmPromiseResult,
-                     base::Unretained(this), promise_id));
+      WrapCallbackWithTimeoutHandler(
+          base::BindOnce(&MojoCdm::OnNewSessionCdmPromiseResult,
+                         base::Unretained(this), promise_id),
+          kMojoCdmTimeout, base::BindOnce(&RecordTimeoutError)));
 }
 
 void MojoCdm::LoadSession(CdmSessionType session_type,
