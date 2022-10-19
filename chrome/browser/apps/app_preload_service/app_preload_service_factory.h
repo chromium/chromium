@@ -34,7 +34,7 @@ class AppPreloadServiceFactory : public ProfileKeyedServiceFactory {
   AppPreloadServiceFactory();
   ~AppPreloadServiceFactory() override;
 
-  // BrowserContextKeyedServiceFactory:
+  // ProfileKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;

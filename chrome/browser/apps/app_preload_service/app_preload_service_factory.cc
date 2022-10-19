@@ -5,7 +5,10 @@
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_provider_factory.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 
 namespace apps {
@@ -13,12 +16,15 @@ namespace apps {
 AppPreloadServiceFactory::AppPreloadServiceFactory()
     : ProfileKeyedServiceFactory(
           "AppPreloadService",
-          // Service is available in Kiosk, Guest, and Regular but not in
-          // incognito profiles.
+          // Service is available in Kiosk, Chrome OS Guest mode (OTR), and
+          // Regular but not in incognito profiles.
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .Build()) {
+  DependsOn(web_app::WebAppProviderFactory::GetInstance());
+  DependsOn(apps::AppServiceProxyFactory::GetInstance());
+}
 
 AppPreloadServiceFactory::~AppPreloadServiceFactory() = default;
 
@@ -36,7 +42,19 @@ AppPreloadServiceFactory* AppPreloadServiceFactory::GetInstance() {
 
 // static
 bool AppPreloadServiceFactory::IsAvailable(Profile* profile) {
-  return base::FeatureList::IsEnabled(features::kAppPreloadService);
+  if (!base::FeatureList::IsEnabled(features::kAppPreloadService)) {
+    return false;
+  }
+
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+
+  if (!web_app::AreWebAppsEnabled(profile)) {
+    return false;
+  }
+
+  return true;
 }
 
 KeyedService* AppPreloadServiceFactory::BuildServiceInstanceFor(
