@@ -177,6 +177,18 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
     return keyboard_shortcut_container_;
   }
 
+  views::FlexLayoutView* get_title_container_for_test() {
+    return title_container_;
+  }
+
+  views::FlexLayoutView* get_details_container_for_test() {
+    return details_container_;
+  }
+
+  views::Label* get_result_text_separator_label_for_test() {
+    return result_text_separator_label_;
+  }
+
   int PreferredHeight() const;
   int PrimaryTextHeight() const;
   int SecondaryTextHeight() const;

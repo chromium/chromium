@@ -800,7 +800,14 @@ void SearchResultView::UpdateDetailsContainer() {
   non_elided_details_label_width_ = 0;
   details_container_->RemoveAllChildViews();
   details_label_tags_.clear();
-  if (!result() || result()->details_text_vector().empty()) {
+
+  // Hide details container for answer cards with multiline titles.
+  bool hide_details_container_for_answer_card =
+      view_type_ == SearchResultViewType::kAnswerCard &&
+      multi_line_title_height_ > kPrimaryTextHeight;
+
+  if (!result() || result()->details_text_vector().empty() ||
+      hide_details_container_for_answer_card) {
     details_container_->SetVisible(false);
     result_text_separator_label_->SetVisible(false);
   } else {
@@ -1110,6 +1117,13 @@ void SearchResultView::Layout() {
     }
   } else if (!title_label_tags_.empty()) {
     gfx::Size text_size(text_bounds.width(), PrimaryTextHeight());
+    if (view_type_ == SearchResultViewType::kAnswerCard &&
+        has_keyboard_shortcut_contents_) {
+      // Increase height for answer cards with keyboard shortcut contents.
+      text_size.Enlarge(
+          /*grow_width=*/0,
+          /*grow_height=*/SecondaryTextHeight() + kKeyboardShortcutTopMargin);
+    }
     gfx::Rect centered_text_bounds(text_bounds);
     centered_text_bounds.ClampToCenteredSize(text_size);
     text_container_->SetBoundsRect(centered_text_bounds);

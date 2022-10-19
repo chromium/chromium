@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -125,6 +126,18 @@ class SearchResultListViewTest : public views::test::WidgetTest,
     return result_view->get_keyboard_shortcut_container_for_test();
   }
 
+  views::FlexLayoutView* GetTitleContents(SearchResultView* result_view) {
+    return result_view->get_title_container_for_test();
+  }
+
+  views::FlexLayoutView* GetDetailsContents(SearchResultView* result_view) {
+    return result_view->get_details_container_for_test();
+  }
+
+  views::Label* GetResultTextSeparatorLabel(SearchResultView* result_view) {
+    return result_view->get_result_text_separator_label_for_test();
+  }
+
   std::vector<SearchResultView*> GetAssistantResultViews() const {
     std::vector<SearchResultView*> results;
     for (auto* view : unified_view_->search_result_views_) {
@@ -148,6 +161,9 @@ class SearchResultListViewTest : public views::test::WidgetTest,
     assistant_result->set_result_type(
         ash::AppListSearchResultType::kAssistantText);
     assistant_result->set_display_type(ash::SearchResultDisplayType::kList);
+    assistant_result->SetAccessibleName(u"Accessible Name");
+    assistant_result->SetTitleTextVector(
+        BuildTitleTextVector(u"assistant result"));
     assistant_result->SetTitle(u"assistant result");
     results->Add(std::move(assistant_result));
 
@@ -160,10 +176,16 @@ class SearchResultListViewTest : public views::test::WidgetTest,
       std::unique_ptr<TestSearchResult> result =
           std::make_unique<TestSearchResult>();
       result->set_display_type(ash::SearchResultDisplayType::kList);
-      result->SetTitle(base::UTF8ToUTF16(base::StringPrintf("Result %d", i)));
+      result->SetAccessibleName(
+          base::UTF8ToUTF16(base::StringPrintf("Result %d", i)));
+      result->SetTitleTextVector(BuildTitleTextVector(
+          base::UTF8ToUTF16(base::StringPrintf("Result %d", i))));
       result->set_best_match(true);
-      if (i < 2)
-        result->SetDetails(u"Detail");
+      if (i < 2) {
+        result->SetAccessibleName(
+            base::UTF8ToUTF16(base::StringPrintf("Result %d, Detail", i)));
+        result->SetDetailsTextVector(BuildDetailsTextVector(u"Detail"));
+      }
       results->Add(std::move(result));
     }
 
@@ -171,15 +193,7 @@ class SearchResultListViewTest : public views::test::WidgetTest,
     RunPendingMessages();
   }
 
-  void SetUpKeyboardShortcutResult() {
-    SearchModel::SearchResults* results = GetResults();
-
-    std::unique_ptr<TestSearchResult> result =
-        std::make_unique<TestSearchResult>();
-    result->set_display_type(ash::SearchResultDisplayType::kList);
-    result->SetTitle(u"Copy and Paste");
-    result->set_best_match(true);
-
+  std::vector<SearchResult::TextItem> BuildKeyboardShortcutTextVector() {
     std::vector<SearchResult::TextItem> keyboard_shortcut_text_vector;
     SearchResult::TextItem shortcut_text_item_1(
         ash::SearchResultTextItemType::kIconifiedText);
@@ -199,7 +213,64 @@ class SearchResultListViewTest : public views::test::WidgetTest,
     shortcut_text_item_3.SetTextTags({});
     keyboard_shortcut_text_vector.push_back(shortcut_text_item_3);
 
-    result->SetKeyboardShortcutTextVector(keyboard_shortcut_text_vector);
+    return keyboard_shortcut_text_vector;
+  }
+
+  std::vector<SearchResult::TextItem> BuildTitleTextVector(
+      std::u16string title) {
+    std::vector<SearchResult::TextItem> title_text_vector;
+    SearchResult::TextItem shortcut_text_item_1(
+        ash::SearchResultTextItemType::kString);
+    shortcut_text_item_1.SetText(title);
+    shortcut_text_item_1.SetTextTags({});
+    title_text_vector.push_back(shortcut_text_item_1);
+    return title_text_vector;
+  }
+
+  std::vector<SearchResult::TextItem> BuildDetailsTextVector(
+      std::u16string details) {
+    std::vector<SearchResult::TextItem> details_text_vector;
+    SearchResult::TextItem shortcut_text_item_1(
+        ash::SearchResultTextItemType::kString);
+    shortcut_text_item_1.SetText(details);
+    shortcut_text_item_1.SetTextTags({});
+    details_text_vector.push_back(shortcut_text_item_1);
+    return details_text_vector;
+  }
+
+  void SetUpKeyboardShortcutResult() {
+    SearchModel::SearchResults* results = GetResults();
+
+    std::unique_ptr<TestSearchResult> result =
+        std::make_unique<TestSearchResult>();
+    result->set_display_type(ash::SearchResultDisplayType::kList);
+    result->SetAccessibleName(u"Copy and Paste");
+    result->SetTitleTextVector(BuildTitleTextVector(u"Copy and Paste"));
+    result->SetDetailsTextVector(BuildDetailsTextVector(u"Shortcuts"));
+    result->set_best_match(true);
+    result->SetKeyboardShortcutTextVector(BuildKeyboardShortcutTextVector());
+    results->Add(std::move(result));
+
+    // Adding results will schedule Update().
+    RunPendingMessages();
+  }
+
+  void SetUpKeyboardShortcutAnswerCard(bool long_title) {
+    SearchModel::SearchResults* results = GetResults();
+    std::unique_ptr<TestSearchResult> result =
+        std::make_unique<TestSearchResult>();
+    result->set_display_type(ash::SearchResultDisplayType::kAnswerCard);
+    result->SetMultilineTitle(true);
+
+    std::u16string title =
+        long_title ? u"Arbitarily long answer card text to check multiline "
+                     u"behavior and hiding of search result details text "
+                   : u" Copy and Paste ";
+
+    result->SetAccessibleName(title);
+    result->SetTitleTextVector(BuildTitleTextVector(title));
+    result->SetDetailsTextVector(BuildDetailsTextVector(u"Shortcuts"));
+    result->SetKeyboardShortcutTextVector(BuildKeyboardShortcutTextVector());
     results->Add(std::move(result));
 
     // Adding results will schedule Update().
@@ -220,8 +291,9 @@ class SearchResultListViewTest : public views::test::WidgetTest,
         std::make_unique<TestSearchResult>();
     result->set_display_type(ash::SearchResultDisplayType::kList);
     result->set_best_match(true);
-    result->SetTitle(base::UTF8ToUTF16(
-        base::StringPrintf("Added Result %d", GetUnifiedViewResultCount())));
+    result->SetAccessibleName(u"Accessible Name");
+    result->SetTitleTextVector(BuildTitleTextVector(base::UTF8ToUTF16(
+        base::StringPrintf("Added Result %d", GetUnifiedViewResultCount()))));
     GetResults()->Add(std::move(result));
   }
 
@@ -286,6 +358,39 @@ TEST_P(SearchResultListViewTest, KeyboardShortcutResult) {
             GetDefaultResultViewAt(0)->ComputeAccessibleName());
   EXPECT_TRUE(
       GetKeyboardShortcutContents(GetDefaultResultViewAt(0))->GetVisible());
+}
+
+// Verifies that title, details, and keyboard shortcut contents are shown for
+// keyboard shortcut answer cards normally but details are hidden for results
+// with long titles.
+TEST_P(SearchResultListViewTest, KeyboardShortcutAnswerCard) {
+  if (!IsProductivityLauncherEnabled())
+    return;
+
+  default_view()->SetBounds(0, 0, kPreferredWidth, 400);
+  SetUpKeyboardShortcutAnswerCard(/*long_title=*/false);
+  // Title, details,and keyboard shortcut views should be visible.
+  EXPECT_TRUE(GetTitleContents(GetAnswerCardResultViewAt(0))->GetVisible());
+  EXPECT_TRUE(GetDetailsContents(GetAnswerCardResultViewAt(0))->GetVisible());
+  EXPECT_TRUE(
+      GetResultTextSeparatorLabel(GetAnswerCardResultViewAt(0))->GetVisible());
+  EXPECT_TRUE(
+      GetKeyboardShortcutContents(GetAnswerCardResultViewAt(0))->GetVisible());
+
+  // Delete the previous result.
+  DeleteResultAt(0);
+
+  SetUpKeyboardShortcutAnswerCard(/*long_title=*/true);
+  // Title and keyboard shortcut views should be visible. The details view
+  // is hidden because the long title view becomes multiline and takes priority.
+  EXPECT_TRUE(
+      GetKeyboardShortcutContents(GetAnswerCardResultViewAt(0))->GetVisible());
+  EXPECT_TRUE(GetTitleContents(GetAnswerCardResultViewAt(0))->GetVisible());
+
+  EXPECT_FALSE(
+      GetResultTextSeparatorLabel(GetAnswerCardResultViewAt(0))->GetVisible());
+
+  EXPECT_FALSE(GetDetailsContents(GetAnswerCardResultViewAt(0))->GetVisible());
 }
 
 TEST_P(SearchResultListViewTest, CorrectEnumLength) {
