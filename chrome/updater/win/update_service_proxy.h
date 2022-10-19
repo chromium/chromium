@@ -20,7 +20,6 @@ class Version;
 namespace updater {
 
 struct RegistrationRequest;
-struct RegistrationResponse;
 enum class UpdaterScope;
 class UpdateServiceProxyImpl;
 
