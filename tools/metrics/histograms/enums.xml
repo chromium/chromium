@@ -31768,7 +31768,7 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="EnterprisePolicies">
-<!-- Generated from components/policy/resources/policy_templates.json -->
+<!-- Generated from components/policy/resources/templates/policies.yaml -->
 
   <int value="1" label="HomepageLocation"/>
   <int value="2" label="HomepageIsNewTabPage"/>
@@ -79833,7 +79833,7 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PolicyAtomicGroups">
-<!-- Generated from components/policy/resources/policy_templates.json -->
+<!-- Generated from components/policy/resources/templates/policies.yaml -->
 
   <int value="1" label="Homepage"/>
   <int value="2" label="RemoteAccess"/>

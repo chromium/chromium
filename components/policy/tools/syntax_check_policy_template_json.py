@@ -14,6 +14,11 @@ import re
 import sys
 from schema_validator import SchemaValidator
 
+_SRC_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.append(os.path.join(_SRC_PATH, 'third_party'))
+import pyyaml
+
 LEADING_WHITESPACE = re.compile('^([ \t]*)')
 TRAILING_WHITESPACE = re.compile('.*?([ \t]+)$')
 # Matches all non-empty strings that contain no whitespaces.
@@ -435,8 +440,8 @@ class PolicyTemplateChecker(object):
     if offending_snippet is not None:
       if isinstance(offending_snippet, dict) or isinstance(
           offending_snippet, list):
-        json_str = json.dumps(offending_snippet, indent=2)
-        formatted_error_message += f'\n  Offending: {json_str}'
+        yaml_str = pyyaml.dumps(offending_snippet, indent=2)
+        formatted_error_message += f'\n  Offending: {yaml_str}'
       else:
         formatted_error_message += f'\n  {offending_snippet}'
     self.errors.append(formatted_error_message)
@@ -611,7 +616,7 @@ class PolicyTemplateChecker(object):
 
     policy_type_legacy = policy.get('type')
     # TODO(crbug.com/1310258): Remove this check once 'type' is removed from
-    # policy_templates.json.
+    # policy_templates.
     if policy_type != policy_type_legacy:
       self._PolicyError(
           f'Unexpected type. Type "{policy_type}" was expected based on the '
@@ -714,7 +719,7 @@ class PolicyTemplateChecker(object):
       proto_paths.add(policy_and_path[1])
 
   # If 'device only' field is true, the policy must be mapped to its proto
-  # field in device_policy_proto_map.json.
+  # field in device_policy_proto_map.yaml.
   def _CheckDevicePolicyProtoMappingDeviceOnly(
       self, policy, device_policy_proto_map, legacy_device_policy_proto_map):
     if not policy.get('device_only', False):
@@ -798,8 +803,9 @@ class PolicyTemplateChecker(object):
                         policy, 'default')
 
   def _NeedsItems(self, policy):
-    return self.policy_type_provider.GetPolicyType(policy) in (
-        'main', 'int-enum', 'string-enum', 'string-enum-list')
+    return (not policy.get('deprecated', False)
+            and self.policy_type_provider.GetPolicyType(policy) in (
+                'main', 'int-enum', 'string-enum', 'string-enum-list'))
 
   def _CheckItems(self, policy, current_version):
     if not self._NeedsItems(policy):
@@ -1046,7 +1052,7 @@ class PolicyTemplateChecker(object):
       self._CheckContains(policy, 'tags', list)
 
       # 'schema' is the new 'type'.
-      # TODO(crbug.com/1310258): remove 'type' from policy_templates.json and
+      # TODO(crbug.com/1310258): remove 'type' from policy_templates and
       # all supporting files (including this one), and exclusively use 'schema'.
       self._CheckPolicySchema(policy, policy_type)
 
@@ -1702,11 +1708,9 @@ class PolicyTemplateChecker(object):
           'Key \'%s\' was added to policy schema path \'%s\' in new schema.' %
           (new_key, current_schema_key))
 
-  def _CheckPolicyDefinitionChangeCompatibility(self, original_policy,
-                                                original_released_platforms,
-                                                new_policy,
-                                                new_released_platforms,
-                                                current_version):
+  def _CheckPolicyDefinitionChangeCompatibility(
+      self, policy_name, original_policy, original_released_platforms,
+      new_policy, new_released_platforms, current_version):
     '''
     Checks if the new policy definition is compatible with the original policy
     definition.
@@ -1752,8 +1756,7 @@ class PolicyTemplateChecker(object):
 
     # 3. Check schema changes for compatibility.
     self.schema_compatible_errors = []
-    self._CheckSchemasAreCompatible([original_policy['name']],
-                                    original_policy['schema'],
+    self._CheckSchemasAreCompatible([policy_name], original_policy['schema'],
                                     new_policy['schema'])
     if self.schema_compatible_errors:
       schema_compatible_error_message = '\n  '.join(
@@ -1786,8 +1789,7 @@ class PolicyTemplateChecker(object):
 
   # Checks if the new policy definitions are compatible with the policy
   # definitions coming from the original_file_contents.
-  def _CheckPolicyDefinitionsChangeCompatibility(self, policy_definitions,
-                                                 original_file_contents,
+  def _CheckPolicyDefinitionsChangeCompatibility(self, policy_change_list,
                                                  current_version):
     '''
     Checks if all the |policy_definitions| in the modified policy templates file
@@ -1801,101 +1803,67 @@ class PolicyTemplateChecker(object):
     |current_version|: The current major version of the branch as stored in
       chrome/VERSION.
     '''
-    try:
-      original_container = eval(original_file_contents)
-    except:
-      import traceback
-      traceback.print_exc(file=sys.stdout)
-      self._Error('Invalid Python/JSON syntax in original file.')
-      return
+    for policy_changes in policy_change_list:
+      original_policy = policy_changes['old_policy']
+      new_policy = policy_changes['new_policy']
+      new_policy['name'] = policy_changes['policy']
+      if original_policy:
+        original_policy['name'] = policy_changes['policy']
+        (original_released_platforms,
+         original_rolling_out_platforms) = self._GetReleasedPlatforms(
+             original_policy, current_version)
 
-    if original_container == None:
-      self._Error('Invalid Python/JSON syntax in original file.')
-      return
+        # A policy that has at least one released platform cannot be removed.
+        if not new_policy:
+          name = original_policy['name']
+          if original_released_platforms:
+            self._PolicyError(f'Released policy has been removed.',
+                              original_policy)
+          else:
+            self._Warning(
+                f'Unreleased Policy {name} has been removed. If the '
+                'policy is available in Beta, please cleanup the Beta '
+                'branch as well.')
+          continue
 
-    original_policy_definitions = self._CheckContains(
-        original_container,
-        'policy_definitions',
-        list,
-        parent_element=None,
-        optional=True,
-        container_name='The root element',
-        offending=None)
+        (new_released_platforms,
+         new_rolling_out_platform) = self._GetReleasedPlatforms(
+             new_policy, current_version)
 
-    if original_policy_definitions is None:
-      return
-
-    # Sort the new policies by name for faster searches.
-    policy_definitions_dict = {
-        policy['name']: policy
-        for policy in policy_definitions
-        if self.policy_type_provider.GetPolicyType(policy) != 'group'
-    }
-
-    original_policy_name_set = {
-        policy['name']
-        for policy in original_policy_definitions
-        if self.policy_type_provider.GetPolicyType(policy) != 'group'
-    }
-
-    for original_policy in original_policy_definitions:
-      # Check change compatibility for all non-group policy definitions.
-      if self.policy_type_provider.GetPolicyType(original_policy) == 'group':
-        continue
-
-      (original_released_platforms,
-       original_rolling_out_platforms) = self._GetReleasedPlatforms(
-           original_policy, current_version)
-
-      new_policy = policy_definitions_dict.get(original_policy['name'])
-
-      # A policy that has at least one released platform cannot be removed.
-      if new_policy is None:
-        name = original_policy['name']
+        # Check policy compatibility if there is at least one released platform.
         if original_released_platforms:
-          self._PolicyError(f'Released policy has been removed.',
-                            original_policy)
-        else:
-          self._Warning(f'Unreleased Policy {name} has been removed. If the '
-                        'policy is available in Beta, please cleanup the Beta '
-                        'branch as well.')
-        continue
+          self._CheckPolicyDefinitionChangeCompatibility(
+              new_policy['name'], original_policy, original_released_platforms,
+              new_policy, new_released_platforms, current_version)
 
-      (new_released_platforms,
-       new_rolling_out_platform) = self._GetReleasedPlatforms(
-           new_policy, current_version)
+        # New released platforms should always use the current version unless
+        # they are going to be merged into previous milestone.
+        if new_released_platforms or new_rolling_out_platform:
+          self._CheckNewReleasedPlatforms(
+              MergeDict(original_released_platforms,
+                        original_rolling_out_platforms),
+              MergeDict(new_released_platforms, new_rolling_out_platform),
+              current_version, new_policy)
+      else:
+        (new_released_platforms,
+         new_rolling_out_platform) = self._GetReleasedPlatforms(
+             new_policy, current_version)
+        if new_released_platforms or new_rolling_out_platform:
+          self._CheckNewReleasedPlatforms({},
+                                          MergeDict(new_released_platforms,
+                                                    new_rolling_out_platform),
+                                          current_version, new_policy)
+        # TODO(crbug.com/1139046): This default check should apply to all
+        # policies instead of just new ones.
+        if self._NeedsDefault(new_policy) and not 'default' in new_policy:
+          self._Error("Definition of policy %s must include a 'default'"
+                      " field." % (new_policy['name']))
 
-      # Check policy compatibility if there is at least one released platform.
-      if original_released_platforms:
-        self._CheckPolicyDefinitionChangeCompatibility(
-            original_policy, original_released_platforms, new_policy,
-            new_released_platforms, current_version)
-
-      # New released platforms should always use the current version unless they
-      # are going to be merged into previous milestone.
-      if new_released_platforms or new_rolling_out_platform:
-        self._CheckNewReleasedPlatforms(
-            MergeDict(original_released_platforms,
-                      original_rolling_out_platforms),
-            MergeDict(new_released_platforms, new_rolling_out_platform),
-            current_version, new_policy)
-
-    # Check brand new policies:
-    for new_policy_name in set(
-        policy_definitions_dict.keys()) - original_policy_name_set:
-      new_policy = policy_definitions_dict[new_policy_name]
-      (new_released_platforms,
-       new_rolling_out_platform) = self._GetReleasedPlatforms(
-           new_policy, current_version)
-      if new_released_platforms or new_rolling_out_platform:
-        self._CheckNewReleasedPlatforms({},
-                                        MergeDict(new_released_platforms,
-                                                  new_rolling_out_platform),
-                                        current_version, new_policy)
-      # TODO(crbug.com/1139046): This default check should apply to all
-      # policies instead of just new ones.
-      if self._NeedsDefault(new_policy) and not 'default' in new_policy:
-        self._PolicyError('Policy does not have "default" field', new_policy)
+        # TODO(crbug.com/1139306): This item check should apply to all policies
+        # instead of just new ones.
+        if self._NeedsItems(new_policy) and new_policy.get('items',
+                                                           None) == None:
+          self._PolicyError('Policy does not have "items" field', new_policy)
 
   def _LeadingWhitespace(self, line):
     match = LEADING_WHITESPACE.match(line)
@@ -1909,79 +1877,9 @@ class PolicyTemplateChecker(object):
       return match.group(1)
     return ''
 
-  def _CheckFormat(self, filename):
-    if self.options.fix:
-      fixed_lines = []
-    # Three quotes open and close multiple lines strings. Odd means currently
-    # inside a multiple line strings. We don't change indentation for those
-    # strings. It changes hash of the string and grit can't find translation in
-    # the file.
-    three_quotes_cnt = 0
-    with open(filename, encoding='utf-8') as f:
-      indent = 0
-      line_number = 0
-      for line in f:
-        line_number += 1
-        line = line.rstrip('\n')
-        # Check for trailing whitespace.
-        trailing_whitespace = self._TrailingWhitespace(line)
-        if len(trailing_whitespace) > 0:
-          if self.options.fix:
-            line = line.rstrip()
-            self._LineWarning('Trailing whitespace.', line_number)
-          else:
-            self._LineError('Trailing whitespace.', line_number)
-        if self.options.fix:
-          if len(line) == 0:
-            fixed_lines += ['\n']
-            continue
-        else:
-          if line == trailing_whitespace:
-            # This also catches the case of an empty line.
-            continue
-        # Check for correct amount of leading whitespace.
-        leading_whitespace = self._LeadingWhitespace(line)
-        if leading_whitespace.count('\t') > 0:
-          if self.options.fix:
-            leading_whitespace = leading_whitespace.replace('\t', '  ')
-            line = leading_whitespace + line.lstrip()
-            self._LineWarning('Tab character found.', line_number)
-          else:
-            self._LineError('Tab character found.', line_number)
-        if line[len(leading_whitespace)] in (']', '}'):
-          indent -= 2
-        # Ignore 0-indented comments and multiple string literals.
-        if line[0] != '#' and three_quotes_cnt % 2 == 0:
-          if len(leading_whitespace) != indent:
-            if self.options.fix:
-              line = ' ' * indent + line.lstrip()
-              self._LineWarning(
-                  'Indentation should be ' + str(indent) + ' spaces.',
-                  line_number)
-            else:
-              self._LineError(
-                  'Bad indentation. Should be ' + str(indent) + ' spaces.',
-                  line_number)
-        three_quotes_cnt += line.count("'''")
-        if line[-1] in ('[', '{'):
-          indent += 2
-        if self.options.fix:
-          fixed_lines.append(line + '\n')
-
-    assert three_quotes_cnt % 2 == 0
-    # If --fix is specified: backup the file (deleting any existing backup),
-    # then write the fixed version with the old filename.
-    if self.options.fix:
-      if self.options.backup:
-        backupfilename = filename + '.bak'
-        if os.path.exists(backupfilename):
-          os.remove(backupfilename)
-        os.rename(filename, backupfilename)
-      with open(filename, 'w', encoding='utf-8') as f:
-        f.writelines(fixed_lines)
 
   def _ValidatePolicyAtomicGroups(self, atomic_groups, max_id, deleted_ids):
-    ids = [x['id'] for x in atomic_groups]
+    ids = sorted([x['id'] for x in atomic_groups])
     actual_highest_id = max(ids)
     if actual_highest_id != max_id:
       self._Error(
@@ -1996,42 +1894,26 @@ class PolicyTemplateChecker(object):
         self._Error('Duplicate atomic group id %s' % (ids[i]))
         return
       ids_set.add(ids[i])
+
       if i > 0 and ids[i - 1] + 1 != ids[i]:
         for delete_id in range(ids[i - 1] + 1, ids[i]):
           if delete_id not in deleted_ids:
             self._Error('Missing atomic group id %s' % (delete_id))
             return
 
-  def Main(self, filename, options, original_file_contents, current_version,
-           skip_compability_check):
-    try:
-      with open(filename, 'rb') as f:
-        raw_data = f.read().decode('UTF-8')
-        data = eval(raw_data)
-        DuplicateKeyVisitor().visit(ast.parse(raw_data))
-    except ValueError as e:
-      self._Error(str(e))
-      return
-    except:
-      import traceback
-      traceback.print_exc(file=sys.stdout)
-      self._Error('Invalid Python/JSON syntax.')
-      return
-    if data == None:
-      self._Error('Invalid Python/JSON syntax.')
-      return
+  def Main(self, legacy_policy_template, options, policy_change_list,
+           current_version, skip_compability_check):
     self.options = options
 
-    # First part: check JSON structure.
+    # First part: check structure.
 
     # Check (non-policy-specific) message definitions.
-    messages = self._CheckContains(
-        data,
-        'messages',
-        dict,
-        parent_element=None,
-        container_name='The root element',
-        offending=None)
+    messages = self._CheckContains(legacy_policy_template,
+                                   'messages',
+                                   dict,
+                                   parent_element=None,
+                                   container_name='The root element',
+                                   offending=None)
     if messages is not None:
       for message in messages:
         self._CheckMessage(message, messages[message])
@@ -2039,57 +1921,54 @@ class PolicyTemplateChecker(object):
           self.features.append(message[12:])
 
     # Check policy definitions.
-    policy_definitions = self._CheckContains(
-        data,
-        'policy_definitions',
-        list,
-        parent_element=None,
-        container_name='The root element',
-        offending=None)
-    deleted_policy_ids = self._CheckContains(
-        data,
-        'deleted_policy_ids',
-        list,
-        parent_element=None,
-        container_name='The root element',
-        offending=None)
+    policy_definitions = self._CheckContains(legacy_policy_template,
+                                             'policy_definitions',
+                                             list,
+                                             parent_element=None,
+                                             container_name='The root element',
+                                             offending=None)
+    deleted_policy_ids = self._CheckContains(legacy_policy_template,
+                                             'deleted_policy_ids',
+                                             list,
+                                             parent_element=None,
+                                             container_name='The root element',
+                                             offending=None)
     deleted_atomic_policy_group_ids = self._CheckContains(
-        data,
+        legacy_policy_template,
         'deleted_atomic_policy_group_ids',
         list,
         parent_element=None,
         container_name='The root element',
         offending=None)
-    highest_id = self._CheckContains(
-        data,
-        'highest_id_currently_used',
-        int,
-        parent_element=None,
-        container_name='The root element',
-        offending=None)
+    highest_id = self._CheckContains(legacy_policy_template,
+                                     'highest_id_currently_used',
+                                     int,
+                                     parent_element=None,
+                                     container_name='The root element',
+                                     offending=None)
     highest_atomic_group_id = self._CheckContains(
-        data,
+        legacy_policy_template,
         'highest_atomic_group_id_currently_used',
         int,
         parent_element=None,
         container_name='The root element',
         offending=None)
     device_policy_proto_map = self._CheckContains(
-        data,
+        legacy_policy_template,
         'device_policy_proto_map',
         dict,
         parent_element=None,
         container_name='The root element',
         offending=None)
     legacy_device_policy_proto_map = self._CheckContains(
-        data,
+        legacy_policy_template,
         'legacy_device_policy_proto_map',
         list,
         parent_element=None,
         container_name='The root element',
         offending=None)
     policy_atomic_group_definitions = self._CheckContains(
-        data,
+        legacy_policy_template,
         'policy_atomic_group_definitions',
         list,
         parent_element=None,
@@ -2153,17 +2032,16 @@ class PolicyTemplateChecker(object):
           policy_in_atomic_groups.add(policy_name)
 
     # Second part: check formatting.
-    self._CheckFormat(filename)
+    # TODO(crbug/1375858): Check valid yaml formatting
 
     # Third part: if the original file contents are available, try to check
     # if the new policy definitions are compatible with the original policy
     # definitions (if the original file contents have not raised any syntax
     # errors).
     self.non_compatibility_error_count = 0
-    if (not self.errors and original_file_contents is not None
-        and not skip_compability_check):
-      self._CheckPolicyDefinitionsChangeCompatibility(
-          policy_definitions, original_file_contents, current_version)
+    if (not self.errors and not skip_compability_check):
+      self._CheckPolicyDefinitionsChangeCompatibility(policy_change_list,
+                                                      current_version)
 
     if self.non_compatibility_error_count > 0:
       print(
@@ -2177,8 +2055,8 @@ class PolicyTemplateChecker(object):
           'https://bit.ly/33qr3ZV.')
 
     # Fourth part: summary and exit.
-    print('Finished checking %s. %d errors, %d warnings.' %
-          (filename, len(self.errors), len(self.warnings)))
+    print('Finished checking policies. %d errors, %d warnings.' %
+          (len(self.errors), len(self.warnings)))
     if self.options.stats:
       if self.num_groups > 0:
         print('%d policies, %d of those in %d groups (containing on '
@@ -2191,13 +2069,13 @@ class PolicyTemplateChecker(object):
 
   def Run(self,
           argv,
-          filename=None,
-          original_file_contents=None,
+          legacy_policy_template=None,
+          policy_change_list=[],
           current_version=None,
           skip_compability_check=False):
     parser = argparse.ArgumentParser(
-        usage='usage: %prog [options] filename',
-        description='Syntax check a policy_templates.json file.')
+        usage='usage: %prog [options] template_dir',
+        description='Syntax check a generated policy_templates.json file.')
     parser.add_argument(
         '--device_policy_proto_path',
         help='[REQUIRED] File path of the device policy proto file.')
@@ -2210,12 +2088,12 @@ class PolicyTemplateChecker(object):
     parser.add_argument(
         '--stats', action='store_true', help='Generate statistics.')
     args = parser.parse_args(argv)
-    if filename is None:
-      self._Error('Filename not specified.')
+    if legacy_policy_template is None:
+      self._Error('Template not specified.')
       return self.errors, self.warnings
     if args.device_policy_proto_path is None:
       self._Error('Missing --device_policy_proto_path argument.')
       return self.errors, self.warnings
-    self.Main(filename, args, original_file_contents, current_version,
+    self.Main(legacy_policy_template, args, policy_change_list, current_version,
               skip_compability_check)
     return self.errors, self.warnings

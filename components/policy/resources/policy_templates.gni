@@ -10,6 +10,7 @@
 # replacement there.
 
 policy_templates_base_dir = "$root_gen_dir/chrome/app/policy"
+policy_templates_yaml_dir = "resources/templates"
 
 # Languages we're going to process. Should match the XX-YY of the translated
 # policy_templates_XX-YY.json files, see policy_templates.grd.
