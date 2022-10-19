@@ -203,6 +203,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.CUPS.PrinterEditDialogActions"
+    enum="PrinterEditDialogActions" expires_after="2023-09-26">
+  <owner>nmuggli@google.com</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    Tracks when the printer edit dialog is opened and certain user interactions.
+    Every time the dialog is opened, the first bucket will get incremented.
+    Additional buckets will get incremented for specific actions, such as
+    clicking the View PPD button. Therefore, the first bucket acts as the total
+    number of potential events and subsequest buckets track how many times
+    specific events occurred. Only on Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="Printing.CUPS.PrinterRemoved" enum="PrinterProtocol"
     expires_after="2023-02-26">
   <owner>bmgordon@chromium.org</owner>

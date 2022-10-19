@@ -281,6 +281,18 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
                                  CupsRemovePrinterCallback callback,
                                  base::OnceClosure error_callback) = 0;
 
+  // A callback to handle the result of CupsRetrievePrinterPpd.
+  using CupsRetrievePrinterPpdCallback =
+      base::OnceCallback<void(const std::vector<uint8_t>& ppd)>;
+
+  // Calls the debugd method to retrieve a PPD.  |name| is the printer name as
+  // registered in CUPS. |callback| is called with a string containing the PPD
+  // data. |error_callback| will be called if there was an error retrieving the
+  // PPD.
+  virtual void CupsRetrievePrinterPpd(const std::string& name,
+                                      CupsRetrievePrinterPpdCallback callback,
+                                      base::OnceClosure error_callback) = 0;
+
   // A callback to handle the result of
   // StartPluginVmDispatcher/StopPluginVmDispatcher.
   using PluginVmDispatcherCallback = base::OnceCallback<void(bool success)>;

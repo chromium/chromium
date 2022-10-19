@@ -46,6 +46,16 @@ export let CupsPrintersList;
 
 /**
  * @typedef {{
+ *   printerName: string,
+ *   ppd: string,
+ * }}
+ *
+ * Note: |ppd| is undefined in the case of a failed response.
+ */
+export let CupsPrinterPpdInfo;
+
+/**
+ * @typedef {{
  *   success: boolean,
  *   manufacturers: Array<string>
  * }}
@@ -145,6 +155,14 @@ export class CupsPrintersBrowserProxy {
    * @param {string} printerName
    */
   removeCupsPrinter(printerId, printerName) {}
+
+  /**
+   * @param {string} printerId
+   * @param {string} printerName
+   * @return {!Promise<!CupsPrinterPpdInfo>} The contents of the PPD for
+   *     printerId.
+   */
+  retrieveCupsPrinterPpd(printerId, printerName) {}
 
   /**
    * @return {!Promise<string>} The full path of the printer PPD file.
@@ -262,6 +280,11 @@ export class CupsPrintersBrowserProxyImpl {
   /** @override */
   removeCupsPrinter(printerId, printerName) {
     chrome.send('removeCupsPrinter', [printerId, printerName]);
+  }
+
+  /** @override */
+  retrieveCupsPrinterPpd(printerId, printerName) {
+    return sendWithPromise('retrieveCupsPrinterPpd', printerId, printerName);
   }
 
   /** @override */
