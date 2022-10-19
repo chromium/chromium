@@ -268,31 +268,16 @@ void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
 }
 
 bool BrowserAccessibilityManager::CanFireEvents() const {
-  // Delay events until it makes sense to fire them.
-  // Events that are generated while waiting until CanFireEvents() returns true
-  // are dropped by design. Any events after the page is ready for events will
-  // be relative to that initial tree.
-
-  // The current tree must have an AXTreeID.
-  if (ax_tree_id() == ui::AXTreeIDUnknown())
+  if (!AXTreeManager::CanFireEvents())
     return false;
 
-  // Fire events only when the root of the tree is reachable, to avoid a bug
-  // in AppKit that gets stuck in an infinite loop trying to find the root,
-  // causing VoiceOver to get stuck announcing "Chrome is not responding".
   BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
+  // If the check below is changed to a DCHECK, it will fail when running
+  // http/tests/devtools/resource-tree/resource-tree-frame-in-crafted-frame.js
+  // on linux. The parent `RenderFrameHostImpl` might not have an AXTreeID
+  // that isn't `ui::AXTreeIDUnknown()`.
   if (!root_manager)
     return false;
-
-  // Make sure that nodes can be traversed to the root.
-  const BrowserAccessibilityManager* ancestor_manager = this;
-  while (!ancestor_manager->IsRootFrameManager()) {
-    BrowserAccessibility* host_node =
-        ancestor_manager->GetParentNodeFromParentTree();
-    if (!host_node)
-      return false;  // Host node not ready yet.
-    ancestor_manager = host_node->manager();
-  }
 
   // Do not fire events if a page is obscured by an interstitial page -- see
   // crbug.com/730910.

@@ -93,6 +93,33 @@ AXNode* AXTreeManager::RetargetForEvents(AXNode* node,
   return node;
 }
 
+bool AXTreeManager::CanFireEvents() const {
+  // Delay events until it makes sense to fire them.
+  // Events that are generated while waiting until CanFireEvents() returns true
+  // are dropped by design. Any events after the page is ready for events will
+  // be relative to that initial tree.
+
+  // The current tree must have an AXTreeID.
+  if (GetTreeID() == AXTreeIDUnknown())
+    return false;
+
+  // Fire events only when the root of the tree is reachable.
+  AXTreeManager* root_manager = GetRootManager();
+  if (!root_manager)
+    return false;
+
+  // Make sure that nodes can be traversed to the root.
+  const AXTreeManager* ancestor_manager = this;
+  while (!ancestor_manager->IsRoot()) {
+    AXNode* host_node = ancestor_manager->GetParentNodeFromParentTreeAsAXNode();
+    if (!host_node)
+      return false;  // Host node not ready yet.
+    ancestor_manager = host_node->GetManager();
+  }
+
+  return true;
+}
+
 void AXTreeManager::Initialize(const ui::AXTreeUpdate& initial_tree) {
   if (!ax_tree()->Unserialize(initial_tree)) {
     LOG(FATAL) << "No recovery is possible if the initial tree is broken: "

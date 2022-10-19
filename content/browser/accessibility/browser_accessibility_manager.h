@@ -145,7 +145,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   void FireFocusEventsIfNeeded();
 
   // Return whether or not we are currently able to fire events.
-  virtual bool CanFireEvents() const;
+  bool CanFireEvents() const override;
 
   // Return a pointer to the root of the tree.
   BrowserAccessibility* GetBrowserAccessibilityRoot() const;
