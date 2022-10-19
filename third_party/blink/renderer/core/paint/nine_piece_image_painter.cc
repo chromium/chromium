@@ -96,9 +96,12 @@ void PaintPieces(GraphicsContext& context,
                  Image* image,
                  const gfx::SizeF& unzoomed_image_size,
                  PhysicalBoxSides sides_to_include) {
+  const RespectImageOrientationEnum respect_orientation =
+      style.RespectImageOrientation() ? kRespectImageOrientation
+                                      : kDoNotRespectImageOrientation;
   // |image_size| is in the image's native resolution and |slice_scale| defines
   // the effective size of a CSS pixel in the image.
-  gfx::SizeF image_size = image->SizeAsFloat(kRespectImageOrientation);
+  const gfx::SizeF image_size = image->SizeAsFloat(respect_orientation);
   // Compute the scale factor to apply to the slice values by relating the
   // zoomed size to the "unzoomed" (CSS pixel) size. For raster images this
   // should match any DPR scale while for generated images it should match the
@@ -129,13 +132,22 @@ void PaintPieces(GraphicsContext& context,
       continue;
 
     if (!ShouldTile(draw_info)) {
+      // When respecting image orientation, the drawing code expects the source
+      // rect to be in the unrotated image space, but we have computed it here
+      // in the rotated space in order to position and size the background. Undo
+      // the src rect rotation if necessary.
+      gfx::RectF src_rect = draw_info.source;
+      if (respect_orientation && !image->HasDefaultOrientation()) {
+        src_rect =
+            image->CorrectSrcRectForImageOrientation(image_size, src_rect);
+      }
       // Since there is no way for the developer to specify decode behavior,
       // use kSync by default.
       // TODO(sohom): Per crbug.com/1351498 investigate and set
       // ImagePaintTimingInfo parameters correctly
       context.DrawImage(image, Image::kSyncDecode, image_auto_dark_mode,
                         ImagePaintTimingInfo(), draw_info.destination,
-                        &draw_info.source);
+                        &src_rect, SkBlendMode::kSrcOver, respect_orientation);
       continue;
     }
 
@@ -172,7 +184,8 @@ void PaintPieces(GraphicsContext& context,
     // TODO(sohom): Per crbug.com/1351498 investigate and set
     // ImagePaintTimingInfo parameters correctly
     context.DrawImageTiled(image, draw_info.destination, tiling_info,
-                           image_auto_dark_mode, ImagePaintTimingInfo());
+                           image_auto_dark_mode, ImagePaintTimingInfo(),
+                           SkBlendMode::kSrcOver, respect_orientation);
   }
 }
 
@@ -208,9 +221,12 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
   // generated or SVG), then get an image using that size. This will yield an
   // image with either "native" size (raster images) or size scaled by effective
   // zoom.
+  const RespectImageOrientationEnum respect_orientation =
+      style.RespectImageOrientation() ? kRespectImageOrientation
+                                      : kDoNotRespectImageOrientation;
   const gfx::SizeF default_object_size(border_image_rect.size);
   gfx::SizeF image_size = style_image->ImageSize(
-      style.EffectiveZoom(), default_object_size, kRespectImageOrientation);
+      style.EffectiveZoom(), default_object_size, respect_orientation);
   scoped_refptr<Image> image =
       style_image->GetImage(observer, document, style, image_size);
   if (!image)
@@ -221,7 +237,7 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
   // 'border-image-slice' values to be in.
   gfx::SizeF unzoomed_image_size = style_image->ImageSize(
       1, gfx::ScaleSize(default_object_size, 1 / style.EffectiveZoom()),
-      kRespectImageOrientation);
+      respect_orientation);
 
   DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",

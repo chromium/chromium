@@ -895,9 +895,6 @@ crbug.com/997202 external/wpt/density-size-correction/density-corrected-image-sv
 
 crbug.com/1159433 external/wpt/css/css-images/image-orientation/image-orientation-exif-png.html [ Failure ]
 
-# Ref results are wrong on the background and list case, not sure on border result
-crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-border-image.html [ Failure ]
-
 # object-fit is not applied for <object>/<embed>.
 crbug.com/693834 external/wpt/css/css-images/object-fit-contain-svg-001e.html [ Failure ]
 crbug.com/693834 external/wpt/css/css-images/object-fit-contain-svg-001o.html [ Failure ]
