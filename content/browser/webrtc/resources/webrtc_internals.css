@@ -166,3 +166,6 @@ details[open] details summary {
     display: none;
 }
 
+.stats-deprecation {
+  color: #be2026;
+}

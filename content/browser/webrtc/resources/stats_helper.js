@@ -54,3 +54,7 @@ export function generateStatsLabel(report) {
   label += 'id=' + report.id + ')';
   return label;
 }
+
+export function isDeprecatedStats(report) {
+  return report.id.startsWith('DEPRECATED_');
+}
