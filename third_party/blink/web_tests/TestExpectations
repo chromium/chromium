@@ -7250,8 +7250,6 @@ crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/perform
 # Disable top flakes trigger step failure on builders
 crbug.com/1371949 [ Mac12 ] virtual/low-priority-script-loading/http/tests/devtools/network/resource-priority.js [ Failure Pass ]
 crbug.com/1371949 [ Mac11 ] virtual/low-priority-script-loading/http/tests/devtools/network/resource-priority.js [ Failure Pass ]
-crbug.com/1374204 [ Linux ] inspector-protocol/debugger/updateCallFrameScopes.js [ Failure Pass ]
-crbug.com/1374204 [ Mac ] inspector-protocol/debugger/updateCallFrameScopes.js [ Failure Pass ]
 crbug.com/1370857 [ Debug Linux ] fast/block/float/float-avoidance.html [ Crash Failure ]
 
 # Sheriff 2022-10-07
