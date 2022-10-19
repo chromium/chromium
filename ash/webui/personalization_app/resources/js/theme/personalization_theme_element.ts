@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,20 +11,21 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import '../css/common.css.js';
-import '../css/cros_button_style.css.js';
+import '../../css/common.css.js';
+import '../../css/cros_button_style.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {WithPersonalizationStore} from './personalization_store.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
+import {isSelectionEvent} from '../utils.js';
+
 import {getTemplate} from './personalization_theme_element.html.js';
-import {initializeData, setColorModeAutoSchedule, setColorModePref} from './theme/theme_controller.js';
-import {getThemeProvider} from './theme/theme_interface_provider.js';
-import {ThemeObserver} from './theme/theme_observer.js';
-import {isSelectionEvent} from './utils.js';
+import {initializeData, setColorModeAutoSchedule, setColorModePref} from './theme_controller.js';
+import {getThemeProvider} from './theme_interface_provider.js';
+import {ThemeObserver} from './theme_observer.js';
 
 export interface PersonalizationThemeElement {
   $: {
