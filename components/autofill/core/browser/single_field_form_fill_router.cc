@@ -63,27 +63,26 @@ void SingleFieldFormFillRouter::OnWillSubmitForm(
 
 bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
     int query_id,
-    bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
     const FormFieldData& field,
+    const AutofillClient& client,
     base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
     const SuggestionsContext& context) {
   // Retrieving suggestions for a new field; select the appropriate filler.
   if (merchant_promo_code_manager_ &&
       merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-          query_id, is_autocomplete_enabled, autoselect_first_suggestion, field,
-          handler, context)) {
+          query_id, autoselect_first_suggestion, field, client, handler,
+          context)) {
     return true;
   }
-  if (iban_manager_ &&
-      iban_manager_->OnGetSingleFieldSuggestions(
-          query_id, is_autocomplete_enabled, autoselect_first_suggestion, field,
-          handler, context)) {
+  if (iban_manager_ && iban_manager_->OnGetSingleFieldSuggestions(
+                           query_id, autoselect_first_suggestion, field, client,
+                           handler, context)) {
     return true;
   }
   if (autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-          query_id, is_autocomplete_enabled, autoselect_first_suggestion, field,
-          handler, context)) {
+          query_id, autoselect_first_suggestion, field, client, handler,
+          context)) {
     return true;
   }
   return false;

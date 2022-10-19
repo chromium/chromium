@@ -328,7 +328,7 @@ void AutofillClientImpl::UpdatePopup(
   NOTREACHED();
 }
 
-bool AutofillClientImpl::IsAutocompleteEnabled() {
+bool AutofillClientImpl::IsAutocompleteEnabled() const {
   NOTREACHED();
   return false;
 }

@@ -181,7 +181,7 @@ class TestAutofillClient : public AutofillClient {
   void HideAutofillPopup(PopupHidingReason reason) override;
   void ShowVirtualCardErrorDialog(
       const AutofillErrorDialogContext& context) override;
-  bool IsAutocompleteEnabled() override;
+  bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       AutofillDriver* driver,

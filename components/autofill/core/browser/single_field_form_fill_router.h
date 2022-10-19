@@ -14,6 +14,7 @@
 
 namespace autofill {
 
+class AutofillClient;
 class FormStructure;
 class MerchantPromoCodeManager;
 struct SuggestionsContext;
@@ -46,9 +47,9 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
       int query_id,
-      bool is_autocomplete_enabled,
       bool autoselect_first_suggestion,
       const FormFieldData& field,
+      const AutofillClient& client,
       base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
       const SuggestionsContext& context) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,

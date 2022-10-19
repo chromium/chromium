@@ -214,7 +214,7 @@ class ChromeAutofillClient
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing) override;
   bool IsAutofillAssistantShowing() override;
-  bool IsAutocompleteEnabled() override;
+  bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       AutofillDriver* driver,

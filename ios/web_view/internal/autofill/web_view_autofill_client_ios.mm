@@ -337,7 +337,7 @@ void WebViewAutofillClientIOS::HideAutofillPopup(PopupHidingReason reason) {
   [bridge_ hideAutofillPopup];
 }
 
-bool WebViewAutofillClientIOS::IsAutocompleteEnabled() {
+bool WebViewAutofillClientIOS::IsAutocompleteEnabled() const {
   return false;
 }
 

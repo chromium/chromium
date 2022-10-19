@@ -1152,9 +1152,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // will handle sending the results back to the renderer.
     bool handled_by_single_field_form_filler =
         single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-            query_id, client()->IsAutocompleteEnabled(),
-            autoselect_first_suggestion, field, weak_ptr_factory_.GetWeakPtr(),
-            context);
+            query_id, autoselect_first_suggestion, field, *client(),
+            weak_ptr_factory_.GetWeakPtr(), context);
     if (handled_by_single_field_form_filler)
       return;
   }

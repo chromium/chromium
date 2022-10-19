@@ -20,18 +20,12 @@ MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
 
 bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     int query_id,
-    bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
     const FormFieldData& field,
+    const AutofillClient& client,
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
-  // We don't check whether |is_autocomplete_enabled| is false because it is
-  // redundant. If |is_autocomplete_enabled| is false, then autofill
-  // wallet import must be disabled. Disabling autofill wallet import (turning
-  // off the "Save and fill payment methods" toggle) will disable offering
-  // suggestions and filling promo codes, because it will cause
-  // PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin() to return
-  // an empty vector.
+  // The field is eligible only if it's focused on a merchant promo code.
   bool field_is_eligible =
       context.focused_field &&
       context.focused_field->Type().GetStorableType() == MERCHANT_PROMO_CODE;

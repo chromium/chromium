@@ -436,7 +436,7 @@ void ChromeAutofillClientIOS::HideAutofillPopup(PopupHidingReason reason) {
   [bridge_ hideAutofillPopup];
 }
 
-bool ChromeAutofillClientIOS::IsAutocompleteEnabled() {
+bool ChromeAutofillClientIOS::IsAutocompleteEnabled() const {
   return prefs::IsAutocompleteEnabled(GetPrefs());
 }
 

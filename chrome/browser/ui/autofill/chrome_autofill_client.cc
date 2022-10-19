@@ -1062,7 +1062,7 @@ bool ChromeAutofillClient::IsAutofillAssistantShowing() {
                                           autofill_assistant::UIState::kShown;
 }
 
-bool ChromeAutofillClient::IsAutocompleteEnabled() {
+bool ChromeAutofillClient::IsAutocompleteEnabled() const {
   return prefs::IsAutocompleteEnabled(GetPrefs());
 }
 

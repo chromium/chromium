@@ -20,9 +20,9 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
       bool,
       OnGetSingleFieldSuggestions,
       (int query_id,
-       bool is_autocomplete_enabled,
        bool autoselect_first_suggestion,
        const FormFieldData& field,
+       const AutofillClient& client,
        base::WeakPtr<MerchantPromoCodeManager::SuggestionsHandler> handler,
        const SuggestionsContext& context),
       (override));

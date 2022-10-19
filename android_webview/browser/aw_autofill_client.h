@@ -61,7 +61,7 @@ class AwAutofillClient : public autofill::AutofillClient,
   ~AwAutofillClient() override;
 
   void SetSaveFormData(bool enabled);
-  bool GetSaveFormData();
+  bool GetSaveFormData() const;
 
   // AutofillClient:
   autofill::PersonalDataManager* GetPersonalDataManager() override;
@@ -138,7 +138,7 @@ class AwAutofillClient : public autofill::AutofillClient,
   void UpdatePopup(const std::vector<autofill::Suggestion>& suggestions,
                    autofill::PopupType popup_type) override;
   void HideAutofillPopup(autofill::PopupHidingReason reason) override;
-  bool IsAutocompleteEnabled() override;
+  bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       autofill::AutofillDriver* driver,

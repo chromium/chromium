@@ -349,7 +349,7 @@ void TestAutofillClient::ShowVirtualCardErrorDialog(
   autofill_error_dialog_context_ = context;
 }
 
-bool TestAutofillClient::IsAutocompleteEnabled() {
+bool TestAutofillClient::IsAutocompleteEnabled() const {
   return true;
 }
 

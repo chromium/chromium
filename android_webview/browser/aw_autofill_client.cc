@@ -46,7 +46,7 @@ void AwAutofillClient::SetSaveFormData(bool enabled) {
   save_form_data_ = enabled;
 }
 
-bool AwAutofillClient::GetSaveFormData() {
+bool AwAutofillClient::GetSaveFormData() const {
   return save_form_data_;
 }
 
@@ -291,7 +291,7 @@ void AwAutofillClient::HideAutofillPopup(autofill::PopupHidingReason reason) {
   Java_AwAutofillClient_hideAutofillPopup(env, obj);
 }
 
-bool AwAutofillClient::IsAutocompleteEnabled() {
+bool AwAutofillClient::IsAutocompleteEnabled() const {
   return GetSaveFormData();
 }
 

@@ -22,9 +22,9 @@ IBANManager::~IBANManager() = default;
 
 bool IBANManager::OnGetSingleFieldSuggestions(
     int query_id,
-    bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
     const FormFieldData& field,
+    const AutofillClient& client,
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
   if (!is_off_the_record_ && personal_data_manager_) {

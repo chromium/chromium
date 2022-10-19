@@ -129,7 +129,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    PopupType popup_type) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
-  bool IsAutocompleteEnabled() override;
+  bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       AutofillDriver* driver,

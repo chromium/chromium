@@ -81,9 +81,9 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
 
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     int query_id,
-    bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
     const FormFieldData& field,
+    const AutofillClient& client,
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
   if (!field.should_autocomplete)
@@ -91,7 +91,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
   CancelPendingQueries(handler.get());
 
-  if (!IsMeaningfulFieldName(field.name) || !is_autocomplete_enabled ||
+  if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
       field.form_control_type == "textarea" ||
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(query_id, autoselect_first_suggestion,

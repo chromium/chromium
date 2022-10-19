@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -205,10 +206,17 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
                                   const std::string& prefix,
                                   MockSuggestionsHandler& handler) {
     FormFieldData field;
+    AutofillClient* autofill_client =
+        ContentAutofillDriverFactory::FromWebContents(web_contents())
+            ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
+            ->autofill_manager()
+            ->client();
+    DCHECK(autofill_client);
     test::CreateTestFormField(/*label=*/"", input_name.c_str(), prefix.c_str(),
                               "input", &field);
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
-        1, true, false, field, handler.GetWeakPtr(), SuggestionsContext()));
+        1, false, field, *autofill_client, handler.GetWeakPtr(),
+        SuggestionsContext()));
 
     // Make sure the DB task gets executed.
     WaitForDBTasks();

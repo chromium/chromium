@@ -719,7 +719,7 @@ class AutofillClient : public RiskDataLoader {
   virtual bool IsAutofillAssistantShowing();
 
   // Whether the Autocomplete feature of Autofill should be enabled.
-  virtual bool IsAutocompleteEnabled() = 0;
+  virtual bool IsAutocompleteEnabled() const = 0;
 
   // Returns whether password management is enabled as per the user preferences.
   virtual bool IsPasswordManagerEnabled() = 0;
