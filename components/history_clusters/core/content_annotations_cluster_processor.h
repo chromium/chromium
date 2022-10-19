@@ -27,8 +27,7 @@ class ContentAnnotationsClusterProcessor : public ClusterProcessor {
   ~ContentAnnotationsClusterProcessor() override;
 
   // ClusterProcessor:
-  std::vector<history::Cluster> ProcessClusters(
-      const std::vector<history::Cluster>& clusters) override;
+  void ProcessClusters(std::vector<history::Cluster>* clusters) override;
 
  private:
   // Creates an occurrence map for `cluster` of the set

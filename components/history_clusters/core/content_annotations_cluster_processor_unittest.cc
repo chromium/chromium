@@ -55,9 +55,8 @@ class ContentAnnotationsClusterProcessorTest : public ::testing::Test {
 
   void TearDown() override { cluster_processor_.reset(); }
 
-  std::vector<history::Cluster> ProcessClusters(
-      const std::vector<history::Cluster>& clusters) {
-    return cluster_processor_->ProcessClusters(clusters);
+  void ProcessClusters(std::vector<history::Cluster>* clusters) {
+    cluster_processor_->ProcessClusters(clusters);
   }
 
  private:
@@ -97,13 +96,13 @@ TEST_F(ContentAnnotationsClusterProcessorTest, AboveThreshold) {
   cluster2.visits = {testing::CreateClusterVisit(visit5)};
   clusters.push_back(cluster2);
 
-  std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
+  ProcessClusters(&clusters);
   EXPECT_THAT(
-      testing::ToVisitResults(result_clusters),
+      testing::ToVisitResults(clusters),
       ElementsAre(ElementsAre(
           testing::VisitResult(1, 1.0), testing::VisitResult(2, 1.0),
           testing::VisitResult(4, 1.0), testing::VisitResult(10, 1.0))));
-  ASSERT_EQ(result_clusters.size(), 1u);
+  ASSERT_EQ(clusters.size(), 1u);
 }
 
 TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
@@ -147,8 +146,8 @@ TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
   cluster5.visits = {testing::CreateClusterVisit(visit7)};
   clusters.push_back(cluster5);
 
-  std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+  ProcessClusters(&clusters);
+  EXPECT_THAT(testing::ToVisitResults(clusters),
               ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
                                       testing::VisitResult(2, 1.0),
                                       testing::VisitResult(4, 1.0)),
@@ -204,13 +203,12 @@ TEST_F(ContentAnnotationsClusterProcessorCosineSimilarityTest, AboveThreshold) {
   cluster2.visits = {testing::CreateClusterVisit(visit5)};
   clusters.push_back(cluster2);
 
-  std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
+  ProcessClusters(&clusters);
   EXPECT_THAT(
-      testing::ToVisitResults(result_clusters),
+      testing::ToVisitResults(clusters),
       ElementsAre(ElementsAre(
           testing::VisitResult(1, 1.0), testing::VisitResult(2, 1.0),
           testing::VisitResult(4, 1.0), testing::VisitResult(10, 1.0))));
-  ASSERT_EQ(result_clusters.size(), 1u);
 }
 
 TEST_F(ContentAnnotationsClusterProcessorCosineSimilarityTest, BelowThreshold) {
@@ -254,8 +252,8 @@ TEST_F(ContentAnnotationsClusterProcessorCosineSimilarityTest, BelowThreshold) {
   cluster5.visits = {testing::CreateClusterVisit(visit7)};
   clusters.push_back(cluster5);
 
-  std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+  ProcessClusters(&clusters);
+  EXPECT_THAT(testing::ToVisitResults(clusters),
               ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
                                       testing::VisitResult(2, 1.0),
                                       testing::VisitResult(4, 1.0)),
@@ -315,13 +313,12 @@ TEST_F(ContentAnnotationsClusterProcessorIntersectionMetricTest,
                      testing::CreateClusterVisit(visit6)};
   clusters.push_back(cluster2);
 
-  std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+  ProcessClusters(&clusters);
+  EXPECT_THAT(testing::ToVisitResults(clusters),
               ElementsAre(ElementsAre(
                   testing::VisitResult(1, 1.0), testing::VisitResult(2, 1.0),
                   testing::VisitResult(4, 1.0), testing::VisitResult(10, 1.0),
                   testing::VisitResult(11, 1.0))));
-  ASSERT_EQ(result_clusters.size(), 1u);
 }
 
 TEST_F(ContentAnnotationsClusterProcessorIntersectionMetricTest,
@@ -356,8 +353,8 @@ TEST_F(ContentAnnotationsClusterProcessorIntersectionMetricTest,
   cluster2.visits = {testing::CreateClusterVisit(visit5)};
   clusters.push_back(cluster2);
 
-  std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
-  ASSERT_EQ(result_clusters.size(), 2u);
+  ProcessClusters(&clusters);
+  ASSERT_EQ(clusters.size(), 2u);
 }
 
 class ContentAnnotationsSimilarityVariousCollectionsFilteringTest
@@ -407,8 +404,8 @@ TEST_F(ContentAnnotationsSimilarityVariousCollectionsFilteringTest,
   cluster2.visits = {testing::CreateClusterVisit(visit5)};
   clusters.push_back(cluster2);
 
-  std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+  ProcessClusters(&clusters);
+  EXPECT_THAT(testing::ToVisitResults(clusters),
               ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
                                       testing::VisitResult(2, 1.0),
                                       testing::VisitResult(4, 1.0)),

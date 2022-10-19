@@ -18,8 +18,7 @@ class ClusterProcessor {
   virtual ~ClusterProcessor() = default;
 
   // Performs operations on clusters (i.e. combine, split).
-  virtual std::vector<history::Cluster> ProcessClusters(
-      const std::vector<history::Cluster>& clusters) = 0;
+  virtual void ProcessClusters(std::vector<history::Cluster>* clusters) = 0;
 
  protected:
   ClusterProcessor() = default;

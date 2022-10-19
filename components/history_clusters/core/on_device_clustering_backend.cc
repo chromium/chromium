@@ -386,7 +386,7 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
 
   // Process clusters.
   for (const auto& processor : cluster_processors) {
-    clusters = processor->ProcessClusters(clusters);
+    processor->ProcessClusters(&clusters);
   }
 
   // Run finalizers that dedupe and score visits within a cluster and

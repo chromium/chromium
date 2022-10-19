@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 
 #include <math.h>
+#include <iterator>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -117,26 +118,23 @@ ContentAnnotationsClusterProcessor::ContentAnnotationsClusterProcessor(
 ContentAnnotationsClusterProcessor::~ContentAnnotationsClusterProcessor() =
     default;
 
-std::vector<history::Cluster>
-ContentAnnotationsClusterProcessor::ProcessClusters(
-    const std::vector<history::Cluster>& clusters) {
+void ContentAnnotationsClusterProcessor::ProcessClusters(
+    std::vector<history::Cluster>* clusters) {
   std::vector<base::flat_map<std::string, float>> occurrence_maps(
-      clusters.size());
-  for (size_t i = 0; i < clusters.size(); i++) {
-    occurrence_maps[i] = CreateOccurrenceMapForCluster(clusters.at(i));
+      clusters->size());
+  for (size_t i = 0; i < clusters->size(); i++) {
+    occurrence_maps[i] = CreateOccurrenceMapForCluster(clusters->at(i));
   }
 
   // Now cluster on the entries in each BoW between clusters.
-  std::vector<history::Cluster> aggregated_clusters;
   base::flat_set<int> merged_cluster_indices;
-  for (size_t i = 0; i < clusters.size(); i++) {
+  for (size_t i = 0; i < clusters->size(); i++) {
     if (merged_cluster_indices.find(i) != merged_cluster_indices.end()) {
       continue;
     }
     // Greedily combine clusters by checking if this cluster is similar to any
     // other unmerged clusters.
-    history::Cluster aggregated_cluster = clusters[i];
-    for (size_t j = i + 1; j < clusters.size(); j++) {
+    for (size_t j = i + 1; j < clusters->size(); j++) {
       if (merged_cluster_indices.find(j) != merged_cluster_indices.end()) {
         continue;
       }
@@ -146,14 +144,24 @@ ContentAnnotationsClusterProcessor::ProcessClusters(
           GetConfig().content_clustering_similarity_threshold) {
         // Add the visits to the aggregated cluster.
         merged_cluster_indices.insert(j);
-        aggregated_cluster.visits.insert(aggregated_cluster.visits.end(),
-                                         clusters[j].visits.begin(),
-                                         clusters[j].visits.end());
+        clusters->at(i).visits.insert(
+            clusters->at(i).visits.end(),
+            std::make_move_iterator(clusters->at(j).visits.begin()),
+            std::make_move_iterator(clusters->at(j).visits.end()));
+        clusters->at(j).visits.clear();
       }
     }
-    aggregated_clusters.push_back(std::move(aggregated_cluster));
   }
-  return aggregated_clusters;
+
+  // Remove empty clusters.
+  auto it = clusters->begin();
+  while (it != clusters->end()) {
+    if (it->visits.empty()) {
+      clusters->erase(it);
+    } else {
+      it++;
+    }
+  }
 }
 
 base::flat_map<std::string, float>
