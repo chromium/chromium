@@ -22,7 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
-#include "chrome/test/interaction/webui_interaction_test_util.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -358,23 +358,23 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest, CloseTabDuringDrag) {
   // Add a second tab and set up an object to instrument that tab.
   ASSERT_TRUE(AddTabAtIndex(-1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabElementId);
-  std::unique_ptr<WebUIInteractionTestUtil> first_tab =
-      WebUIInteractionTestUtil::ForExistingTabInBrowser(browser(),
-                                                        kFirstTabElementId, 0);
+  std::unique_ptr<WebContentsInteractionTestUtil> first_tab =
+      WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+          browser(), kFirstTabElementId, 0);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
-  std::unique_ptr<WebUIInteractionTestUtil> second_tab =
-      WebUIInteractionTestUtil::ForExistingTabInBrowser(browser(),
-                                                        kSecondTabElementId, 1);
+  std::unique_ptr<WebContentsInteractionTestUtil> second_tab =
+      WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+          browser(), kSecondTabElementId, 1);
 
   // The WebUI for the tabstrip will be instrumented only after it is guaranteed
   // to have been created.
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUiTabStripElementId);
-  std::unique_ptr<WebUIInteractionTestUtil> tab_strip;
+  std::unique_ptr<WebContentsInteractionTestUtil> tab_strip;
 
   // This is the DeepQuery path to the second tab element in the WebUI tabstrip.
   // If the structure of the WebUI page changes greatly, it may need to be
   // modified to reflect a new page structure.
-  const WebUIInteractionTestUtil::DeepQuery kSecondTabQuery{
+  const WebContentsInteractionTestUtil::DeepQuery kSecondTabQuery{
       "tabstrip-tab-list", "tabstrip-tab + tabstrip-tab"};
 
   // Some custom events used to advance the test sequence.
@@ -408,8 +408,8 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest, CloseTabDuringDrag) {
                   .SetStartCallback(base::BindLambdaForTesting(
                       [&](ui::InteractionSequence*,
                           ui::TrackedElement* element) {
-                        const auto test_util = CreateInteractionTestUtil();
-                        test_util->PressButton(element);
+                        InteractionTestUtilBrowser test_util;
+                        test_util.PressButton(element);
 
                         // The WebUI tabstrip can be created dynamically, so
                         // wait until the button is pressed and the browser is
@@ -419,8 +419,9 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest, CloseTabDuringDrag) {
                         browser_view->GetWidget()->LayoutRootViewIfNecessary();
                         auto* const web_view = browser_view->webui_tab_strip()
                                                    ->web_view_for_testing();
-                        tab_strip = WebUIInteractionTestUtil::ForNonTabWebView(
-                            web_view, kWebUiTabStripElementId);
+                        tab_strip =
+                            WebContentsInteractionTestUtil::ForNonTabWebView(
+                                web_view, kWebUiTabStripElementId);
                       })))
 
           // Wait for the WebUI tabstrip to become fully loaded, and then wait
@@ -440,11 +441,11 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest, CloseTabDuringDrag) {
                         // tabstrip. Before it is fully loaded the tabs have
                         // zero visible size, so wait until they are the
                         // expected size.
-                        WebUIInteractionTestUtil::StateChange change;
+                        WebContentsInteractionTestUtil::StateChange change;
                         change.event = kTabPopulatedCustomEvent;
                         change.where = kSecondTabQuery;
-                        change.type = WebUIInteractionTestUtil::StateChange::
-                            Type::kExistsAndConditionTrue;
+                        change.type = WebContentsInteractionTestUtil::
+                            StateChange::Type::kExistsAndConditionTrue;
                         change.test_function =
                             "el => (el.getBoundingClientRect().width > 0)";
                         tab_strip->SendEventOnStateChange(std::move(change));

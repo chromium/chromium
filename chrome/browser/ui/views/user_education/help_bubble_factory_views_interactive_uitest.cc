@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "chrome/test/interaction/widget_focus_waiter.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_factory_views.h"

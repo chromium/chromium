@@ -10,25 +10,20 @@
 #include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/interaction/webui_interaction_test_util.h"
+#include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/page_info/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
-#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tree/tree_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "ui/base/interaction/interaction_test_util_mac.h"
-#endif
-
 namespace {
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIInteractionTestUtilTestId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsInteractionTestUtilTestId);
 }  // namespace
 
 class CollectedCookiesViewInteractiveUiTest : public InProcessBrowserTest {
@@ -49,12 +44,6 @@ class CollectedCookiesViewInteractiveUiTest : public InProcessBrowserTest {
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    test_util_.AddSimulator(
-        std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
-#if BUILDFLAG(IS_MAC)
-    test_util_.AddSimulator(
-        std::make_unique<ui::test::InteractionTestUtilSimulatorMac>());
-#endif
     InProcessBrowserTest::SetUp();
   }
 
@@ -83,7 +72,7 @@ class CollectedCookiesViewInteractiveUiTest : public InProcessBrowserTest {
         .Build();
   }
 
-  ui::test::InteractionTestUtil test_util_;
+  InteractionTestUtilBrowser test_util_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -97,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewInteractiveUiTest,
 
   Browser* browser = CreateIncognitoBrowser();
 
-  auto util = WebUIInteractionTestUtil::ForExistingTabInBrowser(
-      browser, kWebUIInteractionTestUtilTestId);
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser, kWebContentsInteractionTestUtilTestId);
   util->LoadPage(third_party_cookie_page_url);
 
   auto sequence =
@@ -108,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewInteractiveUiTest,
           .SetContext(browser->window()->GetElementContext())
           // Wait for page loaded.
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementID(kWebUIInteractionTestUtilTestId)
+                       .SetElementID(kWebContentsInteractionTestUtilTestId)
                        .Build())
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))

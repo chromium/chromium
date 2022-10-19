@@ -11,7 +11,8 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
-#include "chrome/test/interaction/webui_interaction_test_util.h"
+#include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/performance_manager/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,10 +57,10 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  auto test_util = CreateInteractionTestUtil();
+  InteractionTestUtilBrowser test_util;
   const ui::ElementContext context = browser()->window()->GetElementContext();
 
-  auto download_page = WebUIInteractionTestUtil::ForExistingTabInBrowser(
+  auto download_page = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kPrimaryTabPageElementId);
 
   auto sequence =
@@ -77,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
-                             test_util->PressButton(element);
+                             test_util.PressButton(element);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -87,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
-                             test_util->SelectMenuItem(element);
+                             test_util.SelectMenuItem(element);
                            }))
                        .Build())
 
@@ -99,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
                   .SetStartCallback(base::BindLambdaForTesting(
                       [&](ui::InteractionSequence*,
                           ui::TrackedElement* element) {
-                        test_util->SelectMenuItem(
+                        test_util.SelectMenuItem(
                             element,
                             ui::test::InteractionTestUtil::InputType::kMouse);
                       }))
@@ -112,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
                              auto* const contents =
-                                 element->AsA<TrackedElementWebPage>()
+                                 element->AsA<TrackedElementWebContents>()
                                      ->owner()
                                      ->web_contents();
                              ASSERT_EQ(GURL("chrome://settings/performance"),

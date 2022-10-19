@@ -17,7 +17,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
-#include "chrome/test/interaction/webui_interaction_test_util.h"
+#include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/performance_manager/public/features.h"
 #include "components/user_education/test/feature_promo_test_util.h"
@@ -75,11 +76,12 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  auto test_util = CreateInteractionTestUtil();
+  InteractionTestUtilBrowser test_util;
   const ui::ElementContext context = browser()->window()->GetElementContext();
 
-  auto performance_page = WebUIInteractionTestUtil::ForExistingTabInBrowser(
-      browser(), kPrimaryTabPageElementId);
+  auto performance_page =
+      WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+          browser(), kPrimaryTabPageElementId);
 
   bool is_feature_engagement_ready =
       user_education::test::WaitForFeatureEngagementReady(
@@ -100,9 +102,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kAppMenuButtonElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             test_util->PressButton(element);
+                           [&](ui::TrackedElement* element) {
+                             test_util.PressButton(element);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -110,9 +111,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {
                        .SetElementID(AppMenuModel::kMoreToolsMenuItem)
                        .SetMustRemainVisible(false)
                        .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             test_util->SelectMenuItem(element);
+                           [&](ui::TrackedElement* element) {
+                             test_util.SelectMenuItem(element);
                              AppMenu* app_menu =
                                  BrowserView::GetBrowserViewForBrowser(
                                      browser())
@@ -132,9 +132,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {
                   .SetElementID(ToolsMenuModel::kPerformanceMenuItem)
                   .SetMustRemainVisible(false)
                   .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence*,
-                          ui::TrackedElement* element) {
-                        test_util->SelectMenuItem(
+                      [&](ui::TrackedElement* element) {
+                        test_util.SelectMenuItem(
                             element,
                             ui::test::InteractionTestUtil::InputType::kMouse);
                       }))
@@ -144,10 +143,9 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {
                        .SetElementID(kPrimaryTabPageElementId)
                        .SetTransitionOnlyOnEvent(true)
                        .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
+                           [&](ui::TrackedElement* element) {
                              auto* const contents =
-                                 element->AsA<TrackedElementWebPage>()
+                                 element->AsA<TrackedElementWebContents>()
                                      ->owner()
                                      ->web_contents();
                              EXPECT_EQ(
@@ -159,9 +157,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kAppMenuButtonElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             test_util->PressButton(element);
+                           [&](ui::TrackedElement* element) {
+                             test_util.PressButton(element);
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -169,9 +166,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {
                        .SetElementID(AppMenuModel::kMoreToolsMenuItem)
                        .SetMustRemainVisible(false)
                        .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             test_util->SelectMenuItem(element);
+                           [&](ui::TrackedElement* element) {
+                             test_util.SelectMenuItem(element);
                              AppMenu* app_menu =
                                  BrowserView::GetBrowserViewForBrowser(
                                      browser())

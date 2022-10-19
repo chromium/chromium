@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/interaction/webui_interaction_test_util.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/page_info/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -40,8 +40,7 @@
 #endif
 
 namespace {
-
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIInteractionTestUtilTestId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsInteractionTestUtilTestId);
 const char kFirstPartyAllowedRow[] = "FirstPartyAllowedRow";
 const char kThirdPartyBlockedRow[] = "ThirdPartyBlockedRow";
 const char kOnlyPartitionedRow[] = "OnlyPartitionedRow";
@@ -178,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
   Browser* browser = CreateIncognitoBrowser();
 
-  auto util = WebUIInteractionTestUtil::ForExistingTabInBrowser(
-      browser, kWebUIInteractionTestUtilTestId);
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser, kWebContentsInteractionTestUtilTestId);
   util->LoadPage(third_party_cookie_page_url);
 
   auto sequence =
@@ -189,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
           .SetContext(browser->window()->GetElementContext())
           // Wait for page loaded.
           .AddStep(ui::InteractionSequence::StepBuilder().SetElementID(
-              kWebUIInteractionTestUtilTestId))
+              kWebContentsInteractionTestUtilTestId))
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -296,8 +295,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
   Browser* browser = CreateIncognitoBrowser();
 
-  auto util = WebUIInteractionTestUtil::ForExistingTabInBrowser(
-      browser, kWebUIInteractionTestUtilTestId);
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser, kWebContentsInteractionTestUtilTestId);
   util->LoadPage(third_party_cookie_page_url);
 
   auto sequence =
@@ -307,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
           .SetContext(browser->window()->GetElementContext())
           // Wait for page loaded.
           .AddStep(ui::InteractionSequence::StepBuilder().SetElementID(
-              kWebUIInteractionTestUtilTestId))
+              kWebContentsInteractionTestUtilTestId))
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -436,8 +435,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
   Browser* browser = CreateIncognitoBrowser();
 
-  auto util = WebUIInteractionTestUtil::ForExistingTabInBrowser(
-      browser, kWebUIInteractionTestUtilTestId);
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser, kWebContentsInteractionTestUtilTestId);
   util->LoadPage(third_party_cookie_page_url);
 
   auto sequence =
@@ -447,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
           .SetContext(browser->window()->GetElementContext())
           // Wait for page loaded.
           .AddStep(ui::InteractionSequence::StepBuilder().SetElementID(
-              kWebUIInteractionTestUtilTestId))
+              kWebContentsInteractionTestUtilTestId))
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -551,8 +550,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
   Browser* browser = CreateIncognitoBrowser();
 
-  auto util = WebUIInteractionTestUtil::ForExistingTabInBrowser(
-      browser, kWebUIInteractionTestUtilTestId);
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser, kWebContentsInteractionTestUtilTestId);
   util->LoadPage(third_party_cookie_page_url);
 
   auto sequence =
@@ -562,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
           .SetContext(browser->window()->GetElementContext())
           // Wait for page loaded.
           .AddStep(ui::InteractionSequence::StepBuilder().SetElementID(
-              kWebUIInteractionTestUtilTestId))
+              kWebContentsInteractionTestUtilTestId))
           .AddStep(Click(kLocationIconElementId))
           .AddStep(Click(PageInfoMainView::kCookieButtonElementId))
           .AddStep(ui::InteractionSequence::StepBuilder()

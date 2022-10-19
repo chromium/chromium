@@ -105,9 +105,8 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
       GetElement(kTabStripElementId), kCustomEventType1);
 
-  auto test_util = CreateInteractionTestUtil();
-
-  test_util->PressButton(GetElement(kAppMenuButtonElementId));
+  InteractionTestUtilBrowser test_util;
+  test_util.PressButton(GetElement(kAppMenuButtonElementId));
 
   // Simulate click on close button.
   EXPECT_CALL_IN_SCOPE(

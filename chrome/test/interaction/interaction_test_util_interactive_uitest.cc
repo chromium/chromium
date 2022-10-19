@@ -6,24 +6,37 @@
 
 #include "base/bind.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/interaction/interaction_test_util_mac.h"
+#endif
 
 // This allows us to test features of InteractionTestUtil that only work in a
 // single-process production environment - specifically, ensuring it works with
 // context menus, which are native menus on Mac.
 class InteractionTestUtilInteractiveUitest : public InProcessBrowserTest {
  public:
-  InteractionTestUtilInteractiveUitest() = default;
+  InteractionTestUtilInteractiveUitest() {
+    test_util_.AddSimulator(
+        std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+#if BUILDFLAG(IS_MAC)
+    test_util_.AddSimulator(
+        std::make_unique<ui::test::InteractionTestUtilSimulatorMac>());
+#endif
+  }
+
   ~InteractionTestUtilInteractiveUitest() override = default;
 
  protected:
@@ -34,6 +47,8 @@ class InteractionTestUtilInteractiveUitest : public InProcessBrowserTest {
   ui::ElementContext GetContext() {
     return browser()->window()->GetElementContext();
   }
+
+  ui::test::InteractionTestUtil test_util_;
 };
 
 // We only use InputType::kDefault (the default) when testing context menus
@@ -76,11 +91,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilInteractiveUitest,
 #endif
       });
 
-  auto click_menu_item =
-      base::BindOnce([](ui::InteractionSequence*, ui::TrackedElement* element) {
-        auto util = CreateInteractionTestUtil();
-        util->SelectMenuItem(element);
-      });
+  auto click_menu_item = base::BindLambdaForTesting(
+      [&](ui::TrackedElement* element) { test_util_.SelectMenuItem(element); });
 
   auto sequence =
       ui::InteractionSequence::Builder()

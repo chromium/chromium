@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_INTERACTION_WEBUI_INTERACTION_TEST_UTIL_H_
-#define CHROME_TEST_INTERACTION_WEBUI_INTERACTION_TEST_UTIL_H_
+#ifndef CHROME_TEST_INTERACTION_WEBCONTENTS_INTERACTION_TEST_UTIL_H_
+#define CHROME_TEST_INTERACTION_WEBCONTENTS_INTERACTION_TEST_UTIL_H_
 
 #include <map>
 #include <memory>
@@ -30,7 +30,7 @@ class WebView;
 
 class Browser;
 
-class TrackedElementWebPage;
+class TrackedElementWebContents;
 
 // This is a test-only utility class that wraps a specific WebContents in a
 // Browser for use with InteractionSequence. It allows tests to:
@@ -43,8 +43,8 @@ class TrackedElementWebPage;
 //  - Wait for a condition (evaluated as a JS statement or function) to become
 //    true and then send a custom event.
 //  - Track when a WebContents is destroyed or removed from a browser window.
-class WebUIInteractionTestUtil : private content::WebContentsObserver,
-                                 private TabStripModelObserver {
+class WebContentsInteractionTestUtil : private content::WebContentsObserver,
+                                       private TabStripModelObserver {
  public:
   // How often to poll for state changes we're watching; see
   // SendEventOnStateChange().
@@ -123,7 +123,7 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
     ui::CustomElementEventType timeout_event;
   };
 
-  ~WebUIInteractionTestUtil() override;
+  ~WebContentsInteractionTestUtil() override;
 
   // Creates an object associated with a WebContents in the Browser associated
   // with `context`. The TrackedElementWebContents associated with loaded pages
@@ -131,94 +131,53 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
   // this by calling set_page_identifier(). If `tab_index` is specified, a
   // particular tab will be used, but if it is not, the active tab is used
   // instead.
-  static std::unique_ptr<WebUIInteractionTestUtil> ForExistingTabInContext(
-      ui::ElementContext context,
-      ui::ElementIdentifier page_identifier,
-      absl::optional<int> tab_index = absl::nullopt);
+  static std::unique_ptr<WebContentsInteractionTestUtil>
+  ForExistingTabInContext(ui::ElementContext context,
+                          ui::ElementIdentifier page_identifier,
+                          absl::optional<int> tab_index = absl::nullopt);
 
   // As above, but you may directly specify the Browser to use.
-  static std::unique_ptr<WebUIInteractionTestUtil> ForExistingTabInBrowser(
-      Browser* browser,
-      ui::ElementIdentifier page_identifier,
-      absl::optional<int> tab_index = absl::nullopt);
+  static std::unique_ptr<WebContentsInteractionTestUtil>
+  ForExistingTabInBrowser(Browser* browser,
+                          ui::ElementIdentifier page_identifier,
+                          absl::optional<int> tab_index = absl::nullopt);
 
   // Creates a util object associated with a WebContents, which must be in a
   // tab. The associated TrackedElementWebContents will be assigned
   // `page_identifier`.
-  static std::unique_ptr<WebUIInteractionTestUtil> ForTabWebContents(
+  static std::unique_ptr<WebContentsInteractionTestUtil> ForTabWebContents(
       content::WebContents* web_contents,
       ui::ElementIdentifier page_identifier);
 
   // Creates a util object associated with a WebView in a secondary UI (e.g. the
   // touch tabstrip, tab search box, side panel, etc.) The associated
   // TrackedElementWebContents will be assigned `page_identifier`.
-  static std::unique_ptr<WebUIInteractionTestUtil> ForNonTabWebView(
+  static std::unique_ptr<WebContentsInteractionTestUtil> ForNonTabWebView(
       views::WebView* web_view,
       ui::ElementIdentifier page_identifier);
 
   // Creates a util object that becomes valid (and creates an element with
   // identifier `page_identifier`) when the next tab is created in the Browser
   // associated with `context` and references that new WebContents.
-  static std::unique_ptr<WebUIInteractionTestUtil> ForNextTabInContext(
+  static std::unique_ptr<WebContentsInteractionTestUtil> ForNextTabInContext(
       ui::ElementContext context,
       ui::ElementIdentifier page_identifier);
 
   // Creates a util object that becomes valid (and creates an element with
   // identifier `page_identifier`) when the next tab is created in `browser`
   // and references that new WebContents.
-  static std::unique_ptr<WebUIInteractionTestUtil> ForNextTabInBrowser(
+  static std::unique_ptr<WebContentsInteractionTestUtil> ForNextTabInBrowser(
       Browser* browser,
       ui::ElementIdentifier page_identifier);
 
   // Creates a util object that becomes valid (and creates an element with
   // identifier `page_identifier`) when the next tab is created in any browser
   // and references the new WebContents.
-  static std::unique_ptr<WebUIInteractionTestUtil> ForNextTabInAnyBrowser(
+  static std::unique_ptr<WebContentsInteractionTestUtil> ForNextTabInAnyBrowser(
       ui::ElementIdentifier page_identifier);
-
-  // Returns the browser that matches the given context, or nullptr if none
-  // can be found.
-  static Browser* GetBrowserFromContext(ui::ElementContext context);
 
   // Returns whether the given value is "truthy" in the Javascript sense.
   static bool IsTruthy(const base::Value& value);
-
-  // Takes a screenshot based on the contents of `element` and compares with
-  // Skia Gold. On platforms where screenshots are unsupported or flaky, may
-  // trivially return true.
-  //
-  // The name of the screenshot will be composed as follows:
-  //   TestFixture_TestName[_screenshot_name]_baseline
-  // If you are taking more than one screenshot per test, then `screenshot_name`
-  // must be specified and unique within the test; otherwise you may leave it
-  // empty.
-  //
-  // IMPORTANT USAGE NOTES:
-  //
-  // If `element` is a TrackedElementWebPage that corresponds to a tab, the tab
-  // must be the active tab in the browser window.
-  //
-  // If `element` is a TrackedElementWebPage of any sort, it is useful to verify
-  // that the contents you intend to take a screenshot of are present and
-  // rendered before taking the screenshot. One way to do this is by calling:
-  //  - SendEventOnElementMinimumSize() for pages in browser tabs
-  //  - SendEventOnWebViewMinimumSize() for secondary WebUI
-  // These are especially important if your WebView contains any dynamic content
-  // that may populate and display after the page is loaded. After you receive
-  // the event, you should be able to call CompareScreenshot() safely.
-  //
-  // In order to actually take screenshots:
-  // - Your test must be in browser_tests or interactive_ui_tests
-  // - Your test must be included in pixel_tests.filter
-  //
-  // Note that test in browser_tests may run at the same time as other tests,
-  // which can result in flakiness (especially if mouse position, window
-  // activation, or occlusion could change the behavior of a test). So if you
-  // need to both test complex interaction and take screenshots, prefer putting
-  // your test in interactive_ui_tests.
-  static bool CompareScreenshot(ui::TrackedElement* element,
-                                const std::string& screenshot_name,
-                                const std::string& baseline);
 
   // Allow access to the associated WebContents.
   content::WebContents* web_contents() const {
@@ -236,6 +195,9 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
   // Returns if the current page is loaded. Prerequisite for calling
   // Evaluate() or SendEventOnStateChange().
   bool is_page_loaded() const { return current_element_ != nullptr; }
+
+  // Returns the instrumented WebView, or null if none.
+  views::WebView* GetWebView();
 
   // Page Navigation ///////////////////////////////////////////////////////////
 
@@ -388,17 +350,17 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
       const TabStripSelectionChange& selection) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WebUIInteractionTestUtilInteractiveUiTest,
+  FRIEND_TEST_ALL_PREFIXES(WebContentsInteractionTestUtilInteractiveUiTest,
                            OpenTabSearchMenuAndTestVisibility);
   class NewTabWatcher;
   class Poller;
   struct PollerData;
   class WebViewData;
 
-  WebUIInteractionTestUtil(content::WebContents* web_contents,
-                           ui::ElementIdentifier page_identifier,
-                           absl::optional<Browser*> browser,
-                           views::WebView* web_view);
+  WebContentsInteractionTestUtil(content::WebContents* web_contents,
+                                 ui::ElementIdentifier page_identifier,
+                                 absl::optional<Browser*> browser,
+                                 views::WebView* web_view);
 
   void MaybeCreateElement(bool force = false);
   void DiscardCurrentElement();
@@ -409,8 +371,8 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
   void StartWatchingWebContents(content::WebContents* web_contents);
 
   // Dictates the identifier that will be assigned to the new
-  // TrackedElementWebPage created for the target WebContents on the next page
-  // load.
+  // TrackedElementWebContents created for the target WebContents on the next
+  // page load.
   ui::ElementIdentifier page_identifier_;
 
   // When we force a page load, we might still get events for the old page.
@@ -421,7 +383,7 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
   std::unique_ptr<WebViewData> web_view_data_;
 
   // Virtual element representing the currently-loaded webpage; null if none.
-  std::unique_ptr<TrackedElementWebPage> current_element_;
+  std::unique_ptr<TrackedElementWebContents> current_element_;
 
   // List of active event pollers for the current page.
   std::map<Poller*, PollerData> pollers_;
@@ -431,27 +393,4 @@ class WebUIInteractionTestUtil : private content::WebContentsObserver,
   std::unique_ptr<NewTabWatcher> new_tab_watcher_;
 };
 
-// Represents a loaded web page. Created and shown by
-// WebUIInteractionTestUtil when the WebContents it is watching fully
-// loads a page and then hidden and destroyed when the page unloads, navigates
-// away, or is closed.
-class TrackedElementWebPage : public ui::TrackedElement {
- public:
-  TrackedElementWebPage(ui::ElementIdentifier identifier,
-                        ui::ElementContext context,
-                        WebUIInteractionTestUtil* owner);
-  ~TrackedElementWebPage() override;
-
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
-
-  WebUIInteractionTestUtil* owner() { return owner_; }
-
- private:
-  friend WebUIInteractionTestUtil;
-
-  void Init();
-
-  const base::raw_ptr<WebUIInteractionTestUtil> owner_;
-};
-
-#endif  // CHROME_TEST_INTERACTION_WEBUI_INTERACTION_TEST_UTIL_H_
+#endif  // CHROME_TEST_INTERACTION_WEBCONTENTS_INTERACTION_TEST_UTIL_H_
