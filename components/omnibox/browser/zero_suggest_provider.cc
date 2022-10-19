@@ -80,7 +80,7 @@ enum class Eligibility {
 enum class Event {
   // Cached response was synchronously converted to displayed matches.
   // Recorded for non-prefetch requests only.
-  KCachedResponseConvertedToMatches = 0,
+  kCachedResponseConvertedToMatches = 0,
   // Remote request was sent.
   kRequestSent = 1,
   // Remote request was invalidated.
@@ -487,7 +487,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   if (ReadStoredResponse(client(), GetZeroSuggestInput(input, client()),
                          result_type_running_, &results)) {
     ConvertSuggestResultsToAutocompleteMatches(results, input);
-    LogEvent(Event::KCachedResponseConvertedToMatches, result_type_running_,
+    LogEvent(Event::kCachedResponseConvertedToMatches, result_type_running_,
              /*is_prefetch=*/false);
   }
 
