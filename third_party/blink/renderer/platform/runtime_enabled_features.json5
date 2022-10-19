@@ -3177,23 +3177,9 @@
       status: "stable",
       base_feature: "WindowOpenNewPopupBehavior",
     },
-    // Extends window placement functionality for multi-screen devices. Also
-    // exposes requisite information about displays connected to the device.
-    {
-      name: "WindowPlacement",
-      status: "stable",
-      base_feature: "WindowPlacement",
-    },
-    // Exposes user-friendly screen labels, determined by the platform, to sites
-    // with window-placement permission.
-    {
-      name: "WindowPlacementEnhancedScreenLabels",
-      status: "stable",
-    },
     // Allows sites to request fullscreen when the set of screens change.
     {
       name: "WindowPlacementFullscreenOnScreensChange",
-      depends_on: ["WindowPlacement"],
       status: "experimental",
       base_feature: "WindowPlacementFullscreenOnScreensChange",
     },

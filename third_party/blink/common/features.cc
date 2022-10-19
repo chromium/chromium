@@ -1292,11 +1292,6 @@ BASE_FEATURE(kDurableClientHintsCache,
              "DurableClientHintsCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows sites to request fullscreen and open a popup from a single gesture.
-BASE_FEATURE(kWindowPlacementFullscreenCompanionWindow,
-             "WindowPlacementFullscreenCompanionWindow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const base::FeatureParam<std::string> kUserAgentFrozenBuildVersion{
     &kReduceUserAgentMinorVersion, "build_version", "0"};
 

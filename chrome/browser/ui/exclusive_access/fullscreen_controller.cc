@@ -31,7 +31,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -181,13 +180,10 @@ void FullscreenController::EnterFullscreenModeForTab(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWindowPlacementFullscreenCompanionWindow)) {
-    if (!popunder_preventer_)
-      popunder_preventer_ = std::make_unique<PopunderPreventer>(web_contents);
-    else
-      popunder_preventer_->WillActivateWebContents(web_contents);
-  }
+  if (!popunder_preventer_)
+    popunder_preventer_ = std::make_unique<PopunderPreventer>(web_contents);
+  else
+    popunder_preventer_->WillActivateWebContents(web_contents);
 
   // Keep the current state. |SetTabWithExclusiveAccess| may change the return
   // value of |IsWindowFullscreenForTabOrPending|.
@@ -299,8 +295,6 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
 void FullscreenController::FullscreenTabOpeningPopup(
     content::WebContents* opener,
     content::WebContents* popup) {
-  DCHECK(base::FeatureList::IsEnabled(
-      blink::features::kWindowPlacementFullscreenCompanionWindow));
   DCHECK_EQ(exclusive_access_tab(), opener);
   DCHECK(popunder_preventer_);
   popunder_preventer_->AddPotentialPopunder(popup);

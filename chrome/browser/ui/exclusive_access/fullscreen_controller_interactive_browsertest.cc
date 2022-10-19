@@ -887,8 +887,6 @@ class MultiScreenFullscreenControllerInteractiveTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kWindowPlacement};
   std::unique_ptr<TestScreenEnvironment> test_screen_environment_;
 };
 
@@ -1243,20 +1241,6 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
   EXPECT_EQ(popup, browser_list->GetLastActive());
 }
 
-// Tests FullscreenController support for fullscreen companion windows.
-class FullscreenCompanionWindowFullscreenControllerInteractiveTest
-    : public MultiScreenFullscreenControllerInteractiveTest,
-      public testing::WithParamInterface<bool> {
- public:
-  FullscreenCompanionWindowFullscreenControllerInteractiveTest() {
-    feature_list_.InitWithFeatureState(
-        blink::features::kWindowPlacementFullscreenCompanionWindow, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
 // display::Screen configuration used in this test. Disabled on Mac and Linux,
@@ -1271,9 +1255,8 @@ class FullscreenCompanionWindowFullscreenControllerInteractiveTest
 // Test requesting fullscreen on a specific screen and opening a cross-screen
 // popup window from one gesture. Check the expected window activation pattern.
 // https://w3c.github.io/window-placement/#usage-overview-initiate-multi-screen-experiences
-IN_PROC_BROWSER_TEST_P(
-    FullscreenCompanionWindowFullscreenControllerInteractiveTest,
-    MAYBE_FullscreenCompanionWindow) {
+IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
+                       MAYBE_FullscreenCompanionWindow) {
   content::WebContents* tab = SetUpWindowPlacementTab();
 
   BrowserList* browser_list = BrowserList::GetInstance();
@@ -1322,29 +1305,18 @@ IN_PROC_BROWSER_TEST_P(
       return !!document.fullscreenElement && !!w && !w.closed;
     })();
   )";
-  EXPECT_EQ(GetParam(), RequestContentFullscreenFromScript(script));
+  EXPECT_TRUE(RequestContentFullscreenFromScript(script).ExtractBool());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 800), browser()->window()->GetBounds());
 
-  if (GetParam()) {
-    // The popup should open with FullscreenCompanionWindow enabled.
-    EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
-    EXPECT_EQ(2u, browser_list->size());
-    // Popup window activation is delayed until its opener exits fullscreen.
-    EXPECT_EQ(browser(), browser_list->GetLastActive());
-    ToggleTabFullscreen(/*enter_fullscreen=*/false);
-    EXPECT_NE(browser(), browser_list->GetLastActive());
-  } else {
-    // The popup should be blocked with FullscreenCompanionWindow disabled.
-    EXPECT_EQ(1u, popup_blocker->GetBlockedPopupsCount());
-    EXPECT_EQ(1u, browser_list->size());
-  }
+  EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
+  EXPECT_EQ(2u, browser_list->size());
+  // Popup window activation is delayed until its opener exits fullscreen.
+  EXPECT_EQ(browser(), browser_list->GetLastActive());
+  ToggleTabFullscreen(/*enter_fullscreen=*/false);
+  EXPECT_NE(browser(), browser_list->GetLastActive());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    FullscreenCompanionWindowFullscreenControllerInteractiveTest,
-    ::testing::Bool());
-
+// Tests FullscreenController support for fullscreen on screenschange events.
 // Tests FullscreenController support for fullscreen on screenschange events.
 class FullscreenOnScreensChangeFullscreenControllerInteractiveTest
     : public MultiScreenFullscreenControllerInteractiveTest,

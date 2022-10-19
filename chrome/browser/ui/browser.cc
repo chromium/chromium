@@ -228,7 +228,6 @@
 #include "net/base/filename_util.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -1671,9 +1670,7 @@ void Browser::AddNewContents(
   // immediately if the popup would overlap the fullscreen window.
   NavigateParams::WindowAction window_action = NavigateParams::SHOW_WINDOW;
   if (disposition == WindowOpenDisposition::NEW_POPUP &&
-      fullscreen_controller->IsFullscreenForTabOrPending(source) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kWindowPlacementFullscreenCompanionWindow)) {
+      fullscreen_controller->IsFullscreenForTabOrPending(source)) {
     window_action = NavigateParams::SHOW_WINDOW_INACTIVE;
     fullscreen_controller->FullscreenTabOpeningPopup(source,
                                                      new_contents.get());

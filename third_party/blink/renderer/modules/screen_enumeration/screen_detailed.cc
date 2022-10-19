@@ -141,16 +141,7 @@ float ScreenDetailed::devicePixelRatio() const {
 String ScreenDetailed::label() const {
   if (!DomWindow())
     return String();
-  // If enabled, return a more accurate screen label determined by the platform.
-  if (RuntimeEnabledFeatures::WindowPlacementEnhancedScreenLabelsEnabled())
-    return String(GetScreenInfo().label);
-
-  // Return a placeholder label, e.g. "Internal Display 1".
-  // These don't have to be unique, but it's nice to be able to differentiate
-  // if a user has two external screens, for example.
-  const char* prefix =
-      label_is_internal_ ? "Internal Display " : "External Display ";
-  return String(prefix) + String::Number(label_idx_);
+  return String(GetScreenInfo().label);
 }
 
 float ScreenDetailed::highDynamicRangeHeadroom() const {

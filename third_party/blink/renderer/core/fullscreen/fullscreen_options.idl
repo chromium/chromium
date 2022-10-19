@@ -15,5 +15,5 @@ dictionary FullscreenOptions {
 
   // Specifies a screen for element fullscreen requests.
   // https://w3c.github.io/window-placement/
-  [RuntimeEnabled=WindowPlacement] Screen screen;
+  Screen screen;
 };

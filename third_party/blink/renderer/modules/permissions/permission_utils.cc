@@ -275,11 +275,6 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     return CreatePermissionDescriptor(PermissionName::STORAGE_ACCESS);
   }
   if (name == "window-placement") {
-    if (!RuntimeEnabledFeatures::WindowPlacementEnabled(
-            ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError("Window Placement is not enabled.");
-      return nullptr;
-    }
     return CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);
   }
   if (name == "local-fonts") {

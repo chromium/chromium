@@ -6681,9 +6681,7 @@ void RenderFrameHostImpl::EnterFullscreen(
   // This enables multi-screen content experiences from a single user gesture.
   const display::Screen* screen = display::Screen::GetScreen();
   display::Display display;
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWindowPlacementFullscreenCompanionWindow) &&
-      screen && screen->GetNumDisplays() > 1 &&
+  if (screen && screen->GetNumDisplays() > 1 &&
       screen->GetDisplayWithDisplayId(options->display_id, &display) &&
       IsWindowManagementGranted(this)) {
     transient_allow_popup_.Activate();

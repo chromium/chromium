@@ -6,8 +6,7 @@
 // https://w3c.github.io/window-placement/
 [
   Exposed=Window,
-  SecureContext,
-  RuntimeEnabled=WindowPlacement
+  SecureContext
 ] interface ScreenDetailed : Screen {
   // Distance from a multi-screen origin (e.g. primary screen top left) to the
   // left edge of the screen area.

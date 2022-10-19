@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,7 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/display/screen_base.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
@@ -51,8 +49,6 @@ class WindowManagementTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWindowPlacement};
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   display::ScreenBase screen_;
 #endif

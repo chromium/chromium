@@ -567,10 +567,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoForcedFrameUpdatesForWebTests);
 // If enabled, the client hints cache will be loaded on browser restarts.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDurableClientHintsCache);
 
-// Gates Multi-Screen Window Placement additional enhancements.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kWindowPlacementFullscreenCompanionWindow);
-
 // A parameter for kReduceUserAgentMinorVersion;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kUserAgentFrozenBuildVersion;
