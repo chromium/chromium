@@ -8,6 +8,7 @@
 #include <numeric>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -96,12 +97,12 @@ void TabFootprintAggregator::AssociateFrame(ukm::SourceId sid,
       << "Can't associate multiple SourceIds to a single PageId.";
 
   std::vector<PageId>& pages = process_to_pages_[pid];
-  DCHECK(!std::count(pages.begin(), pages.end(), page_id))
+  DCHECK(!base::Contains(pages, page_id))
       << "Can't duplicate associations between a process and a page.";
   pages.push_back(page_id);
 
   std::vector<base::ProcessId>& processes = page_to_processes_[page_id];
-  DCHECK(!std::count(processes.begin(), processes.end(), pid))
+  DCHECK(!base::Contains(processes, pid))
       << "Can't duplicate associations between a page and a process.";
   processes.push_back(pid);
 

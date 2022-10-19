@@ -4,6 +4,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -2806,24 +2807,20 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   // 2 requests should be to the search terms directly, one for the prefetch and
   // one for the subframe (that can't be served from the prefetch cache).
-  EXPECT_EQ(2,
-            std::count_if(requests.begin(), requests.end(),
-                          [search_terms](const auto& request) {
-                            return request.relative_url.find(kLoadInSubframe) ==
-                                       std::string::npos &&
-                                   request.relative_url.find(search_terms) !=
-                                       std::string::npos;
-                          }));
+  EXPECT_EQ(
+      2, base::ranges::count_if(requests, [search_terms](const auto& request) {
+        return request.relative_url.find(kLoadInSubframe) ==
+                   std::string::npos &&
+               request.relative_url.find(search_terms) != std::string::npos;
+      }));
   // 1 request should specify to load content in a subframe but also contain the
   // search terms.
-  EXPECT_EQ(1,
-            std::count_if(requests.begin(), requests.end(),
-                          [search_terms](const auto& request) {
-                            return request.relative_url.find(kLoadInSubframe) !=
-                                       std::string::npos &&
-                                   request.relative_url.find(search_terms) !=
-                                       std::string::npos;
-                          }));
+  EXPECT_EQ(
+      1, base::ranges::count_if(requests, [search_terms](const auto& request) {
+        return request.relative_url.find(kLoadInSubframe) !=
+                   std::string::npos &&
+               request.relative_url.find(search_terms) != std::string::npos;
+      }));
 }
 
 void RunFirstParam(base::RepeatingClosure closure,

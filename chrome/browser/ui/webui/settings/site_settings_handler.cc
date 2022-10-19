@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 
-#include <algorithm>
 #include <set>
 #include <utility>
 #include <vector>
@@ -20,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -345,9 +345,8 @@ int GetNumCookieExceptionsOfTypes(HostContentSettingsMap* map,
                                   const std::set<ContentSetting> types) {
   ContentSettingsForOneType output;
   map->GetSettingsForOneType(ContentSettingsType::COOKIES, &output);
-  return std::count_if(
-      output.begin(), output.end(),
-      [types](const ContentSettingPatternSource setting) {
+  return base::ranges::count_if(
+      output, [types](const ContentSettingPatternSource setting) {
         return types.count(
             content_settings::ValueToContentSetting(setting.setting_value));
       });

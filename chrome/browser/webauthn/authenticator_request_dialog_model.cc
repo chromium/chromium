@@ -1265,9 +1265,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
   }
 
   // At most one mechanism has priority.
-  DCHECK_LE(std::count_if(mechanisms_.begin(), mechanisms_.end(),
-                          [](const Mechanism& m) { return m.priority; }),
-            1);
+  DCHECK_LE(base::ranges::count_if(mechanisms_, &Mechanism::priority), 1);
 }
 
 void AuthenticatorRequestDialogModel::

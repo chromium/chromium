@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <initializer_list>
 #include <memory>
 #include <string>
@@ -17,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/pattern.h"
@@ -640,8 +640,8 @@ class DOMDragEventCounter {
                              });
         };
 
-    return std::count_if(received_events_.begin(), received_events_.end(),
-                         received_event_has_matching_event_type);
+    return base::ranges::count_if(received_events_,
+                                  received_event_has_matching_event_type);
   }
 
   void StoreAccumulatedEvents() {

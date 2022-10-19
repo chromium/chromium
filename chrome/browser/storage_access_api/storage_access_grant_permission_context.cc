@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -231,11 +232,10 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
       ContentSettingsType::STORAGE_ACCESS, &implicit_grants,
       content_settings::SessionModel::UserSession);
 
-  const int existing_implicit_grants =
-      std::count_if(implicit_grants.begin(), implicit_grants.end(),
-                    [requesting_origin](const auto& entry) {
-                      return entry.primary_pattern.Matches(requesting_origin);
-                    });
+  const int existing_implicit_grants = base::ranges::count_if(
+      implicit_grants, [requesting_origin](const auto& entry) {
+        return entry.primary_pattern.Matches(requesting_origin);
+      });
 
   // If we have fewer grants than our limit, we can just set an implicit grant
   // now and skip prompting the user.

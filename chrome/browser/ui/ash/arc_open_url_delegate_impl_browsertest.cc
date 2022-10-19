@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -40,12 +41,11 @@ using arc::mojom::ChromePage;
 
 // Return the number of windows that hosts OS Settings.
 size_t GetNumberOfSettingsWindows() {
-  auto* browser_list = BrowserList::GetInstance();
-  return std::count_if(browser_list->begin(), browser_list->end(),
-                       [](Browser* browser) {
-                         return ash::IsBrowserForSystemWebApp(
-                             browser, ash::SystemWebAppType::SETTINGS);
-                       });
+  return base::ranges::count_if(*BrowserList::GetInstance(),
+                                [](Browser* browser) {
+                                  return ash::IsBrowserForSystemWebApp(
+                                      browser, ash::SystemWebAppType::SETTINGS);
+                                });
 }
 
 // Give the underlying function a clearer name.

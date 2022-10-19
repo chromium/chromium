@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/profile_picker.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -191,12 +191,11 @@ bool ProfilePicker::ShouldShowAtLaunch() {
 
   std::vector<ProfileAttributesEntry*> profile_attributes =
       profile_manager->GetProfileAttributesStorage().GetAllProfilesAttributes();
-  int number_of_active_profiles =
-      std::count_if(profile_attributes.begin(), profile_attributes.end(),
-                    [](ProfileAttributesEntry* entry) {
-                      return (base::Time::Now() - entry->GetActiveTime() <
-                              kActiveTimeThreshold);
-                    });
+  int number_of_active_profiles = base::ranges::count_if(
+      profile_attributes, [](ProfileAttributesEntry* entry) {
+        return (base::Time::Now() - entry->GetActiveTime() <
+                kActiveTimeThreshold);
+      });
   // Don't show the profile picker at launch if the user has less than two
   // active profiles. However, if the user has already seen the profile picker
   // before, respect user's preference.

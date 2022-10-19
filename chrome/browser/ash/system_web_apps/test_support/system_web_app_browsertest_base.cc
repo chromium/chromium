@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 
+#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -146,10 +147,9 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl() {
 size_t SystemWebAppBrowserTestBase::GetSystemWebAppBrowserCount(
     SystemWebAppType type) {
   auto* browser_list = BrowserList::GetInstance();
-  return std::count_if(browser_list->begin(), browser_list->end(),
-                       [&](Browser* browser) {
-                         return ash::IsBrowserForSystemWebApp(browser, type);
-                       });
+  return base::ranges::count_if(*browser_list, [&](Browser* browser) {
+    return ash::IsBrowserForSystemWebApp(browser, type);
+  });
 }
 
 SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(

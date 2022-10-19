@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -548,12 +549,9 @@ TEST_F(AccessContextAuditDatabaseTest, RepeatedAccesses) {
   CloseDatabase();
 
   // Verify that extra entries are not present in the database.
-  size_t num_test_cookie_entries = std::count_if(
-      test_records.begin(), test_records.end(),
-      [](const AccessContextAuditDatabase::AccessRecord& record) {
-        return record.type ==
-               AccessContextAuditDatabase::StorageAPIType::kCookie;
-      });
+  size_t num_test_cookie_entries = base::ranges::count(
+      test_records, AccessContextAuditDatabase::StorageAPIType::kCookie,
+      &AccessContextAuditDatabase::AccessRecord::type);
   size_t num_test_storage_entries =
       test_records.size() - num_test_cookie_entries;
 

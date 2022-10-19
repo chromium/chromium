@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
@@ -61,9 +62,8 @@ size_t ReportPreconnectPredictionAccuracy(
 
   const auto& actual_origins = summary.origins;
 
-  size_t correctly_predicted_count = std::count_if(
-      prediction.requests.begin(), prediction.requests.end(),
-      [&actual_origins](const PreconnectRequest& request) {
+  size_t correctly_predicted_count = base::ranges::count_if(
+      prediction.requests, [&actual_origins](const PreconnectRequest& request) {
         return actual_origins.find(request.origin) != actual_origins.end();
       });
   size_t precision_percentage =
@@ -209,9 +209,8 @@ void LoadingStatsCollector::RecordPageRequestSummary(
           ukm_cap,
           optimization_guide_prediction->predicted_subresources.size()));
       const auto& actual_subresource_urls = summary.subresource_urls;
-      size_t correctly_predicted_subresources = std::count_if(
-          optimization_guide_prediction->predicted_subresources.begin(),
-          optimization_guide_prediction->predicted_subresources.end(),
+      size_t correctly_predicted_subresources = base::ranges::count_if(
+          optimization_guide_prediction->predicted_subresources,
           [&actual_subresource_urls](const GURL& subresource_url) {
             return actual_subresource_urls.find(subresource_url) !=
                    actual_subresource_urls.end();
@@ -233,8 +232,8 @@ void LoadingStatsCollector::RecordPageRequestSummary(
       builder.SetOptimizationGuidePredictionOrigins(
           std::min(ukm_cap, predicted_origins.size()));
       const auto& actual_subresource_origins = summary.origins;
-      size_t correctly_predicted_origins = std::count_if(
-          predicted_origins.begin(), predicted_origins.end(),
+      size_t correctly_predicted_origins = base::ranges::count_if(
+          predicted_origins,
           [&actual_subresource_origins](const url::Origin& subresource_origin) {
             return actual_subresource_origins.find(subresource_origin) !=
                    actual_subresource_origins.end();
@@ -248,12 +247,14 @@ void LoadingStatsCollector::RecordPageRequestSummary(
     builder.SetSubresourceOriginPreconnectsInitiated(
         std::min(ukm_cap, summary.preconnect_origins.size()));
     const auto& actual_subresource_origins = summary.origins;
-    size_t correctly_predicted_subresource_origins_initiated = std::count_if(
-        summary.preconnect_origins.begin(), summary.preconnect_origins.end(),
-        [&actual_subresource_origins](const url::Origin& subresource_origin) {
-          return actual_subresource_origins.find(subresource_origin) !=
-                 actual_subresource_origins.end();
-        });
+    size_t correctly_predicted_subresource_origins_initiated =
+        base::ranges::count_if(
+            summary.preconnect_origins,
+            [&actual_subresource_origins](
+                const url::Origin& subresource_origin) {
+              return actual_subresource_origins.find(subresource_origin) !=
+                     actual_subresource_origins.end();
+            });
     builder.SetCorrectSubresourceOriginPreconnectsInitiated(
         std::min(ukm_cap, correctly_predicted_subresource_origins_initiated));
     recorded_ukm = true;
@@ -262,12 +263,13 @@ void LoadingStatsCollector::RecordPageRequestSummary(
     builder.SetSubresourcePrefetchesInitiated(
         std::min(ukm_cap, summary.prefetch_urls.size()));
     const auto& actual_subresource_urls = summary.subresource_urls;
-    size_t correctly_predicted_subresource_prefetches_initiated = std::count_if(
-        summary.prefetch_urls.begin(), summary.prefetch_urls.end(),
-        [&actual_subresource_urls](const GURL& subresource_url) {
-          return actual_subresource_urls.find(subresource_url) !=
-                 actual_subresource_urls.end();
-        });
+    size_t correctly_predicted_subresource_prefetches_initiated =
+        base::ranges::count_if(
+            summary.prefetch_urls,
+            [&actual_subresource_urls](const GURL& subresource_url) {
+              return actual_subresource_urls.find(subresource_url) !=
+                     actual_subresource_urls.end();
+            });
     builder.SetCorrectSubresourcePrefetchesInitiated(std::min(
         ukm_cap, correctly_predicted_subresource_prefetches_initiated));
     recorded_ukm = true;

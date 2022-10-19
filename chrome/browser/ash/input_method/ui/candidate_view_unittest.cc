@@ -84,9 +84,8 @@ class CandidateViewTest : public views::ViewsTestBase {
 
   size_t GetHighlightedCount() const {
     const auto& children = container_->children();
-    return std::count_if(
-        children.cbegin(), children.cend(),
-        [](const views::View* v) { return !!v->background(); });
+    return base::ranges::count_if(
+        children, [](const views::View* v) { return !!v->background(); });
   }
 
   int GetHighlightedIndex() const {

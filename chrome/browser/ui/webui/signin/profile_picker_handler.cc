@@ -12,6 +12,7 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -1010,9 +1011,8 @@ void ProfilePickerHandler::OnSwitchToProfileComplete(bool new_profile,
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributes();
-  int profile_count = std::count_if(
-      entries.begin(), entries.end(),
-      [](ProfileAttributesEntry* entry) { return !entry->IsOmitted(); });
+  int profile_count =
+      base::ranges::count(entries, false, &ProfileAttributesEntry::IsOmitted);
   if (profile_count > 1 && !open_settings &&
       ProfilePicker::GetOnSelectProfileTargetUrl().is_empty()) {
     browser->window()->MaybeShowProfileSwitchIPH();

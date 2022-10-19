@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -327,16 +328,14 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   // Record the circumstances under which passwords are deleted.
   if (data_types.find(BrowsingDataType::PASSWORDS) != data_types.end()) {
     static const BrowsingDataType other_types[] = {
-        BrowsingDataType::HISTORY,        BrowsingDataType::DOWNLOADS,
-        BrowsingDataType::CACHE,          BrowsingDataType::COOKIES,
-        BrowsingDataType::FORM_DATA,      BrowsingDataType::HOSTED_APPS_DATA,
+        BrowsingDataType::HISTORY,   BrowsingDataType::DOWNLOADS,
+        BrowsingDataType::CACHE,     BrowsingDataType::COOKIES,
+        BrowsingDataType::FORM_DATA, BrowsingDataType::HOSTED_APPS_DATA,
     };
-    static size_t num_other_types = std::size(other_types);
-    int checked_other_types =
-        std::count_if(other_types, other_types + num_other_types,
-                      [&data_types](BrowsingDataType type) {
-                        return data_types.find(type) != data_types.end();
-                      });
+    int checked_other_types = base::ranges::count_if(
+        other_types, [&data_types](BrowsingDataType type) {
+          return data_types.find(type) != data_types.end();
+        });
     base::UmaHistogramSparse(
         "History.ClearBrowsingData.PasswordsDeletion.AdditionalDatatypesCount",
         checked_other_types);

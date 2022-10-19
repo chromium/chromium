@@ -4,13 +4,13 @@
 
 #include "chrome/browser/navigation_predictor/navigation_predictor.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "base/check_op.h"
 #include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
@@ -274,7 +274,7 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     path_length = std::min(path_length, static_cast<int64_t>(100));
     anchor_element_builder.SetPathLength(path_length);
 
-    int64_t num_slashes = std::count(path.begin(), path.end(), '/');
+    int64_t num_slashes = base::ranges::count(path, '/');
     // Truncate at 5.
     num_slashes = std::min(num_slashes, static_cast<int64_t>(5));
     anchor_element_builder.SetPathDepth(num_slashes);

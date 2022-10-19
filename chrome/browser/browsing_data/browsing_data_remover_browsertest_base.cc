@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -384,12 +385,11 @@ int BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModelCount(
   int count = 0;
   for (const auto& node : root->children()) {
     EXPECT_GE(node->children().size(), 1u);
-    count += std::count_if(node->children().cbegin(), node->children().cend(),
-                           [](const auto& child) {
-                             // TODO(crbug.com/1307796): Include quota nodes.
-                             return child->GetDetailedInfo().node_type !=
-                                    CookieTreeNode::DetailedInfo::TYPE_QUOTA;
-                           });
+    count += base::ranges::count_if(node->children(), [](const auto& child) {
+      // TODO(crbug.com/1307796): Include quota nodes.
+      return child->GetDetailedInfo().node_type !=
+             CookieTreeNode::DetailedInfo::TYPE_QUOTA;
+    });
   }
   return count;
 }

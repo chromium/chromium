@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -129,11 +130,8 @@ base::span<const int> GetIconSizes() {
 bool ContainsOneIconOfEachSize(
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps) {
   for (int size_px : kIconSizes) {
-    int num_icons_for_size = std::count_if(
-        icon_bitmaps.begin(), icon_bitmaps.end(),
-        [&size_px](const std::pair<SquareSizePx, SkBitmap>& icon) {
-          return icon.first == size_px;
-        });
+    int num_icons_for_size = base::ranges::count(
+        icon_bitmaps, size_px, &std::pair<const SquareSizePx, SkBitmap>::first);
     if (num_icons_for_size != 1)
       return false;
   }

@@ -91,8 +91,10 @@ absl::optional<std::string> ExtractPhoneNumberForClickToCall(
   if (selection_text.size() > kSelectionTextMaxLength)
     return absl::nullopt;
 
-  int digits = std::count_if(selection_text.begin(), selection_text.end(),
-                             [](char c) { return std::isdigit(c); });
+  // See https://en.cppreference.com/w/cpp/string/byte/isdigit for why this uses
+  // unsigned char.
+  int digits = base::ranges::count_if(
+      selection_text, [](unsigned char c) { return std::isdigit(c); });
   if (digits > kSelectionTextMaxDigits)
     return absl::nullopt;
 

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1224,11 +1224,10 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
     }
   }
 
-  size_t expected_event_count =
-      std::count_if(test_cases.begin(), test_cases.end(),
-                    [](const HeuristicsTestCase& test_case) {
-                      return test_case.expected_results.triggered_any();
-                    });
+  size_t expected_event_count = base::ranges::count_if(
+      test_cases, [](const HeuristicsTestCase& test_case) {
+        return test_case.expected_results.triggered_any();
+      });
   CheckRecordedHeuristicsUkmCount(expected_event_count);
 
   size_t expected_event_idx = 0;

@@ -71,9 +71,8 @@ class SuggestionWindowViewTest
     const auto& children =
         suggestion_window_view_->multiple_candidate_area_for_testing()
             ->children();
-    return std::count_if(
-        children.cbegin(), children.cend(),
-        [](const views::View* v) { return !!v->background(); });
+    return base::ranges::count_if(
+        children, [](const views::View* v) { return !!v->background(); });
   }
 
   absl::optional<int> GetHighlightedIndex() const {

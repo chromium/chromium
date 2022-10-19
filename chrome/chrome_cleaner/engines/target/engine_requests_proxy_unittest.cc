@@ -14,6 +14,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/win/registry.h"
@@ -216,7 +217,7 @@ MULTIPROCESS_TEST_MAIN(GetProcesses) {
   }
 
   base::ProcessId current_pid = ::GetCurrentProcessId();
-  if (std::count(processes.begin(), processes.end(), current_pid) != 1) {
+  if (base::ranges::count(processes, current_pid) != 1) {
     LOG(ERROR)
         << "Failed to find current process in list of returned processes";
     return 1;
@@ -385,8 +386,7 @@ MULTIPROCESS_TEST_MAIN(GetLoadedModules) {
   // Every process contains its executable as a module.
   const base::FilePath exe_path =
       PreFetchedPaths::GetInstance()->GetExecutablePath();
-  if (std::count(module_names.begin(), module_names.end(), exe_path.value()) !=
-      1) {
+  if (base::ranges::count(module_names, exe_path.value()) != 1) {
     LOG(ERROR) << "Failed to find executable in own process";
     return 1;
   }

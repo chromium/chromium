@@ -10,6 +10,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/storage_manager/arc_storage_manager.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
@@ -429,12 +430,10 @@ void OtherUsersSizeCalculator::OnGetOtherUserSize(
     return;
   int64_t other_users_total_bytes;
   // If all the requests succeed, shows the total bytes in the UI.
-  if (std::count(user_sizes_.begin(), user_sizes_.end(), -1) == 0) {
-    other_users_total_bytes =
-        std::accumulate(user_sizes_.begin(), user_sizes_.end(), 0LL);
-  } else {
-    other_users_total_bytes = -1;
-  }
+  other_users_total_bytes =
+      base::Contains(user_sizes_, -1)
+          ? -1
+          : std::accumulate(user_sizes_.begin(), user_sizes_.end(), 0LL);
   NotifySizeCalculated(other_users_total_bytes);
 }
 
