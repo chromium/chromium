@@ -1273,16 +1273,13 @@ class MetaBuildWrapper:
     """Filter out the runtime dependencies not used by Skylab.
 
     Skylab is CrOS infra facilities for us to run hardware tests. These files
-    may appear in the test target's runtime_deps but unnecessary for our tests
-    to execute in a CrOS device.
+    may appear in the test target's runtime_deps for browser lab, but
+    unnecessary for CrOS lab. E.g. chrome is provisioned by our autotest
+    wrapper in Skylab, not by third_party/chromite.
     """
     file_ignore_list = [
-        re.compile(r'.*build/android.*'),
         re.compile(r'.*build/chromeos.*'),
         re.compile(r'.*build/cros_cache.*'),
-        # The following matches anything under //testing/ that isn't under
-        # //testing/buildbot/filters/.
-        re.compile(r'.*testing/(?!buildbot/filters).*'),
         re.compile(r'.*third_party/chromite.*'),
         # No test target should rely on files in [output_dir]/gen.
         re.compile(r'^gen/.*'),
