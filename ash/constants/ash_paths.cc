@@ -27,6 +27,9 @@ const base::FilePath::CharType kMachineHardwareInfoFileName[] =
 const base::FilePath::CharType kVpdFileName[] = FILE_PATH_LITERAL(
     "/mnt/stateful_partition/unencrypted/cache/vpd/filtered.txt");
 
+const base::FilePath::CharType kVpdStatusFileName[] = FILE_PATH_LITERAL(
+    "/mnt/stateful_partition/unencrypted/cache/vpd/status.txt");
+
 const base::FilePath::CharType kUptimeFileName[] =
     FILE_PATH_LITERAL("/proc/uptime");
 
@@ -76,6 +79,9 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case FILE_VPD:
       *result = base::FilePath(kVpdFileName);
+      break;
+    case FILE_VPD_STATUS:
+      *result = base::FilePath(kVpdStatusFileName);
       break;
     case FILE_UPTIME:
       *result = base::FilePath(kUptimeFileName);

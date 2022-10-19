@@ -34,15 +34,19 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) FakeStatisticsProvider
   bool GetMachineFlag(const std::string& name, bool* result) override;
   void Shutdown() override;
   bool IsRunningOnVm() override;
+  VpdStatus GetVpdStatus() const override;
 
   void SetMachineStatistic(const std::string& key, const std::string& value);
   void ClearMachineStatistic(const std::string& key);
   void SetMachineFlag(const std::string& key, bool value);
   void ClearMachineFlag(const std::string& key);
+  void SetVpdStatus(VpdStatus new_status);
 
  private:
   std::map<std::string, std::string> machine_statistics_;
   std::map<std::string, bool> machine_flags_;
+
+  VpdStatus vpd_status_{VpdStatus::kUnknown};
 };
 
 // A convenience subclass that automatically registers itself as the test

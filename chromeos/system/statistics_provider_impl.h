@@ -47,6 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
     base::FilePath machine_info_filepath;
     base::FilePath vpd_echo_filepath;
     base::FilePath vpd_filepath;
+    base::FilePath vpd_status_filepath;
     base::FilePath oem_manifest_filepath;
     base::FilePath cros_regions_filepath;
   };
@@ -89,6 +90,8 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
   // Returns true when Chrome OS is running in a VM. NOTE: if crossystem is not
   // installed it will return false even if Chrome OS is running in a VM.
   bool IsRunningOnVm() override;
+
+  VpdStatus GetVpdStatus() const override;
 
  private:
   using MachineFlags = std::map<std::string, bool>;
@@ -141,6 +144,16 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
   std::string region_;
   base::Value region_dict_;
   base::flat_map<std::string, RegionDataExtractor> regional_data_extractors_;
+
+  // Stores VPD partitions status.
+  // VPD partition or partitions are considered in invalid state if:
+  // 1. Status file or VPD file is missing: both RO_VPD and RW_VPD are
+  //    considered being invalid.
+  // 2. Partition key is missing in the status file: corresponding partition is
+  //    considered being invalid.
+  // 3. Partition key has invalid value: corresponding partition is considered
+  //    being invalid.
+  VpdStatus vpd_status_{VpdStatus::kUnknown};
 
   // Lock held when `statistics_loaded_` is signaled and when
   // `statistics_loaded_callbacks_` is accessed.

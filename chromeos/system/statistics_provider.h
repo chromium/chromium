@@ -129,6 +129,15 @@ COMPONENT_EXPORT(CHROMEOS_SYSTEM) extern const char kSerialNumberKeyForTest[];
 // This interface provides access to Chrome OS statistics.
 class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProvider {
  public:
+  // Represents the status of the VPD statistics source.
+  enum class VpdStatus {
+    kUnknown = 0,
+    kValid = 1,
+    kRoInvalid = 2,
+    kRwInvalid = 3,
+    kInvalid = 4
+  };
+
   // Starts loading the machine statistics.
   virtual void StartLoadingMachineStatistics(bool load_oem_manifest) = 0;
 
@@ -166,6 +175,9 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProvider {
 
   // Returns true if the machine is a VM.
   virtual bool IsRunningOnVm() = 0;
+
+  // Returns the status of RO_VPD and RW_VPD partitions.
+  virtual VpdStatus GetVpdStatus() const = 0;
 
   // Get the Singleton instance.
   static StatisticsProvider* GetInstance();

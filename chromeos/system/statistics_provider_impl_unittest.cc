@@ -32,7 +32,10 @@ constexpr char kCrossystemToolFormat[] = "%s = %s   # %s\n";
 constexpr char kMachineInfoFormat[] = "\"%s\"=\"%s\"\n";
 constexpr char kVpdFormat[] = "\"%s\"=\"%s\"\n";
 
-// Creates a file with unique name in the temp dir and fills it with
+constexpr char kVpdRoPartitionStatusKey[] = "RO_VPD_status";
+constexpr char kVpdRwPartitionStatusKey[] = "RW_VPD_status";
+
+// Creates a file named with `filename` in the temp dir and fills it with
 // `content`. Returns path to the created file.
 base::FilePath CreateFileInTempDir(const std::string& content,
                                    const base::ScopedTempDir& temp_dir) {
@@ -84,6 +87,11 @@ class SourcesBuilder {
     return *this;
   }
 
+  SourcesBuilder& set_vpd_status(const base::FilePath& filepath) {
+    sources_.vpd_status_filepath = filepath;
+    return *this;
+  }
+
   SourcesBuilder& set_oem_manifest(const base::FilePath& filepath) {
     sources_.oem_manifest_filepath = filepath;
     return *this;
@@ -109,6 +117,10 @@ class SourcesBuilder {
 
     if (sources_.vpd_filepath.empty()) {
       sources_.vpd_filepath = CreateFileInTempDir("", temp_dir_);
+    }
+
+    if (sources_.vpd_status_filepath.empty()) {
+      sources_.vpd_status_filepath = CreateFileInTempDir("", temp_dir_);
     }
 
     if (sources_.oem_manifest_filepath.empty()) {
@@ -443,10 +455,15 @@ TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromVpdFile) {
       base::StringPrintf(kVpdFormat, "vpd_key_2", "vpd_value_2") +
       base::StringPrintf(kVpdFormat, "vpd_key_3", "vpd_value_3");
 
+  const std::string kVpdStatusStatistics =
+      base::StringPrintf(kVpdFormat, kVpdRoPartitionStatusKey, "0") +
+      base::StringPrintf(kVpdFormat, kVpdRwPartitionStatusKey, "0");
+
   StatisticsProviderImpl::StatisticsSources testing_sources =
       SourcesBuilder(temp_dir())
           .set_vpd_echo(CreateFileInTempDir(kVpdEchoStatistics, temp_dir()))
           .set_vpd(CreateFileInTempDir(kVpdStatistics, temp_dir()))
+          .set_vpd_status(CreateFileInTempDir(kVpdStatusStatistics, temp_dir()))
           .Build();
 
   // Load statistics.
@@ -511,6 +528,9 @@ TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromVpdFile) {
       kMetricVpdCacheReadResult,
       StatisticsProviderImpl::VpdCacheReadResult::kSuccess,
       /*expected_bucket_count=*/1);
+
+  // Check VPD status.
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kValid);
 }
 
 // Test that the provider records correct metrics when VPD file is missing.
@@ -524,9 +544,16 @@ TEST_F(StatisticsProviderImplTest, RecordsErrorIfVpdFileIsMissing) {
       temp_dir().GetPath().Append("vpd_does_not_exist");
   ASSERT_FALSE(base::PathExists(kNonExistingVpdFilepath));
 
+  // Setup valid VPD status file to ensure the invalid VPD status comes from the
+  // missing VPD file.
+  const std::string kVpdStatusStatistics =
+      base::StringPrintf(kVpdFormat, kVpdRoPartitionStatusKey, "0") +
+      base::StringPrintf(kVpdFormat, kVpdRwPartitionStatusKey, "0");
+
   StatisticsProviderImpl::StatisticsSources testing_sources =
       SourcesBuilder(temp_dir())
           .set_vpd(std::move(kNonExistingVpdFilepath))
+          .set_vpd_status(CreateFileInTempDir(kVpdStatusStatistics, temp_dir()))
           .Build();
 
   // Load statistics.
@@ -542,6 +569,9 @@ TEST_F(StatisticsProviderImplTest, RecordsErrorIfVpdFileIsMissing) {
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
                                     /*count=*/1);
+
+  // Expect invalid VPD status because the VPD file is missing.
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kInvalid);
 }
 
 // Test that the provider records correct metrics when VPD file has incorrect
@@ -592,6 +622,10 @@ TEST_F(StatisticsProviderImplTest, RecordsErrorIfVpdFileIsMalformed) {
       kMetricVpdCacheReadResult,
       StatisticsProviderImpl::VpdCacheReadResult::kParseFailed,
       /*expected_bucket_count=*/1);
+
+  // Expect invalid VPD status because VPD status file does not contain status
+  // keys.
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kInvalid);
 }
 
 // Tests that StatisticsProvider generates stub statistics file for VPD
@@ -626,6 +660,10 @@ TEST_F(StatisticsProviderImplTest, GeneratesStubVpdFileIfNotRunningChromeOS) {
   histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
                                     /*count=*/0);
 
+  // Expect invalid VPD status because VPD status file does not contain status
+  // keys.
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kInvalid);
+
   // Check fresh provider.
   provider = StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
   LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
@@ -640,6 +678,205 @@ TEST_F(StatisticsProviderImplTest, GeneratesStubVpdFileIfNotRunningChromeOS) {
   // The provider shall not record in non-chromeos environment.
   histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
                                     /*count=*/0);
+
+  // Expect invalid VPD status because VPD status file does not contain status
+  // keys.
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kInvalid);
+}
+
+// Test that the provider returns correct VPD status when VPD status file does
+// not exist.
+TEST_F(StatisticsProviderImplTest,
+       ReturnsInvalidVpdStatusWithNonExistingStatusFile) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const base::FilePath kNonExistingVpdStatusFilepath =
+      temp_dir().GetPath().Append("vpd_does_not_exist");
+  ASSERT_FALSE(base::PathExists(kNonExistingVpdStatusFilepath));
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_vpd_status(kNonExistingVpdStatusFilepath)
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kUnknown);
+
+  base::RunLoop loading_loop;
+  provider->ScheduleOnMachineStatisticsLoaded(loading_loop.QuitClosure());
+  provider->StartLoadingMachineStatistics(/*load_oem_manifest=*/false);
+  loading_loop.Run();
+
+  // Check VPD status.
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kInvalid);
+}
+
+// Test that the provider returns correct VPD status with invalid RO VPD status
+// is status file.
+TEST_F(StatisticsProviderImplTest, ReturnsInvalidRoVpdStatus) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kInvalidRoVpdStatus =
+      base::StringPrintf(kVpdFormat, kVpdRoPartitionStatusKey, "1") +
+      base::StringPrintf(kVpdFormat, kVpdRwPartitionStatusKey, "0");
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_vpd_status(CreateFileInTempDir(kInvalidRoVpdStatus, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kUnknown);
+
+  base::RunLoop loading_loop;
+  provider->ScheduleOnMachineStatisticsLoaded(loading_loop.QuitClosure());
+  provider->StartLoadingMachineStatistics(/*load_oem_manifest=*/false);
+  loading_loop.Run();
+
+  // Check VPD status.
+  EXPECT_EQ(provider->GetVpdStatus(),
+            StatisticsProvider::VpdStatus::kRoInvalid);
+}
+
+// Test that the provider returns correct VPD status with missing RO VPD status
+// is status file.
+TEST_F(StatisticsProviderImplTest, ReturnsInvalidRoVpdStatusWhenKeyIsMissing) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kInvalidRoVpdStatus =
+      base::StringPrintf(kVpdFormat, kVpdRwPartitionStatusKey, "0");
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_vpd_status(CreateFileInTempDir(kInvalidRoVpdStatus, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kUnknown);
+
+  base::RunLoop loading_loop;
+  provider->ScheduleOnMachineStatisticsLoaded(loading_loop.QuitClosure());
+  provider->StartLoadingMachineStatistics(/*load_oem_manifest=*/false);
+  loading_loop.Run();
+
+  // Check VPD status.
+  EXPECT_EQ(provider->GetVpdStatus(),
+            StatisticsProvider::VpdStatus::kRoInvalid);
+}
+
+// Test that the provider returns correct VPD status with invalid RW VPD status
+// is status file.
+TEST_F(StatisticsProviderImplTest, ReturnsInvalidRwVpdStatus) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kInvalidRwVpdStatus =
+      base::StringPrintf(kVpdFormat, kVpdRoPartitionStatusKey, "0") +
+      base::StringPrintf(kVpdFormat, kVpdRwPartitionStatusKey, "2");
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_vpd_status(CreateFileInTempDir(kInvalidRwVpdStatus, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kUnknown);
+
+  base::RunLoop loading_loop;
+  provider->ScheduleOnMachineStatisticsLoaded(loading_loop.QuitClosure());
+  provider->StartLoadingMachineStatistics(/*load_oem_manifest=*/false);
+  loading_loop.Run();
+
+  // Check VPD status.
+  EXPECT_EQ(provider->GetVpdStatus(),
+            StatisticsProvider::VpdStatus::kRwInvalid);
+}
+
+// Test that the provider returns correct VPD status with missing RW VPD status
+// is status file.
+TEST_F(StatisticsProviderImplTest, ReturnsInvalidRwVpdStatusWhenKeyIsMissing) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kInvalidRwVpdStatus =
+      base::StringPrintf(kVpdFormat, kVpdRoPartitionStatusKey, "0");
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_vpd_status(CreateFileInTempDir(kInvalidRwVpdStatus, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kUnknown);
+
+  base::RunLoop loading_loop;
+  provider->ScheduleOnMachineStatisticsLoaded(loading_loop.QuitClosure());
+  provider->StartLoadingMachineStatistics(/*load_oem_manifest=*/false);
+  loading_loop.Run();
+
+  // Check VPD status.
+  EXPECT_EQ(provider->GetVpdStatus(),
+            StatisticsProvider::VpdStatus::kRwInvalid);
+}
+
+// Test that the provider returns correct VPD status with invalid RO and RW VPD
+// statuses is status file.
+TEST_F(StatisticsProviderImplTest, ReturnsInvalidVpdStatus) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kInvalidVpdStatus =
+      base::StringPrintf(kVpdFormat, kVpdRoPartitionStatusKey, "3") +
+      base::StringPrintf(kVpdFormat, kVpdRwPartitionStatusKey, "4");
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_vpd_status(CreateFileInTempDir(kInvalidVpdStatus, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kUnknown);
+
+  base::RunLoop loading_loop;
+  provider->ScheduleOnMachineStatisticsLoaded(loading_loop.QuitClosure());
+  provider->StartLoadingMachineStatistics(/*load_oem_manifest=*/false);
+  loading_loop.Run();
+
+  // Check VPD status.
+  EXPECT_EQ(provider->GetVpdStatus(), StatisticsProvider::VpdStatus::kInvalid);
 }
 
 // Test that the provider loads correct statistics OEM file if they

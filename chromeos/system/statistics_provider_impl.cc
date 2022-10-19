@@ -5,6 +5,7 @@
 #include "chromeos/system/statistics_provider_impl.h"
 
 #include <string>
+#include <type_traits>
 
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
@@ -40,6 +41,10 @@ const char kCrosSystemValueError[] = "(error)";
 // the file.
 const char kEchoCouponFile[] =
     "/mnt/stateful_partition/unencrypted/cache/vpd/echo/vpd_echo.txt";
+
+const char kVpdRoPartitionStatusKey[] = "RO_VPD_status";
+const char kVpdRwPartitionStatusKey[] = "RW_VPD_status";
+const char kVpdPartitionStatusValid[] = "0";
 
 // The location of OEM manifest file used to trigger OOBE flow for kiosk mode.
 const base::CommandLine::CharType kOemManifestFilePath[] =
@@ -156,9 +161,49 @@ StatisticsProviderImpl::StatisticsSources CreateDefaultSources() {
   sources.machine_info_filepath = GetFilePathIgnoreFailure(FILE_MACHINE_INFO);
   sources.vpd_echo_filepath = base::FilePath(kEchoCouponFile);
   sources.vpd_filepath = GetFilePathIgnoreFailure(FILE_VPD);
+  sources.vpd_status_filepath = GetFilePathIgnoreFailure(FILE_VPD_STATUS);
   sources.oem_manifest_filepath = base::FilePath(kOemManifestFilePath);
   sources.cros_regions_filepath = base::FilePath(kCrosRegions);
   return sources;
+}
+
+// Reads `vpd_status_file`, and loads and checks VPD key-value statuses from it.
+// Returns VpdStatus according to file existence and content.
+StatisticsProvider::VpdStatus LoadVpdStatusFile(
+    const base::FilePath& vpd_status_file) {
+  using Status = StatisticsProvider::VpdStatus;
+  if (!base::PathExists(vpd_status_file)) {
+    return Status::kInvalid;
+  }
+
+  NameValuePairsParser::NameValueMap map;
+  NameValuePairsParser parser(&map);
+
+  if (!parser.ParseNameValuePairsFromFile(vpd_status_file,
+                                          NameValuePairsFormat::kVpdDump)) {
+    // Failed to parse one of the values in the status file. Let's still check
+    // if partitions statuses are present. It is safe to ignore malformed
+    // values because a missing key is considered as invalid state.
+    LOG(ERROR) << "Failed to parse VPD status file: " << vpd_status_file;
+  }
+
+  const auto ro_vpd_it = map.find(kVpdRoPartitionStatusKey);
+  const bool is_ro_vpd_valid =
+      ro_vpd_it != map.end() && ro_vpd_it->second == kVpdPartitionStatusValid;
+  LOG_IF(ERROR, !is_ro_vpd_valid)
+      << "RO_VPD partition has non-valid status: '"
+      << (ro_vpd_it == map.end() ? "value missing" : ro_vpd_it->second) << "'";
+
+  const auto rw_vpd_it = map.find(kVpdRwPartitionStatusKey);
+  const bool is_rw_vpd_valid =
+      rw_vpd_it != map.end() && rw_vpd_it->second == kVpdPartitionStatusValid;
+  LOG_IF(ERROR, !is_rw_vpd_valid)
+      << "RW_VPD partition has non-valid status: '"
+      << (rw_vpd_it == map.end() ? "value missing" : rw_vpd_it->second) << "'";
+
+  return is_ro_vpd_valid
+             ? (is_rw_vpd_valid ? Status::kValid : Status::kRwInvalid)
+             : (is_rw_vpd_valid ? Status::kRoInvalid : Status::kInvalid);
 }
 
 }  // namespace
@@ -311,6 +356,10 @@ bool StatisticsProviderImpl::IsRunningOnVm() {
     return false;
   std::string is_vm;
   return GetMachineStatistic(kIsVmKey, &is_vm) && is_vm == kIsVmValueTrue;
+}
+
+StatisticsProvider::VpdStatus StatisticsProviderImpl::GetVpdStatus() const {
+  return vpd_status_;
 }
 
 void StatisticsProviderImpl::SignalStatisticsLoaded() {
@@ -493,6 +542,7 @@ void StatisticsProviderImpl::LoadVpdFiles() {
       // metric and continue with loading the next source.
       ReportVpdCacheReadResult(VpdCacheReadResult::KMissing);
       LOG(ERROR) << "Missing FILE_VPD: " << sources_.vpd_filepath;
+      vpd_status_ = VpdStatus::kInvalid;
       return;
     } else {
       std::string stub_contents = "\"ActivateDate\"=\"2000-01\"\n";
@@ -514,6 +564,12 @@ void StatisticsProviderImpl::LoadVpdFiles() {
       LOG(ERROR) << "Failed to parse FILE_VPD: " << sources_.vpd_filepath;
     }
   }
+
+  vpd_status_ = LoadVpdStatusFile(sources_.vpd_status_filepath);
+
+  LOG_IF(ERROR, vpd_status_ != VpdStatus::kValid)
+      << "Detected invalid VPD state: "
+      << static_cast<std::underlying_type_t<VpdStatus>>(vpd_status_);
 }
 
 void StatisticsProviderImpl::LoadOemManifestFromFile(

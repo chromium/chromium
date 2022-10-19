@@ -51,6 +51,9 @@ bool FakeStatisticsProvider::IsRunningOnVm() {
   return GetMachineStatistic(kIsVmKey, &is_vm) && is_vm == kIsVmValueTrue;
 }
 
+StatisticsProvider::VpdStatus FakeStatisticsProvider::GetVpdStatus() const {
+  return vpd_status_;
+}
 
 void FakeStatisticsProvider::SetMachineStatistic(const std::string& key,
                                                  const std::string& value) {
@@ -70,12 +73,16 @@ void FakeStatisticsProvider::ClearMachineFlag(const std::string& key) {
   machine_flags_.erase(key);
 }
 
+void FakeStatisticsProvider::SetVpdStatus(VpdStatus new_status) {
+  vpd_status_ = new_status;
+}
+
 ScopedFakeStatisticsProvider::ScopedFakeStatisticsProvider() {
   StatisticsProvider::SetTestProvider(this);
 }
 
 ScopedFakeStatisticsProvider::~ScopedFakeStatisticsProvider() {
-  StatisticsProvider::SetTestProvider(NULL);
+  StatisticsProvider::SetTestProvider(nullptr);
 }
 
 }  // namespace system

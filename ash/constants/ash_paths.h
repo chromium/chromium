@@ -23,6 +23,7 @@ enum {
                            // default app order.
   FILE_MACHINE_INFO,       // Full path to machine hardware info file.
   FILE_VPD,                // Full path to VPD file.
+  FILE_VPD_STATUS,         // Full path to VPD status file.
   FILE_UPTIME,             // Full path to the file via which the kernel
                            // exposes the current device uptime.
   FILE_UPDATE_REBOOT_NEEDED_UPTIME,  // Full path to a file in which Chrome can
@@ -81,6 +82,7 @@ using ::ash::DIR_SIGNIN_PROFILE_EXTENSIONS;
 using ::ash::FILE_DEFAULT_APP_ORDER;
 using ::ash::FILE_MACHINE_INFO;
 using ::ash::FILE_VPD;
+using ::ash::FILE_VPD_STATUS;
 }  // namespace chromeos
 
 #endif  // ASH_CONSTANTS_ASH_PATHS_H_
