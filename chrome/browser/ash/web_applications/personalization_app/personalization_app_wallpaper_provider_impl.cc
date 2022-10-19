@@ -9,6 +9,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -25,10 +26,13 @@
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -451,9 +455,25 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
               /*key=*/base::UnguessableToken::Create().ToString()));
       return;
     case ash::WallpaperType::kCount:
-      mojo::ReportBadMessage("Impossible WallpaperType received");
-      return;
+      break;
   }
+
+  // This can happen when a WallpaperType object from a different version of
+  // ChromeOS persists through an upgrade or is synced to a different
+  // version of ChromeOS. Handle the error as gracefully as possible. Pick a
+  // safe wallpaper type `kOneShot` to send to personalization app.
+  NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
+      /*attribution=*/std::vector<std::string>(), info->layout,
+      ash::WallpaperType::kOneShot,
+      /*key=*/base::UnguessableToken::Create().ToString()));
+
+  // Continue to record data on how frequently this happens.
+  SCOPED_CRASH_KEY_STRING32(
+      "Wallpaper", "WallpaperType",
+      base::NumberToString(
+          static_cast<std::underlying_type_t<WallpaperType>>(info->type)));
+  base::debug::DumpWithoutCrashing();
+  return;
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnWallpaperPreviewEnded() {
