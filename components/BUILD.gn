@@ -71,6 +71,14 @@ if (!is_chromeos_lacros) {
   ]
 }
 
+config("pdb_larger_than_4gb") {
+  if (is_win) {
+    # Increasing the PDB page size to allow PDBs larger than 4GB. Not all
+    # tools can handle such large PDBs yet, so opt-in when needed.
+    ldflags = [ "/pdbpagesize:8192" ]
+  }
+}
+
 # To add a unit test to this target, make a "unit_tests" source_set in your
 # component(it's important to use a source_set instead of a static library or
 # no tests will run) and add a reference here.You can add more than one unit
@@ -94,6 +102,8 @@ test("components_unittests") {
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
   }
+
+  configs += [ ":pdb_larger_than_4gb" ]
 
   # Add only ":unit_tests" dependencies here.If your tests have dependencies
   #(this would at least include the component itself), they should be on the
