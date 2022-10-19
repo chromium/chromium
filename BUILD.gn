@@ -572,8 +572,9 @@ group("gn_all") {
       deps += [ "//extensions/shell:app_shell" ]
     }
 
-    # TODO(https://crbug.com/1299021): Implement building these NaCl targets
-    # as ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
+    # TODO(https://crbug.com/1299021): These dependencies might be
+    # redundant given that we were able to disable them, apparently without
+    # negative consequences, for the ARM32-NaCl-on-ARM64 case.
     if (enable_nacl && target_cpu != "arm64") {
       deps += [ "//components/nacl/loader:nacl_loader_unittests" ]
 
