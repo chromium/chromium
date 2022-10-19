@@ -1,0 +1,3 @@
+Tests that calling Page.captureScreenshot with optimizeForSpeed = true has some effect
+PASSED: slowly encoded PNG is smaller than quickly encoded
+

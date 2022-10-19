@@ -143,6 +143,7 @@ class PageHandler : public DevToolsDomainHandler,
       Maybe<Page::Viewport> clip,
       Maybe<bool> from_surface,
       Maybe<bool> capture_beyond_viewport,
+      Maybe<bool> optimize_for_speed,
       std::unique_ptr<CaptureScreenshotCallback> callback) override;
   void CaptureSnapshot(
       Maybe<std::string> format,
@@ -189,6 +190,7 @@ class PageHandler : public DevToolsDomainHandler,
   void CaptureFullPageScreenshot(
       Maybe<std::string> format,
       Maybe<int> quality,
+      Maybe<bool> optimize_for_speed,
       std::unique_ptr<CaptureScreenshotCallback> callback,
       const gfx::Size& full_page_size);
   bool ShouldCaptureNextScreencastFrame();

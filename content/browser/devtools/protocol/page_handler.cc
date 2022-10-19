@@ -91,8 +91,14 @@ using BitmapEncoder =
     base::RepeatingCallback<bool(const SkBitmap& bitmap,
                                  std::vector<uint8_t>& output)>;
 
-bool EncodeBitmapAsPng(const SkBitmap& bitmap, std::vector<uint8_t>& output) {
+bool EncodeBitmapAsPngSlow(const SkBitmap& bitmap,
+                           std::vector<uint8_t>& output) {
   return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
+}
+
+bool EncodeBitmapAsPngFast(const SkBitmap& bitmap,
+                           std::vector<uint8_t>& output) {
+  return gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap, false, &output);
 }
 
 bool EncodeBitmapAsJpeg(int quality,
@@ -107,14 +113,15 @@ bool EncodeBitmapAsWebp(int quality,
   return gfx::WebpCodec::Encode(bitmap, quality, &output);
 }
 
-absl::variant<protocol::Response, BitmapEncoder> GetEncoder(
-    const std::string& format,
-    int quality) {
+absl::variant<protocol::Response, BitmapEncoder>
+GetEncoder(const std::string& format, int quality, bool optimize_for_speed) {
   if (quality < 0 || quality > 100)
     quality = kDefaultScreenshotQuality;
 
-  if (format == protocol::Page::CaptureScreenshot::FormatEnum::Png)
-    return base::BindRepeating(&EncodeBitmapAsPng);
+  if (format == protocol::Page::CaptureScreenshot::FormatEnum::Png) {
+    return base::BindRepeating(optimize_for_speed ? EncodeBitmapAsPngFast
+                                                  : EncodeBitmapAsPngSlow);
+  }
   if (format == protocol::Page::CaptureScreenshot::FormatEnum::Jpeg)
     return base::BindRepeating(&EncodeBitmapAsJpeg, quality);
   if (format == protocol::Page::CaptureScreenshot::FormatEnum::Webp)
@@ -763,6 +770,7 @@ void PageHandler::CaptureSnapshot(
 void PageHandler::CaptureFullPageScreenshot(
     Maybe<std::string> format,
     Maybe<int> quality,
+    Maybe<bool> optimize_for_speed,
     std::unique_ptr<CaptureScreenshotCallback> callback,
     const gfx::Size& full_page_size) {
   // check width and height for validity
@@ -783,7 +791,7 @@ void PageHandler::CaptureFullPageScreenshot(
                   .Build();
   CaptureScreenshot(std::move(format), std::move(quality), std::move(clip),
                     /*from_surface=*/true, /*capture_beyond_viewport=*/true,
-                    std::move(callback));
+                    std::move(optimize_for_speed), std::move(callback));
 }
 
 void PageHandler::CaptureScreenshot(
@@ -792,6 +800,7 @@ void PageHandler::CaptureScreenshot(
     Maybe<Page::Viewport> clip,
     Maybe<bool> from_surface,
     Maybe<bool> capture_beyond_viewport,
+    Maybe<bool> optimize_for_speed,
     std::unique_ptr<CaptureScreenshotCallback> callback) {
   if (!host_ || !host_->GetRenderWidgetHost() ||
       !host_->GetRenderWidgetHost()->GetView()) {
@@ -808,7 +817,8 @@ void PageHandler::CaptureScreenshot(
         host_->GetAssociatedLocalMainFrame();
     main_frame->GetFullPageSize(base::BindOnce(
         &PageHandler::CaptureFullPageScreenshot, weak_factory_.GetWeakPtr(),
-        std::move(format), std::move(quality), std::move(callback)));
+        std::move(format), std::move(quality), std::move(optimize_for_speed),
+        std::move(callback)));
     return;
   }
   if (clip.isJust()) {
@@ -827,7 +837,8 @@ void PageHandler::CaptureScreenshot(
   RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
   auto encoder =
       GetEncoder(format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png),
-                 quality.fromMaybe(kDefaultScreenshotQuality));
+                 quality.fromMaybe(kDefaultScreenshotQuality),
+                 optimize_for_speed.fromMaybe(false));
   if (absl::holds_alternative<Response>(encoder)) {
     callback->sendFailure(absl::get<Response>(encoder));
     return;
@@ -980,7 +991,8 @@ Response PageHandler::StartScreencast(Maybe<std::string> format,
 
   auto encoder =
       GetEncoder(format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png),
-                 quality.fromMaybe(kDefaultScreenshotQuality));
+                 quality.fromMaybe(kDefaultScreenshotQuality),
+                 /* optimize_for_speed= */ true);
   if (absl::holds_alternative<Response>(encoder))
     return absl::get<Response>(encoder);
 
