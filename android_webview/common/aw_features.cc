@@ -69,11 +69,6 @@ BASE_FEATURE(kWebViewJavaJsBridgeMojo,
              "WebViewJavaJsBridgeMojo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, connections using legacy TLS 1.0/1.1 versions are allowed.
-BASE_FEATURE(kWebViewLegacyTlsSupport,
-             "WebViewLegacyTlsSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Measure the number of pixels occupied by one or more WebViews as a
 // proportion of the total screen size. Depending on the number of
 // WebVieaws and the size of the screen this might be expensive so

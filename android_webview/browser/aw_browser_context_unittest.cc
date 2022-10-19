@@ -84,40 +84,4 @@ TEST_F(AwBrowserContextTest, SHA1LocalAnchorsAllowed) {
       network_context_params.initial_ssl_config->sha1_local_anchors_enabled);
 }
 
-// Tests that TLS 1.0/1.1 is still allowed for WebView if the escape hatch
-// feature is enabled.
-TEST_F(AwBrowserContextTest, LegacyTLSVersionsAllowed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      android_webview::features::kWebViewLegacyTlsSupport);
-
-  AwBrowserContext context;
-  network::mojom::NetworkContextParams network_context_params;
-  cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
-  context.ConfigureNetworkContextParams(
-      false, base::FilePath(), &network_context_params, &cert_verifier_params);
-
-  ASSERT_TRUE(network_context_params.initial_ssl_config);
-  EXPECT_EQ(network::mojom::SSLVersion::kTLS1,
-            network_context_params.initial_ssl_config->version_min);
-}
-
-// Tests that TLS 1.0/1.1 are disallowed when the escape hatch feature is
-// disabled.
-TEST_F(AwBrowserContextTest, LegacyTLSVersionsDisallowed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      android_webview::features::kWebViewLegacyTlsSupport);
-
-  AwBrowserContext context;
-  network::mojom::NetworkContextParams network_context_params;
-  cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
-  context.ConfigureNetworkContextParams(
-      false, base::FilePath(), &network_context_params, &cert_verifier_params);
-
-  ASSERT_TRUE(network_context_params.initial_ssl_config);
-  EXPECT_EQ(network::mojom::SSLVersion::kTLS12,
-            network_context_params.initial_ssl_config->version_min);
-}
-
 }  // namespace android_webview

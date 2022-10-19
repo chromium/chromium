@@ -248,8 +248,6 @@ public final class ProductionSupportedFlagList {
                             + "high-priority task queue."),
             Flag.baseFeature(BlinkFeatures.PREFETCH_ANDROID_FONTS,
                     "Enables prefetching Android fonts on renderer startup."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_LEGACY_TLS_SUPPORT,
-                    "Whether legacy TLS versions (TLS 1.0/1.1) conections are allowed."),
             Flag.baseFeature(BlinkFeatures.INITIAL_NAVIGATION_ENTRY,
                     "Enables creation of initial NavigationEntries on WebContents creation."),
             Flag.baseFeature(BlinkFeatures.CANVAS2D_STAYS_GPU_ON_READBACK,
