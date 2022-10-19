@@ -457,10 +457,20 @@ void AuthFactorEditor::OnListAuthFactors(
       cryptohome::AuthFactorType::kPassword;
   if (user_manager::User::TypeIsKiosk(context->GetUserType()))
     fallback_type = cryptohome::AuthFactorType::kKiosk;
-  for (const auto& factor_proto : reply->configured_auth_factors()) {
-    auto f = cryptohome::DeserializeAuthFactor(factor_proto, fallback_type);
-    factor_list.emplace_back(
-        cryptohome::DeserializeAuthFactor(factor_proto, fallback_type));
+  for (const auto& factor_with_status_proto :
+       reply->configured_auth_factors_with_status()) {
+    auto factor = cryptohome::DeserializeAuthFactor(
+        factor_with_status_proto.auth_factor(), fallback_type);
+    // Dirty hack below, as cryptohome does not send correct value as a part of
+    // PIN status, but uses indirect signal of listing no intents instead.
+    if (factor.ref().type() == cryptohome::AuthFactorType::kPin) {
+      bool locked = factor_with_status_proto.available_for_intents_size() == 0;
+      cryptohome::PinStatus replacment_status{locked};
+      cryptohome::AuthFactor replacement_factor{
+          factor.ref(), factor.GetCommonMetadata(), replacment_status};
+      factor = replacement_factor;
+    }
+    factor_list.emplace_back(std::move(factor));
   }
   cryptohome::AuthFactorsSet supported_factors;
   for (const auto proto_type : reply->supported_auth_factors()) {

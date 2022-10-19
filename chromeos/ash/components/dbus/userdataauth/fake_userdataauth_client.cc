@@ -1080,6 +1080,21 @@ void FakeUserDataAuthClient::ListAuthFactors(
         FakeAuthFactorToAuthFactor(label, factor);
     if (auth_factor) {
       *reply.add_configured_auth_factors() = *auth_factor;
+      // Hack as cryptohome sends information via list of available intents.
+      auto* factor_with_status =
+          reply.add_configured_auth_factors_with_status();
+      *factor_with_status->mutable_auth_factor() = *auth_factor;
+      factor_with_status->add_available_for_intents(
+          user_data_auth::AUTH_INTENT_DECRYPT);
+      factor_with_status->add_available_for_intents(
+          user_data_auth::AUTH_INTENT_VERIFY_ONLY);
+      factor_with_status->add_available_for_intents(
+          user_data_auth::AUTH_INTENT_WEBAUTHN);
+      if (absl::holds_alternative<PinFactor>(factor)) {
+        if (absl::get<PinFactor>(factor).locked) {
+          factor_with_status->clear_available_for_intents();
+        }
+      }
     } else {
       LOG(WARNING) << "Ignoring auth factor incompatible with AuthFactor API: "
                    << label;
