@@ -15,16 +15,6 @@
 
 namespace cc {
 
-namespace {
-
-// When this feature is enabled, StopWorkerTasks() skips waiting synchronously
-// if no task is running.
-BASE_FEATURE(kImageControllerWaitOnlyForRunningTask,
-             "ImageControllerWaitOnlyForRunningTask",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace
-
 ImageController::ImageDecodeRequestId
     ImageController::s_next_image_decode_queue_id_ = 1;
 
@@ -62,12 +52,10 @@ void ImageController::StopWorkerTasks() {
     return;
 
   base::AutoLock hold(worker_state_->lock);
-  worker_state_->abort_task = true;
 
-  // If a worker task is running (or if the "wait only for running task" feature
-  // is disabled), post a task and wait for its completion to "flush" the queue.
-  if (!base::FeatureList::IsEnabled(kImageControllerWaitOnlyForRunningTask) ||
-      worker_state_->task_state == WorkerTaskState::kRunningTask) {
+  // If a worker task is running, post a task and wait for its completion to
+  // "flush" the queue.
+  if (worker_state_->task_state == WorkerTaskState::kRunningTask) {
     base::AutoUnlock release(worker_state_->lock);
     CompletionEvent completion_event;
     worker_task_runner_->PostTask(
@@ -75,11 +63,6 @@ void ImageController::StopWorkerTasks() {
                                   base::Unretained(&completion_event)));
     completion_event.Wait();
   }
-
-  DCHECK_EQ(worker_state_->task_state, WorkerTaskState::kNoTask);
-
-  // Reset the abort flag so that new tasks can be scheduled.
-  worker_state_->abort_task = false;
 
   // Now, begin cleanup.
 
@@ -283,7 +266,7 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
   worker_state->task_state = WorkerTaskState::kRunningTask;
 
   // If we don't have any work, abort.
-  if (worker_state->image_decode_queue.empty() || worker_state->abort_task) {
+  if (worker_state->image_decode_queue.empty()) {
     worker_state->task_state = WorkerTaskState::kNoTask;
     return;
   }

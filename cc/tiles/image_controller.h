@@ -127,7 +127,6 @@ class CC_EXPORT ImageController {
     std::map<ImageDecodeRequestId, ImageDecodeRequest>
         requests_needing_completion GUARDED_BY(lock);
     WorkerTaskState task_state GUARDED_BY(lock) = WorkerTaskState::kNoTask;
-    bool abort_task GUARDED_BY(lock) = false;
 
     const scoped_refptr<base::SequencedTaskRunner> origin_task_runner;
     const base::WeakPtr<ImageController> weak_ptr;
