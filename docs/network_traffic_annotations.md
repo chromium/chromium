@@ -125,6 +125,10 @@ in the `NetworkTrafficAnnotation` message of
      field.
    * `destination_other`: Human readable description in case the destination
      points to `OTHER`.
+   * `contacts`: A person's or team's email address who are point-of-contact 
+      for questions, issues, or bugs related to this network request. 
+      This field is meant for internal use and should not be used in any 
+      external reports.
 * `policy`: These set of fields specify the controls that a user may have
   on disabling or limiting the network request and its trace.
    * `cookies_allowed`: Specifies if this request stores and uses cookies or

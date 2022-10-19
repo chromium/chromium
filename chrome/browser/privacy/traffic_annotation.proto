@@ -121,6 +121,18 @@ message NetworkTrafficAnnotation {
 
     // Human readable description in case the destination points to OTHER.
     string destination_other = 6;
+
+    // Point-of-contact for questions, issues, or bugs related to
+    // this network request. This field is meant for internal use, and should
+    // not be used in any external reports.
+    message Contact {
+      oneof contact_type {
+        // Email of a team or individual owner
+        string email = 1;
+      }
+    }
+    // TODO(b/254273300): add contacts tag in auditor.py
+    repeated Contact contacts = 7;
   }
 
   TrafficSemantics semantics = 3;
