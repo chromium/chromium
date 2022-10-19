@@ -194,9 +194,8 @@ void TopSitesImpl::AddBlockedUrl(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   {
-    DictionaryPrefUpdate update(pref_service_, kBlockedUrlsPrefsKey);
-    base::Value* blocked_urls = update.Get();
-    blocked_urls->SetKey(GetURLHash(url), base::Value());
+    ScopedDictPrefUpdate update(pref_service_, kBlockedUrlsPrefsKey);
+    update->Set(GetURLHash(url), base::Value());
   }
 
   ResetThreadSafeCache();
@@ -206,9 +205,8 @@ void TopSitesImpl::AddBlockedUrl(const GURL& url) {
 void TopSitesImpl::RemoveBlockedUrl(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
   {
-    DictionaryPrefUpdate update(pref_service_, kBlockedUrlsPrefsKey);
-    base::Value* blocked_urls = update.Get();
-    blocked_urls->RemoveKey(GetURLHash(url));
+    ScopedDictPrefUpdate update(pref_service_, kBlockedUrlsPrefsKey);
+    update->Remove(GetURLHash(url));
   }
   ResetThreadSafeCache();
   NotifyTopSitesChanged(TopSitesObserver::ChangeReason::BLOCKED_URLS);
@@ -221,11 +219,7 @@ bool TopSitesImpl::IsBlocked(const GURL& url) {
 
 void TopSitesImpl::ClearBlockedUrls() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  {
-    DictionaryPrefUpdate update(pref_service_, kBlockedUrlsPrefsKey);
-    base::Value* blocked_urls = update.Get();
-    blocked_urls->DictClear();
-  }
+  pref_service_->SetDict(kBlockedUrlsPrefsKey, base::Value::Dict());
   ResetThreadSafeCache();
   NotifyTopSitesChanged(TopSitesObserver::ChangeReason::BLOCKED_URLS);
 }
