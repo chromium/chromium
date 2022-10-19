@@ -854,6 +854,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SkipCallingFindRegistrationForClientUrl"
+    enum="BooleanSkipped" expires_after="2023-10-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Whether the navigation requires checking the existence of service worker
+    registration by using FindRegistrationForClientUrl(). This metric is not
+    recorded during startup.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.StartNewWorker.Time" units="ms"
     expires_after="2023-04-16">
   <owner>wanderview@chromium.org</owner>

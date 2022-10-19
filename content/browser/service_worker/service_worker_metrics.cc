@@ -475,7 +475,7 @@ void ServiceWorkerMetrics::RecordStartWorkerTimingClockConsistency(
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartTiming.ClockConsistency", type);
 }
 
-void ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
+void ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(
     bool skip_service_worker) {
   static bool is_first_call = true;
   if (is_first_call) {
@@ -483,6 +483,12 @@ void ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
     if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {
       base::UmaHistogramBoolean(
           "ServiceWorker.OnBrowserStartup.SkipServiceWorkerOnFirstNavigation",
+          skip_service_worker);
+    }
+  } else {
+    if (GetContentClient()->browser()->IsBrowserStartupComplete()) {
+      base::UmaHistogramBoolean(
+          "ServiceWorker.SkipCallingFindRegistrationForClientUrl",
           skip_service_worker);
     }
   }

@@ -158,13 +158,11 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // request interception, or if the context is gone so we have to bypass
   // anyway.
   if (skip_service_worker_ || !context_) {
-    ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
-        true);
+    ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(true);
     std::move(loader_callback).Run({});
     return;
   }
-  ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
-      false);
+  ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(false);
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // Fall back for the subsequent offline page interceptor to load the offline
