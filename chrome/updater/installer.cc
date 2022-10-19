@@ -33,9 +33,11 @@ namespace updater {
 namespace {
 
 // This task joins a process, hence .WithBaseSyncPrimitives().
+// TODO(crbug.com/1376713) - implement a way to express priority for
+// foreground/background installs.
 static constexpr base::TaskTraits kTaskTraitsBlockWithSyncPrimitives = {
     base::MayBlock(), base::WithBaseSyncPrimitives(),
-    base::TaskPriority::BEST_EFFORT,
+    base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 // Returns the full path to the installation directory for the application

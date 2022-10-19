@@ -37,8 +37,10 @@
 namespace winhttp {
 namespace {
 
+// TODO(crbug.com/1376713) - implement a way to express priority for
+// foreground/background network fetches.
 constexpr base::TaskTraits kTaskTraits = {
-    base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 void CrackUrl(const GURL& url,
