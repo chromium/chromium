@@ -298,7 +298,9 @@ struct CalculatedFloat {
 // minus the number of leading zero bits.)
 int BitWidth(uint128 value) {
   if (Uint128High64(value) == 0) {
-    return bit_width(Uint128Low64(value));
+    // This static_cast is only needed when using a std::bit_width()
+    // implementation that does not have the fix for LWG 3656 applied.
+    return static_cast<int>(bit_width(Uint128Low64(value)));
   }
   return 128 - countl_zero(Uint128High64(value));
 }
@@ -580,7 +582,9 @@ CalculatedFloat CalculateFromParsedHexadecimal(
     const strings_internal::ParsedFloat& parsed_hex) {
   uint64_t mantissa = parsed_hex.mantissa;
   int exponent = parsed_hex.exponent;
-  int mantissa_width = bit_width(mantissa);
+  // This static_cast is only needed when using a std::bit_width()
+  // implementation that does not have the fix for LWG 3656 applied.
+  int mantissa_width = static_cast<int>(bit_width(mantissa));
   const int shift = NormalizedShiftSize<FloatType>(mantissa_width, exponent);
   bool result_exact;
   exponent += shift;

@@ -72,6 +72,7 @@ absl_cc_test(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::algorithm_container
     absl::btree
     absl::btree_test_common
     absl::compare
@@ -79,6 +80,7 @@ absl_cc_test(
     absl::counting_allocator
     absl::flags
     absl::hash_testing
+    absl::random_random
     absl::raw_logging_internal
     absl::strings
     absl::test_instance_tracker

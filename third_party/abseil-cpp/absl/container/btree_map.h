@@ -46,6 +46,9 @@
 // reason, `insert()` and `erase()` return a valid iterator at the current
 // position. Another important difference is that key-types must be
 // copy-constructible.
+//
+// Another API difference is that btree iterators can be subtracted, and this
+// is faster than using std::distance.
 
 #ifndef ABSL_CONTAINER_BTREE_MAP_H_
 #define ABSL_CONTAINER_BTREE_MAP_H_

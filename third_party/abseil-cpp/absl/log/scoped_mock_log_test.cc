@@ -98,7 +98,7 @@ TEST(ScopedMockLogTest, LogMockCatchAndMatchSendExpectations) {
       log,
       Send(AllOf(SourceFilename(Eq("/my/very/very/very_long_source_file.cc")),
                  SourceBasename(Eq("very_long_source_file.cc")),
-                 SourceLine(Eq(777)), ThreadID(Eq(1234)),
+                 SourceLine(Eq(777)), ThreadID(Eq(absl::LogEntry::tid_t{1234})),
                  TextMessageWithPrefix(Truly([](absl::string_view msg) {
                    return absl::EndsWith(
                        msg, " very_long_source_file.cc:777] Info message");

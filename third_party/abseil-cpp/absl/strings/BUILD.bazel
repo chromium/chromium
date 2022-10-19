@@ -37,11 +37,13 @@ cc_library(
         "internal/charconv_bigint.h",
         "internal/charconv_parse.cc",
         "internal/charconv_parse.h",
+        "internal/damerau_levenshtein_distance.cc",
         "internal/memutil.cc",
         "internal/memutil.h",
         "internal/stl_type_traits.h",
         "internal/str_join_internal.h",
         "internal/str_split_internal.h",
+        "internal/stringify_sink.h",
         "match.cc",
         "numbers.cc",
         "str_cat.cc",
@@ -54,6 +56,7 @@ cc_library(
         "ascii.h",
         "charconv.h",
         "escaping.h",
+        "internal/damerau_levenshtein_distance.h",
         "internal/string_constant.h",
         "match.h",
         "numbers.h",
@@ -175,6 +178,19 @@ cc_test(
     deps = [
         ":strings",
         "@com_github_google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_test(
+    name = "damerau_levenshtein_distance_test",
+    size = "small",
+    srcs = [
+        "internal/damerau_levenshtein_distance_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    deps = [
+        "//absl/strings",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 

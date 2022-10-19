@@ -196,9 +196,6 @@
 // Example:
 //
 //   LOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
-//
-// There is no `VLOG_IF` because the order of evaluation of the arguments is
-// ambiguous and the alternate spelling with an `if`-statement is trivial.
 #define LOG_IF(severity, condition)                            \
   ABSL_LOG_INTERNAL_CONDITION_##severity(STATELESS, condition) \
       ABSL_LOGGING_INTERNAL_LOG_##severity.InternalStream()
@@ -317,42 +314,6 @@
   ABSL_LOG_INTERNAL_CONDITION_INFO(STATEFUL, false) \
   (EveryNSec, n_seconds) ABSL_LOGGING_INTERNAL_LOG_##severity.InternalStream()
 #endif  // def NDEBUG
-
-#define VLOG_EVERY_N(verbose_level, n)                                       \
-  for (int absl_logging_internal_verbose_level = (verbose_level),            \
-           absl_logging_internal_log_loop = 1;                               \
-       absl_logging_internal_log_loop; absl_logging_internal_log_loop = 0)   \
-    ABSL_LOG_INTERNAL_CONDITION_INFO(                                        \
-        STATEFUL, VLOG_IS_ON(absl_logging_internal_verbose_level))           \
-  (EveryN, n) ABSL_LOGGING_INTERNAL_LOG_INFO.InternalStream().WithVerbosity( \
-      absl_logging_internal_verbose_level)
-
-#define VLOG_FIRST_N(verbose_level, n)                                       \
-  for (int absl_logging_internal_verbose_level = (verbose_level),            \
-           absl_logging_internal_log_loop = 1;                               \
-       absl_logging_internal_log_loop; absl_logging_internal_log_loop = 0)   \
-    ABSL_LOG_INTERNAL_CONDITION_INFO(                                        \
-        STATEFUL, VLOG_IS_ON(absl_logging_internal_verbose_level))           \
-  (FirstN, n) ABSL_LOGGING_INTERNAL_LOG_INFO.InternalStream().WithVerbosity( \
-      absl_logging_internal_verbose_level)
-
-#define VLOG_EVERY_POW_2(verbose_level)                                      \
-  for (int absl_logging_internal_verbose_level = (verbose_level),            \
-           absl_logging_internal_log_loop = 1;                               \
-       absl_logging_internal_log_loop; absl_logging_internal_log_loop = 0)   \
-    ABSL_LOG_INTERNAL_CONDITION_INFO(                                        \
-        STATEFUL, VLOG_IS_ON(absl_logging_internal_verbose_level))           \
-  (EveryPow2) ABSL_LOGGING_INTERNAL_LOG_INFO.InternalStream().WithVerbosity( \
-      absl_logging_internal_verbose_level)
-
-#define VLOG_EVERY_N_SEC(verbose_level, n_seconds)                         \
-  for (int absl_logging_internal_verbose_level = (verbose_level),          \
-           absl_logging_internal_log_loop = 1;                             \
-       absl_logging_internal_log_loop; absl_logging_internal_log_loop = 0) \
-    ABSL_LOG_INTERNAL_CONDITION_INFO(                                      \
-        STATEFUL, VLOG_IS_ON(absl_logging_internal_verbose_level))         \
-  (EveryNSec, n_seconds) ABSL_LOGGING_INTERNAL_LOG_INFO.InternalStream()   \
-      .WithVerbosity(absl_logging_internal_verbose_level)
 
 // `LOG_IF_EVERY_N` and friends behave as the corresponding `LOG_EVERY_N`
 // but neither increment a counter nor log a message if condition is false (as

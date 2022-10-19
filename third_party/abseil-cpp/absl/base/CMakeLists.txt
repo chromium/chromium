@@ -198,7 +198,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
     $<$<BOOL:${LIBRT}>:-lrt>
-    $<$<BOOL:${MINGW}>:"advapi32">
+    $<$<BOOL:${MINGW}>:-ladvapi32>
   DEPS
     absl::atomic_hook
     absl::base_internal

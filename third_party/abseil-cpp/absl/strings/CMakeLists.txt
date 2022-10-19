@@ -21,6 +21,7 @@ absl_cc_library(
     "ascii.h"
     "charconv.h"
     "escaping.h"
+    "internal/damerau_levenshtein_distance.h"
     "internal/string_constant.h"
     "match.h"
     "numbers.h"
@@ -39,8 +40,10 @@ absl_cc_library(
     "internal/charconv_bigint.h"
     "internal/charconv_parse.cc"
     "internal/charconv_parse.h"
+    "internal/damerau_levenshtein_distance.cc"
     "internal/memutil.cc"
     "internal/memutil.h"
+    "internal/stringify_sink.h"
     "internal/stl_type_traits.h"
     "internal/str_join_internal.h"
     "internal/str_split_internal.h"
@@ -129,6 +132,19 @@ absl_cc_test(
   DEPS
     absl::strings
     absl::core_headers
+    GTest::gmock_main
+)
+
+absl_cc_test(
+  NAME
+    damerau_levenshtein_distance_test
+  SRCS
+    "internal/damerau_levenshtein_distance_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::strings
+    absl::base
     GTest::gmock_main
 )
 

@@ -48,53 +48,22 @@
 // `StrCat()` or `StrAppend()`. You may specify a minimum hex field width using
 // a `PadSpec` enum.
 //
-// -----------------------------------------------------------------------------
-
-#ifndef ABSL_STRINGS_STR_CAT_H_
-#define ABSL_STRINGS_STR_CAT_H_
-
-#include <array>
-#include <cstdint>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
-#include "absl/base/port.h"
-#include "absl/strings/numbers.h"
-#include "absl/strings/string_view.h"
-
-namespace absl {
-ABSL_NAMESPACE_BEGIN
-
-namespace strings_internal {
-// AlphaNumBuffer allows a way to pass a string to StrCat without having to do
-// memory allocation.  It is simply a pair of a fixed-size character array, and
-// a size.  Please don't use outside of absl, yet.
-template <size_t max_size>
-struct AlphaNumBuffer {
-  std::array<char, max_size> data;
-  size_t size;
-};
-
-//------------------------------------------------------------------------------
-// StrCat Extension
-//------------------------------------------------------------------------------
+// User-defined types can be formatted with the `AbslStringify()` customization
+// point. The API relies on detecting an overload in the user-defined type's
+// namespace of a free (non-member) `AbslStringify()` function as a definition
+// (typically declared as a friend and implemented in-line.
+// with the following signature:
 //
-// AbslStringify()
-//
-// A simple customization API for formatting user-defined types using
-// absl::StrCat(). The API relies on detecting an overload in the
-// user-defined type's namespace of a free (non-member) `AbslStringify()`
-// function as a friend definition with the following signature:
+// class MyClass { ... };
 //
 // template <typename Sink>
-// void AbslStringify(Sink& sink, const X& value);
+// void AbslStringify(Sink& sink, const MyClass& value);
 //
 // An `AbslStringify()` overload for a type should only be declared in the same
 // file and namespace as said type.
 //
-// Note that AbslStringify() also supports use with absl::StrFormat().
+// Note that `AbslStringify()` also supports use with `absl::StrFormat()` and
+// `absl::Substitute()`.
 //
 // Example:
 //
@@ -113,32 +82,35 @@ struct AlphaNumBuffer {
 //   int x;
 //   int y;
 // };
+// -----------------------------------------------------------------------------
 
-class StringifySink {
- public:
-  void Append(size_t count, char ch);
+#ifndef ABSL_STRINGS_STR_CAT_H_
+#define ABSL_STRINGS_STR_CAT_H_
 
-  void Append(string_view v);
+#include <array>
+#include <cstdint>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
-  bool PutPaddedString(string_view v, int width, int precision, bool left);
+#include "absl/base/port.h"
+#include "absl/strings/internal/stringify_sink.h"
+#include "absl/strings/numbers.h"
+#include "absl/strings/string_view.h"
 
-  // Support `absl::Format(&sink, format, args...)`.
-  friend void AbslFormatFlush(StringifySink* sink, absl::string_view v) {
-    sink->Append(v);
-  }
+namespace absl {
+ABSL_NAMESPACE_BEGIN
 
-  template <typename T>
-  friend string_view ExtractStringification(StringifySink& sink, const T& v);
-
- private:
-  std::string buffer_;
+namespace strings_internal {
+// AlphaNumBuffer allows a way to pass a string to StrCat without having to do
+// memory allocation.  It is simply a pair of a fixed-size character array, and
+// a size.  Please don't use outside of absl, yet.
+template <size_t max_size>
+struct AlphaNumBuffer {
+  std::array<char, max_size> data;
+  size_t size;
 };
-
-template <typename T>
-string_view ExtractStringification(StringifySink& sink, const T& v) {
-  AbslStringify(sink, v);
-  return sink.buffer_;
-}
 
 }  // namespace strings_internal
 
@@ -272,15 +244,6 @@ struct Dec {
 // `StrAppend()`, providing efficient conversion of numeric, boolean, and
 // hexadecimal values (through the `Hex` type) into strings.
 
-template <typename T, typename = void>
-struct HasAbslStringify : std::false_type {};
-
-template <typename T>
-struct HasAbslStringify<T, std::enable_if_t<std::is_void<decltype(AbslStringify(
-                               std::declval<strings_internal::StringifySink&>(),
-                               std::declval<const T&>()))>::value>>
-    : std::true_type {};
-
 class AlphaNum {
  public:
   // No bool ctor -- bools convert to an integral type.
@@ -329,7 +292,7 @@ class AlphaNum {
   AlphaNum(absl::string_view pc) : piece_(pc) {}  // NOLINT(runtime/explicit)
 
   template <typename T, typename = typename std::enable_if<
-                            HasAbslStringify<T>::value>::type>
+                            strings_internal::HasAbslStringify<T>::value>::type>
   AlphaNum(                                         // NOLINT(runtime/explicit)
       const T& v,                                   // NOLINT(runtime/explicit)
       strings_internal::StringifySink&& sink = {})  // NOLINT(runtime/explicit)

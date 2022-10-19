@@ -127,3 +127,16 @@ absl_cc_test(
     absl::time_zone
     GTest::gmock_main
 )
+
+absl_cc_test(
+  NAME
+    flag_test
+  SRCS
+    "flag_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::flags
+    absl::flags_reflection
+    GTest::gmock_main
+)

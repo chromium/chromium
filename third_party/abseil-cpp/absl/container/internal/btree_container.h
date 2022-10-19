@@ -107,7 +107,7 @@ class btree_container {
   template <typename K = key_type>
   size_type count(const key_arg<K> &key) const {
     auto equal_range = this->equal_range(key);
-    return std::distance(equal_range.first, equal_range.second);
+    return equal_range.second - equal_range.first;
   }
   template <typename K = key_type>
   iterator find(const key_arg<K> &key) {

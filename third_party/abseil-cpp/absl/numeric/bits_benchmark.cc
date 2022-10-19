@@ -25,17 +25,17 @@ namespace {
 
 template <typename T>
 static void BM_bitwidth(benchmark::State& state) {
-  const int count = state.range(0);
+  const auto count = static_cast<size_t>(state.range(0));
 
   absl::BitGen rng;
   std::vector<T> values;
   values.reserve(count);
-  for (int i = 0; i < count; ++i) {
+  for (size_t i = 0; i < count; ++i) {
     values.push_back(absl::Uniform<T>(rng, 0, std::numeric_limits<T>::max()));
   }
 
   while (state.KeepRunningBatch(count)) {
-    for (int i = 0; i < count; ++i) {
+    for (size_t i = 0; i < count; ++i) {
       benchmark::DoNotOptimize(values[i]);
     }
   }
@@ -47,17 +47,17 @@ BENCHMARK_TEMPLATE(BM_bitwidth, uint64_t)->Range(1, 1 << 20);
 
 template <typename T>
 static void BM_bitwidth_nonzero(benchmark::State& state) {
-  const int count = state.range(0);
+  const auto count = static_cast<size_t>(state.range(0));
 
   absl::BitGen rng;
   std::vector<T> values;
   values.reserve(count);
-  for (int i = 0; i < count; ++i) {
+  for (size_t i = 0; i < count; ++i) {
     values.push_back(absl::Uniform<T>(rng, 1, std::numeric_limits<T>::max()));
   }
 
   while (state.KeepRunningBatch(count)) {
-    for (int i = 0; i < count; ++i) {
+    for (size_t i = 0; i < count; ++i) {
       const T value = values[i];
       ABSL_ASSUME(value > 0);
       benchmark::DoNotOptimize(value);

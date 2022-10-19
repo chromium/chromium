@@ -208,10 +208,13 @@ TEST(LogEntryTest, EmptyFields) {
 }
 
 TEST(LogEntryTest, NegativeFields) {
+  // When Abseil's minimum C++ version is C++17, this conditional can be
+  // converted to a constexpr if and the static_cast below removed.
   if (std::is_signed<absl::LogEntry::tid_t>::value) {
     LogEntryTestPeer entry("foo.cc", -1234, kUsePrefix,
                            absl::LogSeverity::kInfo, "2020-01-02T03:04:05.6789",
-                           -451, "hello world");
+                           static_cast<absl::LogEntry::tid_t>(-451),
+                           "hello world");
     EXPECT_THAT(entry.FormatLogMessage(),
                 Eq("I0102 03:04:05.678900    -451 foo.cc:-1234] hello world"));
     EXPECT_THAT(entry.FormatPrefixIntoSizedBuffer(1000),
@@ -313,12 +316,15 @@ TEST(LogEntryTest, LongFields) {
 }
 
 TEST(LogEntryTest, LongNegativeFields) {
+  // When Abseil's minimum C++ version is C++17, this conditional can be
+  // converted to a constexpr if and the static_cast below removed.
   if (std::is_signed<absl::LogEntry::tid_t>::value) {
     LogEntryTestPeer entry(
         "I am the very model of a modern Major-General / "
         "I've information vegetable, animal, and mineral.",
         -2147483647, kUsePrefix, absl::LogSeverity::kInfo,
-        "2020-01-02T03:04:05.678967896789", -2147483647,
+        "2020-01-02T03:04:05.678967896789",
+        static_cast<absl::LogEntry::tid_t>(-2147483647),
         "I know the kings of England, and I quote the fights historical / "
         "From Marathon to Waterloo, in order categorical.");
     EXPECT_THAT(

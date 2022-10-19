@@ -62,7 +62,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
-    $<$<BOOL:${MINGW}>:"dbghelp">
+    $<$<BOOL:${MINGW}>:-ldbghelp>
   DEPS
     absl::debugging_internal
     absl::demangle_internal

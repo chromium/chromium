@@ -44,7 +44,7 @@ class RandenPoolSeedSeq {
   // Generate random unsigned values directly into the buffer.
   template <typename Contiguous>
   void generate_impl(ContiguousTag, Contiguous begin, Contiguous end) {
-    const size_t n = std::distance(begin, end);
+    const size_t n = static_cast<size_t>(std::distance(begin, end));
     auto* a = &(*begin);
     RandenPool<uint8_t>::Fill(
         absl::MakeSpan(reinterpret_cast<uint8_t*>(a), sizeof(*a) * n));

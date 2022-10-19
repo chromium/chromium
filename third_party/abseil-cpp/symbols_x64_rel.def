@@ -219,8 +219,20 @@ EXPORTS
     ?AbortedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?AbslParseFlag@absl@@YA_NVstring_view@1@PEAVDuration@1@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ?AbslParseFlag@absl@@YA_NVstring_view@1@PEAVTime@1@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
+    ?AbslParseFlag@time_internal@absl@@YA_NVstring_view@2@PEAV?$civil_time@Uday_tag@time_internal@absl@@@detail@cctz@12@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
+    ?AbslParseFlag@time_internal@absl@@YA_NVstring_view@2@PEAV?$civil_time@Uhour_tag@time_internal@absl@@@detail@cctz@12@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
+    ?AbslParseFlag@time_internal@absl@@YA_NVstring_view@2@PEAV?$civil_time@Uminute_tag@time_internal@absl@@@detail@cctz@12@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
+    ?AbslParseFlag@time_internal@absl@@YA_NVstring_view@2@PEAV?$civil_time@Umonth_tag@time_internal@absl@@@detail@cctz@12@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
+    ?AbslParseFlag@time_internal@absl@@YA_NVstring_view@2@PEAV?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@12@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
+    ?AbslParseFlag@time_internal@absl@@YA_NVstring_view@2@PEAV?$civil_time@Uyear_tag@time_internal@absl@@@detail@cctz@12@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ?AbslUnparseFlag@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@VDuration@1@@Z
     ?AbslUnparseFlag@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@VTime@1@@Z
+    ?AbslUnparseFlag@time_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@V?$civil_time@Uday_tag@time_internal@absl@@@detail@cctz@12@@Z
+    ?AbslUnparseFlag@time_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@V?$civil_time@Uhour_tag@time_internal@absl@@@detail@cctz@12@@Z
+    ?AbslUnparseFlag@time_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@V?$civil_time@Uminute_tag@time_internal@absl@@@detail@cctz@12@@Z
+    ?AbslUnparseFlag@time_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@V?$civil_time@Umonth_tag@time_internal@absl@@@detail@cctz@12@@Z
+    ?AbslUnparseFlag@time_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@12@@Z
+    ?AbslUnparseFlag@time_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@V?$civil_time@Uyear_tag@time_internal@absl@@@detail@cctz@12@@Z
     ?Absorb@RandenHwAes@random_internal@absl@@SAXPEBXPEAX@Z
     ?Absorb@RandenSlow@random_internal@absl@@SAXPEBXPEAX@Z
     ?AddDataOffset@CordRepRing@cord_internal@absl@@AEAAXI_K@Z
@@ -288,6 +300,7 @@ EXPORTS
     ?CalculateBase64EscapedLenInternal@strings_internal@absl@@YA_K_K_N@Z
     ?CallVoidPtrFunction@Condition@absl@@CA_NPEBV12@@Z
     ?CancelledError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
+    ?CappedDamerauLevenshteinDistance@strings_internal@absl@@YA_KVstring_view@2@0E@Z
     ?CatPieces@strings_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@V?$initializer_list@Vstring_view@absl@@@5@@Z
     ?Ceil@absl@@YA?AVDuration@1@V21@0@Z
     ?CheckInvariants@GraphCycles@synchronization_internal@absl@@QEBA_NXZ

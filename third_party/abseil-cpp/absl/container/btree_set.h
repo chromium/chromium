@@ -45,6 +45,9 @@
 // more than one iterator, pointer, or reference simultaneously. For this
 // reason, `insert()` and `erase()` return a valid iterator at the current
 // position.
+//
+// Another API difference is that btree iterators can be subtracted, and this
+// is faster than using std::distance.
 
 #ifndef ABSL_CONTAINER_BTREE_SET_H_
 #define ABSL_CONTAINER_BTREE_SET_H_

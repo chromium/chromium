@@ -14,11 +14,13 @@ absl_source_set("strings") {
     "internal/charconv_bigint.h",
     "internal/charconv_parse.cc",
     "internal/charconv_parse.h",
+    "internal/damerau_levenshtein_distance.cc",
     "internal/memutil.cc",
     "internal/memutil.h",
     "internal/stl_type_traits.h",
     "internal/str_join_internal.h",
     "internal/str_split_internal.h",
+    "internal/stringify_sink.h",
     "match.cc",
     "numbers.cc",
     "str_cat.cc",
@@ -31,6 +33,7 @@ absl_source_set("strings") {
     "ascii.h",
     "charconv.h",
     "escaping.h",
+    "internal/damerau_levenshtein_distance.h",
     "internal/string_constant.h",
     "match.h",
     "numbers.h",
@@ -560,6 +563,16 @@ absl_source_set("ascii_test") {
   deps = [
     ":strings",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("damerau_levenshtein_distance_test") {
+  testonly = true
+  sources = [ "internal/damerau_levenshtein_distance_test.cc" ]
+  deps = [
+    ":strings",
+    "//third_party/googletest:gmock",
     "//third_party/googletest:gtest",
   ]
 }

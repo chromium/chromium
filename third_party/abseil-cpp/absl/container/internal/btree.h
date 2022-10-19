@@ -1085,6 +1085,16 @@ class btree_iterator {
     return node_ != other.node_ || position_ != other.position_;
   }
 
+  // Returns n such that n calls to ++other yields *this.
+  // Precondition: n exists.
+  difference_type operator-(const_iterator other) const {
+    if (node_ == other.node_) {
+      if (node_->is_leaf()) return position_ - other.position_;
+      if (position_ == other.position_) return 0;
+    }
+    return distance_slow(other);
+  }
+
   // Accessors for the key/value the iterator is pointing at.
   reference operator*() const {
     ABSL_HARDENING_ASSERT(node_ != nullptr);
@@ -1147,6 +1157,11 @@ class btree_iterator {
     generation_ = other.generation_;
 #endif
   }
+
+  // Returns n such that n calls to ++other yields *this.
+  // Precondition: n exists && (this->node_ != other.node_ ||
+  // !this->node_->is_leaf() || this->position_ != other.position_).
+  difference_type distance_slow(const_iterator other) const;
 
   // Increment/decrement the iterator.
   void increment() {
@@ -1975,6 +1990,64 @@ void btree_node<P>::clear_and_delete(btree_node *node, allocator_type *alloc) {
 
 ////
 // btree_iterator methods
+
+// Note: the implementation here is based on btree_node::clear_and_delete.
+template <typename N, typename R, typename P>
+auto btree_iterator<N, R, P>::distance_slow(const_iterator other) const
+    -> difference_type {
+  const_iterator begin = other;
+  const_iterator end = *this;
+  assert(begin.node_ != end.node_ || !begin.node_->is_leaf() ||
+         begin.position_ != end.position_);
+
+  const node_type *node = begin.node_;
+  // We need to compensate for double counting if begin.node_ is a leaf node.
+  difference_type count = node->is_leaf() ? -begin.position_ : 0;
+
+  // First navigate to the leftmost leaf node past begin.
+  if (node->is_internal()) {
+    ++count;
+    node = node->child(begin.position_ + 1);
+  }
+  while (node->is_internal()) node = node->start_child();
+
+  // Use `size_type` because `pos` needs to be able to hold `kNodeSlots+1`,
+  // which isn't guaranteed to be a valid `field_type`.
+  size_type pos = node->position();
+  const node_type *parent = node->parent();
+  for (;;) {
+    // In each iteration of the next loop, we count one leaf node and go right.
+    assert(pos <= parent->finish());
+    do {
+      node = parent->child(static_cast<field_type>(pos));
+      if (node->is_internal()) {
+        // Navigate to the leftmost leaf under node.
+        while (node->is_internal()) node = node->start_child();
+        pos = node->position();
+        parent = node->parent();
+      }
+      if (node == end.node_) return count + end.position_;
+      if (parent == end.node_ && pos == static_cast<size_type>(end.position_))
+        return count + node->count();
+      // +1 is for the next internal node value.
+      count += node->count() + 1;
+      ++pos;
+    } while (pos <= parent->finish());
+
+    // Once we've counted all children of parent, go up/right.
+    assert(pos > parent->finish());
+    do {
+      node = parent;
+      pos = node->position();
+      parent = node->parent();
+      // -1 because we counted the value at end and shouldn't.
+      if (parent == end.node_ && pos == static_cast<size_type>(end.position_))
+        return count - 1;
+      ++pos;
+    } while (pos > parent->finish());
+  }
+}
+
 template <typename N, typename R, typename P>
 void btree_iterator<N, R, P>::increment_slow() {
   if (node_->is_leaf()) {
@@ -2371,7 +2444,7 @@ auto btree<P>::rebalance_after_delete(iterator iter) -> iterator {
 template <typename P>
 auto btree<P>::erase_range(iterator begin, iterator end)
     -> std::pair<size_type, iterator> {
-  size_type count = static_cast<size_type>(std::distance(begin, end));
+  size_type count = static_cast<size_type>(end - begin);
   assert(count >= 0);
 
   if (count == 0) {
