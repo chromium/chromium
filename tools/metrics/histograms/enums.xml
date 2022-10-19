@@ -60059,6 +60059,7 @@ from previous Chrome versions.
   <int value="-250822813" label="PwaImprovedSplashScreen:enabled"/>
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>
+  <int value="-249636068" label="ChromeRootStoreUsed:enabled"/>
   <int value="-249443346" label="PhoneHubCallNotification:disabled"/>
   <int value="-249415830" label="FilteringScrollPrediction:disabled"/>
   <int value="-248223420" label="AutofillKeyboardAccessory:disabled"/>
@@ -62943,6 +62944,7 @@ from previous Chrome versions.
   <int value="1492541927" label="QuickAnswersTranslationCloudAPI:enabled"/>
   <int value="1493006959" label="AutofillServerBehaviors:disabled"/>
   <int value="1493223152" label="CloseAllTabsModalDialog:enabled"/>
+  <int value="1493727661" label="ChromeRootStoreUsed:disabled"/>
   <int value="1495059835" label="VirtualKeyboardMultipasteSuggestion:enabled"/>
   <int value="1495341532" label="disable-mtp-write-support"/>
   <int value="1495748045" label="SignedHTTPExchange:enabled"/>

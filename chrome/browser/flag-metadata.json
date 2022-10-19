@@ -931,6 +931,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "chrome-root-store-enabled",
+    "owners": ["hchao", "mattm", "davidben", "chrome-trusty-transport-core@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "chrome-share-long-screenshot",
     "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 104

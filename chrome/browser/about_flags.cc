@@ -9820,6 +9820,13 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kEnablePasswordsAccountStorage)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    {"chrome-root-store-enabled",
+     flag_descriptions::kChromeRootStoreEnabledName,
+     flag_descriptions::kChromeRootStoreEnabledDescription, kOsWin | kOsMac,
+     FEATURE_VALUE_TYPE(net::features::kChromeRootStoreUsed)},
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

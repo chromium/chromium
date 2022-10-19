@@ -98,6 +98,11 @@ const char kClipboardUnsanitizedContentDescription[] =
     "Allows reading/writing unsanitized content from/to the clipboard. "
     "Currently, it is only applicable to HTML format. See crbug.com/1268679.";
 
+const char kChromeRootStoreEnabledName[] = "Chrome Root Store";
+const char kChromeRootStoreEnabledDescription[] =
+    "Enable use of Chrome Root Store over platform roots. "
+    "On some platforms this may also enable Chrome Cert Verifier.";
+
 const char kConditionalTabStripAndroidName[] = "Conditional Tab Strip";
 const char kConditionalTabStripAndroidDescription[] =
     "Allows users to access conditional tab strip.";
