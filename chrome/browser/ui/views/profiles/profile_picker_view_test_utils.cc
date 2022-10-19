@@ -14,13 +14,16 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/browser_process.h"
@@ -34,58 +37,7 @@
 #error This file should only be included on desktop.
 #endif
 
-namespace profiles::testing {
-
 namespace {
-
-// Waits until a view gets attached to its widget.
-class WidgetAttachedWaiter : public views::ViewObserver {
- public:
-  explicit WidgetAttachedWaiter(views::View* view) : view_(view) {}
-  ~WidgetAttachedWaiter() override = default;
-
-  void Wait() {
-    if (view_->GetWidget())
-      return;
-    observation_.Observe(view_.get());
-    run_loop_.Run();
-  }
-
- private:
-  // ViewObserver:
-  void OnViewAddedToWidget(views::View* observed_view) override {
-    if (observed_view == view_)
-      run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  const raw_ptr<views::View> view_;
-  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-};
-
-// Waits until a view is deleted.
-class ViewDeletedWaiter : public ::views::ViewObserver {
- public:
-  explicit ViewDeletedWaiter(views::View* view) {
-    DCHECK(view);
-    observation_.Observe(view);
-  }
-  ~ViewDeletedWaiter() override = default;
-
-  // Waits until the view is deleted.
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // ViewObserver:
-  void OnViewIsDeleting(views::View* observed_view) override {
-    // Reset the observation before the view is actually deleted.
-    observation_.Reset();
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-};
 
 content::WebContents* GetPickerWebContents() {
   if (!ProfilePicker::GetWebViewForTesting())
@@ -93,10 +45,143 @@ content::WebContents* GetPickerWebContents() {
   return ProfilePicker::GetWebViewForTesting()->GetWebContents();
 }
 
+class TestProfileManagementFlowController
+    : public ProfileManagementFlowController,
+      public content::WebContentsObserver {
+ public:
+  TestProfileManagementFlowController(
+      ProfilePickerWebContentsHost* host,
+      ClearHostClosure clear_host_callback,
+      Step step,
+      ProfileManagementStepTestView::StepControllerFactory factory,
+      base::OnceClosure initial_step_load_finished_closure)
+      : ProfileManagementFlowController(host,
+                                        std::move(clear_host_callback),
+                                        step),
+        initial_step_load_finished_closure_(
+            std::move(initial_step_load_finished_closure)) {
+    RegisterStep(initial_step(), factory.Run(host));
+  }
+
+  void Init(base::OnceCallback<void(bool)>
+                initial_step_switch_finished_callback) override {
+    ProfileManagementFlowController::Init(base::BindOnce(
+        &TestProfileManagementFlowController::OnInitialStepSwitchFinished,
+        weak_ptr_factory_.GetWeakPtr(),
+        std::move(initial_step_switch_finished_callback)));
+  }
+
+  void OnInitialStepSwitchFinished(
+      base::OnceCallback<void(bool)> original_callback,
+      bool success) {
+    if (original_callback) {
+      std::move(original_callback).Run(success);
+    }
+
+    if (host()->GetPickerContents()->IsLoading()) {
+      Observe(host()->GetPickerContents());
+    } else {
+      DCHECK(initial_step_load_finished_closure_);
+      std::move(initial_step_load_finished_closure_).Run();
+    }
+  }
+
+  void DidFirstVisuallyNonEmptyPaint() override {
+    Observe(nullptr);
+    DCHECK(initial_step_load_finished_closure_);
+    std::move(initial_step_load_finished_closure_).Run();
+  }
+
+  base::OnceClosure initial_step_load_finished_closure_;
+  base::WeakPtrFactory<TestProfileManagementFlowController> weak_ptr_factory_{
+      this};
+};
+
 }  // namespace
 
+// -- ViewAddedWaiter ----------------------------------------------------------
+
+ViewAddedWaiter::ViewAddedWaiter(views::View* view) : view_(view) {}
+ViewAddedWaiter::~ViewAddedWaiter() = default;
+
+void ViewAddedWaiter::Wait() {
+  if (view_->GetWidget())
+    return;
+  observation_.Observe(view_.get());
+  run_loop_.Run();
+}
+
+void ViewAddedWaiter::OnViewAddedToWidget(views::View* observed_view) {
+  if (observed_view == view_)
+    run_loop_.Quit();
+}
+
+// -- ViewDeletedWaiter --------------------------------------------------------
+
+ViewDeletedWaiter::ViewDeletedWaiter(views::View* view) {
+  DCHECK(view);
+  observation_.Observe(view);
+}
+
+ViewDeletedWaiter::~ViewDeletedWaiter() = default;
+
+void ViewDeletedWaiter::Wait() {
+  run_loop_.Run();
+}
+
+void ViewDeletedWaiter::OnViewIsDeleting(views::View* observed_view) {
+  // Reset the observation before the view is actually deleted.
+  observation_.Reset();
+  run_loop_.Quit();
+}
+
+// -- ProfileManagementStepTestView --------------------------------------------
+
+// static
+ProfileManagementStepTestView* ProfileManagementStepTestView::CreateForStep(
+    Profile* profile,
+    ProfileManagementFlowController::Step step,
+    StepControllerFactory step_controller_factory) {
+  auto* view = new ProfileManagementStepTestView(
+      ProfilePicker::Params::ForFirstRun(profile->GetPath()), step,
+      std::move(step_controller_factory));
+
+  return view;
+}
+
+ProfileManagementStepTestView::ProfileManagementStepTestView(
+    ProfilePicker::Params&& params,
+    ProfileManagementFlowController::Step step,
+    StepControllerFactory step_controller_factory)
+    : ProfilePickerView(std::move(params)),
+      step_(step),
+      step_controller_factory_(std::move(step_controller_factory)) {}
+
+ProfileManagementStepTestView::~ProfileManagementStepTestView() = default;
+
+void ProfileManagementStepTestView::ShowAndWait() {
+  Display();
+
+  // waits for the view to be shown to return. If we don't wait enough
+  // and the test is flaky, try to poll the page to check the presence of some
+  // UI elements to know when to stop waiting.
+  run_loop_.Run();
+}
+
+std::unique_ptr<ProfileManagementFlowController>
+ProfileManagementStepTestView::CreateFlowController(
+    Profile* picker_profile,
+    ClearHostClosure clear_host_callback) {
+  return std::make_unique<TestProfileManagementFlowController>(
+      this, std::move(clear_host_callback), step_, step_controller_factory_,
+      run_loop_.QuitClosure());
+}
+
+// -- Other utils --------------------------------------------------------------
+namespace profiles::testing {
+
 void WaitForPickerWidgetCreated() {
-  WidgetAttachedWaiter(ProfilePicker::GetViewForTesting()).Wait();
+  ViewAddedWaiter(ProfilePicker::GetViewForTesting()).Wait();
 }
 
 void WaitForPickerLoadStop(const GURL& url) {

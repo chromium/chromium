@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -22,9 +23,12 @@ ProfileManagementFlowController::ProfileManagementFlowController(
 
 ProfileManagementFlowController::~ProfileManagementFlowController() = default;
 
-void ProfileManagementFlowController::Init() {
+void ProfileManagementFlowController::Init(
+    base::OnceCallback<void(bool)> initial_step_switch_finished_callback) {
   DCHECK(clear_host_callback_.value());
-  SwitchToStep(initial_step());
+  SwitchToStep(initial_step(), /*reset_state=*/false,
+               /*pop_step_callback=*/base::OnceClosure(),
+               std::move(initial_step_switch_finished_callback));
 }
 
 void ProfileManagementFlowController::SwitchToStep(

@@ -3640,6 +3640,8 @@ static_library("ui") {
         "signin_reauth_view_controller.h",
         "views/profiles/dice_web_signin_interception_bubble_view.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.h",
+        "views/profiles/first_run_flow_controller_dice.cc",
+        "views/profiles/first_run_flow_controller_dice.h",
         "views/profiles/profile_picker_dice_sign_in_provider.cc",
         "views/profiles/profile_picker_dice_sign_in_provider.h",
         "views/profiles/profile_picker_dice_sign_in_toolbar.cc",

@@ -27,6 +27,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
+#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
@@ -34,7 +35,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
-#include "chrome/grit/google_chrome_strings.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -110,8 +110,22 @@ class ProfilePickerWidget : public views::Widget {
 bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
   // TODO(crbug.com/1360773): Implement more use cases outside of the classic
   // profile picker flow. e.g.: kLacrosSelectAvailableAccount.
-  return params.entry_point() !=
-         ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun;
+  switch (params.entry_point()) {
+    case ProfilePicker::EntryPoint::kOnStartup:
+    case ProfilePicker::EntryPoint::kProfileMenuManageProfiles:
+    case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
+    case ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion:
+    case ProfilePicker::EntryPoint::kNewSessionOnExistingProcess:
+    case ProfilePicker::EntryPoint::kProfileLocked:
+    case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
+    case ProfilePicker::EntryPoint::kBackgroundModeManager:
+    case ProfilePicker::EntryPoint::kProfileIdle:
+    case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
+      return true;
+    case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
+    case ProfilePicker::EntryPoint::kFirstRun:
+      return false;
+  }
 }
 
 void ClearLockedProfilesFirstBrowserKeepAlive() {
@@ -594,21 +608,7 @@ void ProfilePickerView::Init(Profile* picker_profile) {
       views::HWNDForWidget(GetWidget()));
 #endif
 
-  if (IsClassicProfilePickerFlow(params_)) {
-    flow_controller_ = std::make_unique<ProfilePickerFlowController>(
-        /*host=*/this, GetClearClosure(), params_.entry_point());
-  } else if (params_.entry_point() ==
-             ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    flow_controller_ = std::make_unique<FirstRunFlowControllerLacros>(
-        /*host=*/this, GetClearClosure(), picker_profile,
-        base::BindOnce(&ProfilePicker::Params::NotifyFirstRunExited,
-                       // Unretained ok because the controller is owned
-                       // by this through `initialized_steps_`.
-                       base::Unretained(&params_)));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  }
-
+  flow_controller_ = CreateFlowController(picker_profile, GetClearClosure());
   DCHECK(flow_controller_);
   flow_controller_->Init();
   state_ = kReady;
@@ -627,6 +627,31 @@ void ProfilePickerView::Init(Profile* picker_profile) {
     delete g_profile_picker_opened_callback_for_testing;
     g_profile_picker_opened_callback_for_testing = nullptr;
   }
+}
+
+std::unique_ptr<ProfileManagementFlowController>
+ProfilePickerView::CreateFlowController(Profile* picker_profile,
+                                        ClearHostClosure clear_host_callback) {
+  if (params_.entry_point() ==
+          ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun ||
+      params_.entry_point() == ProfilePicker::EntryPoint::kFirstRun) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    return std::make_unique<FirstRunFlowControllerLacros>(
+        /*host=*/this, std::move(clear_host_callback), picker_profile,
+        base::BindOnce(&ProfilePicker::Params::NotifyFirstRunExited,
+                       // Unretained ok because the controller is owned
+                       // by this through `initialized_steps_`.
+                       base::Unretained(&params_)));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    return std::make_unique<FirstRunFlowControllerDice>(
+        /*host=*/this, std::move(clear_host_callback));
+#endif
+  }
+
+  DCHECK(IsClassicProfilePickerFlow(params_));
+  return std::make_unique<ProfilePickerFlowController>(
+      /*host=*/this, std::move(clear_host_callback), params_.entry_point());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -46,7 +46,10 @@ class ProfileManagementFlowController {
 #endif
     // Renders all post-sign in screens: enterprise management consent, profile
     // switch, sync opt-in, etc.
-    kPostSignInFlow
+    kPostSignInFlow,
+
+    // Renders the beginning of the First Run Experience.
+    kIntro,
   };
 
   // Creates a flow controller that will advance to `initial_step` when it is
@@ -57,14 +60,23 @@ class ProfileManagementFlowController {
                                            Step initial_step);
   virtual ~ProfileManagementFlowController();
 
-  void Init();
+  // Switches to the `initial_step()`.
+  // If `initial_step_switch_finished_callback` is provided, it will be called
+  // with `true` when the navigation to the initial step succeeded, or with
+  // `false` otherwise.
+  virtual void Init(
+      base::OnceCallback<void(bool)> initial_step_switch_finished_callback =
+          base::OnceCallback<void(bool success)>());
 
+  // If `step_switch_finished_callback` is provided, it will be called
+  // with `true` when the navigation to `step` succeeded, or with
+  // `false` otherwise.
   void SwitchToStep(
       Step step,
       bool reset_state = false,
       base::OnceClosure pop_step_callback = base::OnceClosure(),
       base::OnceCallback<void(bool)> step_switch_finished_callback =
-          base::OnceCallback<void(bool)>());
+          base::OnceCallback<void(bool success)>());
 
   void OnNavigateBackRequested();
 

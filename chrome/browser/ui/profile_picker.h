@@ -84,7 +84,10 @@ class ProfilePicker {
     kLacrosPrimaryProfileFirstRun = 9,
     // The Profile became idle, due to the IdleProfileCloseTimeout policy.
     kProfileIdle = 10,
-    kMaxValue = kProfileIdle,
+    // Opens the first run experience on non-Lacros desktop platforms to let the
+    // user sign in, opt in to sync, etc.
+    kFirstRun = 11,
+    kMaxValue = kFirstRun,
   };
 
   class Params final {
@@ -106,6 +109,8 @@ class ProfilePicker {
     // specifying extra parameters.
     static Params ForBackgroundManager(
         const GURL& on_select_profile_target_url);
+
+    static Params ForFirstRun(const base::FilePath& profile_path);
 
     EntryPoint entry_point() const { return entry_point_; }
 

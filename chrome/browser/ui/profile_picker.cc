@@ -78,6 +78,12 @@ ProfilePicker::Params ProfilePicker::Params::ForBackgroundManager(
   return params;
 }
 
+// static
+ProfilePicker::Params ProfilePicker::Params::ForFirstRun(
+    const base::FilePath& profile_path) {
+  return ProfilePicker::Params(EntryPoint::kFirstRun, profile_path);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 ProfilePicker::Params ProfilePicker::Params::ForLacrosSelectAvailableAccount(
@@ -129,7 +135,7 @@ bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
   // points.
   base::flat_set<EntryPoint> exclusive_entry_points = {
       EntryPoint::kLacrosPrimaryProfileFirstRun,
-      EntryPoint::kLacrosSelectAvailableAccount};
+      EntryPoint::kLacrosSelectAvailableAccount, EntryPoint::kFirstRun};
   if (entry_point_ != other.entry_point_ &&
       (exclusive_entry_points.contains(entry_point_) ||
        exclusive_entry_points.contains(other.entry_point_))) {

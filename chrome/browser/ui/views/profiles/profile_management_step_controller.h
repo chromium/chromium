@@ -67,7 +67,7 @@ class ProfileManagementStepController {
   // `true` if it succeeded.
   // `reset_state` indicates that the step should reset its internal state
   // before showing itself.
-  virtual void Show(base::OnceCallback<void(bool)> step_shown_callback,
+  virtual void Show(base::OnceCallback<void(bool success)> step_shown_callback,
                     bool reset_state = false) = 0;
 
   // Frees up unneeded resources. `Show()` will be called if it's needed again.

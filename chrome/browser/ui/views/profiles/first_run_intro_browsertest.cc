@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,12 +31,12 @@ class FirstRunIntroPixelTest : public UiBrowserTest {
   void ShowUi(const std::string& name) override {
     ui::ScopedAnimationDurationScaleMode disable_animation(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-    GURL url(chrome::kChromeUIIntroURL + std::string("?noAnimations"));
-
-    // TODO(crbug.com/1347507): Render the page in the profile management view
-    // instead of a full browser window.
-    ASSERT_TRUE(
-        AddTabAtIndex(0, url, ui::PageTransition::PAGE_TRANSITION_FIRST));
+    profile_picker_view_ = ProfileManagementStepTestView::CreateForStep(
+        browser()->profile(), ProfileManagementFlowController::Step::kIntro,
+        base::BindRepeating([](ProfilePickerWebContentsHost* host) {
+          return CreateIntroStep(host, /*enable_animations=*/false);
+        }));
+    profile_picker_view_->ShowAndWait();
   }
 
   bool VerifyUi() override {
@@ -48,15 +51,16 @@ class FirstRunIntroPixelTest : public UiBrowserTest {
 
   void WaitForUserDismissal() override {
     DCHECK(GetWidgetForScreenshot());
-    ui_test_utils::WaitForBrowserToClose(browser());
+    ViewDeletedWaiter(profile_picker_view_).Wait();
   }
 
  private:
   views::Widget* GetWidgetForScreenshot() {
-    return BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+    return profile_picker_view_->GetWidget();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_{kForYouFre};
+  raw_ptr<ProfileManagementStepTestView> profile_picker_view_;
 };
 
 IN_PROC_BROWSER_TEST_F(FirstRunIntroPixelTest, InvokeUi_default) {

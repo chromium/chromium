@@ -86,14 +86,24 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
+ protected:
+  // To display the Profile picker, use ProfilePicker::Show().
+  explicit ProfilePickerView(ProfilePicker::Params&& params);
+  ~ProfilePickerView() override;
+
+  // Displays the profile picker.
+  void Display();
+
+  // Creates a `ProfileManagementFlowController` to drive the flow for which
+  // this profile picker is being shown.
+  virtual std::unique_ptr<ProfileManagementFlowController> CreateFlowController(
+      Profile* picker_profile,
+      ClearHostClosure clear_host_callback);
+
  private:
   friend class ProfilePicker;
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CreateForceSignedInProfile);
-
-  // To display the Profile picker, use ProfilePicker::Show().
-  explicit ProfilePickerView(ProfilePicker::Params&& params);
-  ~ProfilePickerView() override;
 
   enum State { kNotStarted = 0, kInitializing = 1, kReady = 2, kClosing = 3 };
 
@@ -119,9 +129,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // If the picker needs to be re-opened, this function schedules the reopening,
   // closes the picker and return true. Otherwise, it returns false.
   bool MaybeReopen(ProfilePicker::Params& params);
-
-  // Displays the profile picker.
-  void Display();
 
   // Closes the profile picker.
   void Clear();
