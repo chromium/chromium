@@ -305,30 +305,26 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[2]));
 }
 
-// TODO(crbug.com/1360939): Re-enable when no longer flaky.
-IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_NavigateSelection) {
+IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, NavigateSelection) {
   ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
-
+  ui_controls::EnableUIControls();
   chrome::ShowTaskManager(browser());
 
-  // Set up three new tabs that are in the same task group
-  size_t numGroupTabs = 3;
-  for (size_t i = 1; i <= numGroupTabs; ++i) {
-    chrome::AddTabAt(browser(), GURL(), i, true);
-  }
-
-  // Set up a tab in a different process than the previous New Tab task group
+  // Set up two tabs in different processes.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/title2.html"),
+      browser(), embedded_test_server()->GetURL("b.com", "/title2.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Wait for their titles to appear in the TaskManager.
   auto pattern = browsertest_util::MatchTab("Title *");
-  size_t rows = 1;
+  size_t rows = 2;
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(rows, pattern));
 
-  // Find the single tab we set up that is not in a task group
+  // Find the two tabs we set up, in TaskManager model order. Because we have
+  // not sorted the table yet, this should also be their UI display order.
   std::unique_ptr<TaskManagerTester> tester =
       TaskManagerTester::Create(base::RepeatingClosure());
   std::vector<content::WebContents*> tabs;
@@ -340,50 +336,59 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_NavigateSelection) {
     EXPECT_NE(nullptr, tab);
     tabs.push_back(tab);
   }
-  EXPECT_EQ(1U, tabs.size());
+  EXPECT_EQ(2U, tabs.size());
 
-  // Select the row corresponding to the tab for title2.html
-  // and store its tab id.
+  // Select the first row, and store its tab id.
   [GetTable()
           selectRowIndexes:[NSIndexSet
                                indexSetWithIndex:FindRowForTab(tabs[0]).value()]
       byExtendingSelection:NO];
+  EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[0]));
+  EXPECT_EQ(1, [GetTable() numberOfSelectedRows]);
 
-  absl::optional<size_t> selectedRowIndexes = TableFirstSelectedRow();
-  ASSERT_TRUE(selectedRowIndexes.has_value());
-  size_t expectedSelectedRowIndex = selectedRowIndexes.value();
-  EXPECT_EQ((size_t)[GetTable() numberOfRows] - 1, expectedSelectedRowIndex);
+  // Add two new tasks to the same process as a.com
+  int num_group_tasks = 1;
+  for (int i = 0; i < 2; i++) {
+    ASSERT_TRUE(content::ExecuteScript(tabs[0], "window.open('title3.html');"));
+    EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[0]));
+    ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows((rows += 1), pattern));
+    EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[0]));
+    num_group_tasks++;
+    EXPECT_EQ(num_group_tasks, [GetTable() numberOfSelectedRows]);
+  }
 
-  ui_controls::EnableUIControls();
-  TaskManagerWindowController* windowController =
+  absl::optional<size_t> selected_row = TableFirstSelectedRow();
+  ASSERT_TRUE(selected_row.has_value());
+  size_t expected_selected_row = selected_row.value();
+  TaskManagerWindowController* window_controller =
       GetTaskManagerMac()->CocoaControllerForTests();
 
-  // Navigate up to the three grouped tasks
-  ui_controls::SendKeyPress(windowController.window, ui::VKEY_UP, false, false,
-                            false, false);
-  expectedSelectedRowIndex -= numGroupTabs;
-  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
-  EXPECT_EQ(3, [GetTable() numberOfSelectedRows]);
-
-  // Navigate off of the three grouped tasks
-  ui_controls::SendKeyPress(windowController.window, ui::VKEY_UP, false, false,
-                            false, false);
-  expectedSelectedRowIndex--;
-  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  // Navigate off of the grouped tasks into a different process task
+  ui_controls::SendKeyPress(window_controller.window, ui::VKEY_DOWN, false,
+                            false, false, false);
+  expected_selected_row = expected_selected_row + 3;
+  EXPECT_EQ(expected_selected_row, TableFirstSelectedRow().value());
   EXPECT_EQ(1, [GetTable() numberOfSelectedRows]);
 
-  // Navigate down into the three grouped tasks
-  ui_controls::SendKeyPress(windowController.window, ui::VKEY_DOWN, false,
-                            false, false, false);
-  expectedSelectedRowIndex++;
-  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
-  EXPECT_EQ(3, [GetTable() numberOfSelectedRows]);
+  // Navigate into the three grouped tasks
+  ui_controls::SendKeyPress(window_controller.window, ui::VKEY_UP, false, false,
+                            false, false);
+  expected_selected_row -= num_group_tasks;
+  EXPECT_EQ(expected_selected_row, TableFirstSelectedRow().value());
+  EXPECT_EQ(num_group_tasks, [GetTable() numberOfSelectedRows]);
 
-  // Navigate down into the single task
-  ui_controls::SendKeyPress(windowController.window, ui::VKEY_DOWN, false,
-                            false, false, false);
-  expectedSelectedRowIndex += numGroupTabs;
-  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  // Navigate off of grouped tasks
+  ui_controls::SendKeyPress(window_controller.window, ui::VKEY_UP, false, false,
+                            false, false);
+  expected_selected_row--;
+  EXPECT_EQ(expected_selected_row, TableFirstSelectedRow().value());
   EXPECT_EQ(1, [GetTable() numberOfSelectedRows]);
+
+  // Navigate back into the three grouped tasks
+  ui_controls::SendKeyPress(window_controller.window, ui::VKEY_DOWN, false,
+                            false, false, false);
+  expected_selected_row++;
+  EXPECT_EQ(expected_selected_row, TableFirstSelectedRow().value());
+  EXPECT_EQ(num_group_tasks, [GetTable() numberOfSelectedRows]);
 }
 }  // namespace task_manager
