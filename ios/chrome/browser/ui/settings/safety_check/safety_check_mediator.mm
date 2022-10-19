@@ -1214,8 +1214,12 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       break;
     }
     case SafeBrowsingCheckRowStateSafe: {
-      UIImage* safeIconImage = [[UIImage imageNamed:@"settings_safe_state"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      UIImage* safeIconImage =
+          UseSymbols()
+              ? DefaultSymbolTemplateWithPointSize(
+                    kCheckMarkCircleFillSymbol, kTrailingSymbolImagePointSize)
+              : [[UIImage imageNamed:@"settings_safe_state"]
+                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.safeBrowsingCheckItem.trailingImage = safeIconImage;
       self.safeBrowsingCheckItem.trailingImageTintColor =
           [UIColor colorNamed:kGreenColor];
@@ -1240,8 +1244,12 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       if (base::FeatureList::IsEnabled(
               safe_browsing::kEnhancedProtectionPhase2IOS)) {
         UIImage* unSafeIconImage =
-            [[UIImage imageNamed:@"settings_unsafe_state"]
-                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            UseSymbols()
+                ? DefaultSymbolTemplateWithPointSize(
+                      kWarningFillSymbol, kTrailingSymbolImagePointSize)
+                : [[UIImage imageNamed:@"settings_unsafe_state"]
+                      imageWithRenderingMode:
+                          UIImageRenderingModeAlwaysTemplate];
         self.safeBrowsingCheckItem.trailingImage = unSafeIconImage;
         self.safeBrowsingCheckItem.trailingImageTintColor =
             [UIColor colorNamed:kRedColor];
