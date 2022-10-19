@@ -167,6 +167,9 @@ extern const base::FeatureParam<double> kSliceVisibleExposureThreshold;
 // visits.
 extern const base::FeatureParam<double> kSliceVisibleCoverageThreshold;
 
+// When enabled, allow tagging experiments with only an experiment ID.
+BASE_DECLARE_FEATURE(kFeedExperimentIDTagging);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

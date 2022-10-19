@@ -192,5 +192,8 @@ const base::FeatureParam<double> kSliceVisibleExposureThreshold{
 
 const base::FeatureParam<double> kSliceVisibleCoverageThreshold{
     &kClientGoodVisits, "slice_coverage_threshold", 0.25f};
+BASE_FEATURE(kFeedExperimentIDTagging,
+             "FeedExperimentIDTagging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace feed

@@ -65,8 +65,6 @@ extern const char kMetricsData[];
 extern const char kClientInstanceId[];
 // The pref name for the Discover API endpoint override.
 extern const char kDiscoverAPIEndpointOverride[];
-// The pref name for storing the server experiments the client is in.
-extern const char kExperiments[];
 // If set to true, the WebFeed follow intro bypasses some gates and only checks
 // for recommended and scroll status.
 extern const char kEnableWebFeedFollowIntroDebug[];
@@ -84,12 +82,20 @@ extern const char kLastSeenFeedType[];
 extern const char kFeedOnDeviceUserActionsCollector[];
 // The pref name for the keys of the info cards.
 extern const char kInfoCardStates[];
+// The pref name for storing the server experiments the client is in.
+extern const char kExperimentsV2[];
+
+// Deprecated prefs
+
+// The pref name for storing the server experiments the client is in.
+extern const char kExperimentsDeprecated[];
 
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void MigrateObsoleteProfilePrefsFeb_2021(PrefService* prefs);
 void MigrateObsoleteProfilePrefsJune_2021(PrefService* prefs);
+void MigrateObsoleteProfilePrefsOct_2022(PrefService* prefs);
 
 }  // namespace feed
 

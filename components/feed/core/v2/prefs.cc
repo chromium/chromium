@@ -105,16 +105,24 @@ void ClearClientInstanceId(PrefService& pref_service) {
 void SetExperiments(const Experiments& experiments, PrefService& pref_service) {
   base::Value::Dict dict;
   for (const auto& exp : experiments) {
-    dict.Set(exp.first, exp.second);
+    base::Value::List list;
+    for (auto elem : exp.second) {
+      list.Append(elem);
+    }
+    dict.Set(exp.first, std::move(list));
   }
-  pref_service.SetDict(kExperiments, std::move(dict));
+  pref_service.SetDict(kExperimentsV2, std::move(dict));
 }
 
 Experiments GetExperiments(PrefService& pref_service) {
-  const auto& value = pref_service.GetDict(kExperiments);
+  const auto& dict = pref_service.GetDict(kExperimentsV2);
   Experiments experiments;
-  for (auto kv : value) {
-    experiments[kv.first] = kv.second.GetString();
+  for (auto kv : dict) {
+    std::vector<std::string> vect;
+    for (const auto& v : kv.second.GetList()) {
+      vect.push_back(v.GetString());
+    }
+    experiments[kv.first] = vect;
   }
   return experiments;
 }

@@ -125,8 +125,10 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
     // by design. We do not provide the variations IDs from the backend
     // and do not attach them to the X-Client-Data header.
     for (const auto& exp : experiments) {
-      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(exp.first,
-                                                                exp.second);
+      for (const auto& group_name : exp.second) {
+        ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(exp.first,
+                                                                  group_name);
+      }
     }
   }
   void RegisterFollowingFeedFollowCountFieldTrial(

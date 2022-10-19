@@ -21,6 +21,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "components/feed/feed_feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
@@ -359,11 +360,33 @@ RefreshResponseData TranslateWireResponse(
 
   absl::optional<Experiments> experiments = absl::nullopt;
   if (chrome_response_metadata.experiments_size() > 0) {
+    // Set up the Experiments map that contains the trial -> list of groups.
     Experiments e;
     for (feedwire::Experiment exp : chrome_response_metadata.experiments()) {
-      e[exp.trial_name()] = exp.group_name();
+      if (exp.has_trial_name() && exp.has_group_name()) {
+        // Extract experiment in response that contains both trial and
+        // group names.
+        if (e.find(exp.trial_name()) != e.end()) {
+          e[exp.trial_name()].push_back(exp.group_name());
+        } else {
+          std::vector<std::string> v{exp.group_name()};
+          e[exp.trial_name()] = v;
+        }
+      } else if (exp.has_experiment_id() &&
+                 base::FeatureList::IsEnabled(kFeedExperimentIDTagging)) {
+        // Extract experiment in response that contains an experiment ID.
+        std::string trial_name =
+            exp.has_trial_name() ? exp.trial_name() : kDiscoverFeedExperiments;
+        if (e.find(trial_name) != e.end()) {
+          e[trial_name].push_back(exp.experiment_id());
+        } else {
+          std::vector<std::string> v{exp.experiment_id()};
+          e[trial_name] = v;
+        }
+      }
     }
-    experiments = std::move(e);
+    if (!e.empty())
+      experiments = std::move(e);
   }
 
   MetricsReporter::ActivityLoggingEnabled(

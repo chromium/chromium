@@ -20,6 +20,8 @@
 
 namespace feed {
 
+constexpr const char kDiscoverFeedExperiments[] = "DiscoverFeedExperiments";
+
 // Data for updating StreamModel. This can be sourced from the network or
 // persistent storage.
 struct StreamModelUpdateRequest {
