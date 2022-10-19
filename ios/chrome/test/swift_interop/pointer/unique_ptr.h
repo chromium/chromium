@@ -30,7 +30,11 @@ class ValueReturner {
   ValueReturner();
   ~ValueReturner();
 
-  Value* ObjectPointer();
+  // As of Swift 5.8, C++ methods that return pointers are not imported by
+  // default as they are an unsafe projection into the state of the object.
+  // Using clang hints, the APIs can be annotated to import anyway. These hints
+  // are backwards compatible to previous language versions.
+  __attribute__((swift_attr("import_unsafe"))) Value* ObjectPointer();
 
  private:
 #if SWIFT_INTEROP_UNIQUE_PTR_WORKS

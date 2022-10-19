@@ -224,7 +224,7 @@ config("xctest_config") {
 }
 
 config("enable_swift_cxx_interop") {
-  swiftflags = [ "-enable-cxx-interop" ]
+  swiftflags = [ "-enable-experimental-cxx-interop" ]
 }
 
 group("xctest") {

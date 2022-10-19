@@ -12,8 +12,13 @@ class PointerReturner {
   ~PointerReturner();
 
   bool Valid();
-  int* IntegerPointer();
-  PointerReturner* ObjectPointer();
+
+  // As of Swift 5.8, C++ methods that return pointers are not imported by
+  // default as they are an unsafe projection into the state of the object.
+  // Using clang hints, the APIs can be annotated to import anyway. These hints
+  // are backwards compatible to previous language versions.
+  __attribute__((swift_attr("import_unsafe"))) int* IntegerPointer();
+  __attribute__((swift_attr("import_unsafe"))) PointerReturner* ObjectPointer();
 
  private:
   int integer_;
