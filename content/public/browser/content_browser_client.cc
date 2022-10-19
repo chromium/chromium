@@ -31,7 +31,6 @@
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/prefetch_service_delegate.h"
-#include "content/public/browser/quota_permission_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/speculation_host_delegate.h"
@@ -522,11 +521,6 @@ bool ContentBrowserClient::IsPrivateAggregationAllowed(
 bool ContentBrowserClient::CanSendSCTAuditingReport(
     BrowserContext* browser_context) {
   return false;
-}
-
-scoped_refptr<QuotaPermissionContext>
-ContentBrowserClient::CreateQuotaPermissionContext() {
-  return nullptr;
 }
 
 GeneratedCodeCacheSettings ContentBrowserClient::GetGeneratedCodeCacheSettings(

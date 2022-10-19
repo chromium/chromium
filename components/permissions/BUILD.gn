@@ -98,8 +98,6 @@ source_set("permissions") {
     "permissions_client.h",
     "pref_names.cc",
     "pref_names.h",
-    "quota_permission_context_impl.cc",
-    "quota_permission_context_impl.h",
     "request_type.cc",
     "request_type.h",
     "switches.cc",

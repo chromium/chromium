@@ -59,7 +59,6 @@
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "content/shell/browser/shell_paths.h"
-#include "content/shell/browser/shell_quota_permission_context.h"
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
 #include "content/shell/common/shell_controller.test-mojom.h"
 #include "content/shell/common/shell_switches.h"
@@ -393,11 +392,6 @@ bool ShellContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   // Note that this will not turn on application isolation for all URLs; the
   // content layer will still run its own checks.
   return true;
-}
-
-scoped_refptr<content::QuotaPermissionContext>
-ShellContentBrowserClient::CreateQuotaPermissionContext() {
-  return new ShellQuotaPermissionContext();
 }
 
 GeneratedCodeCacheSettings

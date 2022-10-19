@@ -217,7 +217,6 @@ class NavigationThrottle;
 class NavigationUIData;
 class PrefetchServiceDelegate;
 class PresentationObserver;
-class QuotaPermissionContext;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
 class RenderProcessHost;
@@ -937,9 +936,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual StoragePartitionConfig GetStoragePartitionConfigForSite(
       BrowserContext* browser_context,
       const GURL& site);
-
-  // Create and return a new quota permission context.
-  virtual scoped_refptr<QuotaPermissionContext> CreateQuotaPermissionContext();
 
   // Allows the embedder to provide settings that determine if generated code
   // can be cached and the amount of disk space used for caching generated code.

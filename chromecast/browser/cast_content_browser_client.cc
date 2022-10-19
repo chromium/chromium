@@ -38,7 +38,6 @@
 #include "chromecast/browser/cast_navigation_ui_data.h"
 #include "chromecast/browser/cast_network_contexts.h"
 #include "chromecast/browser/cast_overlay_manifests.h"
-#include "chromecast/browser/cast_quota_permission_context.h"
 #include "chromecast/browser/cast_session_id_map.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/cast_web_preferences.h"
@@ -536,11 +535,6 @@ void CastContentBrowserClient::OverrideWebkitPrefs(
 std::string CastContentBrowserClient::GetApplicationLocale() {
   const std::string locale(base::i18n::GetConfiguredLocale());
   return locale.empty() ? "en-US" : locale;
-}
-
-scoped_refptr<content::QuotaPermissionContext>
-CastContentBrowserClient::CreateQuotaPermissionContext() {
-  return new CastQuotaPermissionContext();
 }
 
 void CastContentBrowserClient::AllowCertificateError(

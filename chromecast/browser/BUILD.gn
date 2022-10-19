@@ -136,8 +136,6 @@ cast_source_set("browser") {
     "cast_permission_manager.h",
     "cast_permission_user_data.cc",
     "cast_permission_user_data.h",
-    "cast_quota_permission_context.cc",
-    "cast_quota_permission_context.h",
     "cast_renderer_block_data.cc",
     "cast_renderer_block_data.h",
     "cast_session_id_map.cc",

@@ -33,7 +33,6 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
-#include "headless/lib/browser/headless_quota_permission_context.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -165,11 +164,6 @@ std::unique_ptr<content::DevToolsManagerDelegate>
 HeadlessContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<HeadlessDevToolsManagerDelegate>(
       browser_->GetWeakPtr());
-}
-
-scoped_refptr<content::QuotaPermissionContext>
-HeadlessContentBrowserClient::CreateQuotaPermissionContext() {
-  return new HeadlessQuotaPermissionContext();
 }
 
 content::GeneratedCodeCacheSettings

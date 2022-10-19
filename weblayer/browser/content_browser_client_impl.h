@@ -174,8 +174,6 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
       content::RenderProcessHost* render_process_host,
       mojo::GenericPendingReceiver receiver) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
-  scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
-      override;
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \

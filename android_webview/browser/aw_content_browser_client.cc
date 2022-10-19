@@ -18,7 +18,6 @@
 #include "android_webview/browser/aw_devtools_manager_delegate.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/aw_http_auth_handler.h"
-#include "android_webview/browser/aw_quota_permission_context.h"
 #include "android_webview/browser/aw_resource_context.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
@@ -376,11 +375,6 @@ gfx::ImageSkia AwContentBrowserClient::GetDefaultFavicon() {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   // TODO(boliu): Bundle our own default favicon?
   return rb.GetImageNamed(IDR_DEFAULT_FAVICON).AsImageSkia();
-}
-
-scoped_refptr<content::QuotaPermissionContext>
-AwContentBrowserClient::CreateQuotaPermissionContext() {
-  return new AwQuotaPermissionContext;
 }
 
 content::GeneratedCodeCacheSettings

@@ -43,8 +43,6 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       blink::AssociatedInterfaceRegistry& associated_registry) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
-  scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
-      override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)

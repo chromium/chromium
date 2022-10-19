@@ -313,7 +313,6 @@ source_set("browser_sources") {
     "provision_fetcher_impl.h",
     "push_messaging_service.cc",
     "push_messaging_service.h",
-    "quota_permission_context.h",
     "reduce_accept_language_controller_delegate.h",
     "reload_type.h",
     "render_frame_host.h",

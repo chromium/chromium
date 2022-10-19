@@ -148,8 +148,6 @@ static_library("content_shell_lib") {
     "browser/shell_platform_data_aura.h",
     "browser/shell_platform_delegate.cc",
     "browser/shell_platform_delegate.h",
-    "browser/shell_quota_permission_context.cc",
-    "browser/shell_quota_permission_context.h",
     "browser/shell_speech_recognition_manager_delegate.cc",
     "browser/shell_speech_recognition_manager_delegate.h",
     "browser/shell_web_contents_view_delegate.h",

@@ -92,8 +92,6 @@ source_set("browser") {
     "aw_proxy_controller.cc",
     "aw_quota_manager_bridge.cc",
     "aw_quota_manager_bridge.h",
-    "aw_quota_permission_context.cc",
-    "aw_quota_permission_context.h",
     "aw_render_process.cc",
     "aw_render_process.h",
     "aw_render_process_gone_delegate.h",

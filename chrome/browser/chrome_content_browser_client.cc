@@ -224,7 +224,6 @@
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/bluetooth_delegate_impl.h"
 #include "components/permissions/permission_context_base.h"
-#include "components/permissions/quota_permission_context_impl.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -664,7 +663,6 @@ using blink::web_pref::WebPreferences;
 using content::BrowserThread;
 using content::BrowserURLHandler;
 using content::ChildProcessSecurityPolicy;
-using content::QuotaPermissionContext;
 using content::RenderFrameHost;
 using content::SiteInstance;
 using content::WebContents;
@@ -3213,11 +3211,6 @@ bool ChromeContentBrowserClient::ShouldUseGmsCoreGeolocationProvider() {
   return true;
 }
 #endif
-
-scoped_refptr<content::QuotaPermissionContext>
-ChromeContentBrowserClient::CreateQuotaPermissionContext() {
-  return new permissions::QuotaPermissionContextImpl();
-}
 
 content::GeneratedCodeCacheSettings
 ChromeContentBrowserClient::GetGeneratedCodeCacheSettings(

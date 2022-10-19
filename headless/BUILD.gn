@@ -391,8 +391,6 @@ component("headless_non_renderer") {
     "lib/browser/headless_permission_manager.h",
     "lib/browser/headless_platform_event_source.cc",
     "lib/browser/headless_platform_event_source.h",
-    "lib/browser/headless_quota_permission_context.cc",
-    "lib/browser/headless_quota_permission_context.h",
     "lib/browser/headless_request_context_manager.cc",
     "lib/browser/headless_request_context_manager.h",
     "lib/browser/headless_select_file_dialog_factory.cc",

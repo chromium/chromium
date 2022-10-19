@@ -56,7 +56,6 @@ class URLLoaderThrottle;
 
 namespace content {
 class BrowserContext;
-class QuotaPermissionContext;
 class RenderFrameHost;
 enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
@@ -337,8 +336,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldUseGmsCoreGeolocationProvider() override;
 #endif
-  scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
-      override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
   cert_verifier::mojom::CertVerifierServiceParamsPtr

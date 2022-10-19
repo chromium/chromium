@@ -88,8 +88,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   std::string GetApplicationLocale() override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   gfx::ImageSkia GetDefaultFavicon() override;
-  scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
-      override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
   void AllowCertificateError(
