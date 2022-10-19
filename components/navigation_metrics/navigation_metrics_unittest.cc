@@ -164,6 +164,17 @@ TEST(NavigationMetrics, RecordIDNA2008Metrics) {
   histograms.ExpectTotalCount(kHistogram, 4);
   histograms.ExpectBucketCount(kHistogram, false, 2);
   histograms.ExpectBucketCount(kHistogram, true, 2);
+
+  // Should work well with non-standard separators
+  RecordIDNA2008Metrics(u"example。com");
+  histograms.ExpectTotalCount(kHistogram, 5);
+  histograms.ExpectBucketCount(kHistogram, false, 3);
+  histograms.ExpectBucketCount(kHistogram, true, 2);
+
+  RecordIDNA2008Metrics(u"subdomain。faß。de");
+  histograms.ExpectTotalCount(kHistogram, 6);
+  histograms.ExpectBucketCount(kHistogram, false, 3);
+  histograms.ExpectBucketCount(kHistogram, true, 3);
 }
 
 // Regression test for crbug.com/1362507. Tests that the IDNA2008 metrics code
