@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_TAB_HELPER_H_
 
 #import <UIKit/UIKit.h>
-#include <memory>
 
 #include "base/timer/timer.h"
 #include "ios/chrome/browser/discover_feed/feed_constants.h"
@@ -121,10 +120,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
   // The saved scroll position for navigating back to the NTP.
   CGFloat saved_scroll_position_ = -CGFLOAT_MAX;
-
-  // Ensure the ignore_load_requests_ flag is never set to NO for more than
-  // `kMaximumIgnoreLoadRequestsTime` seconds.
-  std::unique_ptr<base::OneShotTimer> ignore_load_requests_timer_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
