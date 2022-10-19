@@ -41,7 +41,7 @@ uses third_party/zlib/contrib/minizip/.
   * This patch intentionally does not apply because it was made with
   `--irreversible-delete` because it is deleting a large .tflite file causing
   the chromium-presubmit bot to fail.
-
+14) Remove whitespace tokenizer since it uses the unsafe function `chartorune`.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Run these commands:
