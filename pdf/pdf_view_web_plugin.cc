@@ -46,6 +46,7 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
 #include "net/cookies/site_for_cookies.h"
+#include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
 #include "pdf/content_restriction.h"
@@ -54,6 +55,7 @@
 #include "pdf/loader/url_loader.h"
 #include "pdf/metrics_handler.h"
 #include "pdf/mojom/pdf.mojom.h"
+#include "pdf/paint_manager.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/parsed_params.h"
 #include "pdf/pdf_accessibility_data_handler.h"
@@ -120,6 +122,10 @@ namespace {
 
 // The minimum zoom level allowed.
 constexpr double kMinZoom = 0.01;
+
+// A delay to wait between each accessibility page to keep the system
+// responsive.
+constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
 constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
@@ -283,16 +289,6 @@ PdfViewWebPlugin::PdfViewWebPlugin(
 }
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-const PDFiumEngine* PdfViewWebPlugin::engine() const {
-  return engine_.get();
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-PDFiumEngine* PdfViewWebPlugin::engine() {
-  return engine_.get();
-}
 
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   DCHECK(container);
@@ -1034,6 +1030,35 @@ void PdfViewWebPlugin::DidFormOpen(int32_t result) {
   form_loader_.reset();
 }
 
+void PdfViewWebPlugin::DidStartLoading() {
+  if (did_call_start_loading_)
+    return;
+
+  client_->DidStartLoading();
+  did_call_start_loading_ = true;
+}
+
+void PdfViewWebPlugin::DidStopLoading() {
+  if (!did_call_start_loading_)
+    return;
+
+  client_->DidStopLoading();
+  did_call_start_loading_ = false;
+}
+
+int PdfViewWebPlugin::GetContentRestrictions() const {
+  int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
+  if (!engine_->HasPermission(DocumentPermission::kCopy))
+    content_restrictions |= kContentRestrictionCopy;
+
+  if (!engine_->HasPermission(DocumentPermission::kPrintLowQuality) &&
+      !engine_->HasPermission(DocumentPermission::kPrintHighQuality)) {
+    content_restrictions |= kContentRestrictionPrint;
+  }
+
+  return content_restrictions;
+}
+
 std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
   if (full_frame_) {
     DidStartLoading();
@@ -1041,7 +1066,8 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
     // Disable save and print until the document is fully loaded, since they
     // would generate an incomplete document. This needs to be done each time
     // DidStartLoading() is called because that resets the content restrictions.
-    SetContentRestrictions(kContentRestrictionSave | kContentRestrictionPrint);
+    pdf_service_->UpdateContentRestrictions(kContentRestrictionSave |
+                                            kContentRestrictionPrint);
   }
 
   return std::make_unique<UrlLoader>(weak_factory_.GetWeakPtr());
@@ -1059,6 +1085,62 @@ PdfViewWebPlugin::SearchString(const char16_t* string,
   while (searcher.NextMatchResult(match_index, match_length))
     results.push_back({.start_index = match_index, .length = match_length});
   return results;
+}
+
+void PdfViewWebPlugin::DocumentLoadComplete() {
+  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
+  document_load_state_ = DocumentLoadState::kComplete;
+
+  client_->RecordComputedAction("PDF.LoadSuccess");
+
+  // Clear the focus state for on-screen keyboards.
+  FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus);
+
+  if (IsPrintPreview()) {
+    // Scroll location is retained across document loads in Print Preview, so
+    // there's no need to override the scroll position by scrolling again.
+    if (IsPreviewingPDF(print_preview_page_count_)) {
+      SendPrintPreviewLoadedNotification();
+    } else {
+      DCHECK_EQ(0, print_preview_loaded_page_count_);
+      print_preview_loaded_page_count_ = 1;
+      engine_->AppendBlankPages(print_preview_page_count_);
+      LoadNextPreviewPage();
+    }
+
+    OnGeometryChanged(0, 0);
+    if (!document_size_.IsEmpty())
+      paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
+  }
+
+  RecordDocumentMetrics();
+
+  SendAttachments();
+  SendBookmarks();
+  SendMetadata();
+
+  if (accessibility_state_ == AccessibilityState::kPending)
+    LoadAccessibility();
+
+  if (!full_frame_)
+    return;
+
+  DidStopLoading();
+  pdf_service_->UpdateContentRestrictions(GetContentRestrictions());
+}
+
+void PdfViewWebPlugin::DocumentLoadFailed() {
+  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
+  document_load_state_ = DocumentLoadState::kFailed;
+
+  client_->RecordComputedAction("PDF.LoadFailure");
+
+  // Send a progress value of -1 to indicate a failure.
+  SendLoadingProgress(-1);
+
+  DidStopLoading();
+
+  paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
 }
 
 void PdfViewWebPlugin::DocumentHasUnsupportedFeature(
@@ -1125,6 +1207,22 @@ void PdfViewWebPlugin::SetIsSelecting(bool is_selecting) {
   message.Set("type", "setIsSelecting");
   message.Set("isSelecting", is_selecting);
   client_->PostMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
+                                        const gfx::Rect& right) {
+  gfx::PointF left_point(left.x() + available_area_.x(), left.y());
+  gfx::PointF right_point(right.x() + available_area_.x(), right.y());
+
+  const float inverse_scale = 1.0f / device_scale_;
+  left_point.Scale(inverse_scale);
+  right_point.Scale(inverse_scale);
+
+  pdf_service_->SelectionChanged(left_point, left.height() * inverse_scale,
+                                 right_point, right.height() * inverse_scale);
+
+  if (accessibility_state_ == AccessibilityState::kLoaded)
+    PrepareAndSetAccessibilityViewportInfo();
 }
 
 void PdfViewWebPlugin::EnteredEditMode() {
@@ -1202,12 +1300,7 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
 void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
   using MessageHandler = void (PdfViewWebPlugin::*)(const base::Value::Dict&);
 
-  // Settings this as const instead of constexpr to workaround a bug
-  // in GCC, that will try to reinterpret_cast the method pointers.
-  // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105996
-  // TODO(crbug.com/1302059): make it constexpr again when we get rid
-  // of PdfViewPluginBase
-  static const auto kMessageHandlers =
+  static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
           {"displayAnnotations",
            &PdfViewWebPlugin::HandleDisplayAnnotationsMessage},
@@ -1820,167 +1913,6 @@ void PdfViewWebPlugin::HandleAccessibilityAction(
   engine_->HandleAccessibilityAction(action_data);
 }
 
-base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
-void PdfViewWebPlugin::OnPrintPreviewLoaded() {
-  // Scroll location is retained across document loads in Print Preview, so
-  // there's no need to override the scroll position by scrolling again.
-  if (IsPreviewingPDF(print_preview_page_count_)) {
-    SendPrintPreviewLoadedNotification();
-  } else {
-    DCHECK_EQ(0, print_preview_loaded_page_count_);
-    print_preview_loaded_page_count_ = 1;
-    engine_->AppendBlankPages(print_preview_page_count_);
-    LoadNextPreviewPage();
-  }
-
-  OnGeometryChanged(0, 0);
-  if (!document_size_.IsEmpty())
-    paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
-}
-
-void PdfViewWebPlugin::OnDocumentLoadComplete() {
-  RecordDocumentMetrics();
-
-  SendAttachments();
-  SendBookmarks();
-  SendMetadata();
-
-  if (accessibility_state_ == AccessibilityState::kPending)
-    LoadAccessibility();
-}
-
-void PdfViewWebPlugin::SendLoadingProgress(double percentage) {
-  DCHECK(percentage == -1 || (percentage >= 0 && percentage <= 100));
-  last_progress_sent_ = percentage;
-
-  base::Value::Dict message;
-  message.Set("type", "loadProgress");
-  message.Set("progress", percentage);
-  client_->PostMessage(std::move(message));
-}
-
-void PdfViewWebPlugin::SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) {
-  pdf_accessibility_data_handler_->SetAccessibilityDocInfo(std::move(doc_info));
-}
-
-void PdfViewWebPlugin::SetAccessibilityPageInfo(
-    AccessibilityPageInfo page_info,
-    std::vector<AccessibilityTextRunInfo> text_runs,
-    std::vector<AccessibilityCharInfo> chars,
-    AccessibilityPageObjects page_objects) {
-  pdf_accessibility_data_handler_->SetAccessibilityPageInfo(
-      std::move(page_info), std::move(text_runs), std::move(chars),
-      std::move(page_objects));
-}
-
-void PdfViewWebPlugin::SetAccessibilityViewportInfo(
-    AccessibilityViewportInfo viewport_info) {
-  pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(
-      std::move(viewport_info));
-}
-
-void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
-  pdf_service_->UpdateContentRestrictions(content_restrictions);
-}
-
-void PdfViewWebPlugin::DidStartLoading() {
-  if (did_call_start_loading_)
-    return;
-
-  client_->DidStartLoading();
-  did_call_start_loading_ = true;
-}
-
-void PdfViewWebPlugin::DidStopLoading() {
-  if (!did_call_start_loading_)
-    return;
-
-  client_->DidStopLoading();
-  did_call_start_loading_ = false;
-}
-
-void PdfViewWebPlugin::NotifySelectionChanged(const gfx::PointF& left,
-                                              int left_height,
-                                              const gfx::PointF& right,
-                                              int right_height) {
-  pdf_service_->SelectionChanged(left, left_height, right, right_height);
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
-  client_->RecordComputedAction(action);
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-PaintManager& PdfViewWebPlugin::paint_manager() {
-  return paint_manager_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-const gfx::Rect& PdfViewWebPlugin::available_area() const {
-  return available_area_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-double PdfViewWebPlugin::zoom() const {
-  return zoom_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-bool PdfViewWebPlugin::full_frame() const {
-  return full_frame_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-const gfx::Rect& PdfViewWebPlugin::plugin_rect() const {
-  return plugin_rect_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-float PdfViewWebPlugin::device_scale() const {
-  return device_scale_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-PdfViewPluginBase::DocumentLoadState PdfViewWebPlugin::document_load_state()
-    const {
-  return document_load_state_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-void PdfViewWebPlugin::set_document_load_state(DocumentLoadState state) {
-  document_load_state_ = state;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-PdfViewPluginBase::AccessibilityState PdfViewWebPlugin::accessibility_state()
-    const {
-  return accessibility_state_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-void PdfViewWebPlugin::set_accessibility_state(AccessibilityState state) {
-  accessibility_state_ = state;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-int32_t PdfViewWebPlugin::next_accessibility_page_index() const {
-  return next_accessibility_page_index_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-void PdfViewWebPlugin::increment_next_accessibility_page_index() {
-  ++next_accessibility_page_index_;
-}
-
-// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
-void PdfViewWebPlugin::reset_next_accessibility_page_index() {
-  next_accessibility_page_index_ = 0;
-}
-
 void PdfViewWebPlugin::OnViewportChanged(
     const gfx::Rect& new_plugin_rect_in_css_pixel,
     float new_device_scale) {
@@ -2222,6 +2154,16 @@ void PdfViewWebPlugin::SendMetadata() {
   client_->PostMessage(std::move(message));
 }
 
+void PdfViewWebPlugin::SendLoadingProgress(double percentage) {
+  DCHECK(percentage == -1 || (percentage >= 0 && percentage <= 100));
+  last_progress_sent_ = percentage;
+
+  base::Value::Dict message;
+  message.Set("type", "loadProgress");
+  message.Set("progress", percentage);
+  client_->PostMessage(std::move(message));
+}
+
 void PdfViewWebPlugin::HandleResetPrintPreviewModeMessage(
     const base::Value::Dict& message) {
   const std::string& url = *message.FindString("url");
@@ -2380,6 +2322,86 @@ gfx::Point PdfViewWebPlugin::FrameToPdfCoordinates(
   return gfx::ToFlooredPoint(
              gfx::ScalePoint(frame_coordinates, device_scale_)) -
          gfx::Vector2d(available_area_.x(), 0);
+}
+
+AccessibilityDocInfo PdfViewWebPlugin::GetAccessibilityDocInfo() const {
+  AccessibilityDocInfo doc_info;
+  doc_info.page_count = engine_->GetNumberOfPages();
+  doc_info.text_accessible =
+      engine_->HasPermission(DocumentPermission::kCopyAccessible);
+  doc_info.text_copyable = engine_->HasPermission(DocumentPermission::kCopy);
+  return doc_info;
+}
+
+void PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
+  // Outdated calls are ignored.
+  if (page_index != next_accessibility_page_index_)
+    return;
+  ++next_accessibility_page_index_;
+
+  AccessibilityPageInfo page_info;
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityCharInfo> chars;
+  AccessibilityPageObjects page_objects;
+
+  if (!GetAccessibilityInfo(engine_.get(), page_index, page_info, text_runs,
+                            chars, page_objects)) {
+    return;
+  }
+
+  pdf_accessibility_data_handler_->SetAccessibilityPageInfo(
+      std::move(page_info), std::move(text_runs), std::move(chars),
+      std::move(page_objects));
+
+  // Schedule loading the next page.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo,
+                     weak_factory_.GetWeakPtr(), page_index + 1),
+      kAccessibilityPageDelay);
+}
+
+void PdfViewWebPlugin::PrepareAndSetAccessibilityViewportInfo() {
+  AccessibilityViewportInfo viewport_info;
+  viewport_info.offset = gfx::ScaleToFlooredPoint(available_area_.origin(),
+                                                  1 / (device_scale_ * zoom_));
+  viewport_info.zoom = zoom_;
+  viewport_info.scale = device_scale_;
+  viewport_info.focus_info = {FocusObjectType::kNone, 0, 0};
+
+  engine_->GetSelection(&viewport_info.selection_start_page_index,
+                        &viewport_info.selection_start_char_index,
+                        &viewport_info.selection_end_page_index,
+                        &viewport_info.selection_end_char_index);
+
+  pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(
+      std::move(viewport_info));
+}
+
+void PdfViewWebPlugin::LoadAccessibility() {
+  accessibility_state_ = AccessibilityState::kLoaded;
+
+  // A new document layout will trigger the creation of a new accessibility
+  // tree, so `next_accessibility_page_index_` should be reset to ignore
+  // outdated asynchronous calls of PrepareAndSetAccessibilityPageInfo().
+  next_accessibility_page_index_ = 0;
+  pdf_accessibility_data_handler_->SetAccessibilityDocInfo(
+      GetAccessibilityDocInfo());
+
+  // If the document contents isn't accessible, don't send anything more.
+  if (!(engine_->HasPermission(DocumentPermission::kCopy) ||
+        engine_->HasPermission(DocumentPermission::kCopyAccessible))) {
+    return;
+  }
+
+  PrepareAndSetAccessibilityViewportInfo();
+
+  // Schedule loading the first page.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo,
+                     weak_factory_.GetWeakPtr(), /*page_index=*/0),
+      kAccessibilityPageDelay);
 }
 
 }  // namespace chrome_pdf

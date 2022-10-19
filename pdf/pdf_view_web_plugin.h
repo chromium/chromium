@@ -22,11 +22,12 @@
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/loader/url_loader.h"
 #include "pdf/mojom/pdf.mojom.h"
+#include "pdf/paint_manager.h"
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_engine.h"
-#include "pdf/pdf_view_plugin_base.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/preview_mode_client.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
@@ -73,7 +75,7 @@ class PDFiumEngine;
 class PdfAccessibilityDataHandler;
 class Thumbnail;
 
-class PdfViewWebPlugin final : public PdfViewPluginBase,
+class PdfViewWebPlugin final : public PDFEngine::Client,
                                public blink::WebPlugin,
                                public pdf::mojom::PdfListener,
                                public UrlLoader::Client,
@@ -85,6 +87,12 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Do not save files larger than 100 MB. This cap should be kept in sync with
   // and is also enforced in chrome/browser/resources/pdf/pdf_viewer.ts.
   static constexpr size_t kMaximumSavedFileSize = 100 * 1000 * 1000;
+
+  enum class DocumentLoadState {
+    kLoading = 0,
+    kComplete,
+    kFailed,
+  };
 
   // Must match `SaveRequestType` in chrome/browser/resources/pdf/constants.ts.
   enum class SaveRequestType {
@@ -323,12 +331,15 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
+  void DocumentLoadComplete() override;
+  void DocumentLoadFailed() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
   bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() const override;
   void SetIsSelecting(bool is_selecting) override;
+  void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void CaretChanged(const gfx::Rect& caret_rect) override;
   void EnteredEditMode() override;
   void DocumentFocusChanged(bool document_has_focus) override;
@@ -392,49 +403,18 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     return GetAccessibilityDocInfo();
   }
 
- protected:
-  // PdfViewPluginBase:
-  const PDFiumEngine* engine() const override;
-  PDFiumEngine* engine() override;
-  base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
-  void OnPrintPreviewLoaded() override;
-  void OnDocumentLoadComplete() override;
-  void SendLoadingProgress(double percentage) override;
-  void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) override;
-  void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
-                                std::vector<AccessibilityTextRunInfo> text_runs,
-                                std::vector<AccessibilityCharInfo> chars,
-                                AccessibilityPageObjects page_objects) override;
-  void SetAccessibilityViewportInfo(
-      AccessibilityViewportInfo viewport_info) override;
-  void SetContentRestrictions(int content_restrictions) override;
-  void DidStartLoading() override;
-  void DidStopLoading() override;
-  void NotifySelectionChanged(const gfx::PointF& left,
-                              int left_height,
-                              const gfx::PointF& right,
-                              int right_height) override;
-  void UserMetricsRecordAction(const std::string& action) override;
-  PaintManager& paint_manager() override;
-  const gfx::Rect& available_area() const override;
-  double zoom() const override;
-  bool full_frame() const override;
-  const gfx::Rect& plugin_rect() const override;
-  float device_scale() const override;
-  DocumentLoadState document_load_state() const override;
-  void set_document_load_state(DocumentLoadState state) override;
-  AccessibilityState accessibility_state() const override;
-  void set_accessibility_state(AccessibilityState state) override;
-  int32_t next_accessibility_page_index() const override;
-  void increment_next_accessibility_page_index() override;
-  void reset_next_accessibility_page_index() override;
-
  private:
   // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
   // load the URL, and `result` is the result code for the load.
   using LoadUrlCallback =
       base::OnceCallback<void(std::unique_ptr<UrlLoader> loader,
                               int32_t result)>;
+
+  enum class AccessibilityState {
+    kOff = 0,  // Off.
+    kPending,  // Enabled but waiting for doc to load.
+    kLoaded,   // Fully loaded.
+  };
 
   struct BackgroundPart {
     gfx::Rect location;
@@ -470,6 +450,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Handles `Open()` result for `form_loader_`.
   void DidFormOpen(int32_t result);
+
+  // Sends start/stop loading notifications to the plugin's render frame.
+  void DidStartLoading();
+  void DidStopLoading();
+
+  // Gets the content restrictions based on the permissions which `engine_` has.
+  int GetContentRestrictions() const;
 
   // Message handlers.
   void HandleDisplayAnnotationsMessage(const base::Value::Dict& message);
@@ -572,6 +559,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Send document metadata data.
   void SendMetadata();
 
+  // Sends the loading progress, where `percentage` represents the progress, or
+  // -1 for loading error.
+  void SendLoadingProgress(double percentage);
+
   // Handles message for resetting Print Preview.
   void HandleResetPrintPreviewModeMessage(const base::Value::Dict& message);
 
@@ -595,6 +586,21 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Converts `frame_coordinates` to PDF coordinates.
   gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
+
+  // Gets the accessibility doc info based on the information from `engine_`.
+  AccessibilityDocInfo GetAccessibilityDocInfo() const;
+
+  // Sets the accessibility information about the given `page_index` in the
+  // renderer.
+  void PrepareAndSetAccessibilityPageInfo(int32_t page_index);
+
+  // Prepares the accessibility information about the current viewport. This is
+  // done once when accessibility is first loaded and again when the geometry
+  // changes.
+  void PrepareAndSetAccessibilityViewportInfo();
+
+  // Starts loading accessibility information.
+  void LoadAccessibility();
 
   blink::WebString selected_text_;
 
