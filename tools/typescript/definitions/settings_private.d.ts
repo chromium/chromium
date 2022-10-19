@@ -68,7 +68,7 @@ declare global {
           name: string, value: any, pageId?: string,
           callback?: (success: boolean) => void): void;
 
-      export function getDefaultZoom(callback: (zoom: number) => void): void;
+      export function getDefaultZoom(): Promise<number>;
       export function setDefaultZoom(zoom: number): void;
 
       export const onPrefsChanged: ChromeEvent<PrefsCallback>;

@@ -38,8 +38,7 @@ declare namespace chrome {
       showConfirmDialog?: boolean;
     }
 
-    export function get(
-        id: string, callback?: (info: ExtensionInfo) => void): void;
+    export function get(id: string): Promise<ExtensionInfo>;
     export function uninstall(
         id: string, options?: UninstallOptions, callback?: () => void): void;
     export function setEnabled(

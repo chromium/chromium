@@ -26,15 +26,11 @@ export interface AppearanceBrowserProxy {
 
 export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
   getDefaultZoom(): Promise<number> {
-    return new Promise(function(resolve) {
-      chrome.settingsPrivate.getDefaultZoom(resolve);
-    });
+    return chrome.settingsPrivate.getDefaultZoom();
   }
 
   getThemeInfo(themeId: string): Promise<chrome.management.ExtensionInfo> {
-    return new Promise(function(resolve) {
-      chrome.management.get(themeId, resolve);
-    });
+    return chrome.management.get(themeId);
   }
 
   isChildAccount() {
