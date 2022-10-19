@@ -59,7 +59,7 @@ const tabs: Tab[] = [
 function selectTab(selectedTabEl: HTMLElement) {
   for (const tab of tabs) {
     const isSelectedTab = tab.tabEl === selectedTabEl;
-    tab.tabEl.parentElement!.classList.toggle('selected', isSelectedTab);
+    tab.tabEl.classList.toggle('selected', isSelectedTab);
     tab.tabEl.setAttribute('aria-selected', String(isSelectedTab));
     tab.panelEl.classList.toggle('selected', isSelectedTab);
   }
