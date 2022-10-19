@@ -4,15 +4,21 @@
 
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
 
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/svg/svg_string_list_tear_off.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
+#include "v8/include/v8-function-callback.h"
 
 namespace blink {
 
@@ -29,6 +35,54 @@ bool ShouldSample(WebFeature feature) {
   return IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
       IdentifiableSurface::FromTypeAndToken(
           IdentifiableSurface::Type::kWebFeature, feature));
+}
+
+using ArgumentType = perfetto::protos::pbzero::BlinkHighEntropyAPI::
+    JSFunctionArgument::ArgumentType;
+
+ArgumentType GetArgumentType(v8::Local<v8::Value> value) {
+  if (value->IsUndefined()) {
+    return ArgumentType::UNDEFINED;
+  }
+  if (value->IsNull()) {
+    return ArgumentType::NULL_TYPE;
+  }
+  if (value->IsBigInt()) {
+    return ArgumentType::BIGINT;
+  }
+  if (value->IsBoolean()) {
+    return ArgumentType::BOOLEAN;
+  }
+  if (value->IsFunction()) {
+    return ArgumentType::FUNCTION;
+  }
+  if (value->IsNumber()) {
+    return ArgumentType::NUMBER;
+  }
+  if (value->IsString()) {
+    return ArgumentType::STRING;
+  }
+  if (value->IsSymbol()) {
+    return ArgumentType::SYMBOL;
+  }
+  if (value->IsObject()) {
+    return ArgumentType::OBJECT;
+  }
+
+  return ArgumentType::UNKNOWN_TYPE;
+}
+
+// Returns the stringified object on success and an empty string on failure
+String V8ValueToString(v8::Local<v8::Context> current_context,
+                       v8::Isolate* isolate,
+                       const v8::Local<v8::Value>& value) {
+  v8::Local<v8::String> v8_string;
+
+  if (!value->ToDetailString(current_context).ToLocal(&v8_string)) {
+    return String("");
+  }
+
+  return ToBlinkString<String>(v8_string, kDoNotExternalize);
 }
 
 }  // namespace
@@ -101,6 +155,62 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         WebFeature feature,
                                         SVGStringListTearOff* strings) {
   RecordDirectSurface(context, feature, strings->Values());
+}
+
+Dactyloscoper::HighEntropyTracer::HighEntropyTracer(
+    const char* called_api_name,
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  TRACE_EVENT_BEGIN(
+      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
+      "HighEntropyJavaScriptAPICall", [&](perfetto::EventContext ctx) {
+        v8::Isolate* isolate = info.GetIsolate();
+        v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+        ExecutionContext* execution_context =
+            ExecutionContext::From(current_context);
+
+        if (!execution_context) {
+          return;
+        }
+
+        using ChromeTrackEvent = perfetto::protos::pbzero::ChromeTrackEvent;
+        using HighEntropyAPI = perfetto::protos::pbzero::BlinkHighEntropyAPI;
+        using CalledJsApi =
+            perfetto::protos::pbzero::BlinkHighEntropyAPI::CalledJsApi;
+        using JSFunctionArgument =
+            perfetto::protos::pbzero::BlinkHighEntropyAPI::JSFunctionArgument;
+        using ExecutionContextProto =
+            perfetto::protos::pbzero::BlinkExecutionContext;
+        using SourceLocationProto =
+            perfetto::protos::pbzero::BlinkSourceLocation;
+
+        auto* event = ctx.event<ChromeTrackEvent>();
+
+        HighEntropyAPI& high_entropy_api = *(event->set_high_entropy_api());
+
+        ExecutionContextProto* proto_context =
+            high_entropy_api.set_execution_context();
+        execution_context->WriteIntoTrace(ctx.Wrap(proto_context));
+
+        CalledJsApi& called_api = *(high_entropy_api.set_called_api());
+        called_api.set_identifier(called_api_name);
+
+        SourceLocationProto* proto_source_location =
+            called_api.set_source_location();
+        CaptureSourceLocation(execution_context)
+            ->WriteIntoTrace(ctx.Wrap(proto_source_location));
+
+        for (int i = 0; i < info.Length(); ++i) {
+          JSFunctionArgument& arg = *(called_api.add_func_arguments());
+          arg.set_type(GetArgumentType(info[i]));
+          arg.set_value(
+              V8ValueToString(current_context, isolate, info[i]).Utf8());
+        }
+      });
+}
+
+Dactyloscoper::HighEntropyTracer::~HighEntropyTracer() {
+  TRACE_EVENT_END(
+      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"));
 }
 
 }  // namespace blink

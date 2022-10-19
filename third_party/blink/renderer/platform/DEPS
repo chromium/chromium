@@ -58,6 +58,7 @@ include_rules = [
     "+base/time",
     "+base/timer",
     "+base/trace_event",
+    "+base/tracing",
     "+base/unguessable_token.h",
     "+base/values.h",
     "+base/lazy_instance.h",

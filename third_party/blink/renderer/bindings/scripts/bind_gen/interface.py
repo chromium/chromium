@@ -870,20 +870,56 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
         SymbolNode("return_value", definition_constructor=create_definition))
 
 
-def make_bindings_trace_event(cg_context):
+def get_js_api_identifier(cg_context):
     assert isinstance(cg_context, CodeGenContext)
-
-    event_name = "{}.{}".format(cg_context.class_like.identifier,
-                                cg_context.property_.identifier)
+    js_identifier = "{}.{}".format(cg_context.class_like.identifier,
+                                   cg_context.property_.identifier)
     if cg_context.attribute_get:
-        event_name = "{}.{}".format(event_name, "get")
+        js_identifier = "{}.{}".format(js_identifier, "get")
     elif cg_context.attribute_set:
-        event_name = "{}.{}".format(event_name, "set")
+        js_identifier = "{}.{}".format(js_identifier, "set")
     elif cg_context.constructor_group and not cg_context.is_named_constructor:
-        event_name = "{}.{}".format(cg_context.class_like.identifier,
-                                    "constructor")
+        js_identifier = "{}.{}".format(cg_context.class_like.identifier,
+                                       "constructor")
 
-    return TextNode("BLINK_BINDINGS_TRACE_EVENT(\"{}\");".format(event_name))
+    return js_identifier
+
+
+def make_bindings_trace_event(cg_context):
+    return TextNode("BLINK_BINDINGS_TRACE_EVENT(\"{}\");".format(
+        get_js_api_identifier(cg_context)))
+
+
+def get_high_entropy_checked_ext_attrs(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+    target = cg_context.member_like or cg_context.property_
+    ext_attrs = target.extended_attributes
+    if cg_context.attribute_set or "HighEntropy" not in ext_attrs:
+        return None
+
+    return ext_attrs
+
+
+def make_high_entropy_trace_event(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+    if get_high_entropy_checked_ext_attrs(cg_context) == None:
+        return None
+
+    header_text = "// [HighEntropy]"
+
+    text = _format(
+        "{header_text}"
+        "const Dactyloscoper::HighEntropyTracer"
+        "  high_entropy_tracer(\"{js_api_id}\", ${info});",
+        header_text=header_text,
+        js_api_id=get_js_api_identifier(cg_context))
+
+    node = TextNode(text)
+    node.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/core/frame/dactyloscoper.h",
+        ]))
+    return node
 
 
 def make_check_argument_length(cg_context):
@@ -1420,10 +1456,10 @@ def _make_measure_web_feature_constant(cg_context):
 def make_report_high_entropy(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    target = cg_context.member_like or cg_context.property_
-    ext_attrs = target.extended_attributes
-    if cg_context.attribute_set or "HighEntropy" not in ext_attrs:
+    ext_attrs = get_high_entropy_checked_ext_attrs(cg_context)
+    if ext_attrs is None:
         return None
+
     assert "Measure" in ext_attrs or "MeasureAs" in ext_attrs, "{}: {}".format(
         cg_context.idl_location_and_name,
         "[HighEntropy] must be specified with either [Measure] or "
@@ -1820,6 +1856,7 @@ def make_attribute_get_callback_def(cg_context, function_name):
         EmptyNode(),
         make_runtime_call_timer_scope(cg_context),
         make_bindings_trace_event(cg_context),
+        make_high_entropy_trace_event(cg_context),
         make_report_coop_access(cg_context),
         make_report_deprecate_as(cg_context),
         make_report_measure_as(cg_context),
@@ -2024,6 +2061,7 @@ def make_constant_callback_def(cg_context, function_name):
     body.extend([
         make_runtime_call_timer_scope(cg_context),
         make_bindings_trace_event(cg_context),
+        make_high_entropy_trace_event(cg_context),
         logging_nodes,
         EmptyNode(),
         TextNode(v8_set_return_value),
@@ -2628,6 +2666,7 @@ def make_operation_function_def(cg_context, function_name):
     body.extend([
         make_check_receiver(cg_context),
         EmptyNode(),
+        make_high_entropy_trace_event(cg_context),
         make_report_coop_access(cg_context),
         make_report_deprecate_as(cg_context),
         make_report_measure_as(cg_context),

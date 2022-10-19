@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "v8/include/v8-callbacks.h"
 #include "v8/include/v8-forward.h"
 
@@ -71,6 +72,10 @@ class UkmRecorder;
 namespace v8 {
 class MicrotaskQueue;
 }  // namespace v8
+
+namespace perfetto::protos::pbzero {
+class BlinkExecutionContext;
+}  // namespace perfetto::protos::pbzero
 
 namespace blink {
 
@@ -447,6 +452,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   bool IsInRequestAnimationFrame() const {
     return is_in_request_animation_frame_;
   }
+
+  // Write a representation of this object into a trace.
+  using Proto = perfetto::protos::pbzero::BlinkExecutionContext;
+  void WriteIntoTrace(perfetto::TracedProto<Proto> proto) const;
 
   // For use by FrameRequestCallbackCollection::ExecuteFrameCallbacks();
   // IsInRequestAnimationFrame() for the corresponding ExecutionContext will

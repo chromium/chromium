@@ -14,6 +14,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
+namespace perfetto::protos::pbzero {
+class BlinkSourceLocation;
+}  // namespace perfetto::protos::pbzero
+
 namespace blink {
 
 class ExecutionContext;
@@ -66,6 +70,10 @@ class PLATFORM_EXPORT SourceLocation {
   // Safe to pass between threads, drops async chain in stack trace.
   std::unique_ptr<SourceLocation> Clone() const;
 
+  // Write a representation of this object into a trace.
+  using Proto = perfetto::protos::pbzero::BlinkSourceLocation;
+  void WriteIntoTrace(perfetto::TracedProto<Proto> proto) const;
+  // TODO(altimin): Remove TracedValue version.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // No-op when stack trace is unknown.

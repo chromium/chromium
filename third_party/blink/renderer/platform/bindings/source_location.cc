@@ -7,12 +7,14 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 namespace blink {
 
@@ -91,6 +93,17 @@ std::unique_ptr<SourceLocation> SourceLocation::Clone() const {
   return base::WrapUnique(new SourceLocation(
       url_, function_, line_number_, column_number_,
       stack_trace_ ? stack_trace_->clone() : nullptr, script_id_));
+}
+
+void SourceLocation::WriteIntoTrace(
+    perfetto::TracedProto<SourceLocation::Proto> proto) const {
+  proto->set_function_name(
+      ToPlatformString(stack_trace_->topFunctionName()).Utf8());
+  proto->set_script_id(stack_trace_->topScriptId());
+  proto->set_url(ToPlatformString(stack_trace_->topSourceURL()).Utf8());
+  proto->set_line_number(stack_trace_->topLineNumber());
+  proto->set_column_number(stack_trace_->topColumnNumber());
+  proto->set_stack_trace(ToString().Utf8());
 }
 
 void SourceLocation::WriteIntoTrace(perfetto::TracedValue context) const {

@@ -18,6 +18,7 @@ include_rules = [
     "+base/test/simple_test_tick_clock.h",
     "+base/threading/thread_restrictions.h",
     "+base/time",
+    "+base/tracing",
     "+base/unguessable_token.h",
     "+base/values.h",
     "+cc/animation/animation_host.h",
