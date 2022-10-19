@@ -49,35 +49,29 @@ class DIPSState {
   bool was_loaded() const { return was_loaded_; }
 
   absl::optional<base::Time> first_site_storage_time() const {
-    return first_site_storage_time_;
+    return state_.site_storage_times.first;
   }
   absl::optional<base::Time> last_site_storage_time() const {
-    return last_site_storage_time_;
+    return state_.site_storage_times.last;
   }
   void update_site_storage_time(base::Time time);
 
   absl::optional<base::Time> first_user_interaction_time() const {
-    return first_user_interaction_time_;
+    return state_.user_interaction_times.first;
   }
   absl::optional<base::Time> last_user_interaction_time() const {
-    return last_user_interaction_time_;
+    return state_.user_interaction_times.last;
   }
   void update_user_interaction_time(base::Time time);
 
-  StateValue ToStateValue() const {
-    return {first_site_storage_time_, last_site_storage_time_,
-            first_user_interaction_time_, last_user_interaction_time_};
-  }
+  StateValue ToStateValue() const { return state_; }
 
  private:
   raw_ptr<DIPSStorage> storage_;
   std::string site_;
   bool was_loaded_;
   DirtyBit dirty_;
-  absl::optional<base::Time> first_site_storage_time_;
-  absl::optional<base::Time> last_site_storage_time_;
-  absl::optional<base::Time> first_user_interaction_time_;
-  absl::optional<base::Time> last_user_interaction_time_;
+  StateValue state_;
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_STATE_H_

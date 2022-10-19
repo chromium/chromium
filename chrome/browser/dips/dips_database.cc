@@ -199,10 +199,10 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
     return absl::nullopt;
   }
 
-  return StateValue{ToOptionalTime(statement.ColumnTime(1)),
-                    ToOptionalTime(statement.ColumnTime(2)),
-                    ToOptionalTime(statement.ColumnTime(3)),
-                    ToOptionalTime(statement.ColumnTime(4))};
+  return StateValue{TimestampRange{ToOptionalTime(statement.ColumnTime(1)),
+                                   ToOptionalTime(statement.ColumnTime(2))},
+                    TimestampRange{ToOptionalTime(statement.ColumnTime(3)),
+                                   ToOptionalTime(statement.ColumnTime(4))}};
 }
 
 bool DIPSDatabase::RemoveRow(const std::string& site) {

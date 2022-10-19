@@ -149,8 +149,8 @@ TEST(DIPSStoragePrepopulateTest, NoExistingTime) {
   storage.FlushPostedTasksForTesting();
 
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->first_user_interaction_time, time);  // written
-  EXPECT_EQ(state->first_site_storage_time, time);      // written
+  EXPECT_EQ(state->user_interaction_times.first, time);  // written
+  EXPECT_EQ(state->site_storage_times.first, time);      // written
 }
 
 TEST(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
@@ -177,8 +177,10 @@ TEST(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
 
   // Prepopulate() didn't overwrite the previous timestamps.
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->first_user_interaction_time, interaction_time);  // no change
-  EXPECT_EQ(state->first_site_storage_time, storage_time);          // no change
+  EXPECT_EQ(state->user_interaction_times.first,
+            interaction_time);  // no change
+  EXPECT_EQ(state->site_storage_times.first,
+            storage_time);  // no change
 }
 
 TEST(DIPSStoragePrepopulateTest, ExistingStorageTime) {
@@ -200,8 +202,10 @@ TEST(DIPSStoragePrepopulateTest, ExistingStorageTime) {
   storage.FlushPostedTasksForTesting();
 
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->first_site_storage_time, storage_time);          // no change
-  EXPECT_EQ(state->first_user_interaction_time, prepopulate_time);  // written
+  EXPECT_EQ(state->site_storage_times.first,
+            storage_time);  // no change
+  EXPECT_EQ(state->user_interaction_times.first,
+            prepopulate_time);  // written
 }
 
 TEST(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
@@ -224,8 +228,10 @@ TEST(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
   storage.FlushPostedTasksForTesting();
 
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->first_user_interaction_time, interaction_time);  // no change
-  EXPECT_EQ(state->first_site_storage_time, absl::nullopt);         // no change
+  EXPECT_EQ(state->user_interaction_times.first,
+            interaction_time);  // no change
+  EXPECT_EQ(state->site_storage_times.first,
+            absl::nullopt);  // no change
 }
 
 TEST(DIPSStoragePrepopulateTest, WorksOnChunks) {

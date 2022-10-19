@@ -60,19 +60,24 @@ base::StringPiece GetHistogramPiece(DIPSRedirectType type);
 const char* DIPSRedirectTypeToString(DIPSRedirectType type);
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type);
 
+struct TimestampRange {
+  absl::optional<base::Time> first;
+  absl::optional<base::Time> last;
+};
+
+inline bool operator==(const TimestampRange& lhs, const TimestampRange& rhs) {
+  return std::tie(lhs.first, lhs.last) == std::tie(rhs.first, rhs.last);
+}
+
 // StateValue:
 struct StateValue {
-  absl::optional<base::Time> first_site_storage_time;
-  absl::optional<base::Time> last_site_storage_time;
-  absl::optional<base::Time> first_user_interaction_time;
-  absl::optional<base::Time> last_user_interaction_time;
+  TimestampRange site_storage_times;
+  TimestampRange user_interaction_times;
 };
 
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
-  return (lhs.first_site_storage_time == rhs.first_site_storage_time) &&
-         (lhs.last_site_storage_time == rhs.last_site_storage_time) &&
-         (lhs.first_user_interaction_time == rhs.first_user_interaction_time) &&
-         (lhs.last_user_interaction_time == rhs.last_user_interaction_time);
+  return std::tie(lhs.site_storage_times, lhs.user_interaction_times) ==
+         std::tie(rhs.site_storage_times, rhs.user_interaction_times);
 }
 
 // Return the number of seconds in `td`, clamped to [0, 10].
