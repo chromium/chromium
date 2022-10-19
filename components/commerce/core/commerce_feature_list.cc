@@ -244,6 +244,10 @@ const base::FeatureParam<bool> kReadyToFetchMerchantWidePromotion{
     &commerce::kMerchantWidePromotion, kReadyToFetchMerchantWidePromotionParam,
     false};
 
+const char kCodeBasedRuleDiscountParam[] = "code-based-rbd";
+const base::FeatureParam<bool> kCodeBasedRuleDiscount{
+    &ntp_features::kNtpChromeCartModule, kCodeBasedRuleDiscountParam, false};
+
 bool IsPartnerMerchant(const GURL& url) {
   return commerce::IsCouponDiscountPartnerMerchant(url) ||
          IsRuleDiscountPartnerMerchant(url);

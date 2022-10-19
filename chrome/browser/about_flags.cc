@@ -1702,6 +1702,15 @@ const FeatureEntry::FeatureParam kNtpChromeCartModuleRBDAndCouponDiscount[] = {
     {"partner-merchant-pattern",
      "(electronicexpress.com|zazzle.com|wish.com|homesquare.com)"},
     {ntp_features::kNtpChromeCartModuleCouponParam, "true"}};
+const FeatureEntry::FeatureParam kNtpChromeCartModuleCodeBasedRBD[] = {
+    {ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, "true"},
+    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
+    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
+     "true"},
+    {"partner-merchant-pattern",
+     "(electronicexpress.com|zazzle.com|wish.com|homesquare.com)"},
+    {ntp_features::kNtpChromeCartModuleCouponParam, "true"},
+    {commerce::kCodeBasedRuleDiscountParam, "true"}};
 const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
     {"- Fake Data And Discount", kNtpChromeCartModuleFakeData,
      std::size(kNtpChromeCartModuleFakeData), nullptr},
@@ -1711,6 +1720,8 @@ const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
      std::size(kNtpChromeCartModuleHeuristicsImprovement), nullptr},
     {"- RBD and Coupons", kNtpChromeCartModuleRBDAndCouponDiscount,
      std::size(kNtpChromeCartModuleRBDAndCouponDiscount), nullptr},
+    {"- Code-based RBD and Coupons", kNtpChromeCartModuleCodeBasedRBD,
+     std::size(kNtpChromeCartModuleCodeBasedRBD), nullptr},
 };
 
 // The following are consent v2 variations in the Chrome Cart module.

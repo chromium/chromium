@@ -6,6 +6,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/search/ntp_features.h"
 #include "components/session_proto_db/session_proto_db.h"
@@ -409,6 +410,62 @@ TEST(CartDiscountFetcherTest, TestOverallDiscountTextWithRuleDiscounts) {
   EXPECT_EQ(cart_discount_map.size(), 1u);
   EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).highest_discount_string,
             "20% off");
+}
+
+TEST(CartDiscountFetcherTest, TestCodeBasedRuleDiscount) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpChromeCartModule,
+        {{commerce::kCodeBasedRuleDiscountParam, "true"}}}},
+      {});
+
+  std::unique_ptr<EndpointFetcher> mock_endpoint_fetcher =
+      std::make_unique<MockEndpointFetcher>(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  base::MockCallback<CartDiscountFetcher::CartDiscountFetcherCallback>
+      mock_callback;
+
+  auto fake_responses = std::make_unique<EndpointResponse>();
+
+  fake_responses->response = R"(
+    {
+      "discounts": [
+        {
+          "merchantIdentifier": {
+            "cartUrl": "https://www.foo.com/cart",
+            "merchantId": "0"
+          },
+          "couponDiscounts": [
+            {
+              "type": "RBD_WITH_CODE",
+              "description": {
+                "title": "Save $10 on Running shoes.",
+                "languageCode": "en-US"
+              },
+              "couponCode": "SAVE$10",
+              "couponId": "1",
+              "expiryTimeSec": 1635204292
+            }
+          ]
+        }
+      ]
+    }
+  )";
+
+  CartDiscountFetcher::CartDiscountMap cart_discount_map;
+  EXPECT_CALL(mock_callback, Run(testing::_, testing::_))
+      .WillOnce(testing::SaveArg<0>(&cart_discount_map));
+
+  CartDiscountFetcherTest::OnDiscountsAvailable(
+      std::move(mock_endpoint_fetcher), mock_callback.Get(),
+      std::move(fake_responses));
+
+  ASSERT_EQ(cart_discount_map.size(), 1u);
+  EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).rule_discounts.size(),
+            0u);
+  EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).coupon_discounts.size(),
+            1u);
+  EXPECT_TRUE(cart_discount_map.at(kMockMerchantCartURLA).has_coupons);
 }
 
 class CartDiscountFetcherConfigurableEndpointTest : public testing::Test {
