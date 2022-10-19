@@ -67,10 +67,9 @@ void ClipWorkArea(std::vector<display::Display>* displays,
 
   // If the work area entirely contains exactly one display, assume it's meant
   // for that display (and so do nothing).
-  if (std::count_if(displays->begin(), displays->end(),
-                    [&](const display::Display& display) {
-                      return work_area.Contains(display.bounds());
-                    }) == 1) {
+  if (base::ranges::count_if(*displays, [&](const display::Display& display) {
+        return work_area.Contains(display.bounds());
+      }) == 1) {
     return;
   }
 

@@ -81,8 +81,8 @@ std::pair<uint32_t /* best_crtc */, uint32_t /* connected_crtc */> GetCrtcs(
           IsCrtcInUse(resources->crtcs[j], displays))
         continue;
 
-      int supported_planes = std::count_if(
-          planes.begin(), planes.end(), [crtc_bit](const ScopedDrmPlanePtr& p) {
+      int supported_planes = base::ranges::count_if(
+          planes, [crtc_bit](const ScopedDrmPlanePtr& p) {
             return p->possible_crtcs & crtc_bit;
           });
       if (supported_planes > most_crtc_planes ||

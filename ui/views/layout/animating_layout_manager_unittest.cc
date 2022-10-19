@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -4198,9 +4199,7 @@ class AnimatingLayoutManagerFlexRuleTest : public AnimatingLayoutManagerTest {
   size_t GetVisibleChildCount(const gfx::Size& size) const {
     ProposedLayout layout = flex_layout_->GetProposedLayout(size);
     EXPECT_EQ(size, layout.host_size);
-    return std::count_if(
-        layout.child_layouts.begin(), layout.child_layouts.end(),
-        [](const ChildLayout& layout) { return layout.visible; });
+    return base::ranges::count_if(layout.child_layouts, &ChildLayout::visible);
   }
 
   FlexLayout* flex_layout() { return flex_layout_; }

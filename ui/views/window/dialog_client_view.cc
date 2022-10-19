@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -340,7 +341,7 @@ void DialogClientView::SetupLayout() {
       button_row_container_->AddChildViewAt(extra_view_.get(), 0);
   }
 
-  if (std::count(views.begin(), views.end(), nullptr) == kNumButtons)
+  if (base::ranges::count(views, nullptr) == kNumButtons)
     return;
 
   // This will also clobber any existing layout manager and clear any settings

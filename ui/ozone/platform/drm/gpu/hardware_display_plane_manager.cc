@@ -5,7 +5,7 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
 #include <drm_fourcc.h>
-#include <algorithm>
+
 #include <cstdint>
 #include <memory>
 #include <set>
@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -518,9 +519,8 @@ ui::HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
 
   ui::HardwareCapabilities hc;
   hc.is_valid = true;
-  hc.num_overlay_capable_planes = std::count_if(
-      planes_.begin(), planes_.end(),
-      [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {
+  hc.num_overlay_capable_planes = base::ranges::count_if(
+      planes_, [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {
         return plane->type() != DRM_PLANE_TYPE_CURSOR &&
                plane->CanUseForCrtcId(crtc_id);
       });
