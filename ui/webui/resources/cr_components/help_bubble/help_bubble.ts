@@ -350,6 +350,10 @@ export class HelpBubbleElement extends PolymerElement {
     // Inclusive of 8px visible arrow and 8px margin.
     const anchorRect = this.anchorElement_.getBoundingClientRect();
     const helpBubbleRect = this.getBoundingClientRect();
+    const anchorRectCenter = {
+      x: anchorRect.left + (anchorRect.width / 2),
+      y: anchorRect.top + (anchorRect.height / 2),
+    };
 
     // component is inserted after anchor so start with a reset
     let transform = `translateY(-${anchorRect.height}px) `;
@@ -387,9 +391,11 @@ export class HelpBubbleElement extends PolymerElement {
     switch (this.position) {
       case HelpBubbleArrowPosition.TOP_LEFT:
       case HelpBubbleArrowPosition.BOTTOM_LEFT:
-        transform += `translateX(${
-          (anchorRect.width / 2) - ARROW_OFFSET_FROM_EDGE
-        }px)`;
+        // If anchor element is small, point arrow to center of anchor element
+        if ((anchorRect.left + ARROW_OFFSET_FROM_EDGE) > anchorRectCenter.x) {
+          transform += `translateX(${
+              (anchorRect.width / 2) - ARROW_OFFSET_FROM_EDGE}px)`;
+        }
         break;
       case HelpBubbleArrowPosition.TOP_CENTER:
       case HelpBubbleArrowPosition.BOTTOM_CENTER:
@@ -399,10 +405,16 @@ export class HelpBubbleElement extends PolymerElement {
         break;
       case HelpBubbleArrowPosition.TOP_RIGHT:
       case HelpBubbleArrowPosition.BOTTOM_RIGHT:
-        transform += `translateX(${
-          (anchorRect.width / 2)
-          - (helpBubbleRect.width - ARROW_OFFSET_FROM_EDGE)
-        }px)`;
+        // If anchor element is small, point arrow to center of anchor element
+        if ((anchorRect.right - ARROW_OFFSET_FROM_EDGE) < anchorRectCenter.x) {
+          transform += `translateX(${
+              (anchorRect.width / 2) -
+              (helpBubbleRect.width - ARROW_OFFSET_FROM_EDGE)}px)`;
+        } else {
+          // Right-align bubble and anchor elements
+          transform +=
+              `translateX(${anchorRect.width - helpBubbleRect.width}px)`;
+        }
         break;
       case HelpBubbleArrowPosition.LEFT_TOP:
       case HelpBubbleArrowPosition.RIGHT_TOP:
