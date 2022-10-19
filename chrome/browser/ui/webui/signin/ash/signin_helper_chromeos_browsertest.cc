@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/signin/ash/signin_helper_chromeos.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -68,13 +70,8 @@ constexpr char kSecondaryGoogleAccountUsageHistogramName[] =
 constexpr char kSecondaryGoogleAccountUsageLatencyHistogramName[] =
     "Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency";
 
-// Convenience helper to allow a `closure` to be used in a context which is
-// expecting a callback with arguments.
-template <typename... T>
-const base::RepeatingCallback<void(T...)> IgnoreArgs(
-    base::RepeatingClosure closure) {
-  return closure ? base::BindRepeating([](T...) {}).Then(std::move(closure))
-                 : base::BindRepeating([](T...) { NOTREACHED(); });
+void NotReached() {
+  NOTREACHED();
 }
 
 class TestSigninHelper : public SigninHelper {
@@ -529,14 +526,14 @@ class SigninHelperChromeOSTestSecondaryGoogleAccountUsage
     OnSigninHelperCreated();
     // The `TestSigninHelper` deletes itself after its work is complete.
 
-    new TestSigninHelper(this, account_manager(),
-                         account_manager_mojo_service(),
-                         /*close_dialog_closure=*/close_dialog_closure,
-                         /*show_signin_blocked_by_policy_page=*/
-                         IgnoreArgs<const std::string&, const std::string&>(
-                             show_signin_blocked_by_policy_page),
-                         shared_url_loader_factory(), /*arc_helper=*/nullptr,
-                         gaia_id, email, kFakeAuthCode, kFakeDeviceId);
+    new TestSigninHelper(
+        this, account_manager(), account_manager_mojo_service(),
+        /*close_dialog_closure=*/close_dialog_closure,
+        /*show_signin_blocked_by_policy_page=*/
+        base::IgnoreArgs<const std::string&, const std::string&>(
+            show_signin_blocked_by_policy_page),
+        shared_url_loader_factory(), /*arc_helper=*/nullptr, gaia_id, email,
+        kFakeAuthCode, kFakeDeviceId);
   }
 
  protected:
@@ -558,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
   CreateSigninHelper(
       /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
       /*show_signin_blocked_by_policy_page=*/
-      base::RepeatingClosure(), kFakeGaiaId, kFakeEmail);
+      base::BindRepeating(&NotReached), kFakeGaiaId, kFakeEmail);
 
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
@@ -592,7 +589,8 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
   CreateSigninHelper(
       /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
       /*show_signin_blocked_by_policy_page=*/
-      base::RepeatingClosure(), kFakeEnterpriseGaiaId, kFakeEnterpriseEmail);
+      base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
+      kFakeEnterpriseEmail);
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -627,7 +625,8 @@ IN_PROC_BROWSER_TEST_F(
   CreateSigninHelper(
       /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
       /*show_signin_blocked_by_policy_page=*/
-      base::RepeatingClosure(), kFakeEnterpriseGaiaId, kFakeEnterpriseEmail);
+      base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
+      kFakeEnterpriseEmail);
   // Make sure the close_dialog_closure was called.
   close_dialog_closure_run_loop.Run();
   // Wait until SigninHelper finishes and deletes itself.
@@ -662,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(
   AddResponseRevokeGaiaTokenOnServer();
   // Enterprise account tries to sign in.
   CreateSigninHelper(
-      /*close_dialog_closure=*/base::RepeatingClosure(),
+      /*close_dialog_closure=*/base::BindRepeating(&NotReached),
       /*show_signin_blocked_by_policy_page=*/
       show_signin_blocked_error_closure_run_loop.QuitClosure(),
       kFakeEnterpriseGaiaId, kFakeEnterpriseEmail);
@@ -689,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
   CreateSigninHelper(
       /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
       /*show_signin_blocked_by_policy_page=*/
-      base::RepeatingClosure(),
+      base::BindRepeating(&NotReached),
       user_manager::UserManager::Get()
           ->GetPrimaryUser()
           ->GetAccountId()

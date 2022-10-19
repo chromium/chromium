@@ -60,13 +60,6 @@ constexpr base::TimeDelta kShiftAnimationDuration = base::Milliseconds(250);
 
 // Helpers ---------------------------------------------------------------------
 
-// Convenience helper to allow a `closure` to be used in a context which is
-// expecting a callback with arguments.
-template <typename... T>
-base::RepeatingCallback<void(T...)> IgnoreArgs(base::RepeatingClosure closure) {
-  return base::BindRepeating([](T...) {}).Then(std::move(closure));
-}
-
 // Returns true if small previews should be used given the current shelf
 // configuration, false otherwise.
 bool ShouldUseSmallPreviews() {
@@ -207,7 +200,7 @@ class HoldingSpaceTrayIconPreview::ImageLayerOwner
         HoldingSpaceAnimationRegistry::GetInstance()
             ->AddProgressRingAnimationChangedCallbackForKey(
                 /*animation_key=*/item_,
-                IgnoreArgs<ProgressRingAnimation*>(
+                base::IgnoreArgs<ProgressRingAnimation*>(
                     base::BindRepeating(&ImageLayerOwner::UpdateTransform,
                                         base::Unretained(this))));
 

@@ -114,6 +114,24 @@ SplitOnceCallback(OnceCallback<void(Args...)> callback) {
   return std::make_pair(wrapped_once, wrapped_once);
 }
 
+// Convenience helper to allow a `closure` to be used in a context which is
+// expecting a callback with arguments. Returns a null callback if `closure` is
+// null.
+template <typename... Args>
+RepeatingCallback<void(Args...)> IgnoreArgs(RepeatingClosure closure) {
+  return closure ? BindRepeating([](Args...) {}).Then(std::move(closure))
+                 : RepeatingCallback<void(Args...)>();
+}
+
+// Convenience helper to allow a `closure` to be used in a context which is
+// expecting a callback with arguments. Returns a null callback if `closure` is
+// null.
+template <typename... Args>
+OnceCallback<void(Args...)> IgnoreArgs(OnceClosure closure) {
+  return closure ? BindOnce([](Args...) {}).Then(std::move(closure))
+                 : OnceCallback<void(Args...)>();
+}
+
 // ScopedClosureRunner is akin to std::unique_ptr<> for Closures. It ensures
 // that the Closure is executed no matter how the current scope exits.
 // If you are looking for "ScopedCallback", "CallbackRunner", or

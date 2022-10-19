@@ -690,6 +690,28 @@ base::RepeatingCallback<int()> cb = base::BindRepeating([](){ return 5; });
 base::RepeatingClosure void_cb = base::BindRepeating(base::IgnoreResult(cb));
 ```
 
+### Ignoring Arguments Values
+
+Sometimes you want to pass a function that doesn't take any arguments in a
+place that expects a callback that takes some arguments
+
+```cpp
+void DoSomething() {
+  cout << "Hello!" << endl;
+}
+base::RepeatingCallback<void(int)> cb =
+    base::IgnoreArgs<int>(base::BindRepeating(&DoSomething));
+```
+
+Similarly, you may want to use an existing closure in a place that expects a
+value-accepting callback.
+
+```cpp
+base::OnceClosure closure = base::BindOnce([](){ cout << "Hello!" << endl; });
+base::OnceCallback<void(int)> int_cb =
+    base::IgnoreArgs<int>(std::move(closure));
+```
+
 ## Quick reference for binding parameters to BindOnce() and BindRepeating()
 
 Bound parameters are specified as arguments to `base::Bind{Once, Repeating}()`

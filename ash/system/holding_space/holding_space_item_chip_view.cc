@@ -67,12 +67,6 @@ constexpr float kInProgressImageScaleFactor = 0.7f;
 
 // Helpers ---------------------------------------------------------------------
 
-template <typename... T>
-base::RepeatingCallback<void(T...)> IgnoreArgs(
-    base::RepeatingCallback<void()> callback) {
-  return base::BindRepeating([](T...) {}).Then(std::move(callback));
-}
-
 void ToCenteredSize(gfx::Rect* rect, const gfx::Size& size) {
   rect->Outset(gfx::Outsets::VH(size.height(), size.width()));
   rect->ClampToCenteredSize(size);
@@ -350,9 +344,10 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   progress_ring_animation_changed_subscription_ =
       HoldingSpaceAnimationRegistry::GetInstance()
           ->AddProgressRingAnimationChangedCallbackForKey(
-              item, IgnoreArgs<ProgressRingAnimation*>(base::BindRepeating(
-                        &HoldingSpaceItemChipView::UpdateImageTransform,
-                        base::Unretained(this))));
+              item,
+              base::IgnoreArgs<ProgressRingAnimation*>(base::BindRepeating(
+                  &HoldingSpaceItemChipView::UpdateImageTransform,
+                  base::Unretained(this))));
 
   UpdateImage();
   UpdateImageAndProgressIndicatorVisibility();

@@ -266,4 +266,35 @@ TEST(CallbackHelpersTest, SplitSplitOnceCallback_SecondSplit) {
   EXPECT_CHECK_DEATH(std::move(cb1).Run(&count));
 }
 
+TEST(CallbackHelpersTest, IgnoreArgs) {
+  int count = 0;
+  base::RepeatingClosure repeating_closure =
+      base::BindRepeating(&Increment, &count);
+  base::OnceClosure once_closure = base::BindOnce(&Increment, &count);
+
+  base::RepeatingCallback<void(int)> repeating_int_cb =
+      base::IgnoreArgs<int>(repeating_closure);
+  EXPECT_EQ(0, count);
+  repeating_int_cb.Run(42);
+  EXPECT_EQ(1, count);
+  repeating_int_cb.Run(42);
+  EXPECT_EQ(2, count);
+
+  base::OnceCallback<void(int)> once_int_cb =
+      base::IgnoreArgs<int>(std::move(once_closure));
+  EXPECT_EQ(2, count);
+  std::move(once_int_cb).Run(42);
+  EXPECT_EQ(3, count);
+}
+
+TEST(CallbackHelpersTest, IgnoreArgs_EmptyCallback) {
+  base::RepeatingCallback<void(int)> repeating_int_cb =
+      base::IgnoreArgs<int>(base::RepeatingClosure());
+  EXPECT_FALSE(repeating_int_cb);
+
+  base::OnceCallback<void(int)> once_int_cb =
+      base::IgnoreArgs<int>(base::OnceClosure());
+  EXPECT_FALSE(once_int_cb);
+}
+
 }  // namespace

@@ -211,18 +211,6 @@ base::OnceClosure UIThreadTrampoline(base::OnceClosure callback) {
 }
 #endif  // BUILDFLAG(ENABLE_NACL)
 
-template <typename T>
-void IgnoreArgumentHelper(base::OnceClosure callback, T unused_argument) {
-  std::move(callback).Run();
-}
-
-// Another convenience method to turn a callback without arguments into one that
-// accepts (and ignores) a single argument.
-template <typename T>
-base::OnceCallback<void(T)> IgnoreArgument(base::OnceClosure callback) {
-  return base::BindOnce(&IgnoreArgumentHelper<T>, std::move(callback));
-}
-
 // Returned by ChromeBrowsingDataRemoverDelegate::GetOriginTypeMatcher().
 bool DoesOriginMatchEmbedderMask(uint64_t origin_type_mask,
                                  const url::Origin& origin,
@@ -1020,7 +1008,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (offline_page_model)
         offline_page_model->DeleteCachedPagesByURLPredicate(
             filter,
-            IgnoreArgument<offline_pages::OfflinePageModel::DeletePageResult>(
+            base::IgnoreArgs<offline_pages::OfflinePageModel::DeletePageResult>(
                 CreateTaskCompletionClosure(TracingDataType::kOfflinePages)));
     }
 #endif
