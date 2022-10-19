@@ -37,6 +37,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -73,9 +74,11 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -252,9 +255,10 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<PageLoadMetricsTestWaiter> CreatePageLoadMetricsTestWaiter(
-      const char* observer_name) {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+      const char* observer_name,
+      content::WebContents* web_contents = nullptr) {
+    if (!web_contents)
+      web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     return std::make_unique<PageLoadMetricsTestWaiter>(web_contents,
                                                        observer_name);
   }
@@ -3501,6 +3505,141 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   // should match the main frame value because the iframe content was created
   // after input in the main frame.
   ASSERT_EQ(all_frames_value, main_frame_value);
+}
+
+class PageLoadMetricsBrowserTestDiscardedPage
+    : public PageLoadMetricsBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    PageLoadMetricsBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ public:
+  content::WebContents* OpenTabAndNavigate() {
+    content::OpenURLParams page(embedded_test_server()->GetURL("/title1.html"),
+                                content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_TYPED, false);
+
+    content::WindowedNotificationObserver load(
+        content::NOTIFICATION_NAV_ENTRY_COMMITTED,
+        content::NotificationService::AllSources());
+
+    content::WebContents* contents = browser()->OpenURL(page);
+
+    std::unique_ptr<PageLoadMetricsTestWaiter> waiter =
+        CreatePageLoadMetricsTestWaiter("lcp_waiter", contents);
+
+    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                   TimingField::kLargestContentfulPaint);
+
+    // This is to wait for the navigation entry to be committed.
+    load.Wait();
+
+    // This is to wait for LCP to be observed on browser side.
+    waiter->Wait();
+
+    return contents;
+  }
+
+  double GetLCPTimeFromEmittedLCPEntry(content::WebContents* contents) {
+    content::EvalJsResult lcp_time =
+        EvalJs(contents, ScriptForGettingLCPTimeFromEmittedLCPEntry());
+    return lcp_time.ExtractDouble();
+  }
+
+  void AddNewTab() {
+    std::unique_ptr<content::WebContents> web_contents_to_add =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser()->profile()));
+
+    web_contents_to_add->GetController().LoadURL(
+        embedded_test_server()->GetURL("/title1.html"), content::Referrer(),
+        ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+
+    auto* tab_strip_model = browser()->tab_strip_model();
+    tab_strip_model->AddWebContents(std::move(web_contents_to_add), -1,
+                                    ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                    AddTabTypes::ADD_ACTIVE);
+  }
+
+  void DiscardTab(content::WebContents* contents) {
+    resource_coordinator::TabLifecycleUnitExternal::FromWebContents(contents)
+        ->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
+  }
+
+  std::string ScriptForGettingLCPTimeFromEmittedLCPEntry() {
+    return R"(
+   (async () => {
+        return await new Promise(resolve => {
+          (new PerformanceObserver(list => {
+              const entries = list.getEntries();
+              for (let entry of entries) {
+                  if (entry) {
+                      resolve(entry.startTime);
+                  }
+              }
+          }))
+          .observe({
+              type: 'largest-contentful-paint',
+              buffered: true
+          });
+      })
+  })())";
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestDiscardedPage,
+                       UkmIsRecordedForDiscardedForegroundTabPage) {
+  // Open a new foreground tab and navigate. The new tab would be of index 1
+  // which would be used below in verifying the tab is discarded.
+  content::WebContents* contents = OpenTabAndNavigate();
+
+  // Wait for LCP emission and observation. This is to ensure there is an LCP
+  // entry to report at the time of discardin the page.
+  double lcp_time = GetLCPTimeFromEmittedLCPEntry(contents);
+
+  // Discard tab.
+  DiscardTab(contents);
+
+  // Verify tab is discarded.
+  EXPECT_TRUE(
+      browser()->tab_strip_model()->GetWebContentsAt(1)->WasDiscarded());
+
+  // Verify page load metric is recorded.
+  EXPECT_NEAR(
+      GetUKMPageLoadMetric(
+          PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name),
+      lcp_time, 10);
+}
+
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestDiscardedPage,
+                       UkmIsRecordedForDiscardedBackgroundTabPage) {
+  // Open a new foreground tab and navigate.
+  content::WebContents* contents = OpenTabAndNavigate();
+
+  // Wait for LCP emission and observation.
+  double lcp_time = GetLCPTimeFromEmittedLCPEntry(contents);
+
+  // Add a new tab.
+  AddNewTab();
+
+  // Verify the first tab is backgrounded.
+  EXPECT_NE(contents, browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Discard tab.
+  DiscardTab(contents);
+
+  // Verify tab is discarded.
+  EXPECT_TRUE(
+      browser()->tab_strip_model()->GetWebContentsAt(1)->WasDiscarded());
+
+  // Verify page load metric is recorded.
+  EXPECT_NEAR(
+      GetUKMPageLoadMetric(
+          PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name),
+      lcp_time, 10);
 }
 
 // Test is flaky. https://crbug.com/1260953
