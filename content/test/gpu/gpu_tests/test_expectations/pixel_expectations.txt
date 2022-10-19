@@ -449,6 +449,11 @@ crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_WebGLS
 crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_BackgroundImage [ RetryOnFailure ]
 crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 
+# Flakes on Mac (Nvidia)
+crbug.com/1376520 [ mac nvidia ] Pixel_BackgroundImage [ Failure ]
+crbug.com/1376520 [ mac nvidia ] Pixel_CSSFilterEffects [ Failure ]
+crbug.com/1376520 [ mac nvidia ] Pixel_CSSFilterEffects_NoOverlays [ Failure ]
+
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
 # Pixel_VideoStreamFromWebGL* tests sporadically fail on Linux FYI Release (NVIDIA) bot
