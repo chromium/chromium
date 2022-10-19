@@ -132,6 +132,25 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
   }
 
+#if defined(PA_GLUE_CORE_POOLS)
+  // Checks whether the address belongs to either regular or BRP pool.
+  // Returns false for nullptr.
+  static PA_ALWAYS_INLINE bool IsInCorePools(uintptr_t address) {
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+    const uintptr_t core_pools_base_mask = setup_.core_pools_base_mask_;
+#else
+    // When PA_GLUE_CORE_POOLS is on, the BRP pool is placed at the end of the
+    // regular pool, effectively forming one virtual pool of a twice bigger
+    // size. Adjust the mask appropriately.
+    constexpr uintptr_t core_pools_base_mask = kRegularPoolBaseMask << 1;
+#endif
+    bool ret =
+        (address & core_pools_base_mask) == setup_.regular_pool_base_address_;
+    PA_DCHECK(ret == (IsInRegularPool(address) || IsInBRPPool(address)));
+    return ret;
+  }
+#endif  // defined(PA_GLUE_CORE_POOLS)
+
   static PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
     return address - setup_.brp_pool_base_address_;
@@ -265,7 +284,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
           regular_pool_base_mask_(0),
           brp_pool_base_mask_(0),
+#if defined(PA_GLUE_CORE_POOLS)
+          core_pools_base_mask_(0),
 #endif
+#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
           configurable_pool_base_mask_(0) {
     }
 
@@ -278,7 +300,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t regular_pool_base_mask_;
         uintptr_t brp_pool_base_mask_;
+#if defined(PA_GLUE_CORE_POOLS)
+        uintptr_t core_pools_base_mask_;
 #endif
+#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t configurable_pool_base_mask_;
       };
 
@@ -344,6 +369,14 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAllocRegularPool(uintptr_t address) {
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInBRPPool(address);
 }
+
+#if defined(PA_GLUE_CORE_POOLS)
+// Checks whether the address belongs to either regular or BRP pool.
+// Returns false for nullptr.
+PA_ALWAYS_INLINE bool IsManagedByPartitionAllocCorePools(uintptr_t address) {
+  return internal::PartitionAddressSpace::IsInCorePools(address);
+}
+#endif  // defined(PA_GLUE_CORE_POOLS)
 
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(

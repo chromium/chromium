@@ -398,6 +398,7 @@ buildflag_header("partition_alloc_buildflags") {
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
+    "GLUE_CORE_POOLS=$glue_core_pools",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$_enable_shadow_metadata_for_64_bits_pointers",
 
     # *Scan is currently only used by Chromium.

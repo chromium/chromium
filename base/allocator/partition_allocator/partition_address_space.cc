@@ -168,6 +168,29 @@ void PartitionAddressSpace::Init() {
     return;
 
   size_t regular_pool_size = RegularPoolSize();
+  size_t brp_pool_size = BRPPoolSize();
+
+#if defined(PA_GLUE_CORE_POOLS)
+  // Gluing core pools (regular & BRP) makes sense only when both pools are of
+  // the same size. This the only way we can check belonging to either of the
+  // two with a single bitmask operation.
+  PA_CHECK(regular_pool_size == brp_pool_size);
+
+  // TODO(crbug.com/1362969): Support PA_ENABLE_SHADOW_METADATA.
+  int pools_fd = -1;
+
+  size_t glued_pool_sizes = regular_pool_size * 2;
+  // Note, BRP pool requires to be preceded by a "forbidden zone", which is
+  // conveniently taken care of by the last guard page of the regular pool.
+  setup_.regular_pool_base_address_ =
+      AllocPages(glued_pool_sizes, glued_pool_sizes,
+                 PageAccessibilityConfiguration::kInaccessible,
+                 PageTag::kPartitionAlloc, pools_fd);
+  if (!setup_.regular_pool_base_address_)
+    HandlePoolAllocFailure();
+  setup_.brp_pool_base_address_ =
+      setup_.regular_pool_base_address_ + regular_pool_size;
+#else  // defined(PA_GLUE_CORE_POOLS)
 #if defined(PA_ENABLE_SHADOW_METADATA)
   int regular_pool_fd = memfd_create("/regular_pool", MFD_CLOEXEC);
 #else
@@ -180,19 +203,8 @@ void PartitionAddressSpace::Init() {
   if (!setup_.regular_pool_base_address_)
     HandlePoolAllocFailure();
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
-  setup_.regular_pool_base_mask_ = ~(regular_pool_size - 1);
 #endif
-  PA_DCHECK(!(setup_.regular_pool_base_address_ & (regular_pool_size - 1)));
-  AddressPoolManager::GetInstance().Add(
-      kRegularPoolHandle, setup_.regular_pool_base_address_, regular_pool_size);
-  PA_DCHECK(!IsInRegularPool(setup_.regular_pool_base_address_ - 1));
-  PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_));
-  PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_ +
-                            regular_pool_size - 1));
-  PA_DCHECK(
-      !IsInRegularPool(setup_.regular_pool_base_address_ + regular_pool_size));
 
-  size_t brp_pool_size = BRPPoolSize();
 #if defined(PA_ENABLE_SHADOW_METADATA)
   int brp_pool_fd = memfd_create("/brp_pool", MFD_CLOEXEC);
 #else
@@ -211,16 +223,55 @@ void PartitionAddressSpace::Init() {
   if (!base_address)
     HandlePoolAllocFailure();
   setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
+#endif  // defined(PA_GLUE_CORE_POOLS)
+
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+  setup_.regular_pool_base_mask_ = ~(regular_pool_size - 1);
   setup_.brp_pool_base_mask_ = ~(brp_pool_size - 1);
+#if defined(PA_GLUE_CORE_POOLS)
+  // When PA_GLUE_CORE_POOLS is on, the BRP pool is placed at the end of the
+  // regular pool, effectively forming one virtual pool of a twice bigger
+  // size. Adjust the mask appropriately.
+  setup_.core_pools_base_mask_ = setup_.regular_pool_base_mask_ << 1;
+  PA_DCHECK(setup_.core_pools_base_mask_ == (setup_.brp_pool_base_mask_ << 1));
 #endif
-  PA_DCHECK(!(setup_.brp_pool_base_address_ & (brp_pool_size - 1)));
+#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+
+  AddressPoolManager::GetInstance().Add(
+      kRegularPoolHandle, setup_.regular_pool_base_address_, regular_pool_size);
   AddressPoolManager::GetInstance().Add(
       kBRPPoolHandle, setup_.brp_pool_base_address_, brp_pool_size);
+
+  // Sanity check pool alignment.
+  PA_DCHECK(!(setup_.regular_pool_base_address_ & (regular_pool_size - 1)));
+  PA_DCHECK(!(setup_.brp_pool_base_address_ & (brp_pool_size - 1)));
+#if defined(PA_GLUE_CORE_POOLS)
+  PA_DCHECK(!(setup_.regular_pool_base_address_ & (glued_pool_sizes - 1)));
+#endif
+
+  // Sanity check pool belonging.
+  PA_DCHECK(!IsInRegularPool(setup_.regular_pool_base_address_ - 1));
+  PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_));
+  PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_ +
+                            regular_pool_size - 1));
+  PA_DCHECK(
+      !IsInRegularPool(setup_.regular_pool_base_address_ + regular_pool_size));
   PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ - 1));
   PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_));
   PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_ + brp_pool_size - 1));
   PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ + brp_pool_size));
+#if defined(PA_GLUE_CORE_POOLS)
+  PA_DCHECK(!IsInCorePools(setup_.regular_pool_base_address_ - 1));
+  PA_DCHECK(IsInCorePools(setup_.regular_pool_base_address_));
+  PA_DCHECK(
+      IsInCorePools(setup_.regular_pool_base_address_ + regular_pool_size - 1));
+  PA_DCHECK(
+      IsInCorePools(setup_.regular_pool_base_address_ + regular_pool_size));
+  PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_ - 1));
+  PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_));
+  PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_ + brp_pool_size - 1));
+  PA_DCHECK(!IsInCorePools(setup_.brp_pool_base_address_ + brp_pool_size));
+#endif  // defined(PA_GLUE_CORE_POOLS)
 
 #if PA_STARSCAN_USE_CARD_TABLE
   // Reserve memory for PCScan quarantine card table.
@@ -273,12 +324,18 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
 }
 
 void PartitionAddressSpace::UninitForTesting() {
+#if defined(PA_GLUE_CORE_POOLS)
+  // The core pools (regular & BRP) were allocated using a single allocation of
+  // double size.
+  FreePages(setup_.regular_pool_base_address_, 2 * RegularPoolSize());
+#else   // defined(PA_GLUE_CORE_POOLS)
   FreePages(setup_.regular_pool_base_address_, RegularPoolSize());
   // For BRP pool, the allocation region includes a "forbidden zone" before the
   // pool.
   const size_t kForbiddenZoneSize = PageAllocationGranularity();
   FreePages(setup_.brp_pool_base_address_ - kForbiddenZoneSize,
             BRPPoolSize() + kForbiddenZoneSize);
+#endif  // defined(PA_GLUE_CORE_POOLS)
   // Do not free pages for the configurable pool, because its memory is owned
   // by someone else, but deinitialize it nonetheless.
   setup_.regular_pool_base_address_ = kUninitializedPoolBaseAddress;

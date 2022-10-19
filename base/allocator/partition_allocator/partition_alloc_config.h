@@ -46,6 +46,14 @@ static_assert(sizeof(void*) != 8, "");
 #endif  // defined(PA_HAS_64_BITS_POINTERS) &&
         // (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN))
 
+// Puts the regular and BRP pools right next to each other, so that we can
+// check "belongs to one of the two pools" with a single bitmask operation.
+//
+// This setting is specific to 64-bit, as 32-bit has a different implementation.
+#if defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(GLUE_CORE_POOLS)
+#define PA_GLUE_CORE_POOLS
+#endif
+
 #if defined(PA_HAS_64_BITS_POINTERS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 #include <linux/version.h>

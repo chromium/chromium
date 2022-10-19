@@ -27,6 +27,10 @@ declare_args() {
 
 declare_args() {
   use_freeslot_bitmap = false
+
+  # Puts the regular and BRP pools right next to each other, so that we can
+  # check "belongs to one of the two pools" with a single bitmask operation.
+  glue_core_pools = false
 }
 
 declare_args() {
