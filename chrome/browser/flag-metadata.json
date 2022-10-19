@@ -163,11 +163,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "android-permissions-cache",
-    "owners": [ "peilinwang@google.com"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "android-picture-in-picture-api",
     "owners": [ "steimel", "jazzhsu", "media-dev" ],
     "expiry_milestone": 120

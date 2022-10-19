@@ -9741,13 +9741,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kEnableArcNearbyShareFuseBox)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-permissions-cache",
-     flag_descriptions::kAndroidPermissionsCacheName,
-     flag_descriptions::kAndroidPermissionsCacheDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(::features::kAndroidPermissionsCache)},
-#endif
-
     {"autofill-enable-card-art-image",
      flag_descriptions::kAutofillEnableCardArtImageName,
      flag_descriptions::kAutofillEnableCardArtImageDescription, kOsAll,
