@@ -36,7 +36,7 @@ class HealthModuleDelegate {
 
   bool IsInitialized() const;
 
-  base::WeakPtr<HealthModuleDelegate> GetWeakPtr() const;
+  base::WeakPtr<HealthModuleDelegate> GetWeakPtr();
 
  protected:
   // Checker should be used by subclass too.

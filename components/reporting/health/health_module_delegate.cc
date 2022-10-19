@@ -46,7 +46,7 @@ void HealthModuleDelegate::PostHealthRecord(HealthDataHistory record) {
   DoPostHealthRecord(std::move(record));
 }
 
-base::WeakPtr<HealthModuleDelegate> HealthModuleDelegate::GetWeakPtr() const {
+base::WeakPtr<HealthModuleDelegate> HealthModuleDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 }  // namespace reporting
