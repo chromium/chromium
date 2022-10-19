@@ -356,17 +356,9 @@ class ScrollObserver : public RenderWidgetHost::InputEventObserver {
   bool scroll_end_received_;
 };
 
-// Android: crbug.com/825629
-// NDEBUG: crbug.com/1063045
-#if BUILDFLAG(IS_ANDROID) || defined(NDEBUG)
-#define MAYBE_ScrollBubblingFromNestedOOPIFTest \
-  DISABLED_ScrollBubblingFromNestedOOPIFTest
-#else
-#define MAYBE_ScrollBubblingFromNestedOOPIFTest \
-  ScrollBubblingFromNestedOOPIFTest
-#endif
+// Disabled for high flakiness on multiple platforms. See crbug.com/1063045
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       MAYBE_ScrollBubblingFromNestedOOPIFTest) {
+                       DISABLED_ScrollBubblingFromNestedOOPIFTest) {
   ui::GestureConfiguration::GetInstance()->set_scroll_debounce_interval_in_ms(
       0);
   GURL main_url(embedded_test_server()->GetURL(
