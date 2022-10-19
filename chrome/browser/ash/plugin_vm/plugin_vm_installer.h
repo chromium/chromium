@@ -212,10 +212,7 @@ class PluginVmInstaller : public KeyedService,
   // Download progress/completion happens in the public methods OnDownload*().
 
   void StartImport();
-  void DetectImageType();
-  void OnImageTypeDetected();
-  // Ran as a blocking task preparing the FD for the ImportDiskImage call.
-  absl::optional<base::ScopedFD> PrepareFD();
+  void OnImageTypeDetected(bool is_iso_image);
   // Calls CreateDiskImage or ImportDiskImage, depending on whether we are
   // creating a new VM from an ISO, or importing a prepared VM image.
   void OnFDPrepared(absl::optional<base::ScopedFD> maybe_fd);

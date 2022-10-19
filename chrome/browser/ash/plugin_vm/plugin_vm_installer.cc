@@ -81,6 +81,16 @@ bool IsIsoImage(const base::FilePath& image) {
   return false;
 }
 
+absl::optional<base::ScopedFD> PrepareFD(const base::FilePath& image) {
+  base::File file(image, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid()) {
+    LOG(ERROR) << "Failed to open " << image.value();
+    return absl::nullopt;
+  }
+
+  return base::ScopedFD(file.TakePlatformFile());
+}
+
 PluginVmSetupResult BucketForCancelledInstall(
     PluginVmInstaller::InstallingState installing_state) {
   switch (installing_state) {
@@ -605,19 +615,16 @@ void PluginVmInstaller::StartImport() {
   UpdateInstallingState(InstallingState::kImporting);
   UpdateProgress(/*state_progress=*/0);
 
-  base::ThreadPool::PostTaskAndReply(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&PluginVmInstaller::DetectImageType,
-                     base::Unretained(this)),
+      base::BindOnce(&IsIsoImage, downloaded_image_),
       base::BindOnce(&PluginVmInstaller::OnImageTypeDetected,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PluginVmInstaller::DetectImageType() {
-  creating_new_vm_ = IsIsoImage(downloaded_image_);
-}
+void PluginVmInstaller::OnImageTypeDetected(bool is_iso_image) {
+  creating_new_vm_ = is_iso_image;
 
-void PluginVmInstaller::OnImageTypeDetected() {
   if (!GetConciergeClient()->IsDiskImageProgressSignalConnected()) {
     LOG(ERROR) << "Disk image progress signal is not connected";
     OnImported(FailureReason::SIGNAL_NOT_CONNECTED);
@@ -628,24 +635,9 @@ void PluginVmInstaller::OnImageTypeDetected() {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&PluginVmInstaller::PrepareFD, base::Unretained(this)),
+      base::BindOnce(&PrepareFD, downloaded_image_),
       base::BindOnce(&PluginVmInstaller::OnFDPrepared,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-absl::optional<base::ScopedFD> PluginVmInstaller::PrepareFD() {
-  // In case import has been cancelled meantime.
-  if (state_ != State::kInstalling)
-    return absl::nullopt;
-
-  base::File file(downloaded_image_,
-                  base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid()) {
-    LOG(ERROR) << "Failed to open " << downloaded_image_.value();
-    return absl::nullopt;
-  }
-
-  return base::ScopedFD(file.TakePlatformFile());
 }
 
 void PluginVmInstaller::OnFDPrepared(absl::optional<base::ScopedFD> maybeFd) {
