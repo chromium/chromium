@@ -136,6 +136,9 @@ crbug.com/1345767 [ mac asan ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture
 # Test is very slow and there's no point in running it as a trace test.
 crbug.com/1356246 TraceTest_SVGHuge [ Skip ]
 
+# This test was mainly meant to run as a pixel test, so skipping in this test suite.
+TraceTest_MediaFoundationClearDirectComposition [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################

@@ -291,6 +291,17 @@ class PixelTestPages():
                 'media/test/data/four-colors-incompatible-stride.y4m'),
             test_rect=[0, 0, 240, 135],
             matching_algorithm=VERY_PERMISSIVE_SOBEL_ALGO),
+        PixelTestPage(
+            'pixel_media_foundation_clear_dcomp.html?src='
+            '/media/test/data/four-colors.mp4',
+            base_name + '_MediaFoundationClearDirectComposition',
+            test_rect=[0, 0, 256, 256],
+            browser_args=[
+                '--enable-features=MediaFoundationClearPlayback, \
+                MediaFoundationClearRendering:strategy/direct-composition'
+            ],
+            matching_algorithm=VERY_PERMISSIVE_SOBEL_ALGO,
+            grace_period_end=date(2022, 10, 24)),
 
         # The MP4 contains H.264 which is primarily hardware decoded on bots.
         PixelTestPage(
