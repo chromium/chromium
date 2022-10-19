@@ -225,10 +225,8 @@ class FileSystemEntryURLLoader
       OnClientComplete(result);
       return;
     }
-    // TODO(https://crbug.com/1221308): function will use StorageKey for the
-    // receiver frame/worker in future CL
-    url_ = params_.file_system_context->CrackURL(
-        request.url, blink::StorageKey(url::Origin::Create(request.url)));
+    url_ =
+        params_.file_system_context->CrackURL(request.url, params_.storage_key);
     if (!url_.is_valid()) {
       OnClientComplete(net::ERR_FILE_NOT_FOUND);
       return;

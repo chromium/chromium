@@ -404,8 +404,6 @@ FileSystemURL IsolatedContext::CreateCrackedFileSystemURL(
     const blink::StorageKey& storage_key,
     FileSystemType type,
     const base::FilePath& virtual_path) const {
-  // TODO(https://crbug.com/1221308): function will have StorageKey param in
-  // future CL; conversion from url::Origin is temporary
   return CrackFileSystemURL(FileSystemURL(storage_key, type, virtual_path));
 }
 
