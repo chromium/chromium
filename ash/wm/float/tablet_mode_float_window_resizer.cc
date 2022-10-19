@@ -80,6 +80,12 @@ void TabletModeFloatWindowResizer::Drag(const gfx::PointF& location_in_parent,
 }
 
 void TabletModeFloatWindowResizer::CompleteDrag() {
+  // We can reach this state if the user hits a state changing accelerator
+  // mid-drag.
+  aura::Window* float_window = GetTarget();
+  if (!WindowState::Get(float_window)->IsFloated())
+    return;
+
   // Revert the drag if the window hasn't moved enough. This will prevent
   // accidental magnetisms.
   const gfx::Vector2dF distance =
@@ -89,7 +95,6 @@ void TabletModeFloatWindowResizer::CompleteDrag() {
     return;
   }
 
-  aura::Window* float_window = GetTarget();
   if (snap_position_ != SplitViewController::SnapPosition::kNone) {
     // Let `SplitViewController` handle windows that should be snapped.
     auto* split_view_controller =
@@ -106,8 +111,6 @@ void TabletModeFloatWindowResizer::CompleteDrag() {
   // `FloatController` will magnetize windows to one of the corners if it
   // remains in float state and not tucked.
   auto* float_controller = Shell::Get()->float_controller();
-  DCHECK(WindowState::Get(float_window)->IsFloated());
-
   float_controller->OnDragCompletedForTablet(float_window,
                                              last_location_in_parent_);
 }

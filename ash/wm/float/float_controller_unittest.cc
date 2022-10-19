@@ -844,6 +844,8 @@ TEST_F(TabletWindowFloatTest, Rotation) {
               shelf_size);
 }
 
+// TODO(sammiequon): Update dragging to use touch instead of mouse.
+
 // Tests that dragged float window follows the mouse/touch. Regression test for
 // https://crbug.com/1362727.
 TEST_F(TabletWindowFloatTest, Dragging) {
@@ -865,6 +867,23 @@ TEST_F(TabletWindowFloatTest, Dragging) {
     event_generator->MoveTouch(point);
     EXPECT_EQ(point, header_view->GetBoundsInScreen().CenterPoint());
   }
+}
+
+// Tests that there is no crash when maximizing a dragged floated window.
+// Regression test for https://b/254107825.
+TEST_F(TabletWindowFloatTest, MaximizeWhileDragging) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Press the accelerator to maximize before releasing touch.
+  HeaderView* header_view = GetHeaderView(window.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressTouch(header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveTouch(gfx::Point(100, 100));
+  PressAndReleaseKey(ui::VKEY_OEM_PLUS, ui::EF_ALT_DOWN);
+
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
 }
 
 // Tests that on drag release, the window sticks to one of the four corners of
