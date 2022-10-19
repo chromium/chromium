@@ -148,11 +148,17 @@ class CORE_EXPORT NGLogicalAnchorQuery
       anchor_references_;
 };
 
-// This computes anchor queries for each containing block for when
-// block-fragmented. When block-fragmented, all OOFs are added to their
-// fragmentainers instead of their containing blocks, but anchor queries can be
-// different for each containing block.
-class CORE_EXPORT NGLogicalAnchorQueryForFragmentation {
+// This computes anchor queries for each containing block by traversing
+// descendants.
+//
+// Normally anchor queries are propagated to the containing block chain during
+// the layout. However, there are somme exceptions.
+// 1. When the containing block is an inline box, all OOFs are added to their
+// inline formatting context.
+// 2. When the containing block is in block fragmentation context, all OOFs are
+// added to their fragmentainers.
+// In such cases, traversing descendants is needed to compute anchor queries.
+class CORE_EXPORT NGLogicalAnchorQueryMap {
   STACK_ALLOCATED();
 
  public:

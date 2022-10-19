@@ -503,8 +503,7 @@ void NGLogicalAnchorQuery::SetFromPhysical(
   }
 }
 
-const NGLogicalAnchorQuery&
-NGLogicalAnchorQueryForFragmentation::StitchedAnchorQuery(
+const NGLogicalAnchorQuery& NGLogicalAnchorQueryMap::StitchedAnchorQuery(
     const LayoutObject& containing_block) const {
   DCHECK(&containing_block);
   DCHECK(containing_block.CanContainAbsolutePositionObjects() ||
@@ -515,7 +514,7 @@ NGLogicalAnchorQueryForFragmentation::StitchedAnchorQuery(
   return NGLogicalAnchorQuery::Empty();
 }
 
-void NGLogicalAnchorQueryForFragmentation::Update(
+void NGLogicalAnchorQueryMap::Update(
     const base::span<const NGLogicalLink>& children,
     const base::span<const NGLogicalOOFNodeForFragmentation>& oof_nodes,
     const LayoutBox& root,

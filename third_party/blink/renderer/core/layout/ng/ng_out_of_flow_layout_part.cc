@@ -1133,7 +1133,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                         container_builder_->BorderScrollbarPadding())
           .block_size;
 
-  NGLogicalAnchorQueryForFragmentation stitched_anchor_queries;
+  NGLogicalAnchorQueryMap stitched_anchor_queries;
   NGBoxFragmentBuilder* builder_for_anchor_query = container_builder_;
   if (outer_container_builder_) {
     // If this is an inner layout of the nested block fragmentation, and if this
