@@ -27,7 +27,13 @@
 
 namespace web_app {
 namespace {
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsTrue;
+using ::testing::Optional;
+using ::testing::Pointee;
+using ::testing::Property;
 
 class InstallIsolatedAppFromCommandLineBrowserTest
     : public InProcessBrowserTest {
@@ -70,21 +76,18 @@ class InstallIsolatedAppFromCommandLineBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(zelin): enable this browser test
 IN_PROC_BROWSER_TEST_F(InstallIsolatedAppFromCommandLineBrowserTest,
-                       DISABLED_AppFromCommandLineIsInstalled) {
+                       AppFromCommandLineIsInstalled) {
   WaitForInstallation();
 
-  ASSERT_THAT(GetWebAppRegistrar().CountUserInstalledApps(), 1);
+  std::vector<const WebApp*> apps;
+  for (const WebApp& app : GetWebAppRegistrar().GetApps()) {
+    apps.push_back(&app);
+  }
 
-  std::vector<AppId> all_apps = GetWebAppRegistrar().GetAppIds();
-
-  ASSERT_THAT(all_apps.size(), 1);
-
-  AppId app_id = all_apps.front();
-
-  const WebApp* web_app = GetWebAppRegistrar().GetAppById(app_id);
-  EXPECT_THAT(web_app->isolation_data().has_value(), IsTrue());
+  EXPECT_THAT(
+      apps,
+      ElementsAre(Pointee(Property(&WebApp::isolation_data, Optional(_)))));
 }
 
 }  // namespace

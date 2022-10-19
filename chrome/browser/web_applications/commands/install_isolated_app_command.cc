@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -68,6 +69,7 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     const IsolationData& isolation_data,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
+    content::BrowserContext& browser_context,
     WebAppInstallFinalizer& install_finalizer,
     base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
                                            InstallIsolatedAppCommandError>)>
@@ -78,6 +80,7 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
       isolation_data_(isolation_data),
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
+      browser_context_(browser_context),
       install_finalizer_(install_finalizer),
       data_retriever_(std::make_unique<WebAppDataRetriever>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -106,15 +109,23 @@ Lock& InstallIsolatedAppCommand::lock() const {
 
 void InstallIsolatedAppCommand::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CreateStoragePartition();
   LoadUrl();
+}
+
+void InstallIsolatedAppCommand::CreateStoragePartition() {
+  browser_context_->GetStoragePartition(
+      isolation_info_.storage_partition_config(&browser_context_),
+      /*can_create=*/true);
 }
 
 void InstallIsolatedAppCommand::LoadUrl() {
   DCHECK(web_contents_ != nullptr);
 
-  // |web_app::IsolatedWebAppURLLoaderFactory| uses the isolation data in order
-  // to determine the current state of content serving (installation process vs
-  // application data serving) and source of data (proxy, web bundle, etc...).
+  // |web_app::IsolatedWebAppURLLoaderFactory| uses the isolation data in
+  // order to determine the current state of content serving (installation
+  // process vs application data serving) and source of data (proxy, web
+  // bundle, etc...).
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents_)
       .set_isolation_data(isolation_data_);
 

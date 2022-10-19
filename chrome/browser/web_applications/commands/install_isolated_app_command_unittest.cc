@@ -78,6 +78,7 @@ using ::testing::IsNull;
 using ::testing::IsTrue;
 using ::testing::NiceMock;
 using ::testing::Not;
+using ::testing::NotNull;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointee;
@@ -241,7 +242,8 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
 
     return std::make_unique<InstallIsolatedAppCommand>(
         url_info, isolation_data.value(), std::move(web_contents),
-        std::move(url_loader), *install_finalizer_, std::move(callback));
+        std::move(url_loader), *profile(), *install_finalizer_,
+        std::move(callback));
   }
 
   base::expected<InstallIsolatedAppCommandSuccess,
@@ -613,6 +615,56 @@ TEST_F(InstallIsolatedAppCommandTest, IsolationDataSentToFinalizer) {
                       VariantWith<IsolationData::DevModeProxy>(Field(
                           "proxy_url", &IsolationData::DevModeProxy::proxy_url,
                           Eq("http://some-testing-proxy-url.com/"))))))));
+}
+
+TEST_F(InstallIsolatedAppCommandTest,
+       CreatesStorageParitionDuringInstallation) {
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
+  url_loader->SetNextLoadUrlResult(
+      url_info.origin().GetURL().Resolve(
+          ".well-known/_generated_install_page.html"),
+      WebAppUrlLoader::Result::kUrlLoaded);
+
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
+                                        .url_loader = std::move(url_loader)}),
+              IsInstallationOk());
+
+  EXPECT_THAT(profile()->GetStoragePartition(
+                  url_info.storage_partition_config(profile()),
+                  /*can_create=*/false),
+              NotNull());
+}
+
+TEST_F(InstallIsolatedAppCommandTest, CreatesStoragePartitionBeforeUrlLoading) {
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
+  url_loader->SetNextLoadUrlResult(
+      url_info.origin().GetURL().Resolve(
+          ".well-known/_generated_install_page.html"),
+      WebAppUrlLoader::Result::kUrlLoaded);
+
+  content::StoragePartition* storage_partition_during_url_loading = nullptr;
+  url_loader->TrackLoadUrlCalls(base::BindLambdaForTesting(
+      [&](const GURL& unused_url, content::WebContents* unused_web_contents,
+          WebAppUrlLoader::UrlComparison unused_url_comparison) {
+        storage_partition_during_url_loading = profile()->GetStoragePartition(
+            url_info.storage_partition_config(profile()),
+            /*can_create=*/false);
+      }));
+
+  EXPECT_THAT(profile()->GetStoragePartition(
+                  url_info.storage_partition_config(profile()),
+                  /*can_create=*/false),
+              IsNull());
+
+  EXPECT_THAT(ExecuteCommand({
+                  .url_info = url_info,
+                  .url_loader = std::move(url_loader),
+              }),
+              IsInstallationOk());
+
+  EXPECT_THAT(storage_partition_during_url_loading, NotNull());
 }
 
 using InstallIsolatedAppCommandManifestTest = InstallIsolatedAppCommandTest;

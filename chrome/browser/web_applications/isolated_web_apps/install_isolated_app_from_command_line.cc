@@ -76,7 +76,8 @@ void ScheduleInstallIsolatedApp(GURL url,
   provider.command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedAppCommand>(
           url_info.value(), isolation_data, CreateWebContents(profile),
-          std::make_unique<WebAppUrlLoader>(), provider.install_finalizer(),
+          std::make_unique<WebAppUrlLoader>(), profile,
+          provider.install_finalizer(),
           base::BindOnce(&ReportInstallationResult).Then(std::move(callback))));
 }
 

@@ -26,8 +26,9 @@
 class GURL;
 
 namespace content {
+class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace web_app {
 
@@ -73,6 +74,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       const IsolationData& isolation_data,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
+      content::BrowserContext& browser_context,
       WebAppInstallFinalizer& install_finalizer,
       base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
                                              InstallIsolatedAppCommandError>)>
@@ -108,6 +110,8 @@ class InstallIsolatedAppCommand : public WebAppCommand {
                   std::map<GURL, std::vector<SkBitmap>> icons_map,
                   std::map<GURL, int /*http_status_code*/> icons_http_results);
 
+  void CreateStoragePartition();
+
   void LoadUrl();
   void OnLoadUrl(WebAppUrlLoaderResult result);
 
@@ -135,6 +139,8 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   std::unique_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
+
+  base::raw_ref<content::BrowserContext> browser_context_;
 
   WebAppInstallFinalizer& install_finalizer_;
 
