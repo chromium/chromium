@@ -289,8 +289,8 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   DeviceSettingsService::Get()->AddObserver(this);
-  if (g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->AddObserver(this);
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager())
+    profile_manager_observation_.Observe(profile_manager);
 
   auto* session_manager = session_manager::SessionManager::Get();
   // SessionManager might not exist in unit tests.
@@ -379,8 +379,6 @@ void ChromeUserManagerImpl::UpdateOwnerId() {
 }
 
 ChromeUserManagerImpl::~ChromeUserManagerImpl() {
-  if (g_browser_process->profile_manager())
-    g_browser_process->profile_manager()->RemoveObserver(this);
   if (DeviceSettingsService::IsInitialized())
     DeviceSettingsService::Get()->RemoveObserver(this);
 }
@@ -1164,6 +1162,10 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
     SwitchActiveUser(GetPendingUserSwitchID());
     SetPendingUserSwitchId(EmptyAccountId());
   }
+}
+
+void ChromeUserManagerImpl::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
 }
 
 bool ChromeUserManagerImpl::IsUserAllowed(

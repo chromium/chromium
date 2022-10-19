@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 // TODO(https://crbug.com/1164001): move to forward declaration when fixed.
 #include "chrome/browser/ash/session_length_limiter.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
@@ -129,6 +130,7 @@ class ChromeUserManagerImpl
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // UserManagerBase:
   void OnUserRemoved(const AccountId& account_id) override;
@@ -280,6 +282,9 @@ class ChromeUserManagerImpl
 
   std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
       removed_user_cache_;
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   bool user_added_removed_reporter_intialized_ = false;
 
