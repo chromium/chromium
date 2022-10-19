@@ -889,10 +889,12 @@ class GpuIntegrationTest(
         'android-not-webview',
         # These GPUs are analogous to a particular device, and specifying the
         # device name is clearer.
+        'arm-mali-g52',  # android-sm-a135m
         'arm-mali-t860',  # chromeos-board-kevin
         'qualcomm-adreno-(tm)-330',  # android-nexus-5
         'qualcomm-adreno-(tm)-418',  # android-nexus-5x
         'qualcomm-adreno-(tm)-540',  # android-pixel-2
+        'qualcomm-adreno-(tm)-610',  # android-sm-a235m
         'qualcomm-adreno-(tm)-640',  # android-pixel-4
         'arm-mali-g78',  # android-pixel-6
         'nvidia-nvidia-tegra',  # android-shield-android-tv
