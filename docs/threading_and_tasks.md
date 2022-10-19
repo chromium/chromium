@@ -728,7 +728,7 @@ class MyTest : public testing::Test {
    base::test::TaskEnvironment task_environment_;
 };
 
-TEST(MyTest, MyTest) {
+TEST_F(MyTest, FirstTest) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE, base::BindOnce(&A));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                    base::BindOnce(&B));
