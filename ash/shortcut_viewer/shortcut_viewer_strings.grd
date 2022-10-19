@@ -239,39 +239,6 @@
     Accessibility
   </message>
 
-  <!-- Modifiers -->
-  <message name="IDS_KSV_MODIFIER_CONTROL" desc="Name of [Ctrl] key. Shouldn't be translated in many languages.">
-    Ctrl
-  </message>
-  <message name="IDS_KSV_MODIFIER_ALT" desc="Name of [Alt] key. Shouldn't be translated in many languages.">
-    Alt
-  </message>
-  <message name="IDS_KSV_MODIFIER_SHIFT" desc="Name of [Shift] key. Shouldn't be translated in many languages.">
-    Shift
-  </message>
-  <message name="IDS_KSV_MODIFIER_SEARCH" desc="Name of [Search] key.">
-    Search
-  </message>
-  <message name="IDS_KSV_MODIFIER_LAUNCHER" desc="Name of [Launcher] key.">
-    Launcher
-  </message>
-
-  <!-- Keys with special label -->
-  <message name="IDS_KSV_KEY_ESCAPE" desc="Name of [Esc] key. Shouldn't be translated in many languages.">
-    Esc
-  </message>
-  <message name="IDS_KSV_KEY_SPACE" desc="Name of [Space] key.">
-    Space
-  </message>
-  <message name="IDS_KSV_KEY_OVERVIEW" desc="Name of the key on a Chromebook keyboard that triggers the overview mode.">
-    Overview mode key
-  </message>
-  <message name="IDS_KSV_KEY_FULLSCREEN" desc="Name of the key on a Chromebook keyboard that triggers the fullscreen.">
-    Fullscreen key
-  </message>
-  <message name="IDS_KSV_KEY_SNAPSHOT" desc="Name of the key on a Chromebook keyboard that triggers the capture mode.">
-    Capture mode key
-  </message>
   <message name="IDS_KSV_KEY_NO_MAPPING" desc="Alternative string to display if no meaning found for the key.">
     Not supported with current keyboard layout
   </message>

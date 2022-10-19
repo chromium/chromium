@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/accelerators/keyboard_code_util.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
@@ -180,8 +181,7 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
 
   for (ui::KeyboardCode key_code : data.shortcut_key_codes) {
     // Get the string for the |DomKey|.
-    std::u16string dom_key_string =
-        keyboard_shortcut_viewer::GetStringForKeyboardCode(key_code);
+    std::u16string dom_key_string = ash::GetStringForKeyboardCode(key_code);
 
     // See ash/shortcut_viewer/views/keyboard_shortcut_item_view.cc for details
     // on why this is necessary.
@@ -189,7 +189,7 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
         data.description_message_id == IDS_KSV_DESCRIPTION_IDC_ZOOM_PLUS ||
         data.description_message_id == IDS_KSV_DESCRIPTION_IDC_ZOOM_MINUS;
     if (dont_remap_position) {
-      dom_key_string = keyboard_shortcut_viewer::GetStringForKeyboardCode(
+      dom_key_string = ash::GetStringForKeyboardCode(
           key_code, /*remap_positional_key=*/false);
     }
 

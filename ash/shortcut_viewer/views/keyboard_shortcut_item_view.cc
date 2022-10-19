@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accelerators/keyboard_code_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -87,7 +88,8 @@ std::unique_ptr<views::View> CreateSeparatorView() {
 std::unique_ptr<views::View> CreateBubbleView(const std::u16string& bubble_text,
                                               ui::KeyboardCode key_code) {
   auto bubble_view = std::make_unique<BubbleView>();
-  const gfx::VectorIcon* vector_icon = GetVectorIconForKeyboardCode(key_code);
+  const gfx::VectorIcon* vector_icon =
+      ash::GetVectorIconForKeyboardCode(key_code);
   if (vector_icon)
     bubble_view->SetIcon(*vector_icon);
   else
@@ -123,7 +125,7 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
     auto iter = GetKeycodeToString16Cache()->find(key_code);
     if (iter == GetKeycodeToString16Cache()->end()) {
       iter = GetKeycodeToString16Cache()
-                 ->emplace(key_code, GetStringForKeyboardCode(key_code))
+                 ->emplace(key_code, ash::GetStringForKeyboardCode(key_code))
                  .first;
     }
 
@@ -140,8 +142,8 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
         item.description_message_id == IDS_KSV_DESCRIPTION_IDC_ZOOM_PLUS ||
         item.description_message_id == IDS_KSV_DESCRIPTION_IDC_ZOOM_MINUS;
     if (dont_remap_position) {
-      dom_key_string =
-          GetStringForKeyboardCode(key_code, /*remap_positional_key=*/false);
+      dom_key_string = ash::GetStringForKeyboardCode(
+          key_code, /*remap_positional_key=*/false);
     }
 
     // If the |key_code| has no mapped |dom_key_string|, we use alternative
