@@ -45,7 +45,9 @@
 
 @end
 
-@implementation SettingsCheckCell
+@implementation SettingsCheckCell {
+  UIView* _leadingIconBackground;
+}
 
 @synthesize textLabel = _textLabel;
 @synthesize detailTextLabel = _detailTextLabel;
@@ -59,12 +61,18 @@
     // Attributes of row contents in order or appearance (if present).
 
     // `_leadingImageView` attributes
+    _leadingIconBackground = [[UIView alloc] init];
+    _leadingIconBackground.translatesAutoresizingMaskIntoConstraints = NO;
+    _leadingIconBackground.hidden = NO;
+    [contentView addSubview:_leadingIconBackground];
+
     _leadingImageView = [[UIImageView alloc] init];
     _leadingImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _leadingImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     _leadingImageView.contentMode = UIViewContentModeCenter;
-    _leadingImageView.hidden = NO;
     [contentView addSubview:_leadingImageView];
+
+    AddSameCenterConstraints(_leadingImageView, _leadingIconBackground);
 
     // Text attributes.
     // `_textLabel` attributes.
@@ -124,7 +132,7 @@
                        constant:kTableViewHorizontalSpacing];
 
     _textWithLeadingImageConstraint = [textLayoutGuide.leadingAnchor
-        constraintEqualToAnchor:_leadingImageView.trailingAnchor
+        constraintEqualToAnchor:_leadingIconBackground.trailingAnchor
                        constant:kTableViewImagePadding];
 
     NSLayoutConstraint* heightConstraint = [self.contentView.heightAnchor
@@ -176,15 +184,15 @@
       [_activityIndicator.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
 
-      // Constraints for `_leadingImageView`.
-      [_leadingImageView.leadingAnchor
+      // Constraints for `_leadingIconBackground`.
+      [_leadingIconBackground.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_leadingImageView.widthAnchor
+      [_leadingIconBackground.widthAnchor
           constraintEqualToConstant:kTableViewIconImageSize],
-      [_leadingImageView.heightAnchor
-          constraintEqualToAnchor:_leadingImageView.widthAnchor],
-      [_leadingImageView.centerYAnchor
+      [_leadingIconBackground.heightAnchor
+          constraintEqualToAnchor:_leadingIconBackground.widthAnchor],
+      [_leadingIconBackground.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
 
       // Constraints for `_textLabel` and `_detailTextLabel`.
@@ -249,12 +257,14 @@
                   tintColor:(UIColor*)tintColor
             backgroundColor:(UIColor*)backgroundColor
                cornerRadius:(CGFloat)cornerRadius {
-  self.leadingImageView.tintColor = tintColor;
-  self.leadingImageView.backgroundColor = backgroundColor;
-  self.leadingImageView.layer.cornerRadius = cornerRadius;
-  BOOL hidden = !image;
   self.leadingImageView.image = image;
-  self.leadingImageView.hidden = hidden;
+  self.leadingImageView.tintColor = tintColor;
+
+  _leadingIconBackground.backgroundColor = backgroundColor;
+  _leadingIconBackground.layer.cornerRadius = cornerRadius;
+
+  BOOL hidden = !image;
+  _leadingIconBackground.hidden = hidden;
   // Update the leading text constraint based on `image` being provided.
   if (hidden) {
     _textWithLeadingImageConstraint.active = NO;

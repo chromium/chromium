@@ -73,6 +73,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 @end
 
 @implementation TableViewDetailIconCell {
+  UIView* _iconBackground;
   UIImageView* _iconImageView;
   NSLayoutConstraint* _iconHiddenConstraint;
   NSLayoutConstraint* _iconVisibleConstraint;
@@ -88,11 +89,17 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
     self.isAccessibilityElement = YES;
     UIView* contentView = self.contentView;
 
+    _iconBackground = [[UIView alloc] init];
+    _iconBackground.translatesAutoresizingMaskIntoConstraints = NO;
+    _iconBackground.hidden = YES;
+    [contentView addSubview:_iconBackground];
+
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _iconImageView.contentMode = UIViewContentModeCenter;
-    _iconImageView.hidden = YES;
-    [contentView addSubview:_iconImageView];
+    [_iconBackground addSubview:_iconImageView];
+
+    AddSameCenterConstraints(_iconBackground, _iconImageView);
 
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -112,7 +119,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
         constraintEqualToAnchor:contentView.leadingAnchor
                        constant:kTableViewHorizontalSpacing];
     _iconVisibleConstraint = [_textStackView.leadingAnchor
-        constraintEqualToAnchor:_iconImageView.trailingAnchor
+        constraintEqualToAnchor:_iconBackground.trailingAnchor
                        constant:kTableViewImagePadding];
 
     _minimumCellHeightConstraint = [contentView.heightAnchor
@@ -126,14 +133,14 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 
     [NSLayoutConstraint activateConstraints:@[
       // Icon.
-      [_iconImageView.leadingAnchor
+      [_iconBackground.leadingAnchor
           constraintEqualToAnchor:contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_iconImageView.widthAnchor
+      [_iconBackground.widthAnchor
           constraintEqualToConstant:kTableViewIconImageSize],
-      [_iconImageView.heightAnchor
-          constraintEqualToAnchor:_iconImageView.widthAnchor],
-      [_iconImageView.centerYAnchor
+      [_iconBackground.heightAnchor
+          constraintEqualToAnchor:_iconBackground.widthAnchor],
+      [_iconBackground.centerYAnchor
           constraintEqualToAnchor:contentView.centerYAnchor],
 
       // Text labels.
@@ -173,11 +180,11 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 
   _iconImageView.image = image;
   _iconImageView.tintColor = tintColor;
-  _iconImageView.backgroundColor = backgroundColor;
-  _iconImageView.layer.cornerRadius = cornerRadius;
+  _iconBackground.backgroundColor = backgroundColor;
+  _iconBackground.layer.cornerRadius = cornerRadius;
 
   BOOL hidden = (image == nil);
-  _iconImageView.hidden = hidden;
+  _iconBackground.hidden = hidden;
   if (hidden) {
     _iconVisibleConstraint.active = NO;
     _iconHiddenConstraint.active = YES;

@@ -23,7 +23,13 @@ using TableViewDetailIconItemTest = PlatformTest;
 
 // Returns the UIImageView containing the icon within the cell.
 UIImageView* GetImageView(TableViewDetailIconCell* cell) {
-  return base::mac::ObjCCastStrict<UIImageView>(cell.contentView.subviews[0]);
+  return base::mac::ObjCCastStrict<UIImageView>(
+      cell.contentView.subviews[0].subviews[0]);
+}
+
+// Returns the UIView containing the Image View.
+UIView* GetImageBackgroundView(TableViewDetailIconCell* cell) {
+  return cell.contentView.subviews[0];
 }
 
 }  // namespace
@@ -63,12 +69,13 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
 
   // Check image-based property.
   UIImageView* image_view = GetImageView(detail_cell);
+  UIView* image_background = GetImageBackgroundView(detail_cell);
   EXPECT_NSEQ([[ChromeIcon searchIcon]
                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
               image_view.image);
   EXPECT_EQ(UIColor.whiteColor, image_view.tintColor);
-  EXPECT_EQ(UIColor.blackColor, image_view.backgroundColor);
-  EXPECT_EQ(8, image_view.layer.cornerRadius);
+  EXPECT_EQ(UIColor.blackColor, image_background.backgroundColor);
+  EXPECT_EQ(8, image_background.layer.cornerRadius);
 }
 
 // Tests that the icon image is updated when set from cell.
@@ -88,10 +95,11 @@ TEST_F(TableViewDetailIconItemTest, iconImageUpdate) {
 
   // Check original image is set.
   UIImageView* image_view = GetImageView(detail_cell);
+  UIView* image_background = GetImageBackgroundView(detail_cell);
   EXPECT_NSEQ([ChromeIcon searchIcon], image_view.image);
   EXPECT_NE(UIColor.whiteColor, image_view.tintColor);
-  EXPECT_EQ(nil, image_view.backgroundColor);
-  EXPECT_EQ(0, image_view.layer.cornerRadius);
+  EXPECT_EQ(nil, image_background.backgroundColor);
+  EXPECT_EQ(0, image_background.layer.cornerRadius);
 
   [detail_cell setIconImage:[ChromeIcon infoIcon]
                   tintColor:UIColor.whiteColor
@@ -103,8 +111,8 @@ TEST_F(TableViewDetailIconItemTest, iconImageUpdate) {
                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
               image_view.image);
   EXPECT_EQ(UIColor.whiteColor, image_view.tintColor);
-  EXPECT_EQ(UIColor.blackColor, image_view.backgroundColor);
-  EXPECT_EQ(8, image_view.layer.cornerRadius);
+  EXPECT_EQ(UIColor.blackColor, image_background.backgroundColor);
+  EXPECT_EQ(8, image_background.layer.cornerRadius);
 }
 
 // Tests that the icon image is removed when icon is set to nil from cell.
@@ -127,12 +135,13 @@ TEST_F(TableViewDetailIconItemTest, iconImageNilUpdate) {
 
   // Check original image is set.
   UIImageView* image_view = GetImageView(detail_cell);
+  UIView* image_background = GetImageBackgroundView(detail_cell);
   EXPECT_NSEQ([[ChromeIcon searchIcon]
                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
               image_view.image);
   EXPECT_EQ(UIColor.whiteColor, image_view.tintColor);
-  EXPECT_EQ(UIColor.blackColor, image_view.backgroundColor);
-  EXPECT_EQ(8, image_view.layer.cornerRadius);
+  EXPECT_EQ(UIColor.blackColor, image_background.backgroundColor);
+  EXPECT_EQ(8, image_background.layer.cornerRadius);
 
   [detail_cell setIconImage:nil
                   tintColor:nil
@@ -142,8 +151,8 @@ TEST_F(TableViewDetailIconItemTest, iconImageNilUpdate) {
   // Check image is set to nil.
   EXPECT_NSEQ(nil, image_view.image);
   EXPECT_NE(UIColor.whiteColor, image_view.tintColor);
-  EXPECT_EQ(nil, image_view.backgroundColor);
-  EXPECT_EQ(0, image_view.layer.cornerRadius);
+  EXPECT_EQ(nil, image_background.backgroundColor);
+  EXPECT_EQ(0, image_background.layer.cornerRadius);
 }
 
 // Tests that the UI layout constraint axis for the text labels is updated to

@@ -40,7 +40,9 @@ const CGFloat kSwitchTrailingPadding = 22;
 
 @end
 
-@implementation TableViewSwitchCell
+@implementation TableViewSwitchCell {
+  UIView* _iconBackground;
+}
 
 @synthesize textLabel = _textLabel;
 @synthesize detailTextLabel = _detailTextLabel;
@@ -51,11 +53,17 @@ const CGFloat kSwitchTrailingPadding = 22;
   if (self) {
     self.isAccessibilityElement = YES;
 
+    _iconBackground = [[UIView alloc] init];
+    _iconBackground.translatesAutoresizingMaskIntoConstraints = NO;
+    _iconBackground.hidden = YES;
+    [self.contentView addSubview:_iconBackground];
+
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _iconImageView.contentMode = UIViewContentModeCenter;
-    _iconImageView.hidden = YES;
-    [self.contentView addSubview:_iconImageView];
+    [_iconBackground addSubview:_iconImageView];
+
+    AddSameCenterConstraints(_iconBackground, _iconImageView);
 
     UILayoutGuide* textLayoutGuide = [[UILayoutGuide alloc] init];
     [self.contentView addLayoutGuide:textLayoutGuide];
@@ -90,7 +98,7 @@ const CGFloat kSwitchTrailingPadding = 22;
 
     // Set up the constraints assuming that the icon image is hidden.
     _iconVisibleConstraint = [textLayoutGuide.leadingAnchor
-        constraintEqualToAnchor:_iconImageView.trailingAnchor
+        constraintEqualToAnchor:_iconBackground.trailingAnchor
                        constant:kTableViewImagePadding];
     _iconHiddenConstraint = [textLayoutGuide.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
@@ -125,15 +133,15 @@ const CGFloat kSwitchTrailingPadding = 22;
     ];
 
     [NSLayoutConstraint activateConstraints:@[
-      [_iconImageView.leadingAnchor
+      [_iconBackground.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_iconImageView.widthAnchor
+      [_iconBackground.widthAnchor
           constraintEqualToConstant:kTableViewIconImageSize],
-      [_iconImageView.heightAnchor
-          constraintEqualToAnchor:_iconImageView.widthAnchor],
+      [_iconBackground.heightAnchor
+          constraintEqualToAnchor:_iconBackground.widthAnchor],
 
-      [_iconImageView.centerYAnchor
+      [_iconBackground.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
 
       _iconHiddenConstraint,
@@ -182,12 +190,13 @@ const CGFloat kSwitchTrailingPadding = 22;
         cornerRadius:(CGFloat)cornerRadius {
   BOOL hidden = (image == nil);
 
-  self.iconImageView.tintColor = tintColor;
-  self.iconImageView.backgroundColor = backgroundColor;
-  self.iconImageView.layer.cornerRadius = cornerRadius;
-
   self.iconImageView.image = image;
-  self.iconImageView.hidden = hidden;
+  self.iconImageView.tintColor = tintColor;
+
+  _iconBackground.backgroundColor = backgroundColor;
+  _iconBackground.layer.cornerRadius = cornerRadius;
+
+  _iconBackground.hidden = hidden;
   if (hidden) {
     self.iconVisibleConstraint.active = NO;
     self.iconHiddenConstraint.active = YES;
