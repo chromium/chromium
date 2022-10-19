@@ -144,20 +144,19 @@ bool RemoveNode(BookmarkModel* model,
 }
 
 void GetMetaInfo(const BookmarkNode& node,
-                 base::DictionaryValue* id_to_meta_info_map) {
+                 base::Value::Dict& id_to_meta_info_map) {
   if (!node.IsVisible())
     return;
 
   const BookmarkNode::MetaInfoMap* meta_info = node.GetMetaInfoMap();
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict value;
   if (meta_info) {
     BookmarkNode::MetaInfoMap::const_iterator itr;
     for (itr = meta_info->begin(); itr != meta_info->end(); ++itr) {
-      value.SetKey(itr->first, base::Value(itr->second));
+      value.Set(itr->first, itr->second);
     }
   }
-  id_to_meta_info_map->SetKey(base::NumberToString(node.id()),
-                              std::move(value));
+  id_to_meta_info_map.Set(base::NumberToString(node.id()), std::move(value));
 
   if (node.is_folder()) {
     for (const auto& child : node.children())
