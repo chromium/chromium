@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
@@ -32,17 +32,19 @@ TEST(FeatureProviderTest, ManifestFeatureTypes) {
   const std::vector<Manifest::Type>& extension_types =
       feature->extension_types();
   EXPECT_EQ(8u, extension_types.size());
-  EXPECT_EQ(1, base::STLCount(extension_types, Manifest::TYPE_EXTENSION));
-  EXPECT_EQ(
-      1, base::STLCount(extension_types, Manifest::TYPE_LEGACY_PACKAGED_APP));
-  EXPECT_EQ(1, base::STLCount(extension_types, Manifest::TYPE_PLATFORM_APP));
-  EXPECT_EQ(1, base::STLCount(extension_types, Manifest::TYPE_HOSTED_APP));
-  EXPECT_EQ(1, base::STLCount(extension_types, Manifest::TYPE_THEME));
-  EXPECT_EQ(1, base::STLCount(extension_types, Manifest::TYPE_SHARED_MODULE));
-  EXPECT_EQ(1, base::STLCount(extension_types,
-                              Manifest::TYPE_LOGIN_SCREEN_EXTENSION));
-  EXPECT_EQ(1, base::STLCount(extension_types,
-                              Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION));
+  EXPECT_EQ(1, base::ranges::count(extension_types, Manifest::TYPE_EXTENSION));
+  EXPECT_EQ(1, base::ranges::count(extension_types,
+                                   Manifest::TYPE_LEGACY_PACKAGED_APP));
+  EXPECT_EQ(1,
+            base::ranges::count(extension_types, Manifest::TYPE_PLATFORM_APP));
+  EXPECT_EQ(1, base::ranges::count(extension_types, Manifest::TYPE_HOSTED_APP));
+  EXPECT_EQ(1, base::ranges::count(extension_types, Manifest::TYPE_THEME));
+  EXPECT_EQ(1,
+            base::ranges::count(extension_types, Manifest::TYPE_SHARED_MODULE));
+  EXPECT_EQ(1, base::ranges::count(extension_types,
+                                   Manifest::TYPE_LOGIN_SCREEN_EXTENSION));
+  EXPECT_EQ(1, base::ranges::count(extension_types,
+                                   Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION));
 }
 
 // Tests that real manifest features have the correct availability for an
@@ -93,10 +95,11 @@ TEST(FeatureProviderTest, PermissionFeatureTypes) {
   const std::vector<Manifest::Type>& extension_types =
       feature->extension_types();
   EXPECT_EQ(3u, extension_types.size());
-  EXPECT_EQ(1, base::STLCount(extension_types, Manifest::TYPE_EXTENSION));
-  EXPECT_EQ(
-      1, base::STLCount(extension_types, Manifest::TYPE_LEGACY_PACKAGED_APP));
-  EXPECT_EQ(1, base::STLCount(extension_types, Manifest::TYPE_PLATFORM_APP));
+  EXPECT_EQ(1, base::ranges::count(extension_types, Manifest::TYPE_EXTENSION));
+  EXPECT_EQ(1, base::ranges::count(extension_types,
+                                   Manifest::TYPE_LEGACY_PACKAGED_APP));
+  EXPECT_EQ(1,
+            base::ranges::count(extension_types, Manifest::TYPE_PLATFORM_APP));
 }
 
 // Tests that real permission features have the correct availability for an app.

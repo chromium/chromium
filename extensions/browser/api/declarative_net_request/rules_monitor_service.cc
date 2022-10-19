@@ -4,7 +4,6 @@
 
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -19,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -660,8 +660,8 @@ void RulesMonitorService::UpdateSessionRulesInternal(
       std::move(callback).Run(kSessionRuleCountExceeded);
       return;
     }
-    size_t regex_rule_count = std::count_if(
-        new_rules.begin(), new_rules.end(), [](const dnr_api::Rule& rule) {
+    size_t regex_rule_count =
+        base::ranges::count_if(new_rules, [](const dnr_api::Rule& rule) {
           return !!rule.condition.regex_filter;
         });
     if (regex_rule_count > available_limit.regex_rule_count) {
