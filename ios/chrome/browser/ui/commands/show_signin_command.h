@@ -9,7 +9,7 @@
 
 #include "components/signin/public/base/signin_metrics.h"
 
-@class ChromeIdentity;
+@protocol SystemIdentity;
 
 typedef void (^ShowSigninCommandCompletionCallback)(BOOL succeeded);
 
@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, AuthenticationOperation) {
 // Initializes a command to perform the specified operation with a
 // SigninInteractionController and invoke a possibly-nil callback when finished.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
-                         identity:(ChromeIdentity*)identity
+                         identity:(id<SystemIdentity>)identity
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction
                          callback:(ShowSigninCommandCompletionCallback)callback
@@ -68,7 +68,7 @@ typedef NS_ENUM(NSInteger, AuthenticationOperation) {
 // interaction view controller logins using this identity. If the identity is
 // nil, the interaction view controller asks the user to choose an identity or
 // to add a new one.
-@property(nonatomic, readonly) ChromeIdentity* identity;
+@property(nonatomic, readonly) id<SystemIdentity> identity;
 
 // The access point of this authentication operation.
 @property(nonatomic, readonly) signin_metrics::AccessPoint accessPoint;

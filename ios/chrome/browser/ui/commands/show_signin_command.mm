@@ -19,7 +19,7 @@
 @synthesize callback = _callback;
 
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
-                         identity:(ChromeIdentity*)identity
+                         identity:(id<SystemIdentity>)identity
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction
                          callback:
