@@ -25,7 +25,12 @@ int GetDailyAverageNotificationCount(int notification_count) {
   base::Time date = base::Time::Now();
   base::Time::Exploded date_exploded;
   date.LocalExplode(&date_exploded);
-  return std::ceil(notification_count / date_exploded.day_of_week);
+
+  // |day_of_week| returns 0 for Sunday, but NotificationEngagementService
+  // starts counting on Mondays. So here, setting Sunday as 7 to calculate
+  // average correctly and to prevent calculation errors.
+  int day_of_week = !date_exploded.day_of_week ? 7 : date_exploded.day_of_week;
+  return std::ceil(notification_count / day_of_week);
 }
 
 int ExtractNotificationCount(ContentSettingPatternSource item,

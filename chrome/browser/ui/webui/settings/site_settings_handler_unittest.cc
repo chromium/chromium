@@ -296,7 +296,11 @@ class SiteSettingsHandlerTest : public testing::Test,
     base::Time date = base::Time::Now();
     base::Time::Exploded date_exploded;
     date.LocalExplode(&date_exploded);
-    int day_of_week = date_exploded.day_of_week;
+    // |day_of_week| returns 0 for Sunday, but NotificationEngagementService
+    // starts counting on Mondays. So here, setting Sunday as 7 to record
+    // notifications correctly and to prevent calculation errors.
+    int day_of_week =
+        !date_exploded.day_of_week ? 7 : date_exploded.day_of_week;
 
     // Notification count holds in buckets for each monday. So to calculate
     // necessary notification count, here the day_of_week is calculated.
@@ -3272,8 +3276,7 @@ TEST_F(SiteSettingsHandlerTest, HandleResetNotificationPermissionForOrigin) {
 }
 
 // TODO(crbug.com/137935): Re-enable this test.
-TEST_F(SiteSettingsHandlerTest,
-       DISABLED_PopulateNotificationPermissionReviewData) {
+TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
   // Add a couple of notification permission and check they appear in review
   // list.
   HostContentSettingsMap* map =
@@ -3314,14 +3317,14 @@ TEST_F(SiteSettingsHandlerTest,
 
   // Set a host to have large number of notifications, but low engagement. This
   // should be in review list.
-  RecordNotification(notification_engagement_service, urls[1], 4);
+  RecordNotification(notification_engagement_service, urls[1], 5);
   site_engagement_service->AddPointsForTesting(urls[1], 1.0);
   EXPECT_EQ(blink::mojom::EngagementLevel::LOW,
             site_engagement_service->GetEngagementLevel(urls[1]));
 
   // Set a host to have medium engagement and high notification count. This
   // should not be in review list.
-  RecordNotification(notification_engagement_service, urls[2], 4);
+  RecordNotification(notification_engagement_service, urls[2], 5);
   site_engagement_service->AddPointsForTesting(urls[2], 50.0);
   EXPECT_EQ(blink::mojom::EngagementLevel::MEDIUM,
             site_engagement_service->GetEngagementLevel(urls[2]));
