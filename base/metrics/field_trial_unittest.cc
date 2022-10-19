@@ -52,9 +52,9 @@ scoped_refptr<FieldTrial> CreateFieldTrial(
     const std::string& trial_name,
     int total_probability,
     const std::string& default_group_name) {
+  MockEntropyProvider entropy_provider(0.9);
   return FieldTrialList::FactoryGetFieldTrial(
-      trial_name, total_probability, default_group_name,
-      base::FieldTrialList::GetEntropyProviderForSessionRandomization());
+      trial_name, total_probability, default_group_name, entropy_provider);
 }
 
 // A FieldTrialList::Observer implementation which stores the trial name and
@@ -163,130 +163,70 @@ TEST_F(FieldTrialTest, Registration) {
 }
 
 TEST_F(FieldTrialTest, AbsoluteProbabilities) {
-  char always_true[] = " always true";
-  char default_always_true[] = " default always true";
-  char always_false[] = " always false";
-  char default_always_false[] = " default always false";
-  for (int i = 1; i < 250; ++i) {
-    // Try lots of names, by changing the first character of the name.
-    char c = static_cast<char>(i);
-    always_true[0] = c;
-    default_always_true[0] = c;
-    always_false[0] = c;
-    default_always_false[0] = c;
-
-    scoped_refptr<FieldTrial> trial_true =
-        CreateFieldTrial(always_true, 10, default_always_true);
-    const std::string winner = "TheWinner";
-    trial_true->AppendGroup(winner, 10);
-
-    EXPECT_EQ(winner, trial_true->group_name());
-
-    scoped_refptr<FieldTrial> trial_false =
-        CreateFieldTrial(always_false, 10, default_always_false);
-    trial_false->AppendGroup("ALoser", 0);
-
-    EXPECT_NE("ALoser", trial_false->group_name());
-  }
+  MockEntropyProvider entropy_provider(0.51);
+  scoped_refptr<FieldTrial> trial = FieldTrialList::FactoryGetFieldTrial(
+      "trial name", 100, "Default", entropy_provider);
+  trial->AppendGroup("LoserA", 0);
+  trial->AppendGroup("Winner", 100);
+  trial->AppendGroup("LoserB", 0);
+  EXPECT_EQ(trial->group_name(), "Winner");
 }
 
-TEST_F(FieldTrialTest, RemainingProbability) {
-  // First create a test that hasn't had a winner yet.
-  const std::string winner = "Winner";
-  const std::string loser = "Loser";
-  scoped_refptr<FieldTrial> trial;
-  int counter = 0;
-  do {
-    std::string name = StringPrintf("trial%d", ++counter);
-    trial = CreateFieldTrial(name, 10, winner);
-    trial->AppendGroup(loser, 5);  // 50% chance of not being chosen.
-    // If a group is not assigned, group_ will be kNotFinalized.
-  } while (trial->group_ != FieldTrial::kNotFinalized);
-
-  // And that winner should ALWAYS win.
-  EXPECT_EQ(winner, trial->group_name());
+TEST_F(FieldTrialTest, SmallProbabilities_49) {
+  MockEntropyProvider entropy_provider(0.49);
+  scoped_refptr<FieldTrial> trial = FieldTrialList::FactoryGetFieldTrial(
+      "trial name", 2, "Default", entropy_provider);
+  trial->AppendGroup("first", 1);
+  trial->AppendGroup("second", 1);
+  EXPECT_EQ(trial->group_name(), "first");
 }
 
-TEST_F(FieldTrialTest, FiftyFiftyProbability) {
-  // Check that even with small divisors, we have the proper probabilities, and
-  // all outcomes are possible.  Since this is a 50-50 test, it should get both
-  // outcomes in a few tries, but we'll try no more than 100 times (and be flaky
-  // with probability around 1 in 2^99).
-  bool first_winner = false;
-  bool second_winner = false;
-  int counter = 0;
-  do {
-    std::string name = StringPrintf("FiftyFifty%d", ++counter);
-    std::string default_group_name =
-        StringPrintf("Default FiftyFifty%d", ++counter);
-    scoped_refptr<FieldTrial> trial =
-        CreateFieldTrial(name, 2, default_group_name);
-    trial->AppendGroup("first", 1);  // 50% chance of being chosen.
-    // If group_ is kNotFinalized, then a group assignement hasn't been done.
-    if (trial->group_ != FieldTrial::kNotFinalized) {
-      first_winner = true;
-      continue;
-    }
-    trial->AppendGroup("second", 1);  // Always chosen at this point.
-    EXPECT_FALSE(trial->group_name().empty());
-    second_winner = true;
-  } while ((!second_winner || !first_winner) && counter < 100);
-  EXPECT_TRUE(second_winner);
-  EXPECT_TRUE(first_winner);
+TEST_F(FieldTrialTest, SmallProbabilities_51) {
+  MockEntropyProvider entropy_provider(0.51);
+  scoped_refptr<FieldTrial> trial = FieldTrialList::FactoryGetFieldTrial(
+      "trial name", 2, "Default", entropy_provider);
+  trial->AppendGroup("first", 1);
+  trial->AppendGroup("second", 1);
+  EXPECT_EQ(trial->group_name(), "second");
 }
 
-TEST_F(FieldTrialTest, MiddleProbabilities) {
-  char name[] = " same name";
-  char default_group_name[] = " default same name";
-  bool false_event_seen = false;
-  bool true_event_seen = false;
-  for (int i = 1; i < 250; ++i) {
-    char c = static_cast<char>(i);
-    name[0] = c;
-    default_group_name[0] = c;
-    scoped_refptr<FieldTrial> trial =
-        CreateFieldTrial(name, 10, default_group_name);
-    trial->AppendGroup("MightWin", 5);
-
-    if (trial->group_name() == "MightWin") {
-      true_event_seen = true;
-    } else {
-      false_event_seen = true;
-    }
-    if (false_event_seen && true_event_seen)
-      return;  // Successful test!!!
-  }
-  // Very surprising to get here. Probability should be around 1 in 2 ** 250.
-  // One of the following will fail.
-  EXPECT_TRUE(false_event_seen);
-  EXPECT_TRUE(true_event_seen);
+TEST_F(FieldTrialTest, MiddleProbabilities_49) {
+  MockEntropyProvider entropy_provider(0.49);
+  scoped_refptr<FieldTrial> trial = FieldTrialList::FactoryGetFieldTrial(
+      "trial name", 10, "Default", entropy_provider);
+  trial->AppendGroup("NotDefault", 5);
+  EXPECT_EQ(trial->group_name(), "NotDefault");
 }
 
+TEST_F(FieldTrialTest, MiddleProbabilities_51) {
+  MockEntropyProvider entropy_provider(0.51);
+  scoped_refptr<FieldTrial> trial = FieldTrialList::FactoryGetFieldTrial(
+      "trial name", 10, "Default", entropy_provider);
+  trial->AppendGroup("NotDefault", 5);
+  EXPECT_EQ(trial->group_name(), "Default");
+}
+
+// AppendGroup after finalization should not change the winner.
 TEST_F(FieldTrialTest, OneWinner) {
-  char name[] = "Some name";
-  char default_group_name[] = "Default some name";
-  int group_count(10);
+  MockEntropyProvider entropy_provider(0.51);
+  scoped_refptr<FieldTrial> trial = FieldTrialList::FactoryGetFieldTrial(
+      "trial name", 10, "Default", entropy_provider);
 
-  scoped_refptr<FieldTrial> trial =
-      CreateFieldTrial(name, group_count, default_group_name);
-  std::string winner_name;
-
-  for (int i = 1; i <= group_count; ++i) {
+  for (int i = 0; i < 5; ++i) {
     trial->AppendGroup(StringPrintf("%d", i), 1);
-
-    // Because we keep appending groups, we want to see if the last group that
-    // was added has been assigned or not.
-    if (trial->group_ != FieldTrial::kNotFinalized) {
-      if (winner_name.empty()) {
-        winner_name = trial->group_name();
-      }
-      EXPECT_EQ(winner_name, trial->group_name());
-    }
   }
-  // Since all groups cover the total probability, we have chosen a winner
-  // and it shouldn't be the default group.
-  EXPECT_NE(winner_name, "");
-  EXPECT_NE(winner_name, default_group_name);
+
+  // Entropy 0.51 should assign to the 6th group.
+  // It should be declared the winner and stay that way.
+  trial->AppendGroup("Winner", 1);
+  EXPECT_EQ("Winner", trial->group_name());
+
+  // Note: appending groups after calling group_name() is probably not really
+  // valid usage, since it will DCHECK if the default group won.
+  for (int i = 7; i < 10; ++i) {
+    trial->AppendGroup(StringPrintf("%d", i), 1);
+    EXPECT_EQ("Winner", trial->group_name());
+  }
 }
 
 TEST_F(FieldTrialTest, ActiveGroups) {

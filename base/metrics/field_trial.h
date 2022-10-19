@@ -34,8 +34,7 @@
 // // FieldTrialList.
 // scoped_refptr<base::FieldTrial> trial(
 //     base::FieldTrialList::FactoryGetFieldTrial(
-//         "MemoryExperiment", 1000, "StandardMem",
-//          base::FieldTrialList::GetEntropyProviderForSessionRandomization());
+//         "MemoryExperiment", 1000, "StandardMem", entropy_provider);
 //
 // trial->AppendGroup("HighMem", 20);  // 2% in HighMem group.
 // trial->AppendGroup("LowMem", 20);   // 2% in LowMem group.
@@ -606,10 +605,6 @@ class BASE_EXPORT FieldTrialList {
   static std::vector<const FieldTrial::FieldTrialEntry*>
   GetAllFieldTrialsFromPersistentAllocator(
       PersistentMemoryAllocator const& allocator);
-
-  // Returns an entropy-provider that can be used for session randomized trials.
-  static const FieldTrial::EntropyProvider&
-  GetEntropyProviderForSessionRandomization();
 
   // Returns a pointer to the global instance. This is exposed so that it can
   // be used in a DCHECK in FeatureList and ScopedFeatureList test-only logic

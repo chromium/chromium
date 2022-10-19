@@ -79,17 +79,6 @@ const size_t kFieldTrialAllocationSize = 128 << 10;  // 128 KiB
 constexpr MachPortsForRendezvous::key_type kFieldTrialRendezvousKey = 'fldt';
 #endif
 
-class SessionEntropyProvider : public FieldTrial::EntropyProvider {
- public:
-  SessionEntropyProvider() = default;
-  ~SessionEntropyProvider() override = default;
-
-  double GetEntropyForTrial(StringPiece trial_name,
-                            uint32_t randomization_seed) const override {
-    return RandDouble();
-  }
-};
-
 // Writes out string1 and then string2 to pickle.
 void WriteStringPair(Pickle* pickle,
                      const StringPiece& string1,
@@ -1063,14 +1052,6 @@ FieldTrialList::GetAllFieldTrialsFromPersistentAllocator(
     entries.push_back(entry);
   }
   return entries;
-}
-
-// static
-const FieldTrial::EntropyProvider&
-FieldTrialList::GetEntropyProviderForSessionRandomization() {
-  static const base::NoDestructor<SessionEntropyProvider>
-      session_entropy_provider;
-  return *session_entropy_provider;
 }
 
 // static

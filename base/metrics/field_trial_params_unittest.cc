@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/test/gtest_util.h"
+#include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,9 +22,9 @@ scoped_refptr<FieldTrial> CreateFieldTrial(
     const std::string& trial_name,
     int total_probability,
     const std::string& default_group_name) {
+  MockEntropyProvider entropy_provider(0.9);
   return FieldTrialList::FactoryGetFieldTrial(
-      trial_name, total_probability, default_group_name,
-      base::FieldTrialList::GetEntropyProviderForSessionRandomization());
+      trial_name, total_probability, default_group_name, entropy_provider);
 }
 
 }  // namespace

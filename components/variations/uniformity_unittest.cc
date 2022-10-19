@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <initializer_list>
+#include <map>
 #include <memory>
 
 #include "base/feature_list.h"
@@ -150,6 +151,22 @@ std::vector<std::string> Concat(
   return result;
 }
 
+// Computes the Chi-Square statistic for |assignment_counts| assuming they
+// follow a uniform distribution, where each entry has expected value
+// |expected_value|.
+//
+// The Chi-Square statistic is defined as Sum((O-E)^2/E) where O is the observed
+// value and E is the expected value.
+double ComputeChiSquare(const std::map<std::string, size_t>& assignment_counts,
+                        double expected_value) {
+  double sum = 0;
+  for (const auto& [key, value] : assignment_counts) {
+    const double delta = value - expected_value;
+    sum += (delta * delta) / expected_value;
+  }
+  return sum;
+}
+
 }  // namespace
 
 // We should get the same assignments for clients that have no high entropy.
@@ -245,6 +262,59 @@ TEST(VariationsUniformityTest, DefaultEntropyLayerDefaultEntropyStudy) {
   }
 
   EXPECT_THAT(assignments, ::testing::ElementsAreArray(expected));
+}
+
+TEST(VariationsUniformityTest, SessionEntropyStudyChiSquare) {
+  // Number of buckets in the simulated field trials.
+  const size_t kBucketCount = 20;
+  // Max number of iterations to perform before giving up and failing.
+  const size_t kMaxIterationCount = 10000;
+  // The number of iterations to perform before each time the statistical
+  // significance of the results is checked.
+  const size_t kCheckIterationCount = 1000;
+  // This is the Chi-Square threshold from the Chi-Square statistic table for
+  // 19 degrees of freedom (based on |kBucketCount|) with a 99.9% confidence
+  // level. See: http://www.medcalc.org/manual/chi-square-table.php
+  const double kChiSquareThreshold = 43.82;
+
+  std::map<std::string, size_t> assignment_counts;
+
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name(kStudyName);
+  study->set_consistency(Study_Consistency_SESSION);
+  for (size_t i = 0; i < kBucketCount; i++) {
+    auto* experiment = study->add_experiment();
+    const std::string name =
+        base::StringPrintf("group%02d", static_cast<int>(i));
+    experiment->set_name(name);
+    experiment->set_probability_weight(1);
+    assignment_counts[name] = 0;
+  }
+
+  // The persistent entropy shouldn't matter here.
+  EntropyProviders entropy_providers("not_used", 0, 8000);
+
+  for (size_t i = 1; i <= kMaxIterationCount; i += kCheckIterationCount) {
+    for (size_t j = 0; j < kCheckIterationCount; j++) {
+      assignment_counts[GetUniformityAssignment(seed, entropy_providers)]++;
+    }
+    // Only the configured groups should have been selected.
+    EXPECT_EQ(assignment_counts.size(), kBucketCount);
+
+    const double expected_value_per_bucket =
+        static_cast<double>(i) / kBucketCount;
+    const double chi_square =
+        ComputeChiSquare(assignment_counts, expected_value_per_bucket);
+    if (chi_square < kChiSquareThreshold)
+      break;
+
+    // If |i == kMaxIterationCount|, the Chi-Square statistic did not
+    // converge after |kMaxIterationCount|.
+    EXPECT_LT(i, kMaxIterationCount)
+        << "Failed with chi_square = " << chi_square << " after "
+        << kMaxIterationCount << " iterations.";
+  }
 }
 
 }  // namespace variations

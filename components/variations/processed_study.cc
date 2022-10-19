@@ -245,7 +245,7 @@ ProcessedStudy::SelectEntropyProviderForStudy(
       // randomization (which is more expensive to compute), since the result
       // will be the same.
       all_assignments_to_one_group_) {
-    return base::FieldTrialList::GetEntropyProviderForSessionRandomization();
+    return entropy_providers.session_entropy();
   }
   if (entropy_providers.default_entropy_is_high_entropy() &&
       !ShouldStudyUseLowEntropy()) {

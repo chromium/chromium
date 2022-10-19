@@ -88,6 +88,14 @@ double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
   return static_cast<double>(x_ordinal) / entropy_domain_;
 }
 
+SessionEntropyProvider::~SessionEntropyProvider() = default;
+
+double SessionEntropyProvider::GetEntropyForTrial(
+    base::StringPiece trial_name,
+    uint32_t randomization_seed) const {
+  return base::RandDouble();
+}
+
 EntropyProviders::EntropyProviders(const std::string& high_entropy_value,
                                    uint16_t low_entropy_value,
                                    size_t low_entropy_domain)
@@ -108,6 +116,11 @@ const base::FieldTrial::EntropyProvider& EntropyProviders::default_entropy()
 
 const base::FieldTrial::EntropyProvider& EntropyProviders::low_entropy() const {
   return low_entropy_;
+}
+
+const base::FieldTrial::EntropyProvider& EntropyProviders::session_entropy()
+    const {
+  return session_entropy_;
 }
 
 }  // namespace variations

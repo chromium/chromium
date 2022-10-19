@@ -5,6 +5,7 @@
 #include "components/variations/variations_associated_data.h"
 
 #include "base/metrics/field_trial.h"
+#include "base/test/mock_entropy_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -25,9 +26,9 @@ scoped_refptr<base::FieldTrial> CreateFieldTrial(
     const std::string& trial_name,
     int total_probability,
     const std::string& default_group_name) {
+  base::MockEntropyProvider entropy_provider(0.9);
   return base::FieldTrialList::FactoryGetFieldTrial(
-      trial_name, total_probability, default_group_name,
-      base::FieldTrialList::GetEntropyProviderForSessionRandomization());
+      trial_name, total_probability, default_group_name, entropy_provider);
 }
 
 }  // namespace

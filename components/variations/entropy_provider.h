@@ -70,6 +70,15 @@ class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider final
   const size_t entropy_domain_;
 };
 
+class SessionEntropyProvider : public base::FieldTrial::EntropyProvider {
+ public:
+  SessionEntropyProvider() = default;
+  ~SessionEntropyProvider() override;
+
+  double GetEntropyForTrial(base::StringPiece trial_name,
+                            uint32_t randomization_seed) const override;
+};
+
 class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
  public:
   // Construct providers from the given entropy sources.
@@ -87,6 +96,7 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
   virtual const base::FieldTrial::EntropyProvider& default_entropy() const;
   // Gets the low entropy source.
   virtual const base::FieldTrial::EntropyProvider& low_entropy() const;
+  virtual const base::FieldTrial::EntropyProvider& session_entropy() const;
 
   bool default_entropy_is_high_entropy() const {
     return high_entropy_.has_value();
@@ -97,6 +107,7 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
  private:
   absl::optional<SHA1EntropyProvider> high_entropy_;
   NormalizedMurmurHashEntropyProvider low_entropy_;
+  SessionEntropyProvider session_entropy_;
 };
 
 }  // namespace variations
