@@ -237,10 +237,11 @@ bool InterfaceFactoryImpl::IsEmpty() {
     return false;
 #endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
 
-#if BUILDFLAG(ENABLE_MOJO_RENDERER)
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
+    BUILDFLAG(IS_WIN)
   if (!renderer_receivers_.empty())
     return false;
-#endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
+#endif
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   if (!cdm_receivers_.empty())
@@ -272,9 +273,10 @@ void InterfaceFactoryImpl::SetReceiverDisconnectHandler() {
   audio_encoder_receivers_.set_disconnect_handler(disconnect_cb);
 #endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
 
-#if BUILDFLAG(ENABLE_MOJO_RENDERER)
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
+    BUILDFLAG(IS_WIN)
   renderer_receivers_.set_disconnect_handler(disconnect_cb);
-#endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
+#endif
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   cdm_receivers_.set_disconnect_handler(disconnect_cb);
