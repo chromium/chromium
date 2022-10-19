@@ -15,6 +15,10 @@ namespace crash_keys {
 // of crashes that occur when the app is backgrounded.
 void SetCurrentlyInBackground(bool background);
 
+// Sets a key if the app is terminating. This will allow tracking of crashes
+// that occur when the app is terminating.
+void SetCrashedAfterAppWillTerminate();
+
 // Sets a key if `signedIn` is true, unset if false. The key indicates that the
 // user is signed-in.
 void SetCurrentlySignedIn(bool signedIn);

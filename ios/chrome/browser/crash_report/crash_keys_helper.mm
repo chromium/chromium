@@ -28,6 +28,7 @@ const char kMemoryWarningCount[] = "memory_warning_count";
 const char kGridToVisibleTabAnimation[] = "grid_to_visible_tab_animation";
 static crash_reporter::CrashKeyString<1028> kRemoveGridToVisibleTabAnimationKey(
     kGridToVisibleTabAnimation);
+const char kCrashedAfterAppWillTerminate[] = "crashed_after_app_will_terminate";
 
 // Multiple state information are combined into one CrashReportMultiParameter
 // to save limited and finite number of ReportParameters.
@@ -73,6 +74,11 @@ void SetMemoryWarningInProgress(bool value) {
     key.Set("yes");
   else
     key.Clear();
+}
+
+void SetCrashedAfterAppWillTerminate() {
+  static crash_reporter::CrashKeyString<4> key(kCrashedAfterAppWillTerminate);
+  key.Set("yes");
 }
 
 void SetCurrentFreeMemoryInKB(int value) {
