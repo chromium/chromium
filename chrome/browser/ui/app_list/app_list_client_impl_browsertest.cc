@@ -65,8 +65,6 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
@@ -113,9 +111,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
   ASSERT_NE(nullptr, extension_app);
   EXPECT_FALSE(delegate->IsAppOpen(extension_app->id()));
   {
-    content::WindowedNotificationObserver app_loaded_observer(
-        content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver app_loaded_observer;
     apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
         extension_app->id(),
         apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
@@ -136,9 +132,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsPlatformAppOpen) {
   const extensions::Extension* app = InstallPlatformApp("minimal");
   EXPECT_FALSE(delegate->IsAppOpen(app->id()));
   {
-    content::WindowedNotificationObserver app_loaded_observer(
-        content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-        content::NotificationService::AllSources());
+    content::CreateAndLoadWebContentsObserver app_loaded_observer;
     LaunchPlatformApp(app);
     app_loaded_observer.Wait();
   }
