@@ -433,8 +433,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
               *results.suggest_results[2].suggestion_group_id());
 
     ASSERT_EQ(u"san francisco", results.suggest_results[3].suggestion());
-    // This suggestion belongs to an unrecognized group.
-    ASSERT_EQ(absl::nullopt, results.suggest_results[3].suggestion_group_id());
+    ASSERT_EQ(static_cast<omnibox::GroupId>(40009),
+              results.suggest_results[3].suggestion_group_id());
   }
   {
     std::string json_data = R"([
@@ -523,8 +523,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
               *results.suggest_results[2].suggestion_group_id());
 
     ASSERT_EQ(u"san francisco", results.suggest_results[3].suggestion());
-    // This suggestion belongs to an unrecognized group.
-    ASSERT_EQ(absl::nullopt, results.suggest_results[3].suggestion_group_id());
+    ASSERT_EQ(static_cast<omnibox::GroupId>(40009),
+              results.suggest_results[3].suggestion_group_id());
   }
   {
     std::string json_data = R"([
@@ -625,8 +625,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
               *results.suggest_results[2].suggestion_group_id());
 
     ASSERT_EQ(u"san francisco", results.suggest_results[3].suggestion());
-    // This suggestion belongs to an unrecognized group.
-    ASSERT_EQ(absl::nullopt, results.suggest_results[3].suggestion_group_id());
+    ASSERT_EQ(static_cast<omnibox::GroupId>(40000),
+              results.suggest_results[3].suggestion_group_id());
   }
   {
     std::string json_data = R"([
@@ -735,7 +735,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
               *results.suggest_results[4].suggestion_group_id());
     ASSERT_EQ(omnibox::GROUP_VISITED_DOC_RELATED,
               *results.suggest_results[5].suggestion_group_id());
-    ASSERT_EQ(absl::nullopt, results.suggest_results[6].suggestion_group_id());
+    ASSERT_EQ(static_cast<omnibox::GroupId>(40006),
+              results.suggest_results[6].suggestion_group_id());
   }
 }
 
@@ -830,8 +831,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
               *results.suggest_results[2].suggestion_group_id());
 
     ASSERT_EQ(u"san francisco", results.suggest_results[3].suggestion());
-    // This suggestion belongs to an unrecognized group.
-    ASSERT_EQ(absl::nullopt, results.suggest_results[3].suggestion_group_id());
+    ASSERT_EQ(static_cast<omnibox::GroupId>(40000),
+              results.suggest_results[3].suggestion_group_id());
   }
   {
     omnibox::GroupsInfo groups_info;
