@@ -45,6 +45,13 @@ config("compiler") {
     # by shrinking the alignment gap between segments. This also causes all
     # segments to be mapped adjacently, which breakpad relies on.
     ldflags += [ "-Wl,-z,max-page-size=4096" ]
+
+    # Use non-standard (non-Itanium) ABI for Android64. This shrinks vtables
+    # in half and places them to .rodata, which greatly improves memory
+    # footprint. It should be safe, assuming all of C++ in Chromium is
+    # compiled with this flag.
+    cflags_cc = [ "-fexperimental-relative-c++-abi-vtables" ]
+    ldflags += [ "-fexperimental-relative-c++-abi-vtables" ]
   }
 
   if (current_cpu == "arm64") {
