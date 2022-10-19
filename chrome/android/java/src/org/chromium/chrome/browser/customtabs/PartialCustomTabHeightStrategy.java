@@ -91,7 +91,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
     private static final int NAVBAR_BUTTON_RESTORE_DELAY_MS = 400;
-    private static final int NAVBAR_BUTTON_HIDE_SHOW_DELAY_MS = 50;
+    private static final int NAVBAR_BUTTON_HIDE_SHOW_DELAY_MS = 150;
     private static final String PARAM_LOG_IMMERSIVE_MODE_CONFIRMATIONS =
             "log_immersive_mode_confirmations";
     @VisibleForTesting
@@ -121,6 +121,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final boolean mIsFixedHeight;
     private final @Px int mUnclampedInitialHeight;
     private final FullscreenManager mFullscreenManager;
+    private final boolean mAlwaysShowNavbarButtons;
 
     private static boolean sHasLoggedImmersiveModeConfirmationSetting;
 
@@ -210,6 +211,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher,
             FullscreenManager fullscreenManager, boolean isTablet) {
         mWindowAboveNavbar = ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled();
+        mAlwaysShowNavbarButtons = mWindowAboveNavbar
+                && ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons.isEnabled();
         mActivity = activity;
         mDisplayHeight = getDisplayHeight();
         mUnclampedInitialHeight = initialHeight;
@@ -902,16 +905,19 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             controller.hide(WindowInsetsCompat.Type.navigationBars());
         }
 
-        // Take over the control of insets animation after the #show / #hide. This call needs to
-        // happen after the #show / #hide call to work correctly.
-        mNavbarTransitionController.setShow(show);
-        controller.controlWindowInsetsAnimation(WindowInsetsCompat.Type.navigationBars(),
-                /*durationMillis*/ 1, null, null, mNavbarTransitionController);
+        // If we are no longer hiding the navbar buttons we don't need to take control over the
+        // insets animation.
+        if (!mAlwaysShowNavbarButtons) {
+            // Take over the control of insets animation after the #show / #hide. This call needs to
+            // happen after the #show / #hide call to work correctly.
+            mNavbarTransitionController.setShow(show);
+            controller.controlWindowInsetsAnimation(WindowInsetsCompat.Type.navigationBars(),
+                    /*durationMillis*/ 1, null, null, mNavbarTransitionController);
+        }
     }
 
     private void showNavbarButtons(boolean show) {
-        if (mWindowAboveNavbar
-                && ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons.isEnabled()) {
+        if (mAlwaysShowNavbarButtons) {
             // Resizing while the navbar buttons are visible, at times, flashes the host app.
             // http://crbug/1360425 fixed this for when the navbar buttons are hidden, so taking
             // advantage of that fix by hiding for a bit the navigation buttons, during the time the
