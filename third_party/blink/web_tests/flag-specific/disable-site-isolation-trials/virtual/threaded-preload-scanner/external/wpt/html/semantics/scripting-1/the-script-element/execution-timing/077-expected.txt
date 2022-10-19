@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL  adding several types of scripts through the DOM and removing some of them confuses scheduler  assert_array_equals: expected property 1 to be "Script #1 ran" but got "Script #3 ran" (expected array ["Script #2 ran", "Script #1 ran", "Script #3 ran", "Script #4 ran"] got ["Script #2 ran", "Script #3 ran", "Script #4 ran", "Script #1 ran"])
+Harness: the test ran to completion.
+

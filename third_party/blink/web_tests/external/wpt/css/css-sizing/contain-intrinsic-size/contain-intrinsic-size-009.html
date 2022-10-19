@@ -37,14 +37,16 @@ select {
 data-expected-client-width="55" data-expected-client-height="66"></select>
 <select multiple class="test cis-width"
 data-expected-client-width="55"></select>
-<select multiple size="1" class="test cis-width"
-data-expected-client-width="55"></select>
-<select multiple size="10" class="test cis-width"
-data-expected-client-width="55"></select>
 <select multiple class="test cis-height"
 data-expected-client-height="66"></select>
+
+<select multiple size="1" class="test cis-width"
+data-expected-client-width="55"></select>
 <select multiple size="1" class="test cis-height"
 data-expected-client-height="66"></select>
+
+<select multiple size="10" class="test cis-width"
+data-expected-client-width="55"></select>
 <select multiple size="10" class="test cis-height"
 data-expected-client-height="66"></select>
 
@@ -53,11 +55,10 @@ data-expected-client-height="66"></select>
 <script src="/resources/check-layout-th.js"></script>
 <script>
 const reference = document.getElementById("reference");
-const rowHeight = reference.clientHeight;
 const normalWidth = reference.clientWidth;
 for (let test of document.querySelectorAll(".test.cis-width")) {
-  const numRows = test.size || 4;
-  test.dataset.expectedClientHeight = rowHeight * numRows;
+  reference.size = test.size || 4;
+  test.dataset.expectedClientHeight = reference.clientHeight;
 }
 for (let test of document.querySelectorAll(".test.cis-height")) {
   test.dataset.expectedClientWidth = normalWidth;
