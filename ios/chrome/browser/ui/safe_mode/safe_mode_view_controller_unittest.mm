@@ -67,6 +67,8 @@ class SafeModeViewControllerTest : public PlatformTest {
     if (crash_helper::common::CanUseCrashpad()) {
       client_.ResetForTesting();
       crash_reporter::SetCrashpadRunning(false);
+      crash_reporter::internal::SetCrashReportDatabaseForTesting(nullptr,
+                                                                 nullptr);
     } else {
       [[mock_breakpad_controller_ stub] stop];
       crash_helper::SetEnabled(false);

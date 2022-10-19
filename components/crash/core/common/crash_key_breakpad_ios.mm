@@ -44,25 +44,24 @@ void WithBreakpadRefSync(void (^block)(BreakpadRef ref)) {
 }  // namespace
 
 void CrashKeyStringImpl::Set(base::StringPiece value) {
+  NSString* key = base::SysUTF8ToNSString(name_);
+  NSString* value_ns = base::SysUTF8ToNSString(value);
+  [[PreviousSessionInfo sharedInstance] setReportParameterValue:value_ns
+                                                         forKey:key];
   if (!crash_reporter::IsBreakpadRunning())
     return;
 
-  NSString* key = base::SysUTF8ToNSString(name_);
-  NSString* value_ns = base::SysUTF8ToNSString(value);
-
   [[BreakpadController sharedInstance] addUploadParameter:value_ns forKey:key];
-  [[PreviousSessionInfo sharedInstance] setReportParameterValue:value_ns
-                                                         forKey:key];
 }
 
 void CrashKeyStringImpl::Clear() {
+  NSString* key = base::SysUTF8ToNSString(name_);
+  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:key];
+
   if (!crash_reporter::IsBreakpadRunning())
     return;
 
-  NSString* key = base::SysUTF8ToNSString(name_);
-
   [[BreakpadController sharedInstance] removeUploadParameterForKey:key];
-  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:key];
 }
 
 bool CrashKeyStringImpl::is_set() const {

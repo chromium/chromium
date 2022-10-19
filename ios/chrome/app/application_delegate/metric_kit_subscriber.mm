@@ -16,6 +16,7 @@
 #import "base/version.h"
 #import "components/crash/core/app/crashpad.h"
 #import "components/crash/core/common/reporter_running_ios.h"
+#import "components/previous_session_info/previous_session_info.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
@@ -147,7 +148,6 @@ void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type)
   if (!base::PathService::Get(base::DIR_CACHE, &cache_dir_path)) {
     return;
   }
-  NSDictionary* info_dict = NSBundle.mainBundle.infoDictionary;
   NSError* error = nil;
   // Deflate the payload.
   NSData* payload = [diagnostic.JSONRepresentation
@@ -158,6 +158,7 @@ void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type)
   }
 
   if (crash_reporter::IsBreakpadRunning()) {
+    NSDictionary* info_dict = NSBundle.mainBundle.infoDictionary;
     std::string stringpayload(reinterpret_cast<const char*>(payload.bytes),
                               payload.length);
     CreateSyntheticCrashReportForMetrickit(
@@ -171,12 +172,22 @@ void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type)
   } else {
     base::span<const uint8_t> spanpayload(
         reinterpret_cast<const uint8_t*>(payload.bytes), payload.length);
-    crash_reporter::ProcessExternalDump(
-        "MetricKit", spanpayload,
-        {{"ver",
-          base::SysNSStringToUTF8(diagnostic.metaData.applicationBuildVersion)},
-         {"metrickit", "true"},
-         {"metrickit_type", type}});
+
+    std::map<std::string, std::string> override_annotations = {
+        {"ver",
+         base::SysNSStringToUTF8(diagnostic.metaData.applicationBuildVersion)},
+        {"metrickit", "true"},
+        {"metrickit_type", type}};
+    PreviousSessionInfo* previous_session =
+        [PreviousSessionInfo sharedInstance];
+    for (NSString* key in previous_session.reportParameters.allKeys) {
+      override_annotations.insert(
+          {base::SysNSStringToUTF8(key),
+           base::SysNSStringToUTF8(previous_session.reportParameters[key])});
+    }
+
+    crash_reporter::ProcessExternalDump("MetricKit", spanpayload,
+                                        override_annotations);
   }
 }
 

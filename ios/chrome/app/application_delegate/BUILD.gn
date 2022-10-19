@@ -42,6 +42,7 @@ source_set("unit_tests") {
     ":url_opener_params",
     "//base",
     "//base/test:test_support",
+    "//components/crash/core/app",
     "//components/handoff",
     "//components/metrics",
     "//components/previous_session_info",
@@ -94,6 +95,7 @@ source_set("unit_tests") {
     "//net:test_support",
     "//testing/gtest",
     "//third_party/breakpad:client",
+    "//third_party/crashpad/crashpad/client:common",
     "//third_party/ocmock",
     "//ui/base",
     "//url",
@@ -137,6 +139,7 @@ source_set("metric_kit_subscriber") {
     "//base",
     "//components/crash/core/app",
     "//components/crash/core/common:reporter_running_ios",
+    "//components/previous_session_info",
     "//components/version_info",
     "//ios/chrome/browser/crash_report",
   ]

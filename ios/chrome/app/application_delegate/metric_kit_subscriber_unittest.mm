@@ -9,14 +9,17 @@
 
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/files/scoped_temp_dir.h"
 #import "base/ios/ios_util.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
+#import "components/crash/core/app/crashpad.h"
 #import "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
 #import "testing/platform_test.h"
+#import "third_party/crashpad/crashpad/client/crash_report_database.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -46,6 +49,24 @@ class MetricKitSubscriberTest : public PlatformTest {
     [standard_defaults setBool:YES forKey:kEnableMetricKit];
   }
 
+  void SetUp() override {
+    ASSERT_FALSE(crash_reporter::internal::GetCrashReportDatabase());
+    ASSERT_TRUE(database_dir_.CreateUniqueTempDir());
+    database_dir_path_ = database_dir_.GetPath();
+    database_ = crashpad::CrashReportDatabase::Initialize(database_dir_path_);
+    crash_reporter::internal::SetCrashReportDatabaseForTesting(
+        database_.get(), &database_dir_path_);
+
+    std::vector<crash_reporter::Report> reports;
+    crash_reporter::GetReports(&reports);
+    ASSERT_EQ(reports.size(), 0u);
+  }
+
+  void TearDown() override {
+    crash_reporter::internal::SetCrashReportDatabaseForTesting(nullptr,
+                                                               nullptr);
+  }
+
   ~MetricKitSubscriberTest() override {
     base::DeletePathRecursively(MetricKitReportDirectory());
     NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
@@ -53,6 +74,9 @@ class MetricKitSubscriberTest : public PlatformTest {
   }
 
  private:
+  base::ScopedTempDir database_dir_;
+  base::FilePath database_dir_path_;
+  std::unique_ptr<crashpad::CrashReportDatabase> database_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -181,8 +205,12 @@ TEST_F(MetricKitSubscriberTest, SaveDiagnosticReport) {
   OCMStub([mock_report timeStampEnd]).andReturn(date);
   OCMStub([mock_report JSONRepresentation]).andReturn(data);
   NSArray* array = @[ mock_report ];
-  [[MetricKitSubscriber sharedInstance] didReceiveDiagnosticPayloads:array];
 
+  id mock_diagnostic = OCMClassMock([MXCrashDiagnostic class]);
+  OCMStub([mock_diagnostic JSONRepresentation]).andReturn(data);
+  NSArray* mock_diagnostics = @[ mock_diagnostic ];
+  OCMStub([mock_report crashDiagnostics]).andReturn(mock_diagnostics);
+  [[MetricKitSubscriber sharedInstance] didReceiveDiagnosticPayloads:array];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForFileOperationTimeout, ^bool() {
         base::RunLoop().RunUntilIdle();
@@ -191,4 +219,12 @@ TEST_F(MetricKitSubscriberTest, SaveDiagnosticReport) {
   std::string content;
   base::ReadFileToString(file_path, &content);
   EXPECT_EQ(content, file_data);
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        std::vector<crash_reporter::Report> reports;
+        crash_reporter::GetReports(&reports);
+        return reports.size() == 1;
+      }));
 }

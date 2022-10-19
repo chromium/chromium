@@ -40,6 +40,7 @@ include_rules = [
   "+ios/public/provider/chrome",
   "+mojo/core/embedder/embedder.h",
   "+third_party/breakpad/breakpad/src/client/ios",
+  "+third_party/crashpad/crashpad/client",
 
   # Strings and resources.
   "+components/grit",
