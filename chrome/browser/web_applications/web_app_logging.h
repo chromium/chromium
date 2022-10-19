@@ -8,15 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-
-namespace base {
-class Value;
-}
 
 namespace web_app {
 
@@ -57,9 +54,9 @@ class InstallErrorLogEntry {
 
   void LogErrorObject(const char* stage,
                       const std::string& url,
-                      base::Value object);
+                      base::Value::Dict object);
 
-  std::unique_ptr<base::Value> error_dict_;
+  std::unique_ptr<base::Value::Dict> error_dict_;
   bool background_installation_;
   webapps::WebappInstallSource install_surface_;
 };

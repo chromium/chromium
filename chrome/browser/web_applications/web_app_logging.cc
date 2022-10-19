@@ -44,15 +44,15 @@ InstallErrorLogEntry::InstallErrorLogEntry(
     : background_installation_(background_installation),
       install_surface_(install_surface) {
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo))
-    error_dict_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+    error_dict_ = std::make_unique<base::Value::Dict>();
 }
 
 InstallErrorLogEntry::~InstallErrorLogEntry() = default;
 
 base::Value InstallErrorLogEntry::TakeErrorDict() {
   DCHECK(error_dict_);
-  base::Value error_dict = std::move(*error_dict_);
-  error_dict_->DictClear();
+  base::Value error_dict = base::Value(std::move(*error_dict_));
+  *error_dict_ = base::Value::Dict();
   return error_dict;
 }
 
@@ -62,10 +62,10 @@ void InstallErrorLogEntry::LogUrlLoaderError(const char* stage,
   if (!error_dict_)
     return;
 
-  base::Value url_loader_error(base::Value::Type::DICTIONARY);
+  base::Value::Dict url_loader_error;
 
-  url_loader_error.SetStringKey("WebAppUrlLoader::Result",
-                                ConvertUrlLoaderResultToString(result));
+  url_loader_error.Set("WebAppUrlLoader::Result",
+                       ConvertUrlLoaderResultToString(result));
 
   LogErrorObject(stage, url, std::move(url_loader_error));
 }
@@ -77,9 +77,9 @@ void InstallErrorLogEntry::LogExpectedAppIdError(const char* stage,
   if (!error_dict_)
     return;
 
-  base::Value expected_app_id_error(base::Value::Type::DICTIONARY);
-  expected_app_id_error.SetStringKey("expected_app_id", expected_app_id);
-  expected_app_id_error.SetStringKey("app_id", app_id);
+  base::Value::Dict expected_app_id_error;
+  expected_app_id_error.Set("expected_app_id", expected_app_id);
+  expected_app_id_error.Set("app_id", app_id);
 
   LogErrorObject(stage, url, std::move(expected_app_id_error));
 }
@@ -92,10 +92,10 @@ void InstallErrorLogEntry::LogDownloadedIconsErrors(
   if (!error_dict_)
     return;
 
-  base::Value icon_errors(base::Value::Type::DICTIONARY);
+  base::Value::Dict icon_errors;
   {
     // Reports errors only, omits successful entries.
-    base::Value icons_http_errors(base::Value::Type::LIST);
+    base::Value::List icons_http_errors;
 
     for (const auto& url_and_http_code : icons_http_results) {
       const GURL& icon_url = url_and_http_code.first;
@@ -106,56 +106,55 @@ void InstallErrorLogEntry::LogDownloadedIconsErrors(
       // If the SkBitmap for`icon_url` is missing in `icons_map` then we report
       // this miss as an error, even for net::HttpStatusCode::HTTP_OK.
       if (IsEmptyIconBitmapsForIconUrl(icons_map, icon_url)) {
-        base::Value icon_http_error(base::Value::Type::DICTIONARY);
+        base::Value::Dict icon_http_error;
 
-        icon_http_error.SetStringKey("icon_url", icon_url.spec());
-        icon_http_error.SetIntKey("http_status_code", http_status_code);
-        icon_http_error.SetStringKey("http_code_desc", http_code_desc);
+        icon_http_error.Set("icon_url", icon_url.spec());
+        icon_http_error.Set("http_status_code", http_status_code);
+        icon_http_error.Set("http_code_desc", http_code_desc);
 
         icons_http_errors.Append(std::move(icon_http_error));
       }
     }
 
     if (icons_downloaded_result != IconsDownloadedResult::kCompleted ||
-        !icons_http_errors.GetListDeprecated().empty()) {
-      icon_errors.SetStringKey(
-          "icons_downloaded_result",
-          IconsDownloadedResultToString(icons_downloaded_result));
+        !icons_http_errors.empty()) {
+      icon_errors.Set("icons_downloaded_result",
+                      IconsDownloadedResultToString(icons_downloaded_result));
     }
 
-    if (!icons_http_errors.GetListDeprecated().empty())
-      icon_errors.SetKey("icons_http_results", std::move(icons_http_errors));
+    if (!icons_http_errors.empty())
+      icon_errors.Set("icons_http_results", std::move(icons_http_errors));
   }
 
   if (web_app_info.is_generated_icon)
-    icon_errors.SetBoolKey("is_generated_icon", true);
+    icon_errors.Set("is_generated_icon", true);
 
-  if (!icon_errors.DictEmpty()) {
+  if (!icon_errors.empty()) {
     LogErrorObject("OnIconsRetrieved", web_app_info.start_url.spec(),
                    std::move(icon_errors));
   }
 }
 
 void InstallErrorLogEntry::LogHeaderIfLogEmpty(const std::string& url) {
-  if (!error_dict_ || !error_dict_->DictEmpty())
+  if (!error_dict_ || !error_dict_->empty())
     return;
 
-  error_dict_->SetStringKey("!url", url);
-  error_dict_->SetIntKey("install_surface", static_cast<int>(install_surface_));
-  error_dict_->SetBoolKey("background_installation", background_installation_);
-  error_dict_->SetKey("stages", base::Value(base::Value::Type::LIST));
+  error_dict_->Set("!url", url);
+  error_dict_->Set("install_surface", static_cast<int>(install_surface_));
+  error_dict_->Set("background_installation", background_installation_);
+  error_dict_->Set("stages", base::Value::List());
 }
 
 void InstallErrorLogEntry::LogErrorObject(const char* stage,
                                           const std::string& url,
-                                          base::Value object) {
+                                          base::Value::Dict object) {
   if (!error_dict_)
     return;
 
   LogHeaderIfLogEmpty(url);
 
-  object.SetStringKey("!stage", stage);
-  error_dict_->FindKey("stages")->Append(std::move(object));
+  object.Set("!stage", stage);
+  error_dict_->FindList("stages")->Append(std::move(object));
 }
 
 }  // namespace web_app
