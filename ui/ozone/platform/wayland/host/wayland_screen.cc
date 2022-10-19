@@ -153,15 +153,9 @@ void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
       }
     }
   }
-  // TODO(https://crbug.com/1299403): Work around the symptoms of a common
-  // crash. Unclear if this is the proper long term solution.
   auto it = display_list_.FindDisplayById(output_id);
-  DCHECK(it != display_list_.displays().end());
-  if (it != display_list_.displays().end()) {
+  if (it != display_list_.displays().end())
     display_list_.RemoveDisplay(output_id);
-  } else {
-    LOG(ERROR) << "output_id is not associated with a Display.";
-  }
 }
 
 void WaylandScreen::AddOrUpdateDisplay(WaylandOutput::Id output_id,

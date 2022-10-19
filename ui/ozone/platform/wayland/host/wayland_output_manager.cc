@@ -74,6 +74,7 @@ void WaylandOutputManager::RemoveWaylandOutput(WaylandOutput::Id output_id) {
 
   if (wayland_screen_)
     wayland_screen_->OnOutputRemoved(output_id);
+  DCHECK(output_list_.find(output_id) != output_list_.end());
   output_list_.erase(output_id);
 }
 
