@@ -3263,6 +3263,17 @@ void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
       ServerFieldType::MAX_VALID_FIELD_TYPE);
 }
 
+// static
+void AutofillMetrics::LogContextMenuImpressions(
+    ServerFieldType field_type,
+    AutocompleteState autocomplete_state) {
+  base::UmaHistogramEnumeration(
+      "Autofill.FieldContextMenuImpressions.ByAutocomplete",
+      autocomplete_state);
+  base::UmaHistogramSparse(
+      "Autofill.FieldContextMenuImpressions.ByAutofillType", field_type);
+}
+
 const std::string PaymentsRpcResultToMetricsSuffix(
     AutofillClient::PaymentsRpcResult result) {
   std::string result_suffix;

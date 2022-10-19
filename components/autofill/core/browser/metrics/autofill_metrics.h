@@ -1039,8 +1039,8 @@ class AutofillMetrics {
     kNone = 0,
     kValid = 1,
     kGarbage = 2,
-    kOff = 3,
-    kMaxValue = kOff
+    kIgnored = 3,
+    kMaxValue = kIgnored
   };
 
   AutofillMetrics() = delete;
@@ -1774,6 +1774,11 @@ class AutofillMetrics {
   // heuristic precedence is disabled.
   static void LogAcceptedFilledFieldWithNumericQuantityHeuristicPrediction(
       bool accepted);
+
+  // Logs the context menu impressions based on the autofill type as well as
+  // based on the autocomplete type.
+  static void LogContextMenuImpressions(ServerFieldType field_type,
+                                        AutocompleteState autocomplete_state);
 
  private:
   static void Log(AutocompleteEvent event);

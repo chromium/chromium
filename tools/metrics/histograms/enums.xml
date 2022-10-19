@@ -6328,6 +6328,13 @@ others/histograms.xml -->
   <int value="5" label="Fallback Chrome Autofill on Missing Data"/>
 </enum>
 
+<enum name="AutofillAutocompleteState">
+  <int value="0" label="None"/>
+  <int value="1" label="Valid"/>
+  <int value="2" label="Garbage"/>
+  <int value="3" label="Ignored"/>
+</enum>
+
 <enum name="AutofillAwGSuggestionAvailability">
   <int value="0" label="No suggestion"/>
   <int value="1" label="Has suggestion, user doesn't select it"/>

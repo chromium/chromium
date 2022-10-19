@@ -9098,6 +9098,83 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   histogram_tester.ExpectTotalCount(kTypeHistogram + "ServerOrHeuristics", 4);
 }
 
+struct ContextMenuImpressionTestCase {
+  // Autocomplete attribute value.
+  const char* autocomplete_attribute_value;
+  // Heuristic type for the field in the test case.
+  ServerFieldType heuristic_type;
+  // Server type for the field in the test case.
+  ServerFieldType server_type;
+  // Expected autocomplete state that would be logged in the metrics.
+  AutofillMetrics::AutocompleteState expected_autocomplete_state;
+  // Expected autofill type that would be logged in the metrics.
+  ServerFieldType expected_autofill_type;
+};
+
+class BrowserAutofillManagerContextMenuImpressionsTest
+    : public testing::WithParamInterface<ContextMenuImpressionTestCase>,
+      public BrowserAutofillManagerTest {};
+
+INSTANTIATE_TEST_SUITE_P(
+    BrowserAutofillManagerContextMenuTests,
+    BrowserAutofillManagerContextMenuImpressionsTest,
+    testing::Values(
+        // Empty Autocomplete attribute
+        ContextMenuImpressionTestCase{"", UNKNOWN_TYPE, NO_SERVER_DATA,
+                                      AutofillMetrics::AutocompleteState::kNone,
+                                      UNKNOWN_TYPE},
+        // Valid Autocomplete attribute
+        ContextMenuImpressionTestCase{
+            "name", UNKNOWN_TYPE, EMAIL_ADDRESS,
+            AutofillMetrics::AutocompleteState::kValid, NAME_FULL},
+        // Garbage Autocomplete attribute
+        ContextMenuImpressionTestCase{
+            "asdf", ADDRESS_HOME_COUNTRY, UNKNOWN_TYPE,
+            AutofillMetrics::AutocompleteState::kGarbage, UNKNOWN_TYPE},
+        // Off Autocomplete attribute
+        ContextMenuImpressionTestCase{
+            "off", ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS,
+            AutofillMetrics::AutocompleteState::kIgnored, EMAIL_ADDRESS}));
+
+// Tests that metrics are emitted correctly on form submission for the fields
+// from where the context menu was triggered.
+TEST_P(BrowserAutofillManagerContextMenuImpressionsTest,
+       ContextMenuImpressionMetrics) {
+  auto test_case = GetParam();
+
+  FormData form;
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  FormFieldData field;
+  test::CreateTestFormField("", "", "", "text",
+                            test_case.autocomplete_attribute_value, &field);
+  form.fields.push_back(field);
+
+  // Override the types and simulate seeing the form on page load.
+  auto form_structure = std::make_unique<FormStructure>(form);
+  FormStructureTestApi(form_structure.get())
+      .SetFieldTypes({test_case.heuristic_type}, {test_case.server_type});
+  browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
+
+  // Simulate context menu trigger for all the fields.
+  browser_autofill_manager_->OnContextMenuShownInField(
+      form.global_id(), form.fields[0].global_id());
+
+  // Submit the form and verify that all metrics are collected correctly.
+  base::HistogramTester histogram_tester;
+  FormSubmitted(form);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.FieldContextMenuImpressions.ByAutocomplete"),
+      BucketsAre(base::Bucket(test_case.expected_autocomplete_state, 1)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldContextMenuImpressions.ByAutofillType"),
+              BucketsAre(base::Bucket(test_case.expected_autofill_type, 1)));
+}
+
 // Test that if a form is mixed content we show a warning instead of any
 // suggestions.
 TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {

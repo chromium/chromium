@@ -208,6 +208,22 @@ void LogLanguageMetrics(const translate::LanguageState* language_state) {
   }
 }
 
+AutofillMetrics::AutocompleteState AutocompleteStateForSubmittedField(
+    const AutofillField& field) {
+  // An unparsable autocomplete attribute is treated like kNone.
+  auto autocomplete_state = AutofillMetrics::AutocompleteState::kNone;
+  if (ShouldIgnoreAutocompleteAttribute(field.autocomplete_attribute)) {
+    autocomplete_state = AutofillMetrics::AutocompleteState::kIgnored;
+  } else if (field.parsed_autocomplete) {
+    autocomplete_state =
+        field.parsed_autocomplete->field_type != HtmlFieldType::kUnrecognized
+            ? AutofillMetrics::AutocompleteState::kValid
+            : AutofillMetrics::AutocompleteState::kGarbage;
+  }
+
+  return autocomplete_state;
+}
+
 void LogAutocompletePredictionCollisionTypeMetrics(
     const FormStructure& form_structure) {
   for (size_t i = 0; i < form_structure.field_count(); i++) {
@@ -224,16 +240,7 @@ void LogAutocompletePredictionCollisionTypeMetrics(
       prediction_state = AutofillMetrics::PredictionState::kServer;
     }
 
-    // An unparsable autocomplete attribute is treated like kNone.
-    auto autocomplete_state = AutofillMetrics::AutocompleteState::kNone;
-    if (ShouldIgnoreAutocompleteAttribute(field->autocomplete_attribute)) {
-      autocomplete_state = AutofillMetrics::AutocompleteState::kOff;
-    } else if (field->parsed_autocomplete) {
-      autocomplete_state =
-          field->parsed_autocomplete->field_type != HtmlFieldType::kUnrecognized
-              ? AutofillMetrics::AutocompleteState::kValid
-              : AutofillMetrics::AutocompleteState::kGarbage;
-    }
+    auto autocomplete_state = AutocompleteStateForSubmittedField(*field);
 
     AutofillMetrics::LogAutocompletePredictionCollisionState(
         prediction_state, autocomplete_state);
@@ -242,6 +249,12 @@ void LogAutocompletePredictionCollisionTypeMetrics(
                                                                heuristic_type);
     }
   }
+}
+
+void LogContextMenuImpressionsForSubmittedField(const AutofillField& field) {
+  auto autocomplete_state = AutocompleteStateForSubmittedField(field);
+  AutofillMetrics::LogContextMenuImpressions(field.Type().GetStorableType(),
+                                             autocomplete_state);
 }
 
 // Finds the first field in |form_structure| with |field.value|=|value|.
@@ -775,11 +788,10 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
               base::FastHash(base::UTF16ToUTF8(sanitized_submitted_value)));
     }
 
-    if (submitted_form->field(i)->was_context_menu_shown()) {
-      // TODO(crbug.com/1325811): The context menu was shown in this field, log
-      // the metrics by autocomplete type, form type and autofill type
-      // prediction of the field.
-    }
+    // The context menu was shown in this field, log the metrics by
+    // autocomplete type, form type and autofill type prediction of the field.
+    if (submitted_form->field(i)->was_context_menu_shown())
+      LogContextMenuImpressionsForSubmittedField(*submitted_form->field(i));
   }
   single_field_form_fill_router_->OnWillSubmitForm(
       form_for_autocomplete, submitted_form.get(),

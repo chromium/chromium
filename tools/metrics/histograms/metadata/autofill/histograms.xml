@@ -1338,6 +1338,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FieldContextMenuImpressions.ByAutocomplete"
+    enum="AutofillAutocompleteState" expires_after="2023-09-01">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Number of context menu impressions on fields by their autocomplete attribute
+    value. Recorded on the form submission.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FieldContextMenuImpressions.ByAutofillType"
+    enum="AutofillServerFieldType" expires_after="2023-09-01">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Number of context menu impressions on fields by their autofill type.
+    Recorded on the form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FieldCount" units="form fields"
     expires_after="2023-04-16">
   <owner>kolos@chromium.org</owner>
