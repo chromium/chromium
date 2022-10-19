@@ -114,7 +114,7 @@ class VariantMatches {
       : unit_id(unit_id_in),
         variants(variants_in),
         first_match(first_match_in) {
-    DCHECK_EQ(std::count(variants.begin(), variants.end(), first_match), 1);
+    DCHECK_EQ(base::ranges::count(variants, first_match), 1);
   }
 };
 

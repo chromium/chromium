@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-
 #include "ash/login/ui/login_auth_factors_view.h"
 
 #include "ash/login/resources/grit/login_resources.h"
@@ -17,6 +15,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -366,10 +365,10 @@ void LoginAuthFactorsView::UpdateState() {
       // their password.
       ShowReadyAndDisabledAuthFactors();
 
-      num_factors_in_error_background_state = std::count_if(
-          auth_factors_.begin(), auth_factors_.end(), [](const auto& factor) {
-            return GetPrioritizedAuthFactorViewState(*factor) ==
-                   PrioritizedAuthFactorViewState::kErrorBackground;
+      num_factors_in_error_background_state = base::ranges::count(
+          auth_factors_, PrioritizedAuthFactorViewState::kErrorBackground,
+          [](const auto& factor) {
+            return GetPrioritizedAuthFactorViewState(*factor);
           });
 
       if (num_factors_in_error_background_state == 1) {

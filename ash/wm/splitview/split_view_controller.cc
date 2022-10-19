@@ -49,6 +49,7 @@
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/features.h"
@@ -146,9 +147,8 @@ base::Time g_multi_display_split_view_start_time;
 bool IsExactlyOneRootInSplitView() {
   const aura::Window::Windows all_root_windows = Shell::GetAllRootWindows();
   return 1 ==
-         std::count_if(
-             all_root_windows.begin(), all_root_windows.end(),
-             [](aura::Window* root_window) {
+         base::ranges::count_if(
+             all_root_windows, [](aura::Window* root_window) {
                return SplitViewController::Get(root_window)->InSplitViewMode();
              });
 }

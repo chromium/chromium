@@ -9,6 +9,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/ranges/algorithm.h"
 
 namespace ash {
 
@@ -158,10 +159,9 @@ bool FeaturePodsContainerView::IsButtonVisible(FeaturePodButton* button,
 }
 
 int FeaturePodsContainerView::GetVisibleCount() const {
-  return std::count_if(
-      children().cbegin(), children().cend(), [](const auto* v) {
-        return static_cast<const FeaturePodButton*>(v)->visible_preferred();
-      });
+  return base::ranges::count_if(children(), [](const auto* v) {
+    return static_cast<const FeaturePodButton*>(v)->visible_preferred();
+  });
 }
 
 void FeaturePodsContainerView::EnsurePageWithButton(views::View* button) {

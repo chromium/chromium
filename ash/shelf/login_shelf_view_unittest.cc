@@ -39,6 +39,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -137,10 +138,8 @@ class LoginShelfViewTest : public LoginTestBase,
       if (!login_shelf_view_->GetViewByID(id)->GetVisible())
         return false;
     }
-    const auto& children = login_shelf_view_->children();
-    const size_t visible_buttons =
-        std::count_if(children.cbegin(), login_shelf_view_->children().cend(),
-                      [](const auto* v) { return v->GetVisible(); });
+    const size_t visible_buttons = base::ranges::count_if(
+        login_shelf_view_->children(), &views::View::GetVisible);
     return visible_buttons == ids.size();
   }
 

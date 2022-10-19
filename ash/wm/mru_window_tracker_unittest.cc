@@ -11,6 +11,7 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/ranges/algorithm.h"
 #include "components/app_restore/window_properties.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,7 +76,7 @@ TEST_F(MruWindowTrackerTest, DraggedWindowsInListOnlyOnce) {
   // The dragged window should only be in the list once.
   MruWindowTracker::WindowList window_list =
       mru_window_tracker()->BuildWindowListIgnoreModal(kActiveDesk);
-  EXPECT_EQ(1, std::count(window_list.begin(), window_list.end(), w1.get()));
+  EXPECT_EQ(1, base::ranges::count(window_list, w1.get()));
 }
 
 // Tests whether MRU order is properly restored for the window restore features.

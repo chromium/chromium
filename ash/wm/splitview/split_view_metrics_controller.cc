@@ -93,12 +93,11 @@ bool IsRecordingTabletMultiDisplaySplitView() {
 // Number of root windows in split view.
 int NumRootWindowsInSplitViewRecording() {
   auto root_windows = Shell::GetAllRootWindows();
-  return std::count_if(root_windows.begin(), root_windows.end(),
-                       [](aura::Window* root_window) {
-                         return SplitViewController::Get(root_window)
-                             ->split_view_metrics_controller()
-                             ->in_split_view_recording();
-                       });
+  return base::ranges::count_if(root_windows, [](aura::Window* root_window) {
+    return SplitViewController::Get(root_window)
+        ->split_view_metrics_controller()
+        ->in_split_view_recording();
+  });
 }
 
 // Checks if the device is in tablet mode.
