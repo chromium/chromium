@@ -199,11 +199,6 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
     EXPECT_EQ(nak_from_cross_site_nik.GetFrameSite(), site_b);
     EXPECT_EQ(nak_from_same_site_nik.GetFrameSite(), site_a);
 
-    // Is cross site boolean should not be accessible when the feature is not
-    // enabled.
-    // EXPECT_DEATH_IF_SUPPORTED(nak_from_cross_site_nik.GetIsCrossSite(), "");
-    // EXPECT_DEATH_IF_SUPPORTED(nak_from_same_site_nik.GetIsCrossSite(), "");
-
     // Triple-keyed NAKs created from different third party cross site contexts
     // should be different.
     EXPECT_FALSE(nak_from_same_site_nik == nak_from_cross_site_nik);
@@ -226,11 +221,6 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
     // enabled.
     EXPECT_DEATH_IF_SUPPORTED(nak_from_cross_site_nik.GetFrameSite(), "");
     EXPECT_DEATH_IF_SUPPORTED(nak_from_same_site_nik.GetFrameSite(), "");
-
-    // Is cross site boolean should not be accessible when the feature is not
-    // enabled.
-    // EXPECT_DEATH_IF_SUPPORTED(nak_from_cross_site_nik.GetIsCrossSite(), "");
-    // EXPECT_DEATH_IF_SUPPORTED(nak_from_same_site_nik.GetIsCrossSite(), "");
 
     // Double-keyed NAKs created from different third party cross site contexts
     // should be the same.
