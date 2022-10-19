@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_bubble_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -15,7 +16,8 @@
 // Represents the high efficiency page action chip that appears on previously
 // discarded tabs.
 class HighEfficiencyChipView : public PageActionIconView,
-                               public HighEfficiencyBubbleObserver {
+                               public HighEfficiencyBubbleObserver,
+                               public TabStripModelObserver {
  public:
   METADATA_HEADER(HighEfficiencyChipView);
   HighEfficiencyChipView(
@@ -30,6 +32,12 @@ class HighEfficiencyChipView : public PageActionIconView,
   // HighEfficiencyBubbleObserver:
   void OnBubbleShown() override;
   void OnBubbleHidden() override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  protected:
   // PageActionIconView:

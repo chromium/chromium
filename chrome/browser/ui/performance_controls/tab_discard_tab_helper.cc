@@ -29,6 +29,14 @@ void TabDiscardTabHelper::SetWasAnimated() {
   was_animated_ = true;
 }
 
+void TabDiscardTabHelper::SetChipHasBeenHidden() {
+  was_chip_hidden_ = true;
+}
+
+bool TabDiscardTabHelper::HasChipBeenHidden() {
+  return was_chip_hidden_;
+}
+
 uint64_t TabDiscardTabHelper::GetMemorySavingsInBytes() const {
   auto* pre_discard_resource_usage =
       performance_manager::user_tuning::UserPerformanceTuningManager::
@@ -55,6 +63,7 @@ void TabDiscardTabHelper::DidStartNavigation(
   }
   was_discarded_ = navigation_handle->ExistingDocumentWasDiscarded();
   was_animated_ = false;
+  was_chip_hidden_ = false;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabDiscardTabHelper);
