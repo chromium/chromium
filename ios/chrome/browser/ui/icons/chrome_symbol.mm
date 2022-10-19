@@ -51,6 +51,7 @@ NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
 NSString* const kCameraSymbol = @"camera";
 NSString* const kCameraFillSymbol = @"camera_fill";
+NSString* const kPasswordManagerSymbol = @"password_manager";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
 NSString* const kPhotoBadgePlusSymbol = @"photo_badge_plus";
