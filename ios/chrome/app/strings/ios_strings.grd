@@ -1844,6 +1844,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TABLE_VIEW_INFO_BUTTON_ITEM_ACCESSIBILITY_TAP" desc="Accessibility hint for info button items that have a tap functionality.">
         Button
       </message>
+      <message name="IDS_IOS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_TITLE" desc="Title shown in the iOS message when the account tailored security setting is enabled for a consented primary account">
+        Enhanced Protection is On
+      </message>
+      <message name="IDS_IOS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_TITLE" desc="Title shown in the iOS message when the account tailored security setting is disabled for a consented primary account">
+        Enhanced Protection is Off
+      </message>
+      <message name="IDS_IOS_TAILORED_SECURITY_UNCONSENTED_ENABLE_MESSAGE_TITLE" desc="Title shown in the iOS message when the account tailored security setting is enabled for an unconsented primary account">
+        More Security?
+      </message>
+      <message name="IDS_IOS_TAILORED_SECURITY_TURN_ON_ACTION_TITLE" desc="Action shown in the iOS message when the account tailored security setting is enabled for an unconsented primary account">
+        Turn On
+      </message>
       <message name="IDS_SAVE_PASSWORD_FOOTER" desc="The footer text of the infobar that offers user to save/update a password to Chrome.">
         Passwords are saved in your Google Account so you can use them on any device.
       </message>

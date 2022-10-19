@@ -479,6 +479,15 @@ Things to consider:
       <message name="IDS_IOS_TAB_SWITCHER_NO_TABS_TO_SYNC_PROMO" desc="The title of the paragraph IDS_OPEN_TABS_NO_SESSION_INSTRUCTIONS_IOS. The paragraph explains that tabs opened on other devices where the user is signed in will appear here, in the Tab Switcher. [iOS only]">
         Use Chromium Everywhere
       </message>
+      <message name="IDS_IOS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION" desc="Description shown in the iOS message when the account tailored security setting changes for a consented primary account">
+        You have Chromium's strongest security against harmful websites
+      </message>
+      <message name="IDS_IOS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION" desc="Description shown in the iOS message when the account tailored security setting changes for a consented primary account">
+        You're getting standard security protection for this Chromium profile
+      </message>
+      <message name="IDS_IOS_TAILORED_SECURITY_UNCONSENTED_ENABLE_MESSAGE_DESCRIPTION" desc="Description shown in the iOS message when the account tailored security setting changes for a consented primary account">
+        Get Enhanced Safe Browsing for this Chromium profile, too
+      </message>
       <message name="IDS_IOS_TRANSLATE_INFOBAR_NEVER_MESSAGE" desc="Message for the Translate infobar to allow the user to opt out. [Length: 250em]">
         Would you like Chromium to offer to translate <ph name="LANGUAGE_NAME">$1<ex>French</ex></ph> pages from this site next time?
       </message>

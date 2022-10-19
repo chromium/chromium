@@ -40,6 +40,7 @@ source_set("infobar_delegates") {
   deps = [
     "//components/infobars/core",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/web/public",

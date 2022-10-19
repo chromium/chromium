@@ -6,24 +6,15 @@
 
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// TODO(crbug.com/1358259): Replace test strings.
-const std::u16string test_consent_enabled_string =
-    u"test_consent_enabled_string";
-const std::u16string test_consent_disabled_string =
-    u"test_consent_disabled_string";
-const std::u16string test_unconsent_enabled_string =
-    u"test_unconsent_enabled_string";
-
-}  // namespace
 
 namespace safe_browsing {
 TailoredSecurityServiceInfobarDelegate::TailoredSecurityServiceInfobarDelegate(
@@ -46,20 +37,25 @@ TailoredSecurityServiceInfobarDelegate::FromInfobarDelegate(
 std::u16string TailoredSecurityServiceInfobarDelegate::GetMessageText() const {
   switch (message_state_) {
     case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
-      return test_consent_enabled_string;
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_TITLE);
     case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
-      return test_consent_disabled_string;
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_TITLE);
     case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
-      return test_unconsent_enabled_string;
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_TAILORED_SECURITY_UNCONSENTED_ENABLE_MESSAGE_TITLE);
   }
 }
 
 std::u16string TailoredSecurityServiceInfobarDelegate::GetDescription() const {
   switch (message_state_) {
     case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
-      return test_consent_enabled_string;
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION);
     case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
-      return test_consent_disabled_string;
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION);
     case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
       return std::u16string();
   }
@@ -69,11 +65,11 @@ std::u16string TailoredSecurityServiceInfobarDelegate::GetMessageActionText()
     const {
   switch (message_state_) {
     case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
-      return test_consent_enabled_string;
     case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
-      return test_consent_disabled_string;
+      return l10n_util::GetStringUTF16(IDS_IOS_EDIT_ACTION_TITLE);
     case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
-      return test_unconsent_enabled_string;
+      return l10n_util::GetStringUTF16(
+          IDS_IOS_TAILORED_SECURITY_TURN_ON_ACTION_TITLE);
   }
 }
 
