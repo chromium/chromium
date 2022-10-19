@@ -340,6 +340,7 @@ Result SevenZipReaderImpl::SResToResult(SRes res) {
     case SZ_ERROR_WRITE:
       return Result::kIoError;
     case SZ_ERROR_UNSUPPORTED:
+      return Result::kUnsupported;
     case SZ_ERROR_PARAM:
     case SZ_ERROR_INPUT_EOF:
     case SZ_ERROR_OUTPUT_EOF:

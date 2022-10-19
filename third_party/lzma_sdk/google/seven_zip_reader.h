@@ -41,7 +41,8 @@ enum class Result {
   kIoError = 6,
   kDiskFull = 7,
   kNoFilename = 8,
-  kMaxValue = kNoFilename,
+  kUnsupported = 9,
+  kMaxValue = kUnsupported,
 };
 
 class Delegate {

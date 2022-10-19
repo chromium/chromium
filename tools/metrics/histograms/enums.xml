@@ -90001,6 +90001,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Malformed archive"/>
   <int value="6" label="IO error"/>
   <int value="7" label="Disk full"/>
+  <int value="8" label="No filename"/>
+  <int value="9" label="Unsupported feature in LZMA SDK"/>
 </enum>
 
 <enum name="SHA1Status">

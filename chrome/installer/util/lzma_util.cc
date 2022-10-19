@@ -68,7 +68,8 @@ bool SevenZipDelegateImpl::CreateDirectory(const base::FilePath& dir) {
 void SevenZipDelegateImpl::OnOpenError(seven_zip::Result result) {
   switch (result) {
     case seven_zip::Result::kMalformedArchive:
-    case seven_zip::Result::kBadCrc: {
+    case seven_zip::Result::kBadCrc:
+    case seven_zip::Result::kUnsupported: {
       auto error_code = ::GetLastError();
       if (error_code != ERROR_SUCCESS)
         error_code_ = error_code;
@@ -200,6 +201,7 @@ bool SevenZipDelegateImpl::EntryDone(seven_zip::Result result,
       case seven_zip::Result::kBadCrc:
       case seven_zip::Result::kMemoryMappingFailed:
       case seven_zip::Result::kMalformedArchive:
+      case seven_zip::Result::kUnsupported:
         unpack_error_ = UNPACK_EXTRACT_ERROR;
         break;
     }
