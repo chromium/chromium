@@ -132,8 +132,8 @@ bool IsCrxWebstoreOrDownloadUrl(const GURL& effective_url) {
       "https://chrome.google.com/webstore/download/"};
 
   // Chrome Webstore.
-  if (extension_urls::GetWebstoreLaunchURL().host() ==
-      url_matcher::util::Normalize(effective_url).host()) {
+  if (extension_urls::IsWebstoreDomain(
+          url_matcher::util::Normalize(effective_url))) {
     return true;
   }
 

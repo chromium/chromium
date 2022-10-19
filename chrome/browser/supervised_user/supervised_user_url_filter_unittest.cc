@@ -485,7 +485,7 @@ TEST_F(SupervisedUserURLFilterTest, Reason) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-TEST_F(SupervisedUserURLFilterTest, ChromeWebstoreDownloadsAreAlwaysAllowed) {
+TEST_F(SupervisedUserURLFilterTest, ChromeWebstoreURLsAreAlwaysAllowed) {
   // When installing an extension from Chrome Webstore, it tries to download the
   // crx file from "https://clients2.google.com/service/update2/", which
   // redirects to "https://clients2.googleusercontent.com/crx/blobs/"
@@ -507,6 +507,10 @@ TEST_F(SupervisedUserURLFilterTest, ChromeWebstoreDownloadsAreAlwaysAllowed) {
       "QgAAAC6zw0qH2DJtnXe8Z7rUJP1iCQF099oik9f2ErAYeFAX7_"
       "CIyrNH5qBru1lUSBNvzmjILCGwUjcIBaJqxgegSNy2melYqfodngLxKtHsGBehAMZSmuWSg6"
       "FupAcPS3Ih6NSVCOB9KNh6Mw/extension_2_0.crx");
+  // The actual Webstore URLs should also be allowed regardless of filtering
+  // behavior,
+  GURL webstore_url("https://chrome.google.com/webstore");
+  GURL new_webstore_url("https://webstore.google.com/");
 
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
@@ -515,12 +519,18 @@ TEST_F(SupervisedUserURLFilterTest, ChromeWebstoreDownloadsAreAlwaysAllowed) {
             filter_.GetFilteringBehaviorForURL(crx_download_url2));
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(crx_download_url3));
+  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+            filter_.GetFilteringBehaviorForURL(webstore_url));
+  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+            filter_.GetFilteringBehaviorForURL(new_webstore_url));
 
   // Set explicit host rules to block those website, and make sure the
-  // update URLs still work.
+  // URLs still work.
   std::map<std::string, bool> hosts;
   hosts["clients2.google.com"] = false;
   hosts["clients2.googleusercontent.com"] = false;
+  hosts["chrome.google.com"] = false;
+  hosts["webstore.google.com"] = false;
   filter_.SetManualHosts(std::move(hosts));
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
@@ -529,6 +539,10 @@ TEST_F(SupervisedUserURLFilterTest, ChromeWebstoreDownloadsAreAlwaysAllowed) {
             filter_.GetFilteringBehaviorForURL(crx_download_url2));
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(crx_download_url3));
+  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+            filter_.GetFilteringBehaviorForURL(webstore_url));
+  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+            filter_.GetFilteringBehaviorForURL(new_webstore_url));
 }
 #endif
 
