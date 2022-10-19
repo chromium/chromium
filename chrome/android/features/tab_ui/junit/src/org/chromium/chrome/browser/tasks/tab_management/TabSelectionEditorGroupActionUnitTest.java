@@ -187,9 +187,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         Assert.assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
         Assert.assertTrue(mAction.perform());
         List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
-        // Remove existing group.
         expectedTabs.remove(3);
-        expectedTabs.remove(2);
         verify(mGroupFilter)
                 .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(2), false, true);
         verify(mDelegate).hide();
@@ -227,7 +225,6 @@ public class TabSelectionEditorGroupActionUnitTest {
         Assert.assertTrue(mAction.perform());
         List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
         expectedTabs.remove(1);
-        expectedTabs.remove(0);
         verify(mGroupFilter)
                 .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), false, true);
         verify(mDelegate).hide();
@@ -272,7 +269,6 @@ public class TabSelectionEditorGroupActionUnitTest {
         Assert.assertTrue(mAction.perform());
         List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
         expectedTabs.remove(1);
-        expectedTabs.remove(0);
         verify(mGroupFilter)
                 .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), false, true);
         verify(mDelegate).hide();

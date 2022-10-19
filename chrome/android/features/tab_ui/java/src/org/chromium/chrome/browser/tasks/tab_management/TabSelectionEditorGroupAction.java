@@ -72,10 +72,12 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
         for (Tab tab : relatedTabs) {
             selectedTabs.remove(tab);
         }
+        // Ensure tab count is as expected.
+        selectedTabs.add(destinationTab);
 
         // Sort tabs by index prevent visual bugs when undoing.
         // TODO(crbug/1374935): See if this can be removed.
-        List<Tab> sortedTabs = new ArrayList<>(tabs.size() + 1);
+        List<Tab> sortedTabs = new ArrayList<>(selectedTabs.size());
         TabModel model = getTabModelSelector().getCurrentModel();
         for (int i = 0; i < model.getCount(); i++) {
             Tab tab = model.getTabAt(i);
