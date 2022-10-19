@@ -1217,7 +1217,7 @@ void InterestGroupAuction::StartReportingPhase(
       auction_worklet_manager_, std::move(winning_bid_info),
       std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
-      std::move(private_aggregation_requests_));
+      TakePrivateAggregationRequests());
   reporter_->Start(base::BindOnce(
       &InterestGroupAuction::OnReportingPhaseComplete, base::Unretained(this)));
   // The seller worklet handle is no longer needed. It's useful to keep it
@@ -1227,9 +1227,6 @@ void InterestGroupAuction::StartReportingPhase(
 }
 
 void InterestGroupAuction::ClosePipes() {
-  // Release any worklets the reporter is keeping alive.
-  reporter_.reset();
-
   // This is needed in addition to closing worklet pipes since the callbacks
   // passed to Mojo pipes this class doesn't own aren't cancellable.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -1428,10 +1425,6 @@ void InterestGroupAuction::TakeDebugReportUrls(
     component_auction->TakeDebugReportUrls(debug_win_report_urls,
                                            debug_loss_report_urls);
   }
-}
-
-std::vector<GURL> InterestGroupAuction::TakeReportUrls() {
-  return std::move(report_urls_);
 }
 
 std::map<url::Origin, InterestGroupAuction::PrivateAggregationRequests>
@@ -2079,14 +2072,6 @@ void InterestGroupAuction::OnReportingPhaseComplete() {
   DCHECK(!final_auction_result_);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "reporting_phase", trace_id_);
-
-  // Extract all results from the reporter, and then destroy it.
-  errors_.insert(errors_.end(), reporter_->errors().begin(),
-                 reporter_->errors().end());
-  private_aggregation_requests_ = reporter_->TakePrivateAggregationRequests();
-  ad_beacon_map_ = reporter_->TakeAdBeaconMap();
-  report_urls_ = reporter_->TakeReportUrls();
-  reporter_.reset();
 
   final_auction_result_ = AuctionResult::kSuccess;
   // If there's a winning bid, set its auction result as well. If the winning

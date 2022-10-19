@@ -412,21 +412,18 @@ class CONTENT_EXPORT InterestGroupAuction
   void TakeDebugReportUrls(std::vector<GURL>& debug_win_report_urls,
                            std::vector<GURL>& debug_loss_report_urls);
 
-  // Retrieves the ad beacon map. May only be called once, since it takes
-  // ownership of the stored ad beacon map.
-  ReportingMetadata TakeAdBeaconMap() { return std::move(ad_beacon_map_); }
-
-  // Retrieves any reporting URLs returned by ReportWin() and ReportResult()
-  // methods. May only be called after an auction has completed successfully.
-  // May only be called once, since it takes ownership of stored reporting
-  // URLs.
-  std::vector<GURL> TakeReportUrls();
+  // Returns the completed reporter associated with this auction, if the auction
+  // has run to completion and has a winner.
+  std::unique_ptr<InterestGroupAuctionReporter> TakeReporter() {
+    return std::move(reporter_);
+  }
 
   // Retrieves all requests to the Private Aggregation API returned by
-  // GenerateBid(), ScoreAd(), ReportWin() and ReportResult(). The return value
-  // is keyed by reporting origin of the associated requests. May only be called
-  // after an auction has completed (successfully or not). May only be called
-  // once, since it takes ownership of stored reporting URLs.
+  // GenerateBid() and ScoreAd(). The return value is keyed by reporting origin
+  // of the associated requests. May only be called by external consumers after
+  // an auction has failed (on success, used internally to pass them to the
+  // InterestGroupAuctionReporter). May only be called once, since it takes
+  // ownership of stored reporting URLs.
   std::map<url::Origin, PrivateAggregationRequests>
   TakePrivateAggregationRequests();
 
@@ -774,26 +771,15 @@ class CONTENT_EXPORT InterestGroupAuction
   // Holds a reference to the SellerWorklet used by the auction.
   std::unique_ptr<AuctionWorkletManager::WorkletHandle> seller_worklet_handle_;
 
-  // Report URLs from reportResult() and reportWin() methods. An auction's
-  // report URL from reportResult() comes before the URL from its reportWin()
-  // method if there is one. Returned to `callback_` to deal with, so the
-  // auction itself can be deleted at the end of the auction.
-  std::vector<GURL> report_urls_;
-
-  // Stores all pending Private Aggregation API report requests until they have
-  // been flushed. Keyed by the origin of the script that issued the request
-  // (i.e. the reporting origin).
+  // Stores all pending Private Aggregation API report requests from the bidding
+  // and scoring phase. These are passed to the InterestGroupAuctionReporter
+  // when it's created. Keyed by the origin of the script that issued the
+  // request (i.e. the reporting origin).
   std::map<url::Origin, PrivateAggregationRequests>
       private_aggregation_requests_;
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;
-
-  // Ad Beacon URL mapping generated from reportResult() or reportWin() from
-  // this auction and its components. Destination is relative to this auction.
-  // Returned to `callback_` to deal with, so the Auction itself can be
-  // deleted at the end of the auction.
-  ReportingMetadata ad_beacon_map_;
 
   // This is set to true if the scoring phase ran and was able to score all
   // bids that were made (of which there may have been none). This is used to

@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -176,14 +177,22 @@ void AuctionRunner::OnReportingPhaseComplete(
 
   UpdateInterestGroupsPostAuction();
 
+  std::unique_ptr<InterestGroupAuctionReporter> reporter =
+      auction_.TakeReporter();
+  DCHECK(reporter);
+
+  auto errors = auction_.TakeErrors();
+  errors.insert(errors.end(), reporter->errors().begin(),
+                reporter->errors().end());
+
   state_ = State::kSucceeded;
   std::move(callback_).Run(
       this, /*manually_aborted=*/false, std::move(winning_group_key),
       auction_.top_bid()->bid->render_url,
-      auction_.top_bid()->bid->ad_components, auction_.TakeReportUrls(),
+      auction_.top_bid()->bid->ad_components, reporter->TakeReportUrls(),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
-      auction_.TakeAdBeaconMap(), auction_.TakePrivateAggregationRequests(),
-      auction_.TakeErrors());
+      reporter->TakeAdBeaconMap(), reporter->TakePrivateAggregationRequests(),
+      std::move(errors));
 }
 
 void AuctionRunner::UpdateInterestGroupsPostAuction() {
