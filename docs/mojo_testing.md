@@ -23,7 +23,7 @@ class Incrementer {
  public:
   Incrementer();
 
-  void SetServiceForTest(
+  void SetServiceForTesting(
       mojo::PendingRemote<mojom::IncrementerService> service);
 
   // The underlying service is async, so this method is too.
