@@ -47,7 +47,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "feature is enabled by default. "
           chrome_policy {
             FastPairEnabled {
-                FastPairEnabled: true
+                FastPairEnabled: false
             }
           }
         })");
