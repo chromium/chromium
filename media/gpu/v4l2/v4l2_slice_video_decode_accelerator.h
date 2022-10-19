@@ -402,6 +402,9 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
   scoped_refptr<base::SingleThreadTaskRunner> decoder_thread_task_runner_;
 
   scoped_refptr<V4L2Queue> input_queue_;
+  // Set to true by CreateInputBuffers() if the codec driver supports requests
+  bool supports_requests_ = false;
+
   scoped_refptr<V4L2Queue> output_queue_;
   // Buffers that have been allocated but are awaiting an ImportBuffer
   // or AssignDmabufs event.
@@ -413,7 +416,7 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
   // an image processor in ALLOCATE mode in which case the index of the IP
   // buffer may not match the one of the decoder.
   std::map<int32_t, int32_t> decoded_buffer_map_;
-  // FIFO queue of requests.
+  // FIFO queue of requests, only used if supports_requests_ == true.
   std::queue<base::ScopedFD> requests_;
 
   VideoCodecProfile video_profile_;

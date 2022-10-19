@@ -44,8 +44,11 @@
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -272,9 +275,14 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   reqbufs.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   reqbufs.memory = V4L2_MEMORY_MMAP;
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_REQBUFS, &reqbufs);
-  // Implicitly this is a way to differentiate between old kernels (pre 5.x)
-  // where the request API was not present.
-  CHECK(reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS);
+  if (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS) {
+    // Implicitly this is a way to differentiate between old kernels (pre 5.x)
+    // where the request API was not present.
+    supports_requests_ = true;
+    VLOGF(1) << "Using request API";
+  } else {
+    VLOGF(1) << "Using config store";
+  }
 
   // Check if |video_profile_| is supported by a decoder driver.
   if (!IsSupportedProfile(video_profile_)) {
@@ -283,27 +291,64 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   }
 
   if (video_profile_ >= H264PROFILE_MIN && video_profile_ <= H264PROFILE_MAX) {
-    decoder_ = std::make_unique<H264Decoder>(
-        std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
-        video_profile_, config.container_color_space);
+    if (supports_requests_) {
+      decoder_ = std::make_unique<H264Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
+          video_profile_, config.container_color_space);
+    } else {
+#if BUILDFLAG(IS_CHROMEOS)
+      decoder_ = std::make_unique<H264Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateH264Legacy>(this,
+                                                               device_.get()),
+          video_profile_, config.container_color_space);
+#else
+      NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
+      return false;
+#endif
+    }
   } else if (video_profile_ >= VP8PROFILE_MIN &&
              video_profile_ <= VP8PROFILE_MAX) {
-    decoder_ = std::make_unique<VP8Decoder>(
-        std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()),
-        config.container_color_space);
+    if (supports_requests_) {
+      decoder_ = std::make_unique<VP8Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()),
+          config.container_color_space);
+    } else {
+#if BUILDFLAG(IS_CHROMEOS)
+      decoder_ = std::make_unique<VP8Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateVP8Legacy>(this,
+                                                              device_.get()),
+          config.container_color_space);
+#else
+      NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
+      return false;
+#endif
+    }
   } else if (video_profile_ >= VP9PROFILE_MIN &&
              video_profile_ <= VP9PROFILE_MAX) {
-    // TODO(mcasas): Remove this ifndef when V4L2_CID_STATELESS_VP9_FRAME is
-    // known in all kernels.
+    if (supports_requests_) {
+      // TODO(mcasas): Remove this ifndef when V4L2_CID_STATELESS_VP9_FRAME is
+      // known in all kernels.
 #ifndef V4L2_CID_STATELESS_VP9_FRAME
 #define V4L2_CID_STATELESS_VP9_FRAME (0x00a40900 + 300)
 #endif
-    const bool supports_stable_api =
-        device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
-    CHECK(supports_stable_api);
-    decoder_ = std::make_unique<VP9Decoder>(
-        std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
-        video_profile_, config.container_color_space);
+      const bool supports_stable_api =
+          device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
+      CHECK(supports_stable_api);
+      decoder_ = std::make_unique<VP9Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
+          video_profile_, config.container_color_space);
+
+    } else {
+#if BUILDFLAG(IS_CHROMEOS)
+      decoder_ = std::make_unique<VP9Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateVP9Legacy>(this,
+                                                              device_.get()),
+          video_profile_, config.container_color_space);
+#else
+      NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
+      return false;
+#endif
+    }
   } else {
     NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
     return false;
@@ -619,9 +664,13 @@ bool V4L2SliceVideoDecodeAccelerator::CreateInputBuffers() {
     return false;
   }
 
-  CHECK(input_queue_->SupportsRequests());
-  requests_queue_ = device_->GetRequestsQueue();
-  return !requests_queue_;
+  if (supports_requests_) {
+    requests_queue_ = device_->GetRequestsQueue();
+    if (requests_queue_ == nullptr)
+      return false;
+  }
+
+  return true;
 }
 
 bool V4L2SliceVideoDecodeAccelerator::CreateOutputBuffers() {
@@ -2080,26 +2129,41 @@ V4L2SliceVideoDecodeAccelerator::CreateSurface() {
   if (!input_buffer || !output_buffer)
     return nullptr;
 
-  const int input = input_buffer->BufferId();
-  const int output = output_buffer->BufferId();
+  int input = input_buffer->BufferId();
+  int output = output_buffer->BufferId();
 
-  const size_t index = output_buffer->BufferId();
+  scoped_refptr<V4L2DecodeSurface> dec_surface;
+
+  size_t index = output_buffer->BufferId();
   OutputRecord& output_record = output_buffer_map_[index];
   DCHECK_NE(output_record.picture_id, -1);
 
-  // Get a free request from the queue for a new surface.
-  absl::optional<V4L2RequestRef> request_ref =
-      requests_queue_->GetFreeRequest();
-  if (!request_ref) {
-    LOG(ERROR) << "Failed getting a request";
-    NOTIFY_ERROR(PLATFORM_FAILURE);
+  if (supports_requests_) {
+    // Get a free request from the queue for a new surface.
+    absl::optional<V4L2RequestRef> request_ref =
+        requests_queue_->GetFreeRequest();
+    if (!request_ref) {
+      LOG(ERROR) << "Failed getting a request";
+      NOTIFY_ERROR(PLATFORM_FAILURE);
+      return nullptr;
+    }
+    dec_surface = new V4L2RequestDecodeSurface(
+        std::move(*input_buffer), std::move(*output_buffer),
+        output_record.output_frame, std::move(*request_ref));
+  } else {
+// ConfigStore is ChromeOS-specific legacy stuff
+#if BUILDFLAG(IS_CHROMEOS)
+    dec_surface = new V4L2ConfigStoreDecodeSurface(std::move(*input_buffer),
+                                                   std::move(*output_buffer),
+                                                   output_record.output_frame);
+#else
+    NOTREACHED() << "ConfigStore not supported.";
     return nullptr;
+#endif
   }
 
-  DVLOGF(4) << __func__ << " " << input << " -> " << output;
-  return new V4L2RequestDecodeSurface(
-      std::move(*input_buffer), std::move(*output_buffer),
-      output_record.output_frame, std::move(*request_ref));
+  DVLOGF(4) << "Created surface " << input << " -> " << output;
+  return dec_surface;
 }
 
 void V4L2SliceVideoDecodeAccelerator::SendPictureReady() {

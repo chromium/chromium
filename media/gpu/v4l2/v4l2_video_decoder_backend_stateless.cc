@@ -26,8 +26,11 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
 
 namespace media {
 
@@ -137,9 +140,13 @@ bool V4L2StatelessVideoDecoderBackend::Initialize() {
   if (!CreateDecoder())
     return false;
 
-  CHECK(input_queue_->SupportsRequests());
-  requests_queue_ = device_->GetRequestsQueue();
-  return !requests_queue_;
+  if (input_queue_->SupportsRequests()) {
+    requests_queue_ = device_->GetRequestsQueue();
+    if (requests_queue_ == nullptr)
+      return false;
+  }
+
+  return true;
 }
 
 // static
@@ -263,17 +270,30 @@ V4L2StatelessVideoDecoderBackend::CreateSurface() {
   }
 
   scoped_refptr<V4L2DecodeSurface> dec_surface;
-  CHECK(input_queue_->SupportsRequests());
-  absl::optional<V4L2RequestRef> request_ref =
-      requests_queue_->GetFreeRequest();
-  if (!request_ref) {
-    DVLOGF(1) << "Could not get free request.";
+  if (input_queue_->SupportsRequests()) {
+    absl::optional<V4L2RequestRef> request_ref =
+        requests_queue_->GetFreeRequest();
+    if (!request_ref) {
+      DVLOGF(1) << "Could not get free request.";
+      return nullptr;
+    }
+
+    dec_surface = new V4L2RequestDecodeSurface(
+        std::move(*input_buf), std::move(*output_buf), std::move(frame),
+        std::move(*request_ref));
+  } else {
+    // ConfigStore is ChromeOS-specific legacy stuff
+    // TODO(b/222774780): Remove when all legacy implementations are gone.
+#if BUILDFLAG(IS_CHROMEOS)
+    dec_surface = new V4L2ConfigStoreDecodeSurface(
+        std::move(*input_buf), std::move(*output_buf), std::move(frame));
+#else
+    NOTREACHED() << "ConfigStore not supported.";
     return nullptr;
+#endif
   }
 
-  return new V4L2RequestDecodeSurface(std::move(*input_buf),
-                                      std::move(*output_buf), std::move(frame),
-                                      std::move(*request_ref));
+  return dec_surface;
 }
 
 bool V4L2StatelessVideoDecoderBackend::SubmitSlice(
@@ -672,28 +692,62 @@ bool V4L2StatelessVideoDecoderBackend::CreateDecoder() {
 
   pic_size_ = gfx::Size();
 
-  CHECK(input_queue_->SupportsRequests());
-
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
-    decoder_ = std::make_unique<H264Decoder>(
-        std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
-        profile_, color_space_);
+    if (input_queue_->SupportsRequests()) {
+      decoder_ = std::make_unique<H264Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
+          profile_, color_space_);
+    } else {
+#if BUILDFLAG(IS_CHROMEOS)
+      decoder_ = std::make_unique<H264Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateH264Legacy>(this,
+                                                               device_.get()),
+          profile_, color_space_);
+#else
+      VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
+      return false;
+#endif
+    }
   } else if (profile_ >= VP8PROFILE_MIN && profile_ <= VP8PROFILE_MAX) {
-    decoder_ = std::make_unique<VP8Decoder>(
-        std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()),
-        color_space_);
+    if (input_queue_->SupportsRequests()) {
+      decoder_ = std::make_unique<VP8Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()),
+          color_space_);
+    } else {
+#if BUILDFLAG(IS_CHROMEOS)
+      decoder_ = std::make_unique<VP8Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateVP8Legacy>(this,
+                                                              device_.get()),
+          color_space_);
+#else
+      VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
+      return false;
+#endif
+    }
   } else if (profile_ >= VP9PROFILE_MIN && profile_ <= VP9PROFILE_MAX) {
-    // TODO(mcasas): Remove this ifndef when V4L2_CID_STATELESS_VP9_FRAME is
-    // known in all kernels.
+    if (input_queue_->SupportsRequests()) {
+      // TODO(mcasas): Remove this ifndef when V4L2_CID_STATELESS_VP9_FRAME is
+      // known in all kernels.
 #ifndef V4L2_CID_STATELESS_VP9_FRAME
 #define V4L2_CID_STATELESS_VP9_FRAME (0x00a40900 + 300)
 #endif
-    const bool supports_stable_api =
-        device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
-    CHECK(supports_stable_api);
-    decoder_ = std::make_unique<VP9Decoder>(
-        std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
-        profile_, color_space_);
+      const bool supports_stable_api =
+          device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
+      CHECK(supports_stable_api);
+      decoder_ = std::make_unique<VP9Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
+          profile_, color_space_);
+    } else {
+#if BUILDFLAG(IS_CHROMEOS)
+      decoder_ = std::make_unique<VP9Decoder>(
+          std::make_unique<V4L2VideoDecoderDelegateVP9Legacy>(this,
+                                                              device_.get()),
+          profile_, color_space_);
+#else
+      VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
+      return false;
+#endif
+    }
   } else {
     VLOGF(1) << "Unsupported profile " << GetProfileName(profile_);
     return false;
