@@ -674,12 +674,8 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // to the privacy policy and terms of service URLs.
   views::StyledLabel* const disclosure_label =
       row->AddChildView(std::make_unique<views::StyledLabel>());
-  // TODO(crbug.com/1324689): remove the IsRTL() check and instead replace with
-  // just gfx::HorizontalAlignment::ALIGN_LEFT when
-  // StyledLabel::SetHorizontalAlignment() does mirror in RTL.
   disclosure_label->SetHorizontalAlignment(
-      base::i18n::IsRTL() ? gfx::HorizontalAlignment::ALIGN_RIGHT
-                          : gfx::HorizontalAlignment::ALIGN_LEFT);
+      gfx::HorizontalAlignment::ALIGN_LEFT);
 
   // Set custom top margin for `disclosure_label` in order to take
   // (line_height - font_height) into account.
