@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/buffer_types.h"
@@ -219,6 +220,9 @@ struct GPU_EXPORT Capabilities {
       gfx::BufferFormat::YVU_420,
   };
   std::vector<gfx::BufferUsageAndFormat> texture_target_exception_list;
+
+  base::flat_map<uint32_t, std::vector<uint64_t>> drm_formats_and_modifiers;
+  std::string drm_render_node;
 };
 
 }  // namespace gpu
