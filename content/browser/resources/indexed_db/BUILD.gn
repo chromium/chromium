@@ -59,7 +59,7 @@ mojo_grdp_file = "$target_gen_dir/mojo_resources.grdp"
 generate_grd("mojo_grdp") {
   grd_prefix = "indexed_db"
   out_grd = mojo_grdp_file
-  input_files_base_dir = rebase_path("$target_gen_dir", "//")
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   input_files = []
 
   # Add each mojo file to input_files without the directory name
