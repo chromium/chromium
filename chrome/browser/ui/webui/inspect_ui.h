@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -48,7 +49,7 @@ class InspectUI : public content::WebUIController,
       const std::string& browser_id,
       const GURL& frontend_url);
 
-  void PopulateNativeUITargets(const base::Value& targets);
+  void PopulateNativeUITargets(const base::Value::List& targets);
   void ShowNativeUILaunchButton(bool enabled);
 
   static void InspectDevices(Browser* browser);

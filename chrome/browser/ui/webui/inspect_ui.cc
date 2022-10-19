@@ -72,14 +72,14 @@ const char kInspectUiNameField[] = "name";
 const char kInspectUiUrlField[] = "url";
 const char kInspectUiIsNativeField[] = "isNative";
 
-base::Value GetUiDevToolsTargets() {
-  base::Value targets(base::Value::Type::LIST);
+base::Value::List GetUiDevToolsTargets() {
+  base::Value::List targets;
   for (const auto& client_pair :
        ui_devtools::UiDevToolsServer::GetClientNamesAndUrls()) {
-    base::Value target_data(base::Value::Type::DICTIONARY);
-    target_data.SetStringKey(kInspectUiNameField, client_pair.first);
-    target_data.SetStringKey(kInspectUiUrlField, client_pair.second);
-    target_data.SetBoolKey(kInspectUiIsNativeField, true);
+    base::Value::Dict target_data;
+    target_data.Set(kInspectUiNameField, client_pair.first);
+    target_data.Set(kInspectUiUrlField, client_pair.second);
+    target_data.Set(kInspectUiIsNativeField, true);
     targets.Append(std::move(target_data));
   }
   return targets;
@@ -448,7 +448,7 @@ void InspectMessageHandler::CreateNativeUIInspectionSession(
 void InspectMessageHandler::OnFrontEndFinished() {
   // Clear the client list and re-enable the launch button when the front-end is
   // gone.
-  inspect_ui_->PopulateNativeUITargets(base::ListValue());
+  inspect_ui_->PopulateNativeUITargets(base::Value::List());
   inspect_ui_->ShowNativeUILaunchButton(/* enabled = */ true);
 }
 
@@ -753,7 +753,7 @@ void InspectUI::PopulateTargets(const std::string& source,
                                          targets);
 }
 
-void InspectUI::PopulateNativeUITargets(const base::Value& targets) {
+void InspectUI::PopulateNativeUITargets(const base::Value::List& targets) {
   web_ui()->CallJavascriptFunctionUnsafe("populateNativeUITargets", targets);
 }
 
