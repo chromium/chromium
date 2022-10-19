@@ -372,7 +372,9 @@ const CSSPropertyValueSet& StyleRule::Properties() const {
 }
 
 StyleRule::StyleRule(const StyleRule& other, size_t flattened_size)
-    : StyleRuleBase(kStyle), properties_(other.Properties().MutableCopy()) {
+    : StyleRuleBase(kStyle),
+      properties_(other.Properties().MutableCopy()),
+      child_rules_(other.child_rules_) {
   for (unsigned i = 0; i < flattened_size; ++i) {
     new (&SelectorArray()[i]) CSSSelector(other.SelectorArray()[i]);
   }
