@@ -9,10 +9,10 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/augmentations/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -157,12 +157,12 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
     return *inner_.get();
   }
 
-  ALWAYS_INLINE T* operator->() const ABSL_ATTRIBUTE_RETURNS_NONNULL {
+  ALWAYS_INLINE T* operator->() const PA_ATTRIBUTE_RETURNS_NONNULL {
     CHECK(inner_.get());  // Catch use-after-move.
     return inner_.operator->();
   }
 
-  ALWAYS_INLINE T* operator&() const ABSL_ATTRIBUTE_RETURNS_NONNULL {
+  ALWAYS_INLINE T* operator&() const PA_ATTRIBUTE_RETURNS_NONNULL {
     CHECK(inner_.get());  // Catch use-after-move.
     return inner_.get();
   }
