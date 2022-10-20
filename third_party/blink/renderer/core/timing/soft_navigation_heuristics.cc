@@ -44,6 +44,10 @@ const char SoftNavigationHeuristics::kSupplementName[] =
 
 SoftNavigationHeuristics* SoftNavigationHeuristics::From(
     LocalDOMWindow& window) {
+  // TODO(yoav): Ensure all callers don't have spurious IsMainFrame checks.
+  if (!window.GetFrame()->IsMainFrame()) {
+    return nullptr;
+  }
   SoftNavigationHeuristics* heuristics =
       Supplement<LocalDOMWindow>::From<SoftNavigationHeuristics>(window);
   if (!heuristics) {
@@ -111,8 +115,10 @@ void SoftNavigationHeuristics::ClickEventEnded(ScriptState* script_state) {
 bool SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(
     ScriptState* script_state,
     FlagType type,
-    absl::optional<String> url) {
-  if (!IsCurrentTaskDescendantOfClickEventHandler(script_state)) {
+    absl::optional<String> url,
+    bool skip_descendant_check) {
+  if (!skip_descendant_check &&
+      !IsCurrentTaskDescendantOfClickEventHandler(script_state)) {
     // A non-descendent URL change should not set the flag.
     return false;
   }
@@ -125,8 +131,10 @@ bool SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(
 }
 
 void SoftNavigationHeuristics::SawURLChange(ScriptState* script_state,
-                                            const String& url) {
-  if (!SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange, url)) {
+                                            const String& url,
+                                            bool skip_descendant_check) {
+  if (!SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange, url,
+                                   skip_descendant_check)) {
     ResetHeuristic();
   }
 }

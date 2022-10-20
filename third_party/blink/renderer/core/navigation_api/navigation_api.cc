@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_transition.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
@@ -764,8 +765,10 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   // The main case were that would be a problem (browser-initiated back/forward)
   // is not implemented yet. Move this once it is implemented.
   InformAboutCanceledNavigation();
+  LocalDOMWindow* window = GetSupplementable();
+  DCHECK(window);
 
-  const KURL& current_url = GetSupplementable()->Url();
+  const KURL& current_url = window->Url();
   const String& key = params->destination_item
                           ? params->destination_item->GetNavigationApiKey()
                           : String();
@@ -781,8 +784,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     return DispatchResult::kContinue;
   }
 
-  auto* script_state =
-      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+  auto* script_state = ToScriptStateForMainWorld(window->GetFrame());
+  DCHECK(script_state);
   ScriptState::Scope scope(script_state);
 
   if (params->frame_load_type == WebFrameLoadType::kBackForward &&
@@ -820,8 +823,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   init->setCancelable(params->frame_load_type !=
                       WebFrameLoadType::kBackForward);
   init->setCanIntercept(
-      CanChangeToUrlForHistoryApi(
-          params->url, GetSupplementable()->GetSecurityOrigin(), current_url) &&
+      CanChangeToUrlForHistoryApi(params->url, window->GetSecurityOrigin(),
+                                  current_url) &&
       (params->event_type != NavigateEventType::kCrossDocument ||
        params->frame_load_type != WebFrameLoadType::kBackForward));
   init->setHashChange(
@@ -836,10 +839,25 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   }
   if (ongoing_navigation_)
     init->setInfo(ongoing_navigation_->GetInfo());
-  init->setSignal(MakeGarbageCollected<AbortSignal>(GetSupplementable()));
+  init->setSignal(MakeGarbageCollected<AbortSignal>(window));
   init->setDownloadRequest(params->download_filename);
-  auto* navigate_event = NavigateEvent::Create(
-      GetSupplementable(), event_type_names::kNavigate, init);
+  // This unique_ptr needs to be in the function's scope, to maintain the
+  // SoftNavigationEventScope until the event handler runs.
+  std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
+  auto* soft_navigation_heuristics = SoftNavigationHeuristics::From(*window);
+  if (soft_navigation_heuristics && init->userInitiated() &&
+      !init->hashChange() && !init->downloadRequest() && init->canIntercept()) {
+    // TODO(https://crbug.com/1376597): We need to also treat hash based soft
+    // navigations as such.
+
+    // If these conditions are met, create a SoftNavigationEventScope to
+    // consider this a "user initiated click", and the dispatched event handlers
+    // as potential soft navigation tasks.
+    soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
+        soft_navigation_heuristics, script_state);
+  }
+  auto* navigate_event =
+      NavigateEvent::Create(window, event_type_names::kNavigate, init);
   navigate_event->SetUrl(params->url);
   navigate_event->SaveStateFromDestinationItem(params->destination_item);
 
@@ -867,11 +885,23 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // In our implementation, we call the corresponding function anyway, but
     // |type| being a reload type makes it do none of the spec-relevant
     // steps. Instead it does stuff like the loading spinner and use counters.
-    GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
+    window->document()->Loader()->RunURLAndHistoryUpdateSteps(
         params->url, params->destination_item,
         mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
         state_object, params->frame_load_type, params->is_browser_initiated,
         params->is_synchronously_committed_same_document);
+
+    // This is considered a soft navigation URL change at this point, when the
+    // user visible URL change happens, and before the interception handler
+    // runs. We're skipping the descendant check because the the URL change
+    // doesn't happen in a JS task, and we know this URL change is related to
+    // the user initiated click event from the fact that
+    // `soft_navigation_scope` is not nullptr.
+    if (soft_navigation_scope) {
+      soft_navigation_heuristics->SawURLChange(script_state,
+                                               /*url=*/params->url,
+                                               /*skip_descendant_check=*/true);
+    }
   }
 
   if (navigate_event->HasNavigationActions() ||

@@ -36,7 +36,9 @@ class SoftNavigationHeuristics
   // The class's API.
   void UserInitiatedClick(ScriptState*);
   void ClickEventEnded(ScriptState*);
-  void SawURLChange(ScriptState*, const String& url);
+  void SawURLChange(ScriptState*,
+                    const String& url,
+                    bool skip_descendant_check = false);
   void ModifiedDOM(ScriptState*);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
   void SetBackForwardNavigationURL(ScriptState* script_state,
@@ -57,7 +59,8 @@ class SoftNavigationHeuristics
   bool IsCurrentTaskDescendantOfClickEventHandler(ScriptState*);
   bool SetFlagIfDescendantAndCheck(ScriptState*,
                                    FlagType,
-                                   absl::optional<String> url = absl::nullopt);
+                                   absl::optional<String> url = absl::nullopt,
+                                   bool skip_descendant_check = false);
   void ResetHeuristic();
   void ResetPaintsIfNeeded(LocalFrame*, LocalDOMWindow*);
 
@@ -72,6 +75,9 @@ class SoftNavigationHeuristics
   uint32_t soft_navigation_count_ = 0;
 };
 
+// This class defines a scope that would cover click or navigation related
+// events, in order for the SoftNavigationHeuristics class to be able to keep
+// track of them and their descendant tasks.
 class SoftNavigationEventScope {
  public:
   SoftNavigationEventScope(SoftNavigationHeuristics* heuristics,
@@ -80,6 +86,7 @@ class SoftNavigationEventScope {
     heuristics->UserInitiatedClick(script_state);
   }
   ~SoftNavigationEventScope() { heuristics_->ClickEventEnded(script_state_); }
+  // TODO(yoav): Remove this method, as it's not doing anything useful.
   void SetResult(DispatchEventResult result) { result_ = result; }
 
  private:
