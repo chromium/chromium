@@ -29,7 +29,6 @@ class CONTENT_EXPORT AttributionDebugReport {
 
   static absl::optional<AttributionDebugReport> Create(
       const StorableSource& source,
-      bool is_within_fenced_frame,
       const AttributionStorage::StoreSourceResult& result);
 
   ~AttributionDebugReport();

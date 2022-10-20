@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -25,6 +26,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 #include "url/gurl.h"
@@ -54,6 +56,9 @@ class AttributionHostTest : public RenderViewHostTestHarness {
   AttributionHostTest() = default;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+
     RenderViewHostTestHarness::SetUp();
 
     auto data_host_manager = std::make_unique<MockDataHostManager>();
@@ -100,6 +105,8 @@ class AttributionHostTest : public RenderViewHostTestHarness {
   }
 
   raw_ptr<MockDataHostManager> mock_data_host_manager_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
@@ -302,7 +309,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
   EXPECT_CALL(
       *mock_data_host_manager(),
-      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example"))));
+      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example")),
+                       /*is_within_fenced_frame=*/false));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -383,7 +391,8 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
 TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
   EXPECT_CALL(
       *mock_data_host_manager(),
-      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example"))));
+      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example")),
+                       /*is_within_fenced_frame=*/false));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
 
@@ -430,6 +439,34 @@ TEST_F(AttributionHostTest, DataHostInSubframeOnInsecurePage_BadMessage) {
       "blink.mojom.ConversionHost can only be used with a secure top-level "
       "frame.",
       bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example")),
+                       /*is_within_fenced_frame=*/true));
+
+  contents()->NavigateAndCommit(GURL("https://top.example"));
+  RenderFrameHost* fenced_frame =
+      RenderFrameHostTester::For(main_rfh())
+          ->AppendFencedFrame(blink::mojom::FencedFrameMode::kOpaqueAds);
+  fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+      GURL("https://fencedframe.example"), fenced_frame);
+  SetCurrentTargetFrameForTesting(fenced_frame);
+
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  conversion_host_mojom()->RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver());
+
+  // Run loop to allow the bad message code to run if a bad message was
+  // triggered.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
 }  // namespace

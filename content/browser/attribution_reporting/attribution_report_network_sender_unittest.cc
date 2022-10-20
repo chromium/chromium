@@ -906,7 +906,6 @@ TEST_F(AttributionReportNetworkSenderTest,
   absl::optional<AttributionDebugReport> report =
       AttributionDebugReport::Create(
           SourceBuilder().Build(),
-          /*is_within_fenced_frame=*/false,
           AttributionStorage::StoreSourceResult(
               StorableSource::Result::kInsufficientUniqueDestinationCapacity,
               /*min_fake_report_time=*/absl::nullopt,

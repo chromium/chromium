@@ -259,7 +259,8 @@ class AttributionSimulatorInputParser {
                          attribution_reporting::mojom::SourceRegistrationError>
               storable_source = ParseSourceRegistration(
                   dict.Clone(), source_time, std::move(reporting_origin),
-                  std::move(source_origin), *source_type);
+                  std::move(source_origin), *source_type,
+                  /*is_within_fenced_frame=*/false);
 
           if (!storable_source.has_value()) {
             *Error() << storable_source.error();

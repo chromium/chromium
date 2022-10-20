@@ -58,7 +58,8 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
       /*reporting_origin=*/url::Origin::Create(GURL("https://r.test/")),
       /*source_origin=*/url::Origin::Create(GURL("https://s.test/")),
       // TODO(apaseltiner): Fuzz both source types.
-      AttributionSourceType::kNavigation);
+      AttributionSourceType::kNavigation,
+      /*is_within_fenced_frame=*/false);
 }
 
 }  // namespace content

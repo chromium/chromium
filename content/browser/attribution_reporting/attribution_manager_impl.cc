@@ -482,13 +482,10 @@ void AttributionManagerImpl::OnSourceStored(
   NotifySourcesChanged();
 
   // TODO(crbug.com/1371970): Parse debug_reporting field from the response
-  // header and pass `is_within_fenced_frame` from `AttributionHost`.
+  // header.
   bool debug_reporting = false;
-  bool is_within_fenced_frame = false;
-  if (debug_reporting) {
-    MaybeSendVerboseDebugReport(std::move(source), is_within_fenced_frame,
-                                result);
-  }
+  if (debug_reporting)
+    MaybeSendVerboseDebugReport(std::move(source), result);
 }
 
 void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
@@ -973,11 +970,9 @@ void AttributionManagerImpl::NotifyFailedSourceRegistration(
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     StorableSource source,
-    bool is_within_fenced_frame,
     AttributionStorage::StoreSourceResult result) {
   if (absl::optional<AttributionDebugReport> debug_report =
-          AttributionDebugReport::Create(source, is_within_fenced_frame,
-                                         result)) {
+          AttributionDebugReport::Create(source, result)) {
     report_sender_->SendReport(std::move(*debug_report));
   }
 }

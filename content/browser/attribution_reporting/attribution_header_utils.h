@@ -30,7 +30,8 @@ ParseSourceRegistration(base::Value::Dict registration,
                         base::Time source_time,
                         url::Origin reporting_origin,
                         url::Origin source_origin,
-                        AttributionSourceType source_type);
+                        AttributionSourceType source_type,
+                        bool is_within_fenced_frame);
 
 }  // namespace content
 

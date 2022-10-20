@@ -20,7 +20,6 @@ TEST(AttributionDebugReportTest,
   absl::optional<AttributionDebugReport> report =
       AttributionDebugReport::Create(
           SourceBuilder().Build(),
-          /*is_within_fenced_frame=*/false,
           AttributionStorage::StoreSourceResult(
               StorableSource::Result::kInsufficientUniqueDestinationCapacity,
               /*min_fake_report_time=*/absl::nullopt,
@@ -49,8 +48,7 @@ TEST(AttributionDebugReportTest,
 
   absl::optional<AttributionDebugReport> report =
       AttributionDebugReport::Create(
-          SourceBuilder().Build(),
-          /*is_within_fenced_frame=*/true,
+          SourceBuilder().SetIsWithinFencedFrame(true).Build(),
           AttributionStorage::StoreSourceResult(
               StorableSource::Result::kInsufficientUniqueDestinationCapacity,
               /*min_fake_report_time=*/absl::nullopt,
@@ -83,7 +81,6 @@ TEST(AttributionDebugReportTest, UnsupportedError_NoDebugReports) {
   for (auto result : kResults) {
     EXPECT_FALSE(AttributionDebugReport::Create(
         SourceBuilder().Build(),
-        /*is_within_fenced_frame=*/false,
         AttributionStorage::StoreSourceResult(result)));
   }
 }

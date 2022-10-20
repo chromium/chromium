@@ -169,6 +169,9 @@ struct AttributionDataHostManagerImpl::FrozenContext {
 
   // Logically const.
   base::TimeTicks register_time;
+
+  // Whether the attribution is registered within a fenced frame tree.
+  bool is_within_fenced_frame;
 };
 
 struct AttributionDataHostManagerImpl::DelayedTrigger {
@@ -228,13 +231,16 @@ AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
 
 void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-    url::Origin context_origin) {
+    url::Origin context_origin,
+    bool is_within_fenced_frame) {
   DCHECK(network::IsOriginPotentiallyTrustworthy(context_origin));
 
-  receivers_.Add(this, std::move(data_host),
-                 FrozenContext{.context_origin = std::move(context_origin),
-                               .source_type = AttributionSourceType::kEvent,
-                               .register_time = base::TimeTicks::Now()});
+  receivers_.Add(
+      this, std::move(data_host),
+      FrozenContext{.context_origin = std::move(context_origin),
+                    .source_type = AttributionSourceType::kEvent,
+                    .register_time = base::TimeTicks::Now(),
+                    .is_within_fenced_frame = is_within_fenced_frame});
   data_hosts_in_source_mode_++;
 }
 
@@ -310,12 +316,14 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
   auto it = navigation_data_host_map_.find(attribution_src_token);
 
   if (it != navigation_data_host_map_.end()) {
+    // Source navigations need to navigate the primary main frame to be valid.
     receivers_.Add(
         this, std::move(it->second.data_host),
         FrozenContext{.context_origin = source_origin,
                       .source_type = AttributionSourceType::kNavigation,
                       .destination = net::SchemefulSite(destination_origin),
-                      .register_time = it->second.register_time});
+                      .register_time = it->second.register_time,
+                      .is_within_fenced_frame = false});
 
     navigation_data_host_map_.erase(it);
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
@@ -436,16 +444,18 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   context.num_data_registered++;
 
-  StorableSource storable_source(CommonSourceInfo(
-      data->source_event_id, context.context_origin,
-      std::move(data->destination), std::move(data->reporting_origin),
-      source_time,
-      CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
-                                      context.source_type),
-      context.source_type, data->priority, std::move(*filter_data),
-      data->debug_key ? absl::make_optional(data->debug_key->value)
-                      : absl::nullopt,
-      std::move(*aggregation_keys)));
+  StorableSource storable_source(
+      CommonSourceInfo(
+          data->source_event_id, context.context_origin,
+          std::move(data->destination), std::move(data->reporting_origin),
+          source_time,
+          CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
+                                          context.source_type),
+          context.source_type, data->priority, std::move(*filter_data),
+          data->debug_key ? absl::make_optional(data->debug_key->value)
+                          : absl::nullopt,
+          std::move(*aggregation_keys)),
+      context.is_within_fenced_frame);
 
   attribution_manager_->HandleSource(std::move(storable_source));
 }
@@ -717,10 +727,12 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
       base::unexpected(SourceRegistrationError::kInvalidJson);
   if (result.has_value()) {
     if (result->is_dict()) {
+      // Source navigations need to navigate the primary main frame to be valid.
       source = ParseSourceRegistration(
           std::move(*result).TakeDict(), /*source_time*/ base::Time::Now(),
           reporting_origin, registrations.source_origin,
-          AttributionSourceType::kNavigation);
+          AttributionSourceType::kNavigation,
+          /*is_within_fenced_frame=*/false);
     } else {
       source = base::unexpected(SourceRegistrationError::kRootWrongType);
     }

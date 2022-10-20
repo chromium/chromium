@@ -544,6 +544,12 @@ SourceBuilder& SourceBuilder::SetAggregatableDedupKeys(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetIsWithinFencedFrame(
+    bool is_within_fenced_frame) {
+  is_within_fenced_frame_ = is_within_fenced_frame;
+  return *this;
+}
+
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
   return CommonSourceInfo(source_event_id_, source_origin_, destination_origin_,
                           reporting_origin_, source_time_,
@@ -553,7 +559,7 @@ CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
 }
 
 StorableSource SourceBuilder::Build() const {
-  return StorableSource(BuildCommonInfo());
+  return StorableSource(BuildCommonInfo(), is_within_fenced_frame_);
 }
 
 StoredSource SourceBuilder::BuildStored() const {
@@ -814,7 +820,8 @@ bool operator<(const AttributionStorageDelegate::FakeReport& a,
 
 bool operator==(const StorableSource& a, const StorableSource& b) {
   const auto tie = [](const StorableSource& source) {
-    return std::make_tuple(source.common_info());
+    return std::make_tuple(source.common_info(),
+                           source.is_within_fenced_frame());
   };
   return tie(a) == tie(b);
 }
@@ -1133,7 +1140,9 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& source) {
-  return out << "{common_info=" << source.common_info() << "}";
+  return out << "{common_info=" << source.common_info()
+             << ",is_within_fenced_frame=" << source.is_within_fenced_frame()
+             << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const StoredSource& source) {

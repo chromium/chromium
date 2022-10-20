@@ -277,7 +277,9 @@ void AttributionHost::RegisterDataHost(
   if (!top_frame_origin)
     return;
 
-  data_host_manager->RegisterDataHost(std::move(data_host), *top_frame_origin);
+  data_host_manager->RegisterDataHost(
+      std::move(data_host), *top_frame_origin,
+      receivers_.GetCurrentTargetFrame()->IsNestedWithinFencedFrame());
 }
 
 void AttributionHost::RegisterNavigationDataHost(

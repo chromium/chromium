@@ -163,7 +163,8 @@ class MockDataHostManager : public AttributionDataHostManager {
       void,
       RegisterDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       url::Origin context_origin),
+       url::Origin context_origin,
+       bool is_within_fenced_frame),
       (override));
 
   MOCK_METHOD(
@@ -465,6 +466,8 @@ class SourceBuilder {
   SourceBuilder& SetAggregatableDedupKeys(
       std::vector<uint64_t> aggregatable_dedup_keys);
 
+  SourceBuilder& SetIsWithinFencedFrame(bool is_within_fenced_frame);
+
   StorableSource Build() const;
 
   StoredSource BuildStored() const;
@@ -492,6 +495,7 @@ class SourceBuilder {
   AttributionAggregationKeys aggregation_keys_;
   int64_t aggregatable_budget_consumed_ = 0;
   std::vector<uint64_t> aggregatable_dedup_keys_;
+  bool is_within_fenced_frame_ = false;
 };
 
 // Returns a AttributionTrigger with default data which matches the default

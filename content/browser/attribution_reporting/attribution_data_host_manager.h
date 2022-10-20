@@ -31,7 +31,8 @@ class AttributionDataHostManager {
   // navigation.
   virtual void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-      url::Origin context_origin) = 0;
+      url::Origin context_origin,
+      bool is_within_fenced_frame) = 0;
 
   // Registers a new data host which is associated with a navigation. The
   // context origin will be provided at a later time in

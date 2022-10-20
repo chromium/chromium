@@ -46,7 +46,6 @@ std::string SerializeReportDataType(
 base::Value::Dict GetReportDataBody(
     AttributionDebugReport::DataType data_type,
     const StorableSource& source,
-    bool is_within_fenced_frame,
     absl::optional<int> max_destinations_per_source_site_reporting_origin) {
   switch (data_type) {
     case AttributionDebugReport::DataType::kSourceDestinationLimit:
@@ -59,7 +58,7 @@ base::Value::Dict GetReportDataBody(
                     base::NumberToString(common_info.source_event_id()));
       data_body.Set("limit",
                     *max_destinations_per_source_site_reporting_origin);
-      if (!is_within_fenced_frame)
+      if (!source.is_within_fenced_frame())
         data_body.Set("source_site", common_info.SourceSite().Serialize());
       return data_body;
   }
@@ -106,7 +105,6 @@ base::Value::Dict AttributionDebugReport::ReportData::SerializeAsJson() const {
 // static
 absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StorableSource& source,
-    bool is_within_fenced_frame,
     const AttributionStorage::StoreSourceResult& result) {
   absl::optional<DataType> data_type = GetReportDataType(result.status);
   if (!data_type)
@@ -116,7 +114,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   report_data.emplace_back(
       *data_type,
       GetReportDataBody(
-          *data_type, source, is_within_fenced_frame,
+          *data_type, source,
           result.max_destinations_per_source_site_reporting_origin));
   return AttributionDebugReport(std::move(report_data),
                                 source.common_info().reporting_origin());

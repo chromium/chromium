@@ -8,8 +8,10 @@
 
 namespace content {
 
-StorableSource::StorableSource(CommonSourceInfo common_info)
-    : common_info_(std::move(common_info)) {}
+StorableSource::StorableSource(CommonSourceInfo common_info,
+                               bool is_within_fenced_frame)
+    : common_info_(std::move(common_info)),
+      is_within_fenced_frame_(is_within_fenced_frame) {}
 
 StorableSource::~StorableSource() = default;
 

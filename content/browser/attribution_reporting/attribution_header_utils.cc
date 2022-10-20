@@ -56,7 +56,8 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
     base::Time source_time,
     url::Origin reporting_origin,
     url::Origin source_origin,
-    AttributionSourceType source_type) {
+    AttributionSourceType source_type,
+    bool is_within_fenced_frame) {
   url::Origin destination;
   {
     const base::Value* v = registration.Find("destination");
@@ -102,12 +103,14 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
   if (!aggregation_keys.has_value())
     return base::unexpected(aggregation_keys.error());
 
-  return StorableSource(CommonSourceInfo(
-      source_event_id, std::move(source_origin), std::move(destination),
-      std::move(reporting_origin), source_time,
-      CommonSourceInfo::GetExpiryTime(expiry, source_time, source_type),
-      source_type, priority, std::move(*filter_data), debug_key,
-      std::move(*aggregation_keys)));
+  return StorableSource(
+      CommonSourceInfo(
+          source_event_id, std::move(source_origin), std::move(destination),
+          std::move(reporting_origin), source_time,
+          CommonSourceInfo::GetExpiryTime(expiry, source_time, source_type),
+          source_type, priority, std::move(*filter_data), debug_key,
+          std::move(*aggregation_keys)),
+      is_within_fenced_frame);
 }
 
 }  // namespace content
