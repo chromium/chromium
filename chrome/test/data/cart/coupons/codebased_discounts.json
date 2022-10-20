@@ -1,0 +1,51 @@
+{
+  "discounts": [
+    {
+      "_comment": "Use case for: FetchCodeBasedDiscountWorkerBrowserTest.TwoCartsOneWithDiscountOneWithoutDiscount",
+      "merchantIdentifier": {
+        "cartUrl": "https://www.merchant1.com/cart",
+        "merchantId": "10046"
+      },
+      "couponDiscounts": [
+        {
+          "type": "RBD_WITH_CODE",
+          "description": {
+            "title": "Save $10 on Running shoes.",
+            "languageCode": "en-US"
+          },
+          "couponCode": "SAVE$10",
+          "couponId": "1",
+          "expiryTimeSec": 1635204292
+        }
+      ],
+      "overallDiscountInfo": {
+        "text": "$10 off",
+        "languageCode": "en-US"
+      }
+    },
+    {
+      "_comment": "Use case for: FetchCodeBasedDiscountWorkerBrowserTest.SimplePercentDiscountWithCodeTest",
+      "merchantIdentifier": {
+        "cartUrl": "https://www.merchant2.com/cart",
+        "merchantId": "10047"
+      },
+      "couponDiscounts": [
+        {
+          "type": "RBD_WITH_CODE",
+          "description": {
+            "title": "Save 10% on Running shoes.",
+            "languageCode": "en-US"
+          },
+          "couponCode": "SAVE10",
+          "couponId": "1",
+          "expiryTimeSec": 1635204292.2
+        }
+      ],
+      "overallDiscountInfo": {
+        "text": "10% off",
+        "languageCode": "en-US"
+      }
+    }
+  ],
+  "_comment": "cartUrl needs to be unique. Next cartUrl is https://www.merchant3.com/cart."
+}

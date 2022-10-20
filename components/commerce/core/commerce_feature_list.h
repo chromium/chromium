@@ -290,6 +290,10 @@ extern const char kCommerceHintAndroidHeuristicsImprovementParam[];
 extern const char kReadyToFetchMerchantWidePromotionParam[];
 extern const base::FeatureParam<bool> kReadyToFetchMerchantWidePromotion;
 
+// Feature params for code-based Rule-based Discount (RBD).
+extern const char kCodeBasedRuleDiscountParam[];
+extern const base::FeatureParam<bool> kCodeBasedRuleDiscount;
+
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);
 // Check if a URL belongs to a partner merchant of rule discount.

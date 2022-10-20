@@ -44,8 +44,12 @@ message RuleDiscountInfoProto {
   string raw_merchant_offer_id = 5;
 }
 
+message CouponInfoProto {
+  string promo_id = 1;
+}
+
 // Used for storing the discount information of this cart.
-// Next id: 7
+// Next id: 8
 message ChromeCartDiscountProto {
   // String indicating the content of the discount on this cart (e.g. 15% off).
   string discount_text = 1;
@@ -61,6 +65,7 @@ message ChromeCartDiscountProto {
   repeated RuleDiscountInfoProto rule_discount_info = 5;
 
   bool has_coupons = 6;
+  repeated CouponInfoProto coupon_info = 7;
 }
 
 // Used for storing information of products within the cart.

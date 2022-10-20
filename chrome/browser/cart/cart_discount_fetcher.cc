@@ -77,7 +77,8 @@ struct CouponDiscountInfo {
 enum CouponType {
   UNSPECIFIED,
   FREE_LISTING_WITHOUT_CODE,
-  FREE_LISTING_WITH_CODE
+  FREE_LISTING_WITH_CODE,
+  RBD_WITH_CODE
 };
 
 // TODO(crbug.com/1207197): Consolidate to one util method to get string.
@@ -239,10 +240,22 @@ CouponType ConvertToCouponType(const base::Value* type) {
     return CouponType::FREE_LISTING_WITHOUT_CODE;
   } else if (type_str == "FREE_LISTING_WITH_CODE") {
     return CouponType::FREE_LISTING_WITH_CODE;
+  } else if (type_str == "RBD_WITH_CODE") {
+    return CouponType::RBD_WITH_CODE;
   }
 
   NOTREACHED() << "Unrecognized coupon type";
   return CouponType::UNSPECIFIED;
+}
+
+bool IsCouponWithCode(CouponType type) {
+  if (type == CouponType::FREE_LISTING_WITH_CODE)
+    return true;
+  if (commerce::kCodeBasedRuleDiscount.Get() &&
+      type == CouponType::RBD_WITH_CODE) {
+    return true;
+  }
+  return false;
 }
 
 CouponDiscountInfo ConvertToCouponDiscountInfo(
@@ -261,7 +274,7 @@ CouponDiscountInfo ConvertToCouponDiscountInfo(
 
     // Parse type
     CouponType type = ConvertToCouponType(coupon_discount_dict.Find("type"));
-    if (type != CouponType::FREE_LISTING_WITH_CODE)
+    if (!IsCouponWithCode(type))
       continue;
 
     // Parse description
