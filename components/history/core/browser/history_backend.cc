@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -65,6 +66,7 @@
 #include "sql/error_delegate_util.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
+#include "sql/transaction.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -271,7 +273,6 @@ HistoryBackend::HistoryBackend(
     std::unique_ptr<HistoryBackendClient> backend_client,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : delegate_(std::move(delegate)),
-      scheduled_kill_db_(false),
       expirer_(this, backend_client.get(), task_runner),
       recent_redirects_(kMaxRedirectCount),
       backend_client_(std::move(backend_client)),
@@ -1090,7 +1091,7 @@ void HistoryBackend::InitImpl(
   expirer_.SetDatabases(db_.get(), favicon_db_ptr);
 
   // Open the long-running transaction.
-  db_->BeginTransaction();
+  BeginSingletonTransaction();
 
   // Get the first item in our database.
   db_->GetStartDate(&first_recorded_time_);
@@ -1117,8 +1118,7 @@ void HistoryBackend::OnMemoryPressure(
 
 void HistoryBackend::CloseAllDatabases() {
   if (db_) {
-    // Commit the long-running transaction.
-    db_->CommitTransaction();
+    CommitSingletonTransactionIfItExists();
     db_.reset();
     // Forget the first recorded time since the database is closed.
     first_recorded_time_ = base::Time();
@@ -2680,11 +2680,10 @@ void HistoryBackend::Commit() {
   // some cases) but it hasn't been important yet.
   CancelScheduledCommit();
 
-  db_->CommitTransaction();
-  DCHECK_EQ(db_->transaction_nesting(), 0)
-      << "Somebody left a transaction open";
-  db_->BeginTransaction();
+  CommitSingletonTransactionIfItExists();
+  BeginSingletonTransaction();
 
+  // `FaviconBackend` has its OWN internal long-running transaction.
   if (favicon_backend_)
     favicon_backend_->Commit();
 }
@@ -2738,6 +2737,53 @@ void HistoryBackend::ProcessDBTaskImpl() {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&HistoryBackend::ProcessDBTaskImpl, this));
   }
+}
+
+void HistoryBackend::BeginSingletonTransaction() {
+  // TODO(crbug.com/1321483): Convert to DCHECKs after sussing out all the
+  // transaction bugs in History.
+  CHECK(!singleton_transaction_);
+
+  CHECK_EQ(db_->transaction_nesting(), 0);
+  singleton_transaction_ = db_->CreateTransaction();
+
+  if (singleton_transaction_->Begin()) {
+    CHECK_EQ(db_->transaction_nesting(), 1);
+  } else {
+    // Failing to begin the transaction is weird but it's not the end of the
+    // world. History can operate (slowly) without the long-running transaction,
+    // and we'll try to start one again at the next commit interval. Clear out
+    // the `singleton_transaction_` pointer, because it's only kept around if
+    // it was successfully begun.
+    singleton_transaction_.reset();
+
+    // TODO(crbug.com/1321483): Remove DumpWithoutCrashing after fixing
+    // transaction related bugs in History.
+    base::debug::DumpWithoutCrashing();
+  }
+}
+
+void HistoryBackend::CommitSingletonTransactionIfItExists() {
+  // This can happen if the transaction was not successfully started.
+  // TODO(crbug.com/1321483): Convert to DCHECKs after sussing out all the
+  // transaction bugs in History.
+  if (!singleton_transaction_) {
+    CHECK_EQ(db_->transaction_nesting(), 0)
+        << "There should not be any transactions other than the singleton one.";
+    return;
+  }
+
+  CHECK_EQ(db_->transaction_nesting(), 1)
+      << "Someone opened multiple transactions.";
+  if (singleton_transaction_->Commit()) {
+    CHECK_EQ(db_->transaction_nesting(), 0)
+        << "Someone left a transaction open.";
+  } else {
+    // TODO(crbug.com/1321483): Remove DumpWithoutCrashing after fixing
+    // transaction related bugs in History.
+    base::debug::DumpWithoutCrashing();
+  }
+  singleton_transaction_.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2958,8 +3004,9 @@ void HistoryBackend::KillHistoryDatabase() {
     history_sync_bridge_->OnDatabaseError();
 
   // Rollback transaction because Raze() cannot be called from within a
-  // transaction.
-  db_->RollbackTransaction();
+  // transaction. Deleting the object causes the rollback in the destructor.
+  singleton_transaction_.reset();
+
   bool success = db_->Raze();
   UMA_HISTOGRAM_BOOLEAN("History.KillHistoryDatabaseResult", success);
 
@@ -2967,8 +3014,6 @@ void HistoryBackend::KillHistoryDatabase() {
   // databases which will be closed.
   expirer_.SetDatabases(nullptr, nullptr);
 
-  // Reopen a new transaction for `db_` for the sake of CloseAllDatabases().
-  db_->BeginTransaction();
   CloseAllDatabases();
 }
 
@@ -3137,9 +3182,9 @@ bool HistoryBackend::ClearAllMainHistory(const URLRows& kept_urls) {
   // Vacuum to reclaim the space from the dropped tables. This must be done
   // when there is no transaction open, and we assume that our long-running
   // transaction is currently open.
-  db_->CommitTransaction();
+  CommitSingletonTransactionIfItExists();
   db_->Vacuum();
-  db_->BeginTransaction();
+  BeginSingletonTransaction();
   db_->GetStartDate(&first_recorded_time_);
 
   return true;

@@ -357,22 +357,8 @@ int HistoryDatabase::GetCurrentVersion() {
   return kCurrentVersionNumber;
 }
 
-void HistoryDatabase::BeginTransaction() {
-  db_.BeginTransaction();
-}
-
-void HistoryDatabase::CommitTransaction() {
-  db_.CommitTransaction();
-}
-
-void HistoryDatabase::RollbackTransaction() {
-  // If Init() returns with a failure status, the Transaction created there will
-  // be destructed and rolled back. HistoryBackend might try to kill the
-  // database after that, at which point it will try to roll back a non-existing
-  // transaction. This will crash on a DCHECK. So transaction_nesting() is
-  // checked first.
-  if (db_.transaction_nesting())
-    db_.RollbackTransaction();
+std::unique_ptr<sql::Transaction> HistoryDatabase::CreateTransaction() {
+  return std::make_unique<sql::Transaction>(&db_);
 }
 
 bool HistoryDatabase::RecreateAllTablesButURL() {
