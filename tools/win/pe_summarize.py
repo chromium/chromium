@@ -118,8 +118,8 @@ def main():
             sections = None
     except WindowsError as error:
       if error.winerror == 2:
-        print (r'Cannot find dumpbin. Run "C:\Program Files (x86)\Microsoft '
-               r'Visual Studio\2017\Professional\VC\Auxiliary\Build'
+        print (r'Cannot find dumpbin. Run "C:\Program Files\Microsoft '
+               r'Visual Studio\2022\Professional\VC\Auxiliary\Build'
                r'\vcvarsall.bat amd64" or similar to add dumpbin to the path.')
       else:
         print(error)
