@@ -1408,7 +1408,7 @@ void VolumeDown() {
     audio_handler->SetOutputVolumePercent(0);
   } else {
     if (features::IsAudioPeripheralVolumeGranularityEnabled())
-      audio_handler->DecreaseOutputVolumeByOneStep();
+      audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
     else
       audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
 
@@ -1433,7 +1433,7 @@ void VolumeUp() {
   } else {
     play_sound = audio_handler->GetOutputVolumePercent() != 100;
     if (features::IsAudioPeripheralVolumeGranularityEnabled())
-      audio_handler->IncreaseOutputVolumeByOneStep();
+      audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
     else
       audio_handler->AdjustOutputVolumeByPercent(kStepPercentage);
   }

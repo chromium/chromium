@@ -72,11 +72,12 @@ const uint64_t kBluetoothHeadsetId = 10006;
 const uint64_t kHDMIOutputId = 10007;
 const uint64_t kUSBHeadphoneId1 = 10008;
 const uint64_t kUSBHeadphoneId2 = 10009;
-const uint64_t kMicJackId = 10010;
-const uint64_t kKeyboardMicId = 10011;
-const uint64_t kFrontMicId = 10012;
-const uint64_t kRearMicId = 10013;
-const uint64_t kOtherId = 10014;
+const uint64_t kUSBHeadphoneId3 = 10010;
+const uint64_t kMicJackId = 10011;
+const uint64_t kKeyboardMicId = 10012;
+const uint64_t kFrontMicId = 10013;
+const uint64_t kRearMicId = 10014;
+const uint64_t kOtherId = 10015;
 const uint64_t kUSBJabraSpeakerOutputId1 = 90003;
 const uint64_t kUSBJabraSpeakerOutputId2 = 90004;
 const uint64_t kUSBJabraSpeakerInputId1 = 90005;
@@ -97,6 +98,8 @@ const uint32_t kOutputMaxSupportedChannels = 2;
 
 const uint32_t kInputAudioEffect = 1;
 const uint32_t kOutputAudioEffect = 0;
+
+const int kStepPercentage = 4;
 
 const AudioNodeInfo kInternalSpeaker[] = {{false, kInternalSpeakerId,
                                            "Fake Speaker", "INTERNAL_SPEAKER",
@@ -141,7 +144,10 @@ const AudioNodeInfo kUSBHeadphone1[] = {
     {false, kUSBHeadphoneId1, "USB Headphone", "USB", "USB Headphone 1", 25}};
 
 const AudioNodeInfo kUSBHeadphone2[] = {
-    {false, kUSBHeadphoneId2, "USB Headphone", "USB", "USB Headphone 1", 16}};
+    {false, kUSBHeadphoneId2, "USB Headphone", "USB", "USB Headphone 2", 16}};
+
+const AudioNodeInfo kUSBHeadphone3[] = {
+    {false, kUSBHeadphoneId3, "USB Headphone", "USB", "USB Headphone 3", 0}};
 
 const AudioNodeInfo kUSBJabraSpeakerOutput1[] = {
     {false, kUSBJabraSpeakerOutputId1, "Jabra Speaker 1", "USB",
@@ -2121,15 +2127,31 @@ TEST_P(CrasAudioHandlerTest, SetOutputVolumePercent) {
   EXPECT_EQ(kVolume, audio_pref_handler_->GetOutputVolumeValue(&device));
 }
 
-TEST_P(CrasAudioHandlerTest, IncreaseOutputVolumeByOneStep) {
+TEST_P(CrasAudioHandlerTest, IncreaseOutputVolumeByOneStepOther) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList(
+      {kInternalSpeaker, kHeadphone, kOther, kBluetoothHeadset, kHDMIOutput});
+  SetUpCrasAudioHandler(audio_nodes);
+  for (const auto& audio_node : audio_nodes) {
+    cras_audio_handler_->ChangeActiveNodes({audio_node.id});
+    cras_audio_handler_->SetOutputVolumePercent(50);
+    cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
+    EXPECT_EQ(50 + kStepPercentage,
+              cras_audio_handler_->GetOutputVolumePercent());
+  }
+}
+
+TEST_P(CrasAudioHandlerTest, IncreaseOutputVolumeByOneStepUSB) {
   AudioNodeList audio_nodes =
       GenerateAudioNodeList({kUSBHeadphone1, kUSBHeadphone2});
+  AudioNode invalid_steps_auido_node = GenerateAudioNode(kUSBHeadphone3);
+  invalid_steps_auido_node.number_of_volume_steps = 0;
+  audio_nodes.push_back(invalid_steps_auido_node);
   SetUpCrasAudioHandler(audio_nodes);
   // USB 1 have 25 steps, mean we increase 100/25=4 % of volume per step.
   // USB 1 start from volume 0 and increase one step expect increase to 4.
   cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone1->id});
   cras_audio_handler_->SetOutputVolumePercent(0);
-  cras_audio_handler_->IncreaseOutputVolumeByOneStep();
+  cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(4, cras_audio_handler_->GetOutputVolumePercent());
   // 0   -> step0
   // 1-4 -> step1
@@ -2137,23 +2159,23 @@ TEST_P(CrasAudioHandlerTest, IncreaseOutputVolumeByOneStep) {
   // Inorder to let user feel volume change, increase step1 to step2.
   // USB 1 start from volume 2 and increase one step, expect increase to 8.
   cras_audio_handler_->SetOutputVolumePercent(2);
-  cras_audio_handler_->IncreaseOutputVolumeByOneStep();
+  cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(8, cras_audio_handler_->GetOutputVolumePercent());
   // 100 is max volume
   cras_audio_handler_->SetOutputVolumePercent(100);
-  cras_audio_handler_->IncreaseOutputVolumeByOneStep();
+  cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(100, cras_audio_handler_->GetOutputVolumePercent());
   // can increase from 0 to 100
   cras_audio_handler_->SetOutputVolumePercent(0);
   for (int32_t i = 0; i < kUSBHeadphone1->number_of_volume_steps; ++i) {
-    cras_audio_handler_->IncreaseOutputVolumeByOneStep();
+    cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
   }
   EXPECT_EQ(100, cras_audio_handler_->GetOutputVolumePercent());
   // USB 2 have 16 steps, mean we increase 100/16=6.25 % of volume per step.
   // USB 2 start from volume 0 and increase one step expect increase to 6;
   cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone2->id});
   cras_audio_handler_->SetOutputVolumePercent(0);
-  cras_audio_handler_->IncreaseOutputVolumeByOneStep();
+  cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(6, cras_audio_handler_->GetOutputVolumePercent());
   // 0    -> step0
   // 1-6  -> step1
@@ -2161,36 +2183,77 @@ TEST_P(CrasAudioHandlerTest, IncreaseOutputVolumeByOneStep) {
   // Inorder to let user feel volume change, increase step1 to step2.
   // USB 2 start from volume 4 and increase one step, expect increase to 12
   cras_audio_handler_->SetOutputVolumePercent(4);
-  cras_audio_handler_->IncreaseOutputVolumeByOneStep();
+  cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(12, cras_audio_handler_->GetOutputVolumePercent());
   // USB 2 start from volume 0 and increase 4 step, expect increase to
   // 25(6.25*4=25)
   cras_audio_handler_->SetOutputVolumePercent(0);
   for (int32_t i = 0; i < 4; ++i) {
-    cras_audio_handler_->IncreaseOutputVolumeByOneStep();
+    cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
   }
   EXPECT_EQ(25, cras_audio_handler_->GetOutputVolumePercent());
   // 100 is max
   cras_audio_handler_->SetOutputVolumePercent(100);
-  cras_audio_handler_->IncreaseOutputVolumeByOneStep();
+  cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(100, cras_audio_handler_->GetOutputVolumePercent());
   // can increase from 0 to 100
   cras_audio_handler_->SetOutputVolumePercent(0);
   for (uint32_t i = 0; i < kUSBHeadphone2->number_of_volume_steps; ++i) {
-    cras_audio_handler_->IncreaseOutputVolumeByOneStep();
+    cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
+  }
+  EXPECT_EQ(100, cras_audio_handler_->GetOutputVolumePercent());
+  // USB 3 have 0 steps, this is invalid case, so we will fallback to use 25
+  // steps. USB 3 start from volume 0 and increase one step expect increase
+  // to 4.
+  cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone3->id});
+  cras_audio_handler_->SetOutputVolumePercent(0);
+  cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
+  EXPECT_EQ(4, cras_audio_handler_->GetOutputVolumePercent());
+  // 0   -> step0
+  // 1-4 -> step1
+  // 5-8 -> step2
+  // Inorder to let user feel volume change, increase step1 to step2.
+  // USB 1 start from volume 2 and increase one step, expect increase to 8.
+  cras_audio_handler_->SetOutputVolumePercent(2);
+  cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
+  EXPECT_EQ(8, cras_audio_handler_->GetOutputVolumePercent());
+  // 100 is max volume
+  cras_audio_handler_->SetOutputVolumePercent(100);
+  cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
+  EXPECT_EQ(100, cras_audio_handler_->GetOutputVolumePercent());
+  // can increase from 0 to 100
+  cras_audio_handler_->SetOutputVolumePercent(0);
+  for (int32_t i = 0; i < NUMBER_OF_VOLUME_STEPS_DEFAULT; ++i) {
+    cras_audio_handler_->IncreaseOutputVolumeByOneStep(kStepPercentage);
   }
   EXPECT_EQ(100, cras_audio_handler_->GetOutputVolumePercent());
 }
 
-TEST_P(CrasAudioHandlerTest, DecreaseOutputVolumeByOneStep) {
+TEST_P(CrasAudioHandlerTest, DecreaseOutputVolumeByOneStepOther) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList(
+      {kInternalSpeaker, kHeadphone, kOther, kBluetoothHeadset, kHDMIOutput});
+  SetUpCrasAudioHandler(audio_nodes);
+  for (const auto& audio_node : audio_nodes) {
+    cras_audio_handler_->ChangeActiveNodes({audio_node.id});
+    cras_audio_handler_->SetOutputVolumePercent(50);
+    cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
+    EXPECT_EQ(50 - kStepPercentage,
+              cras_audio_handler_->GetOutputVolumePercent());
+  }
+}
+
+TEST_P(CrasAudioHandlerTest, DecreaseOutputVolumeByOneStepUSB) {
   AudioNodeList audio_nodes =
       GenerateAudioNodeList({kUSBHeadphone1, kUSBHeadphone2});
+  AudioNode invalid_steps_auido_node = GenerateAudioNode(kUSBHeadphone3);
+  invalid_steps_auido_node.number_of_volume_steps = 0;
+  audio_nodes.push_back(invalid_steps_auido_node);
   SetUpCrasAudioHandler(audio_nodes);
   // USB 1 have 25 steps, mean we decrease 100/25=4 % of volume per step.
   // USB 1 start from volume 4 and decrease one step expect decrease to 0;
   cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone1->id});
   cras_audio_handler_->SetOutputVolumePercent(4);
-  cras_audio_handler_->DecreaseOutputVolumeByOneStep();
+  cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
   // 0   -> step0
   // 1-4 -> step1
@@ -2198,23 +2261,23 @@ TEST_P(CrasAudioHandlerTest, DecreaseOutputVolumeByOneStep) {
   // Inorder to let user feel volume change, decrease step2 to step1.
   // USB 1 start from volume 6 and decrease one step, expect decrease to 4
   cras_audio_handler_->SetOutputVolumePercent(6);
-  cras_audio_handler_->DecreaseOutputVolumeByOneStep();
+  cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(4, cras_audio_handler_->GetOutputVolumePercent());
   // 0 is min volume
   cras_audio_handler_->SetOutputVolumePercent(0);
-  cras_audio_handler_->DecreaseOutputVolumeByOneStep();
+  cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
   // can decrease from 100 to 0
   cras_audio_handler_->SetOutputVolumePercent(100);
   for (int32_t i = 0; i < kUSBHeadphone1->number_of_volume_steps; ++i) {
-    cras_audio_handler_->DecreaseOutputVolumeByOneStep();
+    cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   }
   EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
   // USB 2 have 16 steps, mean we decrease 100/16=6.25 % of volume per step.
   // USB 2 start from volume 12 and decrease one step expect decrease to 6;
   cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone2->id});
   cras_audio_handler_->SetOutputVolumePercent(12);
-  cras_audio_handler_->DecreaseOutputVolumeByOneStep();
+  cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(6, cras_audio_handler_->GetOutputVolumePercent());
   // 0    -> step0
   // 1-6  -> step1
@@ -2222,22 +2285,47 @@ TEST_P(CrasAudioHandlerTest, DecreaseOutputVolumeByOneStep) {
   // Inorder to let user feel volume change, decrease step2 to step1.
   // USB 2 start from volume 10 and decrease one step, expect decrease to 6
   cras_audio_handler_->SetOutputVolumePercent(10);
-  cras_audio_handler_->DecreaseOutputVolumeByOneStep();
+  cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(6, cras_audio_handler_->GetOutputVolumePercent());
   // USB 2 start from volume 25 and decrease 4 step, expect decrease to 0
   cras_audio_handler_->SetOutputVolumePercent(25);
   for (int32_t i = 0; i < 4; ++i) {
-    cras_audio_handler_->DecreaseOutputVolumeByOneStep();
+    cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   }
   EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
   // 0 is min volume
   cras_audio_handler_->SetOutputVolumePercent(0);
-  cras_audio_handler_->DecreaseOutputVolumeByOneStep();
+  cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
   // can decrease from 100 to 0
   cras_audio_handler_->SetOutputVolumePercent(100);
   for (int32_t i = 0; i < kUSBHeadphone2->number_of_volume_steps; ++i) {
-    cras_audio_handler_->DecreaseOutputVolumeByOneStep();
+    cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
+  }
+  EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
+  // USB 3 have 0 steps, this is invalid case, so we will fallback to use 25
+  // steps. USB 3 start from volume 4 and decrease one step expect decrease to
+  // 0;
+  cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone3->id});
+  cras_audio_handler_->SetOutputVolumePercent(4);
+  cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
+  EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
+  // 0   -> step0
+  // 1-4 -> step1
+  // 4-8 -> step2
+  // Inorder to let user feel volume change, decrease step2 to step1.
+  // USB 3 start from volume 6 and decrease one step, expect decrease to 4
+  cras_audio_handler_->SetOutputVolumePercent(6);
+  cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
+  EXPECT_EQ(4, cras_audio_handler_->GetOutputVolumePercent());
+  // 0 is min volume
+  cras_audio_handler_->SetOutputVolumePercent(0);
+  cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
+  EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
+  // can decrease from 100 to 0
+  cras_audio_handler_->SetOutputVolumePercent(100);
+  for (int32_t i = 0; i < NUMBER_OF_VOLUME_STEPS_DEFAULT; ++i) {
+    cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   }
   EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
 }
