@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/common/files_scan_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -22,21 +23,9 @@
 
 namespace {
 
-// Helper to keep a mapping of files to the index of their corresponding parent
-// entry in content::DropData::filenames. For instance, this means that for a
-// DropData with filenames = [ "a.txt", "dir/"], `PathsAndIndexes` might be
-// populated with { "a.txt": 0, "dir/sub_1.txt": 1, "dir/sub_2.txt": 1 }.
-using PathsAndIndexes = std::map<base::FilePath, size_t>;
-
-// Helper struct to hold all relevant data to a drag-drop content analysis scan.
-struct ContentAnalysisDropData {
-  enterprise_connectors::ContentAnalysisDelegate::Data analysis_data;
-  PathsAndIndexes paths_and_indexes;
-};
-
 void CompletionCallback(
     content::DropData drop_data,
-    PathsAndIndexes paths_and_indexes,
+    std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback,
     const enterprise_connectors::ContentAnalysisDelegate::Data& data,
     const enterprise_connectors::ContentAnalysisDelegate::Result& result) {
@@ -56,62 +45,26 @@ void CompletionCallback(
 
   // For file drag-drops, block file paths depending on the verdict obtained for
   // child paths.
-  DCHECK_EQ(paths_and_indexes.size(), result.paths_results.size());
-  std::set<size_t> file_indexes_to_filter;
-  for (size_t i = 0; i < result.paths_results.size(); ++i) {
-    if (result.paths_results[i])
-      continue;
-    file_indexes_to_filter.insert(paths_and_indexes.at(data.paths[i]));
-  }
+  DCHECK(files_scan_data);
+  std::set<size_t> file_indexes_to_block =
+      files_scan_data->IndexesToBlock(result.paths_results);
 
-  // If every file path should be filtered, the drop is aborted, otherwise it
-  // continues by filtering the list.
-  if (file_indexes_to_filter.size() == drop_data.filenames.size()) {
+  // If every file path should be blocked, the drop is aborted, otherwise it
+  // continues by blocking sub-elements of the list.
+  if (file_indexes_to_block.size() == drop_data.filenames.size()) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
   std::vector<ui::FileInfo> final_filenames;
   for (size_t i = 0; i < drop_data.filenames.size(); ++i) {
-    if (file_indexes_to_filter.count(i))
+    if (file_indexes_to_block.count(i))
       continue;
     final_filenames.push_back(std::move(drop_data.filenames[i]));
   }
 
   drop_data.filenames = std::move(final_filenames);
   std::move(callback).Run(std::move(drop_data));
-}
-
-ContentAnalysisDropData GetPathsToScan(
-    const std::vector<ui::FileInfo>& filenames,
-    enterprise_connectors::ContentAnalysisDelegate::Data data) {
-  ContentAnalysisDropData content_analysis_drop_data;
-  for (size_t i = 0; i < filenames.size(); ++i) {
-    const ui::FileInfo& file = filenames.at(i);
-    base::File::Info info;
-
-    // Ignore the path if it's a symbolic link.
-    if (!base::GetFileInfo(file.path, &info) || info.is_symbolic_link)
-      continue;
-
-    // If the file is a directory, recursively add the files it holds to `data`.
-    if (info.is_directory) {
-      base::FileEnumerator file_enumerator(file.path, /*recursive=*/true,
-                                           base::FileEnumerator::FILES);
-      for (base::FilePath sub_path = file_enumerator.Next(); !sub_path.empty();
-           sub_path = file_enumerator.Next()) {
-        data.paths.push_back(sub_path);
-        content_analysis_drop_data.paths_and_indexes.insert({sub_path, i});
-      }
-    } else {
-      data.paths.push_back(file.path);
-      content_analysis_drop_data.paths_and_indexes.insert({file.path, i});
-    }
-  }
-
-  content_analysis_drop_data.analysis_data = std::move(data);
-
-  return content_analysis_drop_data;
 }
 
 // Helper class to handle WebContents being destroyed while files are opened in
@@ -123,19 +76,25 @@ class HandleDropScanData : public content::WebContentsObserver {
   HandleDropScanData(
       content::WebContents* web_contents,
       content::DropData drop_data,
+      enterprise_connectors::ContentAnalysisDelegate::Data analysis_data,
       content::WebContentsViewDelegate::DropCompletionCallback callback)
       : content::WebContentsObserver(web_contents),
         drop_data_(std::move(drop_data)),
+        analysis_data_(std::move(analysis_data)),
         callback_(std::move(callback)) {}
 
-  void ScanData(ContentAnalysisDropData content_analysis_drop_data) {
+  void ScanData(
+      std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data) {
     DCHECK(web_contents());
-
+    if (files_scan_data) {
+      for (const auto& path : files_scan_data->expanded_paths()) {
+        analysis_data_.paths.push_back(path);
+      }
+    }
     enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-        web_contents(), std::move(content_analysis_drop_data.analysis_data),
+        web_contents(), std::move(analysis_data_),
         base::BindOnce(&CompletionCallback, std::move(drop_data_),
-                       std::move(content_analysis_drop_data.paths_and_indexes),
-                       std::move(callback_)),
+                       std::move(files_scan_data), std::move(callback_)),
         safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP);
 
     delete this;
@@ -149,6 +108,7 @@ class HandleDropScanData : public content::WebContentsObserver {
 
  private:
   content::DropData drop_data_;
+  enterprise_connectors::ContentAnalysisDelegate::Data analysis_data_;
   content::WebContentsViewDelegate::DropCompletionCallback callback_;
 
   base::WeakPtrFactory<HandleDropScanData> weakptr_factory_{this};
@@ -189,19 +149,22 @@ void HandleOnPerformDrop(
     scan_callback = std::move(callback);
   }
 
-  auto* handle_drop_scan_data =
-      new HandleDropScanData(web_contents, drop_data, std::move(scan_callback));
+  // `handle_drop_scan_data` is created on the heap to stay alive regardless of
+  // how long the threadpool work takes or in case `web_contents` is destroyed.
+  // It deletes itself when `HandleDropScanData::ScanData` is called or when
+  // `web_contents` gets destroyed.
+  auto* handle_drop_scan_data = new HandleDropScanData(
+      web_contents, drop_data, std::move(data), std::move(scan_callback));
   if (drop_data.filenames.empty()) {
-    handle_drop_scan_data->ScanData({
-        .analysis_data = std::move(data),
-        .paths_and_indexes = {},
-    });
+    handle_drop_scan_data->ScanData(/*files_scan_data=*/nullptr);
   } else {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&GetPathsToScan, drop_data.filenames, std::move(data)),
-        base::BindOnce(&HandleDropScanData::ScanData,
-                       handle_drop_scan_data->GetWeakPtr()));
+    auto files_scan_data =
+        std::make_unique<enterprise_connectors::FilesScanData>(
+            drop_data.filenames);
+    auto* files_scan_data_raw = files_scan_data.get();
+    files_scan_data_raw->ExpandPaths(base::BindOnce(
+        &HandleDropScanData::ScanData, handle_drop_scan_data->GetWeakPtr(),
+        std::move(files_scan_data)));
   }
 
   if (!callback.is_null()) {

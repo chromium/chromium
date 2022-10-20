@@ -1830,6 +1830,7 @@ static_library("ui") {
       "//components/commerce/core/mojom:mojo_bindings",
       "//components/commerce/core/webui",
       "//components/enterprise/common:download_item_reroute_info",
+      "//components/enterprise/common:files_scan_data",
       "//components/feedback/proto",
       "//components/keep_alive_registry",
       "//components/media_router/common/mojom:media_router",

@@ -16,3 +16,32 @@ static_library("download_item_reroute_info") {
   ]
   deps = [ "proto:download_item_reroute_info_proto" ]
 }
+
+static_library("files_scan_data") {
+  if (!is_ios) {
+    sources = [
+      "files_scan_data.cc",
+      "files_scan_data.h",
+    ]
+    deps = [
+      "//base",
+      "//ui/base",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (!is_ios) {
+    sources = [ "files_scan_data_unittest.cc" ]
+
+    deps = [
+      ":files_scan_data",
+      "//base/test:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
