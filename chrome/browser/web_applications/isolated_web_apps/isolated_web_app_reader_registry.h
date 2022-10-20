@@ -140,53 +140,86 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       base::expected<web_package::mojom::BundleResponsePtr,
                      SignedWebBundleReader::ReadResponseError> response_head);
 
-  void StartCacheCleanupTimerIfNotRunning();
-
-  void StopCacheCleanupTimerIfCacheIsEmpty();
-
-  void CleanupOldCacheEntries();
-
-  // A `CacheEntry` has two states: In its initial `kPending` state, it caches
-  // requests made to a Signed Web Bundle until the `SignedWebBundleReader` is
-  // ready. Once the `SignedWebBundleReader` is ready to serve responses, all
-  // queued requests are run and the state is updated to `kReady`.
-  class CacheEntry {
+  // A thin wrapper around `base::flat_map<base::FilePath, Cache::Entry>` that
+  // automatically removes entries from the cache if they have not been accessed
+  // for some time. This makes sure that `SignedWebBundleReader`s are not kept
+  // alive indefinitely, since each of them holds an open file handle and
+  // memory.
+  class Cache {
    public:
-    explicit CacheEntry(std::unique_ptr<SignedWebBundleReader> reader);
-    ~CacheEntry();
+    class Entry;
 
-    CacheEntry(const CacheEntry& other) = delete;
-    CacheEntry& operator=(const CacheEntry& other) = delete;
+    Cache();
+    ~Cache();
 
-    CacheEntry(CacheEntry&& other);
-    CacheEntry& operator=(CacheEntry&& other);
+    Cache(Cache&& other) = delete;
+    Cache& operator=(Cache&& other) = delete;
 
-    enum class State { kPending, kReady };
+    base::flat_map<base::FilePath, Entry>::iterator Find(
+        const base::FilePath& file_path);
 
-    SignedWebBundleReader& GetReader() {
-      last_access_ = base::TimeTicks::Now();
-      return *reader_;
-    }
+    base::flat_map<base::FilePath, Entry>::iterator End();
 
-    const base::TimeTicks last_access() const { return last_access_; }
+    template <class... Args>
+    std::pair<base::flat_map<base::FilePath, Entry>::iterator, bool> Emplace(
+        Args&&... args);
 
-    State state = State::kPending;
-    std::vector<std::pair<network::ResourceRequest, ReadResponseCallback>>
-        pending_requests;
+    void Erase(base::flat_map<base::FilePath, Entry>::iterator iterator);
+
+    // A cache `Entry` has two states: In its initial `kPending` state, it
+    // caches requests made to a Signed Web Bundle until the
+    // `SignedWebBundleReader` is ready. Once the `SignedWebBundleReader` is
+    // ready to serve responses, all queued requests are run and the state is
+    // updated to `kReady`.
+    class Entry {
+     public:
+      explicit Entry(std::unique_ptr<SignedWebBundleReader> reader);
+      ~Entry();
+
+      Entry(const Entry& other) = delete;
+      Entry& operator=(const Entry& other) = delete;
+
+      Entry(Entry&& other);
+      Entry& operator=(Entry&& other);
+
+      SignedWebBundleReader& GetReader() {
+        last_access_ = base::TimeTicks::Now();
+        return *reader_;
+      }
+
+      const base::TimeTicks last_access() const { return last_access_; }
+
+      enum class State { kPending, kReady };
+
+      State state = State::kPending;
+      std::vector<std::pair<network::ResourceRequest,
+                            IsolatedWebAppReaderRegistry::ReadResponseCallback>>
+          pending_requests;
+
+     private:
+      std::unique_ptr<SignedWebBundleReader> reader_;
+      // The point in time when the `reader` was last accessed.
+      base::TimeTicks last_access_;
+    };
 
    private:
-    std::unique_ptr<SignedWebBundleReader> reader_;
-    // The point in time when the `reader_` was last accessed.
-    base::TimeTicks last_access_;
+    void StartCleanupTimerIfNotRunning();
+
+    void StopCleanupTimerIfCacheIsEmpty();
+
+    void CleanupOldEntries();
+
+    base::flat_map<base::FilePath, Entry> cache_;
+    base::RepeatingTimer cleanup_timer_;
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
-  base::flat_map<base::FilePath, CacheEntry> reader_cache_;
+  Cache reader_cache_;
 
   // A set of files whose signatures have been verified successfully during the
   // current browser session. Signatures of these files are not re-verified even
   // if their corresponding `CacheEntry` is cleaned up and later re-created.
   base::flat_set<base::FilePath> verified_files_;
-  base::RepeatingTimer cache_cleanup_timer_;
 
   std::unique_ptr<IsolatedWebAppValidator> validator_;
   base::RepeatingCallback<std::unique_ptr<SignedWebBundleSignatureVerifier>()>

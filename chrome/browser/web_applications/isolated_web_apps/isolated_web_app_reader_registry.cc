@@ -59,17 +59,17 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
     ReadResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (auto cache_entry_it = reader_cache_.find(web_bundle_path);
-      cache_entry_it != reader_cache_.end()) {
+  if (auto cache_entry_it = reader_cache_.Find(web_bundle_path);
+      cache_entry_it != reader_cache_.End()) {
     switch (cache_entry_it->second.state) {
-      case CacheEntry::State::kPending:
+      case Cache::Entry::State::kPending:
         // If integrity block and metadata are still being read, then the
         // `SignedWebBundleReader` is not yet ready to be used for serving
         // responses. Queue the request and callback in this case.
         cache_entry_it->second.pending_requests.emplace_back(
             resource_request, std::move(callback));
         return;
-      case CacheEntry::State::kReady:
+      case Cache::Entry::State::kReady:
         // If integrity block and metadata have already been read, read the
         // response from the cached `SignedWebBundleReader`.
         DoReadResponse(cache_entry_it->second.GetReader(), resource_request,
@@ -94,9 +94,8 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
           std::move(signature_verifier));
 
   auto [cache_entry_it, was_insertion] =
-      reader_cache_.emplace(web_bundle_path, CacheEntry(std::move(reader)));
+      reader_cache_.Emplace(web_bundle_path, Cache::Entry(std::move(reader)));
   DCHECK(was_insertion);
-  StartCacheCleanupTimerIfNotRunning();
   cache_entry_it->second.pending_requests.emplace_back(resource_request,
                                                        std::move(callback));
 }
@@ -145,9 +144,9 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
     absl::optional<SignedWebBundleReader::ReadError> read_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto cache_entry_it = reader_cache_.find(web_bundle_path);
-  DCHECK(cache_entry_it != reader_cache_.end());
-  DCHECK_EQ(cache_entry_it->second.state, CacheEntry::State::kPending);
+  auto cache_entry_it = reader_cache_.Find(web_bundle_path);
+  DCHECK(cache_entry_it != reader_cache_.End());
+  DCHECK_EQ(cache_entry_it->second.state, Cache::Entry::State::kPending);
 
   // Get all pending requests and set the pending requests of the cache entry to
   // an empty vector.
@@ -181,8 +180,7 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
       std::move(callback).Run(
           base::unexpected(ReadResponseError::ForOtherError(error_message)));
     }
-    reader_cache_.erase(cache_entry_it);
-    StopCacheCleanupTimerIfCacheIsEmpty();
+    reader_cache_.Erase(cache_entry_it);
     return;
   }
 
@@ -195,8 +193,7 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
       std::move(callback).Run(
           base::unexpected(ReadResponseError::ForOtherError(*error)));
     }
-    reader_cache_.erase(cache_entry_it);
-    StopCacheCleanupTimerIfCacheIsEmpty();
+    reader_cache_.Erase(cache_entry_it);
     return;
   }
 
@@ -204,7 +201,7 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
   // consumers that were waiting for this `SignedWebBundleReader` to become
   // available.
   verified_files_.insert(cache_entry_it->first);
-  cache_entry_it->second.state = CacheEntry::State::kReady;
+  cache_entry_it->second.state = Cache::Entry::State::kReady;
   for (auto& [resource_request, callback] : pending_requests) {
     DoReadResponse(reader, resource_request, std::move(callback));
   }
@@ -269,50 +266,6 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
   std::move(callback).Run(Response(std::move(*response_head), reader));
 }
 
-void IsolatedWebAppReaderRegistry::StartCacheCleanupTimerIfNotRunning() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!reader_cache_.empty());
-
-  if (cache_cleanup_timer_.IsRunning()) {
-    return;
-  }
-  cache_cleanup_timer_.Start(
-      FROM_HERE, kCleanupInterval,
-      base::BindRepeating(
-          &IsolatedWebAppReaderRegistry::CleanupOldCacheEntries,
-          // It is safe to use `base::Unretained` here, because
-          // `cache_cleanup_timer_` will be deleted before `this` is deleted.
-          base::Unretained(this)));
-}
-
-void IsolatedWebAppReaderRegistry::StopCacheCleanupTimerIfCacheIsEmpty() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (reader_cache_.empty()) {
-    cache_cleanup_timer_.AbandonAndStop();
-  }
-}
-
-void IsolatedWebAppReaderRegistry::CleanupOldCacheEntries() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::TimeTicks now = base::TimeTicks::Now();
-  reader_cache_.erase(
-      base::ranges::remove_if(
-          reader_cache_,
-          [&now](const CacheEntry& cache_entry) -> bool {
-            // If a `SignedWebBundleReader` is ready to read responses and has
-            // not been used for at least `kCleanupInterval`, remove it from the
-            // cache.
-            return cache_entry.state == CacheEntry::State::kReady &&
-                   now - cache_entry.last_access() > kCleanupInterval;
-          },
-          [](const std::pair<base::FilePath, CacheEntry>& entry)
-              -> const CacheEntry& { return entry.second; }),
-      reader_cache_.end());
-  StopCacheCleanupTimerIfCacheIsEmpty();
-}
-
 IsolatedWebAppReaderRegistry::Response::Response(
     web_package::mojom::BundleResponsePtr head,
     base::WeakPtr<SignedWebBundleReader> reader)
@@ -338,17 +291,98 @@ void IsolatedWebAppReaderRegistry::Response::ReadBody(
                             std::move(callback));
 }
 
-IsolatedWebAppReaderRegistry::CacheEntry::CacheEntry(
+IsolatedWebAppReaderRegistry::Cache::Cache() = default;
+IsolatedWebAppReaderRegistry::Cache::~Cache() = default;
+
+base::flat_map<base::FilePath,
+               IsolatedWebAppReaderRegistry::Cache::Entry>::iterator
+IsolatedWebAppReaderRegistry::Cache::Find(const base::FilePath& file_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return cache_.find(file_path);
+}
+
+base::flat_map<base::FilePath,
+               IsolatedWebAppReaderRegistry::Cache::Entry>::iterator
+IsolatedWebAppReaderRegistry::Cache::End() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return cache_.end();
+}
+
+template <class... Args>
+std::pair<base::flat_map<base::FilePath,
+                         IsolatedWebAppReaderRegistry::Cache::Entry>::iterator,
+          bool>
+IsolatedWebAppReaderRegistry::Cache::Emplace(Args&&... args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto result = cache_.emplace(std::forward<Args>(args)...);
+  StartCleanupTimerIfNotRunning();
+  return result;
+}
+
+void IsolatedWebAppReaderRegistry::Cache::Erase(
+    base::flat_map<base::FilePath, Entry>::iterator iterator) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  cache_.erase(iterator);
+  StopCleanupTimerIfCacheIsEmpty();
+}
+
+void IsolatedWebAppReaderRegistry::Cache::StartCleanupTimerIfNotRunning() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK(!cache_.empty());
+  if (cleanup_timer_.IsRunning()) {
+    return;
+  }
+  cleanup_timer_.Start(
+      FROM_HERE, kCleanupInterval,
+      base::BindRepeating(&Cache::CleanupOldEntries,
+                          // It is safe to use `base::Unretained` here, because
+                          // `cache_cleanup_timer_` will be deleted before
+                          // `this` is deleted.
+                          base::Unretained(this)));
+}
+
+void IsolatedWebAppReaderRegistry::Cache::StopCleanupTimerIfCacheIsEmpty() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (cache_.empty()) {
+    cleanup_timer_.AbandonAndStop();
+  }
+}
+
+void IsolatedWebAppReaderRegistry::Cache::CleanupOldEntries() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  cache_.erase(
+      base::ranges::remove_if(
+          cache_,
+          [&now](const Entry& cache_entry) -> bool {
+            // If a `SignedWebBundleReader` is ready to read responses and has
+            // not been used for at least `kCleanupInterval`, remove it from the
+            // cache.
+            return cache_entry.state == Entry::State::kReady &&
+                   now - cache_entry.last_access() > kCleanupInterval;
+          },
+          [](const std::pair<base::FilePath, Entry>& entry) -> const Entry& {
+            return entry.second;
+          }),
+      cache_.end());
+  StopCleanupTimerIfCacheIsEmpty();
+}
+
+IsolatedWebAppReaderRegistry::Cache::Entry::Entry(
     std::unique_ptr<SignedWebBundleReader> reader)
     : reader_(std::move(reader)) {}
 
-IsolatedWebAppReaderRegistry::CacheEntry::~CacheEntry() = default;
+IsolatedWebAppReaderRegistry::Cache::Entry::~Entry() = default;
 
-IsolatedWebAppReaderRegistry::CacheEntry::CacheEntry(CacheEntry&& other) =
-    default;
+IsolatedWebAppReaderRegistry::Cache::Entry::Entry(Entry&& other) = default;
 
-IsolatedWebAppReaderRegistry::CacheEntry&
-IsolatedWebAppReaderRegistry::CacheEntry::operator=(CacheEntry&& other) =
-    default;
+IsolatedWebAppReaderRegistry::Cache::Entry&
+IsolatedWebAppReaderRegistry::Cache::Entry::operator=(Entry&& other) = default;
 
 }  // namespace web_app
