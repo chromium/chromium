@@ -1,9 +1,9 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_IME_TRAY_IME_CHROMEOS_H_
-#define ASH_SYSTEM_IME_TRAY_IME_CHROMEOS_H_
+#ifndef ASH_SYSTEM_IME_IME_DETAILED_VIEW_H_
+#define ASH_SYSTEM_IME_IME_DETAILED_VIEW_H_
 
 #include <stddef.h>
 
@@ -58,4 +58,4 @@ class IMEDetailedView : public ImeListView {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_IME_TRAY_IME_CHROMEOS_H_
+#endif  // ASH_SYSTEM_IME_IME_DETAILED_VIEW_H_

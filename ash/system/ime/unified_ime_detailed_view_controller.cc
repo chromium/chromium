@@ -8,7 +8,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/ime/tray_ime_chromeos.h"
+#include "ash/system/ime/ime_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ui/base/l10n/l10n_util.h"

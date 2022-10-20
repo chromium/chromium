@@ -1,8 +1,8 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/ime/tray_ime_chromeos.h"
+#include "ash/system/ime/ime_detailed_view.h"
 
 #include <memory>
 #include <vector>
