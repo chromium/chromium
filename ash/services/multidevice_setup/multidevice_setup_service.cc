@@ -14,12 +14,12 @@
 #include "ash/services/multidevice_setup/multidevice_setup_base.h"
 #include "ash/services/multidevice_setup/multidevice_setup_initializer.h"
 #include "ash/services/multidevice_setup/privileged_host_device_setter_impl.h"
-#include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
-#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
-#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "ash/services/multidevice_setup/wifi_sync_notification_controller.h"
 #include "base/bind.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 
 namespace ash {
 

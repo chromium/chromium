@@ -7,9 +7,9 @@
 
 #include <ostream>
 
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 

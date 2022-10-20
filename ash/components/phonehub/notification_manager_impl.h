@@ -7,8 +7,8 @@
 
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/notification_manager.h"
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 namespace phonehub {

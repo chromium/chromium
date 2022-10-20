@@ -16,8 +16,8 @@
 #include "chrome/browser/push_messaging/budget_database.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #endif
 
 class GURL;

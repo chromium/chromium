@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -18,6 +17,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 namespace ash::secure_channel {
 

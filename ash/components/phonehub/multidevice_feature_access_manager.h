@@ -12,11 +12,11 @@
 #include "ash/components/phonehub/feature_setup_connection_operation.h"
 #include "ash/components/phonehub/feature_setup_response_processor.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 namespace phonehub {

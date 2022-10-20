@@ -30,7 +30,7 @@ export const MultiDeviceSettingsMode = {
 /**
  * Enum of MultiDevice features. Note that this is copied from (and must
  * include an analog of all values in) the Feature enum in
- * //ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
+ * //chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
  * @enum {number}
  */
 export const MultiDeviceFeature = {
@@ -49,7 +49,7 @@ export const MultiDeviceFeature = {
 /**
  * Possible states of MultiDevice features. Note that this is copied from (and
  * must include an analog of all values in) the FeatureState enum in
- * //ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
+ * //chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
  * @enum {number}
  */
 export const MultiDeviceFeatureState = {

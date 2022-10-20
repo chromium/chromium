@@ -10,8 +10,8 @@
 
 #include "ash/services/multidevice_setup/account_status_change_delegate_notifier.h"
 #include "ash/services/multidevice_setup/host_status_provider.h"
-#include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

@@ -3485,7 +3485,7 @@ if (!is_android) {
           "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc",
           "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
         ]
-        deps += [ "//ash/services/multidevice_setup/public/cpp:prefs" ]
+        deps += [ "//chromeos/ash/services/multidevice_setup/public/cpp:prefs" ]
       } else {
         sources += [ "../browser/ui/views/profiles/profile_customization_bubble_view_browsertest.cc" ]
       }
@@ -4201,7 +4201,6 @@ if (!is_android) {
         "//ash/constants:constants",
         "//ash/keyboard/ui:test_support",
         "//ash/public/cpp/external_arc",
-        "//ash/services/multidevice_setup/public/cpp:test_support",
         "//ash/webui/demo_mode_app_ui",
         "//ash/webui/diagnostics_ui",
         "//ash/webui/eche_app_ui",
@@ -4310,6 +4309,7 @@ if (!is_android) {
         "//chromeos/ash/services/auth_factor_config",
         "//chromeos/ash/services/auth_factor_config",
         "//chromeos/ash/services/cros_healthd/public/cpp",
+        "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
         "//chromeos/components/onc:test_support",
         "//chromeos/components/quick_answers/public/cpp:cpp",
         "//chromeos/components/remote_apps/mojom:mojom",
@@ -7503,7 +7503,6 @@ test("unit_tests") {
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//ash/resources/vector_icons",
       "//ash/services/device_sync/public/cpp:test_support",
-      "//ash/services/multidevice_setup/public/cpp:test_support",
       "//ash/services/secure_channel/public/cpp/client:test_support",
       "//ash/shortcut_viewer",
       "//ash/shortcut_viewer/strings:strings_grit",
@@ -7587,6 +7586,7 @@ test("unit_tests") {
       "//chromeos/ash/components/string_matching",
       "//chromeos/ash/components/sync_wifi",
       "//chromeos/ash/services/assistant/public/cpp",
+      "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
       "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
       "//chromeos/ash/services/nearby/public/cpp:test_support",
       "//chromeos/components/onc",

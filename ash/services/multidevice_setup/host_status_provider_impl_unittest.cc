@@ -11,9 +11,9 @@
 #include "ash/services/multidevice_setup/fake_host_backend_delegate.h"
 #include "ash/services/multidevice_setup/fake_host_status_provider.h"
 #include "ash/services/multidevice_setup/fake_host_verifier.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

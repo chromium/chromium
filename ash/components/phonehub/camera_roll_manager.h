@@ -6,9 +6,9 @@
 #define ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_H_
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 namespace phonehub {

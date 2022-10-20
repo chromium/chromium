@@ -6,7 +6,7 @@
 #define ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_FEATURE_STATE_MANAGER_H_
 
 #include "ash/services/multidevice_setup/feature_state_manager.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 

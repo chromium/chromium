@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "base/json/json_reader.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"

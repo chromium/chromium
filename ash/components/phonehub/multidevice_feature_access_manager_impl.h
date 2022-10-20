@@ -9,8 +9,8 @@
 
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "ash/components/phonehub/message_receiver.h"
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;

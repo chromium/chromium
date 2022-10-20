@@ -3123,10 +3123,6 @@ static_library("ui") {
       "//ash/quick_pair/repository",
       "//ash/quick_pair/ui",
       "//ash/services/multidevice_setup",
-      "//ash/services/multidevice_setup/public/cpp",
-      "//ash/services/multidevice_setup/public/cpp:android_sms_app_helper_delegate",
-      "//ash/services/multidevice_setup/public/cpp:prefs",
-      "//ash/services/multidevice_setup/public/cpp:url_provider",
       "//ash/shortcut_viewer",
       "//ash/shortcut_viewer/strings:strings_grit",
       "//ash/webui/camera_app_ui",
@@ -3259,6 +3255,10 @@ static_library("ui") {
       "//chromeos/ash/services/bluetooth_config/public/mojom",
       "//chromeos/ash/services/cellular_setup",
       "//chromeos/ash/services/cellular_setup/public/mojom",
+      "//chromeos/ash/services/multidevice_setup/public/cpp",
+      "//chromeos/ash/services/multidevice_setup/public/cpp:android_sms_app_helper_delegate",
+      "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+      "//chromeos/ash/services/multidevice_setup/public/cpp:url_provider",
       "//chromeos/ash/services/recording/public/mojom",
       "//chromeos/components/onc",
       "//chromeos/components/quick_answers",
@@ -3328,9 +3328,9 @@ static_library("ui") {
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
     ]
     public_deps += [
-      "//ash/services/multidevice_setup/public/mojom",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
+      "//chromeos/ash/services/multidevice_setup/public/mojom",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash",

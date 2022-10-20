@@ -8,9 +8,9 @@
 
 #include "ash/components/phonehub/fake_message_sender.h"
 #include "ash/components/phonehub/fake_user_action_recorder.h"
-#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

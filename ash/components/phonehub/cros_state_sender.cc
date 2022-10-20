@@ -6,8 +6,8 @@
 
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/phone_model.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 namespace phonehub {

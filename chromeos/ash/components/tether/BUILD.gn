@@ -119,7 +119,6 @@ static_library("tether") {
   deps = [
     "//ash/constants",
     "//ash/services/device_sync/public/cpp",
-    "//ash/services/multidevice_setup/public/cpp:cpp",
     "//ash/services/secure_channel/public/cpp/client",
     "//ash/services/secure_channel/public/cpp/shared",
     "//ash/services/secure_channel/public/mojom",
@@ -127,6 +126,7 @@ static_library("tether") {
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/tether/proto",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:cpp",
     "//chromeos/dbus/power",
     "//chromeos/login/login_state",
     "//components/pref_registry",
@@ -139,7 +139,7 @@ static_library("tether") {
 
   public_deps = [
     "//ash/services/device_sync/proto",
-    "//ash/services/multidevice_setup/public/mojom",
+    "//chromeos/ash/services/multidevice_setup/public/mojom",
   ]
 }
 
@@ -266,8 +266,6 @@ source_set("unit_tests") {
     "//ash/services/device_sync/public/cpp",
     "//ash/services/device_sync/public/cpp:test_support",
     "//ash/services/device_sync/public/mojom",
-    "//ash/services/multidevice_setup/public/cpp:test_support",
-    "//ash/services/multidevice_setup/public/mojom:mojom",
     "//ash/services/secure_channel:test_support",
     "//ash/services/secure_channel/public/cpp/client",
     "//ash/services/secure_channel/public/cpp/client:test_support",
@@ -277,6 +275,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/tether/proto",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
+    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom",
     "//chromeos/dbus/power",
     "//chromeos/login/login_state",
     "//components/prefs:test_support",

@@ -7,7 +7,7 @@
 #include "ash/components/phonehub/feature_status.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/util/histogram_util.h"
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

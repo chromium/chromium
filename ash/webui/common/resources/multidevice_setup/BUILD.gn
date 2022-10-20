@@ -33,14 +33,14 @@ js_library("button_bar") {
 
 js_library("fake_mojo_service") {
   deps = [
-    "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
+    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("mojo_api") {
   deps = [
-    "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
+    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -54,8 +54,8 @@ js_library("multidevice_setup") {
     ":password_page",
     ":setup_succeeded_page",
     ":start_setup_page",
-    "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ash/webui/common/resources:web_ui_listener_behavior",
+    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -88,8 +88,8 @@ js_library("start_setup_page") {
     ":multidevice_setup_delegate",
     ":ui_page_container_behavior",
     "//ash/services/device_sync/public/mojom:mojom_webui_js",
-    "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ash/webui/common/resources:web_ui_listener_behavior",
+    "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]

@@ -6,12 +6,12 @@
 
 #include <utility>
 
-#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
 #include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/fake_connection_establisher.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "testing/gtest/include/gtest/gtest.h"

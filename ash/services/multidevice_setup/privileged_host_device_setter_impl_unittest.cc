@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

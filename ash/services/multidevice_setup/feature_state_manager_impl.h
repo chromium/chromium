@@ -9,10 +9,10 @@
 #include "ash/services/multidevice_setup/feature_state_manager.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "ash/services/multidevice_setup/host_status_provider.h"
-#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

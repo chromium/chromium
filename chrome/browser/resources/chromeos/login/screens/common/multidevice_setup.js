@@ -7,7 +7,7 @@
  */
 
 /* #js_imports_placeholder */
-import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from 'chrome://resources/mojo/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
+import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
 /** @implements {MultiDeviceSetupDelegate} */
 class MultiDeviceSetupScreenDelegate {

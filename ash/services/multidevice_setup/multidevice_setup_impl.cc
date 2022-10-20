@@ -19,11 +19,6 @@
 #include "ash/services/multidevice_setup/host_device_timestamp_manager_impl.h"
 #include "ash/services/multidevice_setup/host_status_provider_impl.h"
 #include "ash/services/multidevice_setup/host_verifier_impl.h"
-#include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
-#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
-#include "ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
-#include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/services/multidevice_setup/wifi_sync_notification_controller.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -33,6 +28,11 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 

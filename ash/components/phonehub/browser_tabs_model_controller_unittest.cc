@@ -7,7 +7,7 @@
 #include "ash/components/phonehub/fake_browser_tabs_model_provider.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/phone_model_test_util.h"
-#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

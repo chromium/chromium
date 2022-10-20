@@ -9,7 +9,7 @@
 
 #include "ash/components/phonehub/feature_setup_connection_operation.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 namespace phonehub {

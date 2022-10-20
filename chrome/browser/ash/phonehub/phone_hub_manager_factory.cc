@@ -14,7 +14,6 @@
 #include "ash/components/phonehub/user_action_recorder_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray.h"
-#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/browser_tabs_metadata_fetcher_impl.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {

@@ -5,8 +5,6 @@
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/services/multidevice_setup/public/cpp/prefs.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
@@ -18,6 +16,8 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 

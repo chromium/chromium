@@ -23,7 +23,7 @@ specific_include_rules = {
     "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
   ],
   "save_card_bubble_views_browsertest\.cc": [
-    "+ash/services/multidevice_setup/public/cpp/prefs.h",
+    "+chromeos/ash/services/multidevice_setup/public/cpp/prefs.h",
   ],
   "screen_capture_notification_ui_views\.cc": [
     "+ash/shell.h",

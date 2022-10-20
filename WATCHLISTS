@@ -1437,7 +1437,8 @@
                   '|chrome/browser/ui/webui/settings/ash/multidevice'\
                   '|chrome/test/data/webui/multidevice_setup/'\
                   '|chromeos/ash/components/multidevice/'\
-                  '|chromeos/ash/components/proximity_auth/',
+                  '|chromeos/ash/components/proximity_auth/'\
+                  '|chromeos/ash/services/multidevice_setup/',
     },
     'multipaste': {
      'filepath': 'ash/clipboard/',

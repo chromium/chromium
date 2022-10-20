@@ -5,8 +5,8 @@
 #ifndef ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_FEATURE_STATE_OBSERVER_H_
 #define ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_FEATURE_STATE_OBSERVER_H_
 
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_map.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

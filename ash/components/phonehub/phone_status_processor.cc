@@ -16,10 +16,10 @@
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/screen_lock_manager_impl.h"
 #include "ash/constants/ash_features.h"
-#include "ash/services/multidevice_setup/public/cpp/prefs.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

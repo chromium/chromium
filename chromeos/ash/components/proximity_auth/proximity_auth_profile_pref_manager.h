@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_PROFILE_PREF_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_PROFILE_PREF_MANAGER_H_
 
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_manager.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 

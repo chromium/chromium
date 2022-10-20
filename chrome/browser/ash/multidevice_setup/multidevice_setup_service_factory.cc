@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "ash/services/multidevice_setup/multidevice_setup_service.h"
-#include "ash/services/multidevice_setup/public/cpp/prefs.h"
-#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
@@ -23,6 +21,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user_manager.h"
 

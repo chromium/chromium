@@ -9,10 +9,10 @@
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/feature_status.h"
 #include "ash/components/phonehub/pref_names.h"
-#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
