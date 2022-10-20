@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_TEXT_SELECTION_TEXT_CLASSIFIER_MODEL_SERVICE_H_
 #define IOS_CHROME_BROWSER_TEXT_SELECTION_TEXT_CLASSIFIER_MODEL_SERVICE_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
@@ -46,8 +45,6 @@ class TextClassifierModelService
   // Optimization Guide Service is a BrowserContextKeyedServiceFactory and
   // should not be used after Shutdown.
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> opt_guide_;
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  base::WeakPtrFactory<TextClassifierModelService> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_TEXT_SELECTION_TEXT_CLASSIFIER_MODEL_SERVICE_H_

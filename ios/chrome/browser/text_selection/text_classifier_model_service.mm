@@ -7,8 +7,6 @@
 #import <string>
 
 #import "base/files/file_path.h"
-#import "base/task/sequenced_task_runner.h"
-#import "base/task/thread_pool.h"
 #import "components/optimization_guide/core/optimization_guide_model_provider.h"
 #import "components/optimization_guide/proto/models.pb.h"
 
@@ -23,8 +21,6 @@ TextClassifierModelService::TextClassifierModelService(
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_TEXT_CLASSIFIER,
       /*model_metadata=*/absl::nullopt, this);
-  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 }
 
 TextClassifierModelService::~TextClassifierModelService() {
@@ -43,6 +39,8 @@ bool TextClassifierModelService::HasValidModelPath() const {
 
 void TextClassifierModelService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  opt_guide_->RemoveObserverForOptimizationTargetModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_TEXT_CLASSIFIER, this);
 }
 
 void TextClassifierModelService::OnModelUpdated(
