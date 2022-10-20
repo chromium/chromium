@@ -202,4 +202,9 @@ BASE_FEATURE(kFeedExperimentIDTagging,
 BASE_FEATURE(kFeedShowSignInCommand,
              "FeedShowSignInCommand",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFeedPerformanceStudy,
+             "FeedPerformanceStudy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace feed

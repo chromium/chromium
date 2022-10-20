@@ -176,6 +176,10 @@ BASE_DECLARE_FEATURE(kFeedExperimentIDTagging);
 // When enabled, allow show sign in command to request a user signs in / syncs.
 BASE_DECLARE_FEATURE(kFeedShowSignInCommand);
 
+// When enabled, depending on params selected, enable different
+// performance-oriented features in Feed.
+BASE_DECLARE_FEATURE(kFeedPerformanceStudy);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

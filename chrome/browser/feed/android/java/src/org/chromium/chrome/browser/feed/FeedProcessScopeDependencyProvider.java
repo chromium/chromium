@@ -171,6 +171,20 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
                 return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         featureName, paramName, defaultValue);
             }
+
+            @Override
+            public int getIntegerParameterValue(
+                    String featureName, String paramName, int defaultValue) {
+                return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        featureName, paramName, defaultValue);
+            }
+
+            @Override
+            public double getDoubleParameterValue(
+                    String featureName, String paramName, double defaultValue) {
+                return ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                        featureName, paramName, defaultValue);
+            }
         };
     }
 

@@ -54,6 +54,8 @@ public interface ProcessScopeDependencyProvider {
         boolean isFeatureActive(String featureName);
         boolean getBooleanParameterValue(
                 String featureName, String paramName, boolean defaultValue);
+        int getIntegerParameterValue(String featureName, String paramName, int defaultValue);
+        double getDoubleParameterValue(String featureName, String paramName, double defaultValue);
     }
 
     /**
@@ -71,7 +73,19 @@ public interface ProcessScopeDependencyProvider {
             @Override
             public boolean getBooleanParameterValue(
                     String featureName, String paramName, boolean defaultValue) {
-                return false;
+                return defaultValue;
+            }
+
+            @Override
+            public int getIntegerParameterValue(
+                    String featureName, String paramName, int defaultValue) {
+                return defaultValue;
+            }
+
+            @Override
+            public double getDoubleParameterValue(
+                    String featureName, String paramName, double defaultValue) {
+                return defaultValue;
             }
         };
     }
