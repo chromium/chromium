@@ -632,6 +632,29 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
   v4l2_frame_params.skip_mode_frame[1] =
       base::checked_cast<__u8>(frame_header.skip_mode_frame[1]);
 
+  struct v4l2_ext_control ext_ctrl_array[] = {
+      {.id = V4L2_CID_STATELESS_AV1_SEQUENCE,
+       .size = sizeof(v4l2_seq_params),
+       .ptr = &v4l2_seq_params},
+      {.id = V4L2_CID_STATELESS_AV1_FRAME,
+       .size = sizeof(v4l2_frame_params),
+       .ptr = &v4l2_frame_params},
+  };
+
+  // TODO(b/254274375): Add V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY
+  // control id setup
+
+  struct v4l2_ext_controls ext_ctrls = {
+      .count = base::checked_cast<__u32>(std::size(ext_ctrl_array)),
+      .controls = ext_ctrl_array};
+
+  const auto* v4l2_pic = static_cast<const V4L2AV1Picture*>(&pic);
+  v4l2_pic->dec_surface()->PrepareSetCtrls(&ext_ctrls);
+  if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
+    VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
+    return DecodeStatus::kFail;
+  }
+
   NOTIMPLEMENTED();
 
   return DecodeStatus::kFail;
