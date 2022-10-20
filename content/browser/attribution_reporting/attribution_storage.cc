@@ -4,7 +4,9 @@
 
 #include "content/browser/attribution_reporting/attribution_storage.h"
 
+#include "base/check.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 
 namespace content {
 
@@ -14,8 +16,16 @@ using StoreSourceResult = ::content::AttributionStorage::StoreSourceResult;
 
 StoreSourceResult::StoreSourceResult(
     StorableSource::Result status,
-    absl::optional<base::Time> min_fake_report_time)
-    : status(status), min_fake_report_time(min_fake_report_time) {}
+    absl::optional<base::Time> min_fake_report_time,
+    absl::optional<int> max_destinations_per_source_site_reporting_origin)
+    : status(status),
+      min_fake_report_time(min_fake_report_time),
+      max_destinations_per_source_site_reporting_origin(
+          max_destinations_per_source_site_reporting_origin) {
+  DCHECK(!max_destinations_per_source_site_reporting_origin.has_value() ||
+         status ==
+             StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+}
 
 StoreSourceResult::~StoreSourceResult() = default;
 

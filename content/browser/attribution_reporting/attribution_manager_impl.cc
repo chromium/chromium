@@ -30,6 +30,7 @@
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -479,6 +480,15 @@ void AttributionManagerImpl::OnSourceStored(
   scheduler_timer_.MaybeSet(result.min_fake_report_time);
 
   NotifySourcesChanged();
+
+  // TODO(crbug.com/1371970): Parse debug_reporting field from the response
+  // header and pass `is_within_fenced_frame` from `AttributionHost`.
+  bool debug_reporting = false;
+  bool is_within_fenced_frame = false;
+  if (debug_reporting) {
+    MaybeSendVerboseDebugReport(std::move(source), is_within_fenced_frame,
+                                result);
+  }
 }
 
 void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
@@ -958,6 +968,17 @@ void AttributionManagerImpl::NotifyFailedSourceRegistration(
   for (auto& observer : observers_) {
     observer.OnFailedSourceRegistration(header_value, source_time,
                                         reporting_origin, error);
+  }
+}
+
+void AttributionManagerImpl::MaybeSendVerboseDebugReport(
+    StorableSource source,
+    bool is_within_fenced_frame,
+    AttributionStorage::StoreSourceResult result) {
+  if (absl::optional<AttributionDebugReport> debug_report =
+          AttributionDebugReport::Create(source, is_within_fenced_frame,
+                                         result)) {
+    // TODO(crbug.com/1371970): Implement error report sending.
   }
 }
 

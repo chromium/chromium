@@ -514,7 +514,9 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       break;
     case RateLimitResult::kNotAllowed:
       return StoreSourceResult(
-          StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+          StorableSource::Result::kInsufficientUniqueDestinationCapacity,
+          /*min_fake_report_time=*/absl::nullopt,
+          delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin());
     case RateLimitResult::kError:
       return StoreSourceResult(StorableSource::Result::kInternalError);
   }

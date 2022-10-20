@@ -30,7 +30,9 @@ class AttributionStorage {
   struct CONTENT_EXPORT StoreSourceResult {
     explicit StoreSourceResult(
         StorableSource::Result status,
-        absl::optional<base::Time> min_fake_report_time = absl::nullopt);
+        absl::optional<base::Time> min_fake_report_time = absl::nullopt,
+        absl::optional<int> max_destinations_per_source_site_reporting_origin =
+            absl::nullopt);
 
     ~StoreSourceResult();
 
@@ -45,6 +47,10 @@ class AttributionStorage {
     // The earliest report time for any fake reports stored alongside the
     // source, if any.
     absl::optional<base::Time> min_fake_report_time;
+
+    // Only populated in case of
+    // `StorableSource::Result::kInsufficientUniqueDestinationCapacity`.
+    absl::optional<int> max_destinations_per_source_site_reporting_origin;
   };
 
   virtual ~AttributionStorage() = default;

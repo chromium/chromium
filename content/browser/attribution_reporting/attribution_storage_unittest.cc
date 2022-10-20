@@ -1201,11 +1201,14 @@ TEST_F(AttributionStorageTest,
           .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example/")))
           .SetSourceType(AttributionSourceType::kNavigation)
           .Build());
-  storage()->StoreSource(
+  AttributionStorage::StoreSourceResult result = storage()->StoreSource(
       SourceBuilder()
           .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
           .SetSourceType(AttributionSourceType::kEvent)
           .Build());
+  EXPECT_EQ(result.status,
+            StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+  EXPECT_EQ(result.max_destinations_per_source_site_reporting_origin, 1);
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
