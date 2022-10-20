@@ -127,13 +127,15 @@ class NGGridLineResolver {
 
   scoped_refptr<const ComputedStyle> style_;
 
-  // TODO(kschmi) remove these, as they will be unnecessary when the rest of
-  // the line resolution work is completed.
-  absl::optional<wtf_size_t> subgrid_column_start_line_;
-  absl::optional<wtf_size_t> subgrid_row_start_line_;
+  absl::optional<NamedGridLinesMap>
+      subgridded_columns_merged_explicit_grid_line_names_;
+  absl::optional<NamedGridLinesMap>
+      subgridded_rows_merged_explicit_grid_line_names_;
 
-  absl::optional<NamedGridLinesMap> column_subgrid_merged_grid_line_names_;
-  absl::optional<NamedGridLinesMap> row_subgrid_merged_grid_line_names_;
+  absl::optional<NamedGridLinesMap>
+      subgridded_columns_merged_implicit_grid_line_names_;
+  absl::optional<NamedGridLinesMap>
+      subgridded_rows_merged_implicit_grid_line_names_;
 };
 
 }  // namespace blink

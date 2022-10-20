@@ -31,19 +31,17 @@ NGGridLineResolver::NGGridLineResolver(
     const NGGridLineResolver& parent_line_resolver,
     GridArea subgrid_area)
     : style_(&grid_style),
-      subgrid_column_start_line_(subgrid_area.columns.IsTranslatedDefinite()
-                                     ? subgrid_area.StartLine(kForColumns)
-                                     : 0),
-      subgrid_row_start_line_(subgrid_area.rows.IsTranslatedDefinite()
-                                  ? subgrid_area.StartLine(kForRows)
-                                  : 0),
-      column_subgrid_merged_grid_line_names_(
+      subgridded_columns_merged_explicit_grid_line_names_(
           grid_style.GridTemplateColumns().named_grid_lines),
-      row_subgrid_merged_grid_line_names_(
-          grid_style.GridTemplateRows().named_grid_lines) {
-  auto MergeNamedGridLinesWithAncestor = [](NamedGridLinesMap& subgrid_map,
-                                            const NamedGridLinesMap& parent_map,
-                                            GridSpan subgrid_span) -> void {
+      subgridded_rows_merged_explicit_grid_line_names_(
+          grid_style.GridTemplateRows().named_grid_lines),
+      subgridded_columns_merged_implicit_grid_line_names_(
+          grid_style.ImplicitNamedGridColumnLines()),
+      subgridded_rows_merged_implicit_grid_line_names_(
+          grid_style.ImplicitNamedGridRowLines()) {
+  auto MergeNamedGridLinesWithParent = [](NamedGridLinesMap& subgrid_map,
+                                          const NamedGridLinesMap& parent_map,
+                                          GridSpan subgrid_span) -> void {
     // Update `subgrid_map` to a merged map from a parent grid or subgrid map
     // (`parent_map`). The map is a key-value store with keys as the line name
     // and the value as an array of ascending indices.
@@ -54,11 +52,8 @@ NGGridLineResolver::NGGridLineResolver(
         // offset entries by `subgrid_start_line` before inserting them into the
         // merged map so they are all relative to offset 0. These are already in
         // ascending order so there's no need to sort.
-        if ((position >= subgrid_span.StartLine()) &&
-            (position <=
-             (subgrid_span.StartLine() + subgrid_span.IntegerSpan()))) {
+        if (subgrid_span.Contains(position))
           merged_list.push_back(position - subgrid_span.StartLine());
-        }
       }
 
       // If there's a name collision, merge the values and sort. These are from
@@ -83,17 +78,132 @@ NGGridLineResolver::NGGridLineResolver(
         subgrid_map.Set(pair.key, merged_list);
     }
   };
+  auto MergeImplicitLinesWithParent = [&](NamedGridLinesMap& subgrid_map,
+                                          const NamedGridLinesMap& parent_map,
+                                          GridSpan subgrid_span) -> void {
+    const wtf_size_t subgrid_span_size = subgrid_span.IntegerSpan();
+    // First, clamp the existing `subgrid_map` to the subgrid range before
+    // merging. These are positive and relative to index 0, so we only need to
+    // clamp values above `subgrid_span_size`.
+    for (auto& pair : subgrid_map) {
+      WTF::Vector<wtf_size_t> clamped_list;
+      for (const auto& position : pair.value) {
+        if (position > subgrid_span_size)
+          clamped_list.push_back(subgrid_span_size);
+        else
+          clamped_list.push_back(position);
+      }
+      subgrid_map.Set(pair.key, clamped_list);
+    }
+
+    // Update `subgrid_map` to a merged map from a parent grid or subgrid map
+    // (`parent_map`). The map is a key-value store with keys as the implicit
+    // line name and the value as an array of ascending indices.
+    for (auto& pair : parent_map) {
+      WTF::Vector<wtf_size_t> merged_list;
+      for (const auto& position : pair.value) {
+        auto IsGridAreaInSubgridRange = [&]() -> bool {
+          // Returns true if a given position is within either the implicit
+          // -start or -end line (or both) to comply with this part of the spec:
+          //
+          // "Note: If a named grid area only partially overlaps the subgrid,
+          // its implicitly-assigned line names will be assigned to the first
+          // and/or last line of the subgrid such that a named grid area exists
+          // representing that partially overlapped area of the subgrid".
+          // https://www.w3.org/TR/css-grid-2/#subgrid-area-inheritance
+          //
+          // TODO(kschmi): Performance can be optimized here by storing
+          // additional data on the style object for implicit lines that
+          // correlate matched implicit -start/-end pairs. Another
+          // option is to sort and iterate through adjacent -start/-end lines.
+          auto IsPositionWithinGridArea =
+              [&](const String& initial_suffix,
+                  const String& opposing_suffix) -> bool {
+            if (subgrid_span.Contains(position))
+              return true;
+            if (pair.key.EndsWith(initial_suffix)) {
+              // If the initial suffix is not in range, return true if the
+              // implicit line with the opposing suffix is within range.
+              auto line_name_without_initial_suffix = pair.key.Substring(
+                  0, pair.key.length() - initial_suffix.length());
+              const auto opposite_line_name =
+                  line_name_without_initial_suffix + opposing_suffix;
+
+              const auto& opposite_line_entry =
+                  parent_map.find(opposite_line_name);
+              if (opposite_line_entry != parent_map.end()) {
+                for (auto& opposite_position : opposite_line_entry->value) {
+                  if (subgrid_span.Contains(opposite_position))
+                    return true;
+                }
+              }
+            }
+            return false;
+          };
+          const String start_suffix("-start");
+          const String end_suffix("-end");
+          return IsPositionWithinGridArea(start_suffix, end_suffix) ||
+                 IsPositionWithinGridArea(end_suffix, start_suffix);
+        };
+
+        // Implicit entries within the subgrid span can get inserted directly
+        // (minus the subgrid start position, because they are relative to
+        // the parent grid). For partially overlapping entries, snap to
+        // either 0 or `subgrid_span_size`.
+        const wtf_size_t subgrid_start_line = subgrid_span.StartLine();
+        if (subgrid_span.Contains(position)) {
+          merged_list.push_back(position - subgrid_span.StartLine());
+        } else if (IsGridAreaInSubgridRange()) {
+          // Clamp the parent's start/end positions if a parent grid-area
+          // partially overlaps the subgrid.
+          if (position < subgrid_start_line)
+            merged_list.push_back(0);
+          else if (position > (subgrid_start_line + subgrid_span_size))
+            merged_list.push_back(subgrid_span_size);
+        }
+
+        // If there's a name collision, merge the values and sort. These are
+        // from the subgrid and not the parent, so they are already relative to
+        // index 0 and don't need to be offset.
+        const auto& existing_entry = subgrid_map.find(pair.key);
+        if (existing_entry != subgrid_map.end()) {
+          for (auto& value : existing_entry->value)
+            merged_list.push_back(value);
+          std::sort(merged_list.begin(), merged_list.end());
+        }
+
+        // Override the existing subgrid's line names map with the new merged
+        // list for this particular line name entry. If `merged_list` list is
+        // empty, (this can happen when all entries for a particular line name
+        // are out of the subgrid range), erase the entry entirely, as
+        // `NGGridNamedLineCollection` doesn't support named line entries
+        // without values.
+        if (merged_list.empty())
+          subgrid_map.erase(pair.key);
+        else
+          subgrid_map.Set(pair.key, merged_list);
+      }
+    }
+  };
 
   if (subgrid_area.columns.IsTranslatedDefinite()) {
-    MergeNamedGridLinesWithAncestor(
-        *column_subgrid_merged_grid_line_names_,
+    MergeNamedGridLinesWithParent(
+        *subgridded_columns_merged_explicit_grid_line_names_,
         parent_line_resolver.ExplicitNamedLinesMap(kForColumns),
+        subgrid_area.columns);
+    MergeImplicitLinesWithParent(
+        *subgridded_columns_merged_implicit_grid_line_names_,
+        parent_line_resolver.ImplicitNamedLinesMap(kForColumns),
         subgrid_area.columns);
   }
   if (subgrid_area.rows.IsTranslatedDefinite()) {
-    MergeNamedGridLinesWithAncestor(
-        *row_subgrid_merged_grid_line_names_,
+    MergeNamedGridLinesWithParent(
+        *subgridded_rows_merged_explicit_grid_line_names_,
         parent_line_resolver.ExplicitNamedLinesMap(kForRows),
+        subgrid_area.rows);
+    MergeImplicitLinesWithParent(
+        *subgridded_rows_merged_implicit_grid_line_names_,
+        parent_line_resolver.ImplicitNamedLinesMap(kForRows),
         subgrid_area.rows);
   }
 }
@@ -285,17 +395,26 @@ static GridSpan DefiniteGridSpanWithSpanAgainstOpposite(
 
 const NamedGridLinesMap& NGGridLineResolver::ImplicitNamedLinesMap(
     GridTrackSizingDirection track_direction) const {
-  // TODO(kschmi): Merge implicit list if it's subgridded.
-  return (track_direction == kForColumns)
-             ? style_->ImplicitNamedGridColumnLines()
-             : style_->ImplicitNamedGridRowLines();
+  const auto& subgrid_merged_implicit_grid_line_names =
+      (track_direction == kForColumns)
+          ? subgridded_columns_merged_implicit_grid_line_names_
+          : subgridded_rows_merged_implicit_grid_line_names_;
+
+  const auto& implicit_lines_map_from_style =
+      (track_direction == kForColumns) ? style_->ImplicitNamedGridColumnLines()
+                                       : style_->ImplicitNamedGridRowLines();
+
+  return subgrid_merged_implicit_grid_line_names
+             ? *subgrid_merged_implicit_grid_line_names
+             : implicit_lines_map_from_style;
 }
 
 const NamedGridLinesMap& NGGridLineResolver::ExplicitNamedLinesMap(
     GridTrackSizingDirection track_direction) const {
   const auto& subgrid_merged_grid_line_names =
-      (track_direction == kForColumns) ? column_subgrid_merged_grid_line_names_
-                                       : row_subgrid_merged_grid_line_names_;
+      (track_direction == kForColumns)
+          ? subgridded_columns_merged_explicit_grid_line_names_
+          : subgridded_rows_merged_explicit_grid_line_names_;
 
   return subgrid_merged_grid_line_names
              ? *subgrid_merged_grid_line_names
@@ -402,17 +521,10 @@ int NGGridLineResolver::ResolveGridPosition(
     wtf_size_t subgrid_span_size) const {
   auto track_direction = DirectionFromSide(side);
 
-  // TODO(kschmi): Remove `subgrid_offset` once `auto_repeat_tracks_count` is
-  // correct.
-  const int subgrid_offset = (track_direction == kForColumns)
-                                 ? subgrid_column_start_line_.value_or(0)
-                                 : subgrid_row_start_line_.value_or(0);
   switch (position.GetType()) {
     case kExplicitPosition: {
       DCHECK(position.IntegerPosition());
 
-      // `ResolveNamedGridLinePosition` already factors in
-      // `subgrid_offset` via `ExplicitGridSizeForSide`.
       if (!position.NamedGridLine().IsNull()) {
         return ResolveNamedGridLinePosition(
             position, side, auto_repeat_tracks_count, subgrid_span_size,
@@ -451,7 +563,7 @@ int NGGridLineResolver::ResolveGridPosition(
           implicit_grid_line_names, explicit_grid_line_names, track_list,
           last_line, auto_repeat_tracks_count);
       if (implicit_lines.HasNamedLines())
-        return implicit_lines.FirstPosition() + subgrid_offset;
+        return implicit_lines.FirstPosition();
 
       // Otherwise, if there is a named line with the specified name,
       // contributes the first such line to the grid item's placement.
@@ -460,11 +572,11 @@ int NGGridLineResolver::ResolveGridPosition(
           explicit_grid_line_names, track_list, last_line,
           auto_repeat_tracks_count, is_subgridded_to_parent);
       if (explicit_lines.HasNamedLines())
-        return explicit_lines.FirstPosition() + subgrid_offset;
+        return explicit_lines.FirstPosition();
 
       // If none of the above works specs mandate to assume that all the lines
       // in the implicit grid have this name.
-      return last_line + subgrid_offset + 1;
+      return last_line + 1;
     }
     case kAutoPosition:
     case kSpanPosition:

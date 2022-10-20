@@ -4070,8 +4070,6 @@ crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-smaller-001.html [ F
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-template-computed-nogrid.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/independent-formatting-context.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/item-percentage-height-001.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-005.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-006.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-007.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-008.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-001.html [ Failure ]

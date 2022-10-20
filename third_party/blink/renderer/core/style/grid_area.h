@@ -84,6 +84,14 @@ struct GridSpan {
     return *this < o || *this == o;
   }
 
+  bool Contains(wtf_size_t line) const {
+    DCHECK(IsTranslatedDefinite());
+    DCHECK_GE(start_line_, 0);
+    DCHECK_GE(end_line_, 0);
+    return line >= static_cast<wtf_size_t>(start_line_) &&
+           line <= static_cast<wtf_size_t>(end_line_);
+  }
+
   wtf_size_t IntegerSpan() const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GT(end_line_, start_line_);

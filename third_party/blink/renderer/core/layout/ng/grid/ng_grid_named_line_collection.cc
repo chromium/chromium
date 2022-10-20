@@ -128,7 +128,11 @@ wtf_size_t NGGridNamedLineCollection::FirstExplicitPosition() {
     return auto_repeat_named_lines_indexes_->at(first_line) + insertion_point_;
 
   // The 1st named line must be after the auto repeat().
-  return named_lines_indexes_->at(first_line) + auto_repeat_total_tracks_ - 1;
+  // TODO(kschmi) Remove this offset when `auto_repeat_total_tracks_` is
+  // correct for subgrids.
+  const wtf_size_t auto_repeat_counted_tracks =
+      auto_repeat_total_tracks_ ? auto_repeat_total_tracks_ - 1 : 0;
+  return named_lines_indexes_->at(first_line) + auto_repeat_counted_tracks;
 }
 
 wtf_size_t NGGridNamedLineCollection::FirstPosition() {
