@@ -44,6 +44,8 @@ per-file supervised_user_error_page_strings.grdp=file://chrome/browser/supervise
 
 per-file vr_strings.grdp=file://chrome/browser/vr/OWNERS
 
+per-file password_manager_ui_strings.grdp=file://chrome/browser/password_manager/OWNERS
+
 # Non-GRD rules.
 
 # Translation artifacts:
