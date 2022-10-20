@@ -805,6 +805,9 @@ int SSLClientSocketImpl::Init() {
       ssl_config_.version_max_override.value_or(context_->config().version_max);
   DCHECK_LT(SSL3_VERSION, version_min);
   DCHECK_LT(SSL3_VERSION, version_max);
+  if (base::FeatureList::IsEnabled(features::kSSLMinVersionAtLeastTLS12)) {
+    version_min = std::max<uint16_t>(version_min, TLS1_2_VERSION);
+  }
   if (!SSL_set_min_proto_version(ssl_.get(), version_min) ||
       !SSL_set_max_proto_version(ssl_.get(), version_max)) {
     return ERR_UNEXPECTED;

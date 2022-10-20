@@ -2437,28 +2437,71 @@ TEST_F(SSLClientSocketTest, CipherSuiteDisables) {
   EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
 }
 
-// Test that connecting to a server only supporting TLS 1.0 will fail and
-// results in ERR_SSL_VERSION_OR_CIPHER_MISMATCH.
-TEST_F(SSLClientSocketTest, TLS1_NotSupported) {
-  SSLServerConfig config;
-  config.version_max = SSL_PROTOCOL_VERSION_TLS1;
-  config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, config));
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
-  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
-}
+// Test that TLS 1.0 and 1.1 are no longer supported.
+TEST_F(SSLClientSocketTest, LegacyTLSVersions) {
+  const struct {
+    uint16_t server_version;
+    absl::optional<uint16_t> client_version_min;
+    bool feature = true;
+    bool expect_error;
+  } kTests[] = {
+      // By default, TLS 1.0 and 1.1 should be disabled and will not be
+      // negotiated.
+      {.server_version = SSL_PROTOCOL_VERSION_TLS1, .expect_error = true},
+      {.server_version = SSL_PROTOCOL_VERSION_TLS1_1, .expect_error = true},
+      {.server_version = SSL_PROTOCOL_VERSION_TLS1,
+       .feature = false,
+       .expect_error = true},
+      {.server_version = SSL_PROTOCOL_VERSION_TLS1_1,
+       .feature = false,
+       .expect_error = true},
 
-// Test that connecting to a server only supporting TLS 1.1 will fail and
-// results in ERR_SSL_VERSION_OR_CIPHER_MISMATCH.
-TEST_F(SSLClientSocketTest, TLS1_1_NotSupported) {
-  SSLServerConfig config;
-  config.version_max = SSL_PROTOCOL_VERSION_TLS1_1;
-  config.version_min = SSL_PROTOCOL_VERSION_TLS1_1;
-  ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, config));
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
-  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+      // Even if enabled at the client, TLS 1.0 and 1.1 should be disabled.
+      {.server_version = SSL_PROTOCOL_VERSION_TLS1,
+       .client_version_min = SSL_PROTOCOL_VERSION_TLS1,
+       .expect_error = true},
+      {.server_version = SSL_PROTOCOL_VERSION_TLS1_1,
+       .client_version_min = SSL_PROTOCOL_VERSION_TLS1,
+       .expect_error = true},
+
+      // If `kSSLMinVersionAtLeastTLS12` is disabled, the `version_min` setting
+      // should take effect.
+      {.server_version = SSL_PROTOCOL_VERSION_TLS1,
+       .client_version_min = SSL_PROTOCOL_VERSION_TLS1,
+       .feature = false,
+       .expect_error = false},
+      {.server_version = SSL_PROTOCOL_VERSION_TLS1_1,
+       .client_version_min = SSL_PROTOCOL_VERSION_TLS1,
+       .feature = false,
+       .expect_error = false},
+  };
+  for (const auto& test : kTests) {
+    base::test::ScopedFeatureList feature_list;
+    if (!test.feature) {
+      // TODO(https://crbug.com/1376584): When this feature is removed, this
+      // test can be simplified.
+      feature_list.InitAndDisableFeature(features::kSSLMinVersionAtLeastTLS12);
+    }
+
+    SSLServerConfig config;
+    config.version_max = test.server_version;
+    config.version_min = test.server_version;
+    ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, config));
+    int rv;
+
+    if (test.client_version_min) {
+      SSLContextConfig client_context_config;
+      client_context_config.version_min = *test.client_version_min;
+      ssl_config_service_->UpdateSSLConfigAndNotify(client_context_config);
+    }
+
+    ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+    if (test.expect_error) {
+      EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+    } else {
+      EXPECT_THAT(rv, IsOk());
+    }
+  }
 }
 
 // When creating an SSLClientSocket, it is allowed to pass in a
@@ -5429,6 +5472,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ValuesIn(kSSLHandshakeDetailsParams));
 
 TEST_P(SSLHandshakeDetailsTest, Metrics) {
+  // TLS 1.0 and 1.1 are unreachable by default.
+  // TODO(https://crbug.com/1376584): When this feature is removed, just delete
+  // the TLS 1.0 and 1.1 test cases.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSSLMinVersionAtLeastTLS12);
+
   // Enable all test features in the server.
   SSLServerConfig server_config;
   server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;

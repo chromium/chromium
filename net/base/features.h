@@ -208,6 +208,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumCECPQ2SomeDomains);
 NET_EXPORT extern const base::FeatureParam<std::string>
     kPostQuantumCECPQ2Prefix;
 
+// Causes SSLClientSocket to force a minimum TLS version of at least TLS 1.2.
+NET_EXPORT BASE_DECLARE_FEATURE(kSSLMinVersionAtLeastTLS12);
+
 // Changes the timeout after which unused sockets idle sockets are cleaned up.
 NET_EXPORT BASE_DECLARE_FEATURE(kNetUnusedIdleSocketTimeout);
 
