@@ -1887,16 +1887,16 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, DISABLED_TestWSSClientCert) {
   // cert selection.
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   DCHECK(profile);
-  std::unique_ptr<base::DictionaryValue> setting =
-      std::make_unique<base::DictionaryValue>();
-  base::Value* filters = setting->SetKey("filters", base::ListValue());
-  base::DictionaryValue filter = base::DictionaryValue();
-  filter.SetString("ISSUER.CN", "pywebsocket");
-  filters->Append(std::move(filter));
+  base::Value::Dict filter;
+  filter.SetByDottedPath("ISSUER.CN", "pywebsocket");
+  base::Value::List filters;
+  filters.Append(std::move(filter));
+  base::Value::Dict setting;
+  setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
           url, GURL(), ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-          base::Value::FromUniquePtrValue(std::move(setting)));
+          base::Value(std::move(setting)));
 
   // Visit a HTTPS page which requires client certs.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1993,14 +1993,14 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStore) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   DCHECK(profile);
-  std::unique_ptr<base::DictionaryValue> setting =
-      std::make_unique<base::DictionaryValue>();
-  base::Value* filters = setting->SetKey("filters", base::ListValue());
-  filters->Append(base::DictionaryValue());
+  base::Value::List filters;
+  filters.Append(base::Value::Dict());
+  base::Value::Dict setting;
+  setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
           https_url, GURL(), ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-          base::Value::FromUniquePtrValue(std::move(setting)));
+          base::Value(std::move(setting)));
 
   // Visit a HTTPS page which requires client certs.
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
@@ -2029,14 +2029,14 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthSigningFails) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   DCHECK(profile);
-  std::unique_ptr<base::DictionaryValue> setting =
-      std::make_unique<base::DictionaryValue>();
-  base::Value* filters = setting->SetKey("filters", base::ListValue());
-  filters->Append(base::DictionaryValue());
+  base::Value::List filters;
+  filters.Append(base::Value::Dict());
+  base::Value::Dict setting;
+  setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
           https_url, GURL(), ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-          base::Value::FromUniquePtrValue(std::move(setting)));
+          base::Value(std::move(setting)));
 
   // Visit a HTTPS page which requires client certs.
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
@@ -2092,14 +2092,14 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   DCHECK(profile);
-  std::unique_ptr<base::DictionaryValue> setting =
-      std::make_unique<base::DictionaryValue>();
-  base::Value* filters = setting->SetKey("filters", base::ListValue());
-  filters->Append(base::DictionaryValue());
+  base::Value::List filters;
+  filters.Append(base::Value::Dict());
+  base::Value::Dict setting;
+  setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
           https_url, GURL(), ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-          base::Value::FromUniquePtrValue(std::move(setting)));
+          base::Value(std::move(setting)));
 
   // Visit a HTTPS page which requires client certs.
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
