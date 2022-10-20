@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
@@ -749,6 +750,35 @@ public class CriticalPersistedTabDataTest {
             verify(spyStorage, times(2))
                     .save(anyInt(), anyString(), any(Serializer.class), any(Callback.class));
         }
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testSetRootIdUninitializedTab() {
+        Tab uninitializedTab = new MockTab(1, false);
+        Assert.assertFalse(uninitializedTab.isInitialized());
+        CriticalPersistedTabData criticalPersistedTabData =
+                new CriticalPersistedTabData(uninitializedTab);
+        TabStateAttributes.from(uninitializedTab).setIsTabStateDirty(false);
+        Assert.assertFalse(TabStateAttributes.from(uninitializedTab).isTabStateDirty());
+        criticalPersistedTabData.setRootId(ROOT_ID_A);
+        Assert.assertFalse(TabStateAttributes.from(uninitializedTab).isTabStateDirty());
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testSetRootIdInitializedTab() {
+        MockTab initializedTab = new MockTab(1, false);
+        initializedTab.setIsInitialized(true);
+        Assert.assertTrue(initializedTab.isInitialized());
+        CriticalPersistedTabData criticalPersistedTabData =
+                new CriticalPersistedTabData(initializedTab);
+        TabStateAttributes.from(initializedTab).setIsTabStateDirty(false);
+        Assert.assertFalse(TabStateAttributes.from(initializedTab).isTabStateDirty());
+        criticalPersistedTabData.setRootId(ROOT_ID_A);
+        Assert.assertTrue(TabStateAttributes.from(initializedTab).isTabStateDirty());
     }
 
     private static final ByteBuffer getFlatBufferWithNoWebContentsState() {
