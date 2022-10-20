@@ -1048,6 +1048,9 @@ bool RenderWidgetHostViewBase::IsHTMLFormPopup() const {
 
 void RenderWidgetHostViewBase::OnShowWithPageVisibility(
     PageVisibilityState page_visibility) {
+  if (!host())
+    return;
+
   auto* visible_time_request_trigger = host_->GetVisibleTimeRequestTrigger();
   // The only way this should be null is if there is no RenderWidgetHostView.
   DCHECK(visible_time_request_trigger);

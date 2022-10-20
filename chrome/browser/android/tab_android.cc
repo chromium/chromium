@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 #include "chrome/browser/tab/jni_headers/CriticalPersistedTabData_jni.h"
@@ -311,6 +312,17 @@ void TabAndroid::InitWebContents(
   web_contents()->SetDelegate(web_contents_delegate_.get());
 
   AttachTabHelpers(web_contents_.get());
+  // When restoring a frame that was unloaded we re-create the TabAndroid and
+  // its host. This triggers visibility changes in both the Browser and
+  // Renderer. We need to start tracking the content-to-visible time now. On
+  // Android the tab controller does not send a visibility change until later
+  // on, at which point it is too late to attempt to track tab changes for
+  // unloaded frames.
+  web_contents_->SetTabSwitchStartTime(
+      base::TimeTicks::Now(),
+      resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
+          web_contents_.get()));
+
   url_param_filter::MaybeCreateCrossOtrObserverForTabLaunchType(
       web_contents_.get(),
       static_cast<TabModel::TabLaunchType>(GetLaunchType()));
@@ -433,6 +445,29 @@ void TabAndroid::LoadOriginalImage(JNIEnv* env) {
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> renderer;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&renderer);
   renderer->RequestReloadImageForContextNode();
+}
+
+void TabAndroid::OnShow(JNIEnv* env) {
+  // When changing tabs to one that is unloaded, the tab change notification
+  // arrives before the request to InitWebContents. In that case do nothing and
+  // allow initialization to record timing.
+  //
+  // Similarly if we are already visible do not enqueue a timing request.
+  if (!web_contents_ ||
+      web_contents_->GetVisibility() != content::Visibility::HIDDEN) {
+    return;
+  }
+
+  // TODO(crbug.com/1368291): When a tab is backgrounded, and then brought again
+  // to the foreground it's TabLoadTracker state gets stuck in LOADING. This
+  // disagrees with the WebContents internal state. So for now we can only trust
+  // UNLOADED. TabLoadTracker::DidStopLoading is not being called correctly
+  // except for the initial load in InitWebContents.
+  bool loaded =
+      resource_coordinator::TabLoadTracker::Get()->GetLoadingState(
+          web_contents_.get()) != mojom::LifecycleUnitLoadingState::UNLOADED &&
+      !web_contents_->IsLoading();
+  web_contents_->SetTabSwitchStartTime(base::TimeTicks::Now(), loaded);
 }
 
 scoped_refptr<content::DevToolsAgentHost> TabAndroid::GetDevToolsAgentHost() {
