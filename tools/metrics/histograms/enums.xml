@@ -57056,7 +57056,6 @@ from previous Chrome versions.
       label="LookalikeUrlNavigationSuggestionsUI:disabled"/>
   <int value="-2025971178" label="QsRevamp:disabled"/>
   <int value="-2025367104" label="enable-material-design-ntp"/>
-  <int value="-2025360412" label="SyncAndroidPromosWithSingleButton:disabled"/>
   <int value="-2025330968" label="Journeys:disabled"/>
   <int value="-2024330288" label="RawDraw:enabled"/>
   <int value="-2023673947" label="TabRestoreSubMenus:disabled"/>
@@ -58357,7 +58356,6 @@ from previous Chrome versions.
   <int value="-1276579737" label="PictureInPictureAPI:disabled"/>
   <int value="-1275552094" label="SpectreVariant2Mitigation:disabled"/>
   <int value="-1274502866" label="AllowDisableMouseAcceleration:enabled"/>
-  <int value="-1273786900" label="SyncAndroidPromosWithTitle:disabled"/>
   <int value="-1272990935"
       label="SyncAndroidLimitNTPPromoImpressions:disabled"/>
   <int value="-1272593346" label="NewTabLoadingAnimation:disabled"/>
@@ -60638,7 +60636,6 @@ from previous Chrome versions.
   <int value="92466801" label="UploadOfficeToCloud:disabled"/>
   <int value="93832899" label="NtpCustomizationMenuV2:enabled"/>
   <int value="94576028" label="LensEnableRegionSearchOnPdfViewer:disabled"/>
-  <int value="96148142" label="SyncAndroidPromosWithAlternativeTitle:enabled"/>
   <int value="97091906" label="AutofillSaveCardShowNoThanks:enabled"/>
   <int value="97764742" label="QuickAnswersForMoreLocales:disabled"/>
   <int value="97976428" label="CastUseBlocklistForRemotingQuery:enabled"/>
@@ -61028,7 +61025,6 @@ from previous Chrome versions.
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
-  <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
   <int value="339671131" label="disable-per-user-timezone"/>
   <int value="340497722" label="WebPaymentAPICSP:enabled"/>
@@ -61378,7 +61374,6 @@ from previous Chrome versions.
       label="OmniboxAlternateMatchDescriptionSeparator:disabled"/>
   <int value="547654419" label="CrOSEnforceSystemAecAgc:enabled"/>
   <int value="548503129" label="ImpulseScrollAnimations:enabled"/>
-  <int value="548618823" label="SyncAndroidPromosWithSingleButton:enabled"/>
   <int value="549168649"
       label="AutofillEnableStickyManualFallbackForCards:disabled"/>
   <int value="549483647" label="EnableUnifiedMultiDeviceSettings:disabled"/>
@@ -63019,7 +63014,6 @@ from previous Chrome versions.
   <int value="1534222388" label="EnableEphemeralFlashPermission:enabled"/>
   <int value="1534386287" label="SendTabToSelfWhenSignedIn:enabled"/>
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>
-  <int value="1536568742" label="SyncAndroidPromosWithIllustration:enabled"/>
   <int value="1536921097" label="NavigationMojoResponse:disabled"/>
   <int value="1537693783" label="KioskEnableAppService:enabled"/>
   <int value="1538685213" label="DownloadHomeV2:enabled"/>
@@ -63439,8 +63433,6 @@ from previous Chrome versions.
   <int value="1807088829"
       label="JourneysOnDeviceClusteringContentClustering:disabled"/>
   <int value="1807374811" label="CCTModuleCache:enabled"/>
-  <int value="1809704744"
-      label="SyncAndroidPromosWithAlternativeTitle:disabled"/>
   <int value="1809940714" label="SpeculativeLaunchServiceWorker:disabled"/>
   <int value="1810258949" label="DisplayLocking:enabled"/>
   <int value="1810311887" label="WebAssemblyThreads:enabled"/>
@@ -63829,7 +63821,6 @@ from previous Chrome versions.
   <int value="2024172900" label="KidsManagementUrlClassification:disabled"/>
   <int value="2024298022"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
-  <int value="2025344937" label="SyncAndroidPromosWithIllustration:disabled"/>
   <int value="2027492085" label="SuppressToolbarCaptures:disabled"/>
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
   <int value="2030086360"

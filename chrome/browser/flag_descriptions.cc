@@ -4097,26 +4097,6 @@ const char kSyncAndroidLimitNTPPromoImpressionsName[] =
 const char kSyncAndroidLimitNTPPromoImpressionsDescription[] =
     "Suppress the NTP sync promo after a specific number of impressions.";
 
-const char kSyncAndroidPromosWithAlternativeTitleName[] =
-    "Enable the sync promos with alternative titles on Android";
-const char kSyncAndroidPromosWithAlternativeTitleDescription[] =
-    "Replace sync promos titles with alternative titles.";
-
-const char kSyncAndroidPromosWithIllustrationName[] =
-    "Enable the illustration sync promos on Android";
-const char kSyncAndroidPromosWithIllustrationDescription[] =
-    "Adds illustration to sync promos.";
-
-const char kSyncAndroidPromosWithSingleButtonName[] =
-    "Enable the single button sync promos on Android";
-const char kSyncAndroidPromosWithSingleButtonDescription[] =
-    "Hides the \"Choose another account\" button on sync promos.";
-
-const char kSyncAndroidPromosWithTitleName[] =
-    "Enable the title sync promos on Android";
-const char kSyncAndroidPromosWithTitleDescription[] =
-    "Adds a title above the description on sync promos.";
-
 const char kTabGroupsForTabletsName[] = "Tab groups on tablets";
 const char kTabGroupsForTabletsDescription[] = "Enable tab groups on tablets.";
 

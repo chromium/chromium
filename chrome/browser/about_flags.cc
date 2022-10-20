@@ -8090,37 +8090,6 @@ const FeatureEntry kFeatureEntries[] = {
          "SyncAndroidLimitNTPPromoImpressions")},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"sync-android-promos-with-alternative-title",
-     flag_descriptions::kSyncAndroidPromosWithAlternativeTitleName,
-     flag_descriptions::kSyncAndroidPromosWithAlternativeTitleDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kSyncAndroidPromosWithAlternativeTitle)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-    {"sync-android-promos-with-illustration",
-     flag_descriptions::kSyncAndroidPromosWithIllustrationName,
-     flag_descriptions::kSyncAndroidPromosWithIllustrationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kSyncAndroidPromosWithIllustration)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-    {"sync-android-promos-with-single-button",
-     flag_descriptions::kSyncAndroidPromosWithSingleButtonName,
-     flag_descriptions::kSyncAndroidPromosWithSingleButtonDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kSyncAndroidPromosWithSingleButton)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-    {"sync-android-promos-with-title",
-     flag_descriptions::kSyncAndroidPromosWithTitleName,
-     flag_descriptions::kSyncAndroidPromosWithTitleDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kSyncAndroidPromosWithTitle)},
-#endif
-
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,

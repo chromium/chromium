@@ -2327,18 +2327,6 @@ extern const char kStylusWritingToInputDescription[];
 extern const char kSyncAndroidLimitNTPPromoImpressionsName[];
 extern const char kSyncAndroidLimitNTPPromoImpressionsDescription[];
 
-extern const char kSyncAndroidPromosWithAlternativeTitleName[];
-extern const char kSyncAndroidPromosWithAlternativeTitleDescription[];
-
-extern const char kSyncAndroidPromosWithIllustrationName[];
-extern const char kSyncAndroidPromosWithIllustrationDescription[];
-
-extern const char kSyncAndroidPromosWithSingleButtonName[];
-extern const char kSyncAndroidPromosWithSingleButtonDescription[];
-
-extern const char kSyncAndroidPromosWithTitleName[];
-extern const char kSyncAndroidPromosWithTitleDescription[];
-
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];
 
