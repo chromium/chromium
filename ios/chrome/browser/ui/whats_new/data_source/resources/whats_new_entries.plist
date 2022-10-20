@@ -105,7 +105,7 @@
             <key>BannerImageName</key>
             <string>add_passwords_manually_banner</string>
             <key>IconImageName</key>
-            <string>password_key</string>
+            <string>password</string>
             <key>IconBackgroundColor</key>
             <string>yellow</string>
             <key>IsSymbol</key>
@@ -168,7 +168,7 @@
             <key>BannerImageName</key>
             <string>passwords_in_other_apps_banner</string>
             <key>IconImageName</key>
-            <string>password_key</string>
+            <string>password</string>
             <key>IconBackgroundColor</key>
             <string>yellow</string>
             <key>IsSymbol</key>
