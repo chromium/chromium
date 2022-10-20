@@ -106,6 +106,7 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
             MakeGarbageCollected<WorkletModuleResponsesMap>(),
             mojo::NullRemote() /* browser_interface_broker */,
             window->GetFrame()->Loader().CreateWorkerCodeCacheHost(),
+            window->GetFrame()->GetBlobUrlStorePendingRemote(),
             BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
             window->GetAgentClusterID(), ukm::kInvalidSourceId,
             window->GetExecutionContextToken()),

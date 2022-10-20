@@ -3239,6 +3239,18 @@ void LocalFrame::WriteIntoTrace(perfetto::TracedValue ctx) const {
            IsCrossOriginToOutermostMainFrame());
 }
 
+mojo::PendingRemote<mojom::blink::BlobURLStore>
+LocalFrame::GetBlobUrlStorePendingRemote() {
+  if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
+    mojo::PendingRemote<mojom::blink::BlobURLStore> pending_remote;
+    GetBrowserInterfaceBroker().GetInterface(
+        pending_remote.InitWithNewPipeAndPassReceiver());
+    return pending_remote;
+  } else {
+    return mojo::NullRemote();
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void LocalFrame::SetTitlebarAreaDocumentStyleEnvironmentVariables() const {
   DCHECK(is_window_controls_overlay_visible_);

@@ -142,6 +142,8 @@ WorkletGlobalScope::WorkletGlobalScope(
         std::make_unique<CodeCacheHost>(mojo::Remote<mojom::CodeCacheHost>(
             std::move(creation_params->code_cache_host_interface)));
   }
+
+  blob_url_store_pending_remote_ = std::move(creation_params->blob_url_store);
 }
 
 WorkletGlobalScope::~WorkletGlobalScope() = default;
@@ -327,6 +329,12 @@ ukm::UkmRecorder* WorkletGlobalScope::UkmRecorder() {
 
 ukm::SourceId WorkletGlobalScope::UkmSourceID() const {
   return ukm::kInvalidSourceId;
+}
+
+mojo::PendingRemote<mojom::blink::BlobURLStore>
+WorkletGlobalScope::TakeBlobUrlStorePendingRemote() {
+  DCHECK(blob_url_store_pending_remote_.is_valid());
+  return std::move(blob_url_store_pending_remote_);
 }
 
 void WorkletGlobalScope::Trace(Visitor* visitor) const {

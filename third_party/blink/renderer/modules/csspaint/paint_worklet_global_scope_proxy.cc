@@ -59,9 +59,9 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       mojom::blink::V8CacheOptions::kDefault, module_responses_map,
       mojo::NullRemote() /* browser_interface_broker */,
       window->GetFrame()->Loader().CreateWorkerCodeCacheHost(),
-      BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
-      window->GetAgentClusterID(), ukm::kInvalidSourceId,
-      window->GetExecutionContextToken(),
+      mojo::NullRemote() /* blob_url_store */, BeginFrameProviderParams(),
+      nullptr /* parent_permissions_policy */, window->GetAgentClusterID(),
+      ukm::kInvalidSourceId, window->GetExecutionContextToken(),
       window->CrossOriginIsolatedCapability(),
       window->IsolatedApplicationCapability());
   global_scope_ = PaintWorkletGlobalScope::Create(

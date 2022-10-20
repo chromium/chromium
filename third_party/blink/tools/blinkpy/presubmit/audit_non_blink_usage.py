@@ -593,6 +593,10 @@ _CONFIG = [
             # TODO(crbug.com/1296161): Remove this when the CHIPS OT ends.
             "net::features::kPartitionedCookiesBypassOriginTrial",
 
+            # TODO(https://crbug.com/1261328): Remove this once the Blob URL
+            # partitioning killswitch is removed.
+            "net::features::kSupportPartitionedBlobUrl",
+
             # HTTP structured headers
             'net::structured_headers::.+',
 

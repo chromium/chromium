@@ -213,7 +213,8 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       MakeGarbageCollected<WorkletModuleResponsesMap>(),
       mojo::NullRemote() /* browser_interface_broker */,
       mojo::NullRemote() /* code_cache_host_interface */,
-      BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
+      mojo::NullRemote() /* blob_url_store */, BeginFrameProviderParams(),
+      nullptr /* parent_permissions_policy */,
       base::UnguessableToken::Create() /* agent_cluster_id */);
   creation_params->parent_context_token = GetFrame().GetLocalFrameToken();
   global_scope_ = MakeGarbageCollected<FakeWorkletGlobalScope>(

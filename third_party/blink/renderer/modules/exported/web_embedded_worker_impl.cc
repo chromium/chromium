@@ -211,7 +211,8 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       nullptr /* worklet_module_respones_map */,
       std::move(browser_interface_broker),
       mojo::NullRemote() /* code_cache_host_interface */,
-      BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
+      mojo::NullRemote() /* blob_url_store */, BeginFrameProviderParams(),
+      nullptr /* parent_permissions_policy */,
       base::UnguessableToken() /* agent_cluster_id */,
       worker_start_data->ukm_source_id,
       absl::nullopt, /* parent_context_token */

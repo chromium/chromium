@@ -501,6 +501,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       nullptr /* worklet_module_responses_map */,
       std::move(browser_interface_broker_),
       mojo::NullRemote() /* code_cache_host_interface */,
+      mojo::NullRemote() /* blob_url_store */,
       CreateBeginFrameProviderParams(*execution_context),
       execution_context->GetSecurityContext().GetPermissionsPolicy(),
       execution_context->GetAgentClusterID(), execution_context->UkmSourceID(),
