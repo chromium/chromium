@@ -158,8 +158,31 @@ bool BackgroundScriptExecutor::ExecuteScriptInServiceWorker() {
       util::GetStoragePartitionForExtensionId(extension_->id(),
                                               browser_context_)
           ->GetServiceWorkerContext();
+
   service_worker_context->ExecuteScriptForTest(  // IN-TEST
-      script_, worker_ids[0].version_id, base::DoNothing());
+      script_, worker_ids[0].version_id,
+      base::BindOnce(
+          [](std::string script, base::Value _ignored_value,
+             const absl::optional<std::string>& error) {
+            // `_ignored_value` is ignored, because extension tests are expected
+            // to communicate their result via `chrome.test.sendScriptResult`
+            // instead (see also `BackgroundScriptExecutor::WaitForResult`).
+            //
+            // OTOH, we don't want to `base::DoNothing::Once` when
+            // `error.has_value()`, because it oftentimes means that a newly
+            // authored test has some bugs, throws an exception, and will never
+            // call `chrome.test.sendScriptResult`.  To help debug these
+            // scenarios we try to at least report the (asynchronously reported)
+            // exception via `LOG(WARNING)`.
+            if (error.has_value()) {
+              LOG(WARNING)
+                  << "BackgroundScriptExecutor::ExecuteScriptInServiceWorker "
+                  << "resulted in the following exception:\n    "
+                  << error.value() << "\nwhen executing the following script:\n"
+                  << script;
+            }
+          },
+          script_));
   return true;
 }
 
