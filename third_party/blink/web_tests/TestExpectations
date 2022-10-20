@@ -7735,3 +7735,6 @@ crbug.com/1347831 http/tests/devtools/indexeddb/upgrade-events.js [ Skip ]
 
 # Sheriff 2022-10-19
 crbug.com/1376568 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/077.html [ Skip ]
+
+# Sheriff 2022-10-20
+crbug.com/1376822 [ Win11 ] external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-intrinsic-width-height.html [ Failure ]
