@@ -699,6 +699,14 @@ class SiteSettingsHandlerTest : public testing::Test,
     return first_party_sets;
   }
 
+  base::Value::List GetOriginList(int size) {
+    base::Value::List origins;
+    for (int i = 0; i < size; i++) {
+      origins.Append("https://example" + base::NumberToString(i) + ".org:443");
+    }
+    return origins;
+  }
+
   // Content setting group name for the relevant ContentSettingsType.
   const std::string kNotifications;
   const std::string kCookies;
@@ -3204,7 +3212,7 @@ TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
 }
 
 TEST_F(SiteSettingsHandlerTest,
-       HandleIgnoreOriginForNotificationPermissionReview) {
+       HandleIgnoreOriginsForNotificationPermissionReview) {
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
   ContentSettingsForOneType ignored_patterns;
@@ -3213,8 +3221,8 @@ TEST_F(SiteSettingsHandlerTest,
   ASSERT_EQ(0U, ignored_patterns.size());
 
   base::Value::List args;
-  args.Append("https://www.google.com:443");
-  handler()->HandleIgnoreOriginForNotificationPermissionReview(args);
+  args.Append(GetOriginList(1));
+  handler()->HandleIgnoreOriginsForNotificationPermissionReview(args);
 
   // Check there is 1 origin in ignore list.
   content_settings->GetSettingsForOneType(
@@ -3222,57 +3230,66 @@ TEST_F(SiteSettingsHandlerTest,
   ASSERT_EQ(1U, ignored_patterns.size());
 }
 
-TEST_F(SiteSettingsHandlerTest, HandleBlockNotificationPermissionForOrigin) {
+TEST_F(SiteSettingsHandlerTest, HandleBlockNotificationPermissionForOrigins) {
   base::Value::List args;
-  args.Append("https://www.google.com:443");
-  handler()->HandleBlockNotificationPermissionForOrigin(args);
+  base::Value::List origins = GetOriginList(2);
+  args.Append(origins.Clone());
 
-  // Check the permission for the origin is block.
+  handler()->HandleBlockNotificationPermissionForOrigins(args);
+
+  // Check the permission for the two origins is block.
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
   ContentSettingsForOneType notification_permissions;
   content_settings->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
                                           &notification_permissions);
   auto type = content_settings->GetContentSetting(
-      GURL("https://www.google.com:443"), GURL(),
-      ContentSettingsType::NOTIFICATIONS);
+      GURL(origins[0].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
+  ASSERT_EQ(CONTENT_SETTING_BLOCK, type);
+
+  type = content_settings->GetContentSetting(
+      GURL(origins[1].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
   ASSERT_EQ(CONTENT_SETTING_BLOCK, type);
 }
 
-TEST_F(SiteSettingsHandlerTest, HandleAllowNotificationPermissionForOrigin) {
+TEST_F(SiteSettingsHandlerTest, HandleAllowNotificationPermissionForOrigins) {
   base::Value::List args;
-  args.Append("https://www.google.com:443");
-  handler()->HandleAllowNotificationPermissionForOrigin(args);
+  base::Value::List origins = GetOriginList(2);
+  args.Append(origins.Clone());
+  handler()->HandleAllowNotificationPermissionForOrigins(args);
 
-  // Check the permission for the origin is block.
+  // Check the permission for the two origins is allow.
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
   ContentSettingsForOneType notification_permissions;
   content_settings->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
                                           &notification_permissions);
   auto type = content_settings->GetContentSetting(
-      GURL("https://www.google.com:443"), GURL(),
-      ContentSettingsType::NOTIFICATIONS);
+      GURL(origins[0].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
+  ASSERT_EQ(CONTENT_SETTING_ALLOW, type);
+
+  type = content_settings->GetContentSetting(
+      GURL(origins[1].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
   ASSERT_EQ(CONTENT_SETTING_ALLOW, type);
 }
 
-TEST_F(SiteSettingsHandlerTest, HandleResetNotificationPermissionForOrigin) {
+TEST_F(SiteSettingsHandlerTest, HandleResetNotificationPermissionForOrigins) {
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  ContentSettingsForOneType notification_permissions;
+  base::Value::List args;
+  base::Value::List origins = GetOriginList(1);
+  args.Append(origins.Clone());
+
   content_settings->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromString("https://www.google.com:443"),
+      ContentSettingsPattern::FromString(origins[0].GetString()),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
       CONTENT_SETTING_ALLOW);
 
-  base::Value::List args;
-  args.Append("https://www.google.com:443");
-  handler()->HandleResetNotificationPermissionForOrigin(args);
+  handler()->HandleResetNotificationPermissionForOrigins(args);
 
   // Check the permission for the origin is reset.
   auto type = content_settings->GetContentSetting(
-      GURL("https://www.google.com:443"), GURL(),
-      ContentSettingsType::NOTIFICATIONS);
+      GURL(origins[0].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
   ASSERT_EQ(CONTENT_SETTING_ASK, type);
 }
 
@@ -3346,10 +3363,10 @@ TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
 }
 
 TEST_F(SiteSettingsHandlerTest,
-       HandleUndoIgnoreOriginForNotificationPermissionReview) {
+       HandleUndoIgnoreOriginsForNotificationPermissionReview) {
   base::Value::List args;
-  args.Append("https://www.google.com:443");
-  handler()->HandleIgnoreOriginForNotificationPermissionReview(args);
+  args.Append(GetOriginList(1));
+  handler()->HandleIgnoreOriginsForNotificationPermissionReview(args);
 
   // Check there is 1 origin in ignore list.
   HostContentSettingsMap* content_settings =
@@ -3361,7 +3378,7 @@ TEST_F(SiteSettingsHandlerTest,
   ASSERT_EQ(1U, ignored_patterns.size());
 
   // Check there are no origins in ignore list.
-  handler()->HandleUndoIgnoreOriginForNotificationPermissionReview(args);
+  handler()->HandleUndoIgnoreOriginsForNotificationPermissionReview(args);
   content_settings->GetSettingsForOneType(
       ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
   ASSERT_EQ(0U, ignored_patterns.size());
