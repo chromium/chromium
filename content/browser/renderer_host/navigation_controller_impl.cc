@@ -1364,10 +1364,11 @@ bool NavigationControllerImpl::RendererDidNavigate(
     }
     details->previous_main_frame_url = GetLastCommittedEntry()->GetURL();
     details->previous_entry_index = GetLastCommittedEntryIndex();
-    if (pending_entry_ &&
+    if (PendingEntryMatchesRequest(navigation_request) &&
         pending_entry_->GetIsOverridingUserAgent() !=
-            GetLastCommittedEntry()->GetIsOverridingUserAgent())
+            GetLastCommittedEntry()->GetIsOverridingUserAgent()) {
       overriding_user_agent_changed = true;
+    }
 #if BUILDFLAG(IS_ANDROID)
     // TODO(crbug.com/1266277): Clean up the logic of setting
     // |overriding_user_agent_changed| post-launch.
@@ -1388,7 +1389,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
     // GetLastCommittedEntry() is null, so this is the first entry.
     details->previous_main_frame_url = GURL();
     details->previous_entry_index = -1;
-    if (pending_entry_ && pending_entry_->GetIsOverridingUserAgent()) {
+    if (PendingEntryMatchesRequest(navigation_request) &&
+        pending_entry_->GetIsOverridingUserAgent()) {
       // Default setting is NOT override the user agent, so overriding the user
       // agent in first entry should be considered as user agent changed as
       // well.
@@ -1435,6 +1437,10 @@ bool NavigationControllerImpl::RendererDidNavigate(
     }
   }
 
+  // The renderer tells us whether the navigation replaces the current entry.
+  // (See below for a case where we might override that.)
+  details->did_replace_entry = params.should_replace_current_entry;
+
   // If there is a pending entry at this point, it should have a SiteInstance,
   // except for restored entries. This should be true even if the current commit
   // is not related to the pending entry.
@@ -1452,27 +1458,21 @@ bool NavigationControllerImpl::RendererDidNavigate(
       pending_entry_->set_restore_type(RestoreType::kNotRestored);
       was_restored = true;
     }
-  }
 
-  // If this is a navigation to a matching pending_entry_ and the SiteInstance
-  // has changed, this must be treated as a new navigation with replacement.
-  // Set the replacement bit here and ClassifyNavigation will identify this
-  // case and return NEW_ENTRY.
-  if (!rfh->GetParent() && pending_entry_ &&
-      pending_entry_->GetUniqueID() ==
-          navigation_request->commit_params().nav_entry_id &&
-      pending_entry_->site_instance() &&
-      pending_entry_->site_instance() != rfh->GetSiteInstance()) {
-    DCHECK_NE(-1, pending_entry_index_);
-    // TODO(nasko,creis): Instead of setting this value here, set
-    // should_replace_current_entry on the parameters we send to the
-    // renderer process as part of CommitNavigation. The renderer should
-    // in turn send it back here as part of |params| and it can be just
-    // enforced and renderer process terminated on mismatch.
-    details->did_replace_entry = true;
-  } else {
-    // The renderer tells us whether the navigation replaces the current entry.
-    details->did_replace_entry = params.should_replace_current_entry;
+    // If the SiteInstance has changed from the matching pending entry, this
+    // must be treated as a new navigation with replacement. Set the replacement
+    // bit here and ClassifyNavigation will identify this case and return
+    // NEW_ENTRY.
+    if (!rfh->GetParent() && pending_entry_->site_instance() &&
+        pending_entry_->site_instance() != rfh->GetSiteInstance()) {
+      DCHECK_NE(-1, pending_entry_index_);
+      // TODO(nasko,creis): Instead of setting this value here, set
+      // should_replace_current_entry on the parameters we send to the
+      // renderer process as part of CommitNavigation. The renderer should
+      // in turn send it back here as part of |params| and it can be just
+      // enforced and renderer process terminated on mismatch.
+      details->did_replace_entry = true;
+    }
   }
 
   // Do navigation-type specific actions. These will make and commit an entry.
@@ -1778,7 +1778,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
   }
 
-  if (pending_entry_ && pending_entry_->GetUniqueID() == nav_entry_id) {
+  if (PendingEntryMatchesRequest(navigation_request)) {
     // If the SiteInstance of the |pending_entry_| does not match the
     // SiteInstance that got committed, treat this as a new navigation with
     // replacement. This can happen if back/forward/reload encounters a server
@@ -2129,7 +2129,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   // process, then it should be the one replaced, so update the
   // last_committed_entry_index_ to use it.
   if (replace_entry && pending_entry_index_ != -1 &&
-      pending_entry_->GetUniqueID() == request->commit_params().nav_entry_id) {
+      PendingEntryMatchesRequest(request)) {
     last_committed_entry_index_ = pending_entry_index_;
   }
 
@@ -2166,9 +2166,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     // If the NavigationRequest matches a new pending entry and is classified as
     // EXISTING_ENTRY, then it is a navigation to the same URL that was
     // converted to a reload, such as a user pressing enter in the omnibox.
-    if (pending_entry_ && pending_entry_index_ == -1 &&
-        pending_entry_->GetUniqueID() ==
-            request->commit_params().nav_entry_id) {
+    if (pending_entry_index_ == -1 && PendingEntryMatchesRequest(request)) {
       // Note: The pending entry will usually have a real ReloadType here, but
       // it can still be ReloadType::NONE in cases that
       // ShouldTreatNavigationAsReload returns false (e.g., POST, view-source).
