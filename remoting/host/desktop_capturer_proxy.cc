@@ -106,14 +106,7 @@ void DesktopCapturerProxy::Core::CreateCapturer(
 
   if (options.allow_pipewire() &&
       session_type == base::nix::SessionType::kWayland) {
-    // Even though wayland itself has mechanism to detect surface damage in a
-    // fine grained fashion, the framebuffer handed over by the compositor over
-    // to the pipewire stream contains the entire scene (and not just the delta)
-    // from one frame to another. DesktopCapturerDiffWrapper is the closest
-    // thing that can help mimic XDamage behavior for wayland and avoid
-    // unnecessary frame encoding overhead.
-    capturer_ = std::make_unique<webrtc::DesktopCapturerDifferWrapper>(
-        std::make_unique<WaylandDesktopCapturer>(options));
+    capturer_ = std::make_unique<WaylandDesktopCapturer>(options);
   } else {
     capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
   }
