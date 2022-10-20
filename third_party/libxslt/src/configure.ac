@@ -186,7 +186,13 @@ AC_ARG_WITH(python,
 AS_IF([test "x$with_python" != "xno"], [
     AM_PATH_PYTHON
     PKG_CHECK_MODULES([PYTHON], [python-${PYTHON_VERSION}])
+    case "$host" in
+        *-*-cygwin* | *-*-mingw* | *-*-msys* )
+            PYTHON_LDFLAGS="-no-undefined -shrext .pyd"
+            ;;
+    esac
 ])
+AC_SUBST(PYTHON_LDFLAGS)
 AM_CONDITIONAL([WITH_PYTHON], [test "x$with_python" != "xno"])
 
 AC_ARG_WITH(crypto, [  --with-crypto           Add crypto support to exslt (on)])
@@ -331,20 +337,20 @@ dnl
 if test "${GCC}" != "yes" ; then
     case "${host}" in
           *-*-hpux* )
-	       CFLAGS="${CFLAGS} -Wp,-H30000"
+	       AM_CFLAGS="${AM_CFLAGS} -Wp,-H30000"
 	       ;;
           *-dec-osf* )
-               CFLAGS="${CFLAGS} -ieee"
+               AM_CFLAGS="${AM_CFLAGS} -ieee"
                ;;
     esac
 else
-    CFLAGS="${CFLAGS} -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls"
+    AM_CFLAGS="${AM_CFLAGS} -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls"
     case "${host}" in
           alpha*-*-linux* )
-	       CFLAGS="${CFLAGS} -mieee"
+	       AM_CFLAGS="${AM_CFLAGS} -mieee"
 	       ;;
 	  alpha*-*-osf* )
-	       CFLAGS="${CFLAGS} -mieee"
+	       AM_CFLAGS="${AM_CFLAGS} -mieee"
 	       ;;
     esac
 fi
@@ -437,6 +443,8 @@ then
 	AC_MSG_ERROR([Could not find libxml2 anywhere.])
 fi
 
+AM_CFLAGS="$AM_CFLAGS $LIBXML_CFLAGS"
+
 
 AC_ARG_WITH(plugins,
 [  --with-plugins          Add plugin extension support (on)])
@@ -485,13 +493,6 @@ expanded_libdir=$(
 LIBXSLT_DEFAULT_PLUGINS_PATH="$expanded_libdir/libxslt-plugins"
 AC_SUBST(LIBXSLT_DEFAULT_PLUGINS_PATH)
 
-case "$host" in
- *-*-cygwin*|*-*-mingw*)
- LDFLAGS="$LDFLAGS -no-undefined"
- ;;
-esac
-
-
 AC_SUBST(XML_CONFIG)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
@@ -509,16 +510,19 @@ LIBXSLT_CFLAGS=""
 case ${host} in
     *-*-mingw* | *-*-cygwin* | *-*-msvc* )
         # If the host is Windows, and shared libraries are disabled, we
-        # need to add -DLIBXML_STATIC to EXTRA_CFLAGS in order for linking to
+        # need to add -DLIBXML_STATIC to AM_CFLAGS in order for linking to
         # work properly (without it, xmlexports.h would force the use of
         # DLL imports, which obviously aren't present in a static
         # library).
         if test "x$enable_shared" = "xno"; then
            LIBXSLT_CFLAGS="$LIBXSLT_CFLAGS -DLIBXSLT_STATIC -DLIBEXSLT_STATIC"
+           AM_CFLAGS="$AM_CFLAGS -DLIBXSLT_STATIC -DLIBEXSLT_STATIC"
         fi
         ;;
 esac
 AC_SUBST(LIBXSLT_CFLAGS)
+
+AC_SUBST(AM_CFLAGS)
 
 EXSLT_LIBDIR='-L${libdir}'
 EXSLT_INCLUDEDIR='-I${includedir}'
@@ -547,33 +551,11 @@ xsltproc/Makefile
 python/Makefile
 python/tests/Makefile
 tests/Makefile
-tests/docs/Makefile
-tests/REC1/Makefile
-tests/REC2/Makefile
-tests/REC/Makefile
-tests/general/Makefile
-tests/reports/Makefile
-tests/extensions/Makefile
-tests/namespaces/Makefile
-tests/keys/Makefile
-tests/numbers/Makefile
-tests/documents/Makefile
 tests/xmlspec/Makefile
 tests/multiple/Makefile
 tests/xinclude/Makefile
 tests/XSLTMark/Makefile
 tests/docbook/Makefile
-tests/exslt/Makefile
-tests/exslt/common/Makefile
-tests/exslt/functions/Makefile
-tests/exslt/math/Makefile
-tests/exslt/saxon/Makefile
-tests/exslt/sets/Makefile
-tests/exslt/strings/Makefile
-tests/exslt/date/Makefile
-tests/exslt/dynamic/Makefile
-tests/exslt/crypto/Makefile
-tests/plugins/Makefile
 tests/fuzz/Makefile
 doc/Makefile
 doc/devhelp/Makefile

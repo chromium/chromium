@@ -84,8 +84,8 @@ what in Gods name do I mean with '*.h files and their *.h.in sources',
 then you really should do an automatic configuration. Which files must
 be generated and what needs to be done with their sources in order to
 generate them is something people who have built this software before
-allready know. You will not find any explanations for that
-here. Please configure the source manually only if you allready know
+already know. You will not find any explanations for that
+here. Please configure the source manually only if you already know
 what you must do. Otherwise, you have the choice of either getting a
 precompiled binary distribution, or performing the automatic
 configuration.
@@ -98,7 +98,7 @@ After the configuration stage has been completed, you want to build
 the software. You will have to use the make tool which comes with
 your compiler. If you, for example, configured the source to build
 with Microsoft's MSVC compiler, you would use the NMAKE utility. If
-ýou configured it to build with GNU C compiler, mingw edition, you
+you configured it to build with GNU C compiler, mingw edition, you
 would use the GNU make. Assuming you use MSVC, type
 
   nmake

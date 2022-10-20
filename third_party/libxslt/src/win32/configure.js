@@ -251,8 +251,8 @@ function configureExslt()
 	while (ofi.AtEndOfStream != true) {
 		ln = ofi.ReadLine();
 		s = new String(ln);
-		if (s.search(/\@VERSION\@/) != -1) {
-			of.WriteLine(s.replace(/\@VERSION\@/, 
+		if (s.search(/\@LIBEXSLT_VERSION\@/) != -1) {
+			of.WriteLine(s.replace(/\@LIBEXSLT_VERSION\@/, 
 				verMajorExslt + "." + verMinorExslt + "." + verMicroExslt));
 		} else if (s.search(/\@LIBEXSLT_VERSION_NUMBER\@/) != -1) {
 			of.WriteLine(s.replace(/\@LIBEXSLT_VERSION_NUMBER\@/, 

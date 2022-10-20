@@ -39,24 +39,6 @@ xsltConf.sh: xsltConf.sh.in Makefile
 
 CLEANFILES = xsltConf.sh
 
-check-local: tests
-
-dummy:
-
-tests: dummy
-	@echo '## Running the regression test suite'
-	@(cd tests ; $(MAKE) -s tests)
-	@(cd xsltproc ; $(MAKE) -s tests)
-if WITH_PYTHON
-	@cd python && $(MAKE) tests
-endif
-
-valgrind:
-	@echo '## Running the regression tests under Valgrind'
-	@echo '## Go get a cup of coffee it is gonna take a while ...'
-	@(cd tests ; $(MAKE) CHECKER='libtool --mode=execute valgrind -q --leak-check=full' tests)
-	@(cd xsltproc ; $(MAKE) CHECKER='libtool --mode=execute valgrind -q --leak-check=full' tests)
-
 cleanup:
 	-@(find . -name .\#\* -exec rm {} \;)
 

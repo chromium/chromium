@@ -69,7 +69,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/%{name}{,-python}-%{version}
 
 %check
-make tests
+make check
 
 %clean
 rm -fr %{buildroot}
