@@ -8,10 +8,12 @@
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_server.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -98,7 +100,7 @@ class BluetoothDevice final
   BluetoothRemoteGATTServer* gatt() { return gatt_; }
   bool watchingAdvertisements() { return client_receiver_.is_bound(); }
 
-  void AbortWatchAdvertisements();
+  void AbortWatchAdvertisements(AbortSignal* signal);
 
   // WebBluetoothAdvertisementClient:
   void AdvertisingEvent(mojom::blink::WebBluetoothAdvertisingEventPtr) override;
@@ -131,6 +133,14 @@ class BluetoothDevice final
   HeapMojoAssociatedReceiver<mojom::blink::WebBluetoothAdvertisementClient,
                              BluetoothDevice>
       client_receiver_;
+
+  // Any unaborted signal passed to watchAdvertisements() can abort
+  // advertisements for this device, regardless of previous aborts from other
+  // signals. Abort algorithm handles therefore need to remain alive as long as
+  // both the device and associated signal remain alive, so we store the handles
+  // in a map keyed weakly by AbortSignal.
+  HeapHashMap<WeakMember<AbortSignal>, Member<AbortSignal::AlgorithmHandle>>
+      abort_handle_map_;
 };
 
 }  // namespace blink
