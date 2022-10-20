@@ -168,6 +168,11 @@ BASE_FEATURE(kPasswordChangeInSettings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Enables automatic password change for account store credentials.
+BASE_FEATURE(kPasswordChangeAccountStoreUsers,
+             "PasswordChangeAccountStoreUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables .well-known based password change flow from leaked password dialog.
 BASE_FEATURE(kPasswordChangeWellKnown,
              "PasswordChangeWellKnown",

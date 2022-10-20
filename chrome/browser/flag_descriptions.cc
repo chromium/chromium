@@ -2301,6 +2301,11 @@ const char kPasswordScriptsFetchingName[] = "Fetch password scripts";
 const char kPasswordScriptsFetchingDescription[] =
     "Fetches scripts for password change flows.";
 
+const char kPasswordChangeAccountStoreUsersName[] =
+    "Password change for account store users";
+const char kPasswordChangeAccountStoreUsersDescription[] =
+    "Enables automated password change for credentials in the account store.";
+
 const char kPasswordStrengthIndicatorName[] = "Password strength indicator";
 const char kPasswordStrengthIndicatorDescription[] =
     "Enables password strength indicator when typing a password during a "

@@ -62619,6 +62619,7 @@ from previous Chrome versions.
   <int value="1288612648" label="PluginVmFullscreen:enabled"/>
   <int value="1289433604" label="RecoverFromNeverSaveAndroid:enabled"/>
   <int value="1289495171" label="AssistantBetterOnboarding:disabled"/>
+  <int value="1289647989" label="PasswordChangeAccountStoreUsers:enabled"/>
   <int value="1289670142" label="ArcAccountRestrictions:disabled"/>
   <int value="1290343279" label="SafetyCheckNotificationPermissions:disabled"/>
   <int value="1290904214" label="DiagnosticsAppNavigation:enabled"/>
@@ -63683,6 +63684,7 @@ from previous Chrome versions.
       label="MagnifierContinuousMouseFollowingModeSetting:disabled"/>
   <int value="1946358032" label="SwapClankShareHubRows:disabled"/>
   <int value="1947350992" label="drop-sync-credential:disabled"/>
+  <int value="1948509466" label="PasswordChangeAccountStoreUsers:disabled"/>
   <int value="1948978490" label="PaintPreviewDemo:disabled"/>
   <int value="1949019439"
       label="AutofillRestrictUnownedFieldsToFormlessCheckout:disabled"/>

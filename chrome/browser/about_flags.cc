@@ -7627,7 +7627,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordScriptsFetchingName,
      flag_descriptions::kPasswordScriptsFetchingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordScriptsFetching)},
-#endif  // BUILDFLAG(IS_ANDROID)
+#else
+    {"password-change-account-store-users",
+     flag_descriptions::kPasswordChangeAccountStoreUsersName,
+     flag_descriptions::kPasswordChangeAccountStoreUsersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordChangeAccountStoreUsers)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
     {"page-info-cookies-subpage",

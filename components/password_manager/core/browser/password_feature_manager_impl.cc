@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_feature_manager_impl.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -48,12 +49,11 @@ bool PasswordFeatureManagerImpl::
   }
 #endif  // !BUILDFLAG(IS_IOS)
 
-  // TODO(crbug.com/1349782): Re-enable for account store users once
-  // adjustments to script fetchers and WebsiteLoginManager are made.
   switch (password_manager_util::GetPasswordSyncState(sync_service_)) {
     case SyncState::kNotSyncing:
     case SyncState::kAccountPasswordsActiveNormalEncryption:
-      return false;
+      return base::FeatureList::IsEnabled(
+          features::kPasswordChangeAccountStoreUsers);
     case SyncState::kSyncingWithCustomPassphrase:
     case SyncState::kSyncingNormalEncryption:
       return true;

@@ -1280,6 +1280,9 @@ extern const char kPasswordDomainCapabilitiesFetchingDescription[];
 extern const char kPasswordScriptsFetchingName[];
 extern const char kPasswordScriptsFetchingDescription[];
 
+extern const char kPasswordChangeAccountStoreUsersName[];
+extern const char kPasswordChangeAccountStoreUsersDescription[];
+
 extern const char kPasswordStrengthIndicatorName[];
 extern const char kPasswordStrengthIndicatorDescription[];
 

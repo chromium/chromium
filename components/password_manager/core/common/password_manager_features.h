@@ -54,6 +54,7 @@ BASE_DECLARE_FEATURE(kSendPasswords);
 BASE_DECLARE_FEATURE(kLeakDetectionUnauthenticated);
 BASE_DECLARE_FEATURE(kPasswordChange);
 BASE_DECLARE_FEATURE(kPasswordChangeInSettings);
+BASE_DECLARE_FEATURE(kPasswordChangeAccountStoreUsers);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
 BASE_DECLARE_FEATURE(kPasswordDomainCapabilitiesFetching);
 BASE_DECLARE_FEATURE(kPasswordImport);
