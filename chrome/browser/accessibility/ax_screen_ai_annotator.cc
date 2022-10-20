@@ -78,7 +78,7 @@ void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
                                                gfx::Image snapshot) {
   DCHECK(screen_ai_annotator_.is_bound());
   screen_ai_annotator_->Annotate(
-      snapshot.AsBitmap(),
+      snapshot.AsBitmap(), ax_tree_id,
       base::BindOnce(&AXScreenAIAnnotator::OnAnnotationPerformed,
                      weak_ptr_factory_.GetWeakPtr(), ax_tree_id));
 }

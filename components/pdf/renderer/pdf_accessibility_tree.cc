@@ -27,6 +27,7 @@
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/null_ax_action_target.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -371,14 +372,17 @@ ax::mojom::Role GetRoleForButtonType(chrome_pdf::ButtonType button_type) {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-class PdfOcrService {
+class PdfOcrService final {
  public:
   using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeID&)>;
 
-  PdfOcrService() = default;
+  explicit PdfOcrService(const ui::AXTreeID& parent_tree_id)
+      : parent_tree_id_(parent_tree_id) {}
+
+  ~PdfOcrService() = default;
+
   PdfOcrService(const PdfOcrService&) = delete;
   PdfOcrService& operator=(const PdfOcrService&) = delete;
-  ~PdfOcrService() = default;
 
   // Creates the connection with ScreenAI service.
   void Initialize(content::RenderFrame& render_frame) {
@@ -394,13 +398,14 @@ class PdfOcrService {
     if (!screen_ai_annotator_.is_bound())
       return false;
 
-    screen_ai_annotator_->Annotate(image.image_data, std::move(callback));
+    screen_ai_annotator_->Annotate(image.image_data, parent_tree_id_,
+                                   std::move(callback));
     return true;
   }
 
  private:
-  // The remote of the ScreenAI service's annotator.
   mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
+  const ui::AXTreeID parent_tree_id_;
 };
 
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -416,6 +421,7 @@ class PdfAccessibilityTreeBuilder {
       ui::AXNodeData* page_node,
       content::RenderFrame* render_frame,
       content::RenderAccessibility* render_accessibility,
+      const ui::AXTreeID& tree_id,
       std::vector<std::unique_ptr<ui::AXNodeData>>* nodes,
       std::map<int32_t, chrome_pdf::PageCharacterIndex>*
           node_id_to_page_char_index,
@@ -435,7 +441,12 @@ class PdfAccessibilityTreeBuilder {
         render_accessibility_(render_accessibility),
         nodes_(nodes),
         node_id_to_page_char_index_(node_id_to_page_char_index),
-        node_id_to_annotation_info_(node_id_to_annotation_info) {
+        node_id_to_annotation_info_(node_id_to_annotation_info)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+        ,
+        ocr_service_(tree_id)
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  {
     if (!text_runs.empty()) {
       text_run_start_indices_.reserve(text_runs.size());
       text_run_start_indices_.push_back(0);
@@ -1526,7 +1537,8 @@ void PdfAccessibilityTree::AddPageContent(
   DCHECK(render_accessibility);
   PdfAccessibilityTreeBuilder tree_builder(
       text_runs, chars, page_objects, page_bounds, page_index, page_node,
-      render_frame_, render_accessibility, &nodes_,
+      render_frame_, render_accessibility,
+      render_accessibility->GetTreeIDForPluginHost(), &nodes_,
       &node_id_to_page_char_index_, &node_id_to_annotation_info_);
   tree_builder.BuildPageTree();
 }
@@ -1540,8 +1552,12 @@ void PdfAccessibilityTree::Finish() {
   doc_node_->relative_bounds.transform = MakeTransformFromViewInfo();
 
   ui::AXTreeUpdate update;
+  // We need to set the `AXTreeID` both in the `AXTreeUpdate` and the
+  // `AXTreeData` member because the constructor of `AXTree` might expect the
+  // tree to be constructed with a valid tree ID.
   update.has_tree_data = true;
   update.tree_data.tree_id = render_accessibility->GetTreeIDForPluginHost();
+  tree_data_.tree_id = render_accessibility->GetTreeIDForPluginHost();
   update.root_id = doc_node_->id;
   for (const auto& node : nodes_)
     update.nodes.push_back(*node);
@@ -1682,6 +1698,7 @@ PdfAccessibilityTree::AnnotationInfo::~AnnotationInfo() = default;
 //
 
 bool PdfAccessibilityTree::GetTreeData(ui::AXTreeData* tree_data) const {
+  tree_data->tree_id = tree_data_.tree_id;
   tree_data->sel_is_backward = tree_data_.sel_is_backward;
   tree_data->sel_anchor_object_id = tree_data_.sel_anchor_object_id;
   tree_data->sel_anchor_offset = tree_data_.sel_anchor_offset;

@@ -102,11 +102,9 @@ void ScreenAIService::BindMainContentExtractor(
 }
 
 void ScreenAIService::Annotate(const SkBitmap& image,
+                               const ui::AXTreeID& parent_tree_id,
                                AnnotationCallback callback) {
   DCHECK(screen_ai_annotator_client_.is_bound());
-
-  ui::AXTreeUpdate update;
-
   VLOG(2) << "Screen AI library starting to process " << image.width() << "x"
           << image.height() << " snapshot.";
 
@@ -116,27 +114,28 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   // verifies the data integrity and source.
   if (!CallLibraryAnnotateFunction(image, annotation_proto,
                                    annotation_proto_length)) {
-    std::move(callback).Run(ui::AXTreeID());
+    std::move(callback).Run(ui::AXTreeIDUnknown());
     VLOG(1) << "Screen AI library could not process snapshot.";
     return;
   }
-
-  // TODO(https://crbug.com/1278249): Create an AXTreeSource and send the ID
-  // back to the caller.
-  std::move(callback).Run(ui::AXTreeID());
 
   std::string proto_as_string =
       MakeString(annotation_proto, annotation_proto_length);
   delete annotation_proto;
 
   gfx::Rect image_rect(image.width(), image.height());
-  update = ScreenAIVisualAnnotationToAXTreeUpdate(proto_as_string, image_rect);
-  // TODO(nektar): Get the parent tree ID from the calling process (i.e.
-  // browser or renderer).
-  ScreenAIAXTreeSerializer serializer(
-      /* parent_tree_id */ ui::AXTreeID::CreateNewAXTreeID(),
-      std::move(update.nodes));
+  ui::AXTreeUpdate update =
+      ScreenAIVisualAnnotationToAXTreeUpdate(proto_as_string, image_rect);
+  ScreenAIAXTreeSerializer serializer(parent_tree_id, std::move(update.nodes));
   update = serializer.Serialize();
+
+  const ui::AXTreeID& child_tree_id = update.tree_data.tree_id;
+  // `ScreenAIAXTreeSerializer` should have assigned a new tree ID to `update`.
+  // Thereby, it should never be an unknown tree ID, otherwise there has been an
+  // unexpected serialization bug.
+  DCHECK_NE(child_tree_id, ui::AXTreeIDUnknown()) << "Invalid serialization.\n"
+                                                  << update.ToString();
+  std::move(callback).Run(child_tree_id);
 
   // ScreenAI service is created per profile and all clients are in the same
   // browser process. As the updates are passed to global AXTreeManager, it is

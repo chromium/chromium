@@ -15,13 +15,16 @@ import "ui/accessibility/mojom/ax_tree_update.mojom";
 // ScreenAIAnnotator.
 // All annotators of one browser profile use one ScreenAIService.
 interface ScreenAIAnnotator {
-  // Receives a snapshot, schedules image processing, and returns the ID of the
-  // child tree which would be created by the service upon successful
-  // completion of this request.
-  Annotate(skia.mojom.BitmapN32 image) =>
+  // Receives an image, such as a screenshot or a page from a PDF file, as well
+  // as the ID of the accessibility tree that contains the image
+  // (`parent_tree_id`). It then asks the Screen AI library to perform object
+  // recognition and OCR on the image. It returns the ID of the accessibility
+  // tree which would be created by the Service containing the output of the
+  // library.
+  Annotate(skia.mojom.BitmapN32 image,
+    ax.mojom.AXTreeID parent_tree_id) =>
     (ax.mojom.AXTreeID child_tree_id);
 };
-
 // This interface sends accessibility messages from the Screen AI Service to
 // `AXScreenAIAnnotator` in the browser process in non-ChromeOS or the extension
 // in ChromeOS.

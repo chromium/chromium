@@ -39,7 +39,9 @@ class ScreenAIService : public mojom::ScreenAIService,
   base::ScopedNativeLibrary library_;
 
   // mojom::ScreenAIAnnotator:
-  void Annotate(const SkBitmap& image, AnnotationCallback callback) override;
+  void Annotate(const SkBitmap& image,
+                const ui::AXTreeID& parent_tree_id,
+                AnnotationCallback callback) override;
 
   // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
