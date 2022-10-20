@@ -16,8 +16,8 @@ namespace content {
 // that use V8. Note that this is defined on all platforms even though it may
 // be empty or unused on some.
 //
-// This mapping can be passed to
-// `BrowserChildProcessHost::LaunchWithPreloadedFiles()`.
+// This mapping can be used in `content::ChildProcessLauncherFileData` when
+// constructing a ChildProcessLauncher.
 std::map<std::string, base::FilePath> GetV8SnapshotFilesToPreload();
 
 }  // namespace content
