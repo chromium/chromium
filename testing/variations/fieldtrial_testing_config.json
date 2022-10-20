@@ -2099,21 +2099,6 @@
             ]
         }
     ],
-    "CWPCollectsETM": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CWPCollectsETM"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheCodeOnIdle": [
         {
             "platforms": [

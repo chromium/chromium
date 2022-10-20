@@ -37,7 +37,7 @@ BASE_FEATURE(kCWPCollectionOnHostAndGuest,
 
 BASE_FEATURE(kCWPCollectsETM,
              "CWPCollectsETM",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
