@@ -30,6 +30,7 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
+#include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -135,6 +136,10 @@ class MockReportSender : public AttributionReportSender {
     }
 
     callbacks_.emplace_back(std::move(report), std::move(callback));
+  }
+
+  void SendReport(AttributionDebugReport report) override {
+    // TODO(crbug.com/1371970): Add test for debug reports.
   }
 
   const std::vector<AttributionReport>& calls() const { return calls_; }

@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -885,6 +886,41 @@ TEST_F(AttributionReportNetworkSenderTest,
     histograms.ExpectUniqueSample(
         "Conversions.DebugReport.ReportRetrySucceedAggregatable", true, 1);
   }
+}
+
+TEST_F(AttributionReportNetworkSenderTest,
+       ErrorReportSent_ReportBodySetCorrectly) {
+  static constexpr char kExpectedReportBody[] =
+      R"([{)"
+      R"("body":{)"
+      R"("attribution_destination":"https://conversion.test",)"
+      R"("limit":3,)"
+      R"("source_event_id":"123",)"
+      R"("source_site":"https://impression.test"},)"
+      R"("type":"source-destination-limit")"
+      R"(}])";
+
+  static constexpr char kErrorReportUrl[] =
+      "https://report.test/.well-known/attribution-reporting/debug/verbose";
+
+  absl::optional<AttributionDebugReport> report =
+      AttributionDebugReport::Create(
+          SourceBuilder().Build(),
+          /*is_within_fenced_frame=*/false,
+          AttributionStorage::StoreSourceResult(
+              StorableSource::Result::kInsufficientUniqueDestinationCapacity,
+              /*min_fake_report_time=*/absl::nullopt,
+              /*max_destinations_per_source_site_reporting_origin=*/3));
+  ASSERT_TRUE(report);
+
+  network_sender_->SendReport(std::move(*report));
+
+  const network::ResourceRequest* pending_request;
+  EXPECT_TRUE(
+      test_url_loader_factory_.IsPending(kErrorReportUrl, &pending_request));
+  EXPECT_EQ(kExpectedReportBody, network::GetUploadData(*pending_request));
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kErrorReportUrl, ""));
 }
 
 }  // namespace content

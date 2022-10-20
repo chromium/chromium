@@ -978,7 +978,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
   if (absl::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(source, is_within_fenced_frame,
                                          result)) {
-    // TODO(crbug.com/1371970): Implement error report sending.
+    report_sender_->SendReport(std::move(*debug_report));
   }
 }
 

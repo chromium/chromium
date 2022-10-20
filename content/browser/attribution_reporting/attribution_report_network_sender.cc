@@ -10,6 +10,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/send_result.h"
@@ -54,8 +56,28 @@ void AttributionReportNetworkSender::SendReport(
     AttributionReport report,
     bool is_debug_report,
     ReportSentCallback sent_callback) {
+  GURL url = report.ReportURL(is_debug_report);
+  base::Value::Dict body = report.ReportBody();
+
+  SendReport(std::move(url), body,
+             base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
+                            base::Unretained(this), std::move(report),
+                            is_debug_report, std::move(sent_callback)));
+}
+
+void AttributionReportNetworkSender::SendReport(AttributionDebugReport report) {
+  GURL url = report.ReportURL();
+  base::Value::List body = report.ReportBody();
+  SendReport(std::move(url), body,
+             base::BindOnce(&AttributionReportNetworkSender::OnDebugReportSent,
+                            base::Unretained(this)));
+}
+
+void AttributionReportNetworkSender::SendReport(GURL url,
+                                                base::ValueView report_body,
+                                                UrlLoaderCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = report.ReportURL(is_debug_report);
+  resource_request->url = std::move(url);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags =
@@ -101,7 +123,7 @@ void AttributionReportNetworkSender::SendReport(
   simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
 
   simple_url_loader_ptr->AttachStringForUpload(
-      SerializeAttributionJson(report.ReportBody()), "application/json");
+      SerializeAttributionJson(report_body), "application/json");
 
   // Retry once on network change. A network change during DNS resolution
   // results in a DNS error rather than a network change error, so retry in
@@ -110,20 +132,16 @@ void AttributionReportNetworkSender::SendReport(
                    network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
   simple_url_loader_ptr->SetRetryOptions(/*max_retries=*/1, retry_mode);
 
-  // Unretained is safe because the URLLoader is owned by |this| and will be
-  // deleted before |this|.
   simple_url_loader_ptr->DownloadHeadersOnly(
       url_loader_factory_.get(),
-      base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
-                     base::Unretained(this), std::move(it), std::move(report),
-                     is_debug_report, std::move(sent_callback)));
+      base::BindOnce(std::move(callback), std::move(it)));
 }
 
 void AttributionReportNetworkSender::OnReportSent(
-    UrlLoaderList::iterator it,
     AttributionReport report,
     bool is_debug_report,
     ReportSentCallback sent_callback,
+    UrlLoaderList::iterator it,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   network::SimpleURLLoader* loader = it->get();
 
@@ -207,6 +225,15 @@ void AttributionReportNetworkSender::OnReportSent(
       .Run(std::move(report),
            SendResult(report_status, net_error,
                       headers ? headers->response_code() : 0));
+}
+
+void AttributionReportNetworkSender::OnDebugReportSent(
+    UrlLoaderList::iterator it,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  loaders_in_progress_.erase(it);
+
+  // TODO(crbug.com/1371970): Consider recording metric for debug report
+  // sending.
 }
 
 }  // namespace content

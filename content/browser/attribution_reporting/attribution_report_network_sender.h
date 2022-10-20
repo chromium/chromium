@@ -13,6 +13,12 @@
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/common/content_export.h"
 
+class GURL;
+
+namespace base {
+class ValueView;
+}  // namespace base
+
 namespace net {
 class HttpResponseHeaders;
 }  // namespace net
@@ -47,17 +53,30 @@ class CONTENT_EXPORT AttributionReportNetworkSender
   void SendReport(AttributionReport report,
                   bool is_debug_report,
                   ReportSentCallback sent_callback) override;
+  void SendReport(AttributionDebugReport report) override;
 
  private:
   // This is a std::list so that iterators remain valid during modifications.
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
+  using UrlLoaderCallback =
+      base::OnceCallback<void(UrlLoaderList::iterator it,
+                              scoped_refptr<net::HttpResponseHeaders>)>;
+
+  void SendReport(GURL url,
+                  base::ValueView report_body,
+                  UrlLoaderCallback callback);
+
   // Called when headers are available for a sent report.
-  void OnReportSent(UrlLoaderList::iterator it,
-                    AttributionReport report,
+  void OnReportSent(AttributionReport report,
                     bool is_debug_report,
                     ReportSentCallback sent_callback,
+                    UrlLoaderList::iterator it,
                     scoped_refptr<net::HttpResponseHeaders> headers);
+
+  // Called when headers are available for a sent debug report.
+  void OnDebugReportSent(UrlLoaderList::iterator it,
+                         scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Reports that are actively being sent.
   UrlLoaderList loaders_in_progress_;

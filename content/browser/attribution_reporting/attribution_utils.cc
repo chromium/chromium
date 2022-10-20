@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 
@@ -113,8 +114,7 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source,
   return ReportTimeFromDeadline(source.source_time(), deadline);
 }
 
-std::string SerializeAttributionJson(const base::Value::Dict& body,
-                                     bool pretty_print) {
+std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
   int options = pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;
 
   std::string output_json;

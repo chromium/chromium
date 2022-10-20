@@ -9,6 +9,7 @@
 
 namespace content {
 
+class AttributionDebugReport;
 class AttributionReport;
 
 struct SendResult;
@@ -27,6 +28,8 @@ class AttributionReportSender {
   virtual void SendReport(AttributionReport report,
                           bool is_debug_report,
                           ReportSentCallback sent_callback) = 0;
+
+  virtual void SendReport(AttributionDebugReport report) = 0;
 };
 
 }  // namespace content
