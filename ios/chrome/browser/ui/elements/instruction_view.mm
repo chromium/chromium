@@ -148,6 +148,9 @@ constexpr CGFloat kIconLabelWidth = 30;
   instructionLabel.numberOfLines = 0;
   instructionLabel.adjustsFontForContentSizeCategory = YES;
   instructionLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  [instructionLabel
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
+                                      forAxis:UILayoutConstraintAxisVertical];
 
   UIView* line = [[UIView alloc] init];
   [line addSubview:bulletPointView];
@@ -155,18 +158,18 @@ constexpr CGFloat kIconLabelWidth = 30;
 
   // Add constraints for bulletPointView and instructionLabel vertical margins
   // to make sure that they are as small as possible.
-  NSLayoutConstraint* minimunBulletPointTopMargin =
+  NSLayoutConstraint* minimumBulletPointTopMargin =
       [bulletPointView.topAnchor constraintEqualToAnchor:line.topAnchor
                                                 constant:kVerticalMargin];
-  minimunBulletPointTopMargin.priority = UILayoutPriorityDefaultHigh;
+  minimumBulletPointTopMargin.priority = UILayoutPriorityDefaultHigh;
   NSLayoutConstraint* minimumBulletPointBottomMargin =
       [bulletPointView.bottomAnchor constraintEqualToAnchor:line.bottomAnchor
                                                    constant:-kVerticalMargin];
   minimumBulletPointBottomMargin.priority = UILayoutPriorityDefaultHigh;
-  NSLayoutConstraint* minimunLabelTopMargin =
+  NSLayoutConstraint* minimumLabelTopMargin =
       [instructionLabel.topAnchor constraintEqualToAnchor:line.topAnchor
                                                  constant:kVerticalMargin];
-  minimunLabelTopMargin.priority = UILayoutPriorityDefaultHigh;
+  minimumLabelTopMargin.priority = UILayoutPriorityDefaultHigh;
   NSLayoutConstraint* minimumLabelBottomMargin =
       [instructionLabel.bottomAnchor constraintEqualToAnchor:line.bottomAnchor
                                                     constant:-kVerticalMargin];
@@ -179,8 +182,8 @@ constexpr CGFloat kIconLabelWidth = 30;
         constraintEqualToAnchor:bulletPointView.trailingAnchor
                        constant:kSpacing],
     [instructionLabel.centerYAnchor constraintEqualToAnchor:line.centerYAnchor],
-    minimunBulletPointTopMargin, minimumBulletPointBottomMargin,
-    minimunLabelTopMargin, minimumLabelBottomMargin,
+    minimumBulletPointTopMargin, minimumBulletPointBottomMargin,
+    minimumLabelTopMargin, minimumLabelBottomMargin,
     [bulletPointView.bottomAnchor
         constraintLessThanOrEqualToAnchor:line.bottomAnchor
                                  constant:-kVerticalMargin],
@@ -255,6 +258,10 @@ constexpr CGFloat kIconLabelWidth = 30;
 - (UIView*)createIconView:(UIImage*)icon {
   UIImageView* iconImageView = [[UIImageView alloc] initWithImage:icon];
   iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [iconImageView.widthAnchor constraintEqualToConstant:kIconLabelWidth],
+    [iconImageView.heightAnchor constraintEqualToConstant:kIconLabelWidth],
+  ]];
   return iconImageView;
 }
 
