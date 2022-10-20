@@ -13,7 +13,6 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #include "ios/chrome/browser/signin/constants.h"
 
-@class ChromeIdentity;
 class PrefService;
 
 namespace signin {

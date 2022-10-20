@@ -35,7 +35,7 @@ class AuthenticationServiceFake : public AuthenticationService {
                bool force_clear_browsing_data,
                ProceduralBlock completion) override;
 
-  ChromeIdentity* GetPrimaryIdentity(
+  id<SystemIdentity> GetPrimaryIdentity(
       signin::ConsentLevel consent_level) const override;
 
   bool HasPrimaryIdentityManaged(

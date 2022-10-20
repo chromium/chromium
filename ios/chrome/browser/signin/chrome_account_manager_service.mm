@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -85,34 +84,34 @@ class CombineOr {
 // over identities matching the filter.
 class FindFirstIdentity {
  public:
-  using ResultType = ChromeIdentity*;
+  using ResultType = id<SystemIdentity>;
 
-  ios::IdentityIteratorCallbackResult ForEach(ChromeIdentity* identity) {
-    identity_ = base::mac::ObjCCastStrict<ChromeIdentity>(identity);
+  ios::IdentityIteratorCallbackResult ForEach(id<SystemIdentity> identity) {
+    identity_ = identity;
     return ios::kIdentityIteratorInterruptIteration;
   }
 
   ResultType Result() const { return identity_; }
 
  private:
-  ChromeIdentity* identity_ = nil;
+  id<SystemIdentity> identity_ = nil;
 };
 
 // Helper class returning the list of all identities matching the filter
 // when iterating over identities.
 class CollectIdentities {
  public:
-  using ResultType = NSArray<ChromeIdentity*>*;
+  using ResultType = NSArray<id<SystemIdentity>>*;
 
   ios::IdentityIteratorCallbackResult ForEach(id<SystemIdentity> identity) {
-    [identities_ addObject:base::mac::ObjCCastStrict<ChromeIdentity>(identity)];
+    [identities_ addObject:identity];
     return ios::kIdentityIteratorContinueIteration;
   }
 
   ResultType Result() const { return [identities_ copy]; }
 
  private:
-  NSMutableArray<ChromeIdentity*>* identities_ = [NSMutableArray array];
+  NSMutableArray<id<SystemIdentity>>* identities_ = [NSMutableArray array];
 };
 
 // Helper class implementing iteration in IterateOverIdentities.
@@ -202,7 +201,7 @@ bool ChromeAccountManagerService::IsEmailRestricted(
   return restriction_.IsAccountRestricted(email);
 }
 
-ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
+id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
     NSString* gaia_id) const {
   // Do not iterate if the gaia ID is invalid.
   if (!gaia_id.length)
@@ -213,7 +212,7 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
       CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}});
 }
 
-ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
+id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
     base::StringPiece gaia_id) const {
   // Do not iterate if the gaia ID is invalid. This is duplicated here
   // to avoid allocating a NSString unnecessarily.
@@ -224,13 +223,13 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
   return GetIdentityWithGaiaID(base::SysUTF8ToNSString(gaia_id));
 }
 
-NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities()
+NSArray<id<SystemIdentity>>* ChromeAccountManagerService::GetAllIdentities()
     const {
   return IterateOverIdentities(CollectIdentities{},
                                SkipRestricted{restriction_});
 }
 
-ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() const {
+id<SystemIdentity> ChromeAccountManagerService::GetDefaultIdentity() const {
   return IterateOverIdentities(FindFirstIdentity{},
                                SkipRestricted{restriction_});
 }

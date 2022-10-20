@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/observer_list.h"
 
-@class ChromeIdentity;
 @class ChromeIdentityInteractionManager;
 @protocol SystemIdentity;
 
@@ -231,7 +230,7 @@ class ChromeIdentityService {
   void IsSubjectToParentalControls(id<SystemIdentity> identity,
                                    CapabilitiesCallback callback);
 
-  // Returns true if the service can be used, and supports ChromeIdentity list.
+  // Returns true if the service can be used, and supports SystemIdentity list.
   virtual bool IsServiceSupported();
 
   // Returns the MDM device status associated with `user_info`.

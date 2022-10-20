@@ -24,7 +24,7 @@
 // Simulates a user tapping the cancel button.
 - (void)addAccountViewControllerDidTapCancel;
 
-// Simulates the user encountering an error not handled by ChromeIdentity.
+// Simulates the user encountering an error not handled by SystemIdentity.
 - (void)addAccountViewControllerDidThrowUnhandledError;
 
 // Simulates the add account view being interrupted.

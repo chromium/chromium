@@ -27,9 +27,9 @@ class SyncService;
 class AuthenticationServiceDelegate;
 class AuthenticationServiceFake;
 class AuthenticationServiceObserver;
-@class ChromeIdentity;
 class PrefService;
 class SyncSetupService;
+@protocol SystemIdentity;
 
 // AuthenticationService is the Chrome interface to the iOS shared
 // authentication library.
@@ -107,7 +107,7 @@ class AuthenticationService : public KeyedService,
   // This method should only be called when there is a primary account.
   void ApproveAccountList();
 
-  // ChromeIdentity management
+  // SystemIdentity management
 
   // Returns true if the user is signed in.
   // While the AuthenticationService is in background, this will reload the
@@ -124,7 +124,7 @@ class AuthenticationService : public KeyedService,
   // either the user is not authenticated, or is authenticated through
   // ClientLogin.
   // Virtual for testing.
-  virtual ChromeIdentity* GetPrimaryIdentity(
+  virtual id<SystemIdentity> GetPrimaryIdentity(
       signin::ConsentLevel consent_level) const;
 
   // Grants signin::ConsentLevel::kSignin to `identity`.
@@ -181,9 +181,9 @@ class AuthenticationService : public KeyedService,
                              NSDictionary* user_info);
 
   // Verifies that the authenticated user is still associated with a valid
-  // ChromeIdentity. This method must only be called when the user is
+  // SystemIdentity. This method must only be called when the user is
   // authenticated with the shared authentication library. If there is no valid
-  // ChromeIdentity associated with the currently authenticated user, or the
+  // SystemIdentity associated with the currently authenticated user, or the
   // identity is `invalid_identity`, this method will sign the user out.
   //
   // `invalid_identity` is an additional identity to consider invalid. It can be

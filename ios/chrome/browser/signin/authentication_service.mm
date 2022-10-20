@@ -302,7 +302,7 @@ bool AuthenticationService::HasPrimaryIdentityManaged(
       .IsManaged();
 }
 
-ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
+id<SystemIdentity> AuthenticationService::GetPrimaryIdentity(
     signin::ConsentLevel consent_level) const {
   // There is no authenticated identity if there is no signed in user or if the
   // user signed in via the client login flow.

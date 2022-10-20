@@ -186,7 +186,7 @@ class AuthenticationServiceTest : public PlatformTest {
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
   }
 
-  ChromeIdentity* identity(NSUInteger index) {
+  id<SystemIdentity> identity(NSUInteger index) {
     return [account_manager_->GetAllIdentities() objectAtIndex:index];
   }
 
