@@ -35,8 +35,8 @@ constexpr int kImageBorderRadius = 4;
 }  // namespace
 
 PriceTrackingView::PriceTrackingView(Profile* profile,
-                                     GURL page_url,
-                                     gfx::ImageSkia product_image,
+                                     const GURL& page_url,
+                                     const gfx::ImageSkia& product_image,
                                      bool is_price_track_enabled)
     : profile_(profile), is_price_track_enabled_(is_price_track_enabled) {
   // image column
@@ -119,7 +119,7 @@ std::u16string PriceTrackingView::GetToggleAccessibleName() {
                    : IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY);
 }
 
-void PriceTrackingView::OnToggleButtonPressed(const GURL url) {
+void PriceTrackingView::OnToggleButtonPressed(const GURL& url) {
   is_price_track_enabled_ = !is_price_track_enabled_;
   if (is_price_track_enabled_) {
     base::RecordAction(base::UserMetricsAction(

@@ -16,8 +16,8 @@ class Profile;
 class PriceTrackingView : public views::FlexLayoutView {
  public:
   PriceTrackingView(Profile* profile,
-                    GURL page_url,
-                    gfx::ImageSkia product_image,
+                    const GURL& page_url,
+                    const gfx::ImageSkia& product_image,
                     bool is_price_track_enabled);
   ~PriceTrackingView() override;
 
@@ -27,7 +27,7 @@ class PriceTrackingView : public views::FlexLayoutView {
   friend class PriceTrackingViewTest;
 
   std::u16string GetToggleAccessibleName();
-  void OnToggleButtonPressed(const GURL url);
+  void OnToggleButtonPressed(const GURL& url);
   void UpdatePriceTrackingState(const GURL& url);
   void OnPriceTrackingStateUpdated(bool success);
 
