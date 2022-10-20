@@ -1187,11 +1187,10 @@ bool V4L2SliceVideoDecodeAccelerator::FinishSurfaceSetChange() {
   // All output buffers should've been returned from decoder and device by now.
   // The only remaining owner of surfaces may be display (client), and we will
   // dismiss them when destroying output buffers below.
-  const size_t num_imported_buffers =
-      std::count_if(output_buffer_map_.begin(), output_buffer_map_.end(),
-                    [](const OutputRecord& output_record) {
-                      return output_record.output_frame != nullptr;
-                    });
+  const size_t num_imported_buffers = base::ranges::count_if(
+      output_buffer_map_, [](const OutputRecord& output_record) {
+        return output_record.output_frame != nullptr;
+      });
   DCHECK_EQ(output_queue_->FreeBuffersCount() + surfaces_at_display_.size(),
             num_imported_buffers);
 #endif  // DCHECK_IS_ON()
@@ -2260,8 +2259,7 @@ size_t V4L2SliceVideoDecodeAccelerator::GetNumOfOutputRecordsAtDevice() const {
 
 size_t V4L2SliceVideoDecodeAccelerator::GetNumOfOutputRecordsAtClient() const {
   DCHECK(decoder_thread_.task_runner()->BelongsToCurrentThread());
-  return std::count_if(output_buffer_map_.begin(), output_buffer_map_.end(),
-                       [](const auto& r) { return r.at_client(); });
+  return base::ranges::count_if(output_buffer_map_, &OutputRecord::at_client);
 }
 
 void V4L2SliceVideoDecodeAccelerator::ImageProcessorError() {

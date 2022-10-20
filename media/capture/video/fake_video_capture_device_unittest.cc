@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -360,12 +361,10 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
 
   ASSERT_TRUE(state->supported_background_blur_modes);
   EXPECT_EQ(2u, state->supported_background_blur_modes->size());
-  EXPECT_EQ(1, std::count(state->supported_background_blur_modes->begin(),
-                          state->supported_background_blur_modes->end(),
-                          mojom::BackgroundBlurMode::OFF));
-  EXPECT_EQ(1, std::count(state->supported_background_blur_modes->begin(),
-                          state->supported_background_blur_modes->end(),
-                          mojom::BackgroundBlurMode::BLUR));
+  EXPECT_EQ(1, base::ranges::count(*state->supported_background_blur_modes,
+                                   mojom::BackgroundBlurMode::OFF));
+  EXPECT_EQ(1, base::ranges::count(*state->supported_background_blur_modes,
+                                   mojom::BackgroundBlurMode::BLUR));
   EXPECT_EQ(mojom::BackgroundBlurMode::OFF, state->background_blur_mode);
 
   // Set options: zoom to the maximum value.

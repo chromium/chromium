@@ -10,11 +10,11 @@
 #include <stddef.h>
 #include <wincodec.h>
 
-#include <algorithm>
 #include <cmath>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -1855,33 +1855,27 @@ TEST_F(VideoCaptureDeviceMFWinTest, GetPhotoStateViaPhotoStream) {
   EXPECT_EQ(state->height->max, kArbitraryValidPhotoHeight);
 
   EXPECT_EQ(state->supported_white_balance_modes.size(), 2u);
-  EXPECT_EQ(std::count(state->supported_white_balance_modes.begin(),
-                       state->supported_white_balance_modes.end(),
-                       mojom::MeteringMode::CONTINUOUS),
+  EXPECT_EQ(base::ranges::count(state->supported_white_balance_modes,
+                                mojom::MeteringMode::CONTINUOUS),
             1);
-  EXPECT_EQ(std::count(state->supported_white_balance_modes.begin(),
-                       state->supported_white_balance_modes.end(),
-                       mojom::MeteringMode::MANUAL),
+  EXPECT_EQ(base::ranges::count(state->supported_white_balance_modes,
+                                mojom::MeteringMode::MANUAL),
             1);
   EXPECT_EQ(state->current_white_balance_mode, mojom::MeteringMode::CONTINUOUS);
   EXPECT_EQ(state->supported_exposure_modes.size(), 2u);
-  EXPECT_EQ(std::count(state->supported_exposure_modes.begin(),
-                       state->supported_exposure_modes.end(),
-                       mojom::MeteringMode::CONTINUOUS),
+  EXPECT_EQ(base::ranges::count(state->supported_exposure_modes,
+                                mojom::MeteringMode::CONTINUOUS),
             1);
-  EXPECT_EQ(std::count(state->supported_exposure_modes.begin(),
-                       state->supported_exposure_modes.end(),
-                       mojom::MeteringMode::MANUAL),
+  EXPECT_EQ(base::ranges::count(state->supported_exposure_modes,
+                                mojom::MeteringMode::MANUAL),
             1);
   EXPECT_EQ(state->current_exposure_mode, mojom::MeteringMode::CONTINUOUS);
   EXPECT_EQ(state->supported_focus_modes.size(), 2u);
-  EXPECT_EQ(std::count(state->supported_focus_modes.begin(),
-                       state->supported_focus_modes.end(),
-                       mojom::MeteringMode::CONTINUOUS),
+  EXPECT_EQ(base::ranges::count(state->supported_focus_modes,
+                                mojom::MeteringMode::CONTINUOUS),
             1);
-  EXPECT_EQ(std::count(state->supported_focus_modes.begin(),
-                       state->supported_focus_modes.end(),
-                       mojom::MeteringMode::MANUAL),
+  EXPECT_EQ(base::ranges::count(state->supported_focus_modes,
+                                mojom::MeteringMode::MANUAL),
             1);
   EXPECT_EQ(state->current_focus_mode, mojom::MeteringMode::CONTINUOUS);
   EXPECT_EQ(state->points_of_interest.size(), 0u);
@@ -1977,13 +1971,11 @@ TEST_F(VideoCaptureDeviceMFWinTest, GetPhotoStateViaPhotoStream) {
 
   ASSERT_TRUE(state->supported_background_blur_modes);
   EXPECT_EQ(state->supported_background_blur_modes->size(), 2u);
-  EXPECT_EQ(std::count(state->supported_background_blur_modes->begin(),
-                       state->supported_background_blur_modes->end(),
-                       mojom::BackgroundBlurMode::OFF),
+  EXPECT_EQ(base::ranges::count(*state->supported_background_blur_modes,
+                                mojom::BackgroundBlurMode::OFF),
             1);
-  EXPECT_EQ(std::count(state->supported_background_blur_modes->begin(),
-                       state->supported_background_blur_modes->end(),
-                       mojom::BackgroundBlurMode::BLUR),
+  EXPECT_EQ(base::ranges::count(*state->supported_background_blur_modes,
+                                mojom::BackgroundBlurMode::BLUR),
             1);
   EXPECT_EQ(state->background_blur_mode, mojom::BackgroundBlurMode::OFF);
 }
