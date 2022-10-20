@@ -214,7 +214,8 @@ void ExpectSyncConsentHistogram(
 
 // Tests that opening the sign-in screen from the Settings and signing in works
 // correctly when there is a supervised user identity on the device.
-- (void)testSignInSupervisedUser {
+// TODO(crbug.com/1376983): Re-enable when fixed.
+- (void)DISABLED_testSignInSupervisedUser {
   // Set up a fake supervised identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   SetParentalControlsCapabilityForIdentity(fakeIdentity);
