@@ -279,6 +279,12 @@ TEST_F(ArcUtilTest, IsArcVmEnabled) {
   EXPECT_TRUE(IsArcVmEnabled());
 }
 
+TEST_F(ArcUtilTest, GetArcAndroidSdkVersionAsInt) {
+  // Make sure that the function does not crash even when /etc/lsb-release is
+  // not available (e.g. unit tests) or corrupted.
+  EXPECT_EQ(kMaxArcVersion, GetArcAndroidSdkVersionAsInt());
+}
+
 TEST_F(ArcUtilTest, IsArcVmRtVcpuEnabled) {
   {
     ScopedRtVcpuFeature feature(false, false);

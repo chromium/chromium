@@ -80,6 +80,12 @@ struct JobDesc {
 // Name of the crosvm instance when ARCVM is enabled.
 constexpr char kArcVmName[] = "arcvm";
 
+// Android SDK versions. See GetArcAndroidSdkVersionAsInt().
+constexpr int kArcVersionP = 28;
+constexpr int kArcVersionR = 30;
+constexpr int kArcVersionT = 33;
+constexpr int kMaxArcVersion = 999;
+
 // Returns true if ARC is installed and the current device is officially
 // supported to run ARC.
 // Note that, to run ARC practically, it is necessary to meet more conditions,
@@ -93,6 +99,13 @@ bool IsArcAvailable();
 
 // Returns true if ARC VM is enabled.
 bool IsArcVmEnabled();
+
+// This is a thin wrapper around version_loader::GetArcAndroidSdkVersion() and
+// returns the version as integer. For example, when the device uses ARC++ P,
+// it returns kArcVersionP that is 28, and for ARC++ container R and ARCVM R, it
+// returns kArcVersionR or 30. When the version is not a number, e.g. "master",
+// or the version is unknown, it returns kMaxArcVersion, a large number.
+int GetArcAndroidSdkVersionAsInt();
 
 // Returns true if ARC VM realtime VCPU is enabled.
 // |cpus| is the number of logical cores that are currently online on the

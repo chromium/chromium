@@ -5,6 +5,7 @@ include_rules = [
   "+chromeos/components/sensors",
   "+chromeos/dbus",
   "+chromeos/system",
+  "+chromeos/version",
   # TODO(b/129295708): Remove after move is complete.
   "+components/arc",
   "+components/account_id",

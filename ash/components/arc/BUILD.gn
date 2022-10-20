@@ -216,6 +216,7 @@ static_library("arc_base_utils") {
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/upstart:upstart",
+    "//chromeos/version",
     "//components/exo",
     "//ui/aura",
   ]
