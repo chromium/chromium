@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AD_AUCTION_NAVIGATOR_AUCTION_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
@@ -23,11 +24,11 @@
 
 namespace blink {
 
-class AbortSignal;
 class AdRequestConfig;
 class Ads;
 class AuctionAdInterestGroup;
 class AuctionAdConfig;
+class ScopedAbortState;
 class ScriptPromiseResolver;
 
 class MODULES_EXPORT NavigatorAuction final
@@ -180,7 +181,7 @@ class MODULES_EXPORT NavigatorAuction final
                           const absl::optional<KURL>& creative_url);
   // Completion callback for Mojo call made by runAdAuction().
   void AuctionComplete(ScriptPromiseResolver*,
-                       AbortSignal*,
+                       std::unique_ptr<ScopedAbortState>,
                        bool manually_aborted,
                        const absl::optional<KURL>&);
   // Completion callback for Mojo call made by deprecatedURNToURL().
