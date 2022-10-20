@@ -1424,7 +1424,8 @@ TEST_F(AppShimManagerTest, FindProfileFromBadProfile) {
   // Set the app to be last-active on profile A.
   std::set<base::FilePath> last_active_profile_paths;
   last_active_profile_paths.insert(profile_path_a_);
-  AppShimRegistry::Get()->OnAppQuit(kTestAppIdA, last_active_profile_paths);
+  AppShimRegistry::Get()->SaveLastActiveProfilesForApp(
+      kTestAppIdA, last_active_profile_paths);
 
   // Launch the shim requesting profile C.
   manager_->SetHostForCreate(std::move(host_aa_unique_));

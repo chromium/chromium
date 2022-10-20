@@ -55,10 +55,11 @@ class AppShimRegistry {
   bool OnAppUninstalledForProfile(const std::string& app_id,
                                   const base::FilePath& profile);
 
-  // Called when an app quits, providing a list of the profiles that were
-  // in use at the time of quitting.
-  void OnAppQuit(const std::string& app_id,
-                 std::set<base::FilePath> active_profiles);
+  // Called to save a list of the profiles that were last in use for an app.
+  // This is called for example when an app quits, providing the profiles that
+  // were in use at that time.
+  void SaveLastActiveProfilesForApp(const std::string& app_id,
+                                    std::set<base::FilePath> active_profiles);
 
   // Return all apps installed for the specified profile. Used to delete apps
   // when a profile is removed.

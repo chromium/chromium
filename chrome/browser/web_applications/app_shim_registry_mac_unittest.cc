@@ -50,9 +50,10 @@ TEST_F(AppShimRegistryTest, Lifetime) {
   EXPECT_TRUE(registry_->OnAppUninstalledForProfile(app_id_a, profile_path_a));
   EXPECT_EQ(0u, registry_->GetInstalledProfilesForApp(app_id_a).size());
 
-  // Ensure that OnAppQuit with no profiles installed is a no-op.
+  // Ensure that SaveLastActiveProfilesForApp with no profiles installed is a
+  // no-op.
   profiles.insert(profile_path_a);
-  registry_->OnAppQuit(app_id_a, profiles);
+  registry_->SaveLastActiveProfilesForApp(app_id_a, profiles);
   EXPECT_EQ(0u, registry_->GetInstalledProfilesForApp(app_id_a).size());
   EXPECT_EQ(0u, registry_->GetLastActiveProfilesForApp(app_id_a).size());
 
@@ -71,27 +72,27 @@ TEST_F(AppShimRegistryTest, Lifetime) {
   EXPECT_TRUE(profiles.count(profile_path_b));
   EXPECT_EQ(0u, registry_->GetInstalledProfilesForApp(app_id_b).size());
 
-  // Test OnAppQuit with a valid profile.
+  // Test SaveLastActiveProfilesForApp with a valid profile.
   profiles.clear();
   profiles.insert(profile_path_b);
-  registry_->OnAppQuit(app_id_a, profiles);
+  registry_->SaveLastActiveProfilesForApp(app_id_a, profiles);
   profiles = registry_->GetLastActiveProfilesForApp(app_id_a);
   EXPECT_EQ(profiles.size(), 1u);
   EXPECT_TRUE(profiles.count(profile_path_b));
 
-  // Test OnAppQuit with an invalid profile.
+  // Test SaveLastActiveProfilesForApp with an invalid profile.
   profiles.clear();
   profiles.insert(profile_path_c);
-  registry_->OnAppQuit(app_id_a, profiles);
+  registry_->SaveLastActiveProfilesForApp(app_id_a, profiles);
   profiles = registry_->GetLastActiveProfilesForApp(app_id_a);
   EXPECT_EQ(0u, registry_->GetLastActiveProfilesForApp(app_id_a).size());
 
-  // Test OnAppQuit with a valid and invalid profile. The invalid profile
-  // should be discarded.
+  // Test SaveLastActiveProfilesForApp with a valid and invalid profile. The
+  // invalid profile should be discarded.
   profiles.clear();
   profiles.insert(profile_path_a);
   profiles.insert(profile_path_c);
-  registry_->OnAppQuit(app_id_a, profiles);
+  registry_->SaveLastActiveProfilesForApp(app_id_a, profiles);
   profiles = registry_->GetLastActiveProfilesForApp(app_id_a);
   EXPECT_EQ(profiles.size(), 1u);
   EXPECT_TRUE(profiles.count(profile_path_a));

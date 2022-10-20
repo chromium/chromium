@@ -100,8 +100,9 @@ bool AppShimRegistry::OnAppUninstalledForProfile(
   return installed_profiles.empty();
 }
 
-void AppShimRegistry::OnAppQuit(const std::string& app_id,
-                                std::set<base::FilePath> last_active_profiles) {
+void AppShimRegistry::SaveLastActiveProfilesForApp(
+    const std::string& app_id,
+    std::set<base::FilePath> last_active_profiles) {
   SetAppInfo(app_id, nullptr, &last_active_profiles);
 }
 

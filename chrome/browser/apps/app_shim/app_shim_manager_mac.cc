@@ -352,7 +352,8 @@ void AppShimManager::AppState::SaveLastActiveProfiles() const {
        ++iter_profile) {
     last_active_profile_paths.insert(iter_profile->first->GetPath());
   }
-  AppShimRegistry::Get()->OnAppQuit(app_id, last_active_profile_paths);
+  AppShimRegistry::Get()->SaveLastActiveProfilesForApp(
+      app_id, last_active_profile_paths);
 }
 
 AppShimManager::AppShimManager(std::unique_ptr<Delegate> delegate)
