@@ -639,8 +639,6 @@ static_library("test_support") {
     "animation/keyframe/test/animation_utils.cc",
     "animation/keyframe/test/animation_utils.h",
     "animation/test_animation_delegate.h",
-    "geometry/test/fuzzer_util.cc",
-    "geometry/test/fuzzer_util.h",
     "geometry/test/geometry_util.cc",
     "geometry/test/geometry_util.h",
     "image/image_unittest_util.cc",
@@ -658,6 +656,12 @@ static_library("test_support") {
   }
   if (is_mac) {
     sources += [ "image/image_unittest_util_mac.mm" ]
+  }
+  if (use_fuzzing_engine) {
+    sources += [
+      "geometry/test/fuzzer_util.cc",
+      "geometry/test/fuzzer_util.h",
+    ]
   }
 
   public_deps = [ ":gfx" ]
