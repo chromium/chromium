@@ -54,7 +54,7 @@ class InstrumentedPackageBuilder(object):
     self._extra_configure_flags = unescape_flags(args.extra_configure_flags)
     self._libdir = args.libdir
     self._package = args.package
-    self._patches = [real_path(patch) for patch in (args.patch or [])]
+    self._patches = [real_path(patch) for patch in args.patch]
     self._pre_build = \
         real_path(args.pre_build) if args.pre_build else None
     self._verbose = args.verbose
@@ -542,7 +542,7 @@ def main():
   parser.add_argument('-v', '--verbose', action='store_true')
   parser.add_argument('--cc')
   parser.add_argument('--cxx')
-  parser.add_argument('--patch', nargs='*')
+  parser.add_argument('--patch', nargs='*', action='extend', default=[])
   # This should be a shell script to run before building specific libraries.
   # This will be run after applying the patches above.
   parser.add_argument('--pre-build', default='')

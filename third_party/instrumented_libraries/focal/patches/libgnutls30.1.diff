@@ -42,7 +42,7 @@ diff -rup gnutls28-3.6.13/lib/safe-memfuncs.c gnutls28-3.6.13.new/lib/safe-memfu
 -	}
 -
 -	return status;
-+  return memcmp(s1, s2, n)
++  return memcmp(s1, s2, n);
  }
  
  #ifdef TEST_SAFE_MEMSET
