@@ -136,6 +136,7 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",
     "//url:gurl_java",
   ]

@@ -14,6 +14,7 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * A pattern that matches a certain set of URLs used in content settings rules. The pattern can be
@@ -134,7 +135,8 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     public boolean equals(Object obj) {
         if (obj instanceof WebsiteAddress) {
             WebsiteAddress other = (WebsiteAddress) obj;
-            return compareTo(other) == 0;
+            return Objects.equals(mOrigin, other.mOrigin) && Objects.equals(mScheme, other.mScheme)
+                    && Objects.equals(mHost, other.mHost);
         }
         return false;
     }
