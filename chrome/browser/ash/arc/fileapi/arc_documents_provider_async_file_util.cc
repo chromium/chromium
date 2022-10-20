@@ -379,7 +379,8 @@ void ArcDocumentsProviderAsyncFileUtil::Truncate(
     int64_t length,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // Truncate() doesn't work well on ARC++ P.
+  // Truncate() doesn't work well on ARC P/R container. It works on ARCVM R+
+  // because the mojo proxy for ARCVM implements the feature.
   // TODO(b/223247850) Fix this.
   if (!IsArcVmEnabled()) {
     // HACK: Return FILE_OK even though we do nothing here.
