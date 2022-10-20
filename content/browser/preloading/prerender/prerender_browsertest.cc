@@ -3849,10 +3849,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   std::vector<std::pair<GURL, SequentialPrerenderObserver::EventType>>
       expected_sequence = {
           {prerender_urls[0], SequentialPrerenderObserver::EventType::kStart},
-          {prerender_urls[0], SequentialPrerenderObserver::EventType::kFinish},
           {prerender_urls[1], SequentialPrerenderObserver::EventType::kStart},
-          {prerender_urls[1], SequentialPrerenderObserver::EventType::kFinish},
+          {prerender_urls[0], SequentialPrerenderObserver::EventType::kFinish},
           {prerender_urls[2], SequentialPrerenderObserver::EventType::kStart},
+          {prerender_urls[1], SequentialPrerenderObserver::EventType::kFinish},
           {prerender_urls[2], SequentialPrerenderObserver::EventType::kFinish},
       };
   EXPECT_EQ(observer.events_sequence(), expected_sequence);
@@ -4568,6 +4568,87 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
         << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
                                                              expected_entries);
   }
+}
+
+// TODO(crbug.com/1356907): Remove this and merge it to
+// PrerenderSequentialPrerenderingBrowserTest once kPrerender2InBackground is
+// enabled by default.
+class SequentialPrerenderInBackgroundBrowserTest
+    : public PrerenderSequentialPrerenderingBrowserTest {
+ public:
+  SequentialPrerenderInBackgroundBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2,
+         // Enable to run prerenderings in the background.
+         blink::features::kPrerender2InBackground},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+
+  ~SequentialPrerenderInBackgroundBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that when the current tab gets hidden then the prerender sequence is
+// terminated, and when the current tab gets visible then we start the next
+// prerender if we have some pending prerender hosts.
+IN_PROC_BROWSER_TEST_F(SequentialPrerenderInBackgroundBrowserTest,
+                       SequentialPrerenderingInBackground) {
+  net::test_server::ControllableHttpResponse response1(
+      embedded_test_server(), "/empty.html?prerender1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerender1 =
+      embedded_test_server()->GetURL("/empty.html?prerender1");
+  const GURL kPrerender2 =
+      embedded_test_server()->GetURL("/empty.html?prerender2");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+
+  // Insert 2 URLs into the speculation rules at the same time.
+  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
+  registry_observer.WaitForTrigger(kPrerender2);
+
+  test::PrerenderHostObserver prerender2_observer(*web_contents(),
+                                                  GetHostForUrl(kPrerender2));
+
+  // Stop the first prerendering initial navigation.
+  response1.WaitForRequest();
+
+  // Change the visibility status to HIDDEN.
+  web_contents()->WasHidden();
+
+  // Complete the first prerender response and finish its initial navigation.
+  // This shouldn't start the pending prerender.
+  response1.Send(net::HTTP_OK, "");
+  response1.Done();
+  WaitForPrerenderLoadCompletion(kPrerender1);
+
+  // Check the next prerender host is still pending.
+  PrerenderHost* prerender2_host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
+          kPrerender2);
+  auto* preloading_attempt_impl = static_cast<PreloadingAttemptImpl*>(
+      prerender2_host->preloading_attempt().get());
+  EXPECT_EQ(test::PreloadingAttemptAccessor(preloading_attempt_impl)
+                .GetTriggeringOutcome(),
+            PreloadingTriggeringOutcome::kTriggeredButPending);
+
+  // The hidden page gets back to the foreground. The next pending prerender
+  // should start.
+  web_contents()->WasShown();
+  WaitForPrerenderLoadCompletion(kPrerender2);
+
+  // Activate the second prerender.
+  NavigatePrimaryPage(kPrerender2);
+  prerender2_observer.WaitForActivation();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerender2);
+  EXPECT_TRUE(prerender2_observer.was_activated());
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,

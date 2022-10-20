@@ -18,6 +18,8 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -41,12 +43,12 @@ class RenderFrameHostImpl;
 //   activation start by ReserveHostToActivate(), activate it by
 //   ActivateReservedHost(), and notify the registry of completion of the
 //   activation by OnActivationFinished().
-class CONTENT_EXPORT PrerenderHostRegistry {
+class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
  public:
   using PassKey = base::PassKey<PrerenderHostRegistry>;
 
-  PrerenderHostRegistry();
-  ~PrerenderHostRegistry();
+  explicit PrerenderHostRegistry(WebContents&);
+  ~PrerenderHostRegistry() override;
 
   PrerenderHostRegistry(const PrerenderHostRegistry&) = delete;
   PrerenderHostRegistry& operator=(const PrerenderHostRegistry&) = delete;
@@ -135,10 +137,6 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // `frame_tree_node_id` should be the id returned by ReserveHostToActivate().
   void OnActivationFinished(int frame_tree_node_id);
 
-  // Called from PrerenderHost::DidFinishNavigation. This is called only for the
-  // main frame navigation, not for iframe navigations, in a prerendered page.
-  void OnPrerenderNavigationFinished(int frame_tree_node_id);
-
   // Returns the non-reserved host with the given id. Returns nullptr if the id
   // does not match any non-reserved host.
   PrerenderHost* FindNonReservedHostById(int frame_tree_node_id);
@@ -174,6 +172,14 @@ class CONTENT_EXPORT PrerenderHostRegistry {
       base::RepeatingCallback<void(PrerenderHost&)> callback);
 
  private:
+  // WebContentsObserver implementation:
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(Visibility visibility) override;
+  void ResourceLoadComplete(
+      RenderFrameHost* render_frame_host,
+      const GlobalRequestID& request_id,
+      const blink::mojom::ResourceLoadInfo& resource_load_info) override;
+
   int FindHostToActivateInternal(NavigationRequest& navigation_request);
 
   void ScheduleToDeleteAbandonedHost(
@@ -229,6 +235,10 @@ class CONTENT_EXPORT PrerenderHostRegistry {
       prerender_host_by_frame_tree_node_id_;
 
   // Hosts that are reserved for activation.
+  // TODO(crbug.com/1375942): Change this flat map into a single unique pointer
+  // to a reserved PrerenderHost because now the activation sequence
+  // synchronously proceeds so we don't have a chance to have multiple reserved
+  // hosts at the same time.
   base::flat_map<int, std::unique_ptr<PrerenderHost>>
       reserved_prerender_host_by_frame_tree_node_id_;
 

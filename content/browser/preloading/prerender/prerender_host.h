@@ -17,9 +17,10 @@
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/visibility.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -54,7 +55,7 @@ class WebContentsImpl;
 // process via SpeculationHostImpl or will directly be created for
 // browser-initiated prerendering (this code path is not implemented yet). This
 // is owned by PrerenderHostRegistry.
-class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
+class CONTENT_EXPORT PrerenderHost {
  public:
   // The time to allow prerendering kept alive in the background. PrerenderHost
   // will be terminated with kTimeoutBackgrounded when the timer exceeds this.
@@ -172,7 +173,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContents& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt);
-  ~PrerenderHost() override;
+  ~PrerenderHost();
 
   PrerenderHost(const PrerenderHost&) = delete;
   PrerenderHost& operator=(const PrerenderHost&) = delete;
@@ -182,13 +183,15 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // Returns false if prerendering hasn't been started.
   bool StartPrerendering();
 
-  // WebContentsObserver implementation:
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
-  void OnVisibilityChanged(Visibility visibility) override;
-  void ResourceLoadComplete(
-      RenderFrameHost* render_frame_host,
-      const GlobalRequestID& request_id,
-      const blink::mojom::ResourceLoadInfo& resource_load_info) override;
+  // Called from PrerenderHostRegistry::DidFinishNavigation(). If the navigation
+  // request is for the main frame and doesn't have an error, then the host will
+  // be ready for activation.
+  void DidFinishNavigation(NavigationHandle* navigation_handle);
+
+  // Called from PrerenderHostRegistry::OnVisibilityChanged(). Updates the timer
+  // for prerendering timeout in the background. When the page gets hidden then
+  // the timer starts, and when the page gets visible then the timer stops.
+  void UpdateTimeoutTimer(Visibility visibility);
 
   // Activates the prerendered page and returns StoredPage containing the page.
   // This must be called after this host gets ready for activation.
@@ -351,6 +354,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
       client_hints_type_;
 
   // Starts running the timer when prerendering gets hidden.
+  // TODO(crbug.com/1375979): Move this timer from PrerenderHost to
+  // PrerenderHostRegistry as all the PrerenderHosts in a tab have the same
+  // timeout restriction.
   base::OneShotTimer timeout_timer_;
   // Only used for tests. This task runner is used for precise injection in
   // tests and for timing control.

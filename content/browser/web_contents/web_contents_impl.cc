@@ -922,9 +922,10 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
           std::make_unique<MediaWebContentsObserver>(this)),
       is_overlay_content_(false),
       showing_context_menu_(false),
-      prerender_host_registry_(blink::features::IsPrerender2Enabled()
-                                   ? std::make_unique<PrerenderHostRegistry>()
-                                   : nullptr),
+      prerender_host_registry_(
+          blink::features::IsPrerender2Enabled()
+              ? std::make_unique<PrerenderHostRegistry>(*this)
+              : nullptr),
       audible_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Audible")) {

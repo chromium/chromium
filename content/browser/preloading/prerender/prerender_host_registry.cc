@@ -26,6 +26,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
@@ -62,11 +63,13 @@ bool DeviceHasEnoughMemoryForPrerender() {
 
 }  // namespace
 
-PrerenderHostRegistry::PrerenderHostRegistry() {
+PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {
+  Observe(&web_contents);
   DCHECK(blink::features::IsPrerender2Enabled());
 }
 
 PrerenderHostRegistry::~PrerenderHostRegistry() {
+  Observe(nullptr);
   for (Observer& obs : observers_)
     obs.OnRegistryDestroyed();
 }
@@ -284,6 +287,11 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
     DCHECK(base::FeatureList::IsEnabled(
         blink::features::kPrerender2SequentialPrerendering));
     DCHECK_EQ(running_prerender_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
+
+    // Don't start the pending prerender in the background tab.
+    if (web_contents()->GetVisibility() == Visibility::HIDDEN) {
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
 
     // Skip cancelled requests.
     while (!pending_prerenders_.empty()) {
@@ -506,19 +514,6 @@ void PrerenderHostRegistry::OnActivationFinished(int frame_tree_node_id) {
   reserved_prerender_host_by_frame_tree_node_id_.erase(frame_tree_node_id);
 }
 
-void PrerenderHostRegistry::OnPrerenderNavigationFinished(
-    int frame_tree_node_id) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kPrerender2SequentialPrerendering)) {
-    return;
-  }
-
-  if (frame_tree_node_id == running_prerender_host_id_) {
-    running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
-    StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
-  }
-}
-
 PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(
     int frame_tree_node_id) {
   auto id_iter = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
@@ -585,6 +580,77 @@ void PrerenderHostRegistry::ForEachPrerenderHost(
 
   for (auto& iter : reserved_prerender_host_by_frame_tree_node_id_) {
     callback.Run(*iter.second);
+  }
+}
+
+void PrerenderHostRegistry::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  auto* navigation_request = NavigationRequest::From(navigation_handle);
+
+  if (navigation_request->IsSameDocument())
+    return;
+
+  int main_frame_host_id = navigation_request->frame_tree_node()
+                               ->frame_tree()
+                               ->root()
+                               ->frame_tree_node_id();
+  PrerenderHost* prerender_host = FindNonReservedHostById(main_frame_host_id);
+  if (!prerender_host)
+    return;
+
+  prerender_host->DidFinishNavigation(navigation_handle);
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrerender2SequentialPrerendering) &&
+      running_prerender_host_id_ == main_frame_host_id) {
+    running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+    StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
+  }
+}
+
+void PrerenderHostRegistry::OnVisibilityChanged(Visibility visibility) {
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InBackground)) {
+    for (auto& iter : prerender_host_by_frame_tree_node_id_) {
+      iter.second->UpdateTimeoutTimer(visibility);
+    }
+
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kPrerender2SequentialPrerendering))
+      return;
+
+    // Start the next prerender when the page gets back to the foreground.
+    switch (visibility) {
+      case Visibility::VISIBLE:
+      case Visibility::OCCLUDED:
+        if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId)
+          StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
+        break;
+      case Visibility::HIDDEN:
+        break;
+    }
+    return;
+  }
+
+  if (visibility == Visibility::HIDDEN) {
+    CancelAllHosts(PrerenderHost::FinalStatus::kTriggerBackgrounded);
+  }
+}
+
+void PrerenderHostRegistry::ResourceLoadComplete(
+    RenderFrameHost* render_frame_host,
+    const GlobalRequestID& request_id,
+    const blink::mojom::ResourceLoadInfo& resource_load_info) {
+  for (auto& iter : prerender_host_by_frame_tree_node_id_) {
+    // Observe resource loads only in the prerendering frame tree.
+    if (&render_frame_host->GetPage() !=
+        &iter.second->GetPrerenderedMainFrameHost()->GetPage()) {
+      continue;
+    }
+
+    if (resource_load_info.net_error == net::Error::ERR_BLOCKED_BY_CLIENT) {
+      CancelHost(iter.first, PrerenderHost::FinalStatus::kBlockedByClient);
+    }
+    break;
   }
 }
 

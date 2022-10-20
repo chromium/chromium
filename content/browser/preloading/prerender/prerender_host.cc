@@ -143,10 +143,6 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
 }
 
 PrerenderHost::~PrerenderHost() {
-  // Stop observing here. Otherwise, destructing members may lead
-  // DidFinishNavigation call after almost everything being destructed.
-  Observe(nullptr);
-
   for (auto& observer : observers_)
     observer.OnHostDestroyed(final_status_.value_or(FinalStatus::kDestroyed));
 
@@ -160,9 +156,6 @@ PrerenderHost::~PrerenderHost() {
 // for example.
 bool PrerenderHost::StartPrerendering() {
   TRACE_EVENT0("navigation", "PrerenderHost::StartPrerendering");
-
-  // Observe events about the prerendering contents.
-  Observe(page_holder_->GetWebContents());
 
   // Since prerender started we mark it as eligible and set it to running.
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
@@ -229,26 +222,12 @@ bool PrerenderHost::StartPrerendering() {
 void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
 
-  if (navigation_request->IsSameDocument())
-    return;
-
-  const bool is_inside_prerender_frame_tree =
-      navigation_request->frame_tree_node()->frame_tree() ==
-      page_holder_->frame_tree();
   // Observe navigation only in the prerendering frame tree.
-  if (!is_inside_prerender_frame_tree)
-    return;
+  DCHECK_EQ(navigation_request->frame_tree_node()->frame_tree(),
+            page_holder_->frame_tree());
 
   const bool is_prerender_main_frame =
       navigation_request->GetFrameTreeNodeId() == frame_tree_node_id_;
-
-  if (is_prerender_main_frame) {
-    GetPrerenderedMainFrameHost()
-        ->delegate()
-        ->GetPrerenderHostRegistry()
-        ->OnPrerenderNavigationFinished(
-            navigation_request->GetFrameTreeNodeId());
-  }
 
   // Cancel prerendering on navigation request failure.
   //
@@ -284,50 +263,27 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   }
 }
 
-void PrerenderHost::OnVisibilityChanged(Visibility visibility) {
-  TRACE_EVENT("navigation", "PrerenderHost::OnVisibilityChanged");
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InBackground)) {
-    switch (visibility) {
-      case Visibility::HIDDEN:
-        // Keep a prerendered page alive in the background when its visibility
-        // state changes to HIDDEN if the feature is enabled.
-        DCHECK(!timeout_timer_.IsRunning());
+void PrerenderHost::UpdateTimeoutTimer(Visibility visibility) {
+  switch (visibility) {
+    case Visibility::HIDDEN:
+      // Keep a prerendered page alive in the background when its visibility
+      // state changes to HIDDEN if the feature is enabled.
+      DCHECK(!timeout_timer_.IsRunning());
 
-        timeout_timer_.SetTaskRunner(GetTimerTaskRunner());
-        // Cancel PrerenderHost in the background when it exceeds a certain
-        // amount of time defined in `kTimeToLiveInBackground`.
-        timeout_timer_.Start(
-            FROM_HERE, kTimeToLiveInBackground,
-            base::BindOnce(&PrerenderHost::Cancel, base::Unretained(this),
-                           FinalStatus::kTimeoutBackgrounded));
-        break;
-      case Visibility::OCCLUDED:
-        break;
-      case Visibility::VISIBLE:
-        // Stop the timer when a prerendered page gets visible to users.
-        timeout_timer_.Stop();
-        break;
-    }
-    return;
-  }
-
-  if (visibility == Visibility::HIDDEN) {
-    Cancel(FinalStatus::kTriggerBackgrounded);
-  }
-}
-
-void PrerenderHost::ResourceLoadComplete(
-    RenderFrameHost* render_frame_host,
-    const GlobalRequestID& request_id,
-    const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  // Observe resource loads only in the prerendering frame tree.
-  if (&render_frame_host->GetPage() !=
-      &GetPrerenderedMainFrameHost()->GetPage()) {
-    return;
-  }
-
-  if (resource_load_info.net_error == net::Error::ERR_BLOCKED_BY_CLIENT) {
-    Cancel(FinalStatus::kBlockedByClient);
+      timeout_timer_.SetTaskRunner(GetTimerTaskRunner());
+      // Cancel PrerenderHost in the background when it exceeds a certain
+      // amount of time defined in `kTimeToLiveInBackground`.
+      timeout_timer_.Start(
+          FROM_HERE, kTimeToLiveInBackground,
+          base::BindOnce(&PrerenderHost::Cancel, base::Unretained(this),
+                         FinalStatus::kTimeoutBackgrounded));
+      break;
+    case Visibility::OCCLUDED:
+      break;
+    case Visibility::VISIBLE:
+      // Stop the timer when a prerendered page gets visible to users.
+      timeout_timer_.Stop();
+      break;
   }
 }
 

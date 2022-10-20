@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 
