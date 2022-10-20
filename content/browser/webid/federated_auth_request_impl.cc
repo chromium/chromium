@@ -429,12 +429,21 @@ void FederatedAuthRequestImpl::RequestToken(
   network_manager_ = CreateNetworkManager();
   request_dialog_controller_ = CreateDialogController();
 
+  for (auto& idp_ptr : idp_ptrs) {
+    // Throw an error if duplicate IDPs are specified.
+    if (pending_idps_.count(idp_ptr->config_url)) {
+      CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                               /*token_status=*/absl::nullopt,
+                               /*should_delay_callback=*/false);
+      return;
+    }
+    pending_idps_.insert(idp_ptr->config_url);
+  }
+
   // TODO(crbug.com/1361642): Handle cases where not all IDPs' requests are
   // successful. Currently when multiple IDPs are specified, an accounts
   // dialog is shown only when the last IDP's request is successful.
   for (auto& idp_ptr : idp_ptrs) {
-    pending_idps_.insert(idp_ptr->config_url);
-
     if (!fedcm_metrics_) {
       // Generate a random int for the FedCM call, to be used by the UKM events.
       std::random_device dev;

@@ -2488,4 +2488,36 @@ TEST_F(FederatedAuthRequestImplTest, PartiallySuccessfulMultiIdpRequest) {
   RunAuthTest(parameters, expectations, configuration);
 }
 
+// Test multi IDP FedCM request with duplicate IDPs should throw an error.
+TEST_F(FederatedAuthRequestImplTest, DuplicateIdpMultiIdpRequest) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  IdentityProviderParameters identity_provider{kProviderOneUrlFull, kClientId,
+                                               kNonce};
+  RequestParameters parameters{std::vector<IdentityProviderParameters>{
+                                   identity_provider, identity_provider},
+                               /*prefer_auto_sign_in=*/false};
+
+  MockConfiguration configuration{kToken,
+                                  {{kProviderOneUrlFull, kProviderOneInfo},
+                                   {kProviderOneUrlFull, kProviderOneInfo}},
+                                  {ParseStatus::kSuccess, net::HTTP_OK},
+                                  false /* delay_token_response */,
+                                  true /* customized_dialog */,
+                                  true /* wait_for_callback */};
+  EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _, _, _))
+      .Times(0);
+
+  configuration.idp_info[kProviderOneUrlFull].manifest_list.provider_urls =
+      std::set<std::string>{"https://idp1.example/fedcm.json"};
+
+  RequestExpectations expectations = {RequestTokenStatus::kError,
+                                      /*devtools_issue_status*/ absl::nullopt,
+                                      /*selected_idp_config_url=*/absl::nullopt,
+                                      /*fetched_endpoints=*/0};
+
+  RunAuthTest(parameters, expectations, configuration);
+}
+
 }  // namespace content
