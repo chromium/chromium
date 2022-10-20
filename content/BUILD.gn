@@ -97,6 +97,7 @@ grit("content_resources") {
     "//components/ukm/debug:build_ts",
     "//content/browser/resources/histograms:build_ts",
     "//gpu/ipc/common:vulkan_interface_webui_js",
+    "//ui/base/accelerators/mojom:mojom_webui_js",
     "//ui/base/mojom:mojom_js",
     "//ui/events/mojom:mojom_webui_js",
     "//ui/gfx/geometry/mojom:mojom_js",

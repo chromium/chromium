@@ -11,6 +11,8 @@ mojom("mojom") {
     "//ui/events/mojom",
   ]
 
+  webui_module_path = "chrome://resources/mojo/ui/base/accelerators/mojom"
+
   cpp_typemaps = [
     {
       types = [
