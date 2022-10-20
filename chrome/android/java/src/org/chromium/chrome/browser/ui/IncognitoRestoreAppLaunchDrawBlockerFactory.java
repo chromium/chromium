@@ -10,7 +10,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -19,21 +18,20 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
  * A factory class to create {@link IncognitoRestoreAppLaunchDrawBlocker}.
  */
 public class IncognitoRestoreAppLaunchDrawBlockerFactory {
-    private final @NonNull OneshotSupplier<Bundle> mSavedInstanceStateSupplier;
+    private final @NonNull Supplier<Bundle> mSavedInstanceStateSupplier;
     private final @NonNull ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     /**
-     * @param savedInstanceStateSupplier A {@link OneshotSupplier<Bundle>} instance to pass in the
+     * @param savedInstanceStateSupplier A {@link Supplier<Bundle>} instance to pass in the
      *                                   bundle that was persisted during onSaveInstanceState that
      *                                   allows to look for signals on whether to block the draw or
-     *                                   not. An empty {@link Bundle} would be supplied in the event
-     *                                   there was no saved instance state.
+     *                                   not.
      * @param tabModelSelectorSupplier A {@link ObservableSupplier<TabModelSelector>} that allows to
      *                                 listen for onTabStateInitialized signals which is used a
      *                                 fallback to unblock draw.
      */
     public IncognitoRestoreAppLaunchDrawBlockerFactory(
-            @NonNull OneshotSupplier<Bundle> savedInstanceStateSupplier,
+            @NonNull Supplier<Bundle> savedInstanceStateSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;

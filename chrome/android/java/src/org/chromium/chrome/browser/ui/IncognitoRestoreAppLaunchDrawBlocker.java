@@ -11,10 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -36,8 +34,9 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      */
     public static final String IS_INCOGNITO_SELECTED = "is_incognito_selected";
 
-    /** A {@link OneshotSupplier<Bundle>} for the saved instance state supplier. */
-    private final @NonNull OneshotSupplier<Bundle> mSavedInstanceStateSupplier;
+    /** A {@link Supplier<Bundle>} for the saved instance state supplier. */
+    private final @NonNull Supplier<Bundle> mSavedInstanceStateSupplier;
+
     /** A supplier of {@link TabModelSelector} instance.*/
     private final @NonNull ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     /**
@@ -91,24 +90,16 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
     };
 
     /**
-     * The {@link CallbackController} meant to be used to get the saved instance state when it
-     * becomes available.
-     */
-    private final CallbackController mSavedInstanceCallbackController = new CallbackController();
-    /**
      * A boolean to indicate when native has finished initialization as by then we would have
      * finished creating the {@link IncognitoReauthController}.
      */
     private boolean mIsNativeInitializationFinished;
-    /** A {@link Bundle} containing the saved instance state after the Activity is restarted. */
-    private Bundle mSavedInstanceState;
 
     /**
-     * @param savedInstanceStateSupplier A {@link OneshotSupplier<Bundle>} instance to pass in the
+     * @param savedInstanceStateSupplier A {@link Supplier<Bundle>} instance to pass in the
      *                                   bundle that was persisted during onSaveInstanceState that
      *                                   allows to look for signals on whether to block the draw or
-     *                                   not. An empty {@link Bundle} would be supplied in the event
-     *                                   there was no saved instance state.
+     *                                   not.
      * @param tabModelSelectorSupplier A {@link ObservableSupplier<TabModelSelector>} that allows to
      *                                 listen for onTabStateInitialized signals which is used a
      *                                 fallback to unblock draw.
@@ -120,8 +111,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      *                                   listen for onFinishNativeInitialization signal.
      * @param unblockDrawRunnable A {@link Runnable} to unblock the draw operation.
      */
-    IncognitoRestoreAppLaunchDrawBlocker(
-            @NonNull OneshotSupplier<Bundle> savedInstanceStateSupplier,
+    IncognitoRestoreAppLaunchDrawBlocker(@NonNull Supplier<Bundle> savedInstanceStateSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull Supplier<Intent> intentSupplier,
             @NonNull Supplier<Boolean> shouldIgnoreIntentSupplier,
@@ -135,16 +125,6 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
         mUnblockDrawRunnable = unblockDrawRunnable;
 
         mActivityLifecycleDispatcher.register(mNativeInitObserver);
-        mSavedInstanceStateSupplier.onAvailable(
-                mSavedInstanceCallbackController.makeCancelable(savedInstanceState -> {
-                    mSavedInstanceState = savedInstanceState;
-                    // Draw is currently blocked because |mSavedInstanceState| was null, so let's
-                    // check if having a non-empty saved instance state would unblock us.
-                    if (!shouldBlockDraw()) {
-                        mIsUnblockDrawRunnableInvoked = true;
-                        mUnblockDrawRunnable.run();
-                    }
-                }));
         mTabModelSelectorSupplier.addObserver(mTabModelSelectorSupplierCallback);
     }
 
@@ -153,7 +133,6 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      */
     public void destroy() {
         mActivityLifecycleDispatcher.unregister(mNativeInitObserver);
-        mSavedInstanceCallbackController.destroy();
         mTabModelSelectorSupplier.removeObserver(mTabModelSelectorSupplierCallback);
         if (mTabModelSelectorSupplier.get() != null) {
             mTabModelSelectorSupplier.get().removeObserver(mTabModelSelectorObserver);
@@ -172,21 +151,21 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
         if (!IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) return false;
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE)) return false;
 
-        // A valid saved instance state is needed here. If it's null it means it might not have been
-        // made available yet. Therefore, we need to block the draw. Once it's available, we will
-        // make call again to this method with a valid saved instance state and unblock if any of
-        // these conditions returns false.
-        if (mSavedInstanceState == null) return true;
+        // A valid saved instance state is needed here.
+        if (!mSavedInstanceStateSupplier.hasValue()) return false;
+        Bundle savedInstanceState = mSavedInstanceStateSupplier.get();
 
-        if (!CipherFactory.getInstance().restoreFromBundle(mSavedInstanceState)) return false;
-        boolean isReauthPending = mSavedInstanceState.getBoolean(
-                IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
+        if (!CipherFactory.getInstance().restoreFromBundle(savedInstanceState)) return false;
+
         // There were no Incognito tabs before the Activity got destroyed. So we don't need to block
         // draw here.
-        if (!isReauthPending) return false;
+        if (!savedInstanceState.getBoolean(
+                    IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false)) {
+            return false;
+        }
 
         boolean isLastSelectedModelIncognito =
-                mSavedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
+                savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
         boolean isIncognitoFiredFromLauncherShortcut = !mShouldIgnoreIntentSupplier.get()
                 && mIntentSupplier.get() != null
                 && mIntentSupplier.get().getBooleanExtra(
@@ -224,7 +203,6 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      */
     @VisibleForTesting
     public void resetIsUnblockDrawRunnableInvokedForTesting() {
-        assert mIsUnblockDrawRunnableInvoked : "Must be set before resetting.";
         mIsUnblockDrawRunnableInvoked = false;
     }
 }
