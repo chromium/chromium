@@ -3386,17 +3386,10 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
 
 }  // namespace
 
-// TODO(crbug.com/994789): Flaky on MSan, Linux, Chrome OS, and Mac.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_DownloadCookieIsolation DISABLED_DownloadCookieIsolation
-#else
-#define MAYBE_DownloadCookieIsolation DownloadCookieIsolation
-#endif
 // Downloads initiated from isolated guest parititons should use their
 // respective cookie stores. In addition, if those downloads are resumed, they
 // should continue to use their respective cookie stores.
-IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_DownloadCookieIsolation) {
+IN_PROC_BROWSER_TEST_P(WebViewTest, DownloadCookieIsolation) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&HandleDownloadRequestWithCookie));
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
@@ -3418,26 +3411,29 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_DownloadCookieIsolation) {
   error_info.stream_offset = 0;
   error_injector->InjectError(error_info);
 
-  std::unique_ptr<content::DownloadTestObserver> interrupted_observer(
-      new content::DownloadTestObserverInterrupted(
-          download_manager, 2,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+  auto download_op = [&](std::string cookie) {
+    // DownloadTestObserverInterrupted does not seem to reliably wait for
+    // multiple failed downloads, so we perform one download at a time.
+    content::DownloadTestObserverInterrupted interrupted_observer(
+        download_manager, 1,
+        content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+    EXPECT_TRUE(content::ExecuteScript(
+        web_contents,
+        base::StringPrintf(
+            "startDownload('%s', '%s?cookie=%s')", cookie.c_str(),
+            embedded_test_server()->GetURL(kDownloadPathPrefix).spec().c_str(),
+            cookie.c_str())));
 
-  EXPECT_TRUE(content::ExecuteScript(
-      web_contents,
-      base::StringPrintf(
-          "startDownload('first', '%s?cookie=first')",
-          embedded_test_server()->GetURL(kDownloadPathPrefix).spec().c_str())));
-
-  EXPECT_TRUE(content::ExecuteScript(
-      web_contents,
-      base::StringPrintf(
-          "startDownload('second', '%s?cookie=second')",
-          embedded_test_server()->GetURL(kDownloadPathPrefix).spec().c_str())));
+    // This maps to DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED.
+    interrupted_observer.WaitForFinished();
+  };
 
   // Both downloads should fail due to the error that was injected above to the
-  // download manager. This maps to DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED.
-  interrupted_observer->WaitForFinished();
+  // download manager.
+  download_op("first");
+
+  // Note that the second webview uses an in-memory partition.
+  download_op("second");
 
   error_injector->ClearError();
 
