@@ -145,6 +145,14 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PageOutputQuality {
   absl::optional<std::string> default_quality;
 };
 
+#if defined(UNIT_TEST)
+
+COMPONENT_EXPORT(PRINT_BACKEND)
+bool operator==(const PageOutputQuality& quality1,
+                const PageOutputQuality& quality2);
+
+#endif  // defined(UNIT_TEST)
+
 #endif  // BUILDFLAG(IS_WIN)
 
 struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
@@ -192,6 +200,14 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
   absl::optional<PageOutputQuality> page_output_quality;
 #endif  // BUILDFLAG(IS_WIN)
 };
+
+#if defined(UNIT_TEST)
+
+COMPONENT_EXPORT(PRINT_BACKEND)
+bool operator==(const PrinterSemanticCapsAndDefaults& caps1,
+                const PrinterSemanticCapsAndDefaults& caps2);
+
+#endif  // defined(UNIT_TEST)
 
 struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterCapsAndDefaults {
   PrinterCapsAndDefaults();

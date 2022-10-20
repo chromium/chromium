@@ -130,6 +130,19 @@ PageOutputQuality::PageOutputQuality(const PageOutputQuality& other) = default;
 
 PageOutputQuality::~PageOutputQuality() = default;
 
+// This function is only supposed to be used in tests. The declaration in the
+// header file is guarded by "#if defined(UNIT_TEST)" so that they can be used
+// by tests but not non-test code. However, this .cc file is compiled as part of
+// "backend" where "UNIT_TEST" is not defined. So we need to specify
+// "COMPONENT_EXPORT(PRINT_BACKEND)" here again so that they are visible to
+// tests.
+COMPONENT_EXPORT(PRINT_BACKEND)
+bool operator==(const PageOutputQuality& quality1,
+                const PageOutputQuality& quality2) {
+  return quality1.qualities == quality2.qualities &&
+         quality1.default_quality == quality2.default_quality;
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(
@@ -144,6 +157,37 @@ PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults(
     const PrinterSemanticCapsAndDefaults& other) = default;
 
 PrinterSemanticCapsAndDefaults::~PrinterSemanticCapsAndDefaults() = default;
+
+// This function is only supposed to be used in tests. The declaration in the
+// header file is guarded by "#if defined(UNIT_TEST)" so that they can be used
+// by tests but not non-test code. However, this .cc file is compiled as part of
+// "backend" where "UNIT_TEST" is not defined. So we need to specify
+// "COMPONENT_EXPORT(PRINT_BACKEND)" here again so that they are visible to
+// tests.
+COMPONENT_EXPORT(PRINT_BACKEND)
+bool operator==(const PrinterSemanticCapsAndDefaults& caps1,
+                const PrinterSemanticCapsAndDefaults& caps2) {
+  return caps1.collate_capable == caps2.collate_capable &&
+         caps1.collate_default == caps2.collate_default &&
+         caps1.copies_max == caps2.copies_max &&
+         caps1.duplex_modes == caps2.duplex_modes &&
+         caps1.duplex_default == caps2.duplex_default &&
+         caps1.color_changeable == caps2.color_changeable &&
+         caps1.color_default == caps2.color_default &&
+         caps1.color_model == caps2.color_model &&
+         caps1.bw_model == caps2.bw_model && caps1.papers == caps2.papers &&
+         caps1.user_defined_papers == caps2.user_defined_papers &&
+         caps1.default_paper == caps2.default_paper &&
+         caps1.dpis == caps2.dpis && caps1.default_dpi == caps2.default_dpi
+#if BUILDFLAG(IS_CHROMEOS)
+         && caps1.pin_supported == caps2.pin_supported &&
+         caps1.advanced_capabilities == caps2.advanced_capabilities
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN)
+         && caps1.page_output_quality == caps2.page_output_quality
+#endif  // BUILDFLAG(IS_WIN)
+      ;
+}
 
 PrinterCapsAndDefaults::PrinterCapsAndDefaults() = default;
 
