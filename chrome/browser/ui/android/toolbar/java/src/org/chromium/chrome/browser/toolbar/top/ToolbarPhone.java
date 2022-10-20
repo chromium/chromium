@@ -972,7 +972,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mHomeButton.setVisibility(toolbarButtonVisibility);
         }
 
-        updateToolbarLayoutForExpansionAnimationOnActiveColor();
+        updateToolbarLayoutForExpansionAnimation();
         updateLocationBarLayoutForExpansionAnimation();
     }
 
@@ -1102,27 +1102,29 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      * Updates the toolbar height and bottom padding, as the result of either a focus change or
      * scrolling the New Tab Page.
      */
-    private void updateToolbarLayoutForExpansionAnimationOnActiveColor() {
-        if (!(OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())
-                    && OmniboxFeatures.shouldShowActiveColorOnOmnibox())) {
+    private void updateToolbarLayoutForExpansionAnimation() {
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
             return;
         }
 
-        int heightIncrease = (int) (getResources().getDimensionPixelSize(
-                                            R.dimen.toolbar_url_focus_height_increase)
-                * mUrlExpansionFraction);
-        int bottomPaddingIncrease =
-                (int) (getResources().getDimensionPixelSize(
-                               R.dimen.toolbar_url_focus_bottom_padding_increase)
-                        * mUrlExpansionFraction);
+        int heightIncreaseFactor = getResources().getDimensionPixelSize(
+                OmniboxFeatures.shouldShowActiveColorOnOmnibox()
+                        ? R.dimen.toolbar_url_focus_height_increase_active_color
+                        : R.dimen.toolbar_url_focus_height_increase_no_active_color);
+        int heightIncrease = (int) (heightIncreaseFactor * mUrlExpansionFraction);
 
         var layoutParams = getLayoutParams();
         layoutParams.height = getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
                 + heightIncrease;
         setLayoutParams(layoutParams);
 
-        setPaddingRelative(
-                getPaddingStart(), getPaddingTop(), getPaddingEnd(), bottomPaddingIncrease);
+        // Apply extra bottom padding for no active-color treatments.
+        if (!OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            int bottomPadding = (int) (getResources().getDimensionPixelSize(
+                                               R.dimen.toolbar_url_focus_bottom_padding)
+                    * mUrlExpansionFraction);
+            setPaddingRelative(getPaddingStart(), getPaddingTop(), getPaddingEnd(), bottomPadding);
+        }
     }
 
     /**

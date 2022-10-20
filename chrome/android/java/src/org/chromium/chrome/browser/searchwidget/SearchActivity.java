@@ -186,7 +186,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mSearchBox = (SearchActivityLocationBarLayout) mContentView.findViewById(
                 R.id.search_location_bar);
         mAnchorView = mContentView.findViewById(R.id.toolbar);
-        updateAnchorViewLayoutForActiveColorFlag();
+        updateAnchorViewLayout();
 
         OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
                 (String url, @PageTransition int transition, String postDataType, byte[] postData,
@@ -558,28 +558,39 @@ public class SearchActivity extends AsyncInitializationActivity
         sDelegate = delegate;
     }
 
+    @VisibleForTesting
+    public View getAnchorViewForTesting() {
+        return mAnchorView;
+    }
+
     LocationBarCoordinator getLocationBarCoordinatorForTesting() {
         return mLocationBarCoordinator;
     }
 
     /**
-     * Increase the toolbar vertical height and bottom padding if the omnibox phase 2 active feature
-     * flag is enabled.
+     * Increase the toolbar vertical height and bottom padding if the omnibox phase 2 feature is
+     * enabled.
      */
-    private void updateAnchorViewLayoutForActiveColorFlag() {
-        if (!(OmniboxFeatures.shouldShowModernizeVisualUpdate(mAnchorView.getContext())
-                    && OmniboxFeatures.shouldShowActiveColorOnOmnibox())) {
+    private void updateAnchorViewLayout() {
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(mAnchorView.getContext())) {
             return;
         }
 
         var layoutParams = mAnchorView.getLayoutParams();
+        int heightIncrease = getResources().getDimensionPixelSize(
+                OmniboxFeatures.shouldShowActiveColorOnOmnibox()
+                        ? R.dimen.toolbar_url_focus_height_increase_active_color
+                        : R.dimen.toolbar_url_focus_height_increase_no_active_color);
         layoutParams.height = getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                + getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
+                + heightIncrease;
         mAnchorView.setLayoutParams(layoutParams);
 
-        mAnchorView.setPaddingRelative(mAnchorView.getPaddingStart(), mAnchorView.getPaddingTop(),
-                mAnchorView.getPaddingEnd(),
-                getResources().getDimensionPixelSize(
-                        R.dimen.toolbar_url_focus_bottom_padding_increase));
+        // Apply extra bottom padding for no active-color treatments.
+        if (!OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            int bottomPadding =
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_bottom_padding);
+            mAnchorView.setPaddingRelative(mAnchorView.getPaddingStart(),
+                    mAnchorView.getPaddingTop(), mAnchorView.getPaddingEnd(), bottomPadding);
+        }
     }
 }
