@@ -32,16 +32,16 @@ export function generateStatsLabel(report) {
   let labels = [];
   if (['outbound-rtp', 'inbound-rtp'].includes(report.type)
       && report.stats.values) {
-    labels = ['mid', 'rid', 'ssrc', '[codec]']
+    labels = ['kind', 'mid', 'rid', 'ssrc', '[codec]']
       .map(stat => generateLabel(stat, report.stats.values));
   } else if (['local-candidate', 'remote-candidate'].includes(report.type)) {
-    labels = ['candidateType']
+    labels = ['candidateType', 'tcpType', 'relayProtocol']
       .map(stat => generateLabel(stat, report.stats.values));
   } else if (report.type === 'codec') {
     labels = ['mimeType', 'payloadType']
       .map(stat => generateLabel(stat, report.stats.values));
   } else if (report.type === 'media-source') {
-    labels = ['kind', 'relayProtocol']
+    labels = ['kind']
       .map(stat => generateLabel(stat, report.stats.values));
   } else if (report.type === 'candidate-pair') {
     labels = ['state']
