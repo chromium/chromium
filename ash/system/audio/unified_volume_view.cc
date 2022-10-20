@@ -9,24 +9,12 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/style_util.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_constants.h"
-#include "base/bind.h"
-#include "base/i18n/rtl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/color/color_id.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
-#include "ui/views/background.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/focus_ring.h"
-#include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -54,86 +42,6 @@ const gfx::VectorIcon& GetVolumeIconForLevel(float level) {
   return *kVolumeLevelIcons[index];
 }
 
-// A template class for the UnifiedVolumeView buttons, used by the More button.
-// |T| must be a subtype of |views::Button|.
-template <typename T>
-class UnifiedVolumeViewButton : public T {
- public:
-  static_assert(std::is_base_of<views::Button, T>::value,
-                "T must be a subtype of views::Button");
-
-  // A constructor that forwards |args| to |T|'s constructor, so |args| are the
-  // exact same as required by |T|'s constructor. It sets up the ink drop on the
-  // view.
-  template <typename... Args>
-  explicit UnifiedVolumeViewButton(Args... args)
-      : T(std::forward<Args>(args)...) {
-    StyleUtil::SetUpInkDropForButton(this);
-
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  kTrayItemCornerRadius);
-    T::SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
-                                                        kTrayItemCornerRadius));
-  }
-
-  ~UnifiedVolumeViewButton() override = default;
-
-  void OnThemeChanged() override {
-    T::OnThemeChanged();
-    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-    T::background()->SetNativeControlColor(GetBackgroundColor());
-  }
-
-  SkColor GetIconColor() {
-    return AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-  }
-
-  SkColor GetBackgroundColor() {
-    return AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-  }
-};
-
-class MoreButton : public UnifiedVolumeViewButton<views::Button> {
- public:
-  explicit MoreButton(PressedCallback callback)
-      : UnifiedVolumeViewButton(std::move(callback)) {
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal,
-        gfx::Insets((kTrayItemSize -
-                     GetDefaultSizeOfVectorIcon(kUnifiedMenuExpandIcon)) /
-                    2),
-        2));
-
-    more_image_ = AddChildView(std::make_unique<views::ImageView>());
-    more_image_->SetCanProcessEventsWithinSubtree(false);
-    SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO));
-  }
-
-  MoreButton(const MoreButton&) = delete;
-  MoreButton& operator=(const MoreButton&) = delete;
-
-  ~MoreButton() override = default;
-
-  const char* GetClassName() const override { return "MoreButton"; }
-
-  void OnThemeChanged() override {
-    UnifiedVolumeViewButton::OnThemeChanged();
-    const SkColor icon_color = GetIconColor();
-
-    DCHECK(more_image_);
-    auto icon_rotation = base::i18n::IsRTL()
-                             ? SkBitmapOperations::ROTATION_270_CW
-                             : SkBitmapOperations::ROTATION_90_CW;
-    more_image_->SetImage(gfx::ImageSkiaOperations::CreateRotatedImage(
-        CreateVectorIcon(kUnifiedMenuExpandIcon, icon_color), icon_rotation));
-  }
-
- private:
-  views::ImageView* more_image_ = nullptr;
-};
-
 }  // namespace
 
 UnifiedVolumeView::UnifiedVolumeView(
@@ -145,12 +53,15 @@ UnifiedVolumeView::UnifiedVolumeView(
                         controller,
                         kSystemMenuVolumeHighIcon,
                         IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL),
-      more_button_(new MoreButton(
+      more_button_(AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&UnifiedVolumeSliderController::Delegate::
                                   OnAudioSettingsButtonClicked,
-                              delegate->weak_ptr_factory_.GetWeakPtr()))) {
+                              delegate->weak_ptr_factory_.GetWeakPtr()),
+          IconButton::Type::kSmall,
+          &kQuickSettingsRightArrowIcon,
+          IDS_ASH_STATUS_TRAY_AUDIO))) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
-  AddChildView(more_button_);
+
   Update(false /* by_user */);
 }
 

@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash {
+class IconButton;
 
 // View of a slider that can change audio volume.
 class UnifiedVolumeView : public UnifiedSliderView,
@@ -39,7 +40,7 @@ class UnifiedVolumeView : public UnifiedSliderView,
   // UnifiedSliderView:
   void ChildVisibilityChanged(views::View* child) override;
 
-  views::Button* const more_button_;
+  IconButton* const more_button_;
 };
 
 }  // namespace ash
