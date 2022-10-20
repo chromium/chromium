@@ -350,4 +350,7 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1236234
   "lacros.AudioPlay",
+
+  # https://crbug.com/1376638
+  "lacros.AudioRecord",
 ]
