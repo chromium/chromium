@@ -110,7 +110,7 @@ void ZeroStateDriveProvider::OnFileSystemMounted() {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
-                       weak_factory_.GetWeakPtr()),
+                       update_cache_weak_factory_.GetWeakPtr()),
         kFirstUpdateDelay);
   }
 }
@@ -171,12 +171,12 @@ void ZeroStateDriveProvider::StartZeroState() {
   query_start_time_ = base::TimeTicks::Now();
 
   // Cancel any in-flight queries for this provider.
-  weak_factory_.InvalidateWeakPtrs();
+  suggestion_query_weak_factory_.InvalidateWeakPtrs();
 
   file_suggest_service_->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(&ZeroStateDriveProvider::OnSuggestFileDataFetched,
-                     weak_factory_.GetWeakPtr()));
+                     suggestion_query_weak_factory_.GetWeakPtr()));
 }
 
 void ZeroStateDriveProvider::OnSuggestFileDataFetched(

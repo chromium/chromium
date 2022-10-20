@@ -114,7 +114,12 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ZeroStateDriveProvider> weak_factory_{this};
+  // Used to guard the task of updating the item suggest cache.
+  base::WeakPtrFactory<ZeroStateDriveProvider> update_cache_weak_factory_{this};
+
+  // Used to guard the query for drive file suggestions.
+  base::WeakPtrFactory<ZeroStateDriveProvider> suggestion_query_weak_factory_{
+      this};
 };
 
 }  // namespace app_list
