@@ -36,6 +36,9 @@ fuzzer_test("color_parser_fuzzer") {
   sources = [ "color_parser_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
   seed_corpus = "//content/test/data/fuzzer_corpus/color_parser_data/"
+
+  # Increase the memory limit, since the fuzzer exceeds it in Debug builds.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
 
 fuzzer_test("origin_trial_token_fuzzer") {
