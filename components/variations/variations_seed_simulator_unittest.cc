@@ -8,13 +8,11 @@
 
 #include <map>
 
-#include "base/bind.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/mock_entropy_provider.h"
-#include "base/time/time.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,15 +93,14 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
         .high_entropy = kAlwaysUseFirstGroup,
     });
     return ConvertSimulationResultToString(
-        VariationsSeedSimulator(entropy_providers)
-            .SimulateSeedStudies(seed, *client_state));
+        SimulateSeedStudies(seed, *client_state, entropy_providers));
   }
 
   // Formats |result| as a string with format "1 2 3", where 1 is the number of
   // regular group changes, 2 is the number of "kill best effort" group changes
   // and 3 is the number of "kill critical" group changes.
   std::string ConvertSimulationResultToString(
-      const VariationsSeedSimulator::Result& result) {
+      const SeedSimulationResult& result) {
     return base::StringPrintf("%d %d %d",
                               result.normal_group_change_count,
                               result.kill_best_effort_group_change_count,

@@ -736,8 +736,7 @@ void VariationsService::FetchVariationsSeed() {
   DoActualFetch();
 }
 
-void VariationsService::NotifyObservers(
-    const VariationsSeedSimulator::Result& result) {
+void VariationsService::NotifyObservers(const SeedSimulationResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result.kill_critical_group_change_count > 0) {
@@ -899,12 +898,10 @@ void VariationsService::PerformSimulationWithVersion(
   const base::ElapsedTimer timer;
 
   auto entropy_providers = state_manager_->CreateEntropyProviders();
-  VariationsSeedSimulator seed_simulator(*entropy_providers);
 
   std::unique_ptr<ClientFilterableState> client_state =
       field_trial_creator_.GetClientFilterableStateForVersion(version);
-  const VariationsSeedSimulator::Result result =
-      seed_simulator.SimulateSeedStudies(seed, *client_state);
+  auto result = SimulateSeedStudies(seed, *client_state, *entropy_providers);
 
   UMA_HISTOGRAM_COUNTS_100("Variations.SimulateSeed.NormalChanges",
                            result.normal_group_change_count);

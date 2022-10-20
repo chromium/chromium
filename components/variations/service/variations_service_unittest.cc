@@ -35,6 +35,7 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "components/variations/variations_seed_simulator.h"
 #include "components/version_info/channel.h"
 #include "components/web_resource/resource_request_allowed_notifier_test_util.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -694,7 +695,7 @@ TEST_F(VariationsServiceTest, Observer) {
     TestVariationsServiceObserver observer;
     service.AddObserver(&observer);
 
-    VariationsSeedSimulator::Result result;
+    SeedSimulationResult result;
     result.normal_group_change_count = cases[i].normal_count;
     result.kill_best_effort_group_change_count = cases[i].best_effort_count;
     result.kill_critical_group_change_count = cases[i].critical_count;
