@@ -46,10 +46,6 @@
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampling_thread_win.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/reached_code_profiler.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 using StreamingProfilePacketHandle =
     protozero::MessageHandle<perfetto::protos::pbzero::StreamingProfilePacket>;
 using TracePacketHandle = perfetto::TraceWriter::TracePacketHandle;
@@ -383,17 +379,7 @@ struct FrameDetails {
     ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
 // Returns whether stack sampling is supported on the current platform.
 bool IsStackSamplingSupported() {
-#if BUILDFLAG(IS_ANDROID)
-  // The sampler profiler would conflict with the reached code profiler if they
-  // run at the same time because they use the same signal to suspend threads.
-  if (base::android::IsReachedCodeProfilerEnabled()) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  if (!base::StackSamplingProfiler::IsSupportedForCurrentPlatform()) {
-    return false;
-  }
-  return true;
+  return base::StackSamplingProfiler::IsSupportedForCurrentPlatform();
 }
 #endif
 
@@ -892,14 +878,6 @@ void TracingSamplerProfiler::StartTracing(
 #endif
     return;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  // The sampler profiler would conflict with the reached code profiler if they
-  // run at the same time because they use the same signal to suspend threads.
-  if (base::android::IsReachedCodeProfilerEnabled()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   if (!base::StackSamplingProfiler::IsSupportedForCurrentPlatform()) {
     return;

@@ -122,7 +122,6 @@ source_set("tests") {
     sources += [
       "public/cpp/perfetto/java_heap_profiler/hprof_buffer_android_unittest.cc",
       "public/cpp/perfetto/java_heap_profiler/hprof_parser_android_unittest.cc",
-      "public/cpp/stack_sampling/reached_code_data_source_android_unittest.cc",
     ]
   }
 

@@ -113,8 +113,6 @@ target(tracing_lib_type, "cpp") {
         "perfetto/java_heap_profiler/hprof_parser_android.h",
         "perfetto/java_heap_profiler/java_heap_profiler_android.cc",
         "perfetto/java_heap_profiler/java_heap_profiler_android.h",
-        "stack_sampling/reached_code_data_source_android.cc",
-        "stack_sampling/reached_code_data_source_android.h",
       ]
     }
 
