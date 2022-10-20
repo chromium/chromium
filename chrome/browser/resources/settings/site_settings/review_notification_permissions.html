@@ -130,12 +130,12 @@
         </div>
         <cr-icon-button iron-icon="cr20:block" id="block"
             on-click="onBlockNotificationPermissionClick_"
-            aria-label="[[getAriaLabelText_(actionsEnum_.BLOCK, lastOrigin_)]]"
+            aria-label="[[getBlockAriaLabelForOrigin(item.origin)]]"
             focus-row-control focus-type="show-detail"
             on-pointerenter="onShowTooltip_" actionable></cr-icon-button>
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
             on-click="onShowActionMenuClick_"
-            aria-label="[[getMoreActionsAriaLabelText_(lastOrigin_)]]"
+            aria-label="[[getMoreActionsAriaLabel_(item.origin)]]"
             title="$i18n{moreActions}" focus-row-control focus-type="menu">
         </cr-icon-button>
       </div>
@@ -146,13 +146,11 @@
   </paper-tooltip>
   <cr-action-menu role-description="$i18n{menu}">
     <button class="dropdown-item" id="ignore" on-click="onIgnoreClick_"
-        aria-label="[[getAriaLabelText_(
-            actionsEnum_.IGNORE, lastOrigin_)]]">
+        aria-label="[[getIgnoreAriaLabelForOrigin(lastOrigin_)]]">
       $i18n{safetyCheckNotificationPermissionReviewIgnoreLabel}
     </button>
     <button class="dropdown-item" id="reset" on-click="onResetClick_"
-        aria-label="[[getAriaLabelText_(
-            actionsEnum_.RESET, lastOrigin_)]]">
+        aria-label="[[getResetAriaLabelForOrigin(lastOrigin_)]]">
       $i18n{safetyCheckNotificationPermissionReviewResetLabel}
     </button>
   </cr-action-menu>
