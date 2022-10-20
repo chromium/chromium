@@ -6998,6 +6998,7 @@ test("unit_tests") {
       "../renderer/searchbox/searchbox_unittest.cc",
       "../utility/importer/bookmark_html_reader_unittest.cc",
       "../utility/importer/bookmarks_file_importer_unittest.cc",
+      "interaction/interaction_test_util_browser_unittest.cc",
       "interaction/webcontents_interaction_test_util_unittest.cc",
     ]
 
