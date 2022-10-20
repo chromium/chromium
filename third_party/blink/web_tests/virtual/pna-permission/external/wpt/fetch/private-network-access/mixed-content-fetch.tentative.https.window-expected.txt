@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 52 tests; 44 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 52 tests; 47 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS https-local to http-local: wrong targetAddressSpace "unknown".
 PASS https-local to http-local: wrong targetAddressSpace "private".
 PASS https-local to http-local: wrong targetAddressSpace "public".
@@ -19,7 +19,7 @@ PASS https-private to http-local: wrong targetAddressSpace "public".
 PASS https-private to http-local: failed preflight.
 PASS https-private to http-local: success.
 PASS https-private to http-local: PUT success.
-FAIL https-private to http-local: no-cors success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+PASS https-private to http-local: no-cors success.
 PASS https-private to http-private: wrong targetAddressSpace "unknown".
 PASS https-private to http-private: wrong targetAddressSpace "local".
 PASS https-private to http-private: wrong targetAddressSpace "public".
@@ -35,7 +35,7 @@ PASS https-public to http-local: wrong targetAddressSpace "public".
 PASS https-public to http-local: failed preflight.
 PASS https-public to http-local: success.
 PASS https-public to http-local: PUT success.
-FAIL https-public to http-local: no-cors success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+PASS https-public to http-local: no-cors success.
 PASS https-public to http-private: missing targetAddressSpace.
 PASS https-public to http-private: wrong targetAddressSpace "unknown".
 FAIL https-public to http-private: wrong targetAddressSpace "local". assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
@@ -43,7 +43,7 @@ PASS https-public to http-private: wrong targetAddressSpace "public".
 PASS https-public to http-private: failed preflight.
 PASS https-public to http-private: success.
 PASS https-public to http-private: PUT success.
-FAIL https-public to http-private: no-cors success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+PASS https-public to http-private: no-cors success.
 PASS https-public to http-public: wrong targetAddressSpace "unknown".
 PASS https-public to http-public: wrong targetAddressSpace "local".
 PASS https-public to http-public: wrong targetAddressSpace "private".

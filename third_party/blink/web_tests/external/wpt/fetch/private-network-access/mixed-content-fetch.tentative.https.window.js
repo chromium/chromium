@@ -122,9 +122,9 @@ function makeTests({ source, target }) {
     },
     fetchOptions: {
       targetAddressSpace: correctAddressSpace,
-      method: "no-cors",
+      mode: "no-cors",
     },
-    expected: FetchTestResult.SUCCESS,
+    expected: FetchTestResult.OPAQUE,
   });
 }
 
