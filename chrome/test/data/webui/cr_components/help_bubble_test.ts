@@ -141,6 +141,11 @@ suite('CrComponentsHelpBubbleTest', () => {
         <li>List item 1</li>
         <li>List item 2</li>
       </ul>
+      <button id='short-button'>.</button>
+      <br/>
+      <button id='long-button'>
+        This is the text inside a very long bubble ensuring edge alignment
+      </button>
     </div>`;
 
     helpBubble = document.createElement('help-bubble');
@@ -653,5 +658,119 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertTrue(
         elements.item(1)!.classList.contains('total-progress'),
         'element 1 should have total-progress class');
+  });
+
+  test('help bubble does not left-align with small anchor', async () => {
+    helpBubble.anchorId = 'short-button';
+    helpBubble.position = HelpBubbleArrowPosition.TOP_LEFT;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+
+    helpBubble.show();
+    await waitAfterNextRender(helpBubble);
+
+    const anchorRect = helpBubble.getAnchorElement()!.getBoundingClientRect();
+    const helpBubbleRect = helpBubble.getBoundingClientRect();
+
+    // Sanity checks
+    assertEquals(
+        document.querySelector<HTMLElement>('#short-button'),
+        helpBubble.getAnchorElement(),
+        'help bubble should have correct anchor element');
+    assertBodyInTop();
+    assertEquals(
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        'body content show match');
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
+
+    // Check that bubble exceeds left alignment with anchor so arrow
+    // positions correctly
+    assertTrue(
+        helpBubbleRect.left < anchorRect.left,
+        'bubble should position past the anchor\'s left edge');
+  });
+
+  test('help bubble left-aligns with large anchor', async () => {
+    helpBubble.anchorId = 'long-button';
+    helpBubble.position = HelpBubbleArrowPosition.TOP_LEFT;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+
+    helpBubble.show();
+    await waitAfterNextRender(helpBubble);
+
+    const anchorRect = helpBubble.getAnchorElement()!.getBoundingClientRect();
+    const helpBubbleRect = helpBubble.getBoundingClientRect();
+
+    // Sanity checks
+    assertEquals(
+        document.querySelector<HTMLElement>('#long-button'),
+        helpBubble.getAnchorElement(),
+        'help bubble should have correct anchor element');
+    assertBodyInTop();
+    assertEquals(
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        'body content show match');
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
+
+    // Check that bubble is left-aligned with anchor
+    assertEquals(
+        helpBubbleRect.left, anchorRect.left,
+        'bubble and anchor should left-align');
+  });
+
+  test('help bubble does not right-align with small anchor', async () => {
+    helpBubble.anchorId = 'short-button';
+    helpBubble.position = HelpBubbleArrowPosition.TOP_RIGHT;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+
+    helpBubble.show();
+    await waitAfterNextRender(helpBubble);
+
+    const anchorRect = helpBubble.getAnchorElement()!.getBoundingClientRect();
+    const helpBubbleRect = helpBubble.getBoundingClientRect();
+
+    // Sanity checks
+    assertEquals(
+        document.querySelector<HTMLElement>('#short-button'),
+        helpBubble.getAnchorElement(),
+        'help bubble should have correct anchor element');
+    assertBodyInTop();
+    assertEquals(
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        'body content show match');
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
+
+    // Check that bubble exceeds right alignment with anchor so arrow
+    // positions correctly
+    assertTrue(
+        helpBubbleRect.right > anchorRect.right,
+        'bubble should position past the anchor\'s right edge');
+  });
+
+  test('help bubble right-aligns with large anchor', async () => {
+    helpBubble.anchorId = 'long-button';
+    helpBubble.position = HelpBubbleArrowPosition.TOP_RIGHT;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+
+    helpBubble.show();
+    await waitAfterNextRender(helpBubble);
+
+    const anchorRect = helpBubble.getAnchorElement()!.getBoundingClientRect();
+    const helpBubbleRect = helpBubble.getBoundingClientRect();
+
+    // Sanity checks
+    assertEquals(
+        document.querySelector<HTMLElement>('#long-button'),
+        helpBubble.getAnchorElement(),
+        'help bubble should have correct anchor element');
+    assertBodyInTop();
+    assertEquals(
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        'body content show match');
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
+
+    // Check that bubble is right-aligned with anchor
+    assertEquals(
+        helpBubbleRect.right, anchorRect.right,
+        'bubble and anchor should right-align');
   });
 });
