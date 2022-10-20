@@ -623,6 +623,8 @@ export class TaskController {
   /**
    * Triggers a password dialog and starts an extract task with the
    * password (unless cancel is clicked on the dialog).
+   * @param {!Entry|FilesAppEntry} entry
+   * @param {!chrome.fileManagerPrivate.IOTaskParams} params
    * @private
    */
   async startGetPasswordThenExtractTask_(entry, params) {
@@ -637,7 +639,7 @@ export class TaskController {
     }
 
     params['password'] = password;
-    await this.startExtractTask_(entry, params);
+    await this.startExtractTask_([entry], params);
   }
 
   /**
