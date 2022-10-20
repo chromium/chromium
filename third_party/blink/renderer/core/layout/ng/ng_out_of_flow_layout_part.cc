@@ -53,6 +53,15 @@ void SortInPreOrder(HeapVector<NGLogicalOOFNodeForFragmentation>* nodes) {
             });
 }
 
+bool MayHaveAnchorQuery(
+    const HeapVector<NGLogicalOOFNodeForFragmentation>& nodes) {
+  for (const NGLogicalOOFNodeForFragmentation& node : nodes) {
+    if (node.box->MayHaveAnchorQuery())
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -1158,10 +1167,9 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   // fragmentainers by overflow, |descendants| need to be re-sorted by the
   // pre-order. Note that both |SortInPreOrder| and |IsInPreOrder| are not
   // cheap, limit only when needed.
-  if (stitched_anchor_queries.HasAnchorsOnOutOfFlowObjects() &&
-      !IsInPreOrder(*descendants)) {
+  const bool may_have_anchors_on_oof = MayHaveAnchorQuery(*descendants);
+  if (may_have_anchors_on_oof && !IsInPreOrder(*descendants))
     SortInPreOrder(descendants);
-  }
 
   HeapVector<HeapVector<NodeToLayout>> descendants_to_layout;
   ClearCollectionScope<HeapVector<HeapVector<NodeToLayout>>>
@@ -1208,6 +1216,10 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         // differently when the containing block is different, and may refer to
         // other containing blocks that were already laid out.
         //
+        // Do this only when needed, because doing so may rebuild fragmentainers
+        // multiple times, which can hit the performance when there are many
+        // containing blocks in the block formatting context.
+        //
         // Use |LayoutObject::Container|, not |LayoutObject::ContainingBlock|.
         // The latter is not the CSS containing block for inline boxes. See the
         // comment of |LayoutObject::ContainingBlock|.
@@ -1215,7 +1227,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         // Note |descendant.containing_block.fragment| is |ContainingBlock|, not
         // the CSS containing block.
         DCHECK(stitched_anchor_query);
-        if (stitched_anchor_queries.ShouldLayoutByContainingBlock()) {
+        if (!stitched_anchor_queries.IsEmpty() || may_have_anchors_on_oof) {
           const LayoutObject* css_containing_block =
               descendant.box->Container();
           DCHECK(css_containing_block);
@@ -1225,7 +1237,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
             // the number of rebuilding fragmentainer fragments.
             if (last_css_containing_block &&
                 (!stitched_anchor_query->IsEmpty() ||
-                 stitched_anchor_queries.HasAnchorsOnOutOfFlowObjects())) {
+                 may_have_anchors_on_oof)) {
               has_new_descendants_span = true;
               descendants_span = descendants_span.subspan(
                   &descendant - descendants_span.data());

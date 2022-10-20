@@ -521,14 +521,6 @@ void NGLogicalAnchorQueryMap::Update(
     WritingDirectionMode writing_direction) {
   DCHECK(&root);
 
-  has_anchors_on_oofs_ = false;
-  for (const NGLogicalOOFNodeForFragmentation& oof_node : oof_nodes) {
-    if (oof_node.box->MayHaveAnchorQuery()) {
-      has_anchors_on_oofs_ = true;
-      break;
-    }
-  }
-
   // Early return before expensive work if there are no anchor queries.
   bool has_anchor_queries = false;
   for (const NGLogicalLink& child : children) {
