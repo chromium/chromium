@@ -231,12 +231,13 @@ TEST(SyncUIUtilTest, DistinctCasesReportProperMessages) {
     SyncStatusLabels expected_labels = SetUpDistinctCase(
         &service, &environment, static_cast<DistinctState>(index));
 
-    EXPECT_THAT(GetSyncStatusLabels(&service, environment.identity_manager(),
-                                    /*is_user_signout_allowed=*/true),
-                SyncStatusLabelsMatch(expected_labels.message_type,
-                                      expected_labels.status_label_string_id,
-                                      expected_labels.button_string_id,
-                                      expected_labels.action_type));
+    EXPECT_THAT(
+        GetSyncStatusLabels(&service, environment.identity_manager(),
+                            /*is_user_clear_primary_account_allowed=*/true),
+        SyncStatusLabelsMatch(expected_labels.message_type,
+                              expected_labels.status_label_string_id,
+                              expected_labels.button_string_id,
+                              expected_labels.action_type));
   }
 }
 
@@ -262,7 +263,7 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableError) {
 #endif
   EXPECT_THAT(
       GetSyncStatusLabels(&service, environment.identity_manager(),
-                          /*is_user_signout_allowed=*/true),
+                          /*is_user_clear_primary_account_allowed=*/true),
       SyncStatusLabelsMatch(SyncStatusMessageType::kSyncError,
                             unrecoverable_error, IDS_SYNC_RELOGIN_BUTTON,
                             SyncStatusActionType::kReauthenticate));
@@ -272,12 +273,13 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableError) {
   status.sync_protocol_error.action = syncer::UPGRADE_CLIENT;
   service.SetDetailedSyncStatus(true, status);
 
-  EXPECT_THAT(GetSyncStatusLabels(&service, environment.identity_manager(),
-                                  /*is_user_signout_allowed=*/true),
-              SyncStatusLabelsMatch(SyncStatusMessageType::kSyncError,
-                                    IDS_SYNC_UPGRADE_CLIENT,
-                                    IDS_SYNC_UPGRADE_CLIENT_BUTTON,
-                                    SyncStatusActionType::kUpgradeClient));
+  EXPECT_THAT(
+      GetSyncStatusLabels(&service, environment.identity_manager(),
+                          /*is_user_clear_primary_account_allowed=*/true),
+      SyncStatusLabelsMatch(SyncStatusMessageType::kSyncError,
+                            IDS_SYNC_UPGRADE_CLIENT,
+                            IDS_SYNC_UPGRADE_CLIENT_BUTTON,
+                            SyncStatusActionType::kUpgradeClient));
 }
 
 TEST(SyncUIUtilTest, ActionableErrorWithPassiveMessage) {
@@ -296,12 +298,13 @@ TEST(SyncUIUtilTest, ActionableErrorWithPassiveMessage) {
   service.SetDetailedSyncStatus(true, status);
 
   // Expect a 'client upgrade' call to action.
-  EXPECT_THAT(GetSyncStatusLabels(&service, environment.identity_manager(),
-                                  /*is_user_signout_allowed=*/true),
-              SyncStatusLabelsMatch(SyncStatusMessageType::kSyncError,
-                                    IDS_SYNC_UPGRADE_CLIENT,
-                                    IDS_SYNC_UPGRADE_CLIENT_BUTTON,
-                                    SyncStatusActionType::kUpgradeClient));
+  EXPECT_THAT(
+      GetSyncStatusLabels(&service, environment.identity_manager(),
+                          /*is_user_clear_primary_account_allowed=*/true),
+      SyncStatusLabelsMatch(SyncStatusMessageType::kSyncError,
+                            IDS_SYNC_UPGRADE_CLIENT,
+                            IDS_SYNC_UPGRADE_CLIENT_BUTTON,
+                            SyncStatusActionType::kUpgradeClient));
 }
 
 TEST(SyncUIUtilTest, SyncSettingsConfirmationNeededTest) {
@@ -315,7 +318,7 @@ TEST(SyncUIUtilTest, SyncSettingsConfirmationNeededTest) {
 
   EXPECT_THAT(
       GetSyncStatusLabels(&service, environment.identity_manager(),
-                          /*is_user_signout_allowed=*/true),
+                          /*is_user_clear_primary_account_allowed=*/true),
       SyncStatusLabelsMatch(
           SyncStatusMessageType::kSyncError, IDS_SYNC_SETTINGS_NOT_CONFIRMED,
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
@@ -339,11 +342,12 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
       environment.MakeAccountAvailable("secondary-user@example.com");
 
   // Verify that we do not have any existing errors.
-  ASSERT_THAT(GetSyncStatusLabels(&service, environment.identity_manager(),
-                                  /*is_user_signout_allowed=*/true),
-              SyncStatusLabelsMatch(
-                  SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
-                  IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction));
+  ASSERT_THAT(
+      GetSyncStatusLabels(&service, environment.identity_manager(),
+                          /*is_user_clear_primary_account_allowed=*/true),
+      SyncStatusLabelsMatch(SyncStatusMessageType::kSynced,
+                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SETTINGS_EMPTY_STRING,
+                            SyncStatusActionType::kNoAction));
 
   // Add an error to the secondary account.
   environment.UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -352,11 +356,12 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 
   // Verify that we do not see any sign-in errors.
-  EXPECT_THAT(GetSyncStatusLabels(&service, environment.identity_manager(),
-                                  /*is_user_signout_allowed=*/true),
-              SyncStatusLabelsMatch(
-                  SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
-                  IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction));
+  EXPECT_THAT(
+      GetSyncStatusLabels(&service, environment.identity_manager(),
+                          /*is_user_clear_primary_account_allowed=*/true),
+      SyncStatusLabelsMatch(SyncStatusMessageType::kSynced,
+                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SETTINGS_EMPTY_STRING,
+                            SyncStatusActionType::kNoAction));
 }
 
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError) {

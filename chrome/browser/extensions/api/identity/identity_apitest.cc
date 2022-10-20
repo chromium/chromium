@@ -96,6 +96,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/signin/signin_util.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/browser_init_params.h"
 #endif
@@ -3600,6 +3601,14 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireOnPrimaryAccountSignOut) {
 
   SignIn("primary@example.com");
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Clear primary account is not allowed in Lacros main profile.
+  // This test overrides |UserSignoutSetting| to test Lacros secondary profile.
+  signin_util::UserSignoutSetting* user_signout_setting =
+      signin_util::UserSignoutSetting::GetForProfile(profile());
+  user_signout_setting->IgnoreIsMainProfileForTesting();
+  user_signout_setting->SetClearPrimaryAccountAllowed(true);
+#endif
   AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, false));
 
   // Sign out and verify that the callback fires.

@@ -52,7 +52,7 @@ class TestSigninClient : public SigninClient {
   PrefService* GetPrefs() override;
 
   // Allow or disallow continuation of sign-out depending on value of
-  // |is_signout_allowed_|;
+  // |is_clear_primary_account_allowed_|;
   void PreSignOut(
       base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
       signin_metrics::ProfileSignout signout_source_metric) override;
@@ -77,7 +77,9 @@ class TestSigninClient : public SigninClient {
     are_signin_cookies_allowed_ = value;
   }
 
-  void set_is_signout_allowed(bool value) { is_signout_allowed_ = value; }
+  void set_is_clear_primary_account_allowed(SignoutDecision value) {
+    is_clear_primary_account_allowed_ = value;
+  }
 
   // When |value| is true, network calls posted through DelayNetworkCall() are
   // delayed indefinitely.
@@ -117,7 +119,7 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<network::mojom::CookieManager> cookie_manager_;
   bool are_signin_cookies_allowed_;
   bool network_calls_delayed_;
-  bool is_signout_allowed_;
+  SignoutDecision is_clear_primary_account_allowed_ = SignoutDecision::ALLOW;
 
   std::vector<base::OnceClosure> delayed_network_calls_;
 

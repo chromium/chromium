@@ -104,25 +104,36 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
         USER_CLICKED_SIGNOUT_FROM_USER_POLICY_NOTIFICATION_DIALOG,
 };
 
+SigninClient::SignoutDecision UserSignoutSettingToSignoutDecision(
+    Profile* profile) {
+  signin_util::UserSignoutSetting* setting =
+      signin_util::UserSignoutSetting::GetForProfile(profile);
+
+  if (!setting->IsRevokeSyncConsentAllowed())
+    return SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
+
+  return setting->IsClearPrimaryAccountAllowed()
+             ? SigninClient::SignoutDecision::ALLOW
+             : SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
+}
+
 SigninClient::SignoutDecision IsSignoutAllowed(
     Profile* profile,
     const signin_metrics::ProfileSignout signout_source) {
-  if (signin_util::IsUserSignoutAllowedForProfile(profile))
-    return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+  SigninClient::SignoutDecision signout_decision =
+      UserSignoutSettingToSignoutDecision(profile);
 
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile);
-  if (identity_manager &&
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
-  }
+  if (signout_decision == SigninClient::SignoutDecision::ALLOW)
+    return signout_decision;
 
+  // TODO(crbug.com/1366360): Revisit |kAlwaysAllowedSignoutSources| in general
+  // and for Lacros main profile.
   for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
     if (signout_source == always_allowed_source)
-      return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+      return SigninClient::SignoutDecision::ALLOW;
   }
 
-  return SigninClient::SignoutDecision::DISALLOW_SIGNOUT;
+  return signout_decision;
 }
 
 }  // namespace
@@ -399,7 +410,7 @@ void ChromeSigninClient::OnCloseBrowsersAborted(
 
   // Disallow sign-out (aborted).
   std::move(on_signout_decision_reached_)
-      .Run(SignoutDecision::DISALLOW_SIGNOUT);
+      .Run(SignoutDecision::REVOKE_SYNC_DISALLOWED);
 }
 
 void ChromeSigninClient::LockForceSigninProfile(

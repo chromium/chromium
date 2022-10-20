@@ -76,6 +76,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // UserPolicySigninServiceBase implementation:
   void ShutdownUserCloudPolicyManager() override;
 
+  // ProfileAttributesStorage::Observer implementation:
   void OnProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) override;
 

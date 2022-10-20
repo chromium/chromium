@@ -234,22 +234,16 @@ void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(
       << "Disabling signin in chrome and 'RestrictSigninToPattern' policy "
          "are not supported on Lacros.";
 #else
-  switch (signin_util::UserSignoutSetting::GetForProfile(profile)
-              ->signout_allowed()) {
-    case signin::Tribool::kUnknown:
-      NOTREACHED();
-      break;
-    case signin::Tribool::kTrue: {
-      // Force clear the primary account if it is no longer allowed and if sign
-      // out is allowed.
-      auto* primary_account_mutator =
-          identity_manager->GetPrimaryAccountMutator();
-      primary_account_mutator->ClearPrimaryAccount(
-          clear_primary_account_source,
-          signin_metrics::SignoutDelete::kIgnoreMetric);
-      break;
-    }
-    case signin::Tribool::kFalse:
+  if (signin_util::UserSignoutSetting::GetForProfile(profile)
+          ->IsClearPrimaryAccountAllowed()) {
+    // Force clear the primary account if it is no longer allowed and if sign
+    // out is allowed.
+    auto* primary_account_mutator =
+        identity_manager->GetPrimaryAccountMutator();
+    primary_account_mutator->ClearPrimaryAccount(
+        clear_primary_account_source,
+        signin_metrics::SignoutDelete::kIgnoreMetric);
+  } else {
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
       // Force remove the profile if sign out is not allowed and if the
       // primary account is no longer allowed.
@@ -275,7 +269,6 @@ void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(
 #else
       CHECK(false) << "Deleting profiles is not supported.";
 #endif  // defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
-      break;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

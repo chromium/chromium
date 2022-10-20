@@ -8,10 +8,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -75,6 +77,7 @@ using content::WebContents;
 using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
 using signin::ConsentLevel;
+using signin_util::UserSignoutSetting;
 
 namespace {
 
@@ -194,6 +197,22 @@ base::Value::Dict GetAccountValue(const AccountInfo& account) {
   return dict;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsChangePrimaryAccountAllowed(Profile* profile, const std::string& email) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  if (UserSignoutSetting::GetForProfile(profile)
+          ->IsClearPrimaryAccountAllowed() ||
+      !identity_manager->HasPrimaryAccount(ConsentLevel::kSignin)) {
+    return true;
+  }
+
+  return gaia::AreEmailsSame(
+      email,
+      identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin).email);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 namespace settings {
@@ -472,6 +491,10 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
          AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_));
   const base::Value& email = args[0];
   const base::Value& is_default_promo_account = args[1];
+
+  DCHECK(IsChangePrimaryAccountAllowed(profile_, email.GetString()))
+      << "Changing the primary account is not allowed!";
+
   AccountInfo maybe_account =
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email.GetString());
@@ -599,7 +622,8 @@ void PeopleHandler::HandleTurnOnSync(const base::Value::List& args) {
 void PeopleHandler::HandleTurnOffSync(const base::Value::List& args) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-  DCHECK(signin_util::IsUserSignoutAllowedForProfile(profile_));
+  DCHECK(UserSignoutSetting::GetForProfile(profile_)
+             ->IsRevokeSyncConsentAllowed());
 
   identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
       signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
@@ -616,6 +640,8 @@ void PeopleHandler::HandleStartSignin(const base::Value::List& args) {
   syncer::SyncService* service = GetSyncService();
   DCHECK(IsProfileAuthNeededOrHasErrors() ||
          (service && service->HasUnrecoverableError()));
+  DCHECK(IsChangePrimaryAccountAllowed(profile_, /*email=*/std::string()))
+      << "Primary account already set and change is not allowed";
 
   DisplayGaiaLogin(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 }
@@ -633,17 +659,36 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   bool is_syncing =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-  DCHECK(is_syncing || !delete_profile)
-      << "Deleting the profile should only be offered if the user is syncing.";
+  bool delete_profile_allowed = signin_util::IsProfileDeletionAllowed(profile_);
 
-  if (!signin_util::IsUserSignoutAllowedForProfile(profile_)) {
-    // If the user cannot signout, the profile must be destroyed.
-    if (delete_profile) {
+  DCHECK(!delete_profile || delete_profile_allowed)
+      << "Profile deletion is not allowed!";
+  DCHECK(is_syncing || !delete_profile)
+      << "Deleting the profile should only be offered if the user is "
+         "syncing.";
+
+  UserSignoutSetting* signout_setting =
+      UserSignoutSetting::GetForProfile(profile_);
+
+  if (!signout_setting->IsRevokeSyncConsentAllowed()) {
+    // If the user can't revoke sync the profile must be destroyed.
+    if (delete_profile && delete_profile_allowed) {
       webui::DeleteProfileAtPath(profile_path,
                                  ProfileMetrics::DELETE_PROFILE_SETTINGS);
     } else {
-      DCHECK(false) << "User signout requires profile destruction.";
+      DCHECK(delete_profile) << "User signout requires profile destruction.";
     }
+    return;
+  }
+
+  bool is_clear_primary_account_allowed =
+      signout_setting->IsClearPrimaryAccountAllowed();
+  if (!is_syncing && !is_clear_primary_account_allowed) {
+    // 'Signout' should not be offered in the UI if clear primary account is not
+    // allowed.
+    NOTREACHED()
+        << "Signout should not be offered if clear primary account is not "
+           "allowed.";
     return;
   }
 
@@ -651,21 +696,14 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
       delete_profile ? signin_metrics::SignoutDelete::kDeleted
                      : signin_metrics::SignoutDelete::kKeeping;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (profile_->IsMainProfile()) {
-    if (!is_syncing) {
-      DLOG(ERROR) << "Signout form the main profile is not allowed.";
-      return;
-    }
-    DCHECK(!delete_profile) << "The main profile should never be deleted.";
+  if (is_syncing && !is_clear_primary_account_allowed) {
+    DCHECK(signout_setting->IsRevokeSyncConsentAllowed());
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
-    return;
-  }
-  // For secondary profiles 'Turn off' and 'Signout', clears the primary
-  // account and signout all.
-  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-      signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
+  } else {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+        signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
 #else
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
@@ -688,9 +726,10 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
         signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, delete_metric);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
 
   // CAUTION: |this| may be deleted at this point.
-  if (delete_profile) {
+  if (delete_profile && delete_profile_allowed) {
     webui::DeleteProfileAtPath(profile_path,
                                ProfileMetrics::DELETE_PROFILE_SETTINGS);
   }
@@ -879,16 +918,23 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager);
 
-  // Signout is not allowed if the user has policy (crbug.com/172204).
-  if (!signin_util::IsUserSignoutAllowedForProfile(profile_)) {
-    std::string username =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .email;
+  // TODO(crbug.com/1369982): |domain| is used to show the profile deletion
+  // dialog on turn off sync. This is no longer needed since users are allowed
+  // to turn off sync. Enterprise team to decide whether to show the delete
+  // profile dialog on signout.
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    CoreAccountInfo primary_account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+
+    bool is_managed =
+        identity_manager->FindExtendedAccountInfo(primary_account_info)
+            .IsManaged();
 
     // If there is no one logged in or if the profile name is empty then the
     // domain name is empty. This happens in browser tests.
-    if (!username.empty())
-      sync_status.Set("domain", gaia::ExtractDomainName(username));
+    if (is_managed && !primary_account_info.email.empty())
+      sync_status.Set("domain",
+                      gaia::ExtractDomainName(primary_account_info.email));
   }
 
   // This is intentionally not using GetSyncService(), in order to access more

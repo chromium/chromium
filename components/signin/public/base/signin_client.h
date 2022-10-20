@@ -42,7 +42,13 @@ class CookieManager;
 class SigninClient : public KeyedService {
  public:
   // Argument to PreSignOut() callback, indicating client decision.
-  enum class SignoutDecision { ALLOW_SIGNOUT, DISALLOW_SIGNOUT };
+  enum class SignoutDecision {
+    ALLOW,
+    CLEAR_PRIMARY_ACCOUNT_DISALLOWED,
+    // Revoke sync disallowed implies that removing the primary account is also
+    // disallowed since sync is attached to the primary account.
+    REVOKE_SYNC_DISALLOWED,
+  };
 
   ~SigninClient() override = default;
 

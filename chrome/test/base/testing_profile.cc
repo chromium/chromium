@@ -480,7 +480,9 @@ void TestingProfile::FinishInit() {
     // For testing profiles that do not have a delegate, the signout allowed
     // must be initialized when the testing profile finishes its
     // initialization.
-    signin_util::EnsureUserSignoutAllowedIsInitializedForProfile(this);
+
+    signin_util::UserSignoutSetting::GetForProfile(this)
+        ->InitializeUserSignoutSettingIfNeeded();
   }
 }
 

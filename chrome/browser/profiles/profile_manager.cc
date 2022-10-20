@@ -1635,7 +1635,8 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
   // At this point, the user policy service and the child account service
   // had enough time to initialize and should have updated the user signout
   // flag attached to the profile.
-  signin_util::EnsureUserSignoutAllowedIsInitializedForProfile(profile);
+  signin_util::UserSignoutSetting::GetForProfile(profile)
+      ->InitializeUserSignoutSettingIfNeeded();
   PrimaryAccountPolicyManagerFactory::GetForProfile(profile)->Initialize();
 
 #if !BUILDFLAG(IS_ANDROID)

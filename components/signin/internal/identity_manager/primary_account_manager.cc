@@ -300,18 +300,29 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   DCHECK(IsInitialized());
 
   VLOG(1) << "OnSignoutDecisionReached: "
-          << (signout_decision == SigninClient::SignoutDecision::ALLOW_SIGNOUT);
-  signin_metrics::LogSignout(signout_source_metric, signout_delete_metric);
-  if (primary_account_info().IsEmpty()) {
-    return;
-  }
-  // TODO(crbug.com/887756): Consider moving this higher up, or document why
-  // the above blocks are exempt from the |signout_decision| early return.
-  if (signout_decision == SigninClient::SignoutDecision::DISALLOW_SIGNOUT) {
+          << (signout_decision == SigninClient::SignoutDecision::ALLOW);
+
+  // |REVOKE_SYNC_DISALLOWED| implies that removing the primary account is not
+  // allowed as the sync consent is attached to the primary account. Therefore,
+  // there is no need to check |remove_option| as regardless of its value, this
+  // function will be no-op.
+  bool abort_signout =
+      primary_account_info().IsEmpty() ||
+      signout_decision ==
+          SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED ||
+      (remove_option == RemoveAccountsOption::kRemoveAllAccounts &&
+       signout_decision ==
+           SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+
+  if (abort_signout) {
+    // TODO(crbug.com/1370026): Add 'NOTREACHED()' after updating the
+    // 'SigninManager', 'Dice Response Handler',
+    // 'Lacros Profile Account Mapper'.
     VLOG(1) << "Ignoring attempt to sign out while signout disallowed";
     return;
   }
 
+  signin_metrics::LogSignout(signout_source_metric, signout_delete_metric);
   PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
 
   // Revoke all tokens before sending signed_out notification, because there

@@ -25,6 +25,7 @@
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -191,12 +192,22 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
       AddToAccountTracker("gaia_id", "user@gmail.com");
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync);
-  signin_client()->set_is_signout_allowed(false);
+  signin_client()->set_is_clear_primary_account_allowed(
+      SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  signin_client()->set_is_signout_allowed(true);
+
+  signin_client()->set_is_clear_primary_account_allowed(
+      SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
+  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
+  EXPECT_EQ(0, num_successful_signouts_);
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
+  signin_client()->set_is_clear_primary_account_allowed(
+      SigninClient::SignoutDecision::ALLOW);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(1, num_successful_signouts_);
@@ -215,16 +226,51 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  signin_client()->set_is_signout_allowed(false);
+  signin_client()->set_is_clear_primary_account_allowed(
+      SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
-  signin_client()->set_is_signout_allowed(true);
+
+  signin_client()->set_is_clear_primary_account_allowed(
+      SigninClient::SignoutDecision::ALLOW);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 #endif
+
+TEST_F(PrimaryAccountManagerTest, RevokeSyncConsentAllowedSignoutProhibited) {
+  CreatePrimaryAccountManager();
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_TRUE(
+      manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email.empty());
+  EXPECT_TRUE(manager_->GetPrimaryAccountId(ConsentLevel::kSync).empty());
+
+  CoreAccountId main_account_id =
+      AddToAccountTracker("gaia_id", "user@gmail.com");
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync);
+  signin_client()->set_is_clear_primary_account_allowed(
+      SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
+  manager_->RevokeSyncConsent(signin_metrics::SIGNOUT_TEST,
+                              signin_metrics::SignoutDelete::kIgnoreMetric);
+
+  // Unconsented primary account not changed.
+  EXPECT_EQ(1, num_unconsented_account_changed_);
+  // Sync consent cleared
+  EXPECT_EQ(1, num_successful_signouts_);
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+#endif
+}
 
 // Regression test for https://crbug.com/1155519.
 TEST_F(PrimaryAccountManagerTest, NoopSignOutDoesNotNotifyObservers) {

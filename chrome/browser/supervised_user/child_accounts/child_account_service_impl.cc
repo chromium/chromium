@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -143,11 +144,19 @@ void ChildAccountServiceImpl::SetActive(bool active) {
 
   if (active_) {
 #if !BUILDFLAG(IS_CHROMEOS)
-    // This is also used by user policies (UserPolicySigninService), but since
-    // child accounts can not also be Dasher accounts, there shouldn't be any
-    // problems.
-    signin_util::SetUserSignoutAllowedForProfile(profile_, false);
-#endif
+    bool allow_sync_off = false;
+#if BUILDFLAG(IS_ANDROID)
+    allow_sync_off =
+        base::FeatureList::IsEnabled(switches::kAllowSyncOffForChildAccounts);
+#endif  // BUILDFLAG(IS_ANDROID)
+    if (allow_sync_off) {
+      signin_util::UserSignoutSetting::GetForProfile(profile_)
+          ->SetClearPrimaryAccountAllowed(false);
+    } else {
+      signin_util::UserSignoutSetting::GetForProfile(profile_)
+          ->SetRevokeSyncConsentAllowed(false);
+    }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
     StartFetchingFamilyInfo();
 
@@ -157,9 +166,9 @@ void ChildAccountServiceImpl::SetActive(bool active) {
         PermissionRequestCreatorApiary::CreateWithProfile(profile_));
   } else {
 #if !BUILDFLAG(IS_CHROMEOS)
-    signin_util::SetUserSignoutAllowedForProfile(profile_, true);
+    signin_util::UserSignoutSetting::GetForProfile(profile_)
+        ->ResetSignoutSetting();
 #endif
-
     CancelFetchingFamilyInfo();
   }
 }

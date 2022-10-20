@@ -127,7 +127,32 @@ TEST_F(PrimaryAccountPolicyManagerTest,
 
   // Disable sign out and sign in. This should result in the initial profile
   // being deleted.
-  signin_util::SetUserSignoutAllowedForProfile(GetProfile(), false);
+  signin_util::UserSignoutSetting::GetForProfile(GetProfile())
+      ->SetClearPrimaryAccountAllowed(false);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, GetProfileManager()->profile_manager()->GetNumberOfProfiles());
+}
+
+TEST_F(PrimaryAccountPolicyManagerTest,
+       ClearProfileWhenSigninAndRevokeSyncNotAllowed) {
+  CreateTestingProfile();
+
+  GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+      "test@foo.com", signin::ConsentLevel::kSync);
+
+  // Create a second profile.
+  GetProfileManager()->CreateTestingProfile(
+      "primary_account_policy_manager_test_profile_path_1",
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactories());
+  ASSERT_EQ(2u, GetProfileManager()->profile_manager()->GetNumberOfProfiles());
+
+  // Disable sign out and sign in. This should result in the initial profile
+  // being deleted.
+  signin_util::UserSignoutSetting::GetForProfile(GetProfile())
+      ->SetRevokeSyncConsentAllowed(false);
   GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   base::RunLoop().RunUntilIdle();
 

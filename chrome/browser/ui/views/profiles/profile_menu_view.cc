@@ -28,6 +28,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -346,6 +347,11 @@ void ProfileMenuView::OnSigninAccountButtonClicked(CoreAccountInfo account) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfileMenuView::OnSignoutButtonClicked() {
+  DCHECK(signin_util::UserSignoutSetting::GetForProfile(browser()->profile())
+             ->IsClearPrimaryAccountAllowed())
+      << "Clear primary account is not allowed. Signout should not be offered "
+         "in the UI.";
+
   RecordClick(ActionableItem::kSignoutButton);
   if (!perform_menu_actions())
     return;

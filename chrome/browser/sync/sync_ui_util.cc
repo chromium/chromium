@@ -36,10 +36,11 @@
 
 namespace {
 
-SyncStatusLabels GetStatusForUnrecoverableError(bool is_user_signout_allowed) {
+SyncStatusLabels GetStatusForUnrecoverableError(
+    bool is_user_clear_primary_account_allowed) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   int status_label_string_id =
-      is_user_signout_allowed
+      is_user_clear_primary_account_allowed
           ? IDS_SYNC_STATUS_UNRECOVERABLE_ERROR
           :
           // The message for managed accounts is the same as that on ChromeOS.
@@ -83,7 +84,7 @@ SyncStatusLabels GetStatusForAuthError(
 
 SyncStatusLabels GetSyncStatusLabelsImpl(
     const syncer::SyncService* service,
-    bool is_user_signout_allowed,
+    bool is_user_clear_primary_account_allowed,
     const GoogleServiceAuthError& auth_error) {
   DCHECK(service);
 
@@ -105,7 +106,8 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
 
   // Then check for an unrecoverable error.
   if (service->HasUnrecoverableError()) {
-    return GetStatusForUnrecoverableError(is_user_signout_allowed);
+    return GetStatusForUnrecoverableError(
+        is_user_clear_primary_account_allowed);
   }
 
   // Then check for an auth error.
@@ -222,9 +224,10 @@ absl::optional<AvatarSyncErrorType> GetTrustedVaultError(
 
 }  // namespace
 
-SyncStatusLabels GetSyncStatusLabels(syncer::SyncService* sync_service,
-                                     signin::IdentityManager* identity_manager,
-                                     bool is_user_signout_allowed) {
+SyncStatusLabels GetSyncStatusLabels(
+    syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager,
+    bool is_user_clear_primary_account_allowed) {
   if (!sync_service) {
     // This can happen if Sync is disabled via the command line.
     return {SyncStatusMessageType::kPreSynced, IDS_SETTINGS_EMPTY_STRING,
@@ -235,8 +238,8 @@ SyncStatusLabels GetSyncStatusLabels(syncer::SyncService* sync_service,
   GoogleServiceAuthError auth_error =
       identity_manager->GetErrorStateOfRefreshTokenForAccount(
           account_info.account_id);
-  return GetSyncStatusLabelsImpl(sync_service, is_user_signout_allowed,
-                                 auth_error);
+  return GetSyncStatusLabelsImpl(
+      sync_service, is_user_clear_primary_account_allowed, auth_error);
 }
 
 SyncStatusLabels GetSyncStatusLabels(Profile* profile) {
@@ -244,7 +247,8 @@ SyncStatusLabels GetSyncStatusLabels(Profile* profile) {
   return GetSyncStatusLabels(
       SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
-      signin_util::IsUserSignoutAllowedForProfile(profile));
+      signin_util::UserSignoutSetting::GetForProfile(profile)
+          ->IsClearPrimaryAccountAllowed());
 }
 
 SyncStatusMessageType GetSyncStatusMessageType(Profile* profile) {
@@ -270,7 +274,8 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
   // RequiresClientUpgrade() is unrecoverable, but is treated separately below.
   if (service->HasUnrecoverableError() && !service->RequiresClientUpgrade()) {
     // Display different messages and buttons for managed accounts.
-    if (!signin_util::IsUserSignoutAllowedForProfile(profile)) {
+    if (!signin_util::UserSignoutSetting::GetForProfile(profile)
+             ->IsClearPrimaryAccountAllowed()) {
       return AvatarSyncErrorType::kManagedUserUnrecoverableError;
     }
     return AvatarSyncErrorType::kUnrecoverableError;

@@ -24,19 +24,23 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -54,6 +58,7 @@
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using signin::ConsentLevel;
@@ -1317,6 +1322,25 @@ TEST(PeopleHandlerMainProfile, Signout) {
   EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
 }
 
+#if DCHECK_IS_ON()
+TEST(PeopleHandlerMainProfile, DeleteProfileCrashes) {
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(true);
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(
+              builder, signin::AccountConsistencyMethod::kMirror);
+
+  PeopleHandler handler(profile.get());
+  base::Value::List args;
+  args.Append(/*delete_profile=*/true);
+  EXPECT_DEATH(handler.HandleSignout(args), ".*");
+}
+#endif  // DCHECK_IS_ON()
+
 TEST(PeopleHandlerSecondaryProfile, SignoutWhenSyncing) {
   content::BrowserTaskEnvironment task_environment;
 
@@ -1451,5 +1475,194 @@ TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
   EXPECT_EQ("user@gmail.com", *accounts[0].GetDict().FindString("email"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+class PeopleHandlerSignoutTest : public BrowserWithTestWindowTest {
+ public:
+  PeopleHandlerSignoutTest() = default;
+  ~PeopleHandlerSignoutTest() override = default;
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
+  }
+
+  signin::IdentityManager* identity_manager() {
+    return identity_test_env()->identity_manager();
+  }
+
+  PeopleHandler* handler() { return handler_.get(); }
+
+  void CreatePeopleHandler() {
+    handler_ = std::make_unique<TestingPeopleHandler>(&web_ui_, profile());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  // testing::Test:
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+
+    // Create the first tab so that web_contents() exists.
+    AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
+    web_ui_.set_web_contents(web_contents());
+  }
+
+ private:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories(
+            signin::AccountConsistencyMethod::kDice);
+  }
+
+  void TearDown() override {
+    handler_->set_web_ui(nullptr);
+    handler_->DisallowJavascript();
+    identity_test_env_profile_adaptor_.reset();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
+  content::TestWebUI web_ui_;
+  std::unique_ptr<TestingPeopleHandler> handler_;
+};
+
+#if DCHECK_IS_ON()
+TEST_F(PeopleHandlerSignoutTest, RevokeSyncNotAllowed) {
+  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
+  // 'ClearPrimaryAccount' which breaks the test.
+  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
+            signin::AccountConsistencyMethod::kDisabled);
+
+  auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
+      "a@gmail.com", ConsentLevel::kSync);
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  signin_util::UserSignoutSetting::GetForProfile(profile())
+      ->SetRevokeSyncConsentAllowed(false);
+
+  CreatePeopleHandler();
+  base::Value::List args;
+  args.Append(/*delete_profile=*/false);
+  EXPECT_DEATH(handler()->HandleSignout(args), ".*");
+}
+
+TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOff) {
+  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
+  // 'ClearPrimaryAccount' which breaks the test.
+  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
+            signin::AccountConsistencyMethod::kDisabled);
+
+  auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
+      "a@gmail.com", ConsentLevel::kSignin);
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  signin_util::UserSignoutSetting::GetForProfile(profile())
+      ->SetClearPrimaryAccountAllowed(false);
+
+  CreatePeopleHandler();
+
+  base::Value::List args;
+  args.Append(/*delete_profile=*/false);
+  EXPECT_DEATH(handler()->HandleSignout(args), ".*");
+}
+#endif  // DCHECK_IS_ON()
+
+TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOn) {
+  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
+  // 'ClearPrimaryAccount' which breaks the test.
+  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
+            signin::AccountConsistencyMethod::kDisabled);
+
+  auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
+      "a@gmail.com", ConsentLevel::kSync);
+  auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
+  signin_util::UserSignoutSetting::GetForProfile(profile())
+      ->SetClearPrimaryAccountAllowed(false);
+  EXPECT_TRUE(signin_util::UserSignoutSetting::GetForProfile(profile())
+                  ->IsRevokeSyncConsentAllowed());
+
+  CreatePeopleHandler();
+
+  base::Value::List args;
+  args.Append(/*delete_profile=*/false);
+  handler()->HandleSignout(args);
+
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
+
+  // Signout not triggered on dice platforms.
+  EXPECT_EQ(web_contents()->GetVisibleURL().spec(), chrome::kChromeUINewTabURL);
+  EXPECT_NE(web_contents()->GetVisibleURL(),
+            GaiaUrls::GetInstance()->service_logout_url());
+}
+
+TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOff) {
+  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
+  // 'ClearPrimaryAccount' which breaks the test.
+  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
+            signin::AccountConsistencyMethod::kDisabled);
+
+  auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
+      "a@gmail.com", ConsentLevel::kSignin);
+  auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
+
+  CreatePeopleHandler();
+
+  base::Value::List args;
+  args.Append(/*delete_profile=*/false);
+  handler()->HandleSignout(args);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_EQ(web_contents()->GetVisibleURL(),
+            GaiaUrls::GetInstance()->service_logout_url());
+#else
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+}
+
+TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
+  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
+  // 'ClearPrimaryAccount' which breaks the test.
+  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
+            signin::AccountConsistencyMethod::kDisabled);
+
+  auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
+      "a@gmail.com", ConsentLevel::kSync);
+  auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
+
+  CreatePeopleHandler();
+
+  EXPECT_NE(handler()->web_ui(), nullptr);
+  EXPECT_NE(nullptr, handler()->web_ui()->GetWebContents());
+
+  EXPECT_TRUE(chrome::FindBrowserWithWebContents(
+      handler()->web_ui()->GetWebContents()));
+
+  base::Value::List args;
+  args.Append(/*delete_profile=*/false);
+  handler()->HandleSignout(args);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_EQ(web_contents()->GetVisibleURL(),
+            GaiaUrls::GetInstance()->service_logout_url());
+#else
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace settings

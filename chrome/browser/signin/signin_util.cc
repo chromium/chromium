@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -22,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -57,32 +59,87 @@ UserSignoutSetting* UserSignoutSetting::GetForProfile(Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   signout_setting->is_main_profile_ = profile->IsMainProfile();
+  if (profile->IsMainProfile()) {
+    // Clearing the primary account on Lacros main profile is not allowed.
+    signout_setting->InitializeUserSignoutSettingIfNeeded();
+  }
 #endif
   return signout_setting;
 }
 
-void UserSignoutSetting::SetSignoutAllowed(bool is_allowed) {
+void UserSignoutSetting::InitializeUserSignoutSettingIfNeeded() {
+  if (revoke_sync_consent_allowed_ == signin::Tribool::kUnknown)
+    SetRevokeSyncConsentAllowed(true);
+
+  if (clear_primary_account_allowed_ != signin::Tribool::kUnknown)
+    return;
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (is_main_profile_ && !is_allowed) {
-    // Turn off sync is always allowed in the main profile. For managed
-    // profiles, it does not introduce cross-sync risks as the primary account
-    // can't be changed.
-    DCHECK(false) << "Signout is always allowed in the main profile.";
+  if (is_main_profile_ && !ignore_is_main_profile_for_testing_) {
+    SetClearPrimaryAccountAllowed(false);
     return;
   }
 #endif
-  signout_allowed_ =
-      is_allowed ? signin::Tribool::kTrue : signin::Tribool::kFalse;
+  SetClearPrimaryAccountAllowed(true);
 }
 
-signin::Tribool UserSignoutSetting::signout_allowed() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (is_main_profile_) {
-    return signin::Tribool::kTrue;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return signout_allowed_;
+void UserSignoutSetting::ResetSignoutSetting() {
+  clear_primary_account_allowed_ = signin::Tribool::kUnknown;
+  revoke_sync_consent_allowed_ = signin::Tribool::kUnknown;
+  InitializeUserSignoutSettingIfNeeded();
 }
+
+bool UserSignoutSetting::IsClearPrimaryAccountAllowed() const {
+  return clear_primary_account_allowed_ == signin::Tribool::kTrue;
+}
+
+void UserSignoutSetting::SetClearPrimaryAccountAllowed(bool allowed) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!ignore_is_main_profile_for_testing_ && is_main_profile_ && allowed) {
+    // Changing the primary account is not allowed as it must be the device
+    // account.
+    NOTREACHED()
+        << "Clearing primary account can't be allowed in the main profile.";
+    return;
+  }
+#endif
+  if (allowed && revoke_sync_consent_allowed_ == signin::Tribool::kFalse) {
+    NOTREACHED() << "Revoke sync is not allowed therefore it is not possible "
+                    "to allow clearing the primary account. To reset signout "
+                    "setting please use 'ResetSignoutSetting'";
+    return;
+  }
+
+  clear_primary_account_allowed_ =
+      allowed ? signin::Tribool::kTrue : signin::Tribool::kFalse;
+}
+
+bool UserSignoutSetting::IsRevokeSyncConsentAllowed() const {
+  return revoke_sync_consent_allowed_ == signin::Tribool::kTrue;
+}
+
+void UserSignoutSetting::SetRevokeSyncConsentAllowed(bool allowed) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!ignore_is_main_profile_for_testing_ && is_main_profile_ && !allowed) {
+    NOTREACHED()
+        << "Revoke sync consent is always allowed in Lacros main profile.";
+    return;
+  }
+#endif
+  revoke_sync_consent_allowed_ =
+      allowed ? signin::Tribool::kTrue : signin::Tribool::kFalse;
+  if (!allowed) {
+    // If revoke sync is not allowed, it implies that removing the primary
+    // account is also not allowed.
+    SetClearPrimaryAccountAllowed(false);
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void UserSignoutSetting::IgnoreIsMainProfileForTesting() {
+  ignore_is_main_profile_for_testing_ = true;
+}
+#endif
 
 ScopedForceSigninSetterForTesting::ScopedForceSigninSetterForTesting(
     bool enable) {
@@ -112,20 +169,14 @@ void ResetForceSigninForTesting() {
   g_is_force_signin_enabled_cache = NOT_CACHED;
 }
 
-bool IsUserSignoutAllowedForProfile(Profile* profile) {
-  return UserSignoutSetting::GetForProfile(profile)->signout_allowed() ==
-         signin::Tribool::kTrue;
-}
-
-void SetUserSignoutAllowedForProfile(Profile* profile, bool is_allowed) {
-  UserSignoutSetting::GetForProfile(profile)->SetSignoutAllowed(is_allowed);
-}
-
-void EnsureUserSignoutAllowedIsInitializedForProfile(Profile* profile) {
-  if (UserSignoutSetting::GetForProfile(profile)->signout_allowed() ==
-      signin::Tribool::kUnknown) {
-    SetUserSignoutAllowedForProfile(profile, /*is_allowed=*/true);
-  }
+bool IsProfileDeletionAllowed(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return !profile->IsMainProfile();
+#elif BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return true;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

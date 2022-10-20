@@ -39,6 +39,10 @@ using ProfileSeparationPolicyStateSet =
 // (See ChromeSigninClient::PreSignOut(),
 //      PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile()).
 // This class is also used on Android to disallow signout for supervised users.
+// Note: Preventing Clear primary account is not fully supported yet.
+// This class does not handle UI changes, each feature is responsible of
+// handling required UI changes to align with the desired product behavior
+// (e.g. hide signout button).
 class UserSignoutSetting : public base::SupportsUserData::Data {
  public:
   // Fetch from Profile. Make and store if not already present.
@@ -51,16 +55,50 @@ class UserSignoutSetting : public base::SupportsUserData::Data {
   UserSignoutSetting(const UserSignoutSetting&) = delete;
   UserSignoutSetting& operator=(const UserSignoutSetting&) = delete;
 
-  signin::Tribool signout_allowed() const;
-  void SetSignoutAllowed(bool is_allowed);
+  // Initialize the user signout setting if it has not yet been set.
+  // Delaying the initialization allows services to bet created  and forbid
+  // signout if needed. This protects against allowing signout during this time
+  // where it is not known if it should be allowed.
+  // This function must be called after profile services are initialized to
+  // ensure users who are allowed to signout can signout.
+  void InitializeUserSignoutSettingIfNeeded();
+
+  // Reset Signout setting to the default value.
+  void ResetSignoutSetting();
+
+  // Returns true if removing/changing a non empty primary account from the
+  // profile is allowed. For example: Lacros main profile, the primary account
+  // must be the device account and can't be changed/cleared. The same applies
+  // for cloud-managed enterprise accounts that has accepted managed.
+  bool IsClearPrimaryAccountAllowed() const;
+  void SetClearPrimaryAccountAllowed(bool allowed);
+
+  // If Revoke sync consent is disallowed, it implies clearing the primary
+  // account is disallowed.
+  // This function will be deprecated as soon as turn off sync allowed for
+  // enterprise and child users fully launches.
+  bool IsRevokeSyncConsentAllowed() const;
+  void SetRevokeSyncConsentAllowed(bool allowed);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void IgnoreIsMainProfileForTesting();
+#endif
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // `signout_allowed()` is always true for Lacros main profile despite of
+  // Turn sync off is always true for Lacros main profile despite of
   // policies.
+  bool ignore_is_main_profile_for_testing_ = false;
   bool is_main_profile_ = false;
 #endif
-  signin::Tribool signout_allowed_ = signin::Tribool::kUnknown;
+
+  // TODO(crbug.com/1369980): Remove revoke sync restriction when both:
+  // - |kAllowSyncOffForChildAccounts| is fully launched and feature flag
+  // removed.
+  // - Allowing enterprise users to revoke sync fully launches.
+  signin::Tribool revoke_sync_consent_allowed_ = signin::Tribool::kUnknown;
+
+  signin::Tribool clear_primary_account_allowed_ = signin::Tribool::kUnknown;
 };
 
 // This class calls ResetForceSigninForTesting when destroyed, so that
@@ -87,20 +125,8 @@ void SetForceSigninForTesting(bool enable);
 // Reset force sign in to uninitialized state for testing.
 void ResetForceSigninForTesting();
 
-// Returns true if clearing the primary profile is allowed.
-bool IsUserSignoutAllowedForProfile(Profile* profile);
-
-// Sign-out is allowed by default, but some Chrome profiles (e.g. for cloud-
-// managed enterprise accounts) may wish to disallow user-initiated sign-out.
-// Note that this exempts sign-outs that are not user-initiated (e.g. sign-out
-// triggered when cloud policy no longer allows current email pattern). See
-// ChromeSigninClient::PreSignOut().
-void SetUserSignoutAllowedForProfile(Profile* profile, bool is_allowed);
-
-// Updates the user sign-out state to |true| if is was never initialized.
-// This should be called at the end of the flow to initialize a profile to
-// ensure that the signout allowed flag is updated.
-void EnsureUserSignoutAllowedIsInitializedForProfile(Profile* profile);
+// Returns true if profile deletion is allowed.
+bool IsProfileDeletionAllowed(Profile* profile);
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)

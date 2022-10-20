@@ -168,8 +168,10 @@ void UserPolicySigninService::Shutdown() {
 void UserPolicySigninService::ShutdownUserCloudPolicyManager() {
   UserCloudPolicyManager* manager = policy_manager();
   // Allow the user to signout again.
-  if (manager)
-    signin_util::SetUserSignoutAllowedForProfile(profile_, true);
+  if (manager) {
+    signin_util::UserSignoutSetting::GetForProfile(profile_)
+        ->ResetSignoutSetting();
+  }
 
   UserPolicySigninServiceBase::ShutdownUserCloudPolicyManager();
 }
@@ -181,10 +183,22 @@ void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
 }
 
 void UserPolicySigninService::ProhibitSignoutIfNeeded() {
-  if (policy_manager()->IsClientRegistered() ||
-      internal::g_force_prohibit_signout_for_tests) {
-    DVLOG(1) << "User is registered for policy - prohibiting signout";
-    signin_util::SetUserSignoutAllowedForProfile(profile_, false);
+  if (!policy_manager()->IsClientRegistered() &&
+      !internal::g_force_prohibit_signout_for_tests) {
+    return;
+  }
+
+  DVLOG(1) << "User is registered for policy - prohibiting signout";
+
+  if (!chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // Ensure user accepted management bit is set.
+    chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
+  }
+
+  if (identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    signin_util::UserSignoutSetting::GetForProfile(profile_)
+        ->SetRevokeSyncConsentAllowed(false);
   }
 }
 
