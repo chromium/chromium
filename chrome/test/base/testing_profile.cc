@@ -999,90 +999,114 @@ TestingProfile::Builder::Builder() = default;
 
 TestingProfile::Builder::~Builder() = default;
 
-void TestingProfile::Builder::SetPath(const base::FilePath& path) {
+TestingProfile::Builder& TestingProfile::Builder::SetPath(
+    const base::FilePath& path) {
   path_ = path;
+  return *this;
 }
 
-void TestingProfile::Builder::SetDelegate(Delegate* delegate) {
+TestingProfile::Builder& TestingProfile::Builder::SetDelegate(
+    Delegate* delegate) {
   delegate_ = delegate;
+  return *this;
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-void TestingProfile::Builder::SetExtensionSpecialStoragePolicy(
+TestingProfile::Builder&
+TestingProfile::Builder::SetExtensionSpecialStoragePolicy(
     scoped_refptr<ExtensionSpecialStoragePolicy> policy) {
   extension_policy_ = policy;
+  return *this;
 }
 #endif
 
-void TestingProfile::Builder::SetPrefService(
+TestingProfile::Builder& TestingProfile::Builder::SetPrefService(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs) {
   pref_service_ = std::move(prefs);
+  return *this;
 }
 
-void TestingProfile::Builder::SetGuestSession() {
+TestingProfile::Builder& TestingProfile::Builder::SetGuestSession() {
   guest_session_ = true;
+  return *this;
 }
 
-void TestingProfile::Builder::DisallowBrowserWindows() {
+TestingProfile::Builder& TestingProfile::Builder::DisallowBrowserWindows() {
   allows_browser_windows_ = false;
+  return *this;
 }
 
-void TestingProfile::Builder::SetIsNewProfile(bool is_new_profile) {
+TestingProfile::Builder& TestingProfile::Builder::SetIsNewProfile(
+    bool is_new_profile) {
   is_new_profile_ = is_new_profile;
+  return *this;
 }
 
-void TestingProfile::Builder::SetIsSupervisedProfile() {
+TestingProfile::Builder& TestingProfile::Builder::SetIsSupervisedProfile() {
   is_supervised_profile_ = true;
+  return *this;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TestingProfile::Builder::SetIsMainProfile(bool is_main_profile) {
+TestingProfile::Builder& TestingProfile::Builder::SetIsMainProfile(
+    bool is_main_profile) {
   is_main_profile_ = is_main_profile;
+  return *this;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void TestingProfile::Builder::SetUserCloudPolicyManagerAsh(
+TestingProfile::Builder& TestingProfile::Builder::SetUserCloudPolicyManagerAsh(
     std::unique_ptr<policy::UserCloudPolicyManagerAsh>
         user_cloud_policy_manager) {
   user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
+  return *this;
 }
 #else
-void TestingProfile::Builder::SetUserCloudPolicyManager(
+TestingProfile::Builder& TestingProfile::Builder::SetUserCloudPolicyManager(
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager) {
   user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
+  return *this;
 }
 #endif
 
-void TestingProfile::Builder::SetPolicyService(
+TestingProfile::Builder& TestingProfile::Builder::SetPolicyService(
     std::unique_ptr<policy::PolicyService> policy_service) {
   policy_service_ = std::move(policy_service);
+  return *this;
 }
 
-void TestingProfile::Builder::SetProfileName(const std::string& profile_name) {
+TestingProfile::Builder& TestingProfile::Builder::SetProfileName(
+    const std::string& profile_name) {
   profile_name_ = profile_name;
+  return *this;
 }
 
-void TestingProfile::Builder::SetSharedURLLoaderFactory(
+TestingProfile::Builder& TestingProfile::Builder::SetSharedURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = url_loader_factory;
+  return *this;
 }
 
-void TestingProfile::Builder::OverridePolicyConnectorIsManagedForTesting(
+TestingProfile::Builder&
+TestingProfile::Builder::OverridePolicyConnectorIsManagedForTesting(
     bool is_managed) {
   override_policy_connector_is_managed_ = is_managed;
+  return *this;
 }
 
-void TestingProfile::Builder::AddTestingFactory(
+TestingProfile::Builder& TestingProfile::Builder::AddTestingFactory(
     BrowserContextKeyedServiceFactory* service_factory,
     BrowserContextKeyedServiceFactory::TestingFactory testing_factory) {
   testing_factories_.emplace_back(service_factory, std::move(testing_factory));
+  return *this;
 }
 
-void TestingProfile::Builder::AddTestingFactories(
+TestingProfile::Builder& TestingProfile::Builder::AddTestingFactories(
     const TestingFactories& testing_factories) {
   testing_factories_.insert(testing_factories_.end(), testing_factories.begin(),
                             testing_factories.end());
+  return *this;
 }
 
 std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {

@@ -175,9 +175,9 @@ class ManagedValueStoreCacheTest : public testing::Test {
     auto policy_service =
         std::make_unique<policy::PolicyServiceImpl>(providers);
 
-    TestingProfile::Builder builder;
-    builder.SetPolicyService(std::move(policy_service));
-    profile_ = builder.Build();
+    profile_ = TestingProfile::Builder()
+                   .SetPolicyService(std::move(policy_service))
+                   .Build();
   }
 
   void TearDown() override {

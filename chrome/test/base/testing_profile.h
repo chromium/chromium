@@ -106,72 +106,72 @@ class TestingProfile : public Profile {
     // a MessageLoop. Caller maintains ownership of the Delegate
     // and must manage its lifetime so it continues to exist until profile
     // initialization is complete.
-    void SetDelegate(Delegate* delegate);
+    Builder& SetDelegate(Delegate* delegate);
 
     // Adds a testing factory to the TestingProfile. These testing factories
     // are applied before the ProfileKeyedServices are created.
-    void AddTestingFactory(
+    Builder& AddTestingFactory(
         BrowserContextKeyedServiceFactory* service_factory,
         BrowserContextKeyedServiceFactory::TestingFactory testing_factory);
 
     // Add multiple testing factories to the TestingProfile. These testing
     // factories are applied before the ProfileKeyedServices are created.
-    void AddTestingFactories(const TestingFactories& testing_factories);
+    Builder& AddTestingFactories(const TestingFactories& testing_factories);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Sets the ExtensionSpecialStoragePolicy to be returned by
     // GetExtensionSpecialStoragePolicy().
-    void SetExtensionSpecialStoragePolicy(
+    Builder& SetExtensionSpecialStoragePolicy(
         scoped_refptr<ExtensionSpecialStoragePolicy> policy);
 #endif
 
     // Sets the path to the directory to be used to hold profile data.
-    void SetPath(const base::FilePath& path);
+    Builder& SetPath(const base::FilePath& path);
 
     // Sets the PrefService to be used by this profile.
-    void SetPrefService(
+    Builder& SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs);
 
     // Makes the Profile being built a guest profile.
-    void SetGuestSession();
+    Builder& SetGuestSession();
 
     // Makes Profile::AllowsBrowserWindows() return false.
-    void DisallowBrowserWindows();
+    Builder& DisallowBrowserWindows();
 
     // Set the value to be returned by Profile::IsNewProfile().
-    void SetIsNewProfile(bool is_new_profile);
+    Builder& SetIsNewProfile(bool is_new_profile);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Set the value to be returned by Profile::IsMainProfile().
-    void SetIsMainProfile(bool is_main_profile);
+    Builder& SetIsMainProfile(bool is_main_profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Marks profile as a Family Link supervised profile.
     // Only available when ENABLE_SUPERVISED_USERS feature is enabled.
-    void SetIsSupervisedProfile();
+    Builder& SetIsSupervisedProfile();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    void SetUserCloudPolicyManagerAsh(
+    Builder& SetUserCloudPolicyManagerAsh(
         std::unique_ptr<policy::UserCloudPolicyManagerAsh>
             user_cloud_policy_manager);
 #else
-    void SetUserCloudPolicyManager(
+    Builder& SetUserCloudPolicyManager(
         std::unique_ptr<policy::UserCloudPolicyManager>
             user_cloud_policy_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // Sets the PolicyService to be used by this profile.
-    void SetPolicyService(
+    Builder& SetPolicyService(
         std::unique_ptr<policy::PolicyService> policy_service);
 
     // Sets the UserProfileName to be used by this profile.
-    void SetProfileName(const std::string& profile_name);
+    Builder& SetProfileName(const std::string& profile_name);
 
     // Sets the SharedURLLoaderFactory to be used by this profile.
-    void SetSharedURLLoaderFactory(
+    Builder& SetSharedURLLoaderFactory(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-    void OverridePolicyConnectorIsManagedForTesting(bool is_managed);
+    Builder& OverridePolicyConnectorIsManagedForTesting(bool is_managed);
 
     // Creates the TestingProfile using previously-set settings.
     std::unique_ptr<TestingProfile> Build();
