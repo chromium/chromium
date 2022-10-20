@@ -49,12 +49,7 @@ void CrtcCommitRequest::WriteIntoTrace(perfetto::TracedValue context) const {
 
   DrmWriteIntoTraceHelper(mode_, dict.AddItem("mode"));
 
-  {
-    auto hardware_display_plane_list =
-        dict.AddItem("hardware_display_plane_list");
-    if (plane_list_)
-      plane_list_->WriteIntoTrace(std::move(hardware_display_plane_list));
-  }
+  dict.Add("hardware_display_plane_list", plane_list_);
 
   dict.Add("overlays", overlays_);
 }
