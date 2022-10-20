@@ -20,11 +20,12 @@
 #include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -41,7 +42,6 @@ struct AuctionConfig;
 
 namespace content {
 
-class InterestGroupAuctionReporter;
 class InterestGroupManagerImpl;
 
 // An InterestGroupAuction Handles running an auction, or a component auction.
