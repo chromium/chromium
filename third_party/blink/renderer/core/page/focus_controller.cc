@@ -1311,34 +1311,6 @@ bool FocusController::SetFocusedElement(Element* element,
       new_document->FocusedElement() == element)
     return true;
 
-  // Fenced frame focusing should not auto-scroll, since that behavior can
-  // be observed by an embedder.
-  FocusParams params_to_use = params;
-  if (new_document && params.type == mojom::blink::FocusType::kScript &&
-      new_document->GetFrame()->IsInFencedFrameTree()) {
-    FocusOptions* focus_options = FocusOptions::Create();
-    focus_options->setPreventScroll(true);
-    params_to_use = FocusParams(params.selection_behavior, params.type,
-                                params.source_capabilities, focus_options);
-  }
-
-  if (new_focused_frame && !new_focused_frame->ShouldAllowScriptFocus() &&
-      params_to_use.type == mojom::blink::FocusType::kScript) {
-    // Disallow script focus that crosses a fenced frame boundary on a
-    // frame that doesn't have transient user activation.
-    if (!new_focused_frame->HasTransientUserActivation())
-      return false;
-    // Fenced frames should consume user activation when attempting to pull
-    // focus across a fenced boundary into itself.
-    // TODO(crbug.com/1123606) Right now the browser can't verify that the
-    // renderer properly consumed user activation. When user activation code is
-    // migrated to the browser, move this logic to the browser as well.
-    if (new_focused_frame->IsInFencedFrameTree()) {
-      LocalFrame::ConsumeTransientUserActivation(
-          DynamicTo<LocalFrame>(new_focused_frame));
-    }
-  }
-
   if (old_document && old_document != new_document)
     old_document->ClearFocusedElement();
 
@@ -1351,7 +1323,7 @@ bool FocusController::SetFocusedElement(Element* element,
 
   if (new_document) {
     bool successfully_focused =
-        new_document->SetFocusedElement(element, params_to_use);
+        new_document->SetFocusedElement(element, params);
     if (!successfully_focused)
       return false;
 

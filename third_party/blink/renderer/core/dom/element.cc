@@ -5590,14 +5590,11 @@ Element* Element::GetAutofocusDelegate() const {
   return nullptr;
 }
 
-void Element::focusForBindings() {
-  Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                    mojom::blink::FocusType::kScript, nullptr));
-}
-
 void Element::focusForBindings(const FocusOptions* options) {
   Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                    mojom::blink::FocusType::kScript, nullptr, options));
+                    mojom::blink::FocusType::kScript,
+                    /*capabilities=*/nullptr, options,
+                    /*gate_on_user_activation=*/true));
 }
 
 void Element::Focus() {
@@ -5606,7 +5603,8 @@ void Element::Focus() {
 
 void Element::Focus(const FocusOptions* options) {
   Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                    mojom::blink::FocusType::kNone, nullptr, options));
+                    mojom::blink::FocusType::kNone, /*capabilities=*/nullptr,
+                    options));
 }
 
 void Element::Focus(const FocusParams& params) {
@@ -5627,6 +5625,37 @@ void Element::Focus(const FocusParams& params) {
       frame_owner_element->contentDocument()->UnloadStarted())
     return;
 
+  FocusOptions* focus_options = nullptr;
+  if (params.gate_on_user_activation) {
+    LocalFrame& frame = *GetDocument().GetFrame();
+    if (!frame.AllowFocusWithoutUserActivation() &&
+        !LocalFrame::HasTransientUserActivation(&frame)) {
+      return;
+    }
+
+    // Fenced frame focusing should not auto-scroll, since that behavior can
+    // be observed by an embedder.
+    if (frame.IsInFencedFrameTree()) {
+      focus_options = FocusOptions::Create();
+      focus_options->setPreventScroll(true);
+    }
+
+    // Fenced frames should consume user activation when attempting to pull
+    // focus across a fenced boundary into itself.
+    // TODO(crbug.com/848778) Right now the browser can't verify that the
+    // renderer properly consumed user activation. When user activation code is
+    // migrated to the browser, move this logic to the browser as well.
+    if (!frame.AllowFocusWithoutUserActivation() &&
+        frame.IsInFencedFrameTree()) {
+      LocalFrame::ConsumeTransientUserActivation(&frame);
+    }
+  }
+
+  FocusParams params_to_use = FocusParams(
+      params.selection_behavior, params.type, params.source_capabilities,
+      focus_options ? focus_options : params.options,
+      params.gate_on_user_activation);
+
   // Ensure we have clean style (including forced display locks).
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
 
@@ -5637,9 +5666,9 @@ void Element::Focus(const FocusParams& params) {
     if (Element* new_focus_target = GetFocusableArea()) {
       // Unlike the specification, we re-run focus() for new_focus_target
       // because we can't change |this| in a member function.
-      new_focus_target->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
-                                          mojom::blink::FocusType::kForward,
-                                          nullptr, params.options));
+      new_focus_target->Focus(FocusParams(
+          SelectionBehaviorOnFocus::kReset, mojom::blink::FocusType::kForward,
+          /*capabilities=*/nullptr, params_to_use.options));
     }
     // 2. If new focus target is null, then:
     //  2.1. If no fallback target was specified, then return.
@@ -5648,13 +5677,14 @@ void Element::Focus(const FocusParams& params) {
   // If a script called focus(), then the type would be kScript. This means
   // we are activating because of a script action (kScriptFocus). Otherwise,
   // this is a user activation (kUserFocus).
-  ActivateDisplayLockIfNeeded(params.type == mojom::blink::FocusType::kScript
+  ActivateDisplayLockIfNeeded(params_to_use.type ==
+                                      mojom::blink::FocusType::kScript
                                   ? DisplayLockActivationReason::kScriptFocus
                                   : DisplayLockActivationReason::kUserFocus);
   DeferredShapingController::From(GetDocument())->OnFocus(*this);
 
   if (!GetDocument().GetPage()->GetFocusController().SetFocusedElement(
-          this, GetDocument().GetFrame(), params))
+          this, GetDocument().GetFrame(), params_to_use))
     return;
 
   if (GetDocument().FocusedElement() == this) {
@@ -5675,14 +5705,15 @@ void Element::Focus(const FocusParams& params) {
     // Trigger a tooltip to show for the newly focused element only when the
     // focus was set resulting from a keyboard action.
     //
-    // TODO(bebeaudr): To also trigger a tooltip when the |params.type| is
-    // kSpatialNavigation, we'll first have to ensure that the fake mouse move
-    // event fired by `SpatialNavigationController::DispatchMouseMoveEvent` does
-    // not lead to a cursor triggered tooltip update. The only tooltip update
-    // that there should be in that case is the one triggered from the spatial
-    // navigation keypress. This issue is tracked in https://crbug.com/1206446.
+    // TODO(bebeaudr): To also trigger a tooltip when the |params_to_use.type|
+    // is kSpatialNavigation, we'll first have to ensure that the fake mouse
+    // move event fired by `SpatialNavigationController::DispatchMouseMoveEvent`
+    // does not lead to a cursor triggered tooltip update. The only tooltip
+    // update that there should be in that case is the one triggered from the
+    // spatial navigation keypress. This issue is tracked in
+    // https://crbug.com/1206446.
     bool is_focused_from_keypress = false;
-    switch (params.type) {
+    switch (params_to_use.type) {
       case mojom::blink::FocusType::kScript:
         if (GetDocument()
                 .GetFrame()
