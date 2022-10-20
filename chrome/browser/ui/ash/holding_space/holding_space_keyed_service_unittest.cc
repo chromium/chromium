@@ -2207,6 +2207,14 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   EXPECT_EQ(model->items()[0]->file_path(), current_path);
   EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.5f);
 
+  // Not dangerous in-progress items should only have Cancel and Pause
+  // in-progress commands.
+  EXPECT_EQ(model->items()[0]->in_progress_commands().size(), 2u);
+  EXPECT_TRUE(holding_space_util::SupportsInProgressCommand(
+      model->items()[0].get(), HoldingSpaceCommandId::kCancelItem));
+  EXPECT_TRUE(holding_space_util::SupportsInProgressCommand(
+      model->items()[0].get(), HoldingSpaceCommandId::kPauseItem));
+
   {
     // Once the `ThumbnailLoader` has finished processing the request, the image
     // should represent the file type of the *target* file for the underlying
@@ -2241,6 +2249,11 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
       DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT;
   UpdateFakeDownloadItem();
 
+  // Dangerous in-progress items should only have Cancel in-progress commands.
+  EXPECT_EQ(model->items()[0]->in_progress_commands().size(), 1u);
+  EXPECT_TRUE(holding_space_util::SupportsInProgressCommand(
+      model->items()[0].get(), HoldingSpaceCommandId::kCancelItem));
+
   {
     // Because the download has been marked as dangerous and maybe malicious,
     // the image should represent that the underlying download is in error.
@@ -2274,6 +2287,11 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   current_danger_type =
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
   UpdateFakeDownloadItem();
+
+  // Dangerous in-progress items should only have Cancel in-progress commands.
+  EXPECT_EQ(model->items()[0]->in_progress_commands().size(), 1u);
+  EXPECT_TRUE(holding_space_util::SupportsInProgressCommand(
+      model->items()[0].get(), HoldingSpaceCommandId::kCancelItem));
 
   {
     // Because the download has been marked as dangerous but *not* malicious,

@@ -867,23 +867,26 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
   // Commands.
   std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
   if (!in_progress_download->GetProgress().IsComplete()) {
-    in_progress_commands.push_back(
-        in_progress_download->IsPaused()
-            ? HoldingSpaceItem::InProgressCommand(
-                  HoldingSpaceCommandId::kResumeItem,
-                  IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_RESUME, &kResumeIcon,
-                  base::BindRepeating(&HoldingSpaceDownloadsDelegate::Resume,
-                                      weak_factory_.GetWeakPtr()))
-            : HoldingSpaceItem::InProgressCommand(
-                  HoldingSpaceCommandId::kPauseItem,
-                  IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE, &kPauseIcon,
-                  base::BindRepeating(&HoldingSpaceDownloadsDelegate::Pause,
-                                      weak_factory_.GetWeakPtr())));
-    in_progress_commands.push_back(HoldingSpaceItem::InProgressCommand(
+    if (!(in_progress_download->IsDangerous() ||
+          in_progress_download->IsMixedContent())) {
+      in_progress_commands.push_back(
+          in_progress_download->IsPaused()
+              ? HoldingSpaceItem::InProgressCommand(
+                    HoldingSpaceCommandId::kResumeItem,
+                    IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_RESUME, &kResumeIcon,
+                    base::BindRepeating(&HoldingSpaceDownloadsDelegate::Resume,
+                                        weak_factory_.GetWeakPtr()))
+              : HoldingSpaceItem::InProgressCommand(
+                    HoldingSpaceCommandId::kPauseItem,
+                    IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE, &kPauseIcon,
+                    base::BindRepeating(&HoldingSpaceDownloadsDelegate::Pause,
+                                        weak_factory_.GetWeakPtr())));
+    }
+    in_progress_commands.emplace_back(
         HoldingSpaceCommandId::kCancelItem,
         IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL, &kCancelIcon,
         base::BindRepeating(&HoldingSpaceDownloadsDelegate::Cancel,
-                            weak_factory_.GetWeakPtr())));
+                            weak_factory_.GetWeakPtr()));
   }
 
   // Update.
