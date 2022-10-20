@@ -29,7 +29,7 @@ namespace content_settings {
 class ContentSettingsDefaultProviderTest : public testing::Test {
  public:
   ContentSettingsDefaultProviderTest()
-      : provider_(profile_.GetPrefs(), false) {}
+      : provider_(profile_.GetPrefs(), false, false) {}
   ~ContentSettingsDefaultProviderTest() override {
     provider_.ShutdownOnUIThread();
   }
@@ -163,7 +163,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
 
   // Instantiate a new DefaultProvider; can't use |provider_| because we want to
   // test the constructor's behavior after setting the above.
-  DefaultProvider provider(prefs, false);
+  DefaultProvider provider(prefs, false, false);
 
   // Check that obsolete prefs have been deleted.
   EXPECT_FALSE(prefs->HasPrefPath(kFullscreenPrefPath));
@@ -192,7 +192,7 @@ TEST_F(ContentSettingsDefaultProviderTest,
 
   // Instantiate a new DefaultProvider; can't use |provider_| because we want to
   // test the constructor's behavior after setting the above.
-  DefaultProvider provider(prefs, false);
+  DefaultProvider provider(prefs, false, false);
 
   // Check that the setting has been migrated.
   EXPECT_FALSE(prefs->HasPrefPath(kDeprecatedEnableDRM));
@@ -218,7 +218,7 @@ TEST_F(ContentSettingsDefaultProviderTest,
 
   // Instantiate a new DefaultProvider; can't use |provider_| because we want to
   // test the constructor's behavior after setting the above.
-  DefaultProvider provider(prefs, false);
+  DefaultProvider provider(prefs, false, false);
 
   // Check that the setting has been migrated.
   EXPECT_FALSE(prefs->HasPrefPath(kDeprecatedEnableDRM));
@@ -237,7 +237,8 @@ TEST_F(ContentSettingsDefaultProviderTest,
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
 TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
-  DefaultProvider otr_provider(profile_.GetPrefs(), true /* incognito */);
+  DefaultProvider otr_provider(profile_.GetPrefs(), true /* incognito */,
+                               false /* should_record_metrics */);
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
@@ -279,7 +280,8 @@ TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
                                          true /* include_incognito */));
 
   // Check that new OTR DefaultProviders also inherit the correct value.
-  DefaultProvider otr_provider2(profile_.GetPrefs(), true /* incognito */);
+  DefaultProvider otr_provider2(profile_.GetPrefs(), true /* incognito */,
+                                false /* should_record_metrics */);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&otr_provider2, GURL(), GURL(),
                                          ContentSettingsType::COOKIES,

@@ -45,6 +45,10 @@
 #include "chrome/browser/sessions/exit_type_service_factory.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
+
 HostContentSettingsMapFactory::HostContentSettingsMapFactory()
     : RefcountedProfileKeyedServiceFactory(
           "HostContentSettingsMap",
@@ -95,11 +99,21 @@ scoped_refptr<RefcountedKeyedService>
   if (profile->IsOffTheRecord() && !profile->IsGuestSession())
     GetForProfile(original_profile);
 
+  bool should_record_metrics = profile->IsRegularProfile();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS creates various irregular profiles (login, lock screen...); they
+  // are of type kRegular (returns true for `Profile::IsRegular()`), that aren't
+  // used to browse the web and users can't configure. Don't collect metrics
+  // about them.
+  should_record_metrics =
+      should_record_metrics && ash::ProfileHelper::IsRegularProfile(profile);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   scoped_refptr<HostContentSettingsMap> settings_map(new HostContentSettingsMap(
       profile->GetPrefs(),
       profile->IsOffTheRecord() || profile->IsGuestSession(),
-      /*store_last_modified=*/true,
-      profile->ShouldRestoreOldSessionCookies()));
+      /*store_last_modified=*/true, profile->ShouldRestoreOldSessionCookies(),
+      should_record_metrics));
 
   auto allowlist_provider = std::make_unique<WebUIAllowlistProvider>(
       WebUIAllowlist::GetOrCreate(profile));

@@ -52,7 +52,8 @@ class VerdictCacheManagerTest : public ::testing::Test {
     HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, false /* is_off_the_record */,
-        false /* store_last_modified */, false /* restore_session */);
+        false /* store_last_modified */, false /* restore_session */,
+        false /* should_record_metrics */);
     auto sync_observer = std::make_unique<MockSafeBrowsingSyncObserver>();
     raw_sync_observer_ = sync_observer.get();
     cache_manager_ = std::make_unique<VerdictCacheManager>(

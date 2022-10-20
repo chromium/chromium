@@ -875,8 +875,10 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
   <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
-  <affected-histogram name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
-  <affected-histogram name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
+  <affected-histogram
+      name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
+  <affected-histogram
+      name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Layout.UpdateTime"/>
@@ -910,8 +912,10 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
   <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
-  <affected-histogram name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
-  <affected-histogram name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
+  <affected-histogram
+      name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
+  <affected-histogram
+      name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Layout.UpdateTime"/>
@@ -945,8 +949,10 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
   <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
-  <affected-histogram name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
-  <affected-histogram name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
+  <affected-histogram
+      name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
+  <affected-histogram
+      name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Layout.UpdateTime"/>
@@ -1421,9 +1427,29 @@ chromium-metrics-reviews@google.com.
   <suffix name="Block" label="Block"/>
   <suffix name="DetectImportantContent" label="Detect important content"/>
   <suffix name="SessionOnly" label="Session only"/>
-  <affected-histogram name="ContentSettings.Exceptions.cookies"/>
-  <affected-histogram name="ContentSettings.Exceptions.popups"/>
-  <affected-histogram name="ContentSettings.Exceptions.subresource-filter"/>
+  <affected-histogram name="ContentSettings.Exceptions.cookies">
+    <obsolete>
+      Removed in M107. See ContentSettings.RegularProfile.Exceptions.cookies
+      instead, which includes data only from regular profiles.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="ContentSettings.Exceptions.popups">
+    <obsolete>
+      Removed in M107. See ContentSettings.RegularProfile.Exceptions.popups
+      instead, which includes data only from regular profiles.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="ContentSettings.Exceptions.subresource-filter">
+    <obsolete>
+      Removed in M107. See
+      ContentSettings.RegularProfile.Exceptions.subresource-filter instead,
+      which includes data only from regular profiles.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.cookies"/>
+  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.popups"/>
+  <affected-histogram
+      name="ContentSettings.RegularProfile.Exceptions.subresource-filter"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ContentSuggestionCategory" separator=".">

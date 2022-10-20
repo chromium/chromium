@@ -181,7 +181,7 @@ class BrowsingTopicsServiceImplTest
 
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &prefs_, /*is_off_the_record=*/false, /*store_last_modified=*/false,
-        /*restore_session=*/false);
+        /*restore_session=*/false, /*should_record_metrics=*/false);
     cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
         host_content_settings_map_.get(), &prefs_, false, "chrome-extension");
 

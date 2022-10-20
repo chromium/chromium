@@ -284,7 +284,8 @@ class PasswordProtectionServiceTest : public ::testing::Test {
     HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, /*is_off_the_record=*/false,
-        /*store_last_modified=*/false, /*restore_session=*/false);
+        /*store_last_modified=*/false, /*restore_session=*/false,
+        /*should_record_metrics=*/false);
     database_manager_ = new MockSafeBrowsingDatabaseManager();
     password_protection_service_ =
         std::make_unique<NiceMock<TestPasswordProtectionService>>(
@@ -389,7 +390,8 @@ class PasswordProtectionServiceBaseTest
     safe_browsing::RegisterProfilePrefs(test_pref_service_.registry());
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, false /* is_off_the_record */,
-        false /* store_last_modified */, false /* restore_session*/);
+        false /* store_last_modified */, false /* restore_session*/,
+        false /* should_record_metrics */);
     database_manager_ = new MockSafeBrowsingDatabaseManager();
     auto token_fetcher =
         std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();

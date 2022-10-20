@@ -257,7 +257,8 @@ class SafeBrowsingServiceTest : public PlatformTest {
   void SetupUrlLookupService() {
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         pref_service_.get(), /*is_off_the_record=*/false,
-        /*store_last_modified=*/false, /*restore_session=*/false);
+        /*store_last_modified=*/false, /*restore_session=*/false,
+        /*should_record_metrics=*/false);
     verdict_cache_manager_ =
         std::make_unique<safe_browsing::VerdictCacheManager>(
             /*history_service=*/nullptr, host_content_settings_map_.get(),

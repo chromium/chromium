@@ -78,8 +78,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
 
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, false /* is_off_the_record */,
-        false /* store_last_modified */,
-        false /* restore_session */);
+        false /* store_last_modified */, false /* restore_session */,
+        false /*should_record_metrics*/);
     cache_manager_ = std::make_unique<VerdictCacheManager>(
         /*history_service=*/nullptr, content_setting_map_.get(),
         &test_pref_service_,

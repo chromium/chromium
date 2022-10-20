@@ -10,7 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -148,7 +148,9 @@ void DefaultProvider::RegisterProfilePrefs(
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 }
 
-DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
+DefaultProvider::DefaultProvider(PrefService* prefs,
+                                 bool off_the_record,
+                                 bool should_record_metrics)
     : prefs_(prefs),
       is_off_the_record_(off_the_record),
       updating_preferences_(false) {
@@ -160,90 +162,8 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
   // Read global defaults.
   ReadDefaultSettings();
 
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultCookiesSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::COOKIES))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultPopupsSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::POPUPS))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultImagesSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::IMAGES))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-#endif
-
-#if !BUILDFLAG(IS_IOS)
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultJavaScriptSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::JAVASCRIPT))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultLocationSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::GEOLOCATION))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultNotificationsSetting",
-                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
-                                ContentSettingsType::NOTIFICATIONS))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultMediaStreamMicSetting",
-                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
-                                ContentSettingsType::MEDIASTREAM_MIC))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultMediaStreamCameraSetting",
-                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
-                                ContentSettingsType::MEDIASTREAM_CAMERA))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultMIDISysExSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::MIDI_SYSEX))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultWebBluetoothGuardSetting",
-                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
-                                ContentSettingsType::BLUETOOTH_GUARD))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultAutoplaySetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::AUTOPLAY))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultSubresourceFilterSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::ADS))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultSoundSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::SOUND))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultUsbGuardSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::USB_GUARD))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultIdleDetectionSetting",
-                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
-                                ContentSettingsType::IDLE_DETECTION))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultAutoDarkWebContentSetting",
-                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
-                                ContentSettingsType::AUTO_DARK_WEB_CONTENT))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-
-#endif
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultRequestDesktopSiteSetting",
-                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
-                                ContentSettingsType::REQUEST_DESKTOP_SITE))),
-                            CONTENT_SETTING_NUM_SETTINGS);
-
-#endif
+  if (should_record_metrics)
+    RecordHistogramMetrics();
 
   pref_change_registrar_.Init(prefs_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
@@ -445,6 +365,109 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   }
   prefs_->ClearPref(kDeprecatedEnableDRM);
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+}
+
+void DefaultProvider::RecordHistogramMetrics() {
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultCookiesSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::COOKIES))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultPopupsSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::POPUPS))),
+      CONTENT_SETTING_NUM_SETTINGS);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultImagesSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::IMAGES))),
+      CONTENT_SETTING_NUM_SETTINGS);
+#endif
+
+#if !BUILDFLAG(IS_IOS)
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultJavaScriptSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::JAVASCRIPT))),
+      CONTENT_SETTING_NUM_SETTINGS);
+
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultLocationSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::GEOLOCATION))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultNotificationsSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::NOTIFICATIONS))),
+      CONTENT_SETTING_NUM_SETTINGS);
+
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultMediaStreamMicSetting",
+      IntToContentSetting(prefs_->GetInteger(
+          GetPrefName(ContentSettingsType::MEDIASTREAM_MIC))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultMediaStreamCameraSetting",
+      IntToContentSetting(prefs_->GetInteger(
+          GetPrefName(ContentSettingsType::MEDIASTREAM_CAMERA))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultMIDISysExSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::MIDI_SYSEX))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultWebBluetoothGuardSetting",
+      IntToContentSetting(prefs_->GetInteger(
+          GetPrefName(ContentSettingsType::BLUETOOTH_GUARD))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultAutoplaySetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::AUTOPLAY))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultSubresourceFilterSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::ADS))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultSoundSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::SOUND))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultUsbGuardSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::USB_GUARD))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultIdleDetectionSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::IDLE_DETECTION))),
+      CONTENT_SETTING_NUM_SETTINGS);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultAutoDarkWebContentSetting",
+      IntToContentSetting(prefs_->GetInteger(
+          GetPrefName(ContentSettingsType::AUTO_DARK_WEB_CONTENT))),
+      CONTENT_SETTING_NUM_SETTINGS);
+
+#endif
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultRequestDesktopSiteSetting",
+      IntToContentSetting(prefs_->GetInteger(
+          GetPrefName(ContentSettingsType::REQUEST_DESKTOP_SITE))),
+      CONTENT_SETTING_NUM_SETTINGS);
+
+#endif
 }
 
 }  // namespace content_settings

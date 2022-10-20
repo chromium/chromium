@@ -29,7 +29,7 @@ class UnusedSitePermissionsServiceTest
     clock_.SetNow(time);
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
     hcsm_ = base::MakeRefCounted<HostContentSettingsMap>(&prefs_, false, true,
-                                                         false);
+                                                         false, false);
     hcsm_->SetClockForTesting(&clock_);
     service_ = std::make_unique<UnusedSitePermissionsService>(hcsm_.get());
     service_->SetClockForTesting(&clock_);

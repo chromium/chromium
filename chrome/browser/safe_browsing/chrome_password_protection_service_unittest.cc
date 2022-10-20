@@ -270,7 +270,8 @@ class ChromePasswordProtectionServiceTest
     HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, /*is_off_the_record=*/false,
-        /*store_last_modified=*/false, /*restore_session=*/false);
+        /*store_last_modified=*/false, /*restore_session=*/false,
+        /*should_record_metrics=*/false);
 
     cache_manager_ = std::make_unique<VerdictCacheManager>(
         nullptr, content_setting_map_.get(), &test_pref_service_, nullptr);

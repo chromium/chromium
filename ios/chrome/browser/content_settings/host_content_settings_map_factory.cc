@@ -43,12 +43,15 @@ HostContentSettingsMapFactory::BuildServiceInstanceFor(
     // browser state to ensure the preferences have been migrated.
     GetForBrowserState(browser_state->GetOriginalChromeBrowserState());
   }
-  return base::MakeRefCounted<HostContentSettingsMap>(
-      browser_state->GetPrefs(), browser_state->IsOffTheRecord(),
-      false /* store_last_modified */,
-      false /*restore_session*/);
+
   // TODO(crbug.com/1081711): Set restore_session to whether or not the phone
   // has been reset, which would mirror iOS's cookie store.
+  const bool is_off_the_record = browser_state->IsOffTheRecord();
+  const bool should_record_metrics = !is_off_the_record;
+  return base::MakeRefCounted<HostContentSettingsMap>(
+      browser_state->GetPrefs(), is_off_the_record,
+      false /* store_last_modified */, false /*restore_session*/,
+      should_record_metrics);
 }
 
 web::BrowserState* HostContentSettingsMapFactory::GetBrowserStateToUse(

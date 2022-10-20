@@ -189,13 +189,16 @@ public class RequestDesktopSiteTest {
     }
 
     private void assertContentSettingsHistogramRecorded() {
-        Assert.assertEquals("<ContentSettings.DefaultRequestDesktopSiteSetting> is not recorded.",
+        Assert.assertEquals(
+                "<ContentSettings.RegularProfile.DefaultRequestDesktopSiteSetting> is not recorded.",
                 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        "ContentSettings.DefaultRequestDesktopSiteSetting"));
-        Assert.assertEquals("<ContentSettings.Exceptions.request-desktop-site> is not recorded.", 1,
+                        "ContentSettings.RegularProfile.DefaultRequestDesktopSiteSetting"));
+        Assert.assertEquals(
+                "<ContentSettings.RegularProfile.Exceptions.request-desktop-site> is not recorded.",
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        "ContentSettings.Exceptions.request-desktop-site"));
+                        "ContentSettings.RegularProfile.Exceptions.request-desktop-site"));
     }
 
     private void assertChangeUserActionRecorded(boolean switchToDesktop) {

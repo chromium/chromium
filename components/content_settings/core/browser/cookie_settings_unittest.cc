@@ -111,7 +111,7 @@ class CookieSettingsTest : public testing::TestWithParam<bool> {
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
-        false /* restore_session */);
+        false /* restore_session */, false /* should_record_metrics */);
     cookie_settings_ = new CookieSettings(settings_map_.get(), &prefs_, false,
                                           "chrome-extension");
     cookie_settings_incognito_ = new CookieSettings(

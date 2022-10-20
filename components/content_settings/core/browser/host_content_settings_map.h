@@ -82,7 +82,8 @@ class HostContentSettingsMap : public content_settings::Observer,
   HostContentSettingsMap(PrefService* prefs,
                          bool is_off_the_record,
                          bool store_last_modified,
-                         bool restore_session);
+                         bool restore_session,
+                         bool should_record_metrics);
 
   HostContentSettingsMap(const HostContentSettingsMap&) = delete;
   HostContentSettingsMap& operator=(const HostContentSettingsMap&) = delete;

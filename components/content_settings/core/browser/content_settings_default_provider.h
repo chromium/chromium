@@ -29,7 +29,9 @@ class DefaultProvider : public ObservableProvider {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  DefaultProvider(PrefService* prefs, bool off_the_record);
+  DefaultProvider(PrefService* prefs,
+                  bool off_the_record,
+                  bool should_record_metrics);
 
   DefaultProvider(const DefaultProvider&) = delete;
   DefaultProvider& operator=(const DefaultProvider&) = delete;
@@ -75,6 +77,9 @@ class DefaultProvider : public ObservableProvider {
 
   // Clean up the obsolete preferences from the user's profile.
   void DiscardOrMigrateObsoletePreferences();
+
+  // Record Histograms Metrics.
+  void RecordHistogramMetrics();
 
   // Copies of the pref data, so that we can read it on the IO thread.
   std::map<ContentSettingsType, base::Value> default_settings_;

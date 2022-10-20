@@ -169,7 +169,8 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
   scoped_refptr<HostContentSettingsMap> settings_map =
       new HostContentSettingsMap(&prefs, /*is_off_the_record=*/false,
                                  /*store_last_modified=*/false,
-                                 /*restore_session=*/false);
+                                 /*restore_session=*/false,
+                                 /*should_record_metrics=*/false);
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       new content_settings::CookieSettings(settings_map.get(), &prefs, false);
 

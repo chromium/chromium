@@ -42,7 +42,7 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
-        false /* restore_session */);
+        false /* restore_session */, true /* should_record_metrics */);
 
     settings_manager_ =
         std::make_unique<SubresourceFilterContentSettingsManager>(
@@ -95,7 +95,7 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
 
 TEST_F(SubresourceFilterContentSettingsManagerTest, LogDefaultSetting) {
   const char kDefaultContentSetting[] =
-      "ContentSettings.DefaultSubresourceFilterSetting";
+      "ContentSettings.RegularProfile.DefaultSubresourceFilterSetting";
   // The histogram should be logged at profile creation.
   histogram_tester().ExpectTotalCount(kDefaultContentSetting, 1);
 }

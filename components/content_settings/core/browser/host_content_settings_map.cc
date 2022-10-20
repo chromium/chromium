@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -240,11 +239,11 @@ const char* ContentSettingToString(ContentSetting setting) {
 
 }  // namespace
 
-HostContentSettingsMap::HostContentSettingsMap(
-    PrefService* prefs,
-    bool is_off_the_record,
-    bool store_last_modified,
-    bool restore_session)
+HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
+                                               bool is_off_the_record,
+                                               bool store_last_modified,
+                                               bool restore_session,
+                                               bool should_record_metrics)
     : RefcountedKeyedService(base::ThreadTaskRunnerHandle::Get()),
 #ifndef NDEBUG
       used_from_thread_id_(base::PlatformThread::CurrentId()),
@@ -269,12 +268,13 @@ HostContentSettingsMap::HostContentSettingsMap(
   pref_provider_->AddObserver(this);
 
   auto default_provider = std::make_unique<content_settings::DefaultProvider>(
-      prefs_, is_off_the_record_);
+      prefs_, is_off_the_record_, should_record_metrics);
   default_provider->AddObserver(this);
   content_settings_providers_[DEFAULT_PROVIDER] = std::move(default_provider);
 
   MigrateSettingsPrecedingPermissionDelegationActivation();
-  RecordExceptionMetrics();
+  if (should_record_metrics)
+    RecordExceptionMetrics();
 }
 
 // static
@@ -627,21 +627,21 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
 
       ContentSettingsPattern::SchemeType scheme =
           setting_entry.primary_pattern.GetScheme();
-      UMA_HISTOGRAM_ENUMERATION("ContentSettings.ExceptionScheme", scheme,
-                                ContentSettingsPattern::SCHEME_MAX);
+      base::UmaHistogramEnumeration("ContentSettings.ExceptionScheme", scheme,
+                                    ContentSettingsPattern::SCHEME_MAX);
 
       if (scheme == ContentSettingsPattern::SCHEME_FILE) {
-        UMA_HISTOGRAM_BOOLEAN("ContentSettings.ExceptionSchemeFile.HasPath",
-                              setting_entry.primary_pattern.HasPath());
+        base::UmaHistogramBoolean("ContentSettings.ExceptionSchemeFile.HasPath",
+                                  setting_entry.primary_pattern.HasPath());
         size_t num_values;
         int histogram_value =
             ContentSettingTypeToHistogramValue(content_type, &num_values);
         if (setting_entry.primary_pattern.HasPath()) {
-          UMA_HISTOGRAM_EXACT_LINEAR(
+          base::UmaHistogramExactLinear(
               "ContentSettings.ExceptionSchemeFile.Type.WithPath",
               histogram_value, num_values);
         } else {
-          UMA_HISTOGRAM_EXACT_LINEAR(
+          base::UmaHistogramExactLinear(
               "ContentSettings.ExceptionSchemeFile.Type.WithoutPath",
               histogram_value, num_values);
         }
@@ -663,7 +663,7 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     }
 
     std::string histogram_name =
-        "ContentSettings.Exceptions." + type_name;
+        "ContentSettings.RegularProfile.Exceptions." + type_name;
     base::UmaHistogramCustomCounts(histogram_name, num_exceptions, 1, 1000, 30);
 
     // For some ContentSettingTypes, collect exception histograms broken out by
@@ -683,7 +683,7 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     }
     if (content_type == ContentSettingsType::COOKIES) {
       base::UmaHistogramCustomCounts(
-          "ContentSettings.Exceptions.cookies.AllowThirdParty",
+          "ContentSettings.RegaularProfile.Exceptions.cookies.AllowThirdParty",
           num_third_party_cookie_allow_exceptions, 1, 1000, 30);
     }
   }

@@ -77,7 +77,8 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
     HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
     settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &pref_service_, false /* is_off_the_record */,
-        false /* store_last_modified */, false /* restore_session*/);
+        false /* store_last_modified */, false /* restore_session*/,
+        false /* should_record_metrics */);
 
     subresource_filter::SubresourceFilterObserverManager::CreateForWebContents(
         web_contents());

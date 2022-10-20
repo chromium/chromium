@@ -32,7 +32,7 @@ class AdsInterventionManagerTest : public testing::Test {
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
-        false /* restore_session */);
+        false /* restore_session */, false /* should_record_metrics */);
     settings_manager_ =
         std::make_unique<SubresourceFilterContentSettingsManager>(
             settings_map_.get());

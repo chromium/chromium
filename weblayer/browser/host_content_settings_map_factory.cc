@@ -46,7 +46,8 @@ HostContentSettingsMapFactory::BuildServiceInstanceFor(
       base::MakeRefCounted<HostContentSettingsMap>(
           user_prefs::UserPrefs::Get(context), context->IsOffTheRecord(),
           /*store_last_modified=*/true,
-          /*restore_session=*/false);
+          /*restore_session=*/false,
+          /*should_record_metrics=*/!context->IsOffTheRecord());
 
   return settings_map;
 }

@@ -180,222 +180,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.DefaultAutoDarkWebContentSetting"
-    enum="ContentSetting" expires_after="2023-02-19">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    The default auto dark web content setting at profile open. Recorded for
-    Android only.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultAutoplaySetting" enum="ContentSetting"
-    expires_after="2023-02-26">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default autoplay setting at profile open.</summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultCookiesSetting" enum="ContentSetting"
-    expires_after="2023-02-26">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default cookies setting at profile open.</summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultIdleDetectionSetting"
-    enum="ContentSetting" expires_after="2022-10-23">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    The default permission setting for idle detection at profile open.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultImagesSetting" enum="ContentSetting"
-    expires_after="2022-10-23">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default image setting at profile open.</summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultJavaScriptSetting"
-    enum="ContentSetting" expires_after="2023-03-05">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default JavaScript setting at profile open.</summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultLocationSetting" enum="ContentSetting"
-    expires_after="2023-02-26">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default location setting at profile open.</summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultMediaStreamCameraSetting"
-    enum="ContentSetting" expires_after="2023-03-19">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default camera setting at profile open.</summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultMediaStreamMicSetting"
-    enum="ContentSetting" expires_after="2023-04-16">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    The default microphone setting at profile open. Warning: this histogram was
-    expired from 2022-06-19 to 2022-09-21; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultMIDISysExSetting" enum="ContentSetting"
-    expires_after="2023-04-16">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    The default MIDI permission setting on sysex (system exclusive) messages at
-    profile open. The default microphone setting at profile open. Warning: this
-    histogram was expired from 2022-08-21 to 2022-09-21; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultNotificationsSetting"
-    enum="ContentSetting" expires_after="2023-02-26">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default notification setting at profile open.</summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultPopupsSetting" enum="ContentSetting"
-    expires_after="2023-04-16">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    The default popups setting at profile open. Warning: this histogram was
-    expired from 2022-08-21 to 2022-09-21; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2023-02-26">
-  <owner>shuyng@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The request desktop site content setting at profile open. Recorded for
-    Android and iOS only.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultSoundSetting" enum="ContentSetting"
-    expires_after="2023-04-16">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default sound setting at profile open.</summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultSubresourceFilterSetting"
-    enum="ContentSetting" expires_after="2023-04-16">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    The default subresource filter setting at profile open. Warning: this
-    histogram was expired from 2022-06-19 to 2022-09-21; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultUsbGuardSetting" enum="ContentSetting"
-    expires_after="2023-04-16">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default permission setting for WebUSB at profile open.</summary>
-</histogram>
-
-<histogram name="ContentSettings.DefaultWebBluetoothGuardSetting"
-    enum="ContentSetting" expires_after="2023-04-16">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    The default permission setting for Web Bluetooth at profile open. Warning:
-    this histogram was expired from 2022-08-21 to 2022-09-21; data may be
-    missing.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.Exceptions.{ContentSettingsType}"
-    units="units" expires_after="never">
-<!-- expires-never: tracked as an important privacy metric. -->
-
-  <owner>lshang@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <summary>
-    The number of user defined content setting exceptions at browser start.
-    Suffixed with the name of content setting types.
-  </summary>
-  <token key="ContentSettingsType">
-    <variant name="app-banner" summary="App banner exceptions"/>
-    <variant name="auto-dark-web-content"
-        summary="Auto-dark web contents exceptions"/>
-    <variant name="auto-select-certificate"
-        summary="Auto-select cert exceptions"/>
-    <variant name="automatic-downloads"
-        summary="Automatic downloads exceptions"/>
-    <variant name="autoplay" summary="Autoplay exception"/>
-    <variant name="background-sync" summary="Background sync exceptions"/>
-    <variant name="bluetooth-chooser-data" summary="Bluetooth chooser data"/>
-    <variant name="bluetooth-guard" summary="Bluetooth guard exceptions"/>
-    <variant name="client-hints" summary="Client hints"/>
-    <variant name="cookies" summary="Cookies exceptions"/>
-    <variant name="display-capture" summary="Display Capture Exceptions"/>
-    <variant name="durable-storage" summary="Durable Storage Exceptions"/>
-    <variant name="fullscreen" summary="Fullscreen exceptions"/>
-    <variant name="geolocation" summary="Geolocation exceptions"/>
-    <variant name="hid-chooser-data" summary="HID chooser data"/>
-    <variant name="images" summary="Images exceptions"/>
-    <variant name="important-site-info" summary="Important site info"/>
-    <variant name="installed-web-app-metadata"
-        summary="Installed web app metadata"/>
-    <variant name="javascript" summary="JavaScript exceptions"/>
-    <variant name="keygen" summary="Keygen exceptions"/>
-    <variant name="media-engagement" summary="Media engagement exceptions"/>
-    <variant name="media-stream-camera" summary="Camera exceptions"/>
-    <variant name="media-stream-mic" summary="Microphone exceptions"/>
-    <variant name="midi-sysex" summary="Midi exceptions"/>
-    <variant name="mixed-script" summary="Mixed script exceptions"/>
-    <variant name="mouselock" summary="Mouse lock exceptions"/>
-    <variant name="notifications" summary="Notification exceptions"/>
-    <variant name="password-protection" summary="Password protection"/>
-    <variant name="permission-autoblocking-data"
-        summary="Permission autoblocking data"/>
-    <variant name="permission-autorevocation-data"
-        summary="Permission autorevocation data"/>
-    <variant name="plugins" summary="Plugins exceptions"/>
-    <variant name="popups" summary="Popups exceptions"/>
-    <variant name="ppapi-broker" summary="Ppapi broker exceptions"/>
-    <variant name="protected-media-identifier"
-        summary="Protected media exceptions"/>
-    <variant name="protocol-handler" summary="Protocol handler exceptions"/>
-    <variant name="push-messaging" summary="Push messaging exceptions"/>
-    <variant name="request-desktop-site"
-        summary="Request desktop site exceptions"/>
-    <variant name="safe-browsing-url-check-data"
-        summary="Safe browsing url check data"/>
-    <variant name="serial-chooser-data" summary="Serial chooser data"/>
-    <variant name="site-engagement" summary="Site engagement exceptions"/>
-    <variant name="sound" summary="Sound exceptions"/>
-    <variant name="ssl-cert-decisions" summary="SSL cert decisions exceptions"/>
-    <variant name="subresource-filter" summary="Subresource filter exceptions"/>
-    <variant name="subresource-filter-data" summary="Subresource filter data"/>
-    <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
-    <variant name="webid-active-session" summary="FedCM Active Session"/>
-    <variant name="webid-request" summary="FedCM Request"/>
-    <variant name="webid-share" summary="FedCM Share"/>
-  </token>
-</histogram>
-
 <histogram name="ContentSettings.ExceptionScheme" enum="ContentSettingScheme"
     expires_after="M94">
   <owner>alexmos@chromium.org</owner>
@@ -607,6 +391,526 @@ chromium-metrics-reviews@google.com.
     Counts of various events related to the strong popup blocker (aka abusive
     experience enforcement), that is triggered via safe browsing.
   </summary>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultAutoDarkWebContentSetting"
+    enum="ContentSetting" expires_after="2023-02-19">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default auto dark web content setting at profile open. Recorded for
+    Android only.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultAutoplaySetting"
+    enum="ContentSetting" expires_after="2023-02-26">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default autoplay setting at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSettings.{RegularProfileFiltered}DefaultCookiesSetting"
+    enum="ContentSetting" expires_after="2023-02-26">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default cookies setting at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultIdleDetectionSetting"
+    enum="ContentSetting" expires_after="2022-10-23">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default permission setting for idle detection at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSettings.{RegularProfileFiltered}DefaultImagesSetting"
+    enum="ContentSetting" expires_after="2022-10-23">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default image setting at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultJavaScriptSetting"
+    enum="ContentSetting" expires_after="2023-03-05">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default JavaScript setting at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultLocationSetting"
+    enum="ContentSetting" expires_after="2023-02-26">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default location setting at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultMediaStreamCameraSetting"
+    enum="ContentSetting" expires_after="2023-03-19">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default camera setting at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultMediaStreamMicSetting"
+    enum="ContentSetting" expires_after="2023-04-16">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default microphone setting at profile open. Warning: this histogram was
+    expired from 2022-06-19 to 2022-09-21; data may be missing.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultMIDISysExSetting"
+    enum="ContentSetting" expires_after="2023-04-16">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default MIDI permission setting on sysex (system exclusive) messages at
+    profile open. The default microphone setting at profile open. Warning: this
+    histogram was expired from 2022-08-21 to 2022-09-21; data may be missing.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultNotificationsSetting"
+    enum="ContentSetting" expires_after="2023-02-26">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default notification setting at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSettings.{RegularProfileFiltered}DefaultPopupsSetting"
+    enum="ContentSetting" expires_after="2023-04-16">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default popups setting at profile open. Warning: this histogram was
+    expired from 2022-08-21 to 2022-09-21; data may be missing.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultRequestDesktopSiteSetting"
+    enum="ContentSetting" expires_after="2023-02-26">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The request desktop site content setting at profile open. Recorded for
+    Android and iOS only.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSettings.{RegularProfileFiltered}DefaultSoundSetting"
+    enum="ContentSetting" expires_after="2023-04-16">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default sound setting at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultSubresourceFilterSetting"
+    enum="ContentSetting" expires_after="2023-04-16">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default subresource filter setting at profile open. Warning: this
+    histogram was expired from 2022-06-19 to 2022-09-21; data may be missing.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultUsbGuardSetting"
+    enum="ContentSetting" expires_after="2023-04-16">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default permission setting for WebUSB at profile open.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}DefaultWebBluetoothGuardSetting"
+    enum="ContentSetting" expires_after="2023-04-16">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default permission setting for Web Bluetooth at profile open. Warning:
+    this histogram was expired from 2022-08-21 to 2022-09-21; data may be
+    missing.
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.{RegularProfileFiltered}Exceptions.{ContentSettingsType}"
+    units="units" expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>lshang@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    The number of user defined content setting exceptions at browser start.
+    Suffixed with the name of content setting types.
+
+    Histogram content setting type: {ContentSettingsType}
+
+    This histogram is only recorded {RegularProfileFiltered}.
+  </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-107. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M107. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-107. It is recorded only for regular profiles"/>
+  </token>
+  <token key="ContentSettingsType">
+    <variant name="app-banner" summary="App banner exceptions"/>
+    <variant name="auto-dark-web-content"
+        summary="Auto-dark web contents exceptions"/>
+    <variant name="auto-select-certificate"
+        summary="Auto-select cert exceptions"/>
+    <variant name="automatic-downloads"
+        summary="Automatic downloads exceptions"/>
+    <variant name="autoplay" summary="Autoplay exception"/>
+    <variant name="background-sync" summary="Background sync exceptions"/>
+    <variant name="bluetooth-chooser-data" summary="Bluetooth chooser data"/>
+    <variant name="bluetooth-guard" summary="Bluetooth guard exceptions"/>
+    <variant name="client-hints" summary="Client hints"/>
+    <variant name="cookies" summary="Cookies exceptions"/>
+    <variant name="display-capture" summary="Display Capture Exceptions"/>
+    <variant name="durable-storage" summary="Durable Storage Exceptions"/>
+    <variant name="fullscreen" summary="Fullscreen exceptions"/>
+    <variant name="geolocation" summary="Geolocation exceptions"/>
+    <variant name="hid-chooser-data" summary="HID chooser data"/>
+    <variant name="images" summary="Images exceptions"/>
+    <variant name="important-site-info" summary="Important site info"/>
+    <variant name="installed-web-app-metadata"
+        summary="Installed web app metadata"/>
+    <variant name="javascript" summary="JavaScript exceptions"/>
+    <variant name="keygen" summary="Keygen exceptions"/>
+    <variant name="media-engagement" summary="Media engagement exceptions"/>
+    <variant name="media-stream-camera" summary="Camera exceptions"/>
+    <variant name="media-stream-mic" summary="Microphone exceptions"/>
+    <variant name="midi-sysex" summary="Midi exceptions"/>
+    <variant name="mixed-script" summary="Mixed script exceptions"/>
+    <variant name="mouselock" summary="Mouse lock exceptions"/>
+    <variant name="notifications" summary="Notification exceptions"/>
+    <variant name="password-protection" summary="Password protection"/>
+    <variant name="permission-autoblocking-data"
+        summary="Permission autoblocking data"/>
+    <variant name="permission-autorevocation-data"
+        summary="Permission autorevocation data"/>
+    <variant name="plugins" summary="Plugins exceptions"/>
+    <variant name="popups" summary="Popups exceptions"/>
+    <variant name="ppapi-broker" summary="Ppapi broker exceptions"/>
+    <variant name="protected-media-identifier"
+        summary="Protected media exceptions"/>
+    <variant name="protocol-handler" summary="Protocol handler exceptions"/>
+    <variant name="push-messaging" summary="Push messaging exceptions"/>
+    <variant name="request-desktop-site"
+        summary="Request desktop site exceptions"/>
+    <variant name="safe-browsing-url-check-data"
+        summary="Safe browsing url check data"/>
+    <variant name="serial-chooser-data" summary="Serial chooser data"/>
+    <variant name="site-engagement" summary="Site engagement exceptions"/>
+    <variant name="sound" summary="Sound exceptions"/>
+    <variant name="ssl-cert-decisions" summary="SSL cert decisions exceptions"/>
+    <variant name="subresource-filter" summary="Subresource filter exceptions"/>
+    <variant name="subresource-filter-data" summary="Subresource filter data"/>
+    <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
+    <variant name="webid-active-session" summary="FedCM Active Session"/>
+    <variant name="webid-request" summary="FedCM Request"/>
+    <variant name="webid-share" summary="FedCM Share"/>
+  </token>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ActivityLoggingEnabled" enum="Boolean"
