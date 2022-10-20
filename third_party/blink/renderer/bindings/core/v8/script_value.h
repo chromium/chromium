@@ -84,6 +84,27 @@ class CORE_EXPORT ScriptValue final {
     DCHECK(isolate_);
   }
 
+  ~ScriptValue() {
+    // Reset() below eagerly cleans up Oilpan-internal book-keeping data
+    // structures. Since most uses of ScriptValue are from stack or parameters
+    // this significantly helps in keeping memory compact at the expense of a
+    // few more finalizers in the on-heap use case. Keeping the internals
+    // compact is important in AudioWorklet use cases that don't allocate and
+    // thus never trigger GC.
+    //
+    // Note: If you see a CHECK() fail in non-production code (e.g. C++ unit
+    // tests) then this means that the test runs manual GCs and/or invokes the
+    // `RunLoop` to trigger GCs without stack while having a ScriptValue on the
+    // stack which is not supported. To solve this pass the `v8::StackState`
+    // explicitly on GCs. Alternatively, you can keep ScriptValue alive via
+    // wrapper objects through Persistent instead of referring to it from the
+    // stack.
+    //
+    // TODO(v8:v8:13372): Remove once v8::TracedReference is implemented as
+    // direct pointer.
+    value_.Reset();
+  }
+
   ScriptValue(const ScriptValue& value) = default;
 
   // TODO(riakf): Use this GetIsolate() only when doing DCHECK inside

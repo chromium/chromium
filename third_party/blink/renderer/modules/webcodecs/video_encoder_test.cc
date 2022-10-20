@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -162,8 +163,7 @@ TEST_F(VideoEncoderTest, RejectFlushAfterClose) {
       MakeVideoFrame(script_state, config->width(), config->height(), 1),
       MakeGarbageCollected<VideoEncoderEncodeOptions>(), es);
 
-  auto promise = encoder->flush(es);
-  ScriptPromiseTester tester(script_state, promise);
+  ScriptPromiseTester tester(script_state, encoder->flush(es));
   ASSERT_FALSE(es.HadException());
   ASSERT_FALSE(tester.IsFulfilled());
   ASSERT_FALSE(tester.IsRejected());

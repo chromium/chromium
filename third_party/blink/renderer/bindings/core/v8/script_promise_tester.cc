@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -28,19 +28,21 @@ class ScriptPromiseTester::ThenFunction : public ScriptFunction::Callable {
     DCHECK_EQ(owner_->state_, State::kNotSettled);
     owner_->state_ = target_state_;
 
-    DCHECK(owner_->value_.IsEmpty());
-    owner_->value_ = value;
+    DCHECK(owner_->value_object_->Value().IsEmpty());
+    owner_->value_object_->Value() = value;
     return value;
   }
 
  private:
+  GC_PLUGIN_IGNORE("Pointer to on-stack class is valid here.")
   base::WeakPtr<ScriptPromiseTester> owner_;
   State target_state_;
 };
 
 ScriptPromiseTester::ScriptPromiseTester(ScriptState* script_state,
                                          ScriptPromise script_promise)
-    : script_state_(script_state) {
+    : script_state_(script_state),
+      value_object_(MakeGarbageCollected<ScriptValueObject>()) {
   DCHECK(script_state);
   script_promise.Then(
       MakeGarbageCollected<ScriptFunction>(
@@ -61,12 +63,7 @@ void ScriptPromiseTester::WaitUntilSettled() {
 }
 
 ScriptValue ScriptPromiseTester::Value() const {
-  return value_;
-}
-
-void ScriptPromiseTester::Trace(Visitor* visitor) const {
-  visitor->Trace(script_state_);
-  visitor->Trace(value_);
+  return value_object_->Value();
 }
 
 }  // namespace blink

@@ -7,7 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -22,7 +23,7 @@ class ScriptPromise;
 //   EXPECT_TRUE(tester.IsFulfilled());
 //   EXPECT_TRUE(tester.Value().IsUndefined());
 class ScriptPromiseTester final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   ScriptPromiseTester(ScriptState*, ScriptPromise);
@@ -43,16 +44,19 @@ class ScriptPromiseTester final {
   // The value the promise fulfilled or rejected with.
   ScriptValue Value() const;
 
-  void Trace(Visitor*) const;
-
  private:
   class ThenFunction;
 
+  using ScriptValueObject = DisallowNewWrapper<ScriptValue>;
+
   enum class State { kNotSettled, kFulfilled, kRejected };
 
-  Member<ScriptState> script_state_;
+  ScriptState* script_state_;
   State state_ = State::kNotSettled;
-  ScriptValue value_;
+  // Keep ScriptValue explicitly alive via stack-bound root. This allows running
+  // tests with `ScriptPromiseTester` that pump the message loop and invoke GCs
+  // without stack.
+  Persistent<ScriptValueObject> value_object_;
 
   base::WeakPtrFactory<ScriptPromiseTester> weak_factory_{this};
 };

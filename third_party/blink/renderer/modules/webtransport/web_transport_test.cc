@@ -1528,15 +1528,19 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionCancel) {
 
   auto* script_state = scope.GetScriptState();
 
-  ScriptPromise cancel_promise;
+  // Eagerly destroy the ScriptPromise as this test is using manual GC without
+  // stack which is incompatible with ScriptValue.
+  absl::optional<ScriptPromise> cancel_promise;
   {
     // Cancelling also creates v8 handles, so we need a new handle scope as
     // above.
     v8::HandleScope handle_scope(scope.GetIsolate());
-    cancel_promise = receive_stream->cancel(script_state, ASSERT_NO_EXCEPTION);
+    cancel_promise.emplace(
+        receive_stream->cancel(script_state, ASSERT_NO_EXCEPTION));
   }
 
-  ScriptPromiseTester tester(script_state, cancel_promise);
+  ScriptPromiseTester tester(script_state, cancel_promise.value());
+  cancel_promise.reset();
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
 
