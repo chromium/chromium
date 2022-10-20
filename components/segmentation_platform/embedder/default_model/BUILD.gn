@@ -67,11 +67,30 @@ source_set("unit_tests") {
 
   deps = [
     ":default_model",
+    ":default_model_test_base",
     "//base",
     "//base/test:test_support",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public/proto",
+    "//testing/gtest",
+  ]
+}
+
+source_set("default_model_test_base") {
+  testonly = true
+  sources = [
+    "default_model_test_base.cc",
+    "default_model_test_base.h",
+  ]
+
+  deps = [
+    ":default_model",
+    "//base",
+    "//base/test:test_support",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
     "//testing/gtest",
   ]
 }

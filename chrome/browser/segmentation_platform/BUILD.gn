@@ -37,6 +37,7 @@ static_library("test_utils") {
     "//base/test:test_support",
     "//chrome/browser",
     "//components/segmentation_platform/embedder",
+    "//components/segmentation_platform/embedder/default_model:default_model_test_base",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal:test_support",
     "//components/segmentation_platform/internal/proto",

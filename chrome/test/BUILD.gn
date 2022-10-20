@@ -5985,6 +5985,7 @@ test("unit_tests") {
     "//components/security_interstitials/content:proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/segmentation_platform/embedder/default_model:default_model_test_base",
     "//components/segmentation_platform/internal:internal",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",

@@ -101,6 +101,9 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key);
 // Returns an UMA histogram variant for the given segment_id.
 std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id);
 
+// Returns Subsegment key for the given `segmentation_key`.
+std::string GetSubsegmentKey(const std::string& segmentation_key);
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_CONSTANTS_H_

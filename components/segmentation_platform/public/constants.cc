@@ -102,4 +102,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
   }
 }
 
+std::string GetSubsegmentKey(const std::string& segmentation_key) {
+  return segmentation_key + kSubsegmentDiscreteMappingSuffix;
+}
+
 }  // namespace segmentation_platform
