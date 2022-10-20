@@ -381,7 +381,10 @@ instrumented_library("libdbusmenu-glib4") {
 
 instrumented_library("libexpat1") {
   build_method = "debian"
-  patches = [ "patches/libexpat1.diff" ]
+  patches = [
+    "patches/libexpat1.diff",
+    "patches/libexpat1.2.diff",
+  ]
 }
 
 instrumented_library("libffi7") {
