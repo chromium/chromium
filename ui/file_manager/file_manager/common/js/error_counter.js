@@ -12,6 +12,31 @@ import {GlitchType, reportGlitch} from './glitch.js';
 window.JSErrorCount = 0;
 
 /**
+ * Creates a list of arguments extended with stack information.
+ * @param {string} prefix The prefix indicating type of error situation.
+ * @param {*} args The remaining, if any, arguments of the call.
+ * @return {string} A string representing args and stack traces.
+ */
+function createLoggableArgs(prefix, ...args) {
+  const argsStack = args && args[0] && args[0].stack;
+  if (args.length) {
+    const args0 = args[0];
+    args[0] = `[${prefix}]: ` +
+        (args0 instanceof PromiseRejectionEvent ? args0.reason : args0);
+  } else {
+    args.push(prefix);
+  }
+  const currentStack = new Error('current stack').stack.split('\n');
+  // Remove stack trace that is specific to this function.
+  currentStack.splice(1, 1);
+  args.push(currentStack.join('\n'));
+  if (argsStack) {
+    args.push('Original stack:\n' + argsStack);
+  }
+  return args.join('\n');
+}
+
+/**
  * Count uncaught exceptions.
  */
 window.onerror = (message, url) => {
@@ -23,8 +48,9 @@ window.onerror = (message, url) => {
  * Count uncaught errors in promises.
  */
 window.addEventListener('unhandledrejection', (event) => {
+  window.JSErrorCount++;
   reportGlitch(GlitchType.UNHANDLED_REJECTION);
-  console.error(event.reason);
+  console.warn(createLoggableArgs('unhandled-rejection', event));
 });
 
 /**
@@ -36,19 +62,7 @@ console.error = (() => {
   const orig = console.error;
   return (...args) => {
     window.JSErrorCount++;
-    const currentStack = new Error('current stack').stack;
-    const originalStack = args && args[0] && args[0].stack;
-    const prefix = '[unhandled-error]: ';
-    if (args.length) {
-      args[0] = prefix + args[0];
-    } else {
-      args.push(prefix);
-    }
-    args.push([currentStack]);
-    if (originalStack) {
-      args.push('Original stack:\n' + originalStack);
-    }
-    return orig.apply(this, [args.join('\n')]);
+    return orig.apply(this, [createLoggableArgs('unhandled-error', args)]);
   };
 })();
 
