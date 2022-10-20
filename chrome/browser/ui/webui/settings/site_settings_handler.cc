@@ -1647,6 +1647,8 @@ void SiteSettingsHandler::HandleIgnoreOriginForNotificationPermissionReview(
 
   auto* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  DCHECK(service);
+
   service->AddPatternToNotificationPermissionReviewBlocklist(
       primary_pattern, ContentSettingsPattern::Wildcard());
 
@@ -1710,6 +1712,8 @@ void SiteSettingsHandler::HandleUndoIgnoreOriginForNotificationPermissionReview(
 
   auto* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  DCHECK(service);
+
   service->RemovePatternFromNotificationPermissionReviewBlocklist(
       primary_pattern, ContentSettingsPattern::Wildcard());
 
@@ -2224,14 +2228,21 @@ void SiteSettingsHandler::SendCookieSettingDescription() {
 
 base::Value::List
 SiteSettingsHandler::PopulateNotificationPermissionReviewData() {
+  base::Value::List result;
+  if (!base::FeatureList::IsEnabled(
+          features::kSafetyCheckNotificationPermissions))
+    return result;
+
   auto* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  if (!service)
+    return result;
+
   auto notification_permissions = service->GetNotificationSiteListForReview();
 
   site_engagement::SiteEngagementService* engagement_service =
       site_engagement::SiteEngagementService::Get(profile_);
 
-  base::Value::List result;
   for (const auto& notification_permission : notification_permissions) {
     // Converting primary pattern to GURL should always be valid, since
     // Notification Permission Review list only contains single origins. Those
