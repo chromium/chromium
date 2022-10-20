@@ -57166,6 +57166,8 @@ from previous Chrome versions.
   <int value="-1963402827" label="enable-topchrome-md"/>
   <int value="-1962749353" label="SimplifiedNTP:enabled"/>
   <int value="-1962588488" label="SpeculativePreconnect:disabled"/>
+  <int value="-1962394664"
+      label="ChromeOSAmbientModeThrottleAnimation:disabled"/>
   <int value="-1961931929" label="ContextualSuggestionsBottomSheet:enabled"/>
   <int value="-1961755742" label="LightweightReactions:enabled"/>
   <int value="-1961648833" label="show_summary"/>
@@ -62779,6 +62781,7 @@ from previous Chrome versions.
   <int value="1386300777"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:disabled"/>
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>
+  <int value="1388726032" label="ChromeOSAmbientModeThrottleAnimation:enabled"/>
   <int value="1389729816" label="data-reduction-proxy-lo-fi"/>
   <int value="1391313384" label="Hotspot:disabled"/>
   <int value="1392836587" label="DesktopPWAsElidedExtensionsMenu:disabled"/>

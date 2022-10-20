@@ -142,6 +142,13 @@ BASE_FEATURE(kAmbientModePhotoPreviewFeature,
              "ChromeOSAmbientModePhotoPreview",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to throttle the frame rate of Lottie animations in ambient
+// mode. The slower frame rate may lead to power consumption savings, but also
+// may decrease the animation's smoothness if not done properly.
+BASE_FEATURE(kAmbientModeThrottleAnimation,
+             "ChromeOSAmbientModeThrottleAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable ARC ADB sideloading support.
@@ -2250,6 +2257,10 @@ bool IsAmbientModeEnabled() {
 
 bool IsAmbientModePhotoPreviewEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModePhotoPreviewFeature);
+}
+
+bool IsAmbientModeThrottleAnimationEnabled() {
+  return base::FeatureList::IsEnabled(kAmbientModeThrottleAnimation);
 }
 
 bool IsApnRevampEnabled() {

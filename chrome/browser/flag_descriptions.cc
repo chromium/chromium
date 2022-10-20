@@ -4717,6 +4717,16 @@ const char kAlwaysEnableHdcpDefault[] = "Default";
 const char kAlwaysEnableHdcpType0[] = "Type 0";
 const char kAlwaysEnableHdcpType1[] = "Type 1";
 
+const char kAmbientModeThrottleAnimationName[] =
+    "Throttle the frame rate of Lottie animations in ambient mode";
+const char kAmbientModeThrottleAnimationDescription[] =
+    "The throttled frame rate and when to throttle are embedded within the "
+    "Lottie animation file itself. It is chosen by the motion designer and "
+    "varies depending on how much motion there is in the animation. This is "
+    "done in the hopes of improving power consumption while maintaining the "
+    "same user-visible smoothness. This flag applies to all ambient Lottie "
+    "animations that have throttling specified in the file.";
+
 const char kApnRevampName[] = "APN Revamp";
 const char kApnRevampDescription[] =
     "Enables the ChromeOS APN Revamp, which updates cellular network APN "

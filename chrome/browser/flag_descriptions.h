@@ -2697,6 +2697,9 @@ extern const char kAlwaysEnableHdcpDefault[];
 extern const char kAlwaysEnableHdcpType0[];
 extern const char kAlwaysEnableHdcpType1[];
 
+extern const char kAmbientModeThrottleAnimationName[];
+extern const char kAmbientModeThrottleAnimationDescription[];
+
 extern const char kApnRevampName[];
 extern const char kApnRevampDescription[];
 
