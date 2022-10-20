@@ -71,6 +71,14 @@ TEST(CPU, RunExtendedInstructions) {
     // Execute an AVX 2 instruction.
     __asm__ __volatile__("vpunpcklbw %%ymm0, %%ymm0, %%ymm0\n" : : : "xmm0");
   }
+
+  if (cpu.has_pku()) {
+    // rdpkru
+    uint32_t pkru;
+    __asm__ __volatile__(".byte 0x0f,0x01,0xee\n"
+                         : "=a"(pkru)
+                         : "c"(0), "d"(0));
+  }
 // Visual C 32 bit and ClangCL 32/64 bit test.
 #elif defined(COMPILER_MSVC) &&   \
     (defined(ARCH_CPU_32_BITS) || \
