@@ -435,6 +435,8 @@ static_library("tflite") {
     "src/tensorflow/lite/experimental/acceleration/configuration/proto_to_flatbuffer.h",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
+    "src/tensorflow/lite/experimental/remat/metadata_util.cc",
+    "src/tensorflow/lite/experimental/remat/metadata_util.h",
     "src/tensorflow/lite/experimental/resource/initialization_status.cc",
     "src/tensorflow/lite/experimental/resource/initialization_status.h",
     "src/tensorflow/lite/experimental/resource/lookup_interfaces.h",
