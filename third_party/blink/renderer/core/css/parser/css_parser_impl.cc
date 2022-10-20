@@ -1379,7 +1379,11 @@ static bool MayContainNestedRules(const String& text,
 
   // Strip away the outer {} pair (the { would always give us a false positive).
   DCHECK_EQ(text[offset], '{');
-  DCHECK_EQ(text[offset + length - 1], '}');
+  if (text[offset + length - 1] != '}') {
+    // EOF within the block, so just be on the safe side
+    // and use the normal (non-lazy) code path.
+    return true;
+  }
   ++offset;
   length -= 2;
 
