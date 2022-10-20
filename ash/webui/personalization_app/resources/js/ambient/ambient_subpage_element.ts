@@ -16,7 +16,6 @@ import './toggle_row_element.js';
 import './topic_source_list_element.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
@@ -43,12 +42,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
     return {
       path: Paths,
       queryParams: Object,
-      isAmbientModeAnimationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isAmbientModeAnimationEnabled');
-        },
-      },
       albums_: {
         type: Array,
         value: null,
@@ -70,7 +63,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
 
   path: Paths;
   queryParams: Record<string, string>;
-  private isAmbientModeAnimationEnabled_: boolean;
   private albums_: AmbientModeAlbum[]|null = null;
   private ambientModeEnabled_: boolean|null = null;
   private animationTheme_: AnimationTheme|null = null;

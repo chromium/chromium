@@ -9,7 +9,6 @@
 
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/constants/ambient_animation_theme.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -18,7 +17,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -129,10 +127,7 @@ class TestAmbientObserver
 class PersonalizationAppAmbientProviderImplTest : public testing::Test {
  public:
   PersonalizationAppAmbientProviderImplTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kAmbientModeAnimationFeature}, {});
-  }
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   PersonalizationAppAmbientProviderImplTest(
       const PersonalizationAppAmbientProviderImplTest&) = delete;
   PersonalizationAppAmbientProviderImplTest& operator=(
@@ -316,7 +311,6 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager profile_manager_;

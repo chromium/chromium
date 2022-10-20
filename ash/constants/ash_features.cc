@@ -112,26 +112,6 @@ constexpr base::FeatureParam<bool> kAmbientModeRssPhotosEnabled{
 constexpr base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled{
     &kAmbientModeFeature, "StreetArtAlbumEnabled", false};
 
-// The "slideshow" theme is intentionally omitted here. For that, the developer
-// can just disable |kAmbientModeAnimationFeature| entirely.
-const base::FeatureParam<AmbientAnimationTheme>::Option
-    kAmbientModeAnimationThemeOptions[] = {
-        {AmbientAnimationTheme::kFeelTheBreeze, "feel_the_breeze"},
-        {AmbientAnimationTheme::kFloatOnBy, "float_on_by"}};
-
-// When |kAmbientModeAnimationFeature| is enabled, specifies which animation
-// theme to load. If |kAmbientModeAnimationFeature| is disabled, this is
-// unused.
-const base::FeatureParam<AmbientAnimationTheme> kAmbientModeAnimationThemeParam{
-    &kAmbientModeAnimationFeature, "animation_theme",
-    AmbientAnimationTheme::kFeelTheBreeze, &kAmbientModeAnimationThemeOptions};
-
-// Controls whether to launch the animated screensaver (as opposed to the
-// existing photo slideshow) when entering ambient mode.
-BASE_FEATURE(kAmbientModeAnimationFeature,
-             "ChromeOSAmbientModeAnimation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to allow Dev channel to use Prod server feature.
 BASE_FEATURE(kAmbientModeDevUseProdFeature,
              "ChromeOSAmbientModeDevChannelUseProdServer",
@@ -2234,10 +2214,6 @@ bool IsAdjustSplitViewForVKEnabled() {
 
 bool IsAllowAmbientEQEnabled() {
   return base::FeatureList::IsEnabled(kAllowAmbientEQ);
-}
-
-bool IsAmbientModeAnimationEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientModeAnimationFeature);
 }
 
 bool IsAmbientModeDevUseProdEnabled() {

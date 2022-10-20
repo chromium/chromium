@@ -353,9 +353,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      features::IsWallpaperGooglePhotosIntegrationEnabled() &&
                          wallpaper_provider_->IsEligibleForGooglePhotos());
 
-  source->AddBoolean("isAmbientModeAnimationEnabled",
-                     features::IsAmbientModeAnimationEnabled());
-
   source->AddBoolean("isDarkLightModeEnabled",
                      features::IsDarkLightModeEnabled());
 

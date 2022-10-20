@@ -5,7 +5,6 @@
 #ifndef ASH_CONSTANTS_ASH_FEATURES_H_
 #define ASH_CONSTANTS_ASH_FEATURES_H_
 
-#include "ash/constants/ambient_animation_theme.h"
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -53,11 +52,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<bool> kAmbientModeRssPhotosEnabled;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kAmbientModeAnimationFeature);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<AmbientAnimationTheme>
-    kAmbientModeAnimationThemeParam;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAmbientModeDevUseProdFeature);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -617,7 +611,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdaptiveChargingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdaptiveChargingForTestingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdjustSplitViewForVKEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();

@@ -892,21 +892,8 @@ void AmbientController::StopRefreshingImages() {
 }
 
 AmbientAnimationTheme AmbientController::GetCurrentTheme() const {
-  AmbientAnimationTheme current_theme = kDefaultAmbientAnimationTheme;
-  absl::optional<bool> animation_experiment_enabled =
-      base::FeatureList::GetStateIfOverridden(
-          features::kAmbientModeAnimationFeature);
-  if (animation_experiment_enabled.has_value()) {
-    // Allows developers to enable the animation without having to depend on
-    // personalization hub by overriding the dedicated animation experiment.
-    current_theme = animation_experiment_enabled.value()
-                        ? features::kAmbientModeAnimationThemeParam.Get()
-                        : kDefaultAmbientAnimationTheme;
-  } else if (features::IsAmbientModeAnimationEnabled()) {
-    DCHECK(current_theme_from_pref_);
-    current_theme = *current_theme_from_pref_;
-  }
-  return current_theme;
+  DCHECK(current_theme_from_pref_);
+  return *current_theme_from_pref_;
 }
 
 }  // namespace ash

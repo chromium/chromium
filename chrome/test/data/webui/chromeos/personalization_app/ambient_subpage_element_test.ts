@@ -34,7 +34,6 @@ suite('AmbientSubpageTest', function() {
   setup(() => {
     loadTimeData.overrideValues({
       isAmbientModeAllowed: true,
-      isAmbientModeAnimationEnabled: true,
     });
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
