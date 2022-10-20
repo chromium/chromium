@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 class PrefService;
 
@@ -57,12 +58,11 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
                            std::u16string password) override;
 
   // Initiates the showing of the leak detection notification. It is called by
-  // |helper_| after |is_saved|, |is_reused|, and |has_change_script| were
-  // asynchronously determined.
-  // |all_urls_with_leaked_credentials| contains all the URLs on which the
-  // leaked username/password pair is used.
+  // `helper_` after `in_stores`, `is_reused`,  and `has_change_script`
+  // were determined asynchronously. `all_urls_with_leaked_credentials` contains
+  // all the URLs on which the leaked username/password pair is used.
   void OnShowLeakDetectionNotification(
-      IsSaved is_saved,
+      PasswordForm::Store in_stores,
       IsReused is_reused,
       HasChangeScript has_change_script,
       GURL url,
@@ -85,13 +85,13 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   // OnLeakDetectionDone() with is_leaked = true.
   std::unique_ptr<base::ElapsedTimer> is_leaked_timer_;
 
-  // Helper class to asynchronously determine |CredentialLeakType| for leaked
+  // Helper class to asynchronously determine `CredentialLeakType` for leaked
   // credentials.
   std::unique_ptr<LeakDetectionDelegateHelper> helper_;
 };
 
-// Determines whether the leak check can be started depending on |prefs|. Will
-// use |client| for logging if non-null.
+// Determines whether the leak check can be started depending on `prefs`. Will
+// use `client` for logging if non-null.
 bool CanStartLeakCheck(const PrefService& prefs,
                        PasswordManagerClient* client = nullptr);
 

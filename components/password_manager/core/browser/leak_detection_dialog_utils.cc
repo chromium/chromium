@@ -36,7 +36,7 @@ CredentialLeakType CreateLeakType(IsSaved is_saved,
   if (is_reused)
     leak_type |= kPasswordUsedOnOtherSites;
   if (is_syncing)
-    leak_type |= kSyncingPasswordsNormally;
+    leak_type |= kPasswordSynced;
   if (has_change_script)
     leak_type |= kAutomaticPasswordChangeScriptAvailable;
   return leak_type;
@@ -50,8 +50,8 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type) {
   return leak_type & CredentialLeakFlags::kPasswordUsedOnOtherSites;
 }
 
-bool IsSyncingPasswordsNormally(CredentialLeakType leak_type) {
-  return leak_type & CredentialLeakFlags::kSyncingPasswordsNormally;
+bool IsPasswordSynced(CredentialLeakType leak_type) {
+  return leak_type & CredentialLeakFlags::kPasswordSynced;
 }
 
 bool IsAutomaticPasswordChangeScriptAvailable(CredentialLeakType leak_type) {
@@ -59,14 +59,14 @@ bool IsAutomaticPasswordChangeScriptAvailable(CredentialLeakType leak_type) {
          CredentialLeakFlags::kAutomaticPasswordChangeScriptAvailable;
 }
 
-// Formats the |origin| to a human-friendly url string.
+// Formats the `origin` to a human-friendly url string.
 std::u16string GetFormattedUrl(const GURL& origin) {
   return url_formatter::FormatUrlForSecurityDisplay(
       origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 }
 
 std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type) {
-  // |ShouldShowAutomaticChangePasswordButton()| and |ShouldCheckPasswords()|
+  // `ShouldShowAutomaticChangePasswordButton()` and `ShouldCheckPasswords()`
   // are not both true at the same time.
   if (ShouldShowAutomaticChangePasswordButton(leak_type)) {
     return l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY);
@@ -149,19 +149,16 @@ bool ShouldCheckPasswords(CredentialLeakType leak_type) {
 }
 
 bool ShouldShowAutomaticChangePasswordButton(CredentialLeakType leak_type) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChange)) {
-    return false;
-  }
-
   // Automatic Password change should be offered if all following conditions are
   // fulfilled:
   // - Password is saved. (The password change flows will automatically save the
   //   password. This should only happen as an update of an existing entry.)
-  // - Sync is on (because the password change flow relies on password
-  //   generation which is only available to sync users).
-  // - There is an automatic password change script available for this site.
-  return IsPasswordSaved(leak_type) && IsSyncingPasswordsNormally(leak_type) &&
+  // - Password is synced to a remote store (synced profile store or account
+  //   store), because the password change flow relies on password
+  //   generation which is only available for those credentials.
+  // - Automatic password change is enabled and there is an automatic password
+  //   change script available for this site.
+  return IsPasswordSaved(leak_type) && IsPasswordSynced(leak_type) &&
          IsAutomaticPasswordChangeScriptAvailable(leak_type);
 }
 

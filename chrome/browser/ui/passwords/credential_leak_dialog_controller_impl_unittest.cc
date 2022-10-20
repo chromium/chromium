@@ -231,35 +231,4 @@ TEST_F(CredentialLeakDialogControllerTest,
   EXPECT_CALL(leak_prompt(), ControllerGone());
 }
 
-TEST_F(CredentialLeakDialogControllerTest,
-       CredentialLeakDialogAutomatedPasswordChangeFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kPasswordChange);
-  SetUpController(CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true),
-                                 HasChangeScript(true)));
-
-  // If the password change feature is disabled, we expect to see the normal
-  // check passwords dialog.
-  EXPECT_CALL(leak_prompt(), ShowCredentialLeakPrompt());
-  controller().ShowCredentialLeakPrompt(&leak_prompt());
-
-  EXPECT_CALL(
-      ui_controller_mock(),
-      NavigateToPasswordCheckup(
-          password_manager::PasswordCheckReferrer::kPasswordBreachDialog));
-  EXPECT_CALL(ui_controller_mock(), OnLeakDialogHidden());
-  controller().OnAcceptDialog();
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason",
-      LeakDialogDismissalReason::kClickedCheckPasswords, 1);
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason.Checkup",
-      LeakDialogDismissalReason::kClickedCheckPasswords, 1);
-
-  EXPECT_CALL(leak_prompt(), ControllerGone());
-}
-
 }  // namespace

@@ -427,7 +427,7 @@ TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
           password_manager::HasChangeScript(false));
   CWVPasswordLeakType expected_leak_type = CWVPasswordLeakTypeSaved |
                                            CWVPasswordLeakTypeUsedOnOtherSites |
-                                           CWVPasswordLeakTypeSyncingNormally;
+                                           CWVPasswordLeakTypeSynced;
   OCMExpect([delegate autofillController:autofill_controller_
            notifyUserOfPasswordLeakOnURL:net::NSURLWithGURL(leak_url)
                                 leakType:expected_leak_type]);

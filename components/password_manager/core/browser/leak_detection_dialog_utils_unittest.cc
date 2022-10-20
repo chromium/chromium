@@ -368,8 +368,7 @@ TEST_P(PasswordChangeCredentialLeakDialogUtilsTest,
   IsSaved is_saved = IsSaved(IsPasswordSaved(GetParam().leak_type));
   IsReused is_reused =
       IsReused(IsPasswordUsedOnOtherSites(GetParam().leak_type));
-  IsSyncing is_syncing =
-      IsSyncing(IsSyncingPasswordsNormally(GetParam().leak_type));
+  IsSyncing is_syncing = IsSyncing(IsPasswordSynced(GetParam().leak_type));
   // ...but set HasChangeScript to false.
   CredentialLeakType leak_type =
       CreateLeakType(is_saved, is_reused, is_syncing, HasChangeScript(false));

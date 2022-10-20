@@ -24,8 +24,9 @@ enum CredentialLeakFlags {
   kPasswordSaved = 1 << 0,
   // Password is reused on other sites.
   kPasswordUsedOnOtherSites = 1 << 1,
-  // User is syncing passwords with normal encryption.
-  kSyncingPasswordsNormally = 1 << 2,
+  // Password is synced to a remote store (either syncing profile store or
+  // account store).
+  kPasswordSynced = 1 << 2,
   // There is an automatic password change script available for this credential.
   kAutomaticPasswordChangeScriptAvailable = 1 << 3,
 };
@@ -50,14 +51,14 @@ CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsSyncing is_syncing,
                                   HasChangeScript has_change_script);
 
-// Checks whether password is saved in chrome.
+// Checks whether the password is saved in Chrome.
 bool IsPasswordSaved(CredentialLeakType leak_type);
 
-// Checks whether password is reused on other sites.
+// Checks whether the password is reused on other sites.
 bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type);
 
-// Checks whether user is syncing passwords with normal encryption.
-bool IsSyncingPasswordsNormally(CredentialLeakType leak_type);
+// Checks whether the password is synced to a remote store (profile or account).
+bool IsPasswordSynced(CredentialLeakType leak_type);
 
 // Checks whether an automatic password change script is available for the
 // credential.

@@ -661,8 +661,8 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
   if (password_manager::IsPasswordUsedOnOtherSites(leakType)) {
     cwvLeakType |= CWVPasswordLeakTypeUsedOnOtherSites;
   }
-  if (password_manager::IsSyncingPasswordsNormally(leakType)) {
-    cwvLeakType |= CWVPasswordLeakTypeSyncingNormally;
+  if (password_manager::IsPasswordSynced(leakType)) {
+    cwvLeakType |= CWVPasswordLeakTypeSynced;
   }
   if ([self.delegate
           respondsToSelector:@selector(autofillController:

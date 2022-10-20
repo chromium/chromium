@@ -45,8 +45,8 @@ typedef NS_OPTIONS(NSInteger, CWVPasswordLeakType) {
   CWVPasswordLeakTypeSaved = 1 << 0,
   // The leaked password is also used on other sites.
   CWVPasswordLeakTypeUsedOnOtherSites = 1 << 1,
-  // The user is syncing passwords with normal encryption.
-  CWVPasswordLeakTypeSyncingNormally = 1 << 2,
+  // The leaked password is synced to a remote store.
+  CWVPasswordLeakTypeSynced = 1 << 2,
 };
 
 // Protocol to receive callbacks related to autofill.

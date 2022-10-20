@@ -16,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -886,19 +885,6 @@ TEST(PasswordManagerUtil, GetSignonRealm) {
   for (const auto& test_case : test_cases) {
     EXPECT_EQ(test_case.second, GetSignonRealm(test_case.first));
   }
-}
-
-TEST(PasswordManagerUtil, CheckGpmBrandedNamingSyncing) {
-  EXPECT_TRUE(UsesPasswordManagerGoogleBranding(true));
-}
-
-TEST(PasswordManagerUtil, CheckGpmBrandedNamingNotSyncing) {
-  bool use_branding = UsesPasswordManagerGoogleBranding(false);
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(use_branding);
-#else
-  EXPECT_FALSE(use_branding);
-#endif
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

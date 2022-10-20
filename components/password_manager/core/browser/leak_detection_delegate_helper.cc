@@ -26,7 +26,7 @@ LeakDetectionDelegateHelper::LeakDetectionDelegateHelper(
       scripts_fetcher_(scripts_fetcher),
       callback_(std::move(callback)) {
   DCHECK(profile_store_);
-  // |account_store_| and |scripts_fetcher_| may be null.
+  // `account_store_` and `scripts_fetcher_` may be null.
 }
 
 LeakDetectionDelegateHelper::~LeakDetectionDelegateHelper() = default;
@@ -77,6 +77,13 @@ void LeakDetectionDelegateHelper::ScriptAvailabilityDetermined(
 void LeakDetectionDelegateHelper::ProcessResults() {
   std::u16string canonicalized_username = CanonicalizeUsername(username_);
   std::vector<GURL> all_urls_with_leaked_credentials;
+  PasswordForm::Store in_stores = PasswordForm::Store::kNotSet;
+
+  // Returns true if the urls are identical or one is a PSL match of the other.
+  auto are_urls_equivalent = [](const GURL& url1, const GURL& url2) -> bool {
+    return url1 == url2 || IsPublicSuffixDomainMatch(url1.spec(), url2.spec());
+  };
+
   for (const auto& form : partial_results_) {
     if (CanonicalizeUsername(form->username_value) == canonicalized_username &&
         form->password_value == password_) {
@@ -88,20 +95,12 @@ void LeakDetectionDelegateHelper::ProcessResults() {
           InsecurityMetadata(base::Time::Now(), IsMuted(false)));
       store.UpdateLogin(form_to_update);
       all_urls_with_leaked_credentials.push_back(form->url);
+
+      if (are_urls_equivalent(form->url, url_)) {
+        in_stores = in_stores | form->in_store;
+      }
     }
   }
-
-  // Returns true if the urls are identical or one is a PSL match of the other.
-  auto are_urls_equivalent = [&](const GURL& url1, const GURL& url2) -> bool {
-    return url1 == url2 || IsPublicSuffixDomainMatch(url1.spec(), url2.spec());
-  };
-
-  IsSaved is_saved(base::ranges::any_of(
-      partial_results_, [this, are_urls_equivalent](const auto& form) {
-        return are_urls_equivalent(form->url, url_) &&
-               form->username_value == username_ &&
-               form->password_value == password_;
-      }));
 
   // Check if the password is reused on a different origin, or on the same
   // origin with a different username.
@@ -114,7 +113,7 @@ void LeakDetectionDelegateHelper::ProcessResults() {
 
   HasChangeScript has_change_script(script_is_available_);
 
-  std::move(callback_).Run(is_saved, is_reused, has_change_script,
+  std::move(callback_).Run(in_stores, is_reused, has_change_script,
                            std::move(url_), std::move(username_),
                            std::move(all_urls_with_leaked_credentials));
 }

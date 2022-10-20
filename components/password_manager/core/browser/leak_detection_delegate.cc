@@ -102,7 +102,7 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
       scripts_fetcher = client_->GetPasswordScriptsFetcher();
     }
 
-    // Query the helper to asynchronously determine the |CredentialLeakType|.
+    // Query the helper to asynchronously determine the `CredentialLeakType`.
     helper_ = std::make_unique<LeakDetectionDelegateHelper>(
         client_->GetProfilePasswordStore(), client_->GetAccountPasswordStore(),
         scripts_fetcher,
@@ -114,7 +114,7 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
 }
 
 void LeakDetectionDelegate::OnShowLeakDetectionNotification(
-    IsSaved is_saved,
+    PasswordForm::Store in_stores,
     IsReused is_reused,
     HasChangeScript has_change_script,
     GURL url,
@@ -130,11 +130,26 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   base::UmaHistogramTimes("PasswordManager.LeakDetection.NotifyIsLeakedTime",
                           std::exchange(is_leaked_timer_, nullptr)->Elapsed());
   helper_.reset();
+
+  // A credential is marked as syncing if either the profile store is synced
+  // or it is in the account store.
+  IsSyncing is_syncing{false};
+  switch (client_->GetPasswordSyncState()) {
+    case SyncState::kNotSyncing:
+      break;
+    case SyncState::kAccountPasswordsActiveNormalEncryption:
+      is_syncing = IsSyncing((in_stores & PasswordForm::Store::kAccountStore) ==
+                             PasswordForm::Store::kAccountStore);
+      break;
+    case SyncState::kSyncingWithCustomPassphrase:
+    case SyncState::kSyncingNormalEncryption:
+      is_syncing = IsSyncing(true);
+      break;
+  }
+
   CredentialLeakType leak_type =
-      CreateLeakType(is_saved, is_reused,
-                     IsSyncing(client_->GetPasswordSyncState() ==
-                               SyncState::kSyncingNormalEncryption),
-                     has_change_script);
+      CreateLeakType(IsSaved(in_stores != PasswordForm::Store::kNotSet),
+                     is_reused, is_syncing, has_change_script);
   base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordSaved",
                             IsPasswordSaved(leak_type));
   base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordReused",

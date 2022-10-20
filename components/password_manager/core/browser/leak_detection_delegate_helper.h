@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "url/gurl.h"
 
@@ -23,11 +24,11 @@ class PasswordScriptsFetcher;
 class PasswordStoreInterface;
 
 // Helper class to asynchronously requests all credentials with
-// a specific password from the |PasswordStoreInterface|.
+// a specific password from the `PasswordStoreInterface`.
 class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
  public:
-  // Type alias for |callback_|.
-  using LeakTypeReply = base::OnceCallback<void(IsSaved,
+  // Type alias for `callback_`.
+  using LeakTypeReply = base::OnceCallback<void(PasswordForm::Store,
                                                 IsReused,
                                                 HasChangeScript,
                                                 GURL,
@@ -46,15 +47,15 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
 
   ~LeakDetectionDelegateHelper() override;
 
-  // Request all credentials with |password| from the store.
-  // Results are passed to |OnGetPasswordStoreResults|.
+  // Request all credentials with `password` from the store.
+  // Results are passed to `OnGetPasswordStoreResults`.
   void ProcessLeakedPassword(GURL url,
                              std::u16string username,
                              std::u16string password);
 
  private:
   // PasswordStoreConsumer:
-  // Is called by the |PasswordStoreInterface| once all credentials with the
+  // Is called by the `PasswordStoreInterface` once all credentials with the
   // specific password are retrieved.
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
@@ -65,7 +66,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
 
   // Called when all password store results are available and the script
   // availability has been determined. Computes the resulting credential type
-  // and invokes |callback_|.
+  // and invokes `callback_`.
   void ProcessResults();
 
   scoped_refptr<PasswordStoreInterface> profile_store_;
