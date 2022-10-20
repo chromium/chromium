@@ -1986,6 +1986,7 @@ crbug.com/1207788 external/wpt/css/css-will-change/will-change-stacking-context-
 
 # lab color space not yet implemented
 # color() function not implemented
+crbug.com/1068610 external/wpt/css/css-color/parsing/color-computed-color-mix-function.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/lch-005.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/lch-009.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/lch-010.html [ Failure ]

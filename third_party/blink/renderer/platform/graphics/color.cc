@@ -28,6 +28,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -261,6 +262,75 @@ Color Color::FromOKLCH(absl::optional<float> L,
   result.param2_ = hue.value_or(0.f);
   result.alpha_ = ClampTo(alpha.value_or(1.f), 0.f, 1.f);
   return result;
+}
+
+// static
+Color Color::FromColorMix(Color::ColorInterpolationSpace interpolation_space,
+                          absl::optional<HueInterpolationMethod> hue_method,
+                          Color color1,
+                          Color color2,
+                          float percentage,
+                          float alpha_multiplier) {
+  // todo(1092638) : Support other color spaces, and conversions to the given
+  // color space.
+  if (interpolation_space != ColorInterpolationSpace::kSRGB) {
+    NOTIMPLEMENTED();
+    return Color();
+  }
+
+  color1.ConvertToColorInterpolationSpace(interpolation_space);
+  color2.ConvertToColorInterpolationSpace(interpolation_space);
+
+  float alpha1 = color1.PremultiplyColor();
+  float alpha2 = color2.PremultiplyColor();
+
+  Color result = FromColorFunction(
+      ColorFunctionSpace::kSRGB,
+      blink::Blend(color2.param0_, color1.param0_, percentage),
+      blink::Blend(color2.param1_, color1.param1_, percentage),
+      blink::Blend(color2.param2_, color1.param2_, percentage),
+      blink::Blend(alpha2, alpha1, percentage));
+
+  result.UnpremultiplyColor();
+
+  result.alpha_ *= alpha_multiplier;
+
+  return result;
+}
+
+void Color::ConvertToColorInterpolationSpace(
+    Color::ColorInterpolationSpace interpolation_space) {
+  if (interpolation_space == ColorInterpolationSpace::kSRGB) {
+    if (serialization_type_ == SerializationType::kColor &&
+        color_function_space_ == ColorFunctionSpace::kSRGB)
+      return;
+    SkColor4f sRGB_color = toSkColor4f();
+    serialization_type_ = SerializationType::kColor;
+    color_function_space_ = ColorFunctionSpace::kSRGB;
+    param0_ = sRGB_color.fR;
+    param1_ = sRGB_color.fG;
+    param2_ = sRGB_color.fB;
+  } else {
+    NOTIMPLEMENTED();
+  }
+}
+
+float Color::PremultiplyColor() {
+  float alpha = alpha_;
+  param0_ = param0_ * alpha_;
+  param1_ = param1_ * alpha_;
+  param2_ = param2_ * alpha_;
+  alpha_ = 1.0f;
+  return alpha;
+}
+
+void Color::UnpremultiplyColor() {
+  if (alpha_ == 0.0f)
+    return;
+
+  param0_ = param0_ / alpha_;
+  param1_ = param1_ / alpha_;
+  param2_ = param2_ / alpha_;
 }
 
 // static
@@ -732,27 +802,6 @@ Color::ColorInterpolationSpace Color::GetColorInterpolationSpace() const {
     return ColorInterpolationSpace::kSRGB;
 
   return ColorInterpolationSpace::kOKLab;
-}
-
-void Color::MultiplyAlpha(float alpha_multiplier) {
-  alpha_ *= alpha_multiplier;
-}
-
-Color Color::InterpolateColors(
-    const Color& color1,
-    const Color& color2,
-    float mix_amount,
-    Color::ColorInterpolationSpace color_interpolation_space,
-    Color::HueInterpolationMethod hue_interpolation_method) {
-  // TODO(crbug.com/1362022): Can only do this if the color_interpolation_space
-  // matches.
-  if (mix_amount == 0.0f)
-    return color2;
-  if (mix_amount == 1.0f)
-    return color1;
-
-  // TODO(crbug.com/1362022): We need to actually interpolate colors.
-  return Color::kDarkGray;
 }
 
 String Color::ColorInterpolationSpaceToString(

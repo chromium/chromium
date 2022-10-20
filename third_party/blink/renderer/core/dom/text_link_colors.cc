@@ -143,11 +143,9 @@ Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
     if (cssvalue::CSSColorMixValue::NormalizePercentages(
             color_mix_value->Percentage1(), color_mix_value->Percentage2(),
             mix_amount, alpha_multiplier)) {
-      Color result = Color::InterpolateColors(
-          c1, c2, mix_amount, color_mix_value->ColorInterpolationSpace(),
-          color_mix_value->HueInterpolationMethod());
-      result.MultiplyAlpha(alpha_multiplier);
-      return result;
+      return Color::FromColorMix(color_mix_value->ColorInterpolationSpace(),
+                                 color_mix_value->HueInterpolationMethod(), c1,
+                                 c2, mix_amount, alpha_multiplier);
     } else {
       // TODO(crbug.com/1362022): Not sure what is appropriate to return when
       // both mix amounts are zero.

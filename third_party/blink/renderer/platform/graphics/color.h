@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -130,6 +131,41 @@ class PLATFORM_EXPORT Color {
                          absl::optional<float> hue,
                          absl::optional<float> alpha);
 
+  enum class ColorInterpolationSpace : uint8_t {
+    // Linear in light intensity
+    kXYZD65,
+    kXYZD50,
+    kSRGBLinear,
+    // Perceptually uniform
+    kLab,
+    kOKLab,
+    // Maximizing chroma
+    kLCH,
+    kOKLCH,
+    // Legacy fallback
+    kSRGB,
+    // Polar spaces
+    kHSL,
+    kHWB,
+    // Not specified
+    kNone,
+  };
+  ColorInterpolationSpace GetColorInterpolationSpace() const;
+  enum class HueInterpolationMethod : uint8_t {
+    kShorter,
+    kLonger,
+    kIncreasing,
+    kDecreasing,
+    kSpecified,
+  };
+
+  static Color FromColorMix(ColorInterpolationSpace interpolation_space,
+                            absl::optional<HueInterpolationMethod> hue_method,
+                            Color color1,
+                            Color color2,
+                            float percentage,
+                            float alpha_multiplier = 1.0f);
+
   // TODO(crbug.com/1308932): These three functions are just helpers for while
   // we're converting platform/graphics to float color.
   static Color FromSkColor4f(SkColor4f fc);
@@ -218,49 +254,14 @@ class PLATFORM_EXPORT Color {
   unsigned GetHash() const;
   bool IsLegacyColor() const;
 
-  enum class ColorInterpolationSpace : uint8_t {
-    // Linear in light intensity
-    kXYZD65,
-    kXYZD50,
-    kSRGBLinear,
-    // Perceptually uniform
-    kLab,
-    kOKLab,
-    // Maximizing chroma
-    kLCH,
-    kOKLCH,
-    // Legacy fallback
-    kSRGB,
-    // Polar spaces
-    kHSL,
-    kHWB,
-    // Not specified
-    kNone,
-  };
-  ColorInterpolationSpace GetColorInterpolationSpace() const;
-  enum class HueInterpolationMethod : uint8_t {
-    kShorter,
-    kLonger,
-    kIncreasing,
-    kDecreasing,
-    kSpecified,
-  };
   // For appending color interpolation spaces to the serialization of gradients
   // and color-mix functions.
   static String ColorInterpolationSpaceToString(
       Color::ColorInterpolationSpace color_space,
       Color::HueInterpolationMethod hue_interpolation_method);
 
-  // TODO(crbug.com/1362022): This is just a stub right now.
-  static Color InterpolateColors(
-      const Color& color1,
-      const Color& color2,
-      float mix_amount,
-      Color::ColorInterpolationSpace color_interpolation_space,
-      Color::HueInterpolationMethod hue_interpolation_method =
-          Color::HueInterpolationMethod::kShorter);
-
-  void MultiplyAlpha(float alpha_multiplier);
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, Premultiply);
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, Unpremultiply);
 
  private:
   constexpr explicit Color(RGBA32 color)
@@ -285,6 +286,12 @@ class PLATFORM_EXPORT Color {
     return x < 0 ? 0 : (x > 255 ? 255 : x);
   }
   void GetHueMaxMin(double&, double&, double&) const;
+
+  void ConvertToColorInterpolationSpace(
+      ColorInterpolationSpace interpolation_space);
+
+  float PremultiplyColor();
+  void UnpremultiplyColor();
 
   // The way that this color will be serialized. The value of
   // `serialization_type` determines the interpretation of `params_`.
