@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -161,6 +162,7 @@ class WritableStreamWrapper::UnderlyingSink : public UnderlyingSinkBase {
  private:
   friend class WritableStreamWrapper;
   const Member<WritableStreamWrapper> writable_stream_wrapper_;
+  Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 
 }  // namespace blink

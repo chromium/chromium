@@ -131,7 +131,7 @@ ScriptPromise WritableStreamWrapper::UnderlyingSink::start(
     Member<WritableStreamWrapper> writable_stream_wrapper_;
   };
 
-  Controller()->signal()->AddAlgorithm(
+  abort_handle_ = Controller()->signal()->AddAlgorithm(
       MakeGarbageCollected<AbortAlgorithm>(GetWritableStreamWrapper()));
   return ScriptPromise::CastUndefined(script_state);
 }
@@ -148,6 +148,7 @@ ScriptPromise WritableStreamWrapper::UnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState&) {
   writable_stream_wrapper_->CloseStream();
+  abort_handle_.Clear();
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -160,6 +161,7 @@ ScriptPromise WritableStreamWrapper::UnderlyingSink::abort(
 
 void WritableStreamWrapper::UnderlyingSink::Trace(Visitor* visitor) const {
   visitor->Trace(writable_stream_wrapper_);
+  visitor->Trace(abort_handle_);
   UnderlyingSinkBase::Trace(visitor);
 }
 
