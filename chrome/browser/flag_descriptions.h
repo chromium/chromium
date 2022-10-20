@@ -2447,6 +2447,9 @@ extern const char kNtpCacheOneGoogleBarDescription[];
 extern const char kNtpChromeCartModuleName[];
 extern const char kNtpChromeCartModuleDescription[];
 
+extern const char kNtpComprehensiveThemeRealboxName[];
+extern const char kNtpComprehensiveThemeRealboxDescription[];
+
 extern const char kNtpComprehensiveThemingName[];
 extern const char kNtpComprehensiveThemingDescription[];
 
