@@ -1206,6 +1206,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_TITLE" desc="Title for a dialog allowing the user to test their keyboard.">
         Test your keyboard
       </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_CLOSE_DIALOG_SHORTCUT_HELP_TEXT" translateable="false" desc="Informs the user how to close the keyboard tester dialog using a keyboard shortcut">
+        Press Alt + Esc to close the dialog.
+      </message>
 
       <!-- Ash keyboard diagram ARIA labels -->
       <message name="IDS_KEYBOARD_DIAGRAM_ARIA_LABEL_NOT_PRESSED" desc="ARIA label that describes a key that has not yet been pressed, as part of a keyboard testing UI. Key names could be single letters like Q, or a phrase like 'Down arrow'.">

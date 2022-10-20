@@ -27,6 +27,11 @@
     --iron-icon-fill-color: var(--cros-toast-icon-color);
     margin-inline-end: 12px;
   }
+
+  .shortcut-help-text {
+    color: var(--cros-text-color-secondary);
+    font-family: var(--diagnostics-google-sans-font-family);
+  }
 </style>
 <cr-dialog id="dialog" show-close-button on-close="handleClose">
   <div slot="title">[[i18n('keyboardTesterTitle')]]</div>
@@ -58,9 +63,13 @@
   </div>
   <div slot="button-container">
     <div id="help" inner-h-t-m-l="[[i18nAdvanced('keyboardTesterHelpLink')]]"></div>
-
     <cr-button class="action-button" on-click="close">
       [[i18n('inputTesterDone')]]
     </cr-button>
+  </div>
+  <div slot="footer">
+    <div class="shortcut-help-text">
+      [[i18n('closeDialogShortcutHelpText')]]
+    </div>
   </div>
 </cr-dialog>

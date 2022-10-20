@@ -9,6 +9,9 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {MockController} from '../../mock_controller.js';
+import {isVisible} from '../../test_util.js';
+
+import {assertElementContainsText} from './diagnostics_test_utils.js';
 
 export function keyboardTesterTestSuite() {
   /** @type {?KeyboardTesterElement} */
@@ -181,6 +184,13 @@ export function keyboardTesterTestSuite() {
     keyboardTesterElement.$.dialog.showModal();
     await flushTasks();
     assertTrue(keyboardTesterElement.isOpen());
+
+    // Keyboard shortcut help text should be visible
+    assertTrue(isVisible(
+        keyboardTesterElement.shadowRoot.querySelector('.shortcut-help-text')));
+    assertElementContainsText(
+        keyboardTesterElement.shadowRoot.querySelector('.shortcut-help-text'),
+        'Press Alt + Esc to close the dialog.');
 
     // Alt + Escape should close the tester
     keyboardTesterElement.dispatchEvent(
