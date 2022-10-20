@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.incognito.reauth;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -66,6 +67,8 @@ public class IncognitoReauthCoordinatorFactory {
      * Non-null for {@link FullScreenIncognitoReauthCoordinator}.
      */
     private @Nullable LayoutManager mLayoutManager;
+    /** An {@link Intent} which allows to opens regular overview mode from a non-tabbed Activity. */
+    private @Nullable Intent mShowRegularOverviewIntent;
 
     /**
      * A test-only variable used to mock the menu delegate instead of creating one.
@@ -89,6 +92,7 @@ public class IncognitoReauthCoordinatorFactory {
      * @param incognitoReauthTopToolbarDelegate A {@link IncognitoReauthTopToolbarDelegate} to use
      *         for disabling/enabling few top toolbar elements inside tab switcher.
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
+     * @param showRegularOverviewIntent An {@link Intent} to show the regular overview mode.
      * @param isTabbedActivity A boolean to indicate if the re-auth screen being fired from
      */
     public IncognitoReauthCoordinatorFactory(@NonNull Context context,
@@ -99,7 +103,8 @@ public class IncognitoReauthCoordinatorFactory {
             @Nullable OneshotSupplier<TabSwitcherCustomViewManager>
                     tabSwitcherCustomViewManagerOneshotSupplier,
             @Nullable IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate,
-            @Nullable LayoutManager layoutManager, boolean isTabbedActivity) {
+            @Nullable LayoutManager layoutManager, @Nullable Intent showRegularOverviewIntent,
+            boolean isTabbedActivity) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mModalDialogManager = modalDialogManager;
@@ -107,6 +112,7 @@ public class IncognitoReauthCoordinatorFactory {
         mSettingsLauncher = settingsLauncher;
         mIncognitoReauthTopToolbarDelegate = incognitoReauthTopToolbarDelegate;
         mLayoutManager = layoutManager;
+        mShowRegularOverviewIntent = showRegularOverviewIntent;
         mIsTabbedActivity = isTabbedActivity;
 
         if (isTabbedActivity) {
@@ -118,6 +124,9 @@ public class IncognitoReauthCoordinatorFactory {
                     }));
         } else {
             assert tabSwitcherCustomViewManagerOneshotSupplier == null;
+            assert mShowRegularOverviewIntent
+                    != null : "A valid intent is required to be able to"
+                              + " open regular overview mode from inside non-tabbed Activity.";
         }
     }
 
@@ -149,8 +158,7 @@ public class IncognitoReauthCoordinatorFactory {
                 mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /*animate=*/false);
             };
         } else {
-            // TODO(crbug.com/1227656): Add implementation for iCCT case.
-            return () -> {};
+            return () -> mContext.startActivity(mShowRegularOverviewIntent);
         }
     }
 
@@ -166,11 +174,8 @@ public class IncognitoReauthCoordinatorFactory {
      * @return {@link Runnable} to use when the user presses back while the re-auth is being shown.
      */
     Runnable getBackPressRunnable() {
-        if (mIsTabbedActivity) {
-            return getSeeOtherTabsRunnable();
-        } else {
-            return () -> {};
-        }
+        // Both "See other tabs" and back-press shares the same logic.
+        return getSeeOtherTabsRunnable();
     }
 
     /**
