@@ -25,7 +25,7 @@
     { "site_name": "beachbody" },
     { "site_name": "beautybay" },
     { "site_name": "bed_bath_beyond" },
-    { "site_name": "belk" },
+    { "site_name": "belk", "bug_number": 1376637 },
     { "site_name": "bestbuy" },
     { "site_name": "bhphotovideo", "disabled": true, "bug_number": 1173033 },
     { "site_name": "bloomingdales", "disabled": true, "bug_number": 1373677 },
