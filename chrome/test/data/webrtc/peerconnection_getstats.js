@@ -149,6 +149,7 @@ let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   decoderImplementation: 'string',
   framesAssembledFromMultiplePackets: 'number',
   totalAssemblyTime: 'number',
+  googTimingFrameInfo: 'string',
 });
 addRTCStatsToAllowlist(
     Presence.MANDATORY, 'inbound-rtp', kRTCInboundRtpStreamStats);
