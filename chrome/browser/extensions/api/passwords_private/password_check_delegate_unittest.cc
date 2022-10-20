@@ -1182,7 +1182,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
 
 TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
   base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChange);
+      password_manager::features::kPasswordChangeInSettings);
   base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
@@ -1257,7 +1257,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
 
 TEST_F(PasswordCheckDelegateTest, HasStartableScript_WeakCredentials) {
   base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChange);
+      password_manager::features::kPasswordChangeInSettings);
   base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
@@ -1310,7 +1310,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_WeakCredentials) {
 
 TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
   base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChange);
+      password_manager::features::kPasswordChangeInSettings);
   base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
@@ -1339,7 +1339,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
 TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      password_manager::features::kPasswordChange);
+      password_manager::features::kPasswordChangeInSettings);
   base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
@@ -1368,7 +1368,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
 
 TEST_F(PasswordCheckDelegateTest, HasStartableScript_CacheFresh) {
   base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChange);
+      password_manager::features::kPasswordChangeInSettings);
   base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
@@ -1403,7 +1403,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_CacheFresh) {
 TEST_F(PasswordCheckDelegateTest,
        HasStartableScript_CredentialListUpdateAfterScriptsFetched) {
   base::test::ScopedFeatureList feature_list(
-      password_manager::features::kPasswordChange);
+      password_manager::features::kPasswordChangeInSettings);
   base::HistogramTester histogram_tester;
 
   identity_test_env().MakeAccountAvailable(kTestEmail);

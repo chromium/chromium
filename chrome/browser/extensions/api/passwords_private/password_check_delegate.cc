@@ -370,7 +370,7 @@ void PasswordCheckDelegate::StartPasswordCheck(
   // If automated password change from password check in settings is enabled,
   // we make sure that the cache is warm prior to analyzing passwords.
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChange)) {
+          password_manager::features::kPasswordChangeInSettings)) {
     if (GetPasswordScriptsFetcher()->IsCacheStale()) {
       are_scripts_fetching_ = true;
       // The UMA metric for a stale cache is recorded on callback.
@@ -660,7 +660,7 @@ bool PasswordCheckDelegate::IsAutomatedPasswordChangeFromSettingsEnabled()
   return password_feature_manager_
              ->AreRequirementsForAutomatedPasswordChangeFulfilled() &&
          base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordChange);
+             password_manager::features::kPasswordChangeInSettings);
 }
 
 }  // namespace extensions
