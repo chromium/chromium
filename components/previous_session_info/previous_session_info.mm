@@ -210,12 +210,6 @@ static PreviousSessionInfo* gSharedInstance = nil;
     gSharedInstance.isFirstSessionAfterUpgrade =
         ![lastRanVersion isEqualToString:currentVersion];
 
-    // This key is no longer being used so we remove it here,
-    // but this should be cleaned-up in many milestones.
-    // TODO(crbug.com/1295763): Remove this line.
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:kPreviousSessionInfoMultiWindowEnabled];
-
     gSharedInstance.connectedSceneSessionsIDs = [NSMutableSet
         setWithArray:[defaults
                          stringArrayForKey:
@@ -244,6 +238,8 @@ static PreviousSessionInfo* gSharedInstance = nil;
     gSharedInstance.reportParameters =
         [defaults dictionaryForKey:previous_session_info_constants::
                                        kPreviousSessionInfoParams];
+    [defaults removeObjectForKey:previous_session_info_constants::
+                                     kPreviousSessionInfoParams];
 
     gSharedInstance.memoryFootprint =
         [defaults integerForKey:previous_session_info_constants::
@@ -588,6 +584,13 @@ static PreviousSessionInfo* gSharedInstance = nil;
 }
 
 - (void)setReportParameterValue:(NSString*)value forKey:(NSString*)key {
+  if (![NSThread isMainThread]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self setReportParameterValue:value forKey:key];
+    });
+    return;
+  }
+  DCHECK([NSThread isMainThread]);
   NSMutableDictionary* params = [[NSUserDefaults.standardUserDefaults
       dictionaryForKey:previous_session_info_constants::
                            kPreviousSessionInfoParams] mutableCopy];
@@ -610,6 +613,12 @@ static PreviousSessionInfo* gSharedInstance = nil;
 }
 
 - (void)removeReportParameterForKey:(NSString*)key {
+  if (![NSThread isMainThread]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self removeReportParameterForKey:key];
+    });
+    return;
+  }
   NSMutableDictionary* URLs = [[NSUserDefaults.standardUserDefaults
       dictionaryForKey:previous_session_info_constants::
                            kPreviousSessionInfoParams] mutableCopy];
