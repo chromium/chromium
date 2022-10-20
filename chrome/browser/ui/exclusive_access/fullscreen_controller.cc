@@ -354,6 +354,11 @@ void FullscreenController::WindowFullscreenStateChanged() {
     NotifyTabExclusiveAccessLost();
   } else {
     toggled_into_fullscreen_ = true;
+    if (!chrome::IsRunningInAppMode()) {
+      exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+          ExclusiveAccessBubbleHideCallback(),
+          /*force_update=*/true);
+    }
   }
 }
 
@@ -520,13 +525,7 @@ void FullscreenController::EnterFullscreenModeInternal(
       url, exclusive_access_manager()->GetExclusiveAccessExitBubbleType(),
       display_id);
 
-  exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-      ExclusiveAccessBubbleHideCallback());
-
-  // Once the window has become fullscreen it'll call back to
-  // WindowFullscreenStateChanged(). We don't do this immediately as
-  // BrowserWindow::EnterFullscreen() asks for bookmark_bar_state_, so we let
-  // the BrowserWindow invoke WindowFullscreenStateChanged when appropriate.
+  // WindowFullscreenStateChanged() is called once the window is fullscreen.
 }
 
 void FullscreenController::ExitFullscreenModeInternal() {

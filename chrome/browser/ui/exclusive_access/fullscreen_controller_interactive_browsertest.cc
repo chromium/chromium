@@ -1111,14 +1111,14 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 
 // TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
 // implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
-// display::Screen configuration used in this test. Disabled on Mac and Linux,
-// where the window server's async handling of the fullscreen window state may
-// transition the window into fullscreen on the actual (non-mocked) display
-// bounds before or after the window bounds checks, yielding flaky results.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_SwapShowsBubble DISABLED_SwapShowsBubble
-#else
+// display::Screen configuration used in this test. Disabled on Linux, where the
+// window server's async handling of the fullscreen window state may transition
+// the window into fullscreen on the actual (non-mocked) display bounds before
+// or after the window bounds checks, yielding flaky results.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_SwapShowsBubble SwapShowsBubble
+#else
+#define MAYBE_SwapShowsBubble DISABLED_SwapShowsBubble
 #endif
 // Test requesting fullscreen on the current display and then swapping displays.
 IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
@@ -1127,7 +1127,9 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 
   // Execute JS to request fullscreen on the current display (on the left).
   RequestContentFullscreen();
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 800), browser()->window()->GetBounds());
+  const display::Screen* screen = display::Screen::GetScreen();
+  const auto first_display = screen->GetAllDisplays()[0];
+  EXPECT_EQ(first_display.bounds(), browser()->window()->GetBounds());
 
   // Explicitly check for, and destroy, the exclusive access bubble.
   EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
@@ -1146,7 +1148,8 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
 
   // Execute JS to request fullscreen on the other display (on the right).
   RequestContentFullscreenOnScreen(1);
-  EXPECT_EQ(gfx::Rect(800, 0, 800, 800), browser()->window()->GetBounds());
+  const auto second_display = screen->GetAllDisplays()[1];
+  EXPECT_EQ(second_display.bounds(), browser()->window()->GetBounds());
 
   // Ensure the exclusive access bubble is re-shown on fullscreen display swap.
   EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());

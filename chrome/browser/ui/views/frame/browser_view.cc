@@ -4331,13 +4331,6 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   FullscreenStateChanged();
 #endif
 
-  if (fullscreen && !chrome::IsRunningInAppMode()) {
-    UpdateExclusiveAccessExitBubbleContent(
-        url, bubble_type, ExclusiveAccessBubbleHideCallback(),
-        /*notify_download=*/false,
-        /*force_update=*/display_id != display::kInvalidDisplayId);
-  }
-
   // Undo our anti-jankiness hacks and force a re-layout.
   in_process_fullscreen_ = false;
   ToolbarSizeChanged(false);
