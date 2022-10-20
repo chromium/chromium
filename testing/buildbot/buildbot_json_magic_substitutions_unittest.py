@@ -197,6 +197,26 @@ class GPUParallelJobs(unittest.TestCase):
           else:
             self.assertEqual(retval, ['--jobs=4'])
 
+  def testWebGLWindowsIntelParallelJobs(self):
+    intel_config = CreateConfigWithGpus(['8086:device1-driver'])
+    amd_config = CreateConfigWithGpus(['1002:device1-driver'])
+    for gpu_config in [intel_config, amd_config]:
+      for name, telemetry_test_name in [('webgl_conformance', None),
+                                        (None, 'webgl_conformance')]:
+        is_intel = intel_config == gpu_config
+        c = gpu_config.copy()
+        if name:
+          c['name'] = name
+        if telemetry_test_name:
+          c['telemetry_test_name'] = telemetry_test_name
+        for os_type in ['lacros', 'linux', 'mac', 'win']:
+          retval = magic_substitutions.GPUParallelJobs(c, None,
+                                                       {'os_type': os_type})
+          if is_intel and os_type == 'win':
+            self.assertEqual(retval, ['--jobs=2'])
+          else:
+            self.assertEqual(retval, ['--jobs=4'])
+
 
 def CreateConfigWithDeviceTypes(device_types):
   dimension_sets = []
