@@ -256,6 +256,15 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
 
   void SetWebUIToken(int token);
 
+  // Calls |CheckBrowseUrl| on the database manager and sets
+  // is_async_database_manager_check_in_progress_ if the check is asynchronous.
+  bool CallCheckBrowseUrl(const GURL& url);
+  // Calls |CheckUrlForHighConfidenceAllowlist| on the database manager and sets
+  // is_async_database_manager_check_in_progress_ if the check is asynchronous.
+  AsyncMatch CallCheckUrlForHighConfidenceAllowlist(const GURL& url);
+  // Cancels the ongoing database manager check if there is one.
+  void CancelCheckIfRelevant();
+
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const GURL& url,
       SBThreatType threat_type,
@@ -347,6 +356,12 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // when enterprise real time URL lookup and allowlist bypass is also
   // enabled (SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass).
   bool can_check_high_confidence_allowlist_ = true;
+
+  // Tracks whether there is currently an async call into the database manager
+  // that the checker is waiting to hear back on. This is used in order to
+  // decide whether to ask the database manager to cancel the check for timeouts
+  // or on destruct.
+  bool is_async_database_manager_check_in_progress_ = false;
 
   // The last committed URL when the checker is constructed. It is used to
   // obtain page load token when the URL being checked is not a mainframe URL.

@@ -117,11 +117,19 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     urls_allowlist_match_[url] = match;
   }
 
+  void CancelCheck(Client* client) override { called_cancel_check_ = true; }
+
+  bool HasCalledCancelCheck() { return called_cancel_check_; }
+
  protected:
   ~MockSafeBrowsingDatabaseManager() override = default;
 
  private:
   void OnCheckBrowseURLDone(const GURL& gurl, Client* client) {
+    if (called_cancel_check_) {
+      return;
+    }
+
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_threat_type_, url));
     ThreatMetadata metadata;
@@ -131,6 +139,8 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   base::flat_map<std::string, bool> urls_delayed_callback_;
   base::flat_map<std::string, Client*> urls_client_;
   base::flat_map<std::string, AsyncMatch> urls_allowlist_match_;
+
+  bool called_cancel_check_ = false;
 };
 
 class MockUrlCheckerDelegate : public UrlCheckerDelegate {
@@ -545,6 +555,43 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
+  // Do not cancel check for real-time checks.
+  {
+    auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+        /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
+
+    GURL url("https://example.test/");
+    database_manager_->SetAllowlistResultForUrl(url, AsyncMatch::NO_MATCH);
+    url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING);
+
+    base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
+    safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
+    safe_browsing_url_checker.reset();
+    EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
+
+    task_environment_.RunUntilIdle();
+  }
+  // Do cancel check for local checks.
+  {
+    auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+        /*real_time_lookup_enabled=*/false,
+        /*can_check_safe_browsing_db=*/true);
+
+    GURL url("https://example.test/");
+    database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                           /*delayed_callback=*/false);
+
+    base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
+    EXPECT_CALL(cb, Run(_, /*proceed=*/false, /*showed_interstitial=*/false));
+    safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
+    safe_browsing_url_checker.reset();
+    EXPECT_TRUE(database_manager_->HasCalledCancelCheck());
+
+    task_environment_.RunUntilIdle();
+  }
 }
 
 }  // namespace safe_browsing
