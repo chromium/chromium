@@ -1029,6 +1029,8 @@ component("ash") {
     "style/icon_switch.h",
     "style/pill_button.cc",
     "style/pill_button.h",
+    "style/rounded_container.cc",
+    "style/rounded_container.h",
     "style/rounded_label.cc",
     "style/rounded_label.h",
     "style/rounded_label_widget.cc",
