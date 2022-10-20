@@ -85,9 +85,9 @@
 - (NSArray<UIKeyCommand*>*)keyCommands {
   __weak __typeof(self) weakSelf = self;
 
-  // Block to have the tab model open the tab at `index`, if there is one.
-  void (^focusTab)(NSUInteger) = ^(NSUInteger index) {
-    [weakSelf focusTabAtIndex:index];
+  // Block to have the tab model show the tab at `index`, if there is one.
+  void (^showTab)(NSUInteger) = ^(NSUInteger index) {
+    [weakSelf showTabAtIndex:index];
   };
 
   const BOOL hasTabs = self.tabsCount > 0;
@@ -122,21 +122,21 @@
   }
 
   // Blocks for next/previous tab.
-  void (^focusTabLeft)();
-  void (^focusTabRight)();
+  void (^showTabLeft)();
+  void (^showTabRight)();
   if (useRTLLayout) {
-    focusTabLeft = ^{
-      [weakSelf focusNextTab];
+    showTabLeft = ^{
+      [weakSelf showNextTab];
     };
-    focusTabRight = ^{
-      [weakSelf focusPreviousTab];
+    showTabRight = ^{
+      [weakSelf showPreviousTab];
     };
   } else {
-    focusTabLeft = ^{
-      [weakSelf focusPreviousTab];
+    showTabLeft = ^{
+      [weakSelf showPreviousTab];
     };
-    focusTabRight = ^{
-      [weakSelf focusNextTab];
+    showTabRight = ^{
+      [weakSelf showNextTab];
     };
   }
 
@@ -162,8 +162,7 @@
                                            : IDS_IOS_KEYBOARD_HISTORY_FORWARD;
 
   // Initialize the array of commands with an estimated capacity.
-  NSMutableArray<UIKeyCommand*>* keyCommands =
-      [NSMutableArray arrayWithCapacity:32];
+  NSMutableArray<UIKeyCommand*>* keyCommands = [NSMutableArray array];
 
   // List the commands that always appear in the HUD. They appear in the HUD
   // since they have titles.
@@ -264,19 +263,19 @@
       [UIKeyCommand cr_keyCommandWithInput:UIKeyInputLeftArrow
                              modifierFlags:KeyModifierAltCommand
                                      title:tabLeftTitle
-                                    action:focusTabLeft],
+                                    action:showTabLeft],
       [UIKeyCommand cr_keyCommandWithInput:UIKeyInputRightArrow
                              modifierFlags:KeyModifierAltCommand
                                      title:tabRightTitle
-                                    action:focusTabRight],
+                                    action:showTabRight],
       [UIKeyCommand cr_keyCommandWithInput:@"{"
                              modifierFlags:KeyModifierCommand
                                      title:nil
-                                    action:focusTabLeft],
+                                    action:showTabLeft],
       [UIKeyCommand cr_keyCommandWithInput:@"}"
                              modifierFlags:KeyModifierCommand
                                      title:nil
-                                    action:focusTabRight],
+                                    action:showTabRight],
     ]];
 
     [keyCommands addObjectsFromArray:@[
@@ -414,72 +413,129 @@
                              modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab(0);
+                                      showTab(0);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"2"
                              modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab(1);
+                                      showTab(1);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"3"
                              modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab(2);
+                                      showTab(2);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"4"
                              modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab(3);
+                                      showTab(3);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"5"
                              modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab(4);
+                                      showTab(4);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"6"
                              modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab(5);
+                                      showTab(5);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"7"
                              modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab(6);
+                                      showTab(6);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"8"
                              modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab(7);
+                                      showTab(7);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"9"
                              modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
-                                      focusTab(weakSelf.tabsCount - 1);
+                                      showTab(weakSelf.tabsCount - 1);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"\t"
                              modifierFlags:KeyModifierControlShift
                                      title:nil
                                     action:^{
-                                      [weakSelf focusPreviousTab];
+                                      [weakSelf showPreviousTab];
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"\t"
                              modifierFlags:KeyModifierControl
                                      title:nil
                                     action:^{
-                                      [weakSelf focusNextTab];
+                                      [weakSelf showNextTab];
                                     }],
     ]];
   }
 
-  return [keyCommands copy];
+  return keyCommands;
+}
+
+#pragma mark - Actions
+
+- (void)reopenClosedTab {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  sessions::TabRestoreService* const tabRestoreService =
+      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
+  if (!tabRestoreService || tabRestoreService->entries().empty())
+    return;
+
+  const std::unique_ptr<sessions::TabRestoreService::Entry>& entry =
+      tabRestoreService->entries().front();
+  // Only handle the TAB type.
+  // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
+  if (entry->type != sessions::TabRestoreService::TAB)
+    return;
+
+  [self.dispatcher openURLInNewTab:[OpenNewTabCommand command]];
+  RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, self.browser);
+}
+
+- (void)showNextTab {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  if (!webStateList)
+    return;
+
+  int activeIndex = webStateList->active_index();
+  if (activeIndex == WebStateList::kInvalidIndex)
+    return;
+
+  // If the active index isn't the last index, activate the next index.
+  // (the last index is always `count() - 1`).
+  // Otherwise activate the first index.
+  if (activeIndex < (webStateList->count() - 1)) {
+    webStateList->ActivateWebStateAt(activeIndex + 1);
+  } else {
+    webStateList->ActivateWebStateAt(0);
+  }
+}
+
+- (void)showPreviousTab {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  if (!webStateList)
+    return;
+
+  int activeIndex = webStateList->active_index();
+  if (activeIndex == WebStateList::kInvalidIndex)
+    return;
+
+  // If the active index isn't the first index, activate the prior index.
+  // Otherwise index the last index (`count() - 1`).
+  if (activeIndex > 0) {
+    webStateList->ActivateWebStateAt(activeIndex - 1);
+  } else {
+    webStateList->ActivateWebStateAt(webStateList->count() - 1);
+  }
 }
 
 #pragma mark - Private
@@ -510,66 +566,11 @@
          [[KeyboardObserverHelper sharedKeyboardObserver] isKeyboardVisible];
 }
 
-- (void)focusTabAtIndex:(NSUInteger)index {
+- (void)showTabAtIndex:(NSUInteger)index {
   WebStateList* webStateList = self.browser->GetWebStateList();
   if (webStateList->ContainsIndex(index)) {
     webStateList->ActivateWebStateAt(static_cast<int>(index));
   }
-}
-
-- (void)focusNextTab {
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  if (!webStateList)
-    return;
-
-  int activeIndex = webStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex)
-    return;
-
-  // If the active index isn't the last index, activate the next index.
-  // (the last index is always `count() - 1`).
-  // Otherwise activate the first index.
-  if (activeIndex < (webStateList->count() - 1)) {
-    webStateList->ActivateWebStateAt(activeIndex + 1);
-  } else {
-    webStateList->ActivateWebStateAt(0);
-  }
-}
-
-- (void)focusPreviousTab {
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  if (!webStateList)
-    return;
-
-  int activeIndex = webStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex)
-    return;
-
-  // If the active index isn't the first index, activate the prior index.
-  // Otherwise index the last index (`count() - 1`).
-  if (activeIndex > 0) {
-    webStateList->ActivateWebStateAt(activeIndex - 1);
-  } else {
-    webStateList->ActivateWebStateAt(webStateList->count() - 1);
-  }
-}
-
-- (void)reopenClosedTab {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  sessions::TabRestoreService* const tabRestoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
-  if (!tabRestoreService || tabRestoreService->entries().empty())
-    return;
-
-  const std::unique_ptr<sessions::TabRestoreService::Entry>& entry =
-      tabRestoreService->entries().front();
-  // Only handle the TAB type.
-  // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
-  if (entry->type != sessions::TabRestoreService::TAB)
-    return;
-
-  [self.dispatcher openURLInNewTab:[OpenNewTabCommand command]];
-  RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, self.browser);
 }
 
 @end
