@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL CSSOM View - scrollIntoView doesn't consider scroll-padding when target is stuck assert_equals: Shouldn't have scrolled expected 0 but got 2421
+Harness: the test ran to completion.
+

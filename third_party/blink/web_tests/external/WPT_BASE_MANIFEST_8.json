@@ -2473,6 +2473,15 @@
       ]
      ]
     },
+    "css-nesting": {
+     "pseudo-part-crash.html": [
+      "3ab521d71c84115b219dc9dc9ca0fa1b5f7883b5",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-overflow": {
      "chrome-body-overflow-propagation-crash.html": [
       "22607b4a4d037cdd9185ead784c9480f0926a79a",
@@ -129338,6 +129347,19 @@
         [
          [
           "/css/css-grid/subgrid/line-names-009-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-names-010.html": [
+       "f22cfe3303ec5be1d58092e3b70d50e67e1e6df3",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/subgrid/line-names-010-ref.html",
           "=="
          ]
         ],
@@ -285395,6 +285417,10 @@
        "103a35968d6c955757b2944289eab34b0e899a36",
        []
       ],
+      "line-names-010-ref.html": [
+       "9232f1dcf2a8b805a707c16f7f5976fb90a852f2",
+       []
+      ],
       "orthogonal-writing-mode-001-ref.html": [
        "4f0f6f962e633d8e3c7ddd78acf0247bd96e7715",
        []
@@ -316402,26 +316428,6 @@
        ]
       },
       "navigating-across-documents": {
-       "001-1.html": [
-        "df8d884e8d5dde6eca6a6f2cc10096f0df482170",
-        []
-       ],
-       "001-2.html": [
-        "1cffc59b26ccdff11737da04a18e3995e581cfe7",
-        []
-       ],
-       "001-3.html": [
-        "5f1310e0744fc8293a70d15b5765765723fa25ee",
-        []
-       ],
-       "002-1.html": [
-        "716e182ad5312af7dbd73934244e041c01c4c0d8",
-        []
-       ],
-       "002-2.html": [
-        "a29a6bbcdb7943edde4fc2815ec713d37a3b0dad",
-        []
-       ],
        "003-1.html": [
         "4d2229eb515a2e7cef79dc9966ed1f2b26a2140a",
         []
@@ -316464,6 +316470,10 @@
        ],
        "about-srcdoc-navigation-blocked-expected.txt": [
         "c7ed5ebe28be0a72522eb7ede93da033551d718a",
+        []
+       ],
+       "about-srcdoc-navigation-blocked.window-expected.txt": [
+        "c2a82b173687fbe945d136443ab1c682d7af9109",
         []
        ],
        "empty_fragment_iframe.html": [
@@ -316586,14 +316596,6 @@
        ],
        "navigation-unload-same-origin-fragment-2.html": [
         "2fb7f50b43248abb1ed6d9e19e5ea2332f71b258",
-        []
-       ],
-       "navigation_unload_data_url-1.html": [
-        "8c412e657e42c4f78819507982208313b142d436",
-        []
-       ],
-       "navigation_unload_same_origin-1.html": [
-        "4b52fe3cfba16f5624df32a83d492b2a434fa86e",
         []
        ],
        "plugin-document.historical-expected.txt": [
@@ -316865,7 +316867,7 @@
         []
        ],
        "helpers.js": [
-        "2a894fccccae1e9593e97e3e5e8fb72f13c2b1ff",
+        "b19addfadfacb2ca4789097cae7dc5f79e1268e2",
         []
        ],
        "post-top-opener-on-load.html": [
@@ -325990,6 +325992,10 @@
        },
        "video-aspect-ratio-expected.txt": [
         "9dfdff1b0abbcfe8454afb7c435bac2b8c20cd97",
+        []
+       ],
+       "video-intrinsic-width-height-expected.txt": [
+        "ed8ad953cec83b8ec8426d44fcf6ca98429c2213",
         []
        ]
       },
@@ -420510,6 +420516,13 @@
        {}
       ]
      ],
+     "scrollIntoView-stuck.tentative.html": [
+      "115b8ff9fb6ddc7f28bff4a067f6c891b9f40235",
+      [
+       null,
+       {}
+      ]
+     ],
      "scrollIntoView-svg-shape.html": [
       "899f94671a00e92d60b253b001dee488b8a468fb",
       [
@@ -461416,20 +461429,6 @@
        ]
       },
       "navigating-across-documents": {
-       "001.html": [
-        "7d99f6beb53354818e882466aaeff14843b241d4",
-        [
-         null,
-         {}
-        ]
-       ],
-       "002.html": [
-        "0efc7016fc19576fa49fdb10aa0630ae1954d43f",
-        [
-         null,
-         {}
-        ]
-       ],
        "003.html": [
         "f437150960a86ea90d3c168f75c72368b7c58e33",
         [
@@ -461528,11 +461527,22 @@
          {}
         ]
        ],
-       "about-srcdoc-navigation-blocked.html": [
-        "f31f6f47881b4468c0d644cc129e2b2946a77346",
+       "about-srcdoc-navigation-blocked.window.js": [
+        "659f7321c0e39207b18e1013c3fde4e81163296c",
         [
-         null,
-         {}
+         "html/browsers/browsing-the-web/navigating-across-documents/about-srcdoc-navigation-blocked.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Navigation to about:srcdoc, not via srcdoc=\"\", must be blocked"
+           ],
+           [
+            "script",
+            "../resources/helpers.js"
+           ]
+          ]
+         }
         ]
        ],
        "anchor-fragment-form-submit-longfragment.html": [
@@ -461874,11 +461884,65 @@
          {}
         ]
        ],
+       "navigation-unload-cross-origin.sub.window.js": [
+        "f23e2c440b1e71d4e7ec262dfc7bab9aaaa1488c",
+        [
+         "html/browsers/browsing-the-web/navigating-across-documents/navigation-unload-cross-origin.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Cross-origin navigation started from unload handler must be ignored"
+           ],
+           [
+            "script",
+            "../resources/helpers.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "navigation-unload-data-url.window.js": [
+        "cf39b01107f4c58164e80a2708be67809c6251fc",
+        [
+         "html/browsers/browsing-the-web/navigating-across-documents/navigation-unload-data-url.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "data: URL navigation started from unload handler must be ignored"
+           ],
+           [
+            "script",
+            "../resources/helpers.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "navigation-unload-form-submit.html": [
         "029170d46a5f8ad614fb6c2f63a2737bc55d9f87",
         [
          null,
          {}
+        ]
+       ],
+       "navigation-unload-javascript-url.window.js": [
+        "abbcb888a0add3a707159c44cf21e48bc3a9e748",
+        [
+         "html/browsers/browsing-the-web/navigating-across-documents/navigation-unload-javascript-url.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "javascript: URL navigation started from unload handler must be ignored"
+           ],
+           [
+            "script",
+            "../resources/helpers.js"
+           ]
+          ]
+         }
         ]
        ],
        "navigation-unload-same-origin-fragment.html": [
@@ -461888,18 +461952,22 @@
          {}
         ]
        ],
-       "navigation_unload_data_url.html": [
-        "7a8be3e917de41315cbfefb79c84686a66f29b06",
+       "navigation-unload-same-origin.window.js": [
+        "826af4b75b18dfc4406b5034a100a2caaa748d36",
         [
-         null,
-         {}
-        ]
-       ],
-       "navigation_unload_same_origin.html": [
-        "536d580cbd9bfe0b029eb7d884a01d0e17fd6c51",
-        [
-         null,
-         {}
+         "html/browsers/browsing-the-web/navigating-across-documents/navigation-unload-same-origin.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Same-origin navigation started from unload handler must be ignored"
+           ],
+           [
+            "script",
+            "../resources/helpers.js"
+           ]
+          ]
+         }
         ]
        ],
        "plugin-document.historical.html": [
@@ -501255,7 +501323,7 @@
        ]
       ],
       "popup-animation-corner-cases.tentative.html": [
-       "337346b211d3e89ad54f852c3d9471e3bdb146c8",
+       "917f0d900d150295dc665cb28caa54b17ab7957f",
        [
         null,
         {}
