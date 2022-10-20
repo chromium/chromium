@@ -68,10 +68,16 @@ size_t GetAttachmentIndex(base::span<const uint8_t> name) {
   return 0;
 }
 
+struct TransportOptions {
+  bool is_peer_trusted = false;
+  bool is_trusted_by_peer = false;
+  bool leak_channel_on_shutdown = false;
+};
+
 IpczDriverHandle CreateTransportForMojoEndpoint(
     Transport::EndpointTypes endpoint_types,
     const MojoInvitationTransportEndpoint& endpoint,
-    bool leak_channel_on_shutdown,
+    const TransportOptions& options,
     base::Process remote_process = base::Process(),
     MojoProcessErrorHandler error_handler = nullptr,
     uintptr_t error_handler_context = 0) {
@@ -91,7 +97,9 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
   auto transport = base::MakeRefCounted<Transport>(
       endpoint_types, std::move(channel_endpoint), std::move(remote_process));
   transport->SetErrorHandler(error_handler, error_handler_context);
-  transport->set_leak_channel_on_shutdown(leak_channel_on_shutdown);
+  transport->set_leak_channel_on_shutdown(options.leak_channel_on_shutdown);
+  transport->set_is_peer_trusted(options.is_peer_trusted);
+  transport->set_is_trusted_by_peer(options.is_trusted_by_peer);
   return ObjectBase::ReleaseAsHandle(std::move(transport));
 }
 
@@ -202,12 +210,18 @@ MojoResult Invitation::Send(
     flags |= IPCZ_CONNECT_NODE_TO_BROKER;
   }
 
+  const bool is_peer_elevated =
+      options && (options->flags & MOJO_SEND_INVITATION_FLAG_ELEVATED);
+#if !BUILDFLAG(IS_WIN)
+  // For now, the concept of an elevated process is only meaningful on Windows.
+  DCHECK(!is_peer_elevated);
+#endif
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
       {.source = config.is_broker ? Transport::kBroker : Transport::kNonBroker,
        .destination = is_isolated ? Transport::kBroker : Transport::kNonBroker},
       *transport_endpoint,
-      /*leak_channel_on_shutdown=*/false, std::move(remote_process),
-      error_handler, error_handler_context);
+      {.is_peer_trusted = is_peer_elevated, .is_trusted_by_peer = true},
+      std::move(remote_process), error_handler, error_handler_context);
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
@@ -279,6 +293,13 @@ MojoHandle Invitation::Accept(
     flags |= IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE;
   }
 
+  const bool is_elevated =
+      options && (options->flags & MOJO_ACCEPT_INVITATION_FLAG_ELEVATED) != 0;
+#if !BUILDFLAG(IS_WIN)
+  // For now, the concept of an elevated process is only meaningful on Windows.
+  DCHECK(!is_elevated);
+#endif
+
   // When accepting an invitation, we ConnectNode() with the maximum possible
   // number of initial portals: unlike ipcz, Mojo APIs have no way for this end
   // of a connection to express the expected number of attachments prior to
@@ -296,7 +317,12 @@ MojoHandle Invitation::Accept(
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
       {.source = is_isolated ? Transport::kBroker : Transport::kNonBroker,
        .destination = Transport::kBroker},
-      *transport_endpoint, leak_transport);
+      *transport_endpoint,
+      {
+          .is_peer_trusted = true,
+          .is_trusted_by_peer = is_elevated,
+          .leak_channel_on_shutdown = leak_transport,
+      });
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
     return IPCZ_INVALID_DRIVER_HANDLE;
   }

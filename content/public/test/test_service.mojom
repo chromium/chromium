@@ -42,6 +42,12 @@ interface TestService {
   CreateUnsafeSharedMemoryRegion(string message)
       => (mojo_base.mojom.UnsafeSharedMemoryRegion? region);
 
+  // Accepts a shared memory region and copies its contents into a new shared
+  // memory region which is sent back to the caller. This exercises platform
+  // handle transmission in both directions.
+  CloneSharedMemoryContents(mojo_base.mojom.ReadOnlySharedMemoryRegion region)
+      => (mojo_base.mojom.UnsafeSharedMemoryRegion new_region);
+
   // Returns the result of sandbox::policy::Sandbox::IsProcessSandboxed().
   IsProcessSandboxed() => (bool is_sandboxed);
 };

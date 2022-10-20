@@ -206,6 +206,8 @@ class SuicideOnChannelErrorFilter : public IPC::MessageFilter {
 mojo::IncomingInvitation InitializeMojoIPCChannel() {
   TRACE_EVENT0("startup", "InitializeMojoIPCChannel");
   mojo::PlatformChannelEndpoint endpoint;
+  MojoAcceptInvitationFlags flags =
+      MOJO_ACCEPT_INVITATION_FLAG_LEAK_TRANSPORT_ENDPOINT;
 #if BUILDFLAG(IS_WIN)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           mojo::PlatformChannel::kHandleSwitch)) {
@@ -216,6 +218,7 @@ mojo::IncomingInvitation InitializeMojoIPCChannel() {
     // command line.
     endpoint = mojo::NamedPlatformChannel::ConnectToServer(
         *base::CommandLine::ForCurrentProcess());
+    flags |= MOJO_ACCEPT_INVITATION_FLAG_ELEVATED;
   }
 #elif BUILDFLAG(IS_FUCHSIA)
   endpoint = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
@@ -238,8 +241,7 @@ mojo::IncomingInvitation InitializeMojoIPCChannel() {
       base::GlobalDescriptors::GetInstance()->Get(kMojoIPCChannel))));
 #endif
 
-  return mojo::IncomingInvitation::Accept(
-      std::move(endpoint), MOJO_ACCEPT_INVITATION_FLAG_LEAK_TRANSPORT_ENDPOINT);
+  return mojo::IncomingInvitation::Accept(std::move(endpoint), flags);
 }
 
 // Callback passed to variations::ChildProcessFieldTrialSyncer. Notifies the

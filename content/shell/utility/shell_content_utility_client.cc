@@ -110,6 +110,16 @@ class TestUtilityServiceImpl : public mojom::TestService {
     std::move(callback).Run(std::move(region));
   }
 
+  void CloneSharedMemoryContents(
+      base::ReadOnlySharedMemoryRegion region,
+      CloneSharedMemoryContentsCallback callback) override {
+    auto mapping = region.Map();
+    auto new_region = base::UnsafeSharedMemoryRegion::Create(region.GetSize());
+    auto new_mapping = new_region.Map();
+    memcpy(new_mapping.memory(), mapping.memory(), region.GetSize());
+    std::move(callback).Run(std::move(new_region));
+  }
+
   void IsProcessSandboxed(IsProcessSandboxedCallback callback) override {
     std::move(callback).Run(sandbox::policy::Sandbox::IsProcessSandboxed());
   }

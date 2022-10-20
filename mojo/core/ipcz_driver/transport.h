@@ -75,6 +75,12 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
     leak_channel_on_shutdown_ = leak;
   }
 
+  void set_is_peer_trusted(bool trusted) { is_peer_trusted_ = trusted; }
+  bool is_peer_trusted() const { return is_peer_trusted_; }
+
+  void set_is_trusted_by_peer(bool trusted) { is_trusted_by_peer_ = trusted; }
+  bool is_trusted_by_peer() const { return is_trusted_by_peer_; }
+
   void SetErrorHandler(MojoProcessErrorHandler handler, uintptr_t context) {
     error_handler_ = handler;
     error_handler_context_ = context;
@@ -174,6 +180,20 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   MojoProcessErrorHandler error_handler_ = nullptr;
   uintptr_t error_handler_context_ = 0;
   bool leak_channel_on_shutdown_ = false;
+
+  // Indicates whether the remote transport endpoint is "trusted" by this
+  // endpoint. In practice this means we will accept pre-duplicated handles from
+  // the remote process on Windows. This bit is ignored if the remote endpoint
+  // is a broker, since brokers are implicitly trusted; and it's currently
+  // meaningless on platforms other than Windows.
+  bool is_peer_trusted_ = false;
+
+  // Indicates whether this endpoint is "trusted" by the remote endpoint.
+  // In practice this means the remote endpoint will accept pre-duplicated
+  // handles from us on Windows. This bit is ignored if the local endpoint is a
+  // broker, since brokers are implicitly trusted; and it's currently
+  // meaningless on platforms other than Windows.
+  bool is_trusted_by_peer_ = false;
 
   // The channel endpoint which will be used by this Transport to construct and
   // start its underlying Channel instance once activated. Not guarded by a lock

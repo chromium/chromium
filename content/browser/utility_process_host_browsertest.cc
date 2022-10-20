@@ -5,7 +5,11 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
@@ -22,6 +26,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_service.mojom.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -39,6 +44,8 @@ namespace content {
 namespace {
 
 const char kTestProcessName[] = "test_process";
+
+constexpr base::StringPiece kTestMessage{"hello from shared memory"};
 
 }  // namespace
 
@@ -71,9 +78,10 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
           base::FilePath(FILE_PATH_LITERAL("non_existent_path")));
     }
 #if BUILDFLAG(IS_WIN)
-    if (elevated)
+    if (elevated) {
       host->SetSandboxType(
           sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges);
+    }
 #endif
     EXPECT_TRUE(host->Start());
 
@@ -83,6 +91,18 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
       service_->DoCrashImmediately(
           base::BindOnce(&UtilityProcessHostBrowserTest::OnSomething,
                          base::Unretained(this), crash));
+    } else if (elevated && mojo::core::IsMojoIpczEnabled()) {
+      // Verify that shared memory handles can be transferred to and from the
+      // elevated process. This is only supported with MojoIpcz enabled.
+      auto region =
+          base::WritableSharedMemoryRegion::Create(kTestMessage.size());
+      auto mapping = region.Map();
+      memcpy(mapping.memory(), kTestMessage.data(), kTestMessage.size());
+      service_->CloneSharedMemoryContents(
+          base::WritableSharedMemoryRegion::ConvertToReadOnly(
+              std::move(region)),
+          base::BindOnce(&UtilityProcessHostBrowserTest::OnMemoryCloneReceived,
+                         base::Unretained(this)));
     } else {
       service_->DoSomething(
           base::BindOnce(&UtilityProcessHostBrowserTest::OnSomething,
@@ -114,6 +134,16 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // If service crashes then this never gets called.
     ASSERT_EQ(false, expect_crash);
+    ResetService();
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
+  }
+
+  void OnMemoryCloneReceived(base::UnsafeSharedMemoryRegion region) {
+    auto mapping = region.Map();
+    ASSERT_EQ(kTestMessage.size(), mapping.size());
+    EXPECT_EQ(kTestMessage,
+              base::StringPiece(static_cast<const char*>(mapping.memory()),
+                                kTestMessage.size()));
     ResetService();
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
   }

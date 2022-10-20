@@ -206,6 +206,11 @@ typedef uint32_t MojoSendInvitationFlags;
 // process in question.
 #define MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS ((MojoSendInvitationFlags)2)
 
+// Indicates that the invitation is being sent to a process which may be running
+// at an elevated privilege level compared to the broker. Such processes are
+// implicitly trusted more than others.
+#define MOJO_SEND_INVITATION_FLAG_ELEVATED ((MojoSendInvitationFlags)4)
+
 // Options passed to |MojoSendInvitation()|.
 struct MOJO_ALIGNAS(8) MojoSendInvitationOptions {
   // The size of this structure, used for versioning.
@@ -245,6 +250,12 @@ typedef uint32_t MojoAcceptInvitationFlags;
 // invitations over the course of its lifetime.
 #define MOJO_ACCEPT_INVITATION_FLAG_LEAK_TRANSPORT_ENDPOINT \
   ((MojoAcceptInvitationFlags)2)
+
+// The process accepting this invitation is running at an elevated privilege
+// level relative to the broker. In order for IPC to function properly when this
+// flag is specified, the invitation sender must also specify
+// MOJO_SEND_INVITATION_FLAG_ELEVATED.
+#define MOJO_ACCEPT_INVITATION_FLAG_ELEVATED ((MojoAcceptInvitationFlags)4)
 
 // Options passed to |MojoAcceptInvitation()|.
 struct MOJO_ALIGNAS(8) MojoAcceptInvitationOptions {

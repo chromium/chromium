@@ -112,6 +112,12 @@ class TestRendererServiceImpl : public mojom::TestService {
     NOTREACHED();
   }
 
+  void CloneSharedMemoryContents(
+      base::ReadOnlySharedMemoryRegion region,
+      CloneSharedMemoryContentsCallback callback) override {
+    NOTREACHED();
+  }
+
   void IsProcessSandboxed(IsProcessSandboxedCallback callback) override {
     std::move(callback).Run(sandbox::policy::Sandbox::IsProcessSandboxed());
   }
