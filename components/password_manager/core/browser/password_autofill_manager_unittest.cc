@@ -367,6 +367,22 @@ class PasswordAutofillManagerTest : public testing::Test {
     return std::string();
   }
 
+  void ExpectAndAllowAuthentication() {
+    // Allow authentication.
+    EXPECT_CALL(*authenticator_.get(),
+                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
+        .WillOnce(Return(true));
+    EXPECT_CALL(
+        *authenticator_.get(),
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+        AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
+                                /*message=*/_, _));
+#else
+        Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                     /*use_last_valid_auth= */ true));
+#endif
+  }
+
  protected:
   autofill::PasswordFormFillData& fill_data() { return fill_data_; }
 
@@ -1888,18 +1904,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
       .Times(0);
 
   // The authenticator exists and is available.
-  EXPECT_CALL(*authenticator_.get(),
-              CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-      .WillOnce(Return(true));
-  EXPECT_CALL(
-      *authenticator_.get(),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
-                              /*message=*/_, _));
-#else
-      Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                   /*use_last_valid_auth= */ true));
-#endif
+  ExpectAndAllowAuthentication();
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
@@ -1950,18 +1955,7 @@ TEST_F(PasswordAutofillManagerTest,
       .Times(0);
 
   // The authenticator exists and is available.
-  EXPECT_CALL(*authenticator_.get(),
-              CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-      .WillOnce(Return(true));
-  EXPECT_CALL(
-      *authenticator_.get(),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
-                              /*message=*/_, _));
-#else
-      Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                   /*use_last_valid_auth= */ true));
-#endif
+  ExpectAndAllowAuthentication();
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
@@ -2013,18 +2007,7 @@ TEST_F(PasswordAutofillManagerTest,
       .Times(0);
 
   // The authenticator exists and is available.
-  EXPECT_CALL(*authenticator_.get(),
-              CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-      .WillOnce(Return(true));
-  EXPECT_CALL(
-      *authenticator_.get(),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
-                              /*message=*/_, _));
-#else
-      Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                   /*use_last_valid_auth= */ true));
-#endif
+  ExpectAndAllowAuthentication();
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
@@ -2037,6 +2020,46 @@ TEST_F(PasswordAutofillManagerTest,
               Cancel(BiometricAuthRequester::kAutofillSuggestion));
   password_autofill_manager_->OnAddPasswordFillData(CreateTestFormFillData());
 }
+
+TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
+  TestPasswordManagerClient client;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  ON_CALL(*client.GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+#else
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricTouchToFill);
+#endif
+  NiceMock<MockAutofillClient> autofill_client;
+  client.SetBiometricAuthenticator(authenticator_);
+
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      base::i18n::RIGHT_TO_LEFT, std::u16string(), autofill::IS_PASSWORD_FIELD,
+      gfx::RectF());
+  ExpectAndAllowAuthentication();
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, test_username_),
+      1);
+
+  // Triggering new authentication should cancel ongoing authentication.
+  EXPECT_CALL(*authenticator_.get(),
+              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+  ExpectAndAllowAuthentication();
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, test_username_),
+      1);
+
+  // Destroying the manager should cancel ongoing authentication.
+  EXPECT_CALL(*authenticator_.get(),
+              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+}
+
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 
 TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
