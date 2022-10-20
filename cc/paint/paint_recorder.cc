@@ -37,8 +37,7 @@ sk_sp<PaintRecord> PaintRecorder::finishRecordingAsPicture() {
 
   // The rect doesn't matter, since we just release the record.
   display_item_list_->EndPaintOfUnpaired(gfx::Rect());
-  display_item_list_->Finalize();
-  return display_item_list_->ReleaseAsRecord();
+  return display_item_list_->FinalizeAndReleaseAsRecord();
 }
 
 std::unique_ptr<RecordPaintCanvas> PaintRecorder::CreateCanvas(

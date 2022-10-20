@@ -3090,6 +3090,24 @@ const PaintOp* PaintOpBuffer::PlaybackFoldingIterator::NextUnfoldedOp() {
   return &op;
 }
 
+sk_sp<PaintRecord> PaintOpBuffer::MoveRetainingBufferIfPossible() {
+  if (!data_ || used_ == reserved_)
+    return sk_make_sp<PaintOpBuffer>(std::move(*this));
+
+  const size_t old_reserved = reserved_;
+  BufferDataPtr old;
+  if (!used_) {
+    old = std::move(data_);
+    reserved_ = 0;
+  } else {
+    old = ReallocBuffer(used_);
+  }
+  sk_sp<PaintRecord> copy = sk_make_sp<PaintOpBuffer>(std::move(*this));
+  data_ = std::move(old);
+  reserved_ = old_reserved;
+  return copy;
+}
+
 void PaintOpBuffer::Playback(SkCanvas* canvas,
                              const PlaybackParams& params,
                              const std::vector<size_t>* offsets) const {
@@ -3243,14 +3261,16 @@ SkRect PaintOpBuffer::GetFixedScaleBounds(const SkMatrix& ctm,
       SkScalarCeilToInt(SkScalarAbs(scale.height() * bounds.height())));
 }
 
-void PaintOpBuffer::ReallocBuffer(size_t new_size) {
+PaintOpBuffer::BufferDataPtr PaintOpBuffer::ReallocBuffer(size_t new_size) {
   DCHECK_GE(new_size, used_);
   std::unique_ptr<char, base::AlignedFreeDeleter> new_data(
       static_cast<char*>(base::AlignedAlloc(new_size, PaintOpAlign)));
   if (data_)
     memcpy(new_data.get(), data_.get(), used_);
+  BufferDataPtr old_data = std::move(data_);
   data_ = std::move(new_data);
   reserved_ = new_size;
+  return old_data;
 }
 
 void* PaintOpBuffer::AllocatePaintOp(size_t skip) {

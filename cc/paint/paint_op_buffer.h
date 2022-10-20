@@ -1157,6 +1157,10 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool NeedsAdditionalInvalidationForLCDText(
       const PaintOpBuffer& old_buffer) const;
 
+  // Moves the contents of this to the returned object, retaining the buffer if
+  // possible.
+  sk_sp<PaintOpBuffer> MoveRetainingBufferIfPossible();
+
   bool operator==(const PaintOpBuffer& other) const;
   bool operator!=(const PaintOpBuffer& other) const {
     return !(*this == other);
@@ -1457,6 +1461,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   friend class DisplayItemList;
   friend class PaintOpBufferOffsetsTest;
   friend class SolidColorAnalyzer;
+  using BufferDataPtr = std::unique_ptr<char, base::AlignedFreeDeleter>;
 
   // Replays the paint op buffer into the canvas. If |indices| is specified, it
   // contains indices in an increasing order and only the indices specified in
@@ -1465,11 +1470,14 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
                 const PlaybackParams& params,
                 const std::vector<size_t>* indices) const;
 
-  void ReallocBuffer(size_t new_size);
+  // Creates a new buffer sized to `new_size`, copying the old to the new (if
+  // the old exists). Returns the old buffer.
+  BufferDataPtr ReallocBuffer(size_t new_size);
+
   // Returns the allocated op.
   void* AllocatePaintOp(size_t skip);
 
-  std::unique_ptr<char, base::AlignedFreeDeleter> data_;
+  BufferDataPtr data_;
   size_t used_ = 0;
   size_t reserved_ = 0;
   size_t op_count_ = 0;

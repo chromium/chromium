@@ -167,6 +167,11 @@ void DisplayItemList::EndPaintOfPairedEnd() {
 }
 
 void DisplayItemList::Finalize() {
+  FinalizeImpl();
+  paint_op_buffer_.ShrinkToFit();
+}
+
+void DisplayItemList::FinalizeImpl() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "DisplayItemList::Finalize");
 #if DCHECK_IS_ON()
@@ -190,12 +195,18 @@ void DisplayItemList::Finalize() {
                    return offsets_[index];
                  });
   }
-  paint_op_buffer_.ShrinkToFit();
   visual_rects_.clear();
   visual_rects_.shrink_to_fit();
   offsets_.clear();
   offsets_.shrink_to_fit();
   paired_begin_stack_.shrink_to_fit();
+}
+
+sk_sp<PaintRecord> DisplayItemList::FinalizeAndReleaseAsRecord() {
+  FinalizeImpl();
+  sk_sp<PaintRecord> record = paint_op_buffer_.MoveRetainingBufferIfPossible();
+  Reset();
+  return record;
 }
 
 void DisplayItemList::EmitTraceSnapshot() const {

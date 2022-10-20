@@ -132,6 +132,11 @@ class CC_PAINT_EXPORT DisplayItemList
   // Called after all items are appended, to process the items.
   void Finalize();
 
+  // Combination of Finalize() and ReleaseAsRecord(). Differs from from calling
+  // the two individualy in so far as the backing buffer of PaintOpBuffer may
+  // be retained.
+  sk_sp<PaintRecord> FinalizeAndReleaseAsRecord();
+
   struct DirectlyCompositedImageResult {
     // See PictureLayerImpl::direct_composited_image_default_raster_scale_.
     gfx::Vector2dF default_raster_scale;
@@ -222,6 +227,10 @@ class CC_PAINT_EXPORT DisplayItemList
     if (!paired_begin_stack_.empty())
       visual_rects_[paired_begin_stack_.back().first_index].Union(visual_rect);
   }
+
+  // Shared between Finalize() and FinalizeAndReleaseAsRecord(). Does not modify
+  // `paint_op_buffer_`.
+  void FinalizeImpl();
 
   // RTree stores indices into the paint op buffer.
   // TODO(vmpstr): Update the rtree to store offsets instead.
