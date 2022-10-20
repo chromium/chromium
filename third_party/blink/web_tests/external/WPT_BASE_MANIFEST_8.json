@@ -3561,6 +3561,20 @@
        null,
        {}
       ]
+     ],
+     "eof-some-after-selector-crash.html": [
+      "557fabf668939b863a99c7d5b2eb2535aa2a67c0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "spurious-brace-crash.html": [
+      "b1a462a9690ea40836c0d7cb0cdf9779b9702750",
+      [
+       null,
+       {}
+      ]
      ]
     }
    },
@@ -82295,13 +82309,52 @@
        {}
       ]
      ],
-     "box-shadow.html": [
-      "afc28d03c6f3e9fbef531cd6bc5085c751253a51",
+     "box-shadow-001.html": [
+      "d35aeb682dcfcc77c41f8b09642b3481a4b7f39d",
       [
        null,
        [
         [
-         "/css/css-break/box-shadow-ref.html",
+         "/css/css-break/box-shadow-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-shadow-002.html": [
+      "d26bb8c72e34e6a30f86b20bb0f45cfcc1ff9b6e",
+      [
+       null,
+       [
+        [
+         "/css/css-break/box-shadow-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-shadow-003.html": [
+      "ba8fedfe1b7bab543d3c22b3ca1303869d2a2d1e",
+      [
+       null,
+       [
+        [
+         "/css/css-break/box-shadow-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-shadow-004.html": [
+      "bdf66fcddd34c86e12e81c99d0c203d6a880a080",
+      [
+       null,
+       [
+        [
+         "/css/css-break/box-shadow-004-ref.html",
          "=="
         ]
        ],
@@ -87085,6 +87138,19 @@
      ],
      "margin-after-overflowed-block.html": [
       "26a2eb22aa69b134847dcb8cc3305625bd47100b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "monolithic-abspos-enter-fragmentation-context.html": [
+      "75e33c299a0f0ef828aeacf26a509ceb6c17f88a",
       [
        null,
        [
@@ -270780,8 +270846,20 @@
       "fdaa2c733969b195dc983d58c411bdc0f83f5db0",
       []
      ],
-     "box-shadow-ref.html": [
+     "box-shadow-001-ref.html": [
       "f87e16adedc779911ec081990acd76dd5f6ed5ad",
+      []
+     ],
+     "box-shadow-002-ref.html": [
+      "a55abfbb99ecc4317123904e051b2bba81941244",
+      []
+     ],
+     "box-shadow-003-ref.html": [
+      "1c9451d80798d3c6c4960240bb95adb4e4c417f8",
+      []
+     ],
+     "box-shadow-004-ref.html": [
+      "29156878c0b5aea6f0eec393279f11ebb742cb47",
       []
      ],
      "break-inside-avoid-min-block-size-1-ref.html": [
@@ -271512,7 +271590,7 @@
        []
       ],
       "color-computed-color-mix-function-expected.txt": [
-       "f8f529272556192de12b5c51c3070e4b88484819",
+       "2a53815565bacf61de28752d29b3b33cdf2ce556",
        []
       ],
       "color-computed-relative-color-expected.txt": [
@@ -271524,7 +271602,7 @@
        []
       ],
       "color-valid-color-mix-function-expected.txt": [
-       "932d4828f0709e6d13d0251c810f50a5c542c1bd",
+       "b261cc4adf057f319814ffe3f627687f6532ae94",
        []
       ],
       "color-valid-relative-color-expected.txt": [
@@ -346355,7 +346433,7 @@
       []
      ],
      "soft-navigation-helper.js": [
-      "c0c6cbd1e5187bda807200d7d02ab2497b72823a",
+      "f057bf7982a6fadd948912fbb05a55bd046804d2",
       []
      ]
     }
@@ -352741,6 +352819,10 @@
     ],
     "rtp-stats-creation-expected.txt": [
      "e0e519a4a5436f28d4035c3ee9511fb18e849dc1",
+     []
+    ],
+    "supported-stats-expected.txt": [
+     "da29e157ffccf735fcdecc43185def5ad340c8eb",
      []
     ]
    },
@@ -394529,7 +394611,7 @@
        ]
       ],
       "at-container-parsing.html": [
-       "6c1bf369c6213b5ecdb9010b551ec030f97899d4",
+       "2fbd4b8b6f46185d97b2badf1a71129012cc7df4",
        [
         null,
         {}
@@ -394655,7 +394737,7 @@
        ]
       ],
       "container-name-parsing.html": [
-       "217a73fb68cb60ac9f29a22d38a54ab3fe1c7e9d",
+       "4f385cca5245cd63e531d1ddf26c84cf31b7b2a6",
        [
         null,
         {}
@@ -394669,7 +394751,7 @@
        ]
       ],
       "container-parsing.html": [
-       "44989c225aa3c28d46570eea9351002e6160a742",
+       "87b3bdd48cd30cd591cfaccc5cfda34302a05145",
        [
         null,
         {}
@@ -456746,7 +456828,7 @@
       ]
      ],
      "mixed-content-fetch.tentative.https.window.js": [
-      "a9b6d6b3f0279778cfa6ff87c5cbc064c7006edd",
+      "fb9f6a7709af5a1ffa145d220dc3f3aa7500bb15",
       [
        "fetch/private-network-access/mixed-content-fetch.tentative.https.window.html",
        {
@@ -546900,7 +546982,7 @@
       ]
      ],
      "scroll-timeline-name-parsing.tentative.html": [
-      "866363de3363733dc687de7ac306b13f91e15f07",
+      "a8f2e316501b1070dd8dde58c79500903e30f7b9",
       [
        null,
        {}
@@ -547005,14 +547087,14 @@
       ]
      ],
      "view-timeline-name-parsing.html": [
-      "ba43b3c8260ad4cd60d4844b1f1a345e4a8c8324",
+      "3878d5c58347c83532292d2a565e2988e71ac6be",
       [
        null,
        {}
       ]
      ],
      "view-timeline-shorthand.tentative.html": [
-      "5d81cdcbf8aeb7382271cfaa37e81bdbdec55aa0",
+      "f3efa88c923f20b60fd887ca8143926eeeeaf4a9",
       [
        null,
        {}
@@ -554450,6 +554532,33 @@
     ],
     "image-lcp-followed-by-text-softnav-lcp.tentative.html": [
      "c2e2e149cefa2b4a888fbbd76bb052d1a833765f",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "navigation-api-preventDefault.tentative.html": [
+     "7c15064466c3efbee0dd34f0520296b2baa1713f",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "navigation-api-rejected.tentative.html": [
+     "84dd1b4e194d22870fa2b31d4a12e0c64be8f8dc",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "navigation-api.tentative.html": [
+     "a275ff004cad05621eb6909bb4ffb65c0b790218",
      [
       null,
       {
@@ -576956,7 +577065,7 @@
      ]
     ],
     "chunk-serialization.any.js": [
-     "ea679043d48826fd86f67cb3fdab87610a29ec4f",
+     "821a71170d49e966ea8e75fbc7b4e87e793f5cf9",
      [
       "webcodecs/chunk-serialization.any.html",
       {
@@ -579171,7 +579280,7 @@
      ]
     ],
     "videoFrame-texImage.any.js": [
-     "51328b951c829e7d2a6caa0c4be2662706f0db97",
+     "2eab6c8cde30c6eb3cb728d3d326e3ac321840cc",
      [
       "webcodecs/videoFrame-texImage.any.html",
       {
@@ -582686,7 +582795,7 @@
      ]
     ],
     "supported-stats.html": [
-     "22b514e77a9cd70e59cfebc910c0b2eb42a1b01f",
+     "2da52a1885e3a78b7c08f2468ae1ef0f54736cf5",
      [
       null,
       {
