@@ -13,6 +13,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 
 // static
@@ -39,6 +40,7 @@ IOSChromePasswordReuseManagerFactory::IOSChromePasswordReuseManagerFactory()
     : BrowserStateKeyedServiceFactory(
           "PasswordReuseManager",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSChromePasswordStoreFactory::GetInstance());
 }
 
@@ -55,8 +57,11 @@ IOSChromePasswordReuseManagerFactory::BuildServiceInstanceFor(
   std::unique_ptr<password_manager::PasswordReuseManager> reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
 
-  reuse_manager->Init(ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
+  reuse_manager->Init(browser_state->GetPrefs(),
                       IOSChromePasswordStoreFactory::GetForBrowserState(
+                          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
+                          .get(),
+                      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
                           browser_state, ServiceAccessType::EXPLICIT_ACCESS)
                           .get());
   return reuse_manager;
