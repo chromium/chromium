@@ -13,9 +13,11 @@
 
 namespace blink {
 
-class Element;
 class DOMRectReadOnly;
+class Element;
+class LayoutBox;
 class ResizeObserverSize;
+class SVGGraphicsElement;
 
 class CORE_EXPORT ResizeObserverEntry final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -38,6 +40,9 @@ class CORE_EXPORT ResizeObserverEntry final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  void PopulateFromLayoutBox(const LayoutBox&);
+  void PopulateFromSVGGraphicsElement(SVGGraphicsElement&);
+
   Member<Element> target_;
   Member<DOMRectReadOnly> content_rect_;
   HeapVector<Member<ResizeObserverSize>> device_pixel_content_box_size_;
