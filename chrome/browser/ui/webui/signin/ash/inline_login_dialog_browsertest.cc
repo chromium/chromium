@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 
 #include "base/json/json_reader.h"
 #include "chrome/common/webui_url_constants.h"
@@ -21,9 +21,9 @@ namespace ash {
 namespace {
 
 // Subclass to access protected constructor and protected methods.
-class TestInlineLoginDialogChromeOS : public InlineLoginDialogChromeOS {
+class TestInlineLoginDialog : public InlineLoginDialog {
  public:
-  TestInlineLoginDialogChromeOS() = default;
+  TestInlineLoginDialog() = default;
   using SystemWebDialogDelegate::dialog_window;
 };
 
@@ -48,14 +48,13 @@ class ChildModalDialogDelegate : public views::DialogDelegateView {
 
 }  // namespace
 
-using InlineLoginDialogChromeOSTest = InProcessBrowserTest;
+using InlineLoginDialogTest = InProcessBrowserTest;
 
 // Regression test for use-after-free and crash. https://1170577
-IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
+IN_PROC_BROWSER_TEST_F(InlineLoginDialogTest,
                        CanOpenChildModelDialogThenCloseParent) {
   // Show the dialog. It is owned by the views system.
-  TestInlineLoginDialogChromeOS* login_dialog =
-      new TestInlineLoginDialogChromeOS();
+  TestInlineLoginDialog* login_dialog = new TestInlineLoginDialog();
   login_dialog->ShowSystemDialog();
 
   // Create a child modal dialog, similar to an http auth modal dialog.
@@ -76,28 +75,27 @@ IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
   // No crash.
 }
 
-IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest, ReturnsEmptyDialogArgs) {
-  auto* dialog = new InlineLoginDialogChromeOS(
+IN_PROC_BROWSER_TEST_F(InlineLoginDialogTest, ReturnsEmptyDialogArgs) {
+  auto* dialog = new InlineLoginDialog(
       GURL(chrome::kChromeUIChromeSigninURL), /*options=*/absl::nullopt,
       /*close_dialog_closure=*/base::DoNothing());
-  EXPECT_TRUE(InlineLoginDialogChromeOS::IsShown());
+  EXPECT_TRUE(InlineLoginDialog::IsShown());
   EXPECT_EQ(dialog->GetDialogArgs(), "");
 
   // Delete dialog by calling OnDialogClosed.
   dialog->OnDialogClosed("");
   // Make sure the dialog is deleted.
-  EXPECT_FALSE(InlineLoginDialogChromeOS::IsShown());
+  EXPECT_FALSE(InlineLoginDialog::IsShown());
 }
 
-IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
-                       ReturnsCorrectDialogArgs) {
+IN_PROC_BROWSER_TEST_F(InlineLoginDialogTest, ReturnsCorrectDialogArgs) {
   account_manager::AccountAdditionOptions options;
   options.is_available_in_arc = true;
   options.show_arc_availability_picker = false;
-  auto* dialog = new InlineLoginDialogChromeOS(
-      GURL(chrome::kChromeUIChromeSigninURL), options,
-      /*close_dialog_closure=*/base::DoNothing());
-  EXPECT_TRUE(InlineLoginDialogChromeOS::IsShown());
+  auto* dialog =
+      new InlineLoginDialog(GURL(chrome::kChromeUIChromeSigninURL), options,
+                            /*close_dialog_closure=*/base::DoNothing());
+  EXPECT_TRUE(InlineLoginDialog::IsShown());
 
   absl::optional<base::Value> args =
       base::JSONReader::Read(dialog->GetDialogArgs());
@@ -116,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
   // Delete dialog by calling OnDialogClosed.
   dialog->OnDialogClosed("");
   // Make sure the dialog is deleted.
-  EXPECT_FALSE(InlineLoginDialogChromeOS::IsShown());
+  EXPECT_FALSE(InlineLoginDialog::IsShown());
 }
 
 }  // namespace ash

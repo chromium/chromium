@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_H_
 
-#include "chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
@@ -83,7 +83,7 @@ class SigninHelper : public GaiaAuthConsumer {
 
   // Receives the callback for `GetSecondaryGoogleAccountUsage()`.
   void OnGetSecondaryGoogleAccountUsage(
-      UserCloudSigninRestrictionPolicyFetcherChromeOS::Status status,
+      UserCloudSigninRestrictionPolicyFetcher::Status status,
       absl::optional<std::string> policy_result,
       const std::string& hosted_domain);
 
@@ -114,8 +114,7 @@ class SigninHelper : public GaiaAuthConsumer {
   // sessions, Demo mode, and Kiosks.
   bool IsInitialPrimaryAccount();
   // Fetcher to get SecondaryGoogleAccountUsage policy value.
-  std::unique_ptr<UserCloudSigninRestrictionPolicyFetcherChromeOS>
-      restriction_fetcher_;
+  std::unique_ptr<UserCloudSigninRestrictionPolicyFetcher> restriction_fetcher_;
   // The user's refresh token fetched in `this` object.
   std::string refresh_token_;
   // A non-owning pointer to Chrome OS AccountManager.
@@ -144,4 +143,4 @@ class SigninHelper : public GaiaAuthConsumer {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_SIGNIN_HELPER_H_

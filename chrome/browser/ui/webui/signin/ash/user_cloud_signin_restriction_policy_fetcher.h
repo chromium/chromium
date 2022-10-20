@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_USER_CLOUD_SIGNIN_RESTRICTION_POLICY_FETCHER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_USER_CLOUD_SIGNIN_RESTRICTION_POLICY_FETCHER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_USER_CLOUD_SIGNIN_RESTRICTION_POLICY_FETCHER_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_USER_CLOUD_SIGNIN_RESTRICTION_POLICY_FETCHER_H_
 
 #include <memory>
 #include <string>
@@ -25,7 +25,7 @@ class TimeTicks;
 
 namespace ash {
 
-// UserCloudSigninRestrictionPolicyFetcherChromeOS handles requesting
+// UserCloudSigninRestrictionPolicyFetcher handles requesting
 // SecondaryGoogleAccountUsage policy value for Chrome OS.
 // During this fetch, two extra requests need to be made:
 //
@@ -48,16 +48,16 @@ namespace ash {
 //
 // std::unique_ptr<GaiaAccessTokenFetcher> access_token_fetcher = ...;
 // base::OnceCallback<void(
-// UserCloudSigninRestrictionPolicyFetcherChromeOS::Status,
+// UserCloudSigninRestrictionPolicyFetcher::Status,
 // absl::optional<std::string>, const std::string&)> callback = ...;
 //
-// UserCloudSigninRestrictionPolicyFetcherChromeOS
+// UserCloudSigninRestrictionPolicyFetcher
 //  restriction_fetcher("alice@example.com", url_loader_factory);
 // restriction_fetcher.GetSecondaryGoogleAccountUsage(
 //     std::move(access_token_fetcher), callback);
 // TODO(b/222695699): Refactor this class to share code with
 // UserCloudSigninRestrictionPolicyFetcher.
-class UserCloudSigninRestrictionPolicyFetcherChromeOS
+class UserCloudSigninRestrictionPolicyFetcher
     : public policy::UserInfoFetcher::Delegate,
       public OAuth2AccessTokenConsumer {
  public:
@@ -93,15 +93,15 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOS
   // gmail.com and others since these type of users are known to be
   // non-enterprise. For more information check
   // policy::BrowserPolicyConnector::IsNonEnterpriseUser.
-  UserCloudSigninRestrictionPolicyFetcherChromeOS(
+  UserCloudSigninRestrictionPolicyFetcher(
       const std::string& email,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  ~UserCloudSigninRestrictionPolicyFetcherChromeOS() override;
+  ~UserCloudSigninRestrictionPolicyFetcher() override;
 
-  UserCloudSigninRestrictionPolicyFetcherChromeOS(
-      const UserCloudSigninRestrictionPolicyFetcherChromeOS&) = delete;
-  UserCloudSigninRestrictionPolicyFetcherChromeOS& operator=(
-      const UserCloudSigninRestrictionPolicyFetcherChromeOS&) = delete;
+  UserCloudSigninRestrictionPolicyFetcher(
+      const UserCloudSigninRestrictionPolicyFetcher&) = delete;
+  UserCloudSigninRestrictionPolicyFetcher& operator=(
+      const UserCloudSigninRestrictionPolicyFetcher&) = delete;
 
   // Fetches the value of the SecondaryGoogleAccountUsage policy and runs
   // `callback` with the fetched value and `Status::kSuccess` status.
@@ -163,4 +163,4 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOS
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_USER_CLOUD_SIGNIN_RESTRICTION_POLICY_FETCHER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_USER_CLOUD_SIGNIN_RESTRICTION_POLICY_FETCHER_H_

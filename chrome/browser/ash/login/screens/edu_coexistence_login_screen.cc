@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos_onboarding.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_onboarding.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -68,14 +68,13 @@ void EduCoexistenceLoginScreen::ShowImpl() {
   DCHECK(oobe_ui);
   DCHECK(!dialog_delegate_);
 
-  InlineLoginDialogChromeOSOnboarding* dialog =
-      InlineLoginDialogChromeOSOnboarding::Show(
-          oobe_ui->GetViewSize(),
-          /* parent window */ oobe_ui->GetTopLevelNativeWindow(),
-          base::BindOnce(exit_callback_, Result::DONE));
+  InlineLoginDialogOnboarding* dialog = InlineLoginDialogOnboarding::Show(
+      oobe_ui->GetViewSize(),
+      /* parent window */ oobe_ui->GetTopLevelNativeWindow(),
+      base::BindOnce(exit_callback_, Result::DONE));
 
   dialog_delegate_ =
-      std::make_unique<InlineLoginDialogChromeOSOnboarding::Delegate>(dialog);
+      std::make_unique<InlineLoginDialogOnboarding::Delegate>(dialog);
   dialog_delegate_->UpdateDialogBounds(
       oobe_ui->GetNativeView()->GetBoundsInScreen());
   // RestartOnboarding() depends on this signal.

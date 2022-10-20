@@ -2278,7 +2278,7 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
     Tracks the result of
-    UserCloudSigninRestrictionPolicyFetcherChromeOS::GetSecondaryGoogleAccountUsage.
+    UserCloudSigninRestrictionPolicyFetcher::GetSecondaryGoogleAccountUsage.
     This is recorded when a user account is added as a secondary account
     (in-session).
   </summary>

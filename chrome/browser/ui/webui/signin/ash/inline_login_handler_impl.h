@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_IMPL_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_IMPL_H_
 
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/signin/ash/signin_helper_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "components/account_manager_core/account.h"
 
@@ -17,16 +17,15 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-class InlineLoginHandlerChromeOS : public InlineLoginHandler {
+class InlineLoginHandlerImpl : public ::InlineLoginHandler {
  public:
-  explicit InlineLoginHandlerChromeOS(
+  explicit InlineLoginHandlerImpl(
       const base::RepeatingClosure& close_dialog_closure);
 
-  InlineLoginHandlerChromeOS(const InlineLoginHandlerChromeOS&) = delete;
-  InlineLoginHandlerChromeOS& operator=(const InlineLoginHandlerChromeOS&) =
-      delete;
+  InlineLoginHandlerImpl(const InlineLoginHandlerImpl&) = delete;
+  InlineLoginHandlerImpl& operator=(const InlineLoginHandlerImpl&) = delete;
 
-  ~InlineLoginHandlerChromeOS() override;
+  ~InlineLoginHandlerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -68,9 +67,9 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
   base::RepeatingClosure close_dialog_closure_;
   base::RepeatingCallback<void(const std::string&, const std::string&)>
       show_signin_error_;
-  base::WeakPtrFactory<InlineLoginHandlerChromeOS> weak_factory_{this};
+  base::WeakPtrFactory<InlineLoginHandlerImpl> weak_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_IMPL_H_

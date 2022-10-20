@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_H_
 
 #include <memory>
 #include <string>
@@ -24,12 +24,11 @@ namespace ash {
 class AccountManagerUIImpl;
 
 // Extends from |SystemWebDialogDelegate| to create an always-on-top dialog.
-class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
-                                  public web_modal::WebContentsModalDialogHost {
+class InlineLoginDialog : public SystemWebDialogDelegate,
+                          public web_modal::WebContentsModalDialogHost {
  public:
-  InlineLoginDialogChromeOS(const InlineLoginDialogChromeOS&) = delete;
-  InlineLoginDialogChromeOS& operator=(const InlineLoginDialogChromeOS&) =
-      delete;
+  InlineLoginDialog(const InlineLoginDialog&) = delete;
+  InlineLoginDialog& operator=(const InlineLoginDialog&) = delete;
 
   static bool IsShown();
 
@@ -44,19 +43,17 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
  protected:
-  FRIEND_TEST_ALL_PREFIXES(InlineLoginDialogChromeOSTest,
-                           ReturnsEmptyDialogArgs);
-  FRIEND_TEST_ALL_PREFIXES(InlineLoginDialogChromeOSTest,
-                           ReturnsCorrectDialogArgs);
+  FRIEND_TEST_ALL_PREFIXES(InlineLoginDialogTest, ReturnsEmptyDialogArgs);
+  FRIEND_TEST_ALL_PREFIXES(InlineLoginDialogTest, ReturnsCorrectDialogArgs);
 
-  InlineLoginDialogChromeOS();
-  explicit InlineLoginDialogChromeOS(const GURL& url);
+  InlineLoginDialog();
+  explicit InlineLoginDialog(const GURL& url);
 
-  InlineLoginDialogChromeOS(
+  InlineLoginDialog(
       const GURL& url,
       absl::optional<account_manager::AccountAdditionOptions> options,
       base::OnceClosure close_dialog_closure);
-  ~InlineLoginDialogChromeOS() override;
+  ~InlineLoginDialog() override;
 
   // ui::WebDialogDelegate overrides
   void GetDialogSize(gfx::Size* size) const override;
@@ -100,4 +97,4 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_H_

@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
-#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos_onboarding.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_onboarding.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

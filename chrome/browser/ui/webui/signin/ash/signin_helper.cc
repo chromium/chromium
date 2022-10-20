@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/ash/signin_helper_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -22,8 +22,7 @@ constexpr char kSecondaryGoogleAccountUsageHistogramName[] =
     "Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.Status";
 }  // namespace
 
-using SigninRestrictionPolicyFetcher =
-    UserCloudSigninRestrictionPolicyFetcherChromeOS;
+using SigninRestrictionPolicyFetcher = UserCloudSigninRestrictionPolicyFetcher;
 
 // static
 bool SigninHelper::IsSecondaryGoogleAccountUsageEnabled() {
@@ -78,7 +77,7 @@ SigninHelper::SigninHelper(
   if (!IsInitialPrimaryAccount() && IsSecondaryGoogleAccountUsageEnabled()) {
     DCHECK(show_signin_blocked_error_);
     restriction_fetcher_ =
-        std::make_unique<UserCloudSigninRestrictionPolicyFetcherChromeOS>(
+        std::make_unique<UserCloudSigninRestrictionPolicyFetcher>(
             email_, url_loader_factory_);
   }
 

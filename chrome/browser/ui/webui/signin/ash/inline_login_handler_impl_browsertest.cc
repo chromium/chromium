@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
@@ -113,19 +113,16 @@ MATCHER_P(AccountEmailEq, expected_email, "") {
       arg, result_listener);
 }
 
-class TestInlineLoginHandlerChromeOS : public InlineLoginHandlerChromeOS {
+class TestInlineLoginHandler : public InlineLoginHandlerImpl {
  public:
-  TestInlineLoginHandlerChromeOS(
-      const base::RepeatingClosure& close_dialog_closure,
-      content::WebUI* web_ui)
-      : InlineLoginHandlerChromeOS(close_dialog_closure) {
+  TestInlineLoginHandler(const base::RepeatingClosure& close_dialog_closure,
+                         content::WebUI* web_ui)
+      : InlineLoginHandlerImpl(close_dialog_closure) {
     set_web_ui(web_ui);
   }
 
-  TestInlineLoginHandlerChromeOS(const TestInlineLoginHandlerChromeOS&) =
-      delete;
-  TestInlineLoginHandlerChromeOS& operator=(
-      const TestInlineLoginHandlerChromeOS&) = delete;
+  TestInlineLoginHandler(const TestInlineLoginHandler&) = delete;
+  TestInlineLoginHandler& operator=(const TestInlineLoginHandler&) = delete;
 };
 
 class MockAccountAppsAvailabilityObserver
@@ -146,16 +143,16 @@ class MockAccountAppsAvailabilityObserver
 
 }  // namespace
 
-class InlineLoginHandlerChromeOSTest
+class InlineLoginHandlerTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<DeviceAccountInfo> {
  public:
-  InlineLoginHandlerChromeOSTest()
+  InlineLoginHandlerTest()
       : embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
   }
-  ~InlineLoginHandlerChromeOSTest() override = default;
+  ~InlineLoginHandlerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server_.InitializeAndListen());
@@ -176,10 +173,9 @@ class InlineLoginHandlerChromeOSTest
 
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&InlineLoginHandlerChromeOSTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &InlineLoginHandlerTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
   }
 
   void SetUpOnMainThread() override {
@@ -243,8 +239,8 @@ class InlineLoginHandlerChromeOSTest
     fake_gaia_.UpdateMergeSessionParams(params);
 
     // Setup handlers.
-    handler_ = std::make_unique<TestInlineLoginHandlerChromeOS>(
-        base::DoNothing(), &web_ui_);
+    handler_ =
+        std::make_unique<TestInlineLoginHandler>(base::DoNothing(), &web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
     base::RunLoop().RunUntilIdle();
@@ -296,7 +292,7 @@ class InlineLoginHandlerChromeOSTest
   }
 
  private:
-  std::unique_ptr<InlineLoginHandlerChromeOS> handler_;
+  std::unique_ptr<InlineLoginHandler> handler_;
   std::unique_ptr<EduCoexistenceLoginHandler> edu_handler_;
   content::TestWebUI web_ui_;
   net::EmbeddedTestServer embedded_test_server_;
@@ -308,8 +304,7 @@ class InlineLoginHandlerChromeOSTest
   base::CallbackListSubscription create_services_subscription_;
 };
 
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
-                       NewAccountAdditionSuccess) {
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, NewAccountAdditionSuccess) {
   account_manager::MockAccountManagerFacadeObserver observer;
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
@@ -335,8 +330,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
-                       PrimaryReauthenticationSuccess) {
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, PrimaryReauthenticationSuccess) {
   account_manager::MockAccountManagerFacadeObserver observer;
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
@@ -356,22 +350,22 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
   run_loop.Run();
 }
 
-INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerChromeOSTestSuite,
-                         InlineLoginHandlerChromeOSTest,
+INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerTestSuite,
+                         InlineLoginHandlerTest,
                          ::testing::Values(GetGaiaDeviceAccountInfo(),
                                            GetChildDeviceAccountInfo()));
 
-class InlineLoginHandlerChromeOSTestWithArcRestrictions
-    : public InlineLoginHandlerChromeOSTest {
+class InlineLoginHandlerTestWithArcRestrictions
+    : public InlineLoginHandlerTest {
  public:
-  InlineLoginHandlerChromeOSTestWithArcRestrictions() {
+  InlineLoginHandlerTestWithArcRestrictions() {
     feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   }
 
-  ~InlineLoginHandlerChromeOSTestWithArcRestrictions() override = default;
+  ~InlineLoginHandlerTestWithArcRestrictions() override = default;
 
   void SetUpOnMainThread() override {
-    InlineLoginHandlerChromeOSTest::SetUpOnMainThread();
+    InlineLoginHandlerTest::SetUpOnMainThread();
     // In-session account addition happens when `AccountAppsAvailability` is
     // already initialized.
     EXPECT_TRUE(AccountAppsAvailabilityFactory::GetForProfile(profile())
@@ -438,7 +432,7 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
                        NewAccountAdditionSuccess) {
   account_manager::MockAccountManagerFacadeObserver observer;
   base::ScopedObservation<account_manager::AccountManagerFacade,
@@ -480,7 +474,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   run_loop_1.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
                        PrimaryReauthenticationSuccess) {
   account_manager::MockAccountManagerFacadeObserver observer;
   base::ScopedObservation<account_manager::AccountManagerFacade,
@@ -513,7 +507,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   EXPECT_CALL(apps_availability_observer, OnAccountUnavailableInArc).Times(0);
 }
 
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
                        GetAccountsNotAvailableInArc) {
   AddAccount(kSecondaryAccount1Email, /*is_available_in_arc=*/true);
   AddAccount(kSecondaryAccount2Email, /*is_available_in_arc=*/false);
@@ -528,7 +522,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount3Email));
 }
 
-IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,
                        MakeAvailableInArc) {
   AddAccount(kSecondaryAccount1Email, /*is_available_in_arc=*/true);
   AddAccount(kSecondaryAccount2Email, /*is_available_in_arc=*/false);
@@ -551,8 +545,8 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   EXPECT_EQ(0u, result_1.size());
 }
 
-INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerChromeOSTestWithArcRestrictionsSuite,
-                         InlineLoginHandlerChromeOSTestWithArcRestrictions,
+INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerTestWithArcRestrictionsSuite,
+                         InlineLoginHandlerTestWithArcRestrictions,
                          ::testing::Values(GetGaiaDeviceAccountInfo(),
                                            GetChildDeviceAccountInfo()));
 

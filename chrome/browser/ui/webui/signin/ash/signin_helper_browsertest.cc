@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/ash/signin_helper_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
@@ -33,7 +33,7 @@
 
 namespace ash {
 
-class SigninHelperChromeOSTest;
+class SigninHelperTest;
 
 namespace {
 
@@ -77,7 +77,7 @@ void NotReached() {
 class TestSigninHelper : public SigninHelper {
  public:
   TestSigninHelper(
-      SigninHelperChromeOSTest* test_fixture,
+      SigninHelperTest* test_fixture,
       account_manager::AccountManager* account_manager,
       crosapi::AccountManagerMojoService* account_manager_mojo_service,
       const base::RepeatingClosure& close_dialog_closure,
@@ -106,21 +106,20 @@ class TestSigninHelper : public SigninHelper {
   ~TestSigninHelper() override;
 
  private:
-  SigninHelperChromeOSTest* test_fixture_;
+  SigninHelperTest* test_fixture_;
 };
 
 }  // namespace
 
-class SigninHelperChromeOSTest
-    : public InProcessBrowserTest,
-      public account_manager::AccountManager::Observer {
+class SigninHelperTest : public InProcessBrowserTest,
+                         public account_manager::AccountManager::Observer {
  public:
-  SigninHelperChromeOSTest()
+  SigninHelperTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
 
-  ~SigninHelperChromeOSTest() override {
+  ~SigninHelperTest() override {
     DCHECK_EQ(signin_helper_created_count_, signin_helper_deleted_count_);
   }
 
@@ -260,7 +259,7 @@ TestSigninHelper::~TestSigninHelper() {
   test_fixture_->OnSigninHelperDeleted();
 }
 
-IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTest,
+IN_PROC_BROWSER_TEST_F(SigninHelperTest,
                        NoAccountAddedWhenAuthTokenFetchFails) {
   base::RunLoop close_dialog_closure_run_loop;
   // Set auth token fetch to fail.
@@ -277,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTest,
   EXPECT_EQ(on_token_upserted_call_count(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTest,
+IN_PROC_BROWSER_TEST_F(SigninHelperTest,
                        AccountAddedWhenAuthTokenFetchSucceeds) {
   base::RunLoop close_dialog_closure_run_loop;
   CreateSigninHelper(close_dialog_closure_run_loop.QuitClosure());
@@ -294,18 +293,18 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTest,
   EXPECT_EQ(account.value().raw_email, kFakeEmail);
 }
 
-class SigninHelperChromeOSTestWithArcAccountRestrictions
-    : public SigninHelperChromeOSTest,
+class SigninHelperTestWithArcAccountRestrictions
+    : public SigninHelperTest,
       public ::ash::AccountAppsAvailability::Observer {
  public:
-  SigninHelperChromeOSTestWithArcAccountRestrictions() {
+  SigninHelperTestWithArcAccountRestrictions() {
     feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   }
 
-  ~SigninHelperChromeOSTestWithArcAccountRestrictions() override = default;
+  ~SigninHelperTestWithArcAccountRestrictions() override = default;
 
   void SetUpOnMainThread() override {
-    SigninHelperChromeOSTest::SetUpOnMainThread();
+    SigninHelperTest::SetUpOnMainThread();
     account_apps_availability_ =
         ash::AccountAppsAvailabilityFactory::GetForProfile(
             browser()->profile());
@@ -321,7 +320,7 @@ class SigninHelperChromeOSTestWithArcAccountRestrictions
     on_account_unavailable_in_arc_call_count_ = 0;
     on_account_available_in_arc_account_ = absl::nullopt;
     on_account_unavailable_in_arc_account_ = absl::nullopt;
-    SigninHelperChromeOSTest::TearDownOnMainThread();
+    SigninHelperTest::TearDownOnMainThread();
   }
 
   void CreateSigninHelper(std::unique_ptr<SigninHelper::ArcHelper> arc_helper,
@@ -398,7 +397,7 @@ class SigninHelperChromeOSTestWithArcAccountRestrictions
 
 // Account is available in ARC after account addition if `is_available_in_arc`
 // is set to `true`.
-IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
+IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
                        AccountIsAvailableInArcAfterAddition) {
   std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
       std::make_unique<SigninHelper::ArcHelper>(
@@ -433,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
 
 // Account is not available in ARC after account addition if
 // `is_available_in_arc` is set to `false`.
-IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
+IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
                        AccountIsNotAvailableInArcAfterAddition) {
   std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
       std::make_unique<SigninHelper::ArcHelper>(
@@ -466,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
   EXPECT_FALSE(IsAccountAvailableInArc(account.value()));
 }
 
-IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
+IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
                        ArcAvailabilityIsNotSetAfterReauthentication) {
   account_manager::AccountKey kAccountKey{kFakeGaiaId,
                                           account_manager::AccountType::kGaia};
@@ -503,20 +502,19 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
   EXPECT_EQ(on_account_unavailable_in_arc_call_count(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
+IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
                        AccountAvailabilityDoesntChangeAfterReauthentication) {}
 
-class SigninHelperChromeOSTestSecondaryGoogleAccountUsage
-    : public SigninHelperChromeOSTest {
+class SigninHelperTestSecondaryGoogleAccountUsage : public SigninHelperTest {
  public:
-  SigninHelperChromeOSTestSecondaryGoogleAccountUsage() {
+  SigninHelperTestSecondaryGoogleAccountUsage() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kSecondaryGoogleAccountUsage,
                               chromeos::features::kLacrosSupport},
         /*disabled_features=*/{chromeos::features::kLacrosSupport});
   }
 
-  ~SigninHelperChromeOSTestSecondaryGoogleAccountUsage() override = default;
+  ~SigninHelperTestSecondaryGoogleAccountUsage() override = default;
 
   void CreateSigninHelper(
       const base::RepeatingClosure& close_dialog_closure,
@@ -543,7 +541,7 @@ class SigninHelperChromeOSTestSecondaryGoogleAccountUsage
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
+IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
                        AccountAddedForNonEnterpriseAccount) {
   base::RunLoop close_dialog_closure_run_loop;
 
@@ -570,12 +568,12 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
   EXPECT_EQ(account.value().raw_email, kFakeEmail);
   histogram_tester_.ExpectBucketCount(
       kSecondaryGoogleAccountUsageHistogramName,
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::
+      ash::UserCloudSigninRestrictionPolicyFetcher::Status::
           kUnsupportedAccountTypeError,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
+IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
                        AccountAddedForEnterpriseAccountWithNoPolicySet) {
   base::RunLoop close_dialog_closure_run_loop;
 
@@ -604,14 +602,13 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
   EXPECT_EQ(account.value().raw_email, kFakeEnterpriseEmail);
   histogram_tester_.ExpectBucketCount(
       kSecondaryGoogleAccountUsageHistogramName,
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess,
-      1);
+      ash::UserCloudSigninRestrictionPolicyFetcher::Status::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
       kSecondaryGoogleAccountUsageLatencyHistogramName, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
+    SigninHelperTestSecondaryGoogleAccountUsage,
     AccountAddedForEnterpriseAccountWithPolicyValueAllUsages) {
   base::RunLoop close_dialog_closure_run_loop;
 
@@ -640,14 +637,13 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(account.value().raw_email, kFakeEnterpriseEmail);
   histogram_tester_.ExpectBucketCount(
       kSecondaryGoogleAccountUsageHistogramName,
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess,
-      1);
+      ash::UserCloudSigninRestrictionPolicyFetcher::Status::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
       kSecondaryGoogleAccountUsageLatencyHistogramName, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
+    SigninHelperTestSecondaryGoogleAccountUsage,
     NoAccountAddedForEnterpriseAccountWithPolicyValuePrimaryAccountSignin) {
   base::RunLoop show_signin_blocked_error_closure_run_loop;
 
@@ -674,13 +670,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(on_token_upserted_call_count(), 0);
   histogram_tester_.ExpectBucketCount(
       kSecondaryGoogleAccountUsageHistogramName,
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess,
-      1);
+      ash::UserCloudSigninRestrictionPolicyFetcher::Status::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
       kSecondaryGoogleAccountUsageLatencyHistogramName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
+IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
                        ReauthForInitialPrimaryEnterpriseAccount) {
   base::RunLoop close_dialog_closure_run_loop;
   // Set auth token fetch to succeed.
@@ -704,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
   EXPECT_EQ(on_token_upserted_call_count(), 1);
   histogram_tester_.ExpectBucketCount(
       kSecondaryGoogleAccountUsageHistogramName,
-      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::
+      ash::UserCloudSigninRestrictionPolicyFetcher::Status::
           kUnsupportedAccountTypeError,
       0);
 }

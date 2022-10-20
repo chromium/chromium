@@ -200,7 +200,7 @@
 #include "chrome/browser/extensions/api/shared_storage/shared_storage_private_api.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
-#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1469,7 +1469,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::FamilyUserMetricsService::RegisterProfilePrefs(registry);
   ash::FamilyUserSessionMetrics::RegisterProfilePrefs(registry);
   crosapi::NetworkSettingsServiceAsh::RegisterProfilePrefs(registry);
-  ash::InlineLoginHandlerChromeOS::RegisterProfilePrefs(registry);
+  ash::InlineLoginHandlerImpl::RegisterProfilePrefs(registry);
   ash::first_run::RegisterProfilePrefs(registry);
   ash::file_system_provider::RegisterProfilePrefs(registry);
   ash::full_restore::RegisterProfilePrefs(registry);

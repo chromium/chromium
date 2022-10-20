@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos_onboarding.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_onboarding.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,14 +14,14 @@
 
 namespace ash {
 
-InlineLoginDialogChromeOSOnboarding::Delegate::Delegate(
-    InlineLoginDialogChromeOSOnboarding* dialog)
+InlineLoginDialogOnboarding::Delegate::Delegate(
+    InlineLoginDialogOnboarding* dialog)
     : dialog_(dialog) {
   widget_ = views::Widget::GetWidgetForNativeView(dialog->GetHostView());
   widget_->AddObserver(this);
 }
 
-InlineLoginDialogChromeOSOnboarding::Delegate::~Delegate() {
+InlineLoginDialogOnboarding::Delegate::~Delegate() {
   if (widget_) {
     widget_->RemoveObserver(this);
   }
@@ -29,27 +29,27 @@ InlineLoginDialogChromeOSOnboarding::Delegate::~Delegate() {
   CloseWithoutCallback();
 }
 
-void InlineLoginDialogChromeOSOnboarding::Delegate::CloseWithoutCallback() {
+void InlineLoginDialogOnboarding::Delegate::CloseWithoutCallback() {
   if (dialog_) {
     dialog_->dialog_closed_callback_.Reset();
     dialog_->Close();
   }
 }
 
-void InlineLoginDialogChromeOSOnboarding::Delegate::Close() {
+void InlineLoginDialogOnboarding::Delegate::Close() {
   if (dialog_) {
     dialog_->Close();
   }
 }
 
-void InlineLoginDialogChromeOSOnboarding::Delegate::UpdateDialogBounds(
+void InlineLoginDialogOnboarding::Delegate::UpdateDialogBounds(
     const gfx::Rect& new_bounds) {
   if (dialog_) {
     dialog_->UpdateDialogBounds(new_bounds);
   }
 }
 
-void InlineLoginDialogChromeOSOnboarding::Delegate::OnWidgetClosing(
+void InlineLoginDialogOnboarding::Delegate::OnWidgetClosing(
     views::Widget* widget) {
   if (!dialog_ || widget != widget_) {
     return;
@@ -61,7 +61,7 @@ void InlineLoginDialogChromeOSOnboarding::Delegate::OnWidgetClosing(
 }
 
 // static
-InlineLoginDialogChromeOSOnboarding* InlineLoginDialogChromeOSOnboarding::Show(
+InlineLoginDialogOnboarding* InlineLoginDialogOnboarding::Show(
     const gfx::Size& size,
     gfx::NativeWindow window,
     base::OnceCallback<void(void)> dialog_closed_callback) {
@@ -74,52 +74,50 @@ InlineLoginDialogChromeOSOnboarding* InlineLoginDialogChromeOSOnboarding::Show(
 
   DCHECK(window);
 
-  auto* dialog = new InlineLoginDialogChromeOSOnboarding(
-      size, std::move(dialog_closed_callback));
+  auto* dialog =
+      new InlineLoginDialogOnboarding(size, std::move(dialog_closed_callback));
   dialog->ShowSystemDialog(window);
 
   return dialog;
 }
 
-ui::ModalType InlineLoginDialogChromeOSOnboarding::GetDialogModalType() const {
+ui::ModalType InlineLoginDialogOnboarding::GetDialogModalType() const {
   // Override the default system-modal behavior of the dialog so that the
   // shelf can be accessed during onboarding.
   return ui::ModalType::MODAL_TYPE_WINDOW;
 }
 
-InlineLoginDialogChromeOSOnboarding::InlineLoginDialogChromeOSOnboarding(
+InlineLoginDialogOnboarding::InlineLoginDialogOnboarding(
     const gfx::Size& size,
     base::OnceCallback<void(void)> dialog_closed_callback)
     : size_(size), dialog_closed_callback_(std::move(dialog_closed_callback)) {
   set_modal_type(ui::MODAL_TYPE_CHILD);
 }
 
-InlineLoginDialogChromeOSOnboarding::~InlineLoginDialogChromeOSOnboarding() =
-    default;
+InlineLoginDialogOnboarding::~InlineLoginDialogOnboarding() = default;
 
-void InlineLoginDialogChromeOSOnboarding::UpdateDialogBounds(
-    const gfx::Rect& bounds) {
+void InlineLoginDialogOnboarding::UpdateDialogBounds(const gfx::Rect& bounds) {
   size_ = bounds.size();
   dialog_window()->SetBounds(bounds);
 }
 
-void InlineLoginDialogChromeOSOnboarding::GetDialogSize(gfx::Size* size) const {
+void InlineLoginDialogOnboarding::GetDialogSize(gfx::Size* size) const {
   *size = size_;
 }
 
-void InlineLoginDialogChromeOSOnboarding::AdjustWidgetInitParams(
+void InlineLoginDialogOnboarding::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
-  InlineLoginDialogChromeOS::AdjustWidgetInitParams(params);
+  InlineLoginDialog::AdjustWidgetInitParams(params);
   params->type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
 }
 
-void InlineLoginDialogChromeOSOnboarding::OnDialogClosed(
+void InlineLoginDialogOnboarding::OnDialogClosed(
     const std::string& json_retval) {
   if (dialog_closed_callback_) {
     std::move(dialog_closed_callback_).Run();
   }
 
-  InlineLoginDialogChromeOS::OnDialogClosed(json_retval);
+  InlineLoginDialog::OnDialogClosed(json_retval);
 }
 
 }  // namespace ash

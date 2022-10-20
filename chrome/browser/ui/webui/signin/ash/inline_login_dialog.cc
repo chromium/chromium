@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 
 #include <algorithm>
 #include <string>
@@ -35,7 +35,7 @@ namespace ash {
 
 namespace {
 
-InlineLoginDialogChromeOS* dialog = nullptr;
+InlineLoginDialog* dialog = nullptr;
 constexpr int kSigninDialogWidth = 768;
 constexpr int kSigninDialogHeight = 640;
 
@@ -96,7 +96,7 @@ base::Value AccountAdditionOptionsToValue(
 
 // Cleans up the delegate for a WebContentsModalDialogManager on destruction, or
 // on WebContents destruction, whichever comes first.
-class InlineLoginDialogChromeOS::ModalDialogManagerCleanup
+class InlineLoginDialog::ModalDialogManagerCleanup
     : public content::WebContentsObserver {
  public:
   // This constructor automatically observes |web_contents| for its lifetime.
@@ -119,49 +119,49 @@ class InlineLoginDialogChromeOS::ModalDialogManagerCleanup
 };
 
 // static
-bool InlineLoginDialogChromeOS::IsShown() {
+bool InlineLoginDialog::IsShown() {
   return dialog != nullptr;
 }
 
-void InlineLoginDialogChromeOS::AdjustWidgetInitParams(
+void InlineLoginDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
 }
 
-gfx::Size InlineLoginDialogChromeOS::GetMaximumDialogSize() {
+gfx::Size InlineLoginDialog::GetMaximumDialogSize() {
   gfx::Size size;
   GetDialogSize(&size);
   return size;
 }
 
-gfx::NativeView InlineLoginDialogChromeOS::GetHostView() const {
+gfx::NativeView InlineLoginDialog::GetHostView() const {
   return dialog_window();
 }
 
-gfx::Point InlineLoginDialogChromeOS::GetDialogPosition(const gfx::Size& size) {
+gfx::Point InlineLoginDialog::GetDialogPosition(const gfx::Size& size) {
   gfx::Size host_size = GetHostView()->bounds().size();
 
   // Show all sub-dialogs at center-top.
   return gfx::Point(std::max(0, (host_size.width() - size.width()) / 2), 0);
 }
 
-void InlineLoginDialogChromeOS::AddObserver(
+void InlineLoginDialog::AddObserver(
     web_modal::ModalDialogHostObserver* observer) {
   modal_dialog_host_observer_list_.AddObserver(observer);
 }
 
-void InlineLoginDialogChromeOS::RemoveObserver(
+void InlineLoginDialog::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {
   modal_dialog_host_observer_list_.RemoveObserver(observer);
 }
 
-InlineLoginDialogChromeOS::InlineLoginDialogChromeOS()
-    : InlineLoginDialogChromeOS(GetInlineLoginUrl(std::string())) {}
+InlineLoginDialog::InlineLoginDialog()
+    : InlineLoginDialog(GetInlineLoginUrl(std::string())) {}
 
-InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url)
-    : InlineLoginDialogChromeOS(url, absl::nullopt, base::DoNothing()) {}
+InlineLoginDialog::InlineLoginDialog(const GURL& url)
+    : InlineLoginDialog(url, absl::nullopt, base::DoNothing()) {}
 
-InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(
+InlineLoginDialog::InlineLoginDialog(
     const GURL& url,
     absl::optional<account_manager::AccountAdditionOptions> options,
     base::OnceClosure close_dialog_closure)
@@ -174,7 +174,7 @@ InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(
   dialog = this;
 }
 
-InlineLoginDialogChromeOS::~InlineLoginDialogChromeOS() {
+InlineLoginDialog::~InlineLoginDialog() {
   for (auto& observer : modal_dialog_host_observer_list_)
     observer.OnHostDestroying();
 
@@ -186,7 +186,7 @@ InlineLoginDialogChromeOS::~InlineLoginDialogChromeOS() {
   dialog = nullptr;
 }
 
-void InlineLoginDialogChromeOS::GetDialogSize(gfx::Size* size) const {
+void InlineLoginDialog::GetDialogSize(gfx::Size* size) const {
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(dialog_window());
 
@@ -202,15 +202,15 @@ void InlineLoginDialogChromeOS::GetDialogSize(gfx::Size* size) const {
                 std::min(kSigninDialogHeight, display.work_area().height()));
 }
 
-ui::ModalType InlineLoginDialogChromeOS::GetDialogModalType() const {
+ui::ModalType InlineLoginDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_SYSTEM;
 }
 
-bool InlineLoginDialogChromeOS::ShouldShowDialogTitle() const {
+bool InlineLoginDialog::ShouldShowDialogTitle() const {
   return false;
 }
 
-void InlineLoginDialogChromeOS::OnDialogShown(content::WebUI* webui) {
+void InlineLoginDialog::OnDialogShown(content::WebUI* webui) {
   SystemWebDialogDelegate::OnDialogShown(webui);
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
       webui->GetWebContents());
@@ -221,13 +221,13 @@ void InlineLoginDialogChromeOS::OnDialogShown(content::WebUI* webui) {
       std::make_unique<ModalDialogManagerCleanup>(webui->GetWebContents());
 }
 
-void InlineLoginDialogChromeOS::OnDialogClosed(const std::string& json_retval) {
+void InlineLoginDialog::OnDialogClosed(const std::string& json_retval) {
   SystemWebDialogDelegate::OnDialogClosed(json_retval);
 }
 
 // The args value will be available from JS via
 // chrome.getVariableValue('dialogArguments').
-std::string InlineLoginDialogChromeOS::GetDialogArgs() const {
+std::string InlineLoginDialog::GetDialogArgs() const {
   if (!add_account_options_)
     return std::string();
 
@@ -238,7 +238,7 @@ std::string InlineLoginDialogChromeOS::GetDialogArgs() const {
 }
 
 // static
-void InlineLoginDialogChromeOS::Show(
+void InlineLoginDialog::Show(
     const account_manager::AccountAdditionOptions& options,
     base::OnceClosure close_dialog_closure) {
   ShowInternal(/* email= */ std::string(), options,
@@ -246,14 +246,14 @@ void InlineLoginDialogChromeOS::Show(
 }
 
 // static
-void InlineLoginDialogChromeOS::Show(const std::string& email,
-                                     base::OnceClosure close_dialog_closure) {
+void InlineLoginDialog::Show(const std::string& email,
+                             base::OnceClosure close_dialog_closure) {
   ShowInternal(email, /*options=*/absl::nullopt,
                std::move(close_dialog_closure));
 }
 
 // static
-void InlineLoginDialogChromeOS::ShowInternal(
+void InlineLoginDialog::ShowInternal(
     const std::string& email,
     absl::optional<account_manager::AccountAdditionOptions> options,
     base::OnceClosure close_dialog_closure) {
@@ -270,8 +270,8 @@ void InlineLoginDialogChromeOS::ShowInternal(
   }
 
   // Will be deleted by |SystemWebDialogDelegate::OnDialogClosed|.
-  dialog = new InlineLoginDialogChromeOS(GetInlineLoginUrl(email), options,
-                                         std::move(close_dialog_closure));
+  dialog = new InlineLoginDialog(GetInlineLoginUrl(email), options,
+                                 std::move(close_dialog_closure));
   dialog->ShowSystemDialog();
 
   // TODO(crbug.com/1016828): Remove/update this after the dialog behavior on

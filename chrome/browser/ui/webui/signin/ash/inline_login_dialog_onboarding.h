@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_ONBOARDING_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_ONBOARDING_H_
 
-#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 
 #include "base/callback.h"
 #include "ui/base/ui_base_types.h"
@@ -23,13 +23,13 @@ class Rect;
 
 namespace ash {
 
-// Inherits from InlineLoginDialogChromeOS to handle the special scenario where
+// Inherits from InlineLoginDialog to handle the special scenario where
 // the dialog is shown during onboarding.
-class InlineLoginDialogChromeOSOnboarding : public InlineLoginDialogChromeOS {
+class InlineLoginDialogOnboarding : public InlineLoginDialog {
  public:
   class Delegate : public views::WidgetObserver {
    public:
-    explicit Delegate(InlineLoginDialogChromeOSOnboarding* dialog);
+    explicit Delegate(InlineLoginDialogOnboarding* dialog);
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
     ~Delegate() override;
@@ -41,17 +41,17 @@ class InlineLoginDialogChromeOSOnboarding : public InlineLoginDialogChromeOS {
 
     void UpdateDialogBounds(const gfx::Rect& new_bounds);
 
-    InlineLoginDialogChromeOSOnboarding* dialog() { return dialog_; }
+    InlineLoginDialogOnboarding* dialog() { return dialog_; }
 
    private:
     // views::WidgetObserver:
     void OnWidgetClosing(views::Widget* widget) override;
 
-    InlineLoginDialogChromeOSOnboarding* dialog_ = nullptr;
+    InlineLoginDialogOnboarding* dialog_ = nullptr;
     views::Widget* widget_ = nullptr;
   };
 
-  static InlineLoginDialogChromeOSOnboarding* Show(
+  static InlineLoginDialogOnboarding* Show(
       const gfx::Size& size,
       gfx::NativeWindow window,
       base::OnceCallback<void(void)> dialog_closed_callback);
@@ -61,15 +61,14 @@ class InlineLoginDialogChromeOSOnboarding : public InlineLoginDialogChromeOS {
   ui::ModalType GetDialogModalType() const override;
 
  private:
-  InlineLoginDialogChromeOSOnboarding(
+  InlineLoginDialogOnboarding(
       const gfx::Size& bounds,
       base::OnceCallback<void(void)> dialog_closed_callback);
-  ~InlineLoginDialogChromeOSOnboarding() override;
+  ~InlineLoginDialogOnboarding() override;
 
-  InlineLoginDialogChromeOSOnboarding(
-      const InlineLoginDialogChromeOSOnboarding&) = delete;
-  InlineLoginDialogChromeOSOnboarding& operator=(
-      const InlineLoginDialogChromeOSOnboarding&) = delete;
+  InlineLoginDialogOnboarding(const InlineLoginDialogOnboarding&) = delete;
+  InlineLoginDialogOnboarding& operator=(const InlineLoginDialogOnboarding&) =
+      delete;
 
   void UpdateDialogBounds(const gfx::Rect& bounds);
 
@@ -85,4 +84,4 @@ class InlineLoginDialogChromeOSOnboarding : public InlineLoginDialogChromeOS {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_CHROMEOS_ONBOARDING_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_ONBOARDING_H_

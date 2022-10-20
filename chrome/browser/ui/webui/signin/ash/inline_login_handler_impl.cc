@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 
 #include <memory>
 #include <string>
@@ -22,7 +22,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
-#include "chrome/browser/ui/webui/signin/ash/signin_helper_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -214,57 +214,54 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
 
 }  // namespace
 
-InlineLoginHandlerChromeOS::InlineLoginHandlerChromeOS(
+InlineLoginHandlerImpl::InlineLoginHandlerImpl(
     const base::RepeatingClosure& close_dialog_closure)
     : close_dialog_closure_(close_dialog_closure) {
-  show_signin_error_ =
-      base::BindRepeating(&InlineLoginHandlerChromeOS::ShowSigninErrorPage,
-                          weak_factory_.GetWeakPtr());
+  show_signin_error_ = base::BindRepeating(
+      &InlineLoginHandlerImpl::ShowSigninErrorPage, weak_factory_.GetWeakPtr());
 }
 
-InlineLoginHandlerChromeOS::~InlineLoginHandlerChromeOS() = default;
+InlineLoginHandlerImpl::~InlineLoginHandlerImpl() = default;
 
 // static
-void InlineLoginHandlerChromeOS::RegisterProfilePrefs(
+void InlineLoginHandlerImpl::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kShouldSkipInlineLoginWelcomePage,
                                 false /*default_value*/);
 }
 
-void InlineLoginHandlerChromeOS::RegisterMessages() {
+void InlineLoginHandlerImpl::RegisterMessages() {
   InlineLoginHandler::RegisterMessages();
 
   web_ui()->RegisterMessageCallback(
       "showIncognito",
-      base::BindRepeating(
-          &InlineLoginHandlerChromeOS::ShowIncognitoAndCloseDialog,
-          base::Unretained(this)));
+      base::BindRepeating(&InlineLoginHandlerImpl::ShowIncognitoAndCloseDialog,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getAccounts",
-      base::BindRepeating(&InlineLoginHandlerChromeOS::GetAccountsInSession,
+      base::BindRepeating(&InlineLoginHandlerImpl::GetAccountsInSession,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getAccountsNotAvailableInArc",
-      base::BindRepeating(
-          &InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc,
-          base::Unretained(this)));
+      base::BindRepeating(&InlineLoginHandlerImpl::GetAccountsNotAvailableInArc,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "makeAvailableInArc",
       base::BindRepeating(
-          &InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog,
+          &InlineLoginHandlerImpl::MakeAvailableInArcAndCloseDialog,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "skipWelcomePage",
-      base::BindRepeating(&InlineLoginHandlerChromeOS::HandleSkipWelcomePage,
+      base::BindRepeating(&InlineLoginHandlerImpl::HandleSkipWelcomePage,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "openGuestWindow",
       base::BindRepeating(
-          &InlineLoginHandlerChromeOS::OpenGuestWindowAndCloseDialog,
+          &InlineLoginHandlerImpl::OpenGuestWindowAndCloseDialog,
           base::Unretained(this)));
 }
 
-void InlineLoginHandlerChromeOS::SetExtraInitParams(base::Value::Dict& params) {
+void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
   const GaiaUrls* const gaia_urls = GaiaUrls::GetInstance();
   params.Set("clientId", gaia_urls->oauth2_chrome_client_id());
 
@@ -287,8 +284,7 @@ void InlineLoginHandlerChromeOS::SetExtraInitParams(base::Value::Dict& params) {
   params.Set("ignoreCrOSIdpSetting", true);
 }
 
-void InlineLoginHandlerChromeOS::CompleteLogin(
-    const CompleteLoginParams& params) {
+void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
   CHECK(!params.auth_code.empty());
   CHECK(!params.gaia_id.empty());
   CHECK(!params.email.empty());
@@ -296,7 +292,7 @@ void InlineLoginHandlerChromeOS::CompleteLogin(
   if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
         ->GetAccounts(base::BindOnce(
-            &InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin,
+            &InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin,
             weak_factory_.GetWeakPtr(), params));
     return;
   }
@@ -304,12 +300,11 @@ void InlineLoginHandlerChromeOS::CompleteLogin(
   CreateSigninHelper(params, /*arc_helper=*/nullptr);
 }
 
-void InlineLoginHandlerChromeOS::HandleDialogClose(
-    const base::Value::List& args) {
+void InlineLoginHandlerImpl::HandleDialogClose(const base::Value::List& args) {
   close_dialog_closure_.Run();
 }
 
-void InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin(
+void InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin(
     const CompleteLoginParams& params,
     const std::vector<::account_manager::Account>& accounts) {
   bool is_new_account = !base::Contains(
@@ -328,7 +323,7 @@ void InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin(
   CreateSigninHelper(params, std::move(arc_helper));
 }
 
-void InlineLoginHandlerChromeOS::CreateSigninHelper(
+void InlineLoginHandlerImpl::CreateSigninHelper(
     const CompleteLoginParams& params,
     std::unique_ptr<SigninHelper::ArcHelper> arc_helper) {
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -371,7 +366,7 @@ void InlineLoginHandlerChromeOS::CreateSigninHelper(
                          params.gaia_id));
 }
 
-void InlineLoginHandlerChromeOS::ShowSigninErrorPage(
+void InlineLoginHandlerImpl::ShowSigninErrorPage(
     const std::string& email,
     const std::string& hosted_domain) {
   base::Value::Dict params;
@@ -383,22 +378,22 @@ void InlineLoginHandlerChromeOS::ShowSigninErrorPage(
   FireWebUIListener("show-signin-error-page", params);
 }
 
-void InlineLoginHandlerChromeOS::ShowIncognitoAndCloseDialog(
+void InlineLoginHandlerImpl::ShowIncognitoAndCloseDialog(
     const base::Value::List& args) {
   chrome::NewIncognitoWindow(Profile::FromWebUI(web_ui()));
   close_dialog_closure_.Run();
 }
 
-void InlineLoginHandlerChromeOS::GetAccountsInSession(
+void InlineLoginHandlerImpl::GetAccountsInSession(
     const base::Value::List& args) {
   const std::string& callback_id = args[0].GetString();
   const Profile* profile = Profile::FromWebUI(web_ui());
   ::GetAccountManagerFacade(profile->GetPath().value())
-      ->GetAccounts(base::BindOnce(&InlineLoginHandlerChromeOS::OnGetAccounts,
+      ->GetAccounts(base::BindOnce(&InlineLoginHandlerImpl::OnGetAccounts,
                                    weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void InlineLoginHandlerChromeOS::OnGetAccounts(
+void InlineLoginHandlerImpl::OnGetAccounts(
     const std::string& callback_id,
     const std::vector<::account_manager::Account>& accounts) {
   base::Value::List account_emails;
@@ -415,27 +410,27 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
   ResolveJavascriptCallback(base::Value(callback_id), account_emails);
 }
 
-void InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc(
+void InlineLoginHandlerImpl::GetAccountsNotAvailableInArc(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
   ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
       ->GetAccounts(base::BindOnce(
-          &InlineLoginHandlerChromeOS::ContinueGetAccountsNotAvailableInArc,
+          &InlineLoginHandlerImpl::ContinueGetAccountsNotAvailableInArc,
           weak_factory_.GetWeakPtr(), callback_id));
 }
 
-void InlineLoginHandlerChromeOS::ContinueGetAccountsNotAvailableInArc(
+void InlineLoginHandlerImpl::ContinueGetAccountsNotAvailableInArc(
     const std::string& callback_id,
     const std::vector<::account_manager::Account>& accounts) {
   AccountAppsAvailabilityFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->GetAccountsAvailableInArc(base::BindOnce(
-          &InlineLoginHandlerChromeOS::FinishGetAccountsNotAvailableInArc,
+          &InlineLoginHandlerImpl::FinishGetAccountsNotAvailableInArc,
           weak_factory_.GetWeakPtr(), callback_id, accounts));
 }
 
-void InlineLoginHandlerChromeOS::FinishGetAccountsNotAvailableInArc(
+void InlineLoginHandlerImpl::FinishGetAccountsNotAvailableInArc(
     const std::string& callback_id,
     const std::vector<::account_manager::Account>& accounts,
     const base::flat_set<account_manager::Account>& arc_accounts) {
@@ -458,7 +453,7 @@ void InlineLoginHandlerChromeOS::FinishGetAccountsNotAvailableInArc(
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-void InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog(
+void InlineLoginHandlerImpl::MakeAvailableInArcAndCloseDialog(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
   const base::Value::Dict& dictionary = args.front().GetDict();
@@ -468,7 +463,7 @@ void InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog(
   close_dialog_closure_.Run();
 }
 
-void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(
+void InlineLoginHandlerImpl::HandleSkipWelcomePage(
     const base::Value::List& args) {
   CHECK(!args.empty());
   const bool skip = args.front().GetBool();
@@ -476,7 +471,7 @@ void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(
       chromeos::prefs::kShouldSkipInlineLoginWelcomePage, skip);
 }
 
-void InlineLoginHandlerChromeOS::OpenGuestWindowAndCloseDialog(
+void InlineLoginHandlerImpl::OpenGuestWindowAndCloseDialog(
     const base::Value::List& args) {
   crosapi::BrowserManager::Get()->NewGuestWindow();
   close_dialog_closure_.Run();

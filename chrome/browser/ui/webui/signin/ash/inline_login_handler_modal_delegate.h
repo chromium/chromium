@@ -9,14 +9,14 @@
 
 namespace ash {
 
-// Used to display sub-modals inside |InlineLoginHandlerDialogChromeOS| modal
+// Used to display sub-modals inside |InlineLoginHandlerDialog| modal
 // dialog, e.g. displaying a dialog for accounts using 2FA with WebAuthn,
 // where users can select alternate 2FAs.
 class InlineLoginHandlerModalDelegate
     : public ChromeWebModalDialogManagerDelegate {
  public:
   // |host| is a non owning pointer to the host dialog of this delegate
-  // (|InlineLoginHandlerDialogChromeOS|).
+  // (|InlineLoginHandlerDialog|).
   explicit InlineLoginHandlerModalDelegate(
       web_modal::WebContentsModalDialogHost* host);
 

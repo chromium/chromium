@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher_chromeos.h"
+#include "chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.h"
 
 #include "base/command_line.h"
 #include "base/json/json_string_value_serializer.h"
@@ -85,15 +85,15 @@ std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(
 }  // namespace
 
 // static
-const char UserCloudSigninRestrictionPolicyFetcherChromeOS::
+const char UserCloudSigninRestrictionPolicyFetcher::
     kSecondaryGoogleAccountUsagePolicyValueAll[] = "all";
 // static
-const char UserCloudSigninRestrictionPolicyFetcherChromeOS::
+const char UserCloudSigninRestrictionPolicyFetcher::
     kSecondaryGoogleAccountUsagePolicyValuePrimaryAccountSignin[] =
         "primary_account_signin";
 
-UserCloudSigninRestrictionPolicyFetcherChromeOS::
-    UserCloudSigninRestrictionPolicyFetcherChromeOS(
+UserCloudSigninRestrictionPolicyFetcher::
+    UserCloudSigninRestrictionPolicyFetcher(
         const std::string& email,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : email_(email), url_loader_factory_(url_loader_factory) {
@@ -102,13 +102,12 @@ UserCloudSigninRestrictionPolicyFetcherChromeOS::
       std::make_unique<policy::UserInfoFetcher>(this, url_loader_factory_);
 }
 
-UserCloudSigninRestrictionPolicyFetcherChromeOS::
-    ~UserCloudSigninRestrictionPolicyFetcherChromeOS() = default;
+UserCloudSigninRestrictionPolicyFetcher::
+    ~UserCloudSigninRestrictionPolicyFetcher() = default;
 
-void UserCloudSigninRestrictionPolicyFetcherChromeOS::
-    GetSecondaryGoogleAccountUsage(
-        std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher,
-        PolicyInfoCallback callback) {
+void UserCloudSigninRestrictionPolicyFetcher::GetSecondaryGoogleAccountUsage(
+    std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher,
+    PolicyInfoCallback callback) {
   DCHECK(access_token_fetcher);
   DCHECK(callback);
   DCHECK(!callback_) << "A request is already in progress";
@@ -124,7 +123,7 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::
   FetchAccessToken();
 }
 
-void UserCloudSigninRestrictionPolicyFetcherChromeOS::FetchAccessToken() {
+void UserCloudSigninRestrictionPolicyFetcher::FetchAccessToken() {
   access_token_fetcher_->Start(
       GaiaUrls::GetInstance()->oauth2_chrome_client_id(),
       GaiaUrls::GetInstance()->oauth2_chrome_client_secret(),
@@ -133,13 +132,13 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::FetchAccessToken() {
        GaiaConstants::kSecureConnectOAuth2Scope});
 }
 
-void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetTokenSuccess(
+void UserCloudSigninRestrictionPolicyFetcher::OnGetTokenSuccess(
     const TokenResponse& token_response) {
   access_token_ = token_response.access_token;
   FetchUserInfo();
 }
 
-void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetTokenFailure(
+void UserCloudSigninRestrictionPolicyFetcher::OnGetTokenFailure(
     const GoogleServiceAuthError& error) {
   // TODO(b/223628330): Implement retry strategy.
   LOG(ERROR) << "Failed to fetch access token for consumer: "
@@ -149,16 +148,15 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetTokenFailure(
                            /*domain=*/std::string());
 }
 
-std::string UserCloudSigninRestrictionPolicyFetcherChromeOS::GetConsumerName()
-    const {
+std::string UserCloudSigninRestrictionPolicyFetcher::GetConsumerName() const {
   return "signin_restriction_policy_fetcher";
 }
 
-void UserCloudSigninRestrictionPolicyFetcherChromeOS::FetchUserInfo() {
+void UserCloudSigninRestrictionPolicyFetcher::FetchUserInfo() {
   user_info_fetcher_->Start(access_token_);
 }
 
-void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetUserInfoSuccess(
+void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoSuccess(
     const base::Value::Dict& user_info) {
   // Check if the user account has a hosted domain.
   const std::string* hosted_domain = user_info.FindString(kHostedDomainKey);
@@ -174,7 +172,7 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetUserInfoSuccess(
   }
 }
 
-void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetUserInfoFailure(
+void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoFailure(
     const GoogleServiceAuthError& error) {
   LOG(ERROR) << "Failed to fetch user info: " << error.ToString();
   std::move(callback_).Run(/*status=*/Status::kGetUserInfoError,
@@ -182,7 +180,7 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetUserInfoFailure(
                            /*domain=*/std::string());
 }
 
-void UserCloudSigninRestrictionPolicyFetcherChromeOS::
+void UserCloudSigninRestrictionPolicyFetcher::
     GetSecondaryGoogleAccountUsageInternal() {
   policy_fetch_start_time_ = base::TimeTicks::Now();
   // Each url loader can only be used for one request.
@@ -193,13 +191,13 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::
   // base::Unretained is safe here because `url_loader_` is owned by `this`.
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&UserCloudSigninRestrictionPolicyFetcherChromeOS::
+      base::BindOnce(&UserCloudSigninRestrictionPolicyFetcher::
                          OnSecondaryGoogleAccountUsageResult,
                      base::Unretained(this)),
       1024 * 1024 /* 1 MiB */);
 }
 
-void UserCloudSigninRestrictionPolicyFetcherChromeOS::
+void UserCloudSigninRestrictionPolicyFetcher::
     OnSecondaryGoogleAccountUsageResult(
         std::unique_ptr<std::string> response_body) {
   base::UmaHistogramMediumTimes(
@@ -250,7 +248,7 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::
   std::move(callback_).Run(status, restriction, hosted_domain_);
 }
 
-std::string UserCloudSigninRestrictionPolicyFetcherChromeOS::
+std::string UserCloudSigninRestrictionPolicyFetcher::
     GetSecureConnectApiGetAccountSigninRestrictionUrl() const {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(policy::switches::kSecureConnectApiUrl)) {
