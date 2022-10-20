@@ -89,33 +89,6 @@
 
   const BOOL useRTLLayout = UseRTLLayout();
 
-  // Blocks for navigating forward/back.
-  void (^browseLeft)();
-  void (^browseRight)();
-  if (useRTLLayout) {
-    browseLeft = ^{
-      __typeof(self) strongSelf = weakSelf;
-      if (strongSelf.navigationAgent->CanGoForward())
-        strongSelf.navigationAgent->GoForward();
-    };
-    browseRight = ^{
-      __typeof(self) strongSelf = weakSelf;
-      if (strongSelf.navigationAgent->CanGoBack())
-        strongSelf.navigationAgent->GoBack();
-    };
-  } else {
-    browseLeft = ^{
-      __typeof(self) strongSelf = weakSelf;
-      if (strongSelf.navigationAgent->CanGoBack())
-        strongSelf.navigationAgent->GoBack();
-    };
-    browseRight = ^{
-      __typeof(self) strongSelf = weakSelf;
-      if (strongSelf.navigationAgent->CanGoForward())
-        strongSelf.navigationAgent->GoForward();
-    };
-  }
-
   // Blocks for next/previous tab.
   void (^showTabLeft)();
   void (^showTabRight)();
@@ -134,13 +107,6 @@
       [weakSelf showNextTab];
     };
   }
-
-  const int browseLeftDescriptionID = useRTLLayout
-                                          ? IDS_IOS_KEYBOARD_HISTORY_FORWARD
-                                          : IDS_IOS_KEYBOARD_HISTORY_BACK;
-  const int browseRightDescriptionID = useRTLLayout
-                                           ? IDS_IOS_KEYBOARD_HISTORY_BACK
-                                           : IDS_IOS_KEYBOARD_HISTORY_FORWARD;
 
   // Initialize the array of commands with an estimated capacity.
   NSMutableArray<UIKeyCommand*>* keyCommands = [NSMutableArray array];
@@ -267,20 +233,71 @@
                                     }],
     ]];
 
+    // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
+    // by default. It handles flipping the direction of brackets.
+    NSString* bracketBack;
+    NSString* bracketForward;
+    if (@available(iOS 15.0, *)) {
+      bracketBack = @"[";
+      bracketForward = @"]";
+    } else {
+      if (UseRTLLayout()) {
+        bracketBack = @"]";
+        bracketForward = @"[";
+      } else {
+        bracketBack = @"[";
+        bracketForward = @"]";
+      }
+    }
+    [keyCommands addObjectsFromArray:@[
+      [UIKeyCommand cr_keyCommandWithInput:bracketBack
+                             modifierFlags:KeyModifierCommand
+                                     title:l10n_util::GetNSStringWithFixup(
+                                               IDS_IOS_KEYBOARD_HISTORY_BACK)
+                                    action:^{
+                                      [weakSelf goBack];
+                                    }],
+      [UIKeyCommand cr_keyCommandWithInput:bracketForward
+                             modifierFlags:KeyModifierCommand
+                                     title:l10n_util::GetNSStringWithFixup(
+                                               IDS_IOS_KEYBOARD_HISTORY_FORWARD)
+                                    action:^{
+                                      [weakSelf goForward];
+                                    }],
+    ]];
+
     // Since cmd+left and cmd+right are valid system shortcuts when editing
-    // text, don't register those if text is being edited.
+    // text, register those only if text is not being edited.
     if (!self.editingText) {
+      // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is
+      // true by default. It handles flipping the direction of arrows.
+      NSString* arrowBack;
+      NSString* arrowForward;
+      if (@available(iOS 15.0, *)) {
+        arrowBack = UIKeyInputLeftArrow;
+        arrowForward = UIKeyInputRightArrow;
+      } else {
+        if (UseRTLLayout()) {
+          arrowBack = UIKeyInputRightArrow;
+          arrowForward = UIKeyInputLeftArrow;
+        } else {
+          arrowBack = UIKeyInputLeftArrow;
+          arrowForward = UIKeyInputRightArrow;
+        }
+      }
       [keyCommands addObjectsFromArray:@[
-        [UIKeyCommand cr_keyCommandWithInput:UIKeyInputLeftArrow
+        [UIKeyCommand cr_keyCommandWithInput:arrowBack
                                modifierFlags:KeyModifierCommand
-                                       title:l10n_util::GetNSStringWithFixup(
-                                                 browseLeftDescriptionID)
-                                      action:browseLeft],
-        [UIKeyCommand cr_keyCommandWithInput:UIKeyInputRightArrow
+                                       title:nil
+                                      action:^{
+                                        [weakSelf goBack];
+                                      }],
+        [UIKeyCommand cr_keyCommandWithInput:arrowForward
                                modifierFlags:KeyModifierCommand
-                                       title:l10n_util::GetNSStringWithFixup(
-                                                 browseRightDescriptionID)
-                                      action:browseRight],
+                                       title:nil
+                                      action:^{
+                                        [weakSelf goForward];
+                                      }],
       ]];
     }
 
@@ -334,14 +351,6 @@
   // is at least a tab.
   if (hasTabs) {
     [keyCommands addObjectsFromArray:@[
-      [UIKeyCommand cr_keyCommandWithInput:@"["
-                             modifierFlags:KeyModifierCommand
-                                     title:nil
-                                    action:browseLeft],
-      [UIKeyCommand cr_keyCommandWithInput:@"]"
-                             modifierFlags:KeyModifierCommand
-                                     title:nil
-                                    action:browseRight],
       [UIKeyCommand cr_keyCommandWithInput:@"."
                              modifierFlags:KeyModifierCommand
                                      title:nil
@@ -542,6 +551,16 @@
 
 - (void)reload {
   self.navigationAgent->Reload();
+}
+
+- (void)goBack {
+  if (self.navigationAgent->CanGoBack())
+    self.navigationAgent->GoBack();
+}
+
+- (void)goForward {
+  if (self.navigationAgent->CanGoForward())
+    self.navigationAgent->GoForward();
 }
 
 - (void)showHistory {
