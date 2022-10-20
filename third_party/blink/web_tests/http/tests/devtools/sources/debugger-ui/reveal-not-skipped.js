@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 (async function() {
+  Root.Runtime.experiments.setEnabled('sourcesPrettyPrint', false);
+
   TestRunner.addResult(
       `Tests that certain user actions in scripts panel reveal execution line.\n`);
-  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources');
+  await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('resources/reveal-not-skipped.html');
 

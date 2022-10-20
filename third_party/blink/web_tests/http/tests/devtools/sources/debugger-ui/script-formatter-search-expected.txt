@@ -2,12 +2,12 @@ Tests that search across files works with formatted scripts.
 
 Pre-format search results:
 Search matches: 
-lineNumber: 11, line: '      console.log('magic-string'); // first'
-lineNumber: 12, line: '      console.log('magic-string'); // second'
+lineNumber: 13, line: '      console.log('magic-string'); // first'
+lineNumber: 14, line: '      console.log('magic-string'); // second'
 
 Post-format search results:
 Search matches: 
-lineNumber: 11, line: '      console.log('magic-string'); // first'
-lineNumber: 12, line: '      console.log('magic-string'); // second'
+lineNumber: 13, line: '      console.log('magic-string'); // first'
+lineNumber: 14, line: '      console.log('magic-string'); // second'
 
 
