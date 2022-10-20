@@ -47,7 +47,6 @@
   },
   "android-builder-perf-pgo": {
     "gn_args": {
-      "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
@@ -76,7 +75,6 @@
   },
   "android_arm64-builder-perf-pgo": {
     "gn_args": {
-      "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,

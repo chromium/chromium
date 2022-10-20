@@ -3294,11 +3294,11 @@
     ],
 
     'official_goma_minimal_symbols_android_arm64_pgo': [
-      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo'
+      'official', 'goma', 'minimal_symbols', 'android', 'arm64'
     ],
 
     'official_goma_minimal_symbols_android_pgo': [
-      'official', 'goma', 'minimal_symbols', 'android', 'no_default_afdo'
+      'official', 'goma', 'minimal_symbols', 'android'
     ],
 
     'official_goma_minimal_symbols_android_thin_lto_opt': [
