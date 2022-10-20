@@ -26,7 +26,6 @@ class IdleDetectionPermissionContext
   void UpdateTabContext(const permissions::PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;
-  bool IsRestrictedToSecureOrigins() const override;
   void DecidePermission(
       const permissions::PermissionRequestID& id,
       const GURL& requesting_origin,

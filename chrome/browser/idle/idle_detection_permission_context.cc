@@ -39,10 +39,6 @@ void IdleDetectionPermissionContext::UpdateTabContext(
     content_settings->OnContentBlocked(ContentSettingsType::IDLE_DETECTION);
 }
 
-bool IdleDetectionPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 void IdleDetectionPermissionContext::DecidePermission(
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
