@@ -732,12 +732,6 @@ const char kNaturalScrollDefault[] = "enable-natural-scroll-default";
 // notes. If unset, a hardcoded list is used instead.
 const char kNoteTakingAppIds[] = "note-taking-app-ids";
 
-// Used for overriding the time limit imposed by the policies
-// SAMLOfflineSigninTimeLimit & GaiaOfflineSigninTimeLimitDays when testing.
-// TODO(crbug.com/1177416): Clean up once testing is complete
-const char kOfflineSignInTimeLimitInSecondsOverrideForTesting[] =
-    "offline-signin-timelimit-in-seconds-override-for-testing";
-
 // Allows the eula url to be overridden for tests.
 const char kOobeEulaUrlForTests[] = "oobe-eula-url-for-tests";
 
@@ -804,12 +798,6 @@ const char kRmaNotAllowed[] = "rma-not-allowed";
 // more within the first 60 seconds on start.
 // See BrowserJob::ExportArgv in platform2/login_manager/browser_job.cc.
 const char kSafeMode[] = "safe-mode";
-
-// Used for overriding the preference set by the policy
-// kSamlLockScreenReauthenticationEnabled to true.
-// TODO(crbug.com/1177416): Clean up once testing is complete
-const char kSamlLockScreenReauthenticationEnabledOverrideForTesting[] =
-    "saml-lockscreen-reauthentication-enabled-override-for-testing";
 
 // Password change url for SAML users.
 // TODO(941489): Remove when the bug is fixed.

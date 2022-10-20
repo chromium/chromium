@@ -67,14 +67,12 @@ class OfflineSigninLimiter : public KeyedService,
   // immediately.
   void UpdateLockScreenLimit();
 
-  // Convenience method to get the time limit for SAML and no-SAML flows
-  // taking into consideration a possible override from the command line.
+  // Convenience method to get the time limit for SAML and no-SAML flows.
   // Returns nullopt if it is an invalid time.
   absl::optional<base::TimeDelta> GetGaiaNoSamlTimeLimit();
   absl::optional<base::TimeDelta> GetGaiaSamlTimeLimit();
   absl::optional<base::TimeDelta> GetGaiaNoSamlLockScreenTimeLimit();
   absl::optional<base::TimeDelta> GetGaiaSamlLockScreenTimeLimit();
-  absl::optional<base::TimeDelta> GetTimeLimitOverrideForTesting();
 
   // Sets the flag enforcing online login. This will cause the user's next login
   // to use online authentication against GAIA.

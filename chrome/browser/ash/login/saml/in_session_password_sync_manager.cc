@@ -58,11 +58,6 @@ InSessionPasswordSyncManager::~InSessionPasswordSyncManager() {
 }
 
 bool InSessionPasswordSyncManager::IsLockReauthEnabled() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSamlLockScreenReauthenticationEnabledOverrideForTesting)) {
-    return true;
-  }
-
   return primary_profile_->GetPrefs()->GetBoolean(
       prefs::kLockScreenReauthenticationEnabled);
 }
