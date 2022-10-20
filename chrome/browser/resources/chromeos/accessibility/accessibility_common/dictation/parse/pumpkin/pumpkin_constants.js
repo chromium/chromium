@@ -90,8 +90,6 @@ export const PumpkinLocale = {
  * TODO(crbug.com/1264544): Determine if all en* languages can be mapped to
  * en_us. Possible locales are listed in dictation.cc,
  * kWebSpeechSupportedLocales.
- * TODO(https://crbug.com/1258190): Add mappings for other locales supported by
- * Pumpkin.
  * @const {!Object<string, PumpkinLocale>}
  */
 export const SUPPORTED_LOCALES = {

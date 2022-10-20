@@ -35,8 +35,6 @@ export class SpeechParser {
 
   /** Refreshes the speech parser when the locale changes. */
   refresh() {
-    // TODO(https://crbug.com/1258190): Investigate if we can keep Pumpkin
-    // enabled, even if commands aren't supported.
     // Pumpkin has its own strings for command parsing, but we disable it when
     // commands aren't supported for consistency.
     this.simpleParseStrategy_.refresh();
@@ -50,19 +48,15 @@ export class SpeechParser {
    * @return {!Promise<!Macro>}
    */
   async parse(text) {
-    // Try pumpkin parsing first.
-    // TODO(akihiroota): If `pumpkinParseStrategy_` fails, then
-    // `simpleParseStrategy_` will also fail. Let's merge them into a single
-    // member and decide the type of strategy based on the locale.
+    // Use either `pumpkinParseStrategy_` or `simpleParseStrategy_` because if
+    // `pumpkinParseStrategy_` fails, then `simpleParseStrategy_` will also
+    // fail.
     if (this.pumpkinParseStrategy_.isEnabled()) {
       const macro = await this.pumpkinParseStrategy_.parse(text);
       if (macro) {
         return macro;
       }
-    }
-
-    // Fall-back to simple parsing.
-    if (this.simpleParseStrategy_.isEnabled()) {
+    } else if (this.simpleParseStrategy_.isEnabled()) {
       return await /** @type {!Promise<!Macro>} */ (
           this.simpleParseStrategy_.parse(text));
     }
