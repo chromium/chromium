@@ -43,8 +43,6 @@ void InitializeSchemeAllowlist(SchemeSet* allowlist,
   allowlist->insert(std::string(url::kMailToScheme));
 }
 
-InMemoryURLIndex::RestoreCacheObserver::~RestoreCacheObserver() = default;
-
 // RebuildPrivateDataFromHistoryDBTask -----------------------------------------
 
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
@@ -238,6 +236,4 @@ void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
     private_data_->Clear();
   }
   restored_ = true;
-  if (restore_cache_observer_)
-    restore_cache_observer_->OnCacheRestoreFinished(succeeded);
 }

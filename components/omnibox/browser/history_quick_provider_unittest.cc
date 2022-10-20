@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -21,23 +20,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/history/core/browser/url_database.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/history_test_util.h"
 #include "components/omnibox/browser/history_url_provider.h"
-#include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/prefs/pref_service.h"
-#include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -220,7 +213,11 @@ void HistoryQuickProviderTest::SetUp() {
       client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
       history_dir_.GetPath(), SchemeSet()));
   client_->GetInMemoryURLIndex()->Init();
-  BlockUntilInMemoryURLIndexIsRefreshed(client_->GetInMemoryURLIndex());
+
+  // Block until History has processed InMemoryURLIndex initialization.
+  history::BlockUntilHistoryProcessesPendingRequests(
+      client_->GetHistoryService());
+  ASSERT_TRUE(client_->GetInMemoryURLIndex()->restored());
 
   provider_ = new HistoryQuickProvider(client_.get());
 }

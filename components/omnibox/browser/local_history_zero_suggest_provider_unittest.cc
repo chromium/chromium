@@ -27,7 +27,6 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
-#include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
@@ -127,9 +126,6 @@ class LocalHistoryZeroSuggestProviderTest
   // Fills the URLDatabase with search URLs using the provided information.
   void LoadURLs(const std::vector<TestURLData>& url_data_list);
 
-  // Waits for history::HistoryService's async operations.
-  void WaitForHistoryService();
-
   // Creates an input using the provided information and queries the provider.
   void StartProviderAndWaitUntilDone(const std::string& text,
                                      metrics::OmniboxFocusType focus_type,
@@ -180,17 +176,9 @@ void LocalHistoryZeroSuggestProviderTest::LoadURLs(
     client_->GetHistoryService()->SetKeywordSearchTermsForURL(
         GURL(search_url), entry.search_provider->id(),
         base::UTF8ToUTF16(entry.search_terms));
-    WaitForHistoryService();
+    history::BlockUntilHistoryProcessesPendingRequests(
+        client_->GetHistoryService());
   }
-}
-
-void LocalHistoryZeroSuggestProviderTest::WaitForHistoryService() {
-  history::BlockUntilHistoryProcessesPendingRequests(
-      client_->GetHistoryService());
-
-  // MemoryURLIndex schedules tasks to rebuild its index on the history thread.
-  // Block here to make sure they are complete.
-  BlockUntilInMemoryURLIndexIsRefreshed(client_->GetInMemoryURLIndex());
 }
 
 void LocalHistoryZeroSuggestProviderTest::StartProviderAndWaitUntilDone(
@@ -538,7 +526,8 @@ TEST_P(LocalHistoryZeroSuggestProviderTest, Deletion) {
       {{"not to be deleted", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
 
   // Wait until the history service performs the deletion.
-  WaitForHistoryService();
+  history::BlockUntilHistoryProcessesPendingRequests(
+      client_->GetHistoryService());
 
   // Histogram tracking the async deletion duration should get logged once the
   // HistoryService async task returns to the initiating thread.

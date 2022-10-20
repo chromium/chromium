@@ -67,7 +67,6 @@
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
-#include "components/omnibox/browser/history_index_restore_observer.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"

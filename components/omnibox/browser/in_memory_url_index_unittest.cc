@@ -13,37 +13,27 @@
 #include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
-#include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "components/omnibox/browser/history_index_restore_observer.h"
-#include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/url_index_private_data.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
-#include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using base::ASCIIToUTF16;
 
 // The test version of the history url database table ('url') is contained in
 // a database file created from a text file('in_memory_url_index_test.db.txt').
@@ -81,7 +71,7 @@ void StringToTerms(const char* search_string,
                    size_t cursor_position,
                    std::u16string* lower_string,
                    String16Vector* lower_terms) {
-  *lower_string = base::i18n::ToLower(ASCIIToUTF16(search_string));
+  *lower_string = base::i18n::ToLower(base::ASCIIToUTF16(search_string));
   if ((cursor_position != kInvalid) &&
       (cursor_position < lower_string->length()) && (cursor_position > 0)) {
     lower_string->insert(cursor_position, u" ");

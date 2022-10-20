@@ -20,7 +20,6 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/history_test_util.h"
-#include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -125,7 +124,11 @@ void HQPPerfTestOnePopularURL::SetUp() {
       client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
       history_dir_.GetPath(), SchemeSet()));
   client_->GetInMemoryURLIndex()->Init();
-  BlockUntilInMemoryURLIndexIsRefreshed(client_->GetInMemoryURLIndex());
+
+  // Block until History has processed InMemoryURLIndex initialization.
+  history::BlockUntilHistoryProcessesPendingRequests(
+      client_->GetHistoryService());
+  ASSERT_TRUE(client_->GetInMemoryURLIndex()->restored());
 
   provider_ = new HistoryQuickProvider(client_.get());
 }
