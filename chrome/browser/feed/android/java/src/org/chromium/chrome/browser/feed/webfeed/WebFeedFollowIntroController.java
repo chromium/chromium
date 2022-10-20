@@ -38,6 +38,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.LoadingView;
@@ -101,6 +102,8 @@ public class WebFeedFollowIntroController {
     private final WebFeedSnackbarController mWebFeedSnackbarController;
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
     private final ObservableSupplier<Tab> mTabSupplier;
+    private final WebFeedRecommendationFollowAcceleratorController
+            mRecommendationFollowAcceleratorController;
     private final RecommendationInfoFetcher mRecommendationFetcher =
             new RecommendationInfoFetcher(mPrefService);
 
@@ -129,6 +132,11 @@ public class WebFeedFollowIntroController {
             ObservableSupplier<Tab> tabSupplier, View menuButtonAnchorView,
             FeedLauncher feedLauncher, ModalDialogManager dialogManager,
             SnackbarManager snackbarManager) {
+        mRecommendationFollowAcceleratorController =
+                new WebFeedRecommendationFollowAcceleratorController(activity, appMenuHandler,
+                        tabSupplier, menuButtonAnchorView, feedLauncher, dialogManager,
+                        snackbarManager);
+
         mActivity = activity;
         mTabSupplier = tabSupplier;
         mFeatureEngagementTracker =
@@ -146,7 +154,15 @@ public class WebFeedFollowIntroController {
             @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
                 mRecommendationFetcher.abort();
+                mRecommendationFollowAcceleratorController.dismissBubble();
                 mWebFeedFollowIntroView.dismissBubble();
+            }
+
+            @Override
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
+                mRecommendationFollowAcceleratorController.onDidFinishNavigation(
+                        tab, navigationHandle);
             }
 
             @Override
@@ -165,6 +181,12 @@ public class WebFeedFollowIntroController {
                                     + url.getValidSpecOrEmpty());
                     return;
                 }
+
+                if (mRecommendationFollowAcceleratorController.showIfPageIsFromRecommendation(
+                            tab)) {
+                    return;
+                }
+
                 mRecommendationFetcher.beginFetch(tab, url, result -> {
                     if (result != null) {
                         maybeShowFollowIntro(result);
@@ -358,6 +380,12 @@ public class WebFeedFollowIntroController {
     @VisibleForTesting
     void setClockForTesting(Clock clock) {
         mClock = clock;
+    }
+
+    @VisibleForTesting
+    WebFeedRecommendationFollowAcceleratorController
+    getRecommendationFollowAcceleratorController() {
+        return mRecommendationFollowAcceleratorController;
     }
 
     private static class RecommendationInfoFetcher {

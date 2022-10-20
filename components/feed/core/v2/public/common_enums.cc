@@ -132,6 +132,8 @@ std::ostream& operator<<(std::ostream& out, FeedUserActionType value) {
       return out << "kFollowingFeedSelectedGroupByPublisher";
     case FeedUserActionType::kFollowingFeedSelectedSortByLatest:
       return out << "kFollowingFeedSelectedSortByLatest";
+    case FeedUserActionType::kTappedFollowOnRecommendationFollowAccelerator:
+      return out << "kTappedFollowOnRecommendationFollowAccelerator";
     case FeedUserActionType::kTappedGotItFeedPostFollowActiveHelp:
       return out << "kTappedGotItFeedPostFollowActiveHelp";
   }

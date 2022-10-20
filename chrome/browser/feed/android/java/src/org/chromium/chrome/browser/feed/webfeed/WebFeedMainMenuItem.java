@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.FollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -78,6 +80,8 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private TextView mItemText;
     // TODO(crbug.com/1369755): Move this variable into a mock
     private boolean mItemTextClicked;
+
+    private @Nullable byte[] mRecommendedWebFeedName;
 
     private WebFeedFaviconFetcher mFaviconFetcher;
     private WebFeedSnackbarController mWebFeedSnackbarController;
@@ -133,7 +137,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                 mContext, feedLauncher, dialogManager, snackbarManager);
         mCrowButtonDelegate = crowButtonDelegate;
         mCreatorActivityClass = creatorActivityClass;
-        Callback<WebFeedMetadata> metadata_callback = result -> {
+        Callback<WebFeedMetadata> metadataCallback = result -> {
             initializeFavicon(result);
             initializeText(result);
             initializeChipView(result);
@@ -143,11 +147,18 @@ public class WebFeedMainMenuItem extends FrameLayout {
                 mChipView.setEnabled(false);
             }
         };
-        WebFeedBridge.getWebFeedMetadataForPage(mTab, mUrl,
-                WebFeedPageInformationRequestReason.MENU_ITEM_PRESENTATION, metadata_callback);
+        mRecommendedWebFeedName =
+                WebFeedRecommendationFollowAcceleratorController.getWebFeedNameIfPageIsRecommended(
+                        mTab);
+        if (mRecommendedWebFeedName != null) {
+            WebFeedBridge.getWebFeedMetadata(mRecommendedWebFeedName, metadataCallback);
+        } else {
+            WebFeedBridge.getWebFeedMetadataForPage(mTab, mUrl,
+                    WebFeedPageInformationRequestReason.MENU_ITEM_PRESENTATION, metadataCallback);
+        }
     }
 
-    private void initializeFavicon(WebFeedMetadata webFeedMetadata) {
+    private void initializeFavicon(@Nullable WebFeedMetadata webFeedMetadata) {
         mFaviconFetcher.beginFetch(
                 mContext.getResources().getDimensionPixelSize(R.dimen.web_feed_icon_size),
                 mContext.getResources().getDimensionPixelSize(R.dimen.web_feed_monogram_text_size),
@@ -160,7 +171,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         return mItemTextClicked;
     }
 
-    private void initializeText(WebFeedMetadata webFeedMetadata) {
+    private void initializeText(@Nullable WebFeedMetadata webFeedMetadata) {
         if (webFeedMetadata != null && !TextUtils.isEmpty(webFeedMetadata.title)) {
             mTitle = webFeedMetadata.title;
         } else {
@@ -182,7 +193,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         }
     }
 
-    private void initializeChipView(WebFeedMetadata webFeedMetadata) {
+    private void initializeChipView(@Nullable WebFeedMetadata webFeedMetadata) {
         @WebFeedSubscriptionStatus
         int subscriptionStatus = webFeedMetadata == null ? WebFeedSubscriptionStatus.UNKNOWN
                                                          : webFeedMetadata.subscriptionStatus;
@@ -198,7 +209,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         }
     }
 
-    private void initializeCrowButton(WebFeedMetadata webFeedMetadata) {
+    private void initializeCrowButton(@Nullable WebFeedMetadata webFeedMetadata) {
         mCrowButtonDelegate.isEnabledForSite(mUrl, (enabled) -> {
             if (enabled) {
                 boolean isFollowing = webFeedMetadata != null
@@ -214,19 +225,23 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mChipView = mFollowChipView;
         showEnabledChipView(mFollowChipView, mContext.getText(R.string.menu_follow),
                 R.drawable.ic_add, (view) -> {
-                    WebFeedBridge.followFromUrl(
-                            mTab, mUrl, WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU, result -> {
-                                byte[] followId =
-                                        result.metadata != null ? result.metadata.id : null;
-                                mWebFeedSnackbarController.showPostFollowHelp(mTab, result,
-                                        followId, mUrl, mTitle,
-                                        WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU);
-                                PrefService prefs = FeedFeatures.getPrefService();
-                                if (!prefs.getBoolean(Pref.ARTICLES_LIST_VISIBLE)) {
-                                    prefs.setBoolean(Pref.ARTICLES_LIST_VISIBLE, true);
-                                    FeedFeatures.setLastSeenFeedTabId(StreamTabId.FOLLOWING);
-                                }
-                            });
+                    Callback<FollowResults> onFollowComplete = result -> {
+                        byte[] followId = result.metadata != null ? result.metadata.id : null;
+                        mWebFeedSnackbarController.showPostFollowHelp(mTab, result, followId, mUrl,
+                                mTitle, WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU);
+                        PrefService prefs = FeedFeatures.getPrefService();
+                        if (!prefs.getBoolean(Pref.ARTICLES_LIST_VISIBLE)) {
+                            prefs.setBoolean(Pref.ARTICLES_LIST_VISIBLE, true);
+                            FeedFeatures.setLastSeenFeedTabId(StreamTabId.FOLLOWING);
+                        }
+                    };
+                    if (mRecommendedWebFeedName != null) {
+                        WebFeedBridge.followFromId(mRecommendedWebFeedName, /*isDurable=*/false,
+                                WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU, onFollowComplete);
+                    } else {
+                        WebFeedBridge.followFromUrl(mTab, mUrl,
+                                WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU, onFollowComplete);
+                    }
                     WebFeedBridge.incrementFollowedFromWebPageMenuCount();
                     FeedServiceBridge.reportOtherUserAction(
                             StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_BUTTON);
