@@ -1076,7 +1076,7 @@ xmlSaveUri(xmlURIPtr uri) {
 
 
     max = 80;
-    ret = (xmlChar *) xmlMallocAtomic((max + 1) * sizeof(xmlChar));
+    ret = (xmlChar *) xmlMallocAtomic(max + 1);
     if (ret == NULL) {
         xmlURIErrMemory("saving URI\n");
 	return(NULL);
@@ -1657,6 +1657,7 @@ xmlURIUnescapeString(const char *str, int len, char *target) {
 	        c = c * 16 + (*in - 'A') + 10;
 	    in++;
 	    len -= 3;
+            /* Explicit sign change */
 	    *out++ = (char) c;
 	} else {
 	    *out++ = *in++;

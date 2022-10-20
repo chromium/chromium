@@ -124,6 +124,14 @@ int main(int argc, char **argv) {
     int ret;
     int blocks, mem;
 
+#if defined(_WIN32)
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
+    printf("Skipping on Windows for now\n");
+    return(0);
+#endif
+
 #ifdef HAVE_PUTENV
     /* access to the proxy can slow up regression tests a lot */
     putenv((char *) "http_proxy=");

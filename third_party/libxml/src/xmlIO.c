@@ -15,9 +15,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
@@ -2035,8 +2032,7 @@ xmlIOHTTPCloseWrite( void * context, const char * http_mthd ) {
 		    xmlGenericError( xmlGenericErrorContext,
 			"Transmitted content saved in file:  %s\n", buffer );
 
-		    fwrite( http_content, sizeof( char ),
-					content_lgth, tst_file );
+		    fwrite( http_content, 1, content_lgth, tst_file );
 		    fclose( tst_file );
 		}
 
@@ -2050,7 +2046,7 @@ xmlIOHTTPCloseWrite( void * context, const char * http_mthd ) {
 		    while ( (avail = xmlNanoHTTPRead( http_ctxt,
 					buffer, sizeof( buffer ) )) > 0 ) {
 
-			fwrite( buffer, sizeof( char ), avail, tst_file );
+			fwrite( buffer, 1, avail, tst_file );
 		    }
 
 		    fclose( tst_file );

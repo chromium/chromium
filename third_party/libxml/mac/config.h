@@ -4,20 +4,11 @@
 /* A form that will not confuse apibuild.py */
 #define ATTRIBUTE_DESTRUCTOR __attribute__((destructor))
 
-/* Type cast for the gethostbyname() argument */
-#define GETHOSTBYNAME_ARG_CAST /**/
-
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #define HAVE_ARPA_INET_H 1
 
-/* Define to 1 if you have the <arpa/nameser.h> header file. */
-#define HAVE_ARPA_NAMESER_H 1
-
 /* Define if __attribute__((destructor)) is accepted */
 #define HAVE_ATTRIBUTE_DESTRUCTOR 1
-
-/* Whether struct sockaddr::__ss_family exists */
-/* #undef HAVE_BROKEN_SS_FAMILY */
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
@@ -34,11 +25,11 @@
 /* Define to 1 if you have the `ftime' function. */
 #define HAVE_FTIME 1
 
-/* Define if getaddrinfo is there */
-#define HAVE_GETADDRINFO /**/
-
 /* Define to 1 if you have the `gettimeofday' function. */
 #define HAVE_GETTIMEOFDAY 1
+
+/* Define to 1 if you have the <glob.h> header file. */
+#define HAVE_GLOB_H 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -75,7 +66,7 @@
 /* Define to 1 if you have the <poll.h> header file. */
 #define HAVE_POLL_H 1
 
-/* Define if <pthread.h> is there */
+/* Define to 1 if you have the <pthread.h> header file. */
 #define HAVE_PTHREAD_H /**/
 
 /* Define to 1 if you have the `putenv' function. */
@@ -83,9 +74,6 @@
 
 /* Define to 1 if you have the `rand_r' function. */
 
-
-/* Define to 1 if you have the <resolv.h> header file. */
-#define HAVE_RESOLV_H 1
 
 /* Have shl_load based dso */
 /* #undef HAVE_SHLLOAD */
@@ -171,16 +159,13 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "2.11.0"
 
-/* Type cast for the send() function 2nd arg */
-#define SEND_ARG2_CAST /**/
-
 /* Define to 1 if all of the C90 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #define STDC_HEADERS 1
 
 /* Support for IPv6 */
-#define SUPPORT_IP6 /**/
+/* #undef SUPPORT_IP6 */
 
 /* Define if va_list is an array type */
 #define VA_LIST_IS_ARRAY 1
@@ -189,15 +174,12 @@
 #define VERSION "2.11.0"
 
 /* Determine what socket length (socklen_t) data type is */
-#define XML_SOCKLEN_T socklen_t
+/* #undef XML_SOCKLEN_T */
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
    #define below would cause a syntax error. */
 /* #undef _UINT32_T */
-
-/* ss_family is not defined here, use __ss_family instead */
-/* #undef ss_family */
 
 /* Define to the type of an unsigned integer type of width exactly 32 bits if
    such a type exists and the standard includes do not define it. */
