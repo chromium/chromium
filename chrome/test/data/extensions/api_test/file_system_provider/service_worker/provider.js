@@ -699,6 +699,19 @@ export class TestFileSystemProvider {
       return;
     }
 
+    // Returning a thumbnail while not requested is not allowed for performance
+    // reasons. Remove the field if needed. However, do not remove it for one
+    // file, to simulate an error.
+    if (!options.thumbnail && entry.metadata.thumbnail &&
+        options.entryPath !==
+            `/${TestFileSystemProvider.FILE_ALWAYS_VALID_THUMBNAIL}`) {
+      const metadataWithoutThumbnail = {
+        ...entry.metadata,
+        thumbnail: undefined,
+      };
+      onSuccess(metadataWithoutThumbnail);
+      return;
+    }
     onSuccess(entry.metadata);
   };
 
@@ -1197,12 +1210,32 @@ TestFileSystemProvider.FILE_ONLY_TYPE_AND_SIZE =
     'metadata-only-type-and-size.txt';
 
 /**
+ * File always with valid thumbnail.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_ALWAYS_VALID_THUMBNAIL =
+    'always-with-thumbnail.txt';
+
+/**
  * Initial contents of default testing files.
  *
  * @type {string}
  * @const
  */
 TestFileSystemProvider.INITIAL_TEXT = 'Hello world. How are you today?';
+
+/**
+ * Valid thumbnail for testing files.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.VALID_THUMBNAIL =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA' +
+    'AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO' +
+    '9TXL0Y4OHwAAAABJRU5ErkJggg==';
 
 // Service worker entry point.
 export function serviceWorkerMain(serviceWorker) {

@@ -48,6 +48,8 @@ js_library("service_worker") {
     "read_file/test.js",
     "remove_watcher/sw.js",
     "remove_watcher/test.js",
+    "thumbnail/sw.js",
+    "thumbnail/test.js",
     "unmount/sw.js",
     "unmount/test.js",
     "write_file/sw.js",

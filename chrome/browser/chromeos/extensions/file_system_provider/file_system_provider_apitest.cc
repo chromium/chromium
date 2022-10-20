@@ -451,6 +451,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, RemoveWatcher) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Thumbnail) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/thumbnail",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Unmount) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/unmount",
                                {.extension_url = "test.html"},
