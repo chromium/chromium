@@ -1923,11 +1923,6 @@ const char kOmniboxAdaptiveSuggestionsCountDescription[] =
     "flag to adjust the limit of offered suggestions. The number of shown "
     "suggestions will be no less than the platform default limit.";
 
-const char kOmniboxAggregateShortcutsName[] = "Omnibox Aggregate Shortcuts";
-const char kOmniboxAggregateShortcutsDescription[] =
-    "When enabled, duplicate shortcuts matching the user input will be given "
-    "an aggregate score; when disabled, they'll be scored independently";
-
 const char kOmniboxAssistantVoiceSearchName[] =
     "Omnibox Assistant Voice Search";
 const char kOmniboxAssistantVoiceSearchDescription[] =

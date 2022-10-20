@@ -4979,11 +4979,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "omnibox-aggregate-shortcuts",
-    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "omnibox-assistant-voice-search",
     "owners": [
       "jds@google.com",

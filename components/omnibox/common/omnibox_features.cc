@@ -290,14 +290,6 @@ BASE_FEATURE(kBookmarkPaths,
              "OmniboxBookmarkPaths",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If disabled, shortcuts to the same stripped destination URL are scored
-// independently, and only the highest scored shortcut is kept. If enabled,
-// duplicate shortcuts are given an aggregate score, as if they had been a
-// single shortcut.
-BASE_FEATURE(kAggregateShortcuts,
-             "OmniboxAggregateShortcuts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, when updating or creating a shortcut, the last word of the input
 // is expanded, if possible, to a complete word in the suggestion description.
 BASE_FEATURE(kShortcutExpanding,
