@@ -434,6 +434,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const KURL& url,
       const ResourceResponse& response);
 
+  // This needs to be kept as public to be accessible from
+  // SameSizeAsDocumentLoader as GCC will fail to allow access
+  // even if it is friend of DocumentLoader
+  class DecodedBodyData;
+
  protected:
   // Based on its MIME type, if the main document's response corresponds to an
   // MHTML archive, then every resources will be loaded from this archive.
@@ -465,7 +470,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   friend struct SameSizeAsDocumentLoader;
   class BodyData;
   class EncodedBodyData;
-  class DecodedBodyData;
 
   Frame* CalculateOwnerFrame();
   scoped_refptr<SecurityOrigin> CalculateOrigin(Document* owner_document);
