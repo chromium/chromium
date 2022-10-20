@@ -110,14 +110,13 @@ Just run `tools/rust/build_rust.py` or `tools/rust/build_crubit.py`.
 ### Deploying
 
 `build_rust.py` by default copies the newly build executables/binaries into
-`//third_party/rust-toolchain`.  Currently a manual step is needed to copy
-Crubit binaries (note that the `_impl` suffix has been dropped from the binary
-name during the copy - this is expected):
+`//third_party/rust-toolchain`.
 
-```sh
-cp \
-    third_party/crubit/bazel-bin/rs_bindings_from_cc/rs_bindings_from_cc_impl \
-    third_party/rust-toolchain/rs_bindings_from_cc
+`build_crubit.py` will copy files into the directory specified in the
+(optional) `--install-to` cmdline parameter - for example:
+
+```
+$ tools/rust/build_crubit.py --install-to=third_party/rust-toolchain/bin/
 ```
 
 ### Testing
