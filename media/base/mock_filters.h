@@ -217,7 +217,7 @@ class MockDemuxerStream : public DemuxerStream {
   void set_liveness(StreamLiveness liveness);
 
  private:
-  Type type_;
+  Type type_ = DemuxerStream::Type::UNKNOWN;
   StreamLiveness liveness_ = StreamLiveness::kUnknown;
   AudioDecoderConfig audio_decoder_config_;
   VideoDecoderConfig video_decoder_config_;
