@@ -184,6 +184,12 @@ export class SettingsAutofillSectionElement extends
     if (this.shadowRoot!
             .querySelector('settings-address-remove-confirmation-dialog')!
             .wasConfirmed()) {
+      if (this.addresses.length === 1) {
+        // When user removes the last address, move focus to the Add Address
+        // button when the dialog closes. Otherwise, focus gets lost.
+        this.activeDialogAnchor_ = this.$.addAddress;
+      }
+
       this.autofillManager_.removeAddress(this.activeAddress!.guid as string);
       getAnnouncerInstance().announce(
           loadTimeData.getString('addressRemovedMessage'));
