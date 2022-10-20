@@ -814,6 +814,7 @@
       "fast/filesystem",
       "external/wpt/html/browsers/windows/post-message",
       "http/tests/inspector-protocol/storage/dom-storage-set-items-by-storage-key.js",
+      "http/tests/inspector-protocol/storage/indexed-db-set-items-by-storage-key.js",
       "http/tests/storage/partitioned-storage"
     ],
     "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]

@@ -763,11 +763,10 @@ absl::variant<LocalFrame*, Response> ResolveFrame(
         "At least and at most one of security_origin, "
         "storage_key must be specified.");
   }
-  if (security_origin.isJust()) {
-    return inspected_frames->FrameWithSecurityOrigin(
-        security_origin.fromJust());
+  if (storage_key.isJust()) {
+    return inspected_frames->FrameWithStorageKey(storage_key.fromJust());
   }
-  return inspected_frames->FrameWithStorageKey(storage_key.fromJust());
+  return inspected_frames->FrameWithSecurityOrigin(security_origin.fromJust());
 }
 
 }  // namespace

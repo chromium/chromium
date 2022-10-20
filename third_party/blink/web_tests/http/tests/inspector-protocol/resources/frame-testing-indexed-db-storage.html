@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script>
+  const openRequest = window.indexedDB.open("test-database");
+  openRequest.onerror = (event) => window.parent.postMessage('not able to open database', '*');
+  // upgrade on the first access
+  openRequest.onupgradeneeded = (event) => {
+    const database = event.target.result;
+    let objectStore;
+    try {
+      // will fail if object store with this name already exists
+      objectStore = database.createObjectStore("test-store");
+    } catch (e) {
+      const transaction = event.target.transaction;
+      objectStore = transaction.objectStore('test-store');
+    }
+    getItem(objectStore);
+    objectStore.add("test-data", "test-key");
+  };
+  // success on the second access
+  openRequest.onsuccess = (event) => {
+    const database = event.target.result;
+    const transaction = database.transaction(['test-store'],'readwrite');
+    const objectStore = transaction.objectStore("test-store");
+
+    getItem(objectStore);
+  };
+
+  function getItem(objectStore) {
+    const getRequest = objectStore.get("test-key");
+    getRequest.onsuccess = event => window.parent.postMessage("item value: " + getRequest.result, '*');
+    getRequest.onerror = event => window.parent.postMessage("get failed", '*');
+  }
+</script>

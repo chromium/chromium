@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<script>
+  window.onMessagePromise = new Promise(resolve => {window.onmessage = event => resolve(event.data)});
+</script>
+<iframe src="https://127.0.0.1:8443/inspector-protocol/resources/frame-testing-indexed-db-storage.html">
+</iframe>
+
