@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {fakeAllNetworksAvailable, fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeWifiNetwork} from './fake_data.js';
+import {fakeAllNetworksAvailable, fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeKeyboards, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeTouchDevices, fakeWifiNetwork} from './fake_data.js';
+import {FakeInputDataProvider} from './fake_input_data_provider.js';
 import {FakeNetworkHealthProvider} from './fake_network_health_provider.js';
 import {FakeSystemDataProvider} from './fake_system_data_provider.js';
 import {FakeSystemRoutineController} from './fake_system_routine_controller.js';
@@ -153,6 +154,13 @@ export function getNetworkHealthProvider() {
   return networkHealthProvider;
 }
 
+// Creates a FakeInputDataProvider with fake devices setup.
+function setupFakeInputDataProvider() {
+  const provider = new FakeInputDataProvider();
+  provider.setFakeConnectedDevices(fakeKeyboards, fakeTouchDevices);
+  setInputDataProviderForTesting(provider);
+}
+
 /**
  * @param {!InputDataProviderInterface} testProvider
  */
@@ -165,7 +173,11 @@ export function setInputDataProviderForTesting(testProvider) {
  */
 export function getInputDataProvider() {
   if (!inputDataProvider) {
-    inputDataProvider = InputDataProvider.getRemote();
+    if (useFakeProviders) {
+      setupFakeInputDataProvider();
+    } else {
+      inputDataProvider = InputDataProvider.getRemote();
+    }
   }
 
   assert(!!inputDataProvider);
