@@ -164,9 +164,9 @@ RenderProcessImpl::RenderProcessImpl()
 
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
   SetV8FlagIfFeature(features::kEnableExperimentalWebAssemblyStackSwitching,
-                     "--experimental-wasm-type-reflection");
-  SetV8FlagIfFeature(features::kEnableExperimentalWebAssemblyStackSwitching,
                      "--experimental-wasm-stack-switching");
+  SetV8FlagIfNotFeature(features::kEnableExperimentalWebAssemblyStackSwitching,
+                        "--no-experimental-wasm-stack-switching");
 #endif  // defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
 
   SetV8FlagIfFeature(features::kWebAssemblyLazyCompilation,
