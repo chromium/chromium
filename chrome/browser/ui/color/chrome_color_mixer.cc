@@ -679,8 +679,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorWindowControlButtonBackgroundActive] = {ui::kColorFrameActive};
   mixer[kColorWindowControlButtonBackgroundInactive] = {
       ui::kColorFrameInactive};
-  mixer[kColorPwaScrollButtonBackground] =
-      ui::SetAlpha(ui::kColorButtonBackground, gfx::kGoogleGreyAlpha700);
 
   // Apply high contrast recipes if necessary.
   if (!ShouldApplyHighContrastColors(key))

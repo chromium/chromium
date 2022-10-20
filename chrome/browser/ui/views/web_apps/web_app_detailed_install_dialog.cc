@@ -15,7 +15,6 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -44,6 +43,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/shadow_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
@@ -59,6 +59,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -134,7 +135,12 @@ class ImageCarouselView : public views::View {
 
     leading_button_container->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    leading_button_ = leading_button_container->AddChildView(CreateScrollButton(
+
+    // TODO(https://crbug.com/1374897): A background container is added because
+    // setting a solid background doesn't work with inkdrop right now. Remove
+    // the container after the bug is fixed.
+    leading_button_ = CreateBackgroundContainer(leading_button_container.get());
+    leading_button_->AddChildView(CreateScrollButton(
         ButtonType::LEADING,
         base::BindRepeating(&ImageCarouselView::OnScrollButtonClicked,
                             base::Unretained(this), ButtonType::LEADING)));
@@ -145,12 +151,13 @@ class ImageCarouselView : public views::View {
     auto trailing_button_container = std::make_unique<views::BoxLayoutView>();
     trailing_button_container->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-
     trailing_button_ =
-        trailing_button_container->AddChildView(CreateScrollButton(
-            ButtonType::TRAILING,
-            base::BindRepeating(&ImageCarouselView::OnScrollButtonClicked,
-                                base::Unretained(this), ButtonType::TRAILING)));
+        CreateBackgroundContainer(trailing_button_container.get());
+
+    trailing_button_->AddChildView(CreateScrollButton(
+        ButtonType::TRAILING,
+        base::BindRepeating(&ImageCarouselView::OnScrollButtonClicked,
+                            base::Unretained(this), ButtonType::TRAILING)));
     trailing_button_container_ =
         AddChildView(std::move(trailing_button_container));
   }
@@ -195,12 +202,12 @@ class ImageCarouselView : public views::View {
       trailing_button_visibility_set_up_ = true;
     }
 
-    leading_button_container_->SetBounds(kSpacingBetweenImages, 0, kIconSize,
-                                         fixed_height);
+    leading_button_container_->SetBounds(kSpacingBetweenImages, 0,
+                                         scroll_button_size_, fixed_height);
 
     trailing_button_container_->SetBounds(
-        width() - kSpacingBetweenImages - kIconSize, 0, kIconSize,
-        fixed_height);
+        width() - kSpacingBetweenImages - scroll_button_size_, 0,
+        scroll_button_size_, fixed_height);
   }
 
  private:
@@ -242,9 +249,8 @@ class ImageCarouselView : public views::View {
       ButtonType button_type,
       views::Button::PressedCallback callback) {
     auto scroll_button = views::CreateVectorImageButton(std::move(callback));
-    scroll_button->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorPwaScrollButtonBackground, kIconSize));
     scroll_button->SetPreferredSize(gfx::Size(kIconSize, kIconSize));
+
     views::HighlightPathGenerator::Install(
         scroll_button.get(),
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
@@ -263,15 +269,39 @@ class ImageCarouselView : public views::View {
 
     views::InkDrop::Get(scroll_button.get())
         ->SetBaseColorCallback(base::BindRepeating(
-            [](views::ImageButton* host) {
-              return host->GetColorProvider()->GetColor(
-                  kColorPwaScrollButtonBackground);
+            [](views::View* host) {
+              return views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
+                                            views::style::STYLE_SECONDARY);
             },
             scroll_button.get()));
-    views::InkDrop::Get(scroll_button.get())->SetVisibleOpacity(1);
-    views::InkDrop::Get(scroll_button.get())->SetHighlightOpacity(1);
     scroll_button->SetFocusBehavior(FocusBehavior::ALWAYS);
+
     return scroll_button;
+  }
+
+  views::View* CreateBackgroundContainer(views::View* button_container) {
+    auto* background_container =
+        button_container->AddChildView(std::make_unique<views::View>());
+    background_container->SetUseDefaultFillLayout(true);
+    const auto& shadow =
+        gfx::ShadowDetails::Get(/*elevation=*/1, /*radius=*/kIconSize / 2);
+    gfx::Insets ninebox_insets = gfx::ShadowValue::GetBlurRegion(shadow.values);
+    // Circle border with same thickness in all directions.
+    int scroll_button_border_thickness = ninebox_insets.left();
+    scroll_button_size_ = kIconSize + scroll_button_border_thickness;
+    background_container->SetPreferredSize(
+        gfx::Size(scroll_button_size_, scroll_button_size_));
+
+    background_container->SetBorder(views::CreateBorderPainter(
+        views::Painter::CreateImagePainter(shadow.ninebox_image,
+                                           ninebox_insets),
+        -gfx::ShadowValue::GetMargin(shadow.values)));
+    background_container->SetBackground(
+        views::CreateThemedRoundedRectBackground(
+            ui::kColorButtonBackground,
+            /*radius=*/kIconSize / 2, scroll_button_border_thickness));
+
+    return background_container;
   }
 
   const std::vector<webapps::Screenshot>& screenshots_;
@@ -285,6 +315,7 @@ class ImageCarouselView : public views::View {
   views::View* trailing_button_container_ = nullptr;
   int image_carousel_full_width_ = 0;
   int image_padding_ = 0;
+  int scroll_button_size_ = 0;
   bool trailing_button_visibility_set_up_ = false;
 };
 
