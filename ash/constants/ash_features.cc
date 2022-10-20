@@ -454,6 +454,10 @@ BASE_FEATURE(kCrosLanguageSettingsUpdateJapanese,
              "CrosLanguageSettingsUpdateJapanese",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCrosJpSysPkSettingsMigrate,
+             "kCrosJpSysPkSettingsMigrate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Crosh System Web App. When enabled, crosh (ChromeOS
 // Shell) will run as a tabbed System Web App rather than a normal browser tab.
 BASE_FEATURE(kCroshSWA, "CroshSWA", base::FEATURE_ENABLED_BY_DEFAULT);
