@@ -1027,6 +1027,46 @@ void PermissionUmaUtil::RecordPageInfoDialogAccessType(
       "Permissions.ConfirmationChip.PageInfoDialogAccessType", access_type);
 }
 
+// static
+void PermissionUmaUtil::RecordPageInfoPermissionChangeWithin1m(
+    ContentSettingsType type,
+    PermissionAction previous_action,
+    ContentSetting setting_after) {
+  DCHECK(IsRequestablePermissionType(type));
+  std::string permission_type = GetPermissionRequestString(
+      GetUmaValueForRequestType(ContentSettingsTypeToRequestType(type)));
+  std::string histogram_name =
+      "Permissions.PageInfo.ChangedWithin1m." + permission_type;
+  switch (previous_action) {
+    case PermissionAction::GRANTED:
+    case PermissionAction::GRANTED_ONCE:
+      if (setting_after == ContentSetting::CONTENT_SETTING_BLOCK) {
+        base::UmaHistogramEnumeration(histogram_name,
+                                      PermissionChangeAction::REVOKED);
+      } else if (setting_after == ContentSetting::CONTENT_SETTING_DEFAULT) {
+        base::UmaHistogramEnumeration(
+            histogram_name, PermissionChangeAction::RESET_FROM_ALLOWED);
+      }
+      break;
+    case PermissionAction::DENIED:
+      if (setting_after == ContentSetting::CONTENT_SETTING_ALLOW) {
+        base::UmaHistogramEnumeration(histogram_name,
+                                      PermissionChangeAction::REALLOWED);
+      } else if (setting_after == ContentSetting::CONTENT_SETTING_DEFAULT) {
+        base::UmaHistogramEnumeration(
+            histogram_name, PermissionChangeAction::RESET_FROM_DENIED);
+      }
+      break;
+    case PermissionAction::DISMISSED:  // dismissing had no effect on content
+                                       // setting
+    case PermissionAction::IGNORED:    // ignoring has no effect on content
+                                       // settings
+    case PermissionAction::REVOKED:  // not a relevant use case for this metric
+    case PermissionAction::NUM:      // placeholder
+      break;                         // NOP
+  }
+}
+
 std::string PermissionUmaUtil::GetPermissionActionString(
     PermissionAction permission_action) {
   switch (permission_action) {

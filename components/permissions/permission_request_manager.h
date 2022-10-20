@@ -17,6 +17,7 @@
 #include "components/permissions/permission_request_queue.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -313,6 +314,10 @@ class PermissionRequestManager
   void NotifyPromptAdded();
   void NotifyPromptRemoved();
   void NotifyRequestDecided(permissions::PermissionAction permission_action);
+
+  void StorePermissionActionForUMA(const GURL& origin,
+                                   RequestType request_type,
+                                   PermissionAction permission_action);
 
   void OnPermissionUiSelectorDone(size_t selector_index,
                                   const UiDecision& decision);

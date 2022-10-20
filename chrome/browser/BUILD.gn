@@ -1143,6 +1143,8 @@ static_library("browser") {
     "permissions/notifications_engagement_service_factory.h",
     "permissions/notifications_permission_revocation_config.cc",
     "permissions/notifications_permission_revocation_config.h",
+    "permissions/origin_keyed_permission_action_service_factory.cc",
+    "permissions/origin_keyed_permission_action_service_factory.h",
     "permissions/permission_actions_history_factory.cc",
     "permissions/permission_actions_history_factory.h",
     "permissions/permission_auditing_service_factory.cc",

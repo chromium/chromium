@@ -27,6 +27,8 @@ class TestPermissionsClient : public PermissionsClient {
       content::BrowserContext* browser_context) override;
   bool IsSubresourceFilterActivated(content::BrowserContext* browser_context,
                                     const GURL& url) override;
+  OriginKeyedPermissionActionService* GetOriginKeyedPermissionActionService(
+      content::BrowserContext* browser_context) override;
   PermissionActionsHistory* GetPermissionActionsHistory(
       content::BrowserContext* browser_context) override;
   PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
@@ -47,6 +49,7 @@ class TestPermissionsClient : public PermissionsClient {
   scoped_refptr<HostContentSettingsMap> settings_map_;
   PermissionDecisionAutoBlocker autoblocker_;
   PermissionActionsHistory permission_actions_history_;
+  OriginKeyedPermissionActionService origin_keyed_permission_action_service_;
 };
 
 }  // namespace permissions

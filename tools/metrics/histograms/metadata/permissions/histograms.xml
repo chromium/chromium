@@ -22,7 +22,32 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="PermissionType">
+<variants name="AllPermissionTypes">
+  <variant name="AR"/>
+  <variant name="AudioAndVideoCapture"/>
+  <variant name="AudioCapture"/>
+  <variant name="CameraPanTiltZoom"/>
+  <variant name="ClipboardReadWrite"/>
+  <variant name="Geolocation"/>
+  <variant name="IdleDetection"/>
+  <variant name="LocalFonts"/>
+  <variant name="MidiSysEx"/>
+  <variant name="MultipleDownload"/>
+  <variant name="Nfc"/>
+  <variant name="Notifications"/>
+  <variant name="PaymentHandler"/>
+  <variant name="ProtectedMedia"/>
+  <variant name="Quota"/>
+  <variant name="RegisterProtocolHandler"/>
+  <variant name="SecurityKeyAttestation"/>
+  <variant name="StorageAccess"/>
+  <variant name="U2fApiRequest"/>
+  <variant name="VideoCapture"/>
+  <variant name="VR"/>
+  <variant name="WindowPlacement"/>
+</variants>
+
+<variants name="Top2PermissionTypes">
   <variant name="Geolocation"/>
   <variant name="Notifications"/>
 </variants>
@@ -502,7 +527,20 @@ chromium-metrics-reviews@google.com.
     a {PermissionType} permission request. Records whether its response was
     ignored or not.
   </summary>
-  <token key="PermissionType" variants="PermissionType"/>
+  <token key="PermissionType" variants="Top2PermissionTypes"/>
+</histogram>
+
+<histogram name="Permissions.PageInfo.ChangedWithin1m.{PermissionType}"
+    enum="PermissionChangeAction" expires_after="2023-10-31">
+  <owner>fjacky@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    This metric measures how often and in what way users change their mind
+    within the first minute of making an active permission decision, i.e. any
+    PermissionAction that is any action that is not ignore, dismiss or an
+    automated revoke event.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
 <histogram name="Permissions.PredictionService.GeolocationRequest"
@@ -555,7 +593,7 @@ chromium-metrics-reviews@google.com.
     to a {PermissionType} permission request. Records whether its response was
     ignored or not.
   </summary>
-  <token key="PermissionType" variants="PermissionType"/>
+  <token key="PermissionType" variants="Top2PermissionTypes"/>
 </histogram>
 
 <histogram name="Permissions.Prompt.Accepted" enum="PermissionRequestType"

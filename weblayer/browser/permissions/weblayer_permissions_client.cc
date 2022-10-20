@@ -47,6 +47,12 @@ bool WebLayerPermissionsClient::IsSubresourceFilterActivated(
       ->GetSiteActivationFromMetadata(url);
 }
 
+permissions::OriginKeyedPermissionActionService*
+WebLayerPermissionsClient::GetOriginKeyedPermissionActionService(
+    content::BrowserContext* browser_context) {
+  return nullptr;
+}
+
 permissions::PermissionDecisionAutoBlocker*
 WebLayerPermissionsClient::GetPermissionDecisionAutoBlocker(
     content::BrowserContext* browser_context) {

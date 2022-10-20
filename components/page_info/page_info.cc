@@ -18,6 +18,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/browser_ui/util/android/url_constants.h"
@@ -32,10 +33,11 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/page_info/page_info_delegate.h"
 #include "components/page_info/page_info_ui.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "components/permissions/origin_keyed_permission_action_service.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -45,6 +47,7 @@
 #endif
 #include "build/chromeos_buildflags.h"
 #include "components/page_info/core/features.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
@@ -292,7 +295,7 @@ const char kPageInfoTimePrefix[] = "Security.PageInfo.TimeOpen";
 const char kPageInfoTimeActionPrefix[] = "Security.PageInfo.TimeOpen.Action";
 const char kPageInfoTimeNoActionPrefix[] =
     "Security.PageInfo.TimeOpen.NoAction";
-
+const base::TimeDelta kRecordPageInfoPermissionChangeWindow = base::Minutes(1);
 }  // namespace
 
 PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
@@ -652,6 +655,32 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
   }
 
   DCHECK(web_contents_);
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(
+          web_contents_.get());
+
+  if (manager) {
+    // Retrieve latest permission action for the current origin and the current
+    // content settings type. Note that these values are only kept in memory and
+    // not persisted across browser sessions.
+    absl::optional<permissions::PermissionActionTime> entry =
+        permissions::PermissionsClient::Get()
+            ->GetOriginKeyedPermissionActionService(
+                web_contents_->GetBrowserContext())
+            ->GetLastActionEntry(
+                permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+                    web_contents_->GetPrimaryMainFrame()),
+                type);
+    // If a value was found, and the record is from less than a minute ago,
+    // record the change of mind of the user to UMA.
+    if (entry.has_value() && (base::TimeTicks::Now() - entry->second <=
+                              kRecordPageInfoPermissionChangeWindow)) {
+      permissions::PermissionUmaUtil::RecordPageInfoPermissionChangeWithin1m(
+          type, entry->first, setting);
+    }
+  }
+
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(web_contents_->GetBrowserContext(), site_url_,
                                  site_url_, type,

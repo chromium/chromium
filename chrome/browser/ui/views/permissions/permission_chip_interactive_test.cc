@@ -1,9 +1,11 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
@@ -25,17 +28,26 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/features.h"
+#include "components/permissions/origin_keyed_permission_action_service.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "permission_prompt_chip.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/test/test_event.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -547,6 +559,202 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipUmaInteractiveTest, VerifyUmaMetrics) {
   histograms.ExpectBucketCount(
       "Permissions.ConfirmationChip.PageInfoDialogAccessType",
       static_cast<int>(permissions::PageInfoDialogAccessType::LOCK_CLICK), 2);
+}
+
+class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveTest {
+ public:
+  PageInfoChangedWithin1mUmaTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {permissions::features::kConfirmationChip,
+         permissions::features::kPermissionChipGestureSensitive},
+        {permissions::features::kPermissionChipRequestTypeSensitive});
+  }
+
+  void InitAndRequestNotification() {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    url_ = (embedded_test_server()->GetURL("/empty.html"));
+    content::RenderFrameHost* main_rfh =
+        ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                                  url_, 1);
+    content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+    content::WebContents* embedder_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(embedder_contents);
+
+    constexpr char kRequestNotifications[] = R"(
+      new Promise(resolve => {
+        Notification.requestPermission().then(function (permission) {
+          resolve(permission)
+        });
+      })
+      )";
+
+    permissions::PermissionRequestObserver observer(embedder_contents);
+
+    EXPECT_TRUE(content::ExecJs(
+        main_rfh, kRequestNotifications,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    observer.Wait();
+  }
+
+  PageInfoBubbleView* OpenAndGetPageInfoBubbleView() {
+    base::RunLoop run_loop;
+    GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();
+    OpenPageInfoBubble(browser());
+    run_loop.Run();
+    auto* bubble_view = static_cast<PageInfoBubbleView*>(
+        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+    EXPECT_TRUE(bubble_view);
+
+    return bubble_view;
+  }
+
+  void OpenPageInfoAndTogglePermission() {
+    PageInfoBubbleView* page_info = OpenAndGetPageInfoBubbleView();
+    views::View* permisison_toggle =
+        GetViewWithinPageInfo(
+            page_info, PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW)
+            ->GetViewByID(PageInfoViewFactory::
+                              VIEW_ID_PERMISSION_TOGGLE_ROW_TOGGLE_BUTTON);
+
+    ASSERT_TRUE(permisison_toggle);
+
+    PerformMouseClickOnView(
+        static_cast<views::ToggleButton*>(permisison_toggle));
+  }
+
+  void OpenPageInfoAndClickReset() {
+    PageInfoBubbleView* page_info = OpenAndGetPageInfoBubbleView();
+    views::View* reset_permissions_view = GetViewWithinPageInfo(
+        page_info,
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON);
+
+    PerformMouseClickOnView(
+        static_cast<views::MdTextButton*>(reset_permissions_view));
+  }
+
+ private:
+  void OpenPageInfoBubble(Browser* browser) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    LocationIconView* location_icon_view =
+        browser_view->toolbar()->location_bar()->location_icon_view();
+    ASSERT_TRUE(location_icon_view);
+    ui::test::TestEvent event;
+    location_icon_view->ShowBubble(event);
+    views::BubbleDialogDelegateView* page_info =
+        PageInfoBubbleView::GetPageInfoBubbleForTesting();
+    EXPECT_NE(nullptr, page_info);
+    page_info->set_close_on_deactivate(false);
+  }
+
+  views::View* GetViewWithinPageInfo(PageInfoBubbleView* page_info_bubble,
+                                     int view_id) {
+    views::View* view = page_info_bubble->GetViewByID(view_id);
+    EXPECT_TRUE(view);
+    return view;
+  }
+
+  void PerformMouseClickOnView(views::Button* button) {
+    views::test::ButtonTestApi(button).NotifyClick(
+        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  GURL url_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
+                       VerifyResetFromAllowedUmaMetric) {
+  InitAndRequestNotification();
+  base::HistogramTester histograms;
+
+  test_api_->manager()->Accept();
+
+  OpenPageInfoAndClickReset();
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.ChangedWithin1m.Notifications",
+      static_cast<int>(permissions::PermissionChangeAction::RESET_FROM_ALLOWED),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
+                       VerifyResetFromDeniedUmaMetric) {
+  InitAndRequestNotification();
+  base::HistogramTester histograms;
+
+  test_api_->manager()->Deny();
+
+  OpenPageInfoAndClickReset();
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.ChangedWithin1m.Notifications",
+      static_cast<int>(permissions::PermissionChangeAction::RESET_FROM_DENIED),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest, VerifyRevokedUmaMetric) {
+  InitAndRequestNotification();
+  base::HistogramTester histograms;
+
+  test_api_->manager()->Accept();
+
+  OpenPageInfoAndTogglePermission();
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.ChangedWithin1m.Notifications",
+      static_cast<int>(permissions::PermissionChangeAction::REVOKED), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest, VerifyReallowUmaMetric) {
+  InitAndRequestNotification();
+  base::HistogramTester histograms;
+
+  test_api_->manager()->Deny();
+
+  OpenPageInfoAndTogglePermission();
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.ChangedWithin1m.Notifications",
+      static_cast<int>(permissions::PermissionChangeAction::REALLOWED), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
+                       VerifyNoReallowFromDenyRecordedAfter2mUmaMetric) {
+  InitAndRequestNotification();
+  base::HistogramTester histograms;
+
+  test_api_->manager()->Deny();
+
+  content::WebContents* web_contents = GetLocationBarView()->GetWebContents();
+  const GURL& origin = permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+      web_contents->GetPrimaryMainFrame());
+  permissions::OriginKeyedPermissionActionService* permission_action_service =
+      permissions::PermissionsClient::Get()
+          ->GetOriginKeyedPermissionActionService(
+              GetLocationBarView()->GetWebContents()->GetBrowserContext());
+
+  // Get recorded entry and manually change its time to 2 minutes ago.
+  absl::optional<permissions::PermissionActionTime> record =
+      permission_action_service->GetLastActionEntry(
+          origin, ContentSettingsType::NOTIFICATIONS);
+  EXPECT_TRUE(record.has_value());
+  permission_action_service->RecordActionWithTimeForTesting(
+      origin, ContentSettingsType::NOTIFICATIONS, record->first,
+      record->second - base::Minutes(2));
+
+  OpenPageInfoAndTogglePermission();
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "Permissions.PageInfo.ChangedWithin1m.Notifications",
+      static_cast<int>(permissions::PermissionChangeAction::REALLOWED), 0);
 }
 
 class ChipGestureSensitiveEnabledInteractiveTest

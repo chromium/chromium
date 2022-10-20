@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/origin_keyed_permission_action_service.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
@@ -80,6 +81,12 @@ class PermissionsClient {
       content::BrowserContext* browser_context,
       const GURL& url) = 0;
 
+  // Holds and mediates access to an in-memory origin-keyed map, that holds the
+  // last PermissionAction and its  timestamp for each Content Setting. Used for
+  // metrics collection.
+  virtual OriginKeyedPermissionActionService*
+  GetOriginKeyedPermissionActionService(
+      content::BrowserContext* browser_context) = 0;
   virtual PermissionActionsHistory* GetPermissionActionsHistory(
       content::BrowserContext* browser_context) = 0;
   // Retrieves the PermissionDecisionAutoBlocker for this context. The returned

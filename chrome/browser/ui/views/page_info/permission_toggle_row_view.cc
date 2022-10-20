@@ -93,6 +93,8 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
   auto toggle_button = std::make_unique<views::ToggleButton>(
       base::BindRepeating(&PermissionToggleRowView::OnToggleButtonPressed,
                           base::Unretained(this)));
+  toggle_button->SetID(
+      PageInfoViewFactory::VIEW_ID_PERMISSION_TOGGLE_ROW_TOGGLE_BUTTON);
   toggle_button->SetPreferredSize(
       gfx::Size(toggle_button->GetPreferredSize().width(),
                 row_view_->GetFirstLineHeight()));
