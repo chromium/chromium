@@ -501,6 +501,9 @@ as required builders.
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12-x64-rel""))
   * Experiment percentage: 60.0
 
+* [android-nougat-x86-rel-inverse-fyi](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-rel-inverse-fyi) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-rel-inverse-fyi"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-nougat-x86-rel-inverse-fyi""))
+  * Experiment percentage: 15.0
+
 * [android-nougat-x86-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-rel-reclient) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-rel-reclient"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-nougat-x86-rel-reclient""))
   * Experiment percentage: 5.0
 
