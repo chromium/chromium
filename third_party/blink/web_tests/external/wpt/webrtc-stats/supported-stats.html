@@ -80,36 +80,34 @@ async function getAllStats(t, pc) {
 }
 
 
-  promise_test(async t => {
-    // load the IDL to know which members to be looking for
+promise_test(async t => {
+  // load the IDL to know which members to be looking for
+  const idl = await fetch("/interfaces/webrtc-stats.idl").then(r => r.text());
+  // for RTCStats definition
+  const webrtcIdl = await fetch("/interfaces/webrtc.idl").then(r => r.text());
+  const astArray = WebIDL2.parse(idl + webrtcIdl);
 
-    const idl = await fetch("/interfaces/webrtc-stats.idl").then(r => r.text());
-    // for RTCStats definition
-    const webrtcIdl = await fetch("/interfaces/webrtc.idl").then(r => r.text());
-    const astArray = WebIDL2.parse(idl + webrtcIdl);
-
-    let all = {};
-    for (let type in dictionaryNames) {
-        // TODO: make use of audio/video distinction
-      let dictionaries = dictionaryNames[type].audio ? Object.values(dictionaryNames[type]) : [dictionaryNames[type]];
-      all[type] = [];
-      let i = 0;
-      // Recursively collect members from inherited dictionaries
-      while (i < dictionaries.length) {
-        const dictName = dictionaries[i];
-        const dict = astArray.find(i => i.name === dictName && i.type === "dictionary");
-        if (dict && dict.members) {
-          all[type] = all[type].concat(dict.members.map(m => m.name));
-          if (dict.inheritance) {
-            dictionaries.push(dict.inheritance);
-          }
+  let all = {};
+  for (let type in dictionaryNames) {
+      // TODO: make use of audio/video distinction
+    let dictionaries = dictionaryNames[type].audio ? Object.values(dictionaryNames[type]) : [dictionaryNames[type]];
+    all[type] = [];
+    let i = 0;
+    // Recursively collect members from inherited dictionaries
+    while (i < dictionaries.length) {
+      const dictName = dictionaries[i];
+      const dict = astArray.find(i => i.name === dictName && i.type === "dictionary");
+      if (dict && dict.members) {
+        all[type] = all[type].concat(dict.members.map(m => m.name));
+        if (dict.inheritance) {
+          dictionaries.push(dict.inheritance);
         }
-        i++;
       }
-      // Unique-ify
-      all[type] = [...new Set(all[type])];
+      i++;
     }
-
+    // Unique-ify
+    all[type] = [...new Set(all[type])];
+  }
 
   const remaining = JSON.parse(JSON.stringify(all));
     for (const type in remaining) {
@@ -123,15 +121,21 @@ async function getAllStats(t, pc) {
 
   const dc1 = pc1.createDataChannel("dummy", {negotiated: true, id: 0});
   const dc2 = pc2.createDataChannel("dummy", {negotiated: true, id: 0});
-
   const stream = await getNoiseStream({video: true, audio:true});
   for (const track of stream.getTracks()) {
     pc1.addTrack(track, stream);
     pc2.addTrack(track, stream);
     t.add_cleanup(() => track.stop());
   }
-  exchangeIceCandidates(pc1, pc2);
-  await exchangeOfferAnswer(pc1, pc2);
+
+  // Do a non-trickle ICE handshake to ensure that TCP candidates are gathered.
+  await pc1.setLocalDescription();
+  await waitForIceGatheringState(pc1, ['complete']);
+  await pc2.setRemoteDescription(pc1.localDescription);
+  await pc2.setLocalDescription();
+  await waitForIceGatheringState(pc2, ['complete']);
+  await pc1.setRemoteDescription(pc2.localDescription);
+
   const stats = await getAllStats(t, pc1);
 
   // The focus of this test is not API correctness, but rather to provide an
