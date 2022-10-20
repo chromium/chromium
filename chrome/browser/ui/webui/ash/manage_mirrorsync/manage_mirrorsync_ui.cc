@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_ui.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -12,7 +12,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 
 ManageMirrorSyncUI::ManageMirrorSyncUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
@@ -30,8 +30,7 @@ ManageMirrorSyncUI::ManageMirrorSyncUI(content::WebUI* web_ui)
 ManageMirrorSyncUI::~ManageMirrorSyncUI() = default;
 
 void ManageMirrorSyncUI::BindInterface(
-    mojo::PendingReceiver<
-        chromeos::manage_mirrorsync::mojom::PageHandlerFactory>
+    mojo::PendingReceiver<manage_mirrorsync::mojom::PageHandlerFactory>
         pending_receiver) {
   if (factory_receiver_.is_bound()) {
     factory_receiver_.reset();
@@ -40,12 +39,11 @@ void ManageMirrorSyncUI::BindInterface(
 }
 
 void ManageMirrorSyncUI::CreatePageHandler(
-    mojo::PendingReceiver<chromeos::manage_mirrorsync::mojom::PageHandler>
-        receiver) {
+    mojo::PendingReceiver<manage_mirrorsync::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<ManageMirrorSyncPageHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui()));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ManageMirrorSyncUI)
 
-}  // namespace chromeos
+}  // namespace ash

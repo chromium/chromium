@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_PAGE_HANDLER_H_
 
 #include <vector>
 
@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync.mojom.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,7 +20,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // Handles communication from the chrome://manage-mirrorsync renderer process to
 // the browser process exposing various methods for the JS to invoke.
@@ -38,7 +38,7 @@ class ManageMirrorSyncPageHandler
 
   ~ManageMirrorSyncPageHandler() override;
 
-  // chromeos::manage_mirrorsync::mojom::PageHandler:
+  // manage_mirrorsync::mojom::PageHandler:
   void GetChildFolders(const base::FilePath& path,
                        GetChildFoldersCallback callback) override;
 
@@ -62,6 +62,6 @@ class ManageMirrorSyncPageHandler
   base::WeakPtrFactory<ManageMirrorSyncPageHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_PAGE_HANDLER_H_

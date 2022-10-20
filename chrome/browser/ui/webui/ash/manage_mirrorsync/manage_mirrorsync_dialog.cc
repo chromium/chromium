@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_dialog.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.h"
 
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_ui.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
@@ -21,7 +21,7 @@ GURL GetURL() {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 void ManageMirrorSyncDialog::Show(Profile* profile) {
   auto* instance = SystemWebDialogDelegate::FindInstance(GetURL().spec());
@@ -60,4 +60,4 @@ void ManageMirrorSyncDialog::OnWebContentsFinishedLoad() {
   dialog_window()->SetTitle(u"Manage MirrorSync");
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_dialog.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync.mojom.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,7 +31,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -441,4 +441,4 @@ IN_PROC_BROWSER_TEST_F(ManageMirrorSyncDialogTest,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

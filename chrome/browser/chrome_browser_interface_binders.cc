@@ -270,6 +270,8 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals.mojom.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
@@ -277,8 +279,6 @@
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/vm/vm_ui.h"
@@ -1260,8 +1260,8 @@ void PopulateChromeWebUIFrameBinders(
 
   if (ash::features::IsDriveFsMirroringEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        chromeos::manage_mirrorsync::mojom::PageHandlerFactory,
-        chromeos::ManageMirrorSyncUI>(map);
+        ash::manage_mirrorsync::mojom::PageHandlerFactory,
+        ash::ManageMirrorSyncUI>(map);
   }
 
   if (ash::features::IsUploadOfficeToCloudEnabled()) {

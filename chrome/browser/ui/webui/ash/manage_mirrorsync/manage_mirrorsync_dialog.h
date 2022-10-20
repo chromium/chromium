@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_DIALOG_H_
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class ManageMirrorSyncUI;
 
@@ -30,6 +30,6 @@ class ManageMirrorSyncDialog : public SystemWebDialogDelegate {
   ManageMirrorSyncUI* mirrorsync_ui_ = nullptr;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_DIALOG_H_

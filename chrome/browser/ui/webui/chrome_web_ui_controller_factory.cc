@@ -264,6 +264,7 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
@@ -278,7 +279,6 @@
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/notification_tester/notification_tester_ui.h"
 #include "chrome/browser/ui/webui/chromeos/power_ui.h"
@@ -1023,7 +1023,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::HumanPresenceInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIManageMirrorSyncHost &&
       ash::features::IsDriveFsMirroringEnabled()) {
-    return &NewWebUI<chromeos::ManageMirrorSyncUI>;
+    return &NewWebUI<ash::ManageMirrorSyncUI>;
   }
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;

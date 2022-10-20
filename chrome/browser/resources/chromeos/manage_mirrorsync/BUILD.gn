@@ -35,8 +35,10 @@ copy("copy_src") {
 # Mojo bindings are generated in the corresponding webui folder, copy the JS
 # binding outputs to the same gen/ directory as above.
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/chromeos/manage_mirrorsync:mojo_bindings_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync.mojom-webui.js" ]
+  deps = [
+    "//chrome/browser/ui/webui/ash/manage_mirrorsync:mojo_bindings_webui_js",
+  ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 

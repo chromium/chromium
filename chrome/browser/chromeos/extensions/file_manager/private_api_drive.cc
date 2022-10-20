@@ -44,7 +44,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_dialog.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
@@ -988,7 +988,7 @@ FileManagerPrivatePollDriveHostedFilePinStatesFunction::Run() {
 ExtensionFunction::ResponseAction
 FileManagerPrivateOpenManageSyncSettingsFunction::Run() {
   if (ash::features::IsDriveFsMirroringEnabled()) {
-    chromeos::ManageMirrorSyncDialog::Show(
+    ash::ManageMirrorSyncDialog::Show(
         Profile::FromBrowserContext(browser_context()));
   }
   return RespondNow(WithArguments());

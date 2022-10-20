@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_page_handler.h"
+#include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_page_handler.h"
 
 #include <utility>
 
@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -166,4 +166,4 @@ void ManageMirrorSyncPageHandler::OnGetSyncingPaths(
                           std::move(remapped_paths));
 }
 
-}  // namespace chromeos
+}  // namespace ash
