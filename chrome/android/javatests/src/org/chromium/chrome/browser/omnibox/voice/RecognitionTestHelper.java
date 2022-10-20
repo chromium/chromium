@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -267,7 +268,7 @@ public class RecognitionTestHelper {
           () -> modalDialogManager, null, null, dataProvider,
           profileSupplier, (tab) -> {
           }, null, (url) -> false, new DummyJankTracker(),
-          pedalDelegate);
+          pedalDelegate, new OmniboxSuggestionsDropdownScrollListener() {});
             // clang-format on
         }
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -39,10 +40,26 @@ public class SuggestionListProperties {
      */
     public static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
 
-    /** Observer that will receive notifications and callbacks from Suggestion List. */
-    public static final WritableObjectPropertyKey<OmniboxSuggestionsDropdown.Observer> OBSERVER =
+    /**
+     * The observer that will receive notifications that the user is interacting with an item on
+     * the Suggestions list.
+     */
+    public static final WritableObjectPropertyKey<OmniboxSuggestionsDropdown.GestureObserver>
+            GESTURE_OBSERVER = new WritableObjectPropertyKey<>();
+
+    /** The listener that will receive the new height of the suggestion list in pixels. */
+    public static final WritableObjectPropertyKey<Callback<Integer>>
+            DROPDOWN_HEIGHT_CHANGE_LISTENER = new WritableObjectPropertyKey<>();
+
+    /** The listener that will be invoked whenever the User scrolls the list. */
+    public static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            VISIBLE, EMBEDDER, SUGGESTION_MODELS, COLOR_SCHEME, OBSERVER, LIST_IS_FINAL};
+    /** The listener that will be invoked whenever the User scrolls the list to the top. */
+    public static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_TO_TOP_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBLE, EMBEDDER,
+            SUGGESTION_MODELS, COLOR_SCHEME, GESTURE_OBSERVER, DROPDOWN_HEIGHT_CHANGE_LISTENER,
+            DROPDOWN_SCROLL_LISTENER, DROPDOWN_SCROLL_TO_TOP_LISTENER, LIST_IS_FINAL};
 }

@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -75,6 +76,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     private final @NonNull AutocompleteMediator mMediator;
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
+    private @NonNull ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
+            new ObserverList<>();
 
     public AutocompleteCoordinator(@NonNull ViewGroup parent,
             @NonNull AutocompleteDelegate delegate,
@@ -88,7 +91,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull Callback<Tab> bringToForegroundCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
-            @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
+            @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener) {
         mParent = parent;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         Context context = parent.getContext();
@@ -106,7 +110,14 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 tabWindowManagerSupplier, bookmarkState, jankTracker, omniboxPedalDelegate);
         mMediator.initDefaultProcessors();
 
-        listModel.set(SuggestionListProperties.OBSERVER, mMediator);
+        mScrollListenerList.addObserver(scrollListener);
+        mScrollListenerList.addObserver(mMediator);
+        listModel.set(SuggestionListProperties.GESTURE_OBSERVER, mMediator);
+        listModel.set(SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER,
+                mMediator::onSuggestionDropdownHeightChanged);
+        listModel.set(SuggestionListProperties.DROPDOWN_SCROLL_LISTENER, this::dropdownScrolled);
+        listModel.set(SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER,
+                this::dropdownOverscrolledToTop);
 
         ViewProvider<SuggestionListViewHolder> viewProvider =
                 createViewProvider(context, listItems);
@@ -435,5 +446,24 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     @VisibleForTesting
     public void stopAutocompleteForTest(boolean clearResults) {
         mMediator.stopAutocomplete(clearResults);
+    }
+
+    /**
+     * Notify the {@link OmniboxSuggestionsDropdownScrollListener} that the dropdown is scrolled.
+     */
+    public void dropdownScrolled() {
+        for (OmniboxSuggestionsDropdownScrollListener listener : mScrollListenerList) {
+            listener.onSuggestionDropdownScroll();
+        }
+    }
+
+    /**
+     * Notify the {@link OmniboxSuggestionsDropdownScrollListener} that the dropdown is scrolled to
+     * the top.
+     */
+    public void dropdownOverscrolledToTop() {
+        for (OmniboxSuggestionsDropdownScrollListener listener : mScrollListenerList) {
+            listener.onSuggestionDropdownOverscrolledToTop();
+        }
     }
 }

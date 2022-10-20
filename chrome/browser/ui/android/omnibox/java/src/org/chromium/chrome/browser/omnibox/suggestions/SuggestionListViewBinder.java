@@ -67,8 +67,17 @@ class SuggestionListViewBinder {
             }
         } else if (SuggestionListProperties.EMBEDDER.equals(propertyKey)) {
             view.dropdown.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
-        } else if (SuggestionListProperties.OBSERVER.equals(propertyKey)) {
-            view.dropdown.setObserver(model.get(SuggestionListProperties.OBSERVER));
+        } else if (SuggestionListProperties.GESTURE_OBSERVER.equals(propertyKey)) {
+            view.dropdown.setGestureObserver(model.get(SuggestionListProperties.GESTURE_OBSERVER));
+        } else if (SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER.equals(propertyKey)) {
+            view.dropdown.setHeightChangeListener(
+                    model.get(SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER));
+        } else if (SuggestionListProperties.DROPDOWN_SCROLL_LISTENER.equals(propertyKey)) {
+            view.dropdown.setSuggestionDropdownScrollListener(
+                    model.get(SuggestionListProperties.DROPDOWN_SCROLL_LISTENER));
+        } else if (SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER.equals(propertyKey)) {
+            view.dropdown.setSuggestionDropdownOverscrolledToTopListener(
+                    model.get(SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER));
         } else if (SuggestionListProperties.LIST_IS_FINAL.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
                 view.dropdown.emitWindowContentChanged();

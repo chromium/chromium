@@ -22,12 +22,12 @@ import android.view.WindowInsets;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
@@ -62,7 +62,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
     private @Nullable OmniboxSuggestionsDropdownEmbedder mEmbedder;
-    private @Nullable OmniboxSuggestionsDropdown.Observer mObserver;
+    private @Nullable GestureObserver mGestureObserver;
+    private @Nullable Callback<Integer> mHeightChangeListener;
+    private @Nullable Runnable mSuggestionDropdownScrollListener;
+    private @Nullable Runnable mSuggestionDropdownOverscrolledToTopListener;
     private @Nullable View mAnchorView;
     private @Nullable View mAlignmentView;
     private @Nullable OnGlobalLayoutListener mAnchorViewLayoutListener;
@@ -86,26 +89,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private int mWidthMeasureSpec;
     private int mHeightMeasureSpec;
 
-    /** Interface that will receive notifications and callbacks from OmniboxSuggestionsDropdown. */
-    public interface Observer {
-        /**
-         * Invoked whenever the height of suggestion list changes.
-         * The height may change as a result of eg. soft keyboard popping up.
-         *
-         * @param newHeightPx New height of the suggestion list in pixels.
-         */
-        void onSuggestionDropdownHeightChanged(@Px int newHeightPx);
-
-        /**
-         * Invoked whenever the User scrolls the list.
-         */
-        void onSuggestionDropdownScroll();
-
-        /**
-         * Invoked whenever the User scrolls the list to the top.
-         */
-        void onSuggestionDropdownOverscrolledToTop();
-
+    /**
+     * Interface that will receive notifications when the user is interacting with an item on the
+     * Suggestions list.
+     */
+    public interface GestureObserver {
         /**
          * Notify that the user is interacting with an item on the Suggestions list.
          *
@@ -149,14 +137,17 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         /* package */ int updateKeyboardVisibilityAndScroll(int scrollY, int deltaY) {
             boolean keyboardShouldShow = (scrollY == 0 && deltaY <= 0);
 
-            if (mObserver == null) return scrollY;
             if (mLastKeyboardShowState == keyboardShouldShow) return scrollY;
             mLastKeyboardShowState = keyboardShouldShow;
 
             if (keyboardShouldShow) {
-                mObserver.onSuggestionDropdownOverscrolledToTop();
+                if (mSuggestionDropdownOverscrolledToTopListener != null) {
+                    mSuggestionDropdownOverscrolledToTopListener.run();
+                }
             } else {
-                mObserver.onSuggestionDropdownScroll();
+                if (mSuggestionDropdownScrollListener != null) {
+                    mSuggestionDropdownScrollListener.run();
+                }
                 return 0;
             }
             return scrollY;
@@ -253,7 +244,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     /** Clean up resources and remove observers installed by this class. */
     public void destroy() {
         getRecycledViewPool().clear();
-        mObserver = null;
+        mGestureObserver = null;
+        mHeightChangeListener = null;
+        mSuggestionDropdownScrollListener = null;
+        mSuggestionDropdownOverscrolledToTopListener = null;
 
         mAnchorView.getViewTreeObserver().removeOnGlobalLayoutListener(mAnchorViewLayoutListener);
         if (mAlignmentView != null) {
@@ -264,11 +258,35 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /**
-     * Sets the observer of suggestion list.
-     * @param observer an observer of this list.
+     * Sets the observer for that the user is interacting with an item on the Suggestions list..
+     * @param observer an observer of this gesture.
      */
-    public void setObserver(@NonNull OmniboxSuggestionsDropdown.Observer observer) {
-        mObserver = observer;
+    public void setGestureObserver(@NonNull OmniboxSuggestionsDropdown.GestureObserver observer) {
+        mGestureObserver = observer;
+    }
+
+    /**
+     * Sets the listener for changes of the suggestion list's height.
+     * The height may change as a result of eg. soft keyboard popping up.
+     *
+     * @param listener A listener will receive the new height of the suggestion list in pixels.
+     */
+    public void setHeightChangeListener(@NonNull Callback<Integer> listener) {
+        mHeightChangeListener = listener;
+    }
+
+    /**
+     * @param listener A listener will be invoked whenever the User scrolls the list.
+     */
+    public void setSuggestionDropdownScrollListener(@NonNull Runnable listener) {
+        mSuggestionDropdownScrollListener = listener;
+    }
+
+    /**
+     * @param listener A listener will be invoked whenever the User scrolls the list to the top.
+     */
+    public void setSuggestionDropdownOverscrolledToTopListener(@NonNull Runnable listener) {
+        mSuggestionDropdownOverscrolledToTopListener = listener;
     }
 
     /** Resets selection typically in response to changes to the list. */
@@ -449,7 +467,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         if (availableViewportHeight == mListViewMaxHeight) return;
 
         mListViewMaxHeight = availableViewportHeight;
-        if (mObserver != null) {
+        if (mHeightChangeListener != null) {
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
                 // Detect if there was another change since this task posted.
                 // This indicates a subsequent task being posted too.
@@ -458,9 +476,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 // The two checks (one above and one below) allow us to detect quick
                 // A->B->A transitions and suppress the broadcasts.
                 if (mLastBroadcastedListViewMaxHeight == availableViewportHeight) return;
-                if (mObserver == null) return;
+                if (mHeightChangeListener == null) return;
 
-                mObserver.onSuggestionDropdownHeightChanged(availableViewportHeight);
+                mHeightChangeListener.onResult(availableViewportHeight);
                 mLastBroadcastedListViewMaxHeight = availableViewportHeight;
             });
         }
@@ -511,8 +529,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         final int eventType = ev.getActionMasked();
         if ((eventType == MotionEvent.ACTION_UP || eventType == MotionEvent.ACTION_DOWN)
-                && mObserver != null) {
-            mObserver.onGesture(eventType == MotionEvent.ACTION_UP, ev.getEventTime());
+                && mGestureObserver != null) {
+            mGestureObserver.onGesture(eventType == MotionEvent.ACTION_UP, ev.getEventTime());
         }
         return super.dispatchTouchEvent(ev);
     }

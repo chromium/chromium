@@ -44,8 +44,12 @@ public final class BaseCarouselSuggestionViewBinder {
             boolean shouldShowSmallBottomMargin =
                     OmniboxFeatures.shouldShowModernizeVisualUpdate(view.getContext())
                     && OmniboxFeatures.shouldShowSmallBottomMargin();
-            final int topPadding = view.getResources().getDimensionPixelSize(
+            int topPadding = view.getResources().getDimensionPixelSize(
                     R.dimen.omnibox_carousel_suggestion_padding);
+            if (OmniboxFeatures.shouldShowModernizeVisualUpdate(view.getContext())) {
+                topPadding -= view.getResources().getDimensionPixelSize(
+                        R.dimen.tile_view_icon_background_margin_top_modern);
+            }
             final int bottomPadding =
                     view.getResources().getDimensionPixelSize(shouldShowSmallBottomMargin
                                     ? R.dimen.omnibox_carousel_suggestion_small_bottom_padding

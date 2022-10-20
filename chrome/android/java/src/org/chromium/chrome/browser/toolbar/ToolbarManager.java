@@ -692,7 +692,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     jankTracker,
                     merchantTrustSignalsCoordinatorSupplier,
                     omniboxPedalDelegate, mControlsVisibilityDelegate,
-                    ChromePureJavaExceptionReporter::reportJavaException, backPressManager);
+                    ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
+                    toolbarLayout);
             // clang-format on
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
