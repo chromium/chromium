@@ -107,6 +107,8 @@ BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
     return absl::nullopt;
   }
 
+  if (!rr.is_valid())
+    return "";
   return std::string(reinterpret_cast<const char*>(rr.as_span().data()),
                      rr.as_span().size());
 }

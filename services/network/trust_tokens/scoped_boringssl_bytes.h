@@ -33,6 +33,7 @@ class ScopedBoringsslBytes {
   ScopedBoringsslBytes() = default;
   ~ScopedBoringsslBytes() { OPENSSL_free(ptr_); }
 
+  bool is_valid() { return ptr_; }
   uint8_t** mutable_ptr() { return &ptr_; }
   size_t* mutable_len() { return &len_; }
 
