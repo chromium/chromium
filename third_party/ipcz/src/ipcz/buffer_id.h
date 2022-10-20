@@ -16,7 +16,7 @@ namespace ipcz {
 // either side of the NodeLink.
 using BufferId = StrongAlias<class BufferIdTag, uint64_t>;
 
-constexpr BufferId kInvalidBufferId{~0};
+constexpr BufferId kInvalidBufferId{UINT64_MAX};
 
 }  // namespace ipcz
 
