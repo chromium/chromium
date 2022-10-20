@@ -676,6 +676,8 @@ class StorageQueueTest
                StorageQueueTest* self) {
               LOG(ERROR) << "Attempt upload, reason="
                          << UploaderInterface::ReasonToString(reason);
+              LOG_IF(FATAL, ++(self->upload_count_) >= 8uL)
+                  << "Too many uploads";
               auto result = self->set_mock_uploader_expectations_.Call(reason);
               if (!result.ok()) {
                 LOG(ERROR) << "Upload not allowed, reason="
@@ -744,6 +746,8 @@ class StorageQueueTest
   // Test-wide global mapping of <generation id, sequencing id> to record
   // digest. Serves all TestUploaders created by test fixture.
   TestUploader::LastRecordDigestMap last_record_digest_map_;
+
+  size_t upload_count_ = 0uL;
 
   ::testing::MockFunction<StatusOr<std::unique_ptr<TestUploader>>(
       UploaderInterface::UploadReason /*reason*/)>
