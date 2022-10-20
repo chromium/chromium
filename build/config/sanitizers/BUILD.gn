@@ -18,14 +18,12 @@ if (is_ios) {
 group("deps") {
   if (using_sanitizer) {
     public_configs = [
-      ":sanitizer_options_link_helper",
-
       # Even when a target removes default_sanitizer_flags, it may be depending
       # on a library that did not remove default_sanitizer_flags. Thus, we need
       # to add the ldflags here as well as in default_sanitizer_flags.
       ":default_sanitizer_ldflags",
     ]
-    deps = [ ":options_sources" ]
+    deps = []
     if (!is_fuchsia) {
       if (is_win) {
         exe = ".exe"
@@ -36,6 +34,11 @@ group("deps") {
         "//tools/valgrind/asan/",
         "$clang_base_path/bin/llvm-symbolizer${exe}",
       ]
+    }
+    if (is_asan || is_lsan || is_msan || is_tsan || is_ubsan || is_ubsan_vptr ||
+        is_ubsan_security) {
+      public_configs += [ ":sanitizer_options_link_helper" ]
+      deps += [ ":options_sources" ]
     }
     if (use_prebuilt_instrumented_libraries ||
         use_locally_built_instrumented_libraries) {
