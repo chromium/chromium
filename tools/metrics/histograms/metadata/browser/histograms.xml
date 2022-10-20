@@ -39,18 +39,13 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="TabSwitchingType">
+  <variant name="" summary="Aggregation of all tab states."/>
   <variant name=".NoSavedFrames_Loaded"
-      summary="The time from the input timestamp on a tab switch, until the
-               frame is presented on the screen, when there is no saved frame
-               in the cache but the destination tab is already loaded."/>
+      summary="Tab has no saved frame in the cache but is already loaded."/>
   <variant name=".NoSavedFrames_NotLoaded"
-      summary="The time from the input timestamp on a tab switch, until the
-               frame is presented on the screen, when there is no saved frame
-               in the cache and the destination tab is not loaded."/>
+      summary="Tab has no saved frame in the cache and is not loaded."/>
   <variant name=".WithSavedFrames"
-      summary="The time from the input timestamp on a tab switch, until the
-               frame is presented on the screen, when there is a saved frame
-               in the cache."/>
+      summary="Tab has a saved frame in the cache."/>
 </variants>
 
 <histogram name="Browser.AnyWindowHasName" enum="Boolean"
@@ -588,7 +583,8 @@ chromium-metrics-reviews@google.com.
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Whether a frame was presented after a tab switch event. {TabSwitchingType}
+    Whether a frame was presented after a tab switch event. Recorded based on
+    the destination tab state when the tab switch starts: {TabSwitchingType}
   </summary>
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
@@ -618,7 +614,8 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     The time between a tab switch input event timestamp and when the tab is
-    hidden, if no frame is presented in the meantime. {TabSwitchingType}
+    hidden, if no frame is presented in the meantime. Recorded based on the
+    destination tab state when the tab switch starts: {TabSwitchingType}
   </summary>
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
@@ -650,7 +647,8 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     The time between the input event timestamp and the frame presentation time
-    on a tab switch. {TabSwitchingType}
+    on a tab switch. Recorded based on the destination tab state when the tab
+    switch starts: {TabSwitchingType}
   </summary>
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>

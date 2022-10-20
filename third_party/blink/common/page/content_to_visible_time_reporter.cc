@@ -182,6 +182,8 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
 
   if (IsTabSwitchMetric2FeatureEnabled()) {
     // Record result histogram.
+    base::UmaHistogramEnumeration("Browser.Tabs.TabSwitchResult2",
+                                  tab_switch_result);
     base::UmaHistogramEnumeration(
         base::StrCat({"Browser.Tabs.TabSwitchResult2.", suffix}),
         tab_switch_result);
@@ -189,12 +191,16 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     // Record latency histogram.
     switch (tab_switch_result) {
       case TabSwitchResult::kSuccess:
+        base::UmaHistogramMediumTimes("Browser.Tabs.TotalSwitchDuration2",
+                                      tab_switch_duration);
         base::UmaHistogramMediumTimes(
             base::StrCat({"Browser.Tabs.TotalSwitchDuration2.", suffix}),
             tab_switch_duration);
         break;
       case TabSwitchResult::kMissedTabHide:
       case TabSwitchResult::kIncomplete:
+        base::UmaHistogramMediumTimes(
+            "Browser.Tabs.TotalIncompleteSwitchDuration2", tab_switch_duration);
         base::UmaHistogramMediumTimes(
             base::StrCat(
                 {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),

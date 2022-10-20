@@ -1119,9 +1119,10 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
   AssertionResult WaitForPresentationFeedback(
       HistogramToExpect histogram_to_expect) {
     // If TabSwitchMetrics2 is enabled, both Browser.Tabs.TotalSwitchDuration.*
-    // and Browser.Tabs.TotalSwitchDuration2.* will be logged.
+    // and Browser.Tabs.TotalSwitchDuration2.* will be logged, along with an
+    // unsuffixed aggregate Browser.Tabs.TotalSwitchDuration2.
     const size_t expected_histogram_count =
-        base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2) ? 2
+        base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2) ? 3
                                                                           : 1;
 
     // Expect one of Browser.Tabs.TotalSwitchDuration.* or
