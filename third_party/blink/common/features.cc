@@ -97,6 +97,12 @@ BASE_FEATURE(kBackForwardCacheDedicatedWorker,
              "BackForwardCacheDedicatedWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allows pages with keepalive requests to stay eligible for the back/forward
+// cache.
+BASE_FEATURE(kBackForwardCacheWithKeepaliveRequest,
+             "BackForwardCacheWithKeepaliveRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable intervention for download that was initiated from or occurred in an ad
 // frame without user activation.
 BASE_FEATURE(kBlockingDownloadsInAdFrameWithoutUserActivation,

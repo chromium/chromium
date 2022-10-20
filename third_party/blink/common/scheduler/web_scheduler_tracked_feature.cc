@@ -124,6 +124,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"InjectedJavascript", "External javascript injected"};
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return {"InjectedStyleSheet", "External systesheet injected"};
+    case WebSchedulerTrackedFeature::kKeepaliveRequest:
+      return {"InjectedStyleSheet", "requests with keepalive set"};
     case WebSchedulerTrackedFeature::kDummy:
       return {"Dummy", "Dummy for testing"};
   }
@@ -213,6 +215,7 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kWebOTPService,
       WebSchedulerTrackedFeature::kInjectedJavascript,
       WebSchedulerTrackedFeature::kInjectedStyleSheet,
+      WebSchedulerTrackedFeature::kKeepaliveRequest,
       WebSchedulerTrackedFeature::kDummy);
   return features;
 }

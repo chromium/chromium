@@ -1659,6 +1659,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::InjectedJavascript;
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return Page::BackForwardCacheNotRestoredReasonEnum::InjectedStyleSheet;
+    case WebSchedulerTrackedFeature::kKeepaliveRequest:
+      return Page::BackForwardCacheNotRestoredReasonEnum::KeepaliveRequest;
     case WebSchedulerTrackedFeature::kDummy:
       // This is a test only reason and should never be called.
       NOTREACHED();
@@ -1870,6 +1872,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebSocket:
     case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
     case WebSchedulerTrackedFeature::kSpeechSynthesis:
+    case WebSchedulerTrackedFeature::kKeepaliveRequest:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:

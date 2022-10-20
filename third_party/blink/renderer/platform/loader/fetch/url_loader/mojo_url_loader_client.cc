@@ -444,6 +444,12 @@ void MojoURLLoaderClient::OnReceiveRedirect(
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK(!has_received_response_head_);
   if (freeze_mode_ == WebLoaderFreezeMode::kBufferIncoming) {
+    // Evicting a page from the bfcache and aborting the request is not good for
+    // a request with keepalive set, which is why we block bfcache when we find
+    // such a request.
+    // TODO(crbug.com/1356128): This will not be a problem when we move the
+    // keepalive request infrastructure to the browser process.
+
     EvictFromBackForwardCache(
         blink::mojom::RendererEvictionReason::kNetworkRequestRedirected);
 

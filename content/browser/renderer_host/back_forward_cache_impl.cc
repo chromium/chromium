@@ -165,6 +165,7 @@ constexpr WebSchedulerTrackedFeatures kDisallowedFeatures(
     WebSchedulerTrackedFeature::kIdleManager,
     WebSchedulerTrackedFeature::kIndexedDBConnection,
     WebSchedulerTrackedFeature::kKeyboardLock,
+    WebSchedulerTrackedFeature::kKeepaliveRequest,
     WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction,
     WebSchedulerTrackedFeature::kPaymentManager,
     WebSchedulerTrackedFeature::kPictureInPicture,

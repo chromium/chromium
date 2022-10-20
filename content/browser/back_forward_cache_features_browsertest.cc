@@ -2888,7 +2888,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     {}, {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CachePagesWithBeacon) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BeaconAndBfCache) {
   constexpr char kKeepalivePath[] = "/keepalive";
 
   net::test_server::ControllableHttpResponse keepalive(embedded_test_server(),
@@ -2900,8 +2900,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CachePagesWithBeacon) {
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   EXPECT_TRUE(
       ExecJs(shell(), JsReplace(R"(navigator.sendBeacon($1, "");)", url_ping)));
@@ -2914,9 +2912,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CachePagesWithBeacon) {
   keepalive.WaitForRequest();
   // Don't actually send the response.
 
-  // Page A should be in the cache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kKeepaliveRequest}, {}, {},
+      {}, FROM_HERE);
 }
 
 class GeolocationBackForwardCacheBrowserTest

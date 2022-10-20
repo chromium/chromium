@@ -23,9 +23,8 @@ namespace content {
 
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 
-// When loading task is unfreezable with the feature flag
-// kLoadingTaskUnfreezable, a page will keep processing the in-flight network
-// requests while the page is frozen in BackForwardCache.
+// fetch keepalive may or may not prevent the page from entering into
+// the back forward cache in this case.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
@@ -52,12 +51,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
   fetch_response.WaitForRequest();
   fetch_response.Send(net::HTTP_OK, "text/html", "TheResponse");
   fetch_response.Done();
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
 
-  // 3) Go back to A.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectRestored(FROM_HERE);
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // fetch() with keepalive should prevent the bfcache from storing the page,
+  // but doing that in the 'freeze' event handler may be too late. In the latter
+  // case the page is stored in the bfcache and evicted right after that.
 }
 
 // Eviction is triggered when a normal fetch request gets redirected while the
@@ -111,10 +110,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     {}, FROM_HERE);
 }
 
-// Eviction is triggered when a keepalive fetch request gets redirected while
-// the page is in back-forward cache.
-// TODO(https://crbug.com/1137682): We should not trigger eviction on redirects
-// of keepalive fetches.
+// Keepalive prevents the page from entering into the bfcache, and
+// the redirect is handled correctly in the renderer.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        KeepAliveFetchRedirectedWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
@@ -137,9 +134,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
 
-  // Page A is initially stored in the back-forward cache.
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-
   // Respond the fetch with a redirect.
   fetch_response.WaitForRequest();
   fetch_response.Send(
@@ -147,23 +141,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       "Location: /fetch2");
   fetch_response.Done();
 
-  // Ensure that the request to /fetch2 was never sent (because the page is
-  // immediately evicted) by checking after 3 seconds.
-  // TODO(https://crbug.com/1137682): We should not trigger eviction on
-  // redirects of keepalive fetches and the redirect request should be sent.
-  base::RunLoop loop;
-  base::OneShotTimer timer;
-  timer.Start(FROM_HERE, base::Seconds(3), loop.QuitClosure());
-  loop.Run();
-  EXPECT_EQ(nullptr, fetch2_response.http_request());
+  // The renderer continues running and processes the 302 response.
+  fetch2_response.WaitForRequest();
 
   // Page A should be evicted from the back-forward cache.
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored({NotRestoredReason::kNetworkRequestRedirected}, {}, {}, {},
-                    {}, FROM_HERE);
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kKeepaliveRequest}, {}, {},
+      {}, FROM_HERE);
 }
 
 // Tests the case when the header was received before the page is frozen,
@@ -931,6 +920,48 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Wait until the deferred body is processed. Since it's not a valid image
   // value, we'll get the "error" event.
   EXPECT_EQ("error", EvalJs(rfh_1, "image_load_status"));
+}
+
+class BackForwardCacheWithKeepaliveSupportBrowserTest
+    : public BackForwardCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(
+        blink::features::kBackForwardCacheWithKeepaliveRequest, "", "");
+
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// With the feature, keepalive doesn't prevent the page from entering into the
+// bfcache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithKeepaliveSupportBrowserTest,
+                       KeepAliveFetch) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // Trigger a keepalive fetch.
+  ExecuteScriptAsync(rfh_a, "my_fetch = fetch('/fetch', { keepalive: true });");
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Respond the fetch with a redirect.
+  fetch_response.WaitForRequest();
+
+  // 3) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 }  // namespace content
