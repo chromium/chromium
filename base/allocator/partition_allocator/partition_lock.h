@@ -89,7 +89,8 @@ class PA_LOCKABLE Lock {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // Should in theory be protected by |lock_|, but we need to read it to detect
   // recursive lock acquisition (and thus, the allocator becoming reentrant).
-  std::atomic<base::PlatformThreadRef> owning_thread_ref_{};
+  std::atomic<base::PlatformThreadRef> owning_thread_ref_ =
+      base::PlatformThreadRef();
 #endif
 };
 
