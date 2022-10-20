@@ -638,6 +638,9 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL" desc="The ok button label shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
     Send
   </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CVC_CHALLENGE_INFO" desc="Text that is shown for the security code challenge option in the Card Unmask Authentication Selection Dialog. This text lets the user know where the location of the security code is on their card. If the user selects this challenge option and then accepts the dialog, the user will be prompted to enter this security code. An example of a security code is the CVC on the back of the user's credit card.">
+      This is the <ph name="NUMBER_OF_DIGITS">$1<ex>3</ex></ph>-digit code on the <ph name="SIDE_OF_CARD">$2<ex>back of your card</ex></ph>
+    </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TITLE" desc="The title for the dialog that lets the user type in the OTP they received on Desktop. This message is shown right next to the logo for the dialog, and it lets the users know the action that is required in this dialog, which is to enter their verification code (OTP).">
     Enter verification code
   </message>
