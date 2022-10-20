@@ -1,0 +1,4 @@
+Tests screenshot produced by beginFrame supports WEBP encoding
+requested url: http://example.com/
+RIFF signature: RIFF
+WEBP signature: WEBP

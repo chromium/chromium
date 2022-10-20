@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/switches.h"
@@ -20,8 +21,8 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_util.h"
 
 namespace headless {
 namespace protocol {
@@ -30,33 +31,58 @@ using HeadlessExperimental::ScreenshotParams;
 
 namespace {
 
-
-enum class ImageEncoding { kPng, kJpeg };
 constexpr int kDefaultScreenshotQuality = 80;
 
-protocol::Binary EncodeBitmap(const SkBitmap& bitmap,
-                              ImageEncoding encoding,
-                              int quality) {
-  gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
-  DCHECK(!image.IsEmpty());
+using BitmapEncoder =
+    base::RepeatingCallback<bool(const SkBitmap& bitmap,
+                                 std::vector<uint8_t>& output)>;
 
-  scoped_refptr<base::RefCountedMemory> data;
-  if (encoding == ImageEncoding::kPng) {
-    data = image.As1xPNGBytes();
-  } else if (encoding == ImageEncoding::kJpeg) {
-    scoped_refptr<base::RefCountedBytes> bytes(new base::RefCountedBytes());
-    if (gfx::JPEG1xEncodedDataFromImage(image, quality, &bytes->data()))
-      data = bytes;
+bool EncodeBitmapAsPngSlow(const SkBitmap& bitmap,
+                           std::vector<uint8_t>& output) {
+  TRACE_EVENT0("devtools", "EncodeBitmapAsPngSlow");
+  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
+}
+
+bool EncodeBitmapAsPngFast(const SkBitmap& bitmap,
+                           std::vector<uint8_t>& output) {
+  TRACE_EVENT0("devtools", "EncodeBitmapAsPngFast");
+  return gfx::PNGCodec::FastEncodeBGRASkBitmap(bitmap, false, &output);
+}
+
+bool EncodeBitmapAsJpeg(int quality,
+                        const SkBitmap& bitmap,
+                        std::vector<uint8_t>& output) {
+  TRACE_EVENT0("devtools", "EncodeBitmapAsJpeg");
+  return gfx::JPEGCodec::Encode(bitmap, quality, &output);
+}
+
+bool EncodeBitmapAsWebp(int quality,
+                        const SkBitmap& bitmap,
+                        std::vector<uint8_t>& output) {
+  TRACE_EVENT0("devtools", "EncodeBitmapAsWebp");
+  return gfx::WebpCodec::Encode(bitmap, quality, &output);
+}
+
+absl::variant<protocol::Response, BitmapEncoder>
+GetEncoder(const std::string& format, int quality, bool optimize_for_speed) {
+  if (quality < 0 || quality > 100) {
+    return Response::InvalidParams(
+        "screenshot.quality has to be in range 0..100");
   }
-  if (!data || !data->front())
-    return protocol::Binary();
-  return protocol::Binary::fromRefCounted(data);
+  if (format == ScreenshotParams::FormatEnum::Png) {
+    return base::BindRepeating(optimize_for_speed ? EncodeBitmapAsPngFast
+                                                  : EncodeBitmapAsPngSlow);
+  }
+  if (format == ScreenshotParams::FormatEnum::Jpeg)
+    return base::BindRepeating(&EncodeBitmapAsJpeg, quality);
+  if (format == ScreenshotParams::FormatEnum::Webp)
+    return base::BindRepeating(&EncodeBitmapAsWebp, quality);
+  return protocol::Response::InvalidParams("Invalid image format");
 }
 
 void OnBeginFrameFinished(
+    BitmapEncoder encoder,
     std::unique_ptr<HeadlessHandler::BeginFrameCallback> callback,
-    ImageEncoding encoding,
-    int quality,
     bool has_damage,
     std::unique_ptr<SkBitmap> bitmap,
     std::string error_message) {
@@ -68,7 +94,10 @@ void OnBeginFrameFinished(
     callback->sendSuccess(has_damage, Maybe<protocol::Binary>());
     return;
   }
-  callback->sendSuccess(has_damage, EncodeBitmap(*bitmap, encoding, quality));
+  std::vector<uint8_t> bytes;
+  bool success = encoder.Run(*bitmap, bytes);
+  DCHECK(success || bytes.empty());
+  callback->sendSuccess(has_damage, Binary::fromVector(bytes));
 }
 
 }  // namespace
@@ -142,36 +171,26 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
 
   base::TimeTicks deadline = frame_time_ticks + interval;
 
-  bool capture_screenshot = false;
-  ImageEncoding encoding;
-  int quality;
-
+  BitmapEncoder encoder;
   if (screenshot.isJust()) {
-    capture_screenshot = true;
-    const std::string format =
-        screenshot.fromJust()->GetFormat(ScreenshotParams::FormatEnum::Png);
-    if (format != ScreenshotParams::FormatEnum::Png &&
-        format != ScreenshotParams::FormatEnum::Jpeg) {
-      callback->sendFailure(
-          Response::InvalidParams("Invalid screenshot.format"));
+    ScreenshotParams& params = *screenshot.fromJust();
+    auto encoder_or_response =
+        GetEncoder(params.GetFormat(ScreenshotParams::FormatEnum::Png),
+                   params.GetQuality(kDefaultScreenshotQuality),
+                   params.GetOptimizeForSpeed(false));
+    if (absl::holds_alternative<protocol::Response>(encoder_or_response)) {
+      callback->sendFailure(absl::get<protocol::Response>(encoder_or_response));
       return;
     }
-    encoding = format == ScreenshotParams::FormatEnum::Png
-                   ? ImageEncoding::kPng
-                   : ImageEncoding::kJpeg;
-    quality = screenshot.fromJust()->GetQuality(kDefaultScreenshotQuality);
-    if (quality < 0 || quality > 100) {
-      callback->sendFailure(Response::InvalidParams(
-          "screenshot.quality has to be in range 0..100"));
-      return;
-    }
+    encoder = absl::get<BitmapEncoder>(std::move(encoder_or_response));
   }
 
+  const bool capture_screenshot = !!encoder;
   headless_contents->BeginFrame(
       frame_time_ticks, deadline, interval, no_display_updates,
       capture_screenshot,
-      base::BindOnce(&OnBeginFrameFinished, std::move(callback), encoding,
-                     quality));
+      base::BindOnce(&OnBeginFrameFinished, std::move(encoder),
+                     std::move(callback)));
 }
 
 }  // namespace protocol

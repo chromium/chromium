@@ -29,6 +29,7 @@ class HeadlessHandler : public DomainHandler,
 
   ~HeadlessHandler() override;
 
+ private:
   // DomainHandler implementation
   void Wire(UberDispatcher* dispatcher) override;
   Response Disable() override;  // Also Headless::Backend implementation
@@ -41,7 +42,6 @@ class HeadlessHandler : public DomainHandler,
                   Maybe<HeadlessExperimental::ScreenshotParams> screenshot,
                   std::unique_ptr<BeginFrameCallback> callback) override;
 
- private:
   raw_ptr<HeadlessBrowserImpl> browser_;
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<HeadlessExperimental::Frontend> frontend_;
