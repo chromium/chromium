@@ -695,7 +695,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 - (NSArray*)keyCommands {
   __weak BookmarkEditViewController* weakSelf = self;
   return @[ [UIKeyCommand cr_keyCommandWithInput:UIKeyInputEscape
-                                   modifierFlags:Cr_UIKeyModifierNone
+                                   modifierFlags:KeyModifierNone
                                            title:nil
                                           action:^{
                                             [weakSelf dismiss];

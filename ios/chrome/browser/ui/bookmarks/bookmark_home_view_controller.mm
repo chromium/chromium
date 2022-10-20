@@ -457,7 +457,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (NSArray*)keyCommands {
   __weak BookmarkHomeViewController* weakSelf = self;
   return @[ [UIKeyCommand cr_keyCommandWithInput:UIKeyInputEscape
-                                   modifierFlags:Cr_UIKeyModifierNone
+                                   modifierFlags:KeyModifierNone
                                            title:nil
                                           action:^{
                                             [weakSelf navigationBarCancel:nil];

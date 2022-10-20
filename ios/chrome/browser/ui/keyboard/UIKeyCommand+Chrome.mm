@@ -10,7 +10,17 @@
 #error "This file requires ARC support."
 #endif
 
-UIKeyModifierFlags Cr_UIKeyModifierNone = 0;
+UIKeyModifierFlags KeyModifierNone = 0;
+UIKeyModifierFlags KeyModifierCommand = UIKeyModifierCommand;
+UIKeyModifierFlags KeyModifierControl = UIKeyModifierControl;
+UIKeyModifierFlags KeyModifierAltCommand =
+    UIKeyModifierAlternate | UIKeyModifierCommand;
+UIKeyModifierFlags KeyModifierShiftCommand =
+    UIKeyModifierShift | UIKeyModifierCommand;
+UIKeyModifierFlags KeyModifierShiftAltCommand =
+    UIKeyModifierShift | UIKeyModifierAlternate | UIKeyModifierCommand;
+UIKeyModifierFlags KeyModifierControlShift =
+    UIKeyModifierControl | UIKeyModifierShift;
 
 @implementation UIApplication (ChromeKeyCommandHandler)
 

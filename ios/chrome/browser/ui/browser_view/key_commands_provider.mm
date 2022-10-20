@@ -169,24 +169,23 @@
   // since they have titles.
   [keyCommands addObjectsFromArray:@[
     [UIKeyCommand cr_keyCommandWithInput:@"t"
-                           modifierFlags:UIKeyModifierCommand
+                           modifierFlags:KeyModifierCommand
                                    title:l10n_util::GetNSStringWithFixup(
                                              IDS_IOS_TOOLS_MENU_NEW_TAB)
                                   action:newTab],
     [UIKeyCommand
         cr_keyCommandWithInput:@"n"
-                 modifierFlags:UIKeyModifierCommand | UIKeyModifierShift
+                 modifierFlags:KeyModifierShiftCommand
                          title:l10n_util::GetNSStringWithFixup(
                                    IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)
                         action:newIncognitoTab],
-    [UIKeyCommand
-        cr_keyCommandWithInput:@"t"
-                 modifierFlags:UIKeyModifierCommand | UIKeyModifierShift
-                         title:l10n_util::GetNSStringWithFixup(
-                                   IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB)
-                        action:^{
-                          [weakSelf reopenClosedTab];
-                        }],
+    [UIKeyCommand cr_keyCommandWithInput:@"t"
+                           modifierFlags:KeyModifierShiftCommand
+                                   title:l10n_util::GetNSStringWithFixup(
+                                             IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB)
+                                  action:^{
+                                    [weakSelf reopenClosedTab];
+                                  }],
   ]];
 
   // List the commands that only appear when there is at least a tab. When they
@@ -197,7 +196,7 @@
 
         [UIKeyCommand
             cr_keyCommandWithInput:@"f"
-                     modifierFlags:UIKeyModifierCommand
+                     modifierFlags:KeyModifierCommand
                              title:l10n_util::GetNSStringWithFixup(
                                        IDS_IOS_TOOLS_MENU_FIND_IN_PAGE)
                             action:^{
@@ -205,14 +204,14 @@
                             }],
         [UIKeyCommand
             cr_keyCommandWithInput:@"g"
-                     modifierFlags:UIKeyModifierCommand
+                     modifierFlags:KeyModifierCommand
                              title:nil
                             action:^{
                               [weakSelf.dispatcher findNextStringInPage];
                             }],
         [UIKeyCommand
             cr_keyCommandWithInput:@"g"
-                     modifierFlags:UIKeyModifierCommand | UIKeyModifierShift
+                     modifierFlags:KeyModifierShiftCommand
                              title:nil
                             action:^{
                               [weakSelf.dispatcher findPreviousStringInPage];
@@ -222,14 +221,14 @@
 
     [keyCommands addObjectsFromArray:@[
       [UIKeyCommand cr_keyCommandWithInput:@"l"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:l10n_util::GetNSStringWithFixup(
                                                IDS_IOS_KEYBOARD_OPEN_LOCATION)
                                     action:^{
                                       [weakSelf.omniboxHandler focusOmnibox];
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"w"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:l10n_util::GetNSStringWithFixup(
                                                IDS_IOS_TOOLS_MENU_CLOSE_TAB)
                                     action:^{
@@ -262,32 +261,28 @@
     NSString* tabRightTitle = l10n_util::GetNSStringWithFixup(
         tabRightDescriptionID);
     [keyCommands addObjectsFromArray:@[
-      [UIKeyCommand
-           cr_keyCommandWithInput:UIKeyInputLeftArrow
-                    modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
-                            title:tabLeftTitle
-                           action:focusTabLeft],
-       [UIKeyCommand
-           cr_keyCommandWithInput:UIKeyInputRightArrow
-                    modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
-                            title:tabRightTitle
-                           action:focusTabRight],
-       [UIKeyCommand
-           cr_keyCommandWithInput:@"{"
-                    modifierFlags:UIKeyModifierCommand
-                            title:nil
-                           action:focusTabLeft],
-       [UIKeyCommand
-           cr_keyCommandWithInput:@"}"
-                    modifierFlags:UIKeyModifierCommand
-                            title:nil
-                           action:focusTabRight],
+      [UIKeyCommand cr_keyCommandWithInput:UIKeyInputLeftArrow
+                             modifierFlags:KeyModifierAltCommand
+                                     title:tabLeftTitle
+                                    action:focusTabLeft],
+      [UIKeyCommand cr_keyCommandWithInput:UIKeyInputRightArrow
+                             modifierFlags:KeyModifierAltCommand
+                                     title:tabRightTitle
+                                    action:focusTabRight],
+      [UIKeyCommand cr_keyCommandWithInput:@"{"
+                             modifierFlags:KeyModifierCommand
+                                     title:nil
+                                    action:focusTabLeft],
+      [UIKeyCommand cr_keyCommandWithInput:@"}"
+                             modifierFlags:KeyModifierCommand
+                                     title:nil
+                                    action:focusTabRight],
     ]];
 
     [keyCommands addObjectsFromArray:@[
       [UIKeyCommand
           cr_keyCommandWithInput:@"d"
-                   modifierFlags:UIKeyModifierCommand
+                   modifierFlags:KeyModifierCommand
                            title:l10n_util::GetNSStringWithFixup(
                                      IDS_IOS_KEYBOARD_BOOKMARK_THIS_PAGE)
                           action:^{
@@ -306,7 +301,7 @@
                             }
                           }],
       [UIKeyCommand cr_keyCommandWithInput:@"r"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:l10n_util::GetNSStringWithFixup(
                                                IDS_IOS_ACCNAME_RELOAD)
                                     action:^{
@@ -319,12 +314,12 @@
     if (!self.editingText) {
       [keyCommands addObjectsFromArray:@[
         [UIKeyCommand cr_keyCommandWithInput:UIKeyInputLeftArrow
-                               modifierFlags:UIKeyModifierCommand
+                               modifierFlags:KeyModifierCommand
                                        title:l10n_util::GetNSStringWithFixup(
                                                  browseLeftDescriptionID)
                                       action:browseLeft],
         [UIKeyCommand cr_keyCommandWithInput:UIKeyInputRightArrow
-                               modifierFlags:UIKeyModifierCommand
+                               modifierFlags:KeyModifierCommand
                                        title:l10n_util::GetNSStringWithFixup(
                                                  browseRightDescriptionID)
                                       action:browseRight],
@@ -335,7 +330,7 @@
         IDS_IOS_VOICE_SEARCH_KEYBOARD_DISCOVERY_TITLE);
     [keyCommands addObjectsFromArray:@[
       [UIKeyCommand cr_keyCommandWithInput:@"y"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:l10n_util::GetNSStringWithFixup(
                                                IDS_HISTORY_SHOW_HISTORY)
                                     action:^{
@@ -343,7 +338,7 @@
                                     }],
       [UIKeyCommand
           cr_keyCommandWithInput:@"."
-                   modifierFlags:UIKeyModifierCommand | UIKeyModifierShift
+                   modifierFlags:KeyModifierShiftCommand
                            title:voiceSearchTitle
                           action:^{
                             [LayoutGuideCenterForBrowser(weakSelf.browser)
@@ -357,7 +352,7 @@
   if (self.canDismissModals) {
     [keyCommands
         addObject:[UIKeyCommand cr_keyCommandWithInput:UIKeyInputEscape
-                                         modifierFlags:Cr_UIKeyModifierNone
+                                         modifierFlags:KeyModifierNone
                                                  title:nil
                                                 action:^{
                                                   [weakSelf.dispatcher
@@ -368,11 +363,11 @@
   // List the commands that don't appear in the HUD but are always present.
   [keyCommands addObjectsFromArray:@[
     [UIKeyCommand cr_keyCommandWithInput:@"n"
-                           modifierFlags:UIKeyModifierCommand
+                           modifierFlags:KeyModifierCommand
                                    title:nil
                                   action:newTab],
     [UIKeyCommand cr_keyCommandWithInput:@","
-                           modifierFlags:UIKeyModifierCommand
+                           modifierFlags:KeyModifierCommand
                                    title:nil
                                   action:^{
                                     [weakSelf.dispatcher
@@ -386,22 +381,22 @@
   if (hasTabs) {
     [keyCommands addObjectsFromArray:@[
       [UIKeyCommand cr_keyCommandWithInput:@"["
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:browseLeft],
       [UIKeyCommand cr_keyCommandWithInput:@"]"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:browseRight],
       [UIKeyCommand cr_keyCommandWithInput:@"."
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       weakSelf.navigationAgent->StopLoading();
                                     }],
       [UIKeyCommand
           cr_keyCommandWithInput:@"?"
-                   modifierFlags:UIKeyModifierCommand
+                   modifierFlags:KeyModifierCommand
                            title:nil
                           action:^{
                             [weakSelf.browserCoordinatorCommandsHandler
@@ -409,75 +404,74 @@
                           }],
       [UIKeyCommand
           cr_keyCommandWithInput:@"l"
-                   modifierFlags:UIKeyModifierCommand | UIKeyModifierAlternate
+                   modifierFlags:KeyModifierAltCommand
                            title:nil
                           action:^{
                             [weakSelf.browserCoordinatorCommandsHandler
                                     showDownloadsFolder];
                           }],
       [UIKeyCommand cr_keyCommandWithInput:@"1"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       focusTab(0);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"2"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       focusTab(1);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"3"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       focusTab(2);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"4"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       focusTab(3);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"5"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       focusTab(4);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"6"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       focusTab(5);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"7"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       focusTab(6);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"8"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       focusTab(7);
                                     }],
       [UIKeyCommand cr_keyCommandWithInput:@"9"
-                             modifierFlags:UIKeyModifierCommand
+                             modifierFlags:KeyModifierCommand
                                      title:nil
                                     action:^{
                                       focusTab(weakSelf.tabsCount - 1);
                                     }],
-      [UIKeyCommand
-          cr_keyCommandWithInput:@"\t"
-                   modifierFlags:UIKeyModifierControl | UIKeyModifierShift
-                           title:nil
-                          action:^{
-                            [weakSelf focusPreviousTab];
-                          }],
       [UIKeyCommand cr_keyCommandWithInput:@"\t"
-                             modifierFlags:UIKeyModifierControl
+                             modifierFlags:KeyModifierControlShift
+                                     title:nil
+                                    action:^{
+                                      [weakSelf focusPreviousTab];
+                                    }],
+      [UIKeyCommand cr_keyCommandWithInput:@"\t"
+                             modifierFlags:KeyModifierControl
                                      title:nil
                                     action:^{
                                       [weakSelf focusNextTab];

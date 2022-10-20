@@ -10,6 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Common (and short) key modifier flags.
+extern UIKeyModifierFlags KeyModifierNone;
+extern UIKeyModifierFlags KeyModifierCommand;
+extern UIKeyModifierFlags KeyModifierControl;
+extern UIKeyModifierFlags KeyModifierAltCommand;
+extern UIKeyModifierFlags KeyModifierShiftCommand;
+extern UIKeyModifierFlags KeyModifierShiftAltCommand;
+extern UIKeyModifierFlags KeyModifierControlShift;
+
 // Protocol UIResponder subclasses can implement to intercept key commands.
 // The implementer must be in the responder chain and be the first to respond to
 // this method to be called.
@@ -29,9 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^UIKeyCommandAction)(void);
 
-// Addition to the set of predefined modifier flags.
-extern UIKeyModifierFlags Cr_UIKeyModifierNone;
-
 // Defines a set of one-liner factory methods taking a key command block.
 // That way, responders willing to declare and respond to key commands can do it
 // in only one place:
@@ -42,11 +48,11 @@ extern UIKeyModifierFlags Cr_UIKeyModifierNone;
 //   __weak AccountsTableViewController* weakSelf = self;
 //   return @[
 //     [UIKeyCommand cr_keyCommandWithInput:UIKeyInputEscape
-//                           modifierFlags:Cr_UIKeyModifierNone
+//                           modifierFlags:KeyModifierNone
 //                                   title:@"Exit"
 //                                  action:^{ [[Bar sharedInstance] exit]; }],
 //     [UIKeyCommand cr_keyCommandWithInput:@"t"
-//                            modifierFlags:UIKeyModifierCommand
+//                            modifierFlags:KeyModifierCommand
 //                                    title:@"New Tab"
 //                                   action:^{
 //       Foo* strongSelf = weakSelf;
