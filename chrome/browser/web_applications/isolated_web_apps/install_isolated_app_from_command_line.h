@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,6 +20,9 @@ class Profile;
 namespace web_app {
 
 void SetNextInstallationDoneCallbackForTesting(base::OnceClosure done_callback);
+
+base::expected<IsolatedWebAppUrlInfo, std::string> GetIsolationInfo(
+    const IsolationData& isolation_data);
 
 base::expected<absl::optional<IsolationData>, std::string>
 GetIsolationDataFromCommandLine(const base::CommandLine& command_line);

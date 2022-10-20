@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -31,6 +32,7 @@
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -57,25 +59,16 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile& profile) {
   return web_contents;
 }
 
-void ScheduleInstallIsolatedApp(GURL url,
+void ScheduleInstallIsolatedApp(const IsolatedWebAppUrlInfo& isolation_info,
                                 IsolationData isolation_data,
                                 WebAppProvider& provider,
                                 Profile& profile,
                                 base::OnceClosure callback) {
-  DCHECK(url.is_valid());
   DCHECK(!callback.is_null());
-
-  // TODO(zelin): move random generation up to MaybeInstallAppFromCommandLine()
-  web_package::SignedWebBundleId random_signed_web_bundle_id =
-      web_package::SignedWebBundleId::CreateRandomForDevelopment();
-  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          random_signed_web_bundle_id);
-  DCHECK(url_info.has_value());
 
   provider.command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedAppCommand>(
-          url_info.value(), isolation_data, CreateWebContents(profile),
+          isolation_info, isolation_data, CreateWebContents(profile),
           std::make_unique<WebAppUrlLoader>(), profile,
           provider.install_finalizer(),
           base::BindOnce(&ReportInstallationResult).Then(std::move(callback))));
@@ -134,6 +127,30 @@ void SetNextInstallationDoneCallbackForTesting(  // IN-TEST
   GetNextDoneCallbackInstance() = std::move(done_callback);
 }
 
+base::expected<IsolatedWebAppUrlInfo, std::string> GetIsolationInfo(
+    const IsolationData& isolation_data) {
+  return absl::visit(
+      base::Overloaded{
+          [](const IsolationData::InstalledBundle&)
+              -> base::expected<IsolatedWebAppUrlInfo, std::string> {
+            return base::unexpected(
+                "Getting IsolationInfo from |InstalledBundle| is not "
+                "implemented");
+          },
+          [](const IsolationData::DevModeBundle&)
+              -> base::expected<IsolatedWebAppUrlInfo, std::string> {
+            return base::unexpected(
+                "Getting IsolationInfo from |DevModeBundle| is not "
+                "implemented");
+          },
+          [](const IsolationData::DevModeProxy&)
+              -> base::expected<IsolatedWebAppUrlInfo, std::string> {
+            return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                web_package::SignedWebBundleId::CreateRandomForDevelopment());
+          }},
+      isolation_data.content);
+}
+
 base::expected<absl::optional<IsolationData>, std::string>
 GetIsolationDataFromCommandLine(const base::CommandLine& command_line) {
   base::expected<absl::optional<IsolationData>, std::string> proxy_url =
@@ -184,15 +201,20 @@ void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
     return;
   }
 
-  // TODO(b/245352649): Replace with randomly generated isolated-app: URL.
-  GURL url(absl::get<IsolationData::DevModeProxy>(
-               isolation_data.value().value().content)
-               .proxy_url);
+  base::expected<IsolatedWebAppUrlInfo, std::string> isolation_info =
+      GetIsolationInfo(**isolation_data);
+
+  if (!isolation_info.has_value()) {
+    LOG(ERROR) << isolation_info.error();
+    std::move(done).Run();
+    return;
+  }
 
   provider->on_registry_ready().Post(
       FROM_HERE,
-      base::BindOnce(&ScheduleInstallIsolatedApp, url, **isolation_data,
-                     std::ref(*provider), std::ref(profile), std::move(done)));
+      base::BindOnce(&ScheduleInstallIsolatedApp, isolation_info.value(),
+                     **isolation_data, std::ref(*provider), std::ref(profile),
+                     std::move(done)));
 }
 
 }  // namespace web_app

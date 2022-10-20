@@ -13,6 +13,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/web_applications/isolation_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,6 +21,8 @@
 
 namespace web_app {
 namespace {
+
+using ::testing::HasSubstr;
 
 void DescribeOptionalIsolationData(
     ::testing::MatchResultListener* result_listener,
@@ -267,6 +270,39 @@ TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
   EXPECT_THAT(GetIsolationDataFromCommandLine(CreateCommandLine(
                   "http://example.com", cwd.existing_file_name())),
               HasErrorWithSubstr("cannot both be provided"));
+}
+
+class InstallIsolatedAppFromCommandLineIsolationInfoTest
+    : public ::testing::Test {
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+TEST_F(InstallIsolatedAppFromCommandLineIsolationInfoTest,
+       GetIsolationInfoSucceedsWhenInstalledBundle) {
+  IsolationData isolation_data =
+      IsolationData{IsolationData::InstalledBundle{}};
+  base::expected<IsolatedWebAppUrlInfo, std::string> isolation_info =
+      GetIsolationInfo(isolation_data);
+  ASSERT_THAT(isolation_info.has_value(), false);
+  EXPECT_THAT(isolation_info.error(), HasSubstr("is not implemented"));
+}
+
+TEST_F(InstallIsolatedAppFromCommandLineIsolationInfoTest,
+       GetIsolationInfoSucceedsWhenDevModeBundle) {
+  IsolationData isolation_data = IsolationData{IsolationData::DevModeBundle{}};
+  base::expected<IsolatedWebAppUrlInfo, std::string> isolation_info =
+      GetIsolationInfo(isolation_data);
+  ASSERT_THAT(isolation_info.has_value(), false);
+  EXPECT_THAT(isolation_info.error(), HasSubstr("is not implemented"));
+}
+
+TEST_F(InstallIsolatedAppFromCommandLineIsolationInfoTest,
+       GetIsolationInfoSucceedsWhenDevModeProxy) {
+  IsolationData isolation_data = IsolationData{IsolationData::DevModeProxy{}};
+  base::expected<IsolatedWebAppUrlInfo, std::string> isolation_info =
+      GetIsolationInfo(isolation_data);
+  EXPECT_THAT(isolation_info.has_value(), true);
 }
 
 }  // namespace
