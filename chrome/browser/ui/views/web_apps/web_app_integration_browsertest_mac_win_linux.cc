@@ -61,13 +61,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckCreateShortcuts) {
   helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
 }
 
-// TODO(crbug.com/1357214): Flaky on MacOS 12 ARM
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CheckSiteHandlesFile DISABLED_CheckSiteHandlesFile
-#else
-#define MAYBE_CheckSiteHandlesFile CheckSiteHandlesFile
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, MAYBE_CheckSiteHandlesFile) {
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteHandlesFile) {
   helper_.InstallMenuOption(InstallableSite::kMinimalUi);
   helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
   helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
