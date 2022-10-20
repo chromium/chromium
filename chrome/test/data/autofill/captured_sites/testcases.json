@@ -162,7 +162,7 @@
     { "site_name": "newlook" },
     { "site_name": "nflshop" },
     { "site_name": "nhl" },
-    { "site_name": "nike" },
+    { "site_name": "nike", "bug_number": 1376631 },
     { "site_name": "nordstrom" },
     { "site_name": "north_face" },
     { "site_name": "northerntool" },
