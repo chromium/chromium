@@ -1785,6 +1785,4 @@ TEST(AutofillProfileTest, GetNonEmptyRawTypes) {
               testing::UnorderedElementsAreArray(expected_raw_types));
 }
 
-enum Expectation { GREATER, LESS, EQUAL };
-
 }  // namespace autofill
