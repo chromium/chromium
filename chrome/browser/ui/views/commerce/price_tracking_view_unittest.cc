@@ -14,6 +14,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -220,4 +221,24 @@ TEST_F(PriceTrackingViewTest, ToggleRecordUntracked) {
       user_action_tester_.GetActionCount(
           "Commerce.PriceTracking.BookmarkDialogPriceTrackViewUntrackedPrice"),
       1);
+}
+
+TEST_F(PriceTrackingViewTest, EmailTurnedOff) {
+  profile()->GetPrefs()->SetBoolean(commerce::kPriceEmailNotificationsEnabled,
+                                    false);
+  const bool enabled = false;
+  CreateViewAndShow(enabled);
+  VerifyToggleState(enabled);
+  VerifyBodyMessage(l10n_util::GetStringUTF16(
+      IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION_EMAIL_OFF));
+}
+
+TEST_F(PriceTrackingViewTest, EmailTurnedOn) {
+  profile()->GetPrefs()->SetBoolean(commerce::kPriceEmailNotificationsEnabled,
+                                    true);
+  const bool enabled = false;
+  CreateViewAndShow(enabled);
+  VerifyToggleState(enabled);
+  VerifyBodyMessage(l10n_util::GetStringUTF16(
+      IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
 }
