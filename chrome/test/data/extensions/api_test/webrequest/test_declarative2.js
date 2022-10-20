@@ -27,7 +27,7 @@ var EditRequestCookie = chrome.declarativeWebRequest.EditRequestCookie;
 var EditResponseCookie = chrome.declarativeWebRequest.EditResponseCookie;
 var RemoveRequestCookie = chrome.declarativeWebRequest.RemoveRequestCookie;
 var RemoveResponseCookie = chrome.declarativeWebRequest.RemoveResponseCookie;
-var headerName = 'Foo';
+var headerName = 'foo';
 var headerValue = 'Bar';
 
 // Constants as functions, not to be called until after runTests.
@@ -50,6 +50,11 @@ function getURLSetCookie2() {
 
 function getURLEchoCookie() {
   return getServerURL('echoheader?Cookie');
+}
+
+function getHeaderValueFromResponseHeaders(responseHeaders, headerName) {
+  var responseHeadersObject = Object.fromEntries(responseHeaders.entries());
+  return responseHeadersObject[headerName];
 }
 
 runTests([
@@ -84,17 +89,16 @@ runTests([
         actions: [new RemoveRequestHeader({name: headerName})]
        }],
       chrome.test.callbackPass(function() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', getServerURL('echoheader?' + headerName));
-        xhr.setRequestHeader(headerName, headerValue);
-        xhr.onload = chrome.test.callbackPass(function() {
-          chrome.test.assertTrue(xhr.responseText.indexOf(headerValue) == -1,
-              'Header was not removed.');
+        passCallback = chrome.test.callbackPass((response) => {
+          chrome.test.assertEq(
+              undefined,
+              getHeaderValueFromResponseHeaders(response.headers, headerName));
         });
-        xhr.onerror = function() {
-          chrome.test.fail();
-        }
-        xhr.send();
+        fetch(getServerURL('echoheader?' + headerName)).then((response) => {
+          passCallback(response);
+        }).catch((e) => {
+          chrome.test.fail(e);
+        });
       }));
   },
 
@@ -106,16 +110,16 @@ runTests([
         actions: [new AddResponseHeader({name: headerName, value: headerValue})]
        }],
       chrome.test.callbackPass(function() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', getServerURL('echo'));
-        xhr.onload = chrome.test.callbackPass(function() {
-          chrome.test.assertTrue(xhr.getResponseHeader(headerName) == 'Bar',
-              'Header was not added.');
+        passCallback = chrome.test.callbackPass((response) => {
+          chrome.test.assertEq(
+              headerValue,
+              getHeaderValueFromResponseHeaders(response.headers, headerName));
         });
-        xhr.onerror = function() {
-          chrome.test.fail();
-        }
-        xhr.send();
+        fetch(getServerURL('echo')).then((response) => {
+          passCallback(response);
+        }).catch((e) => {
+          chrome.test.fail(e);
+        });
       }));
   },
 
@@ -128,16 +132,16 @@ runTests([
                                             value: 'Bar'})]
        }],
       chrome.test.callbackPass(function() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', getURLSetHeader());
-        xhr.onload = chrome.test.callbackPass(function() {
-          chrome.test.assertTrue(xhr.getResponseHeader(headerName) == null,
-              'Header was not removed.');
+        passCallback = chrome.test.callbackPass((response) => {
+          chrome.test.assertEq(
+              undefined,
+              getHeaderValueFromResponseHeaders(response.headers, headerName));
         });
-        xhr.onerror = function() {
-          chrome.test.fail();
-        }
-        xhr.send();
+        fetch(getURLSetHeader()).then((response) => {
+          passCallback(response);
+        }).catch((e) => {
+          chrome.test.fail(e);
+        });
       }));
   },
 
