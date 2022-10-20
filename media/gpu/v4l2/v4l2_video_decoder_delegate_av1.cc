@@ -425,9 +425,15 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
     const libgav1::ObuSequenceHeader& sequence_header,
     const AV1ReferenceFrameVector& ref_frames,
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
-    base::span<const uint8_t> data) {
+    base::span<const uint8_t> stream) {
   struct v4l2_ctrl_av1_sequence v4l2_seq_params = {};
   FillSequenceParams(v4l2_seq_params, sequence_header);
+
+  std::vector<struct v4l2_ext_control> ext_ctrl_vectors;
+
+  ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_SEQUENCE,
+                              .size = sizeof(v4l2_seq_params),
+                              .ptr = &v4l2_seq_params});
 
   const libgav1::ObuFrameHeader& frame_header = pic.frame_header;
 
@@ -655,7 +661,27 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
     return DecodeStatus::kFail;
   }
 
-  NOTIMPLEMENTED();
+  std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces;
+  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++) {
+    if (ref_frames[i]) {
+      const auto* v4l2_ref_pic =
+          static_cast<const V4L2AV1Picture*>(ref_frames[i].get());
+
+      ref_surfaces.emplace_back(std::move(v4l2_ref_pic->dec_surface()));
+    }
+  }
+  v4l2_pic->dec_surface()->SetReferenceSurfaces(std::move(ref_surfaces));
+
+  // Copies the frame data into the V4L2 buffer.
+  if (!surface_handler_->SubmitSlice(v4l2_pic->dec_surface().get(),
+                                     stream.data(), stream.size())) {
+    return DecodeStatus::kFail;
+  }
+
+  // Queues the buffers to the kernel driver.
+  DVLOGF(4) << "Submitting decode for surface: "
+            << v4l2_pic->dec_surface()->ToString();
+  surface_handler_->DecodeSurface(v4l2_pic->dec_surface());
 
   return DecodeStatus::kFail;
 }

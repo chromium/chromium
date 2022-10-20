@@ -34,7 +34,7 @@ class V4L2VideoDecoderDelegateAV1 : public AV1Decoder::AV1Accelerator {
                       const libgav1::ObuSequenceHeader& sequence_header,
                       const AV1ReferenceFrameVector& ref_frames,
                       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
-                      base::span<const uint8_t> data) override;
+                      base::span<const uint8_t> stream) override;
 
   bool OutputPicture(const AV1Picture& pic) override;
 
