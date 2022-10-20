@@ -68,7 +68,7 @@ jint LocationBarModelAndroid::GetPageClassification(
 
   // TODO: Android does not save the homepage to the native pref, so we will
   // never get the HOME_PAGE classification. Fix this by overriding IsHomePage.
-  return location_bar_model_->GetPageClassification(source);
+  return location_bar_model_->GetPageClassification(source, is_prefetch);
 }
 
 content::WebContents* LocationBarModelAndroid::GetActiveWebContents() const {
