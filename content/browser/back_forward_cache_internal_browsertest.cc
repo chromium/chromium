@@ -1046,7 +1046,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
   rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
   // 2) Navigate to B.
@@ -1057,14 +1056,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
   task_runner->FastForwardBy(time_to_live_in_back_forward_cache - delta);
 
   // 4) Confirm A is still in BackForwardCache.
-  ASSERT_FALSE(delete_observer_rfh_a.deleted());
+  ASSERT_FALSE(rfh_a.IsDestroyed());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 5) Fast forward to when eviction is due.
   task_runner->FastForwardBy(delta);
 
   // 6) Confirm A is evicted.
-  delete_observer_rfh_a.WaitUntilDeleted();
   EXPECT_EQ(current_frame_host(), rfh_b.get());
 
   // 7) Go back to A.
@@ -3728,7 +3726,6 @@ IN_PROC_BROWSER_TEST_F(CustomTTLBackForwardCacheBrowserTest,
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -3738,14 +3735,14 @@ IN_PROC_BROWSER_TEST_F(CustomTTLBackForwardCacheBrowserTest,
   task_runner->FastForwardBy(time_to_live_in_back_forward_cache - delta);
 
   // 4) Confirm A is still in BackForwardCache.
-  ASSERT_FALSE(delete_observer_rfh_a.deleted());
+  ASSERT_FALSE(rfh_a.IsDestroyed());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 5) Fast forward to when eviction is due.
   task_runner->FastForwardBy(delta);
 
   // 6) Confirm A is evicted.
-  delete_observer_rfh_a.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
   EXPECT_EQ(current_frame_host(), rfh_b.get());
 
   // 7) Go back to A.

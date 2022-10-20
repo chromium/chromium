@@ -418,14 +418,13 @@ IN_PROC_BROWSER_TEST_F(
   // 1) Load the document and specify no-store for the main resource.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
   rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
   // Use blocklisted feature.
   EXPECT_TRUE(ExecJs(rfh_a.get(), "window.foo = new BroadcastChannel('foo');"));
 
   // 2) Navigate away. |rfh_a| should not enter bfcache.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  delete_observer_rfh_a.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -458,7 +457,6 @@ IN_PROC_BROWSER_TEST_F(
   // 1) Load the document and specify no-store for the main resource.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
   rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
   // 2) Navigate away. |rfh_a| should enter bfcache.
@@ -467,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Evict |rfh_a| by JavaScriptExecution.
   EvictByJavaScript(rfh_a.get());
-  delete_observer_rfh_a.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));

@@ -673,7 +673,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   // Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
 
   // Call fetch in a dedicated worker before navigating away.
   std::string worker_script =
@@ -694,7 +693,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   // Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
 
-  delete_observer_rfh_a.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // Go back to A. kNetworkRequestDatapipeDrainedAsBytesConsumer is recorded
   // since receiving the response body started but this didn't end before the
@@ -725,7 +724,6 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
 
   // Call fetch in a nested dedicated worker before navigating away.
   std::string child_worker_script =
@@ -752,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
 
-  delete_observer_rfh_a.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // Go back to A. kNetworkRequestDatapipeDrainedAsBytesConsumer is recorded
   // since receiving the response body started but this didn't end before the
@@ -807,12 +805,11 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   // for back-forward cache.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  RenderFrameDeletedObserver delete_observer(rfh_a.get());
   // Start sending the image response while in the back-forward cache, but never
   // finish the request. Eventually the page will get deleted due to network
   // request timeout.
   image_response.Send(net::HTTP_OK, "image/png");
-  delete_observer.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
@@ -871,12 +868,11 @@ IN_PROC_BROWSER_TEST_P(
   // for back-forward cache.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  RenderFrameDeletedObserver delete_observer(rfh_a.get());
   // Start sending the image response while in the back-forward cache, but never
   // finish the request. Eventually the page will get deleted due to network
   // request timeout.
   image_response.Send(net::HTTP_OK, "image/png");
-  delete_observer.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
@@ -1611,7 +1607,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
 
   AcquireKeyboardLock(rfh_a.get());
   ReleaseKeyboardLock(rfh_a.get());
@@ -1645,7 +1640,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
 
   AcquireKeyboardLock(rfh_a.get());
   ReleaseKeyboardLock(rfh_a.get());
@@ -1656,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
   // The page uses keyboard lock so it should be deleted.
-  rfh_a_deleted.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back and make sure the keyboard lock page wasn't in the cache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -1676,7 +1670,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
 
   AcquireKeyboardLock(rfh_a.get());
   ReleaseKeyboardLock(rfh_a.get());
@@ -1700,7 +1693,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
 
   AcquireKeyboardLock(rfh_a.get());
   // Register a pagehide handler to release keyboard lock.
@@ -1730,7 +1722,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
   rfh_a->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // 2) Navigate away.
@@ -1738,7 +1729,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
   // The page uses the dummy sticky feature so it should be deleted.
-  rfh_a_deleted.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back and make sure the dummy sticky feature page wasn't in the cache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -2186,14 +2177,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                    "a.com", "/back_forward_cache/page_with_indexedDB.html")));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   EXPECT_TRUE(ExecJs(rfh_a.get(), "setupIndexedDBConnection()"));
-  RenderFrameDeletedObserver deleted(rfh_a.get());
 
   // 2) Navigate away.
   shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
   // The page has an open IndexedDB connection so it should be deleted.
-  deleted.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to the page with IndexedDB.
   web_contents()->GetController().GoBack();
@@ -2420,7 +2410,6 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
 
   // Establish a WebTransport session.
   const char script[] = R"(
@@ -2432,7 +2421,7 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
 
   // Confirm A is evicted.
-  delete_observer_rfh_a.WaitUntilDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
