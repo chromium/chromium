@@ -207,8 +207,8 @@ void InputMethodAsh::OnTextInputTypeChanged(TextInputClient* client) {
     // When focused input client is not changed, a text input type change
     // should cause blur/focus events to engine. The focus in to or out from
     // password field should also notify engine.
-    engine->FocusOut();
-    engine->FocusIn(context);
+    engine->Blur();
+    engine->Focus(context);
   }
 
   OnCaretBoundsChanged(client);
@@ -351,7 +351,7 @@ void InputMethodAsh::OnWillChangeFocusedClient(TextInputClient* focused_before,
   }
 
   if (GetEngine())
-    GetEngine()->FocusOut();
+    GetEngine()->Blur();
 }
 
 void InputMethodAsh::OnDidChangeFocusedClient(TextInputClient* focused_before,
@@ -362,7 +362,7 @@ void InputMethodAsh::OnDidChangeFocusedClient(TextInputClient* focused_before,
   UpdateContextFocusState();
 
   if (GetEngine()) {
-    GetEngine()->FocusIn(GetInputContext());
+    GetEngine()->Focus(GetInputContext());
   }
 
   OnCaretBoundsChanged(GetTextInputClient());

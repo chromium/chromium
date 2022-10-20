@@ -205,8 +205,8 @@ class TestInputMethodManager
 
 class NiceMockIMEEngine : public ash::MockIMEEngineHandler {
  public:
-  MOCK_METHOD1(FocusIn, void(const InputContext&));
-  MOCK_METHOD0(FocusOut, void());
+  MOCK_METHOD1(Focus, void(const InputContext&));
+  MOCK_METHOD0(Blur, void());
   MOCK_METHOD4(SetSurroundingText,
                void(const std::u16string&, uint32_t, uint32_t, uint32_t));
 };
@@ -445,15 +445,15 @@ TEST_F(InputMethodAshTest, OnWillChangeFocusedClientClearAutocorrectRange) {
   EXPECT_EQ(gfx::Range(), this->GetAutocorrectRange());
 }
 
-// Confirm that IBusClient::FocusIn is called on "connected" if input_type_ is
+// Confirm that IBusClient::Focus is called on "connected" if input_type_ is
 // TEXT.
-TEST_F(InputMethodAshTest, FocusIn_Text) {
+TEST_F(InputMethodAshTest, Focus_Text) {
   // A context shouldn't be created since the daemon is not running.
   EXPECT_EQ(0U, on_input_method_changed_call_count_);
   // Click a text input form.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   input_method_ash_->OnTextInputTypeChanged(this);
-  // Since a form has focus, IBusClient::FocusIn() should be called.
+  // Since a form has focus, IBusClient::Focus() should be called.
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_in_call_count());
   EXPECT_EQ(1,
             mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
@@ -463,19 +463,19 @@ TEST_F(InputMethodAshTest, FocusIn_Text) {
   EXPECT_EQ(1U, on_input_method_changed_call_count_);
 }
 
-// Confirm that InputMethodEngine::FocusIn is called on "connected" even if
+// Confirm that InputMethodEngine::Focus is called on "connected" even if
 // input_type_ is PASSWORD.
-TEST_F(InputMethodAshTest, FocusIn_Password) {
+TEST_F(InputMethodAshTest, Focus_Password) {
   EXPECT_EQ(0U, on_input_method_changed_call_count_);
   input_type_ = TEXT_INPUT_TYPE_PASSWORD;
   input_method_ash_->OnTextInputTypeChanged(this);
-  // InputMethodEngine::FocusIn() should be called even for password field.
+  // InputMethodEngine::Focus() should be called even for password field.
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_in_call_count());
   EXPECT_EQ(1U, on_input_method_changed_call_count_);
 }
 
-// Confirm that IBusClient::FocusOut is called as expected.
-TEST_F(InputMethodAshTest, FocusOut_None) {
+// Confirm that IBusClient::Blur is called as expected.
+TEST_F(InputMethodAshTest, Blur_None) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   input_method_ash_->OnTextInputTypeChanged(this);
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_in_call_count());
@@ -486,8 +486,8 @@ TEST_F(InputMethodAshTest, FocusOut_None) {
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_out_call_count());
 }
 
-// Confirm that IBusClient::FocusOut is called as expected.
-TEST_F(InputMethodAshTest, FocusOut_Password) {
+// Confirm that IBusClient::Blur is called as expected.
+TEST_F(InputMethodAshTest, Blur_Password) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   input_method_ash_->OnTextInputTypeChanged(this);
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_in_call_count());
@@ -498,9 +498,9 @@ TEST_F(InputMethodAshTest, FocusOut_Password) {
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_out_call_count());
 }
 
-// FocusIn/FocusOut scenario test
+// Focus/Blur scenario test
 TEST_F(InputMethodAshTest, Focus_Scenario) {
-  // Confirm that both FocusIn and FocusOut are NOT called.
+  // Confirm that both Focus and Blur are NOT called.
   EXPECT_EQ(0, mock_ime_engine_handler_->focus_in_call_count());
   EXPECT_EQ(0, mock_ime_engine_handler_->focus_out_call_count());
   EXPECT_EQ(TEXT_INPUT_TYPE_NONE,
@@ -511,7 +511,7 @@ TEST_F(InputMethodAshTest, Focus_Scenario) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   input_mode_ = TEXT_INPUT_MODE_TEXT;
   input_method_ash_->OnTextInputTypeChanged(this);
-  // Confirm that only FocusIn is called, the TextInputType is TEXT and the
+  // Confirm that only Focus is called, the TextInputType is TEXT and the
   // TextInputMode is LATIN..
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_in_call_count());
   EXPECT_EQ(0, mock_ime_engine_handler_->focus_out_call_count());
@@ -522,7 +522,7 @@ TEST_F(InputMethodAshTest, Focus_Scenario) {
 
   input_mode_ = TEXT_INPUT_MODE_SEARCH;
   input_method_ash_->OnTextInputTypeChanged(this);
-  // Confirm that both FocusIn and FocusOut are called for mode change.
+  // Confirm that both Focus and Blur are called for mode change.
   EXPECT_EQ(2, mock_ime_engine_handler_->focus_in_call_count());
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_out_call_count());
   EXPECT_EQ(TEXT_INPUT_TYPE_TEXT,
@@ -532,7 +532,7 @@ TEST_F(InputMethodAshTest, Focus_Scenario) {
 
   input_type_ = TEXT_INPUT_TYPE_URL;
   input_method_ash_->OnTextInputTypeChanged(this);
-  // Confirm that both FocusIn and FocusOut are called and the TextInputType is
+  // Confirm that both Focus and Blur are called and the TextInputType is
   // changed to URL.
   EXPECT_EQ(3, mock_ime_engine_handler_->focus_in_call_count());
   EXPECT_EQ(2, mock_ime_engine_handler_->focus_out_call_count());
@@ -541,11 +541,11 @@ TEST_F(InputMethodAshTest, Focus_Scenario) {
   EXPECT_EQ(TEXT_INPUT_MODE_SEARCH,
             mock_ime_engine_handler_->last_text_input_context().mode);
 
-  // Confirm that FocusOut is called when set focus to NULL client.
+  // Confirm that Blur is called when set focus to NULL client.
   input_method_ash_->SetFocusedTextInputClient(nullptr);
   EXPECT_EQ(3, mock_ime_engine_handler_->focus_in_call_count());
   EXPECT_EQ(3, mock_ime_engine_handler_->focus_out_call_count());
-  // Confirm that FocusIn is called when set focus to this client.
+  // Confirm that Focus is called when set focus to this client.
   input_method_ash_->SetFocusedTextInputClient(this);
   EXPECT_EQ(4, mock_ime_engine_handler_->focus_in_call_count());
   EXPECT_EQ(3, mock_ime_engine_handler_->focus_out_call_count());
@@ -887,8 +887,8 @@ TEST_F(InputMethodAshTest, SurroundingText_EventOrder) {
   {
     // Switches the text input client.
     ::testing::InSequence seq;
-    EXPECT_CALL(mock_engine, FocusOut);
-    EXPECT_CALL(mock_engine, FocusIn);
+    EXPECT_CALL(mock_engine, Blur);
+    EXPECT_CALL(mock_engine, Focus);
     EXPECT_CALL(mock_engine, SetSurroundingText);
 
     surrounding_text_ = u"a";
@@ -903,8 +903,8 @@ TEST_F(InputMethodAshTest, SurroundingText_EventOrder) {
   {
     // Changes text input type.
     ::testing::InSequence seq;
-    EXPECT_CALL(mock_engine, FocusOut);
-    EXPECT_CALL(mock_engine, FocusIn);
+    EXPECT_CALL(mock_engine, Blur);
+    EXPECT_CALL(mock_engine, Focus);
     EXPECT_CALL(mock_engine, SetSurroundingText);
 
     surrounding_text_ = u"b";

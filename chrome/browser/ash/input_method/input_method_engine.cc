@@ -603,7 +603,7 @@ void InputMethodEngine::CancelPendingKeyEvents() {
   pending_key_events_.clear();
 }
 
-void InputMethodEngine::FocusIn(
+void InputMethodEngine::Focus(
     const ui::TextInputMethod::InputContext& input_context) {
   current_input_type_ = input_context.type;
 
@@ -616,14 +616,7 @@ void InputMethodEngine::FocusIn(
   observer_->OnFocus(active_component_id_, context_id_, input_context);
 }
 
-void InputMethodEngine::OnTouch(ui::EventPointerType pointerType) {
-  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
-    return;
-
-  observer_->OnTouch(pointerType);
-}
-
-void InputMethodEngine::FocusOut() {
+void InputMethodEngine::Blur() {
   if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
     return;
 
@@ -634,13 +627,20 @@ void InputMethodEngine::FocusOut() {
   observer_->OnBlur(active_component_id_, context_id);
 }
 
+void InputMethodEngine::OnTouch(ui::EventPointerType pointerType) {
+  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
+    return;
+
+  observer_->OnTouch(pointerType);
+}
+
 void InputMethodEngine::Enable(const std::string& component_id) {
   active_component_id_ = component_id;
   observer_->OnActivate(component_id);
   const ui::TextInputMethod::InputContext& input_context =
       ui::IMEBridge::Get()->GetCurrentInputContext();
   current_input_type_ = input_context.type;
-  FocusIn(input_context);
+  Focus(input_context);
 
   InputMethodManager::Get()->GetActiveIMEState()->EnableInputView();
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();

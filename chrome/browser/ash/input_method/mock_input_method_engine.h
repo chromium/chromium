@@ -28,9 +28,9 @@ class MockInputMethodEngine : public ui::TextInputMethod {
   ~MockInputMethodEngine() override;
 
   // TextInputMethod overrides.
-  void FocusIn(const TextInputMethod::InputContext& input_context) override;
+  void Focus(const InputContext& input_context) override;
+  void Blur() override;
   void OnTouch(ui::EventPointerType pointerType) override;
-  void FocusOut() override;
   void Enable(const std::string& component_id) override;
   void Disable() override;
   void Reset() override;

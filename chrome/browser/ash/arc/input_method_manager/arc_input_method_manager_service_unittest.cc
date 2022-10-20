@@ -960,21 +960,21 @@ TEST_F(ArcInputMethodManagerServiceTest, FocusAndBlur) {
 
   ASSERT_EQ(0, bridge()->focus_calls_count_);
 
-  engine_handler->FocusIn(test_context);
+  engine_handler->Focus(test_context);
   EXPECT_EQ(1, bridge()->focus_calls_count_);
 
-  engine_handler->FocusOut();
+  engine_handler->Blur();
   EXPECT_EQ(1, bridge()->focus_calls_count_);
 
-  // If an ARC window is focused, FocusIn doesn't call the bridge's Focus().
+  // If an ARC window is focused, Focus doesn't call the bridge's Focus().
   auto window = base::WrapUnique(CreateTestArcWindow());
   window_delegate()->SetFocusedWindow(window.get());
   window_delegate()->SetActiveWindow(window.get());
 
-  engine_handler->FocusIn(test_context);
+  engine_handler->Focus(test_context);
   EXPECT_EQ(1, bridge()->focus_calls_count_);
 
-  engine_handler->FocusOut();
+  engine_handler->Blur();
   EXPECT_EQ(1, bridge()->focus_calls_count_);
 }
 

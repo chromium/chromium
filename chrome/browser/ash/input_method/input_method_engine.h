@@ -225,8 +225,8 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
   }
 
   // ui::TextInputMethod overrides.
-  void FocusIn(const ui::TextInputMethod::InputContext& input_context) override;
-  void FocusOut() override;
+  void Focus(const ui::TextInputMethod::InputContext& input_context) override;
+  void Blur() override;
   void OnTouch(ui::EventPointerType pointerType) override;
   void Enable(const std::string& component_id) override;
   void Disable() override;

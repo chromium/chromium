@@ -462,7 +462,7 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
       ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method connected.
-  engine.FocusIn(input_context);
+  engine.Focus(input_context);
   engine.FlushForTesting();
 
   InputMethodManager::Shutdown();
@@ -511,7 +511,7 @@ TEST_F(NativeInputMethodEngineTest,
       ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method connected.
-  engine.FocusIn(input_context);
+  engine.Focus(input_context);
   engine.FlushForTesting();
 
   InputMethodManager::Get()->GetActiveIMEState()->SetUIStyle(
@@ -536,7 +536,7 @@ TEST_F(NativeInputMethodEngineTest, FocusUpdatesXkbLayout) {
       ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdPinyin);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.FocusIn(input_context);
+  engine.Focus(input_context);
 
   EXPECT_EQ(InputMethodManager::Get()
                 ->GetImeKeyboard()
@@ -590,7 +590,7 @@ TEST_F(NativeInputMethodEngineTest,
       ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.FocusIn(input_context);
+  engine.Focus(input_context);
   engine.FlushForTesting();
 
   InputMethodManager::Shutdown();
@@ -641,7 +641,7 @@ TEST_F(
       ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.FocusIn(input_context);
+  engine.Focus(input_context);
   engine.FlushForTesting();
 
   InputMethodManager::Shutdown();
@@ -672,7 +672,7 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
       ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.FocusIn(input_context);
+  engine.Focus(input_context);
   engine.FlushForTesting();
   ui::MockIMEInputContextHandler mock_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
@@ -722,7 +722,7 @@ TEST_F(NativeInputMethodEngineTest,
 
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.FocusIn(ui::TextInputMethod::InputContext(
+  engine.Focus(ui::TextInputMethod::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
       ui::PersonalizationMode::kEnabled));
@@ -777,7 +777,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
 
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.FocusIn(ui::TextInputMethod::InputContext(
+  engine.Focus(ui::TextInputMethod::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
       ui::PersonalizationMode::kEnabled));
@@ -842,7 +842,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
 
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.FocusIn(ui::TextInputMethod::InputContext(
+  engine.Focus(ui::TextInputMethod::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
       ui::PersonalizationMode::kEnabled));
@@ -893,7 +893,7 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
   }
 
   engine.Enable(kEngineIdUs);
-  engine.FocusIn(ui::TextInputMethod::InputContext(
+  engine.Focus(ui::TextInputMethod::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
       ui::PersonalizationMode::kEnabled));

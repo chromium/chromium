@@ -231,7 +231,7 @@ class InputConnectionImplTest : public testing::Test {
 
 TEST_F(InputConnectionImplTest, CommitText) {
   auto connection = CreateNewConnection(1);
-  engine()->FocusIn(context());
+  engine()->Focus(context());
 
   context_handler()->Reset();
   connection->CommitText(u"text", 1);
@@ -249,23 +249,23 @@ TEST_F(InputConnectionImplTest, CommitText) {
   EXPECT_EQ(ui::VKEY_RETURN, last_sent_key_event.key_code());
   EXPECT_EQ(ui::ET_KEY_RELEASED, last_sent_key_event.type());
 
-  engine()->FocusOut();
+  engine()->Blur();
 }
 
 TEST_F(InputConnectionImplTest, DeleteSurroundingText) {
   auto connection = CreateNewConnection(1);
-  engine()->FocusIn(context());
+  engine()->Focus(context());
 
   context_handler()->Reset();
   connection->DeleteSurroundingText(1, 1);
   EXPECT_EQ(1, context_handler()->delete_surrounding_text_call_count());
 
-  engine()->FocusOut();
+  engine()->Blur();
 }
 
 TEST_F(InputConnectionImplTest, FinishComposingText) {
   auto connection = CreateNewConnection(1);
-  engine()->FocusIn(context());
+  engine()->Focus(context());
 
   // If there is no composing text, FinishComposingText() does nothing.
   context_handler()->Reset();
@@ -287,13 +287,13 @@ TEST_F(InputConnectionImplTest, FinishComposingText) {
   connection->FinishComposingText();
   EXPECT_EQ(1, context_handler()->commit_text_call_count());
 
-  engine()->FocusOut();
+  engine()->Blur();
 }
 
 TEST_F(InputConnectionImplTest, SetComposingText) {
   const std::u16string text = u"text";
   auto connection = CreateNewConnection(1);
-  engine()->FocusIn(context());
+  engine()->Focus(context());
 
   context_handler()->Reset();
   connection->SetComposingText(text, 0, absl::nullopt);
@@ -327,12 +327,12 @@ TEST_F(InputConnectionImplTest, SetComposingText) {
                     ->last_update_composition_arg()
                     .composition_text.selection.end());
 
-  engine()->FocusOut();
+  engine()->Blur();
 }
 
 TEST_F(InputConnectionImplTest, SetSelection) {
   auto connection = CreateNewConnection(1);
-  engine()->FocusIn(context());
+  engine()->Focus(context());
   ASSERT_TRUE(client()->selection_history().empty());
 
   context_handler()->Reset();
@@ -341,12 +341,12 @@ TEST_F(InputConnectionImplTest, SetSelection) {
   EXPECT_EQ(2u, client()->selection_history().back().start());
   EXPECT_EQ(4u, client()->selection_history().back().end());
 
-  engine()->FocusOut();
+  engine()->Blur();
 }
 
 TEST_F(InputConnectionImplTest, SendKeyEvent) {
   auto connection = CreateNewConnection(1);
-  engine()->FocusIn(context());
+  engine()->Focus(context());
 
   context_handler()->Reset();
 
@@ -388,12 +388,12 @@ TEST_F(InputConnectionImplTest, SendKeyEvent) {
     EXPECT_NE(0, ui::EF_ALT_DOWN & received.flags());
     EXPECT_NE(0, ui::EF_CAPS_LOCK_ON & received.flags());
   }
-  engine()->FocusOut();
+  engine()->Blur();
 }
 
 TEST_F(InputConnectionImplTest, SetCompositionRange) {
   auto connection = CreateNewConnection(1);
-  engine()->FocusIn(context());
+  engine()->Focus(context());
 
   context_handler()->Reset();
   client()->SetText("abcde");
@@ -405,7 +405,7 @@ TEST_F(InputConnectionImplTest, SetCompositionRange) {
   EXPECT_EQ(std::make_tuple(1, 2),
             context_handler()->composition_range_history().back());
 
-  engine()->FocusOut();
+  engine()->Blur();
 }
 
 TEST_F(InputConnectionImplTest, InputContextHandlerIsNull) {
