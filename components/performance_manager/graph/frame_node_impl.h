@@ -252,9 +252,9 @@ class FrameNodeImpl
 
   mojo::Receiver<mojom::DocumentCoordinationUnit> receiver_{this};
 
-  const raw_ptr<FrameNodeImpl> parent_frame_node_;
-  const raw_ptr<PageNodeImpl> page_node_;
-  const raw_ptr<ProcessNodeImpl> process_node_;
+  const raw_ptr<FrameNodeImpl, DanglingUntriaged> parent_frame_node_;
+  const raw_ptr<PageNodeImpl, DanglingUntriaged> page_node_;
+  const raw_ptr<ProcessNodeImpl, DanglingUntriaged> process_node_;
   // The routing id of the frame.
   const int render_frame_id_;
 

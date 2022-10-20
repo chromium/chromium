@@ -82,7 +82,7 @@ class BackgroundSyncMetrics {
       int max_attempts,
       ukm::SourceId source_id);
 
-  raw_ptr<background_sync::BackgroundSyncDelegate> delegate_;
+  raw_ptr<background_sync::BackgroundSyncDelegate, DanglingUntriaged> delegate_;
 
   // Used to signal tests that a UKM event has been recorded.
   base::OnceClosure ukm_event_recorded_for_testing_;

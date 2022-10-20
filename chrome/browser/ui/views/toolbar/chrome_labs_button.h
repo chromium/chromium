@@ -53,7 +53,7 @@ class ChromeLabsButton : public ToolbarButton {
 
   void UpdateDotIndicator();
 
-  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_waiting_to_show = false;
@@ -61,7 +61,7 @@ class ChromeLabsButton : public ToolbarButton {
   bool should_circumvent_device_check_for_testing_ = false;
 #endif
 
-  raw_ptr<const ChromeLabsBubbleViewModel> model_;
+  raw_ptr<const ChromeLabsBubbleViewModel, DanglingUntriaged> model_;
 
   raw_ptr<views::DotIndicator> new_experiments_indicator_;
 

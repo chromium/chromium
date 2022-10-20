@@ -55,7 +55,8 @@ class OwningAudioManagerAccessor : public Service::AudioManagerAccessor {
 #endif
   AudioManagerFactoryCallback audio_manager_factory_cb_;
   std::unique_ptr<media::AudioManager> audio_manager_;
-  raw_ptr<media::AudioLogFactory> log_factory_ = nullptr;  // not owned.
+  raw_ptr<media::AudioLogFactory, DanglingUntriaged> log_factory_ =
+      nullptr;  // not owned.
 
   THREAD_CHECKER(thread_checker_);
 };

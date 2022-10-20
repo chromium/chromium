@@ -61,7 +61,7 @@ class InProcessImporterBridge : public ImporterBridge {
  private:
   ~InProcessImporterBridge() override;
 
-  const raw_ptr<ProfileWriter> writer_;  // weak
+  const raw_ptr<ProfileWriter, DanglingUntriaged> writer_;  // weak
   const base::WeakPtr<ExternalProcessImporterHost> host_;
 };
 

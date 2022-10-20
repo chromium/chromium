@@ -255,7 +255,7 @@ class BubbleDialogModelHost::ContentsView : public BoxLayoutView {
   }
 
  private:
-  const raw_ptr<BubbleDialogModelHost> parent_;
+  const raw_ptr<BubbleDialogModelHost, DanglingUntriaged> parent_;
 };
 
 class BubbleDialogModelHost::LayoutConsensusView : public View {

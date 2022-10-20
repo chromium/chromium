@@ -131,7 +131,7 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   // Quits the message loop if |condition_| is met.
   void MaybeQuit();
 
-  raw_ptr<content::BrowserContext> context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
 
  private:
   content::NotificationRegistrar registrar_;

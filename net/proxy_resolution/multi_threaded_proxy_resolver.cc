@@ -208,7 +208,7 @@ class Job : public base::RefCountedThreadSafe<Job> {
   virtual ~Job() = default;
 
  private:
-  raw_ptr<Executor> executor_ = nullptr;
+  raw_ptr<Executor, DanglingUntriaged> executor_ = nullptr;
   bool was_cancelled_ = false;
 };
 
@@ -262,7 +262,7 @@ class CreateResolverJob : public Job {
   }
 
   const scoped_refptr<PacFileData> script_data_;
-  raw_ptr<ProxyResolverFactory> factory_;
+  raw_ptr<ProxyResolverFactory, DanglingUntriaged> factory_;
   std::unique_ptr<ProxyResolver> resolver_;
 };
 
@@ -336,7 +336,7 @@ class MultiThreadedProxyResolver::GetProxyForURLJob : public Job {
   CompletionOnceCallback callback_;
 
   // Must only be used on the "origin" thread.
-  raw_ptr<ProxyInfo> results_;
+  raw_ptr<ProxyInfo, DanglingUntriaged> results_;
 
   // Can be used on either "origin" or worker thread.
   NetLogWithSource net_log_;
@@ -566,8 +566,9 @@ class MultiThreadedProxyResolverFactory::Job
     std::move(callback_).Run(error);
   }
 
-  raw_ptr<MultiThreadedProxyResolverFactory> factory_;
-  const raw_ptr<std::unique_ptr<ProxyResolver>> resolver_out_;
+  raw_ptr<MultiThreadedProxyResolverFactory, DanglingUntriaged> factory_;
+  const raw_ptr<std::unique_ptr<ProxyResolver>, DanglingUntriaged>
+      resolver_out_;
   std::unique_ptr<ProxyResolverFactory> resolver_factory_;
   const size_t max_num_threads_;
   scoped_refptr<PacFileData> script_data_;

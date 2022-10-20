@@ -305,7 +305,7 @@ class BrowserThemePack : public CustomThemeSupplier {
     // theme_id without NULL terminator.
     uint8_t theme_id[16];
   };
-  raw_ptr<BrowserThemePackHeader> header_ = nullptr;
+  raw_ptr<BrowserThemePackHeader, DanglingUntriaged> header_ = nullptr;
 
   // The remaining structs represent individual entries in an array. For the
   // following three structs, BrowserThemePack will either allocate an array or
@@ -316,23 +316,23 @@ class BrowserThemePack : public CustomThemeSupplier {
     double s;
     double l;
   };
-  raw_ptr<TintEntry> tints_ = nullptr;
+  raw_ptr<TintEntry, DanglingUntriaged> tints_ = nullptr;
 
   struct ColorPair {
     int32_t id;
     SkColor color;
   };
-  raw_ptr<ColorPair> colors_ = nullptr;
+  raw_ptr<ColorPair, DanglingUntriaged> colors_ = nullptr;
 
   struct DisplayPropertyPair {
     int32_t id;
     int32_t property;
   };
-  raw_ptr<DisplayPropertyPair> display_properties_ = nullptr;
+  raw_ptr<DisplayPropertyPair, DanglingUntriaged> display_properties_ = nullptr;
 
   // A list of included source images. A pointer to a -1 terminated array of
   // our persistent IDs.
-  raw_ptr<int> source_images_ = nullptr;
+  raw_ptr<int, DanglingUntriaged> source_images_ = nullptr;
 #pragma pack(pop)
 
   // The scale factors represented by the images in the theme pack.

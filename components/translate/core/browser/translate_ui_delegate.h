@@ -185,7 +185,7 @@ class TranslateUIDelegate {
   // associated with the current page.
   std::string GetPageHost() const;
 
-  raw_ptr<TranslateDriver> translate_driver_;
+  raw_ptr<TranslateDriver, DanglingUntriaged> translate_driver_;
   base::WeakPtr<TranslateManager> translate_manager_;
 
   // ISO code (en, fr...) -> displayable name in the current locale

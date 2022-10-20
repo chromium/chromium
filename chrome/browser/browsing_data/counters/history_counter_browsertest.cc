@@ -118,7 +118,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<history::HistoryService, DanglingUntriaged> history_service_;
   std::unique_ptr<history::FakeWebHistoryService> fake_web_history_service_;
   base::Time time_;
 

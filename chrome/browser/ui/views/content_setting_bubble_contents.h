@@ -104,7 +104,7 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
 
   typedef std::vector<views::RadioButton*> RadioGroup;
   RadioGroup radio_group_;
-  raw_ptr<views::LabelButton> manage_button_ = nullptr;
+  raw_ptr<views::LabelButton, DanglingUntriaged> manage_button_ = nullptr;
   raw_ptr<views::Checkbox> manage_checkbox_ = nullptr;
   raw_ptr<views::ImageButton> learn_more_button_ = nullptr;
 };

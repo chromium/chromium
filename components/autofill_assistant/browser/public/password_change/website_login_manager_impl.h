@@ -80,9 +80,10 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
 
   void OnRequestFinished(const PendingRequest* request);
 
-  const raw_ptr<password_manager::PasswordManagerClient> client_;
+  const raw_ptr<password_manager::PasswordManagerClient, DanglingUntriaged>
+      client_;
 
-  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   // Update password request will be created in PresaveGeneratedPassword and
   // released in CommitGeneratedPassword after committing presaved password to

@@ -46,7 +46,8 @@ class SubresourceFilterHistoryObserver
       history_observation_{this};
 
   // Outlives this object.
-  raw_ptr<subresource_filter::SubresourceFilterContentSettingsManager>
+  raw_ptr<subresource_filter::SubresourceFilterContentSettingsManager,
+          DanglingUntriaged>
       settings_manager_;
 };
 

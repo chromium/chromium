@@ -74,7 +74,7 @@ class MojoProxyResolverV8TracingBindings
   }
 
   base::ThreadChecker thread_checker_;
-  const raw_ptr<Client> client_;
+  const raw_ptr<Client, DanglingUntriaged> client_;
   HostResolverMojo host_resolver_;
 };
 

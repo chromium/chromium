@@ -187,8 +187,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
  private:
   friend class AppRegistryCacheTest;
 
-  raw_ptr<const apps::App> state_ = nullptr;
-  raw_ptr<const apps::App> delta_ = nullptr;
+  raw_ptr<const apps::App, DanglingUntriaged> state_ = nullptr;
+  raw_ptr<const apps::App, DanglingUntriaged> delta_ = nullptr;
 
   const ::AccountId& account_id_;
 };

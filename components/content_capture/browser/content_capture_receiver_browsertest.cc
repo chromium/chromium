@@ -71,8 +71,8 @@ class ContentCaptureBrowserTest : public content::ContentBrowserTest {
  protected:
   ContentCaptureTestHelper helper_;
 
-  raw_ptr<content::RenderFrameHost> main_frame_ = nullptr;
-  raw_ptr<content::RenderFrameHost> fenced_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> main_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> fenced_frame_ = nullptr;
 
   FakeContentCaptureSender main_frame_sender_;
   FakeContentCaptureSender fenced_frame_sender_;

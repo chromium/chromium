@@ -846,8 +846,8 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManagerFactory factory_;
   // Note that these are only set if you launch app using LoadAppWithGuest().
-  raw_ptr<guest_view::GuestViewBase> guest_view_;
-  raw_ptr<content::WebContents> embedder_web_contents_;
+  raw_ptr<guest_view::GuestViewBase, DanglingUntriaged> guest_view_;
+  raw_ptr<content::WebContents, DanglingUntriaged> embedder_web_contents_;
 };
 
 class WebViewTest : public WebViewTestBase,

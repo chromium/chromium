@@ -80,7 +80,7 @@ class ShellBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<ShellUpdateQueryParamsDelegate> update_query_params_delegate_;
 
   // Owned by the KeyedService system.
-  raw_ptr<ShellExtensionSystem> extension_system_;
+  raw_ptr<ShellExtensionSystem, DanglingUntriaged> extension_system_;
 
   std::unique_ptr<ShellBrowserMainDelegate> browser_main_delegate_;
 

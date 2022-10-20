@@ -71,7 +71,7 @@ class FullscreenControlPopup : public views::AnimationDelegateViews {
 
   void OnVisibilityChanged();
 
-  const raw_ptr<FullscreenControlView> control_view_;
+  const raw_ptr<FullscreenControlView, DanglingUntriaged> control_view_;
   const std::unique_ptr<views::Widget> popup_;
   const std::unique_ptr<gfx::SlideAnimation> animation_;
 

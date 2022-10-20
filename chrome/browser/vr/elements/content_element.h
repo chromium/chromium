@@ -71,7 +71,7 @@ class VR_UI_EXPORT ContentElement : public PlatformUiElement {
   gfx::Transform projection_matrix_;
   bool focused_ = false;
   bool uses_quad_layer_ = false;
-  raw_ptr<ContentInputDelegate> content_delegate_ = nullptr;
+  raw_ptr<ContentInputDelegate, DanglingUntriaged> content_delegate_ = nullptr;
   base::RepeatingCallback<void(const gfx::SizeF& size)>
       on_size_changed_callback_;
 };

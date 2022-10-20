@@ -72,7 +72,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   base::OnceClosure initialized_callback_ = base::NullCallback();
 
-  raw_ptr<PageInfo> presenter_;
+  raw_ptr<PageInfo, DanglingUntriaged> presenter_;
 
   // The view that contains the fps_button and cookies_dialog_button.
   raw_ptr<views::View> cookies_buttons_container_view_ = nullptr;

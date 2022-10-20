@@ -168,7 +168,7 @@ class WebTestControlHost : public WebContentsObserver,
     Node(Node&& other);
     Node& operator=(Node&& other);
 
-    raw_ptr<RenderFrameHost> render_frame_host = nullptr;
+    raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host = nullptr;
     GlobalRenderFrameHostId render_frame_host_id;
     std::vector<Node*> children;
   };
@@ -332,7 +332,7 @@ class WebTestControlHost : public WebContentsObserver,
   base::FilePath temp_path_;
 
   raw_ptr<Shell> main_window_ = nullptr;
-  raw_ptr<Shell> secondary_window_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> secondary_window_ = nullptr;
 
   std::unique_ptr<WebTestDevToolsBindings> devtools_bindings_;
   std::unique_ptr<DevToolsProtocolTestBindings>

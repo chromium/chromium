@@ -328,10 +328,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   raw_ptr<Viewport> header_viewport_ = nullptr;
 
   // Horizontal scrollbar.
-  raw_ptr<ScrollBar> horiz_sb_;
+  raw_ptr<ScrollBar, DanglingUntriaged> horiz_sb_;
 
   // Vertical scrollbar.
-  raw_ptr<ScrollBar> vert_sb_;
+  raw_ptr<ScrollBar, DanglingUntriaged> vert_sb_;
 
   // Corner view.
   std::unique_ptr<View> corner_view_;

@@ -139,12 +139,13 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
   bool SetMessageSenderInfo(SharingMessage* message);
 
   std::unique_ptr<WebPushSender> web_push_sender_;
-  raw_ptr<SharingMessageBridge> sharing_message_bridge_;
-  raw_ptr<SharingSyncPreference> sync_preference_;
-  raw_ptr<VapidKeyManager> vapid_key_manager_;
-  raw_ptr<gcm::GCMDriver> gcm_driver_;
-  raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
-  raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<SharingMessageBridge, DanglingUntriaged> sharing_message_bridge_;
+  raw_ptr<SharingSyncPreference, DanglingUntriaged> sync_preference_;
+  raw_ptr<VapidKeyManager, DanglingUntriaged> vapid_key_manager_;
+  raw_ptr<gcm::GCMDriver, DanglingUntriaged> gcm_driver_;
+  raw_ptr<syncer::LocalDeviceInfoProvider, DanglingUntriaged>
+      local_device_info_provider_;
+  raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;
 
   base::WeakPtrFactory<SharingFCMSender> weak_ptr_factory_{this};
 };

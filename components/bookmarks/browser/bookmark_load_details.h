@@ -106,10 +106,12 @@ class BookmarkLoadDetails {
 
  private:
   std::unique_ptr<BookmarkNode> root_node_;
-  raw_ptr<BookmarkNode> root_node_ptr_;
-  raw_ptr<BookmarkPermanentNode> bb_node_ = nullptr;
-  raw_ptr<BookmarkPermanentNode> other_folder_node_ = nullptr;
-  raw_ptr<BookmarkPermanentNode> mobile_folder_node_ = nullptr;
+  raw_ptr<BookmarkNode, DanglingUntriaged> root_node_ptr_;
+  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> bb_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> other_folder_node_ =
+      nullptr;
+  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> mobile_folder_node_ =
+      nullptr;
   LoadManagedNodeCallback load_managed_node_callback_;
   std::unique_ptr<TitledUrlIndex> index_;
   BookmarkNode::MetaInfoMap model_meta_info_map_;

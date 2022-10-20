@@ -200,9 +200,9 @@ class ExternallyManagedAppManager {
   void ContinueOrCompleteSynchronization(ExternalInstallSource source);
 
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
-  raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
+  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> finalizer_ = nullptr;
-  raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
+  raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
 
   base::flat_map<ExternalInstallSource, SynchronizeRequest>

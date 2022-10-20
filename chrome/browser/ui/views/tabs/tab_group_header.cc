@@ -79,8 +79,8 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  const raw_ptr<const views::View> chip_;
-  const raw_ptr<const views::View> title_;
+  const raw_ptr<const views::View, DanglingUntriaged> chip_;
+  const raw_ptr<const views::View, DanglingUntriaged> title_;
 };
 
 }  // namespace

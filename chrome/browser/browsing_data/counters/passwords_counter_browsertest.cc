@@ -145,7 +145,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     return result;
   }
 
-  raw_ptr<password_manager::PasswordStoreInterface> store_;
+  raw_ptr<password_manager::PasswordStoreInterface, DanglingUntriaged> store_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
   base::Time time_;

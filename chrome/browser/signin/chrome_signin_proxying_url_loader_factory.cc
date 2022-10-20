@@ -301,8 +301,8 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
   }
 
  private:
-  const raw_ptr<InProgressRequest> in_progress_request_;
-  const raw_ptr<net::HttpResponseHeaders> headers_;
+  const raw_ptr<InProgressRequest, DanglingUntriaged> in_progress_request_;
+  const raw_ptr<net::HttpResponseHeaders, DanglingUntriaged> headers_;
 };
 
 ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(

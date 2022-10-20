@@ -529,8 +529,10 @@ class HeadlessWebContentsBeginFrameControlTest
             base::Unretained(this)));
   }
 
-  raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;  // Not owned.
-  raw_ptr<HeadlessWebContentsImpl> web_contents_ = nullptr;    // Not owned.
+  raw_ptr<HeadlessBrowserContext, DanglingUntriaged> browser_context_ =
+      nullptr;  // Not owned.
+  raw_ptr<HeadlessWebContentsImpl, DanglingUntriaged> web_contents_ =
+      nullptr;  // Not owned.
 
   bool page_ready_ = false;
   bool needs_begin_frames_ = false;

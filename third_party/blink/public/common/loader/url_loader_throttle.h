@@ -238,7 +238,7 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
  protected:
   URLLoaderThrottle();
 
-  raw_ptr<Delegate> delegate_ = nullptr;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 };
 
 }  // namespace blink

@@ -921,7 +921,8 @@ class AppBannerManagerBrowserTestWithFailableInstallableManager
   }
 
  protected:
-  raw_ptr<FailingInstallableManager> installable_manager_ = nullptr;
+  raw_ptr<FailingInstallableManager, DanglingUntriaged> installable_manager_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(

@@ -37,9 +37,10 @@ class BrowserCrashEventRouter
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
  private:
-  raw_ptr<enterprise_connectors::RealtimeReportingClient> reporting_client_ =
-      nullptr;
-  raw_ptr<policy::ChromeBrowserCloudManagementController> controller_ = nullptr;
+  raw_ptr<enterprise_connectors::RealtimeReportingClient, DanglingUntriaged>
+      reporting_client_ = nullptr;
+  raw_ptr<policy::ChromeBrowserCloudManagementController, DanglingUntriaged>
+      controller_ = nullptr;
 
 #if !BUILDFLAG(IS_FUCHSIA)
   // ReportCrashes() checks the enterprise policy settings, retrieves crash

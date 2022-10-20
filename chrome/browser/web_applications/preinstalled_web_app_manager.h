@@ -162,10 +162,10 @@ class PreinstalledWebAppManager {
   bool IsReinstallPastMilestoneNeededSinceLastSync(
       int force_reinstall_for_milestone);
 
-  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
-  raw_ptr<const WebAppUiManager> ui_manager_ = nullptr;
-  raw_ptr<ExternallyManagedAppManager> externally_managed_app_manager_ =
-      nullptr;
+  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
+  raw_ptr<const WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
+  raw_ptr<ExternallyManagedAppManager, DanglingUntriaged>
+      externally_managed_app_manager_ = nullptr;
   const raw_ptr<Profile> profile_;
 
   std::unique_ptr<DebugInfo> debug_info_;

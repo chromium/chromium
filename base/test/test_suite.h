@@ -100,7 +100,7 @@ class TestSuite {
 
   bool initialized_command_line_ = false;
 
-  raw_ptr<XmlUnitTestResultPrinter> printer_ = nullptr;
+  raw_ptr<XmlUnitTestResultPrinter, DanglingUntriaged> printer_ = nullptr;
 
   std::unique_ptr<logging::ScopedLogAssertHandler> assert_handler_;
 

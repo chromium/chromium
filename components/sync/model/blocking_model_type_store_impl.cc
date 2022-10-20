@@ -71,7 +71,7 @@ class LevelDbMetadataChangeList : public MetadataChangeList {
     return metadata_prefix_ + id;
   }
 
-  const raw_ptr<leveldb::WriteBatch> leveldb_write_batch_;
+  const raw_ptr<leveldb::WriteBatch, DanglingUntriaged> leveldb_write_batch_;
 
   // Key for this type's metadata records.
   const std::string metadata_prefix_;

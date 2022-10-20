@@ -22,7 +22,7 @@ class NativeWidgetNSWindowBridge;
 REMOTE_COCOA_APP_SHIM_EXPORT
 @interface ViewsNSWindowDelegate : NSObject <NSWindowDelegate> {
  @private
-  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge>
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge, DanglingUntriaged>
       _parent;  // Weak. Owns this.
   base::scoped_nsobject<NSCursor> _cursor;
   absl::optional<float> _aspectRatio;

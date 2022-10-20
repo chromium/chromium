@@ -130,7 +130,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   int max_ppapi_processes_per_profile_ = kDefaultMaxPpapiProcessesPerProfile;
 
   // Weak pointer; set during the startup and must outlive us.
-  raw_ptr<PluginServiceFilter> filter_ = nullptr;
+  raw_ptr<PluginServiceFilter, DanglingUntriaged> filter_ = nullptr;
 
   // Used to detect if a given plugin is crashing over and over.
   std::map<base::FilePath, std::vector<base::Time>> crash_times_;

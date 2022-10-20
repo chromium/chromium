@@ -76,7 +76,7 @@ class AutofillDataModelChange : public GenericAutofillChange<std::string> {
 
  private:
   // Weak reference, can be NULL.
-  raw_ptr<const DataType> data_model_;
+  raw_ptr<const DataType, DanglingUntriaged> data_model_;
 };
 
 typedef AutofillDataModelChange<AutofillProfile> AutofillProfileChange;

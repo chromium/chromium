@@ -75,7 +75,8 @@ class AuctionV8DevToolsSession::BreakpointHandler
     return crdtp::DispatchResponse::Success();
   }
 
-  const raw_ptr<v8_inspector::V8InspectorSession> v8_session_;
+  const raw_ptr<v8_inspector::V8InspectorSession, DanglingUntriaged>
+      v8_session_;
   std::set<std::string> instrumentation_breakpoints_;
   SEQUENCE_CHECKER(v8_sequence_checker_);
 };

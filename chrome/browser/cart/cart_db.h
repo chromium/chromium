@@ -63,7 +63,8 @@ class CartDB {
                              OperationCallback callback);
 
  private:
-  raw_ptr<SessionProtoDB<cart_db::ChromeCartContentProto>> proto_db_;
+  raw_ptr<SessionProtoDB<cart_db::ChromeCartContentProto>, DanglingUntriaged>
+      proto_db_;
   base::WeakPtrFactory<CartDB> weak_ptr_factory_{this};
 };
 

@@ -76,7 +76,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   views::FlexLayout* layout_manager_for_testing() { return layout_manager_; }
   raw_ptr<views::View> GetTabStripContainerForTesting() {
-    return tab_strip_container_;
+    return raw_ptr<views::View>(tab_strip_container_);
   }
 
  private:
@@ -84,13 +84,13 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // whenever any input of the computation of the border's sizing changes.
   void UpdateNewTabButtonBorder();
 
-  raw_ptr<views::FlexLayout> layout_manager_ = nullptr;
-  raw_ptr<views::View> tab_strip_container_;
-  raw_ptr<views::View> reserved_grab_handle_space_;
-  raw_ptr<TabStrip> tab_strip_;
-  raw_ptr<NewTabButton> new_tab_button_ = nullptr;
-  raw_ptr<TabSearchButton> tab_search_button_ = nullptr;
-  raw_ptr<TipMarqueeView> tip_marquee_view_ = nullptr;
+  raw_ptr<views::FlexLayout, DanglingUntriaged> layout_manager_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> tab_strip_container_;
+  raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_;
+  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;
+  raw_ptr<NewTabButton, DanglingUntriaged> new_tab_button_ = nullptr;
+  raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
+  raw_ptr<TipMarqueeView, DanglingUntriaged> tip_marquee_view_ = nullptr;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

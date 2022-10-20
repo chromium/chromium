@@ -94,7 +94,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                           ContainerHostPredicate predicate);
     void ForwardUntilMatchingContainerHost();
 
-    const raw_ptr<ContainerHostByClientUUIDMap> map_;
+    const raw_ptr<ContainerHostByClientUUIDMap, DanglingUntriaged> map_;
     ContainerHostPredicate predicate_;
     ContainerHostByClientUUIDMap::iterator container_host_iterator_;
   };

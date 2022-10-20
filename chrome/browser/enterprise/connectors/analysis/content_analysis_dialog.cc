@@ -118,7 +118,7 @@ class DeepScanningBaseView {
   ContentAnalysisDialog* dialog() { return dialog_; }
 
  protected:
-  raw_ptr<ContentAnalysisDialog> dialog_;
+  raw_ptr<ContentAnalysisDialog, DanglingUntriaged> dialog_;
 };
 
 class DeepScanningTopImageView : public DeepScanningBaseView,

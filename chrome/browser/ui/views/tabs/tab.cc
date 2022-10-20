@@ -136,7 +136,7 @@ class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  const raw_ptr<TabStyle> tab_style_;
+  const raw_ptr<TabStyle, DanglingUntriaged> tab_style_;
 };
 
 }  // namespace
@@ -176,9 +176,9 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
   base::ScopedObservation<views::View, views::ViewObserver>
       tab_close_button_observation_{this};
 
-  raw_ptr<Tab> tab_;
-  raw_ptr<views::View> close_button_;
-  raw_ptr<TabSlotController> controller_;
+  raw_ptr<Tab, DanglingUntriaged> tab_;
+  raw_ptr<views::View, DanglingUntriaged> close_button_;
+  raw_ptr<TabSlotController, DanglingUntriaged> controller_;
 };
 
 // Tab -------------------------------------------------------------------------

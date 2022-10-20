@@ -75,7 +75,7 @@ class VectorBinding : public BindingBase {
   }
 
  private:
-  raw_ptr<std::vector<M>> models_ = nullptr;
+  raw_ptr<std::vector<M>, DanglingUntriaged> models_ = nullptr;
   std::vector<std::unique_ptr<ElementBinding>> bindings_;
   absl::optional<size_t> last_size_;
   ModelAddedCallback added_callback_;

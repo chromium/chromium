@@ -225,15 +225,17 @@ class WebAppInstallFinalizer {
       const AppId& app_id,
       const WebAppInstallInfo& new_web_app_info);
 
-  raw_ptr<WebAppInstallManager> install_manager_ = nullptr;
-  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
-  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
-  raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
-  raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
-  raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
-  raw_ptr<WebAppPolicyManager> policy_manager_ = nullptr;
-  raw_ptr<WebAppTranslationManager> translation_manager_ = nullptr;
-  raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
+  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_ = nullptr;
+  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
+  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
+  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
+  raw_ptr<OsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
+      nullptr;
+  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_ = nullptr;
+  raw_ptr<WebAppPolicyManager, DanglingUntriaged> policy_manager_ = nullptr;
+  raw_ptr<WebAppTranslationManager, DanglingUntriaged> translation_manager_ =
+      nullptr;
+  raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_ = nullptr;
 
   const raw_ptr<Profile> profile_;
   bool started_ = false;

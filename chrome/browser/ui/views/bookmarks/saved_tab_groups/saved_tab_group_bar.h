@@ -98,8 +98,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   raw_ptr<SavedTabGroupModel> saved_tab_group_model_;
 
   // The page navigator used to create tab groups
-  raw_ptr<content::PageNavigator> page_navigator_ = nullptr;
-
+  raw_ptr<content::PageNavigator, DanglingUntriaged> page_navigator_ = nullptr;
   raw_ptr<Browser> browser_;
 
   // animations have been noted to cause issues with tests in the bookmarks bar.

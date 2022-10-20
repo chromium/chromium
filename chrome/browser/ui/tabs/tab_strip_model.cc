@@ -258,7 +258,8 @@ struct TabStripModel::DetachNotifications {
   //
   // Once the notification for change of active web contents has been sent,
   // this field is set to nullptr.
-  raw_ptr<WebContents> initially_active_web_contents = nullptr;
+  raw_ptr<WebContents, DanglingUntriaged> initially_active_web_contents =
+      nullptr;
 
   // The WebContents that were recently detached. Observers need to be notified
   // about these. These must be updated after construction.

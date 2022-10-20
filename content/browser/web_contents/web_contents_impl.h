@@ -1511,11 +1511,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     void OnFrameTreeNodeDestroyed(FrameTreeNode* node) final;
 
     // The WebContents that owns this WebContentsTreeNode.
-    const raw_ptr<WebContentsImpl> current_web_contents_;
+    const raw_ptr<WebContentsImpl, DanglingUntriaged> current_web_contents_;
 
     // The outer WebContents of |current_web_contents_|, or nullptr if
     // |current_web_contents_| is the outermost WebContents.
-    raw_ptr<WebContentsImpl> outer_web_contents_;
+    raw_ptr<WebContentsImpl, DanglingUntriaged> outer_web_contents_;
 
     // The ID of the FrameTreeNode in the |outer_web_contents_| that hosts
     // |current_web_contents_| as an inner WebContents.
@@ -1906,7 +1906,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
-  raw_ptr<WebContentsDelegate> delegate_;
+  raw_ptr<WebContentsDelegate, DanglingUntriaged> delegate_;
 
   // The corresponding view.
   std::unique_ptr<WebContentsView> view_;
@@ -2215,11 +2215,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Stores the RenderWidgetHost that currently holds a mouse lock or nullptr if
   // there's no RenderWidgetHost holding a lock.
-  raw_ptr<RenderWidgetHostImpl> mouse_lock_widget_ = nullptr;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> mouse_lock_widget_ = nullptr;
 
   // Stores the RenderWidgetHost that currently holds a keyboard lock or nullptr
   // if no RenderWidgetHost has the keyboard locked.
-  raw_ptr<RenderWidgetHostImpl> keyboard_lock_widget_ = nullptr;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> keyboard_lock_widget_ =
+      nullptr;
 
   // Indicates whether the escape key is one of the requested keys to be locked.
   // This information is used to drive the browser UI so the correct exit
@@ -2248,7 +2249,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool was_ever_audible_ = false;
 
   // Helper variable for resolving races in UpdateTargetURL / ClearTargetURL.
-  raw_ptr<RenderFrameHost> frame_that_set_last_target_url_ = nullptr;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> frame_that_set_last_target_url_ =
+      nullptr;
 
   // Whether we should override user agent in new tabs.
   bool should_override_user_agent_in_new_tabs_ = false;
@@ -2267,7 +2269,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::set<RenderFrameHostImpl*> fullscreen_frames_;
 
   // Store the frame that is currently fullscreen, nullptr if there is none.
-  raw_ptr<RenderFrameHostImpl> current_fullscreen_frame_ = nullptr;
+  raw_ptr<RenderFrameHostImpl, DanglingUntriaged> current_fullscreen_frame_ =
+      nullptr;
 
   // Whether location bar should be focused by default. This is computed in
   // DidStartNavigation/DidFinishNavigation and only set for an initial

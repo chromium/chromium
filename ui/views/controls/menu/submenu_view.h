@@ -216,7 +216,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   MenuDelegate::DropPosition drop_position_;
 
   // Ancestor of the SubmenuView, lazily created.
-  raw_ptr<MenuScrollViewContainer> scroll_view_container_;
+  raw_ptr<MenuScrollViewContainer, DanglingUntriaged> scroll_view_container_;
 
   // See description above getter.
   mutable int max_minor_text_width_;

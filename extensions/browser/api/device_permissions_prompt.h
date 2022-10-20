@@ -121,9 +121,11 @@ class DevicePermissionsPrompt {
    private:
     friend class base::RefCounted<Prompt>;
 
-    raw_ptr<const extensions::Extension> extension_ = nullptr;
-    raw_ptr<Observer> observer_ = nullptr;
-    raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+    raw_ptr<const extensions::Extension, DanglingUntriaged> extension_ =
+        nullptr;
+    raw_ptr<Observer, DanglingUntriaged> observer_ = nullptr;
+    raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
+        nullptr;
     bool multiple_ = false;
   };
 

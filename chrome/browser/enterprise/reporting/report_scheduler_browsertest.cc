@@ -100,7 +100,7 @@ class ReportSchedulerTest
   base::test::ScopedFeatureList scoped_feature_list_;
   policy::FakeBrowserDMTokenStorage storage_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  raw_ptr<ReportScheduler> report_scheduler_;
+  raw_ptr<ReportScheduler, DanglingUntriaged> report_scheduler_;
   bool has_cloud_reporting_launched = false;
 };
 

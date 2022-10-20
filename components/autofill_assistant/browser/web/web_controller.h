@@ -555,13 +555,15 @@ class WebController {
 
   // Weak pointer is fine here since it must outlive this web controller, which
   // is guaranteed by the owner of this object.
-  const raw_ptr<content::WebContents> web_contents_;
+
+  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   std::unique_ptr<DevtoolsClient> devtools_client_;
   // Must not be |nullptr| and outlive this web controller.
-  const raw_ptr<const UserData> user_data_;
-  const raw_ptr<ProcessedActionStatusDetailsProto> log_info_;
+  const raw_ptr<const UserData, DanglingUntriaged> user_data_;
+  const raw_ptr<ProcessedActionStatusDetailsProto, DanglingUntriaged> log_info_;
   // Can be |nullptr|, if not must outlive this web controller.
-  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
+  const raw_ptr<AnnotateDomModelService, DanglingUntriaged>
+      annotate_dom_model_service_;
 
   // Currently running workers.
   std::vector<std::unique_ptr<WebControllerWorker>> pending_workers_;

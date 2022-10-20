@@ -113,7 +113,7 @@ class VR_UI_EXPORT UiScene {
   std::vector<PerFrameCallback> per_frame_callback_;
 
   std::vector<std::unique_ptr<Sequence>> scheduled_tasks_;
-  raw_ptr<SkiaSurfaceProvider> provider_ = nullptr;
+  raw_ptr<SkiaSurfaceProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 }  // namespace vr

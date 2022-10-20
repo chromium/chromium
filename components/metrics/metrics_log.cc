@@ -99,7 +99,7 @@ class IndependentFlattener : public base::HistogramFlattener {
   }
 
  private:
-  const raw_ptr<MetricsLog> log_;
+  const raw_ptr<MetricsLog, DanglingUntriaged> log_;
 };
 
 // Convenience function to return the given time at a resolution in seconds.

@@ -127,7 +127,7 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
 
   std::unique_ptr<PlatformUiInputDelegate> vr_dialog_input_delegate_;
 
-  raw_ptr<BrowserRendererBrowserInterface> browser_;
+  raw_ptr<BrowserRendererBrowserInterface, DanglingUntriaged> browser_;
 
   std::unique_ptr<UiTestState> ui_test_state_;
   std::unique_ptr<UiVisibilityState> ui_visibility_state_;

@@ -46,8 +46,8 @@ class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTexture {
 
  private:
   bool have_context_ = true;
-  raw_ptr<Texture> texture_;
-  raw_ptr<gl::GLApi> api_ = nullptr;
+  raw_ptr<Texture, DanglingUntriaged> texture_;
+  raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
 };
 
 // Implementation of AbstractTexture which creates gles2::TexturePassthrough on
@@ -77,7 +77,7 @@ class GPU_GLES2_EXPORT AbstractTextureImplPassthrough : public AbstractTexture {
  private:
   bool have_context_ = true;
   scoped_refptr<TexturePassthrough> texture_;
-  raw_ptr<gl::GLApi> api_ = nullptr;
+  raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
 };
 
 }  // namespace gles2

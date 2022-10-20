@@ -52,10 +52,12 @@ class ChromeLabsCoordinator : public views::ViewObserver {
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;
 
-  raw_ptr<ChromeLabsButton> anchor_view_;
-  raw_ptr<Browser> browser_;
-  raw_ptr<const ChromeLabsBubbleViewModel> chrome_labs_model_;
-  raw_ptr<ChromeLabsBubbleView> chrome_labs_bubble_view_ = nullptr;
+  raw_ptr<ChromeLabsButton, DanglingUntriaged> anchor_view_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<const ChromeLabsBubbleViewModel, DanglingUntriaged>
+      chrome_labs_model_;
+  raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> chrome_labs_bubble_view_ =
+      nullptr;
 
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   raw_ptr<flags_ui::FlagsState> flags_state_;

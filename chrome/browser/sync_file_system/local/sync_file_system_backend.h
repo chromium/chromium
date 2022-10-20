@@ -85,14 +85,14 @@ class SyncFileSystemBackend : public storage::FileSystemBackend {
 
  private:
   // Not owned.
-  raw_ptr<storage::FileSystemContext> context_ = nullptr;
+  raw_ptr<storage::FileSystemContext, DanglingUntriaged> context_ = nullptr;
 
   std::unique_ptr<LocalFileChangeTracker> change_tracker_;
   scoped_refptr<LocalFileSyncContext> sync_context_;
 
   // |profile_| will initially be valid but may be destroyed before |this|, so
   // it should be checked before being accessed.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // A flag to skip the initialization sequence of SyncFileSystemService for
   // testing.

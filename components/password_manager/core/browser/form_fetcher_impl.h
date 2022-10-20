@@ -74,7 +74,7 @@ class FormFetcherImpl : public FormFetcher,
   const PasswordFormDigest form_digest_;
 
   // Client used to obtain a CredentialFilter.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
 
   // State of the fetcher.
   State state_ = State::NOT_WAITING;

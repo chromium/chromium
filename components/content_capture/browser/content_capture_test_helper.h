@@ -141,7 +141,8 @@ class ContentCaptureTestHelper {
   }
 
  private:
-  raw_ptr<OnscreenContentProvider> onscreen_content_provider_ = nullptr;
+  raw_ptr<OnscreenContentProvider, DanglingUntriaged>
+      onscreen_content_provider_ = nullptr;
   std::unique_ptr<ContentCaptureConsumerHelper> content_capture_consumer_;
 
   ContentCaptureData test_data_;

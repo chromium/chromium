@@ -323,10 +323,11 @@ class TabContainerImpl : public TabContainer,
 
   const raw_ref<TabContainerController> controller_;
 
-  const raw_ptr<TabHoverCardController> hover_card_controller_;
+  const raw_ptr<TabHoverCardController, DanglingUntriaged>
+      hover_card_controller_;
 
   // May be nullptr in tests.
-  const raw_ptr<TabDragContextBase> drag_context_;
+  const raw_ptr<TabDragContextBase, DanglingUntriaged> drag_context_;
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 

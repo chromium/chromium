@@ -121,7 +121,7 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
                                     bool expect_new_web_contents,
                                     bool wait_for_document_loaded);
 
-  raw_ptr<DistillerPageWebContents> distiller_page_;
+  raw_ptr<DistillerPageWebContents, DanglingUntriaged> distiller_page_;
   std::unique_ptr<proto::DomDistillerResult> distiller_result_;
 };
 

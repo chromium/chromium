@@ -318,7 +318,7 @@ class InputController final : public StreamMonitor {
 
   // Pointer to the audio input stream object.
   // Only used on the audio thread.
-  raw_ptr<media::AudioInputStream> stream_ = nullptr;
+  raw_ptr<media::AudioInputStream, DanglingUntriaged> stream_ = nullptr;
 
   // SyncWriter is used only in low-latency mode for synchronous writing.
   const raw_ptr<SyncWriter> sync_writer_;
@@ -340,7 +340,7 @@ class InputController final : public StreamMonitor {
   std::unique_ptr<OutputTapper> output_tapper_;
 #endif
 
-  const raw_ptr<media::UserInputMonitor> user_input_monitor_;
+  const raw_ptr<media::UserInputMonitor, DanglingUntriaged> user_input_monitor_;
 
 #if defined(AUDIO_POWER_MONITORING)
   // Whether the silence state and microphone levels should be checked and sent

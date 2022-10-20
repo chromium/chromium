@@ -106,7 +106,7 @@ class PinBase : public IPin,
   Microsoft::WRL::ComPtr<IPin> connected_pin_;
   // owner_ is the filter owning this pin. We don't reference count it since
   // that would create a circular reference count.
-  raw_ptr<IBaseFilter> owner_;
+  raw_ptr<IBaseFilter, DanglingUntriaged> owner_;
 };
 
 }  // namespace media

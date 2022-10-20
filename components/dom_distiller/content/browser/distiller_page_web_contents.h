@@ -27,7 +27,7 @@ class SourcePageHandleWebContents : public SourcePageHandle {
 
  private:
   // The WebContents this class holds.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   // Whether this owns |web_contents_|.
   bool owned_;
 };

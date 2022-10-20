@@ -219,7 +219,7 @@ class Buffer final : public ui::GbmBuffer {
     buffer->mmap_data_ = nullptr;
   }
 
-  const raw_ptr<gbm_bo> bo_;
+  const raw_ptr<gbm_bo, DanglingUntriaged> bo_;
   void* mmap_data_ = nullptr;
 
   const uint32_t format_;

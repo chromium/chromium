@@ -84,7 +84,7 @@ class NetworkPermissionsUpdater {
       std::unique_ptr<NetworkPermissionsUpdater> updater);
 
   // The associated BrowserContext.
-  raw_ptr<content::BrowserContext> const browser_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> const browser_context_;
 
   // A callback to invoke upon completion.
   base::OnceClosure completion_callback_;

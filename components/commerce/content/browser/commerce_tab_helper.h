@@ -57,7 +57,7 @@ class CommerceTabHelper
 
   std::unique_ptr<WebContentsWrapper> web_wrapper_;
 
-  raw_ptr<ShoppingService> shopping_service_;
+  raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
 
   // The url from the previous successful main frame navigation. This will be
   // empty if this is the first navigation for this tab or post-restart. We keep

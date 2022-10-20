@@ -109,7 +109,7 @@ class SavePasswordLeakDetectionDelegate
   void OnLeakDetectionTimeout();
 
   // Must outlive the SavePasswordLeakDetectionDelegate.
-  raw_ptr<password_manager::PasswordManagerClient> client_;
+  raw_ptr<password_manager::PasswordManagerClient, DanglingUntriaged> client_;
 
   // The factory that creates objects for performing a leak check up.
   std::unique_ptr<password_manager::LeakDetectionCheckFactory> leak_factory_;

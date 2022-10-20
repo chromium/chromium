@@ -67,7 +67,7 @@ class CONTENT_EXPORT FrameTokenMessageQueue {
 
  private:
   // Not owned.
-  raw_ptr<Client> client_ = nullptr;
+  raw_ptr<Client, DanglingUntriaged> client_ = nullptr;
 
   // Last non-zero frame token received from the renderer. Any swap messsages
   // having a token less than or equal to this value will be processed.

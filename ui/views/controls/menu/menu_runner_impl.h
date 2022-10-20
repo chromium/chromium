@@ -67,7 +67,7 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
 
   // The menu. We own this. We don't use scoped_ptr as the destructor is
   // protected and we're a friend.
-  raw_ptr<MenuItemView> menu_;
+  raw_ptr<MenuItemView, DanglingUntriaged> menu_;
 
   // Any sibling menus. Does not include |menu_|. We own these too.
   std::set<MenuItemView*> sibling_menus_;

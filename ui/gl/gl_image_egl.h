@@ -46,7 +46,7 @@ class GL_EXPORT GLImageEGL : public GLImage {
                   void* buffer /* EGLClientBuffer */,
                   const EGLint* attrs);
 
-  raw_ptr<void> egl_image_ /* EGLImageKHR */;
+  raw_ptr<void, DanglingUntriaged> egl_image_ /* EGLImageKHR */;
   const gfx::Size size_;
   base::ThreadChecker thread_checker_;
 };

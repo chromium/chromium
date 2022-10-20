@@ -633,19 +633,19 @@ class ExtensionService : public ExtensionServiceInterface,
       const std::string& extension_id,
       const absl::optional<CrxInstallError>& error);
 
-  raw_ptr<const base::CommandLine> command_line_ = nullptr;
+  raw_ptr<const base::CommandLine, DanglingUntriaged> command_line_ = nullptr;
 
   // The normal profile associated with this ExtensionService.
   raw_ptr<Profile> profile_ = nullptr;
 
   // The ExtensionSystem for the profile above.
-  raw_ptr<ExtensionSystem> system_ = nullptr;
+  raw_ptr<ExtensionSystem, DanglingUntriaged> system_ = nullptr;
 
   // Preferences for the owning profile.
-  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
+  raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_ = nullptr;
 
   // Blocklist for the owning profile.
-  raw_ptr<Blocklist> blocklist_ = nullptr;
+  raw_ptr<Blocklist, DanglingUntriaged> blocklist_ = nullptr;
 
   ExtensionAllowlist allowlist_;
 
@@ -654,7 +654,7 @@ class ExtensionService : public ExtensionServiceInterface,
   OmahaAttributesHandler omaha_attributes_handler_;
 
   // Sets of enabled/disabled/terminated/blocklisted extensions. Not owned.
-  raw_ptr<ExtensionRegistry> registry_ = nullptr;
+  raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_ = nullptr;
 
   // Set of allowlisted enabled extensions loaded from the
   // --disable-extensions-except command line flag.

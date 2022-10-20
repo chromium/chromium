@@ -62,7 +62,7 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
   bool initialized_ = false;
 
   sk_sp<SkSurface> surface_;
-  raw_ptr<SkiaSurfaceProvider> provider_ = nullptr;
+  raw_ptr<SkiaSurfaceProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 }  // namespace vr

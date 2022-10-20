@@ -472,8 +472,9 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  protected:
-  raw_ptr<BackgroundFetchDelegateImpl> delegate_ = nullptr;
-  raw_ptr<download::BackgroundDownloadService> download_service_ = nullptr;
+  raw_ptr<BackgroundFetchDelegateImpl, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<download::BackgroundDownloadService, DanglingUntriaged>
+      download_service_ = nullptr;
   base::OnceClosure click_event_closure_;
 
   std::unique_ptr<WaitableDownloadLoggerObserver> download_observer_;
@@ -502,7 +503,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
-  raw_ptr<Browser> active_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> active_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {

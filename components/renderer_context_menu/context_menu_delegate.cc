@@ -21,7 +21,8 @@ class ContextMenuDelegateUserData : public base::SupportsUserData::Data {
   ContextMenuDelegate* menu_delegate() { return menu_delegate_; }
 
  private:
-  raw_ptr<ContextMenuDelegate> menu_delegate_;  // not owned by us.
+  raw_ptr<ContextMenuDelegate, DanglingUntriaged>
+      menu_delegate_;  // not owned by us.
 };
 
 }  // namespace

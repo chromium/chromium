@@ -175,9 +175,12 @@ class ChromeAppSorting : public AppSorting,
   // Returns the number of items in |m| visible on the new tab page.
   size_t CountItemsVisibleOnNtp(const AppLaunchOrdinalMap& m) const;
 
-  const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
-  raw_ptr<const web_app::WebAppRegistrar> web_app_registrar_ = nullptr;
-  raw_ptr<web_app::WebAppSyncBridge> web_app_sync_bridge_ = nullptr;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
+      nullptr;
+  raw_ptr<const web_app::WebAppRegistrar, DanglingUntriaged>
+      web_app_registrar_ = nullptr;
+  raw_ptr<web_app::WebAppSyncBridge, DanglingUntriaged> web_app_sync_bridge_ =
+      nullptr;
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       app_registrar_observation_{this};

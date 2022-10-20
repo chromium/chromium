@@ -471,7 +471,7 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
     }
 
    private:
-    const raw_ptr<gl::GLImage> gl_image_;
+    const raw_ptr<gl::GLImage, DanglingUntriaged> gl_image_;
     gfx::GpuFenceHandle acquire_fence_;
     gfx::GpuFenceHandle release_fence_;
   };

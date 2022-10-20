@@ -103,9 +103,10 @@ class AdsInterventionManager {
  private:
   // The SubresourceFilterContentSettingsManager is guaranteed to outlive the
   // AdsInterventionManager. Both are bound to the profile.
-  raw_ptr<SubresourceFilterContentSettingsManager> settings_manager_ = nullptr;
+  raw_ptr<SubresourceFilterContentSettingsManager, DanglingUntriaged>
+      settings_manager_ = nullptr;
 
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<base::Clock, DanglingUntriaged> clock_;
 };
 
 }  // namespace subresource_filter

@@ -77,7 +77,7 @@ class VIEWS_EXPORT DragDropClientMac : public remote_cocoa::DragDropClient {
   int last_operation_ = 0;
 
   // The bridge between the content view and the drag drop client.
-  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge>
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge, DanglingUntriaged>
       bridge_;  // Weak. Owns |this|.
 
   // The closure for the drag and drop's run loop.

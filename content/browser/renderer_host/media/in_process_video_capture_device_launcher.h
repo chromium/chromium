@@ -111,7 +111,8 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
       std::vector<media::VideoCaptureDeviceInfo> devices_info);
 
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
-  const raw_ptr<media::VideoCaptureSystem> video_capture_system_;
+  const raw_ptr<media::VideoCaptureSystem, DanglingUntriaged>
+      video_capture_system_;
   State state_;
   std::unique_ptr<media::FakeVideoCaptureDeviceFactory> fake_device_factory_;
 };

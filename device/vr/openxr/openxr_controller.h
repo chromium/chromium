@@ -169,7 +169,7 @@ class OpenXrController {
       button_action_map_;
   std::unordered_map<OpenXrAxisType, XrAction> axis_action_map_;
 
-  raw_ptr<const OpenXRPathHelper> path_helper_;
+  raw_ptr<const OpenXRPathHelper, DanglingUntriaged> path_helper_;
   raw_ptr<const OpenXrExtensionHelper> extension_helper_;
 };
 

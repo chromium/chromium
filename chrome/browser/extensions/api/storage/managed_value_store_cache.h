@@ -92,14 +92,15 @@ class ManagedValueStoreCache : public ValueStoreCache,
 
   // The profile that owns the extension system being used. This is used to
   // get the PolicyService, the EventRouter and the ExtensionService.
-  raw_ptr<Profile> profile_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
+  raw_ptr<Profile, DanglingUntriaged> profile_
+      GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // The policy domain. This is used for both updating the schema registry with
   // the list of extensions and for observing the policy updates.
   policy::PolicyDomain policy_domain_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // The |profile_|'s PolicyService.
-  raw_ptr<policy::PolicyService> policy_service_
+  raw_ptr<policy::PolicyService, DanglingUntriaged> policy_service_
       GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // Observes extension loading and unloading, and keeps the Profile's

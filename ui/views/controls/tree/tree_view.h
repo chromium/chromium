@@ -286,7 +286,7 @@ class VIEWS_EXPORT TreeView : public View,
 
    private:
     // The node from the model.
-    raw_ptr<ui::TreeModelNode> model_node_ = nullptr;
+    raw_ptr<ui::TreeModelNode, DanglingUntriaged> model_node_ = nullptr;
 
     // A virtual accessibility view that is used to expose information about
     // this node to assistive software.

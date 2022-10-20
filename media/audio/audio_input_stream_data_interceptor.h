@@ -63,7 +63,7 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
  private:
   const CreateDebugRecorderCB create_debug_recorder_cb_;
   std::unique_ptr<AudioDebugRecorder> debug_recorder_;
-  const raw_ptr<AudioInputStream> stream_;
+  const raw_ptr<AudioInputStream, DanglingUntriaged> stream_;
   raw_ptr<AudioInputStream::AudioInputCallback> callback_;
   SEQUENCE_CHECKER(sequence_checker_);
 };

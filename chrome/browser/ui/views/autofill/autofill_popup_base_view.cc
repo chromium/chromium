@@ -89,7 +89,8 @@ class AutofillPopupBaseView::Widget : public views::Widget {
   }
 
  private:
-  const raw_ptr<AutofillPopupBaseView> autofill_popup_base_view_;
+  const raw_ptr<AutofillPopupBaseView, DanglingUntriaged>
+      autofill_popup_base_view_;
 };
 
 // static

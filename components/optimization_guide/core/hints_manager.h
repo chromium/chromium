@@ -471,10 +471,10 @@ class HintsManager : public OptimizationHintsComponentObserver,
   std::unique_ptr<HintsFetcherFactory> hints_fetcher_factory_;
 
   // The top host provider that can be queried. Not owned.
-  raw_ptr<TopHostProvider> top_host_provider_ = nullptr;
+  raw_ptr<TopHostProvider, DanglingUntriaged> top_host_provider_ = nullptr;
 
   // The tab URL provider that can be queried. Not owned.
-  raw_ptr<TabUrlProvider> tab_url_provider_ = nullptr;
+  raw_ptr<TabUrlProvider, DanglingUntriaged> tab_url_provider_ = nullptr;
 
   // The timer used to schedule fetching hints from the remote Optimization
   // Guide Service.
@@ -487,7 +487,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The logger that plumbs the debug logs to the optimization guide
   // internals page. Not owned. Guaranteed to outlive |this|, since the logger
   // and |this| are owned by the optimization guide keyed service.
-  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger, DanglingUntriaged>
+      optimization_guide_logger_;
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.

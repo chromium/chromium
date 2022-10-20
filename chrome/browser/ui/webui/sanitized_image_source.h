@@ -124,7 +124,7 @@ class SanitizedImageSource : public content::URLDataSource {
       std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames);
 
   // Owned by `IdentityManagerFactory` or `IdentityTestEnvironment`.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

@@ -35,7 +35,7 @@ class AppWindowNativeWidgetMac : public views::NativeWidgetMac {
  private:
   // Weak. Owned by extensions::AppWindow (which manages our Widget via its
   // WebContents).
-  raw_ptr<extensions::NativeAppWindow> native_app_window_;
+  raw_ptr<extensions::NativeAppWindow, DanglingUntriaged> native_app_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_NATIVE_WIDGET_MAC_H_

@@ -102,10 +102,10 @@ class CertificateSelector : public views::DialogDelegateView,
   bool show_provider_column_ = false;
   std::unique_ptr<CertificateTableModel> model_;
 
-  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
-  raw_ptr<views::TableView> table_ = nullptr;
-  raw_ptr<views::LabelButton> view_cert_button_ = nullptr;
+  raw_ptr<views::TableView, DanglingUntriaged> table_ = nullptr;
+  raw_ptr<views::LabelButton, DanglingUntriaged> view_cert_button_ = nullptr;
 };
 
 }  // namespace chrome

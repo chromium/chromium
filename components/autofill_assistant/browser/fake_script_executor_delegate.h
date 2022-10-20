@@ -137,7 +137,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   GURL current_url_;
   raw_ptr<Service> service_ = nullptr;
   raw_ptr<WebController> web_controller_ = nullptr;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
   std::unique_ptr<JsFlowDevtoolsWrapper> js_flow_devtools_wrapper_;
   std::string js_flow_library_;
   std::unique_ptr<TriggerContext> trigger_context_;

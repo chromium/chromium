@@ -440,11 +440,12 @@ class BookmarkModel : public BookmarkUndoProvider,
   // |owned_root_|. Once loading has completed, |owned_root_| is destroyed and
   // this is set to url_index_->root(). |owned_root_| is done as lots of
   // existing code assumes the root is non-null while loading.
-  raw_ptr<BookmarkNode> root_ = nullptr;
+  raw_ptr<BookmarkNode, DanglingUntriaged> root_ = nullptr;
 
-  raw_ptr<BookmarkPermanentNode> bookmark_bar_node_ = nullptr;
-  raw_ptr<BookmarkPermanentNode> other_node_ = nullptr;
-  raw_ptr<BookmarkPermanentNode> mobile_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> bookmark_bar_node_ =
+      nullptr;
+  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> other_node_ = nullptr;
+  raw_ptr<BookmarkPermanentNode, DanglingUntriaged> mobile_node_ = nullptr;
 
   // The maximum ID assigned to the bookmark nodes in the model.
   int64_t next_node_id_ = 1;
@@ -474,7 +475,7 @@ class BookmarkModel : public BookmarkUndoProvider,
 
   std::set<std::string> non_cloned_keys_;
 
-  raw_ptr<BookmarkUndoDelegate> undo_delegate_ = nullptr;
+  raw_ptr<BookmarkUndoDelegate, DanglingUntriaged> undo_delegate_ = nullptr;
   std::unique_ptr<BookmarkUndoDelegate> empty_undo_delegate_;
 
   scoped_refptr<ModelLoader> model_loader_;

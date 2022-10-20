@@ -239,7 +239,7 @@ class WaylandSurface {
 
     wl::Object<zwp_linux_buffer_release_v1> linux_buffer_release;
     // The buffer associated with this explicit release.
-    raw_ptr<wl_buffer> buffer;
+    raw_ptr<wl_buffer, DanglingUntriaged> buffer;
     // The associated release callback with this request.
     ExplicitReleaseCallback explicit_release_callback;
   };
@@ -265,7 +265,7 @@ class WaylandSurface {
     // buffer_handle owning this wl_buffer is destroyed. Accessing this field
     // should ensure wl_buffer exists by calling
     // WaylandBufferManagerHost::EnsureBufferHandle(buffer_id).
-    raw_ptr<wl_buffer> buffer = nullptr;
+    raw_ptr<wl_buffer, DanglingUntriaged> buffer = nullptr;
     gfx::Size buffer_size_px;
 
     // Current scale factor of a next attached buffer used by the GPU process.

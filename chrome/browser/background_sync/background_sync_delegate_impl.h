@@ -86,11 +86,13 @@ class BackgroundSyncDelegateImpl
       site_engagement::EngagementType engagement_type) override;
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   bool off_the_record_;
-  raw_ptr<ukm::UkmBackgroundRecorderService> ukm_background_service_;
+  raw_ptr<ukm::UkmBackgroundRecorderService, DanglingUntriaged>
+      ukm_background_service_;
   // Same lifetime as |profile_|.
-  raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
+  raw_ptr<site_engagement::SiteEngagementService, DanglingUntriaged>
+      site_engagement_service_;
   std::set<url::Origin> suspended_periodic_sync_origins_;
 };
 

@@ -75,10 +75,10 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
 
     // The MenuModel corresponding to this MenuItem, or null if this MenuItem is
     // not a submenu.  This can happen for leaf items or an empty root item.
-    const raw_ptr<ui::MenuModel> menu;
+    const raw_ptr<ui::MenuModel, DanglingUntriaged> menu;
     // |containing_menu| will be null for the root item.  If it's null, then
     // |containing_menu_index| is meaningless.
-    const raw_ptr<ui::MenuModel> containing_menu;
+    const raw_ptr<ui::MenuModel, DanglingUntriaged> containing_menu;
     const size_t containing_menu_index;
   };
 

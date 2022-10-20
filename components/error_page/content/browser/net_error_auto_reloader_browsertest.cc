@@ -148,7 +148,7 @@ class DeferNextNavigationThrottleInserter
   }
 
   const content::TestNavigationThrottleInserter throttle_inserter_;
-  raw_ptr<DeferringThrottle> throttle_ = nullptr;
+  raw_ptr<DeferringThrottle, DanglingUntriaged> throttle_ = nullptr;
   base::RunLoop defer_wait_loop_;
   base::RunLoop finish_wait_loop_;
 };

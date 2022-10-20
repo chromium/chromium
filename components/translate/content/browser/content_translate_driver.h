@@ -150,7 +150,7 @@ class ContentTranslateDriver : public TranslateDriver,
       GetLanguageDetectionModelCallback callback,
       bool is_available);
 
-  raw_ptr<TranslateManager> translate_manager_;
+  raw_ptr<TranslateManager, DanglingUntriaged> translate_manager_;
 
   base::ObserverList<TranslationObserver, true> translation_observers_;
 

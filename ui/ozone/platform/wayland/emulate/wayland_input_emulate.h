@@ -124,10 +124,10 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     bool buffer_attached_and_configured = false;
 
     // Frame callback that invokes WaylandInputEmulate::FrameCallbackHandler.
-    raw_ptr<struct wl_callback> frame_callback = nullptr;
+    raw_ptr<struct wl_callback, DanglingUntriaged> frame_callback = nullptr;
 
     // The attached buffer.
-    raw_ptr<wl_buffer> buffer = nullptr;
+    raw_ptr<wl_buffer, DanglingUntriaged> buffer = nullptr;
 
     // True if the window was created or assigned a role and is now waiting for
     // a buffer to be committed.

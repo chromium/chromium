@@ -221,7 +221,7 @@ class HungRendererDialogView : public views::DialogDelegateView,
   static void BypassActiveBrowserRequirementForTests();
 
   // The WebContents that this dialog was created for and is associated with.
-  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   // The label describing the list.
   raw_ptr<views::Label> info_label_ = nullptr;

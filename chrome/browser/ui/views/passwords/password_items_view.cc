@@ -149,7 +149,8 @@ class PasswordItemsView::PasswordRow {
   void UndoButtonPressed();
 
   const raw_ptr<PasswordItemsView> parent_;
-  const raw_ptr<const password_manager::PasswordForm> password_form_;
+  const raw_ptr<const password_manager::PasswordForm, DanglingUntriaged>
+      password_form_;
   bool deleted_ = false;
 };
 

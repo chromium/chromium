@@ -188,9 +188,10 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   std::unique_ptr<WebAppUrlLoader> url_loader_;
 
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
-  raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
+  raw_ptr<OsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
+      nullptr;
   raw_ptr<WebAppInstallFinalizer> finalizer_ = nullptr;
-  raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
+  raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
   raw_ptr<WebAppTranslationManager> translation_manager_ = nullptr;
   raw_ptr<WebAppIconManager> icon_manager_ = nullptr;

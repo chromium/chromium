@@ -65,7 +65,7 @@ class BubbleButtonController : public views::ButtonController {
   }
 
  private:
-  raw_ptr<BubbleOwnerDelegate> bubble_owner_ = nullptr;
+  raw_ptr<BubbleOwnerDelegate, DanglingUntriaged> bubble_owner_ = nullptr;
 };
 
 ChipController::ChipController(Browser* browser, OmniboxChipButton* chip_view)

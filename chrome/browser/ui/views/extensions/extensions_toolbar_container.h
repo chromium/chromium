@@ -309,8 +309,9 @@ class ExtensionsToolbarContainer
   // `extensions_features::kExtensionsMenuAccessControl` experiment is released.
   // Exactly one of `extensions_button_ and `extensions_controls_` is created;
   // the other is null.
-  const raw_ptr<ExtensionsToolbarButton> extensions_button_;
-  const raw_ptr<ExtensionsToolbarControls> extensions_controls_;
+  const raw_ptr<ExtensionsToolbarButton, DanglingUntriaged> extensions_button_;
+  const raw_ptr<ExtensionsToolbarControls, DanglingUntriaged>
+      extensions_controls_;
   DisplayMode display_mode_;
 
   // Controller for showing the toolbar action hover card.

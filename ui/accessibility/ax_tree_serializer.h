@@ -201,13 +201,13 @@ class AXTreeSerializer {
   ClientTreeNode* GetClientTreeNodeParent(ClientTreeNode* obj);
 
   // The tree source.
-  raw_ptr<AXTreeSource<AXSourceNode>> tree_;
+  raw_ptr<AXTreeSource<AXSourceNode>, DanglingUntriaged> tree_;
 
   // The tree data most recently sent to the client.
   AXTreeData client_tree_data_;
 
   // Our representation of the client tree.
-  raw_ptr<ClientTreeNode> client_root_ = nullptr;
+  raw_ptr<ClientTreeNode, DanglingUntriaged> client_root_ = nullptr;
 
   // A map from IDs to nodes in the client tree.
   std::map<AXNodeID, ClientTreeNode*> client_id_map_;
@@ -244,7 +244,7 @@ struct AX_EXPORT ClientTreeNode {
   ClientTreeNode();
   virtual ~ClientTreeNode();
   AXNodeID id;
-  raw_ptr<ClientTreeNode> parent;
+  raw_ptr<ClientTreeNode, DanglingUntriaged> parent;
   std::vector<ClientTreeNode*> children;
   bool ignored;
   bool invalid;

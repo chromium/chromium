@@ -172,10 +172,10 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   raw_ptr<CastDialogController> controller_;
 
   // ScrollView containing the list of sink buttons.
-  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
 
   // View shown while there are no sinks.
-  raw_ptr<views::View> no_sinks_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> no_sinks_view_ = nullptr;
 
   const raw_ptr<Profile> profile_;
 

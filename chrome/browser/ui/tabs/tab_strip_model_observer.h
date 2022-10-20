@@ -227,8 +227,8 @@ struct TabStripSelectionChange {
     return selected_tabs_were_removed || old_model != new_model;
   }
 
-  raw_ptr<content::WebContents> old_contents = nullptr;
-  raw_ptr<content::WebContents> new_contents = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> old_contents = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> new_contents = nullptr;
 
   ui::ListSelectionModel old_model;
   ui::ListSelectionModel new_model;

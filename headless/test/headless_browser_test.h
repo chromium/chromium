@@ -163,8 +163,9 @@ class HeadlessAsyncDevTooledBrowserTest : public HeadlessBrowserTest,
  protected:
   void RunTest();
 
-  raw_ptr<HeadlessBrowserContext> browser_context_;  // Not owned.
-  raw_ptr<HeadlessWebContents> web_contents_;
+  raw_ptr<HeadlessBrowserContext, DanglingUntriaged>
+      browser_context_;  // Not owned.
+  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_;
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
   std::unique_ptr<HeadlessDevToolsClient> browser_devtools_client_;
   bool render_process_exited_;

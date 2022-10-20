@@ -1164,7 +1164,7 @@ class NotificationPlatformBridgeLinuxImpl
 
   scoped_refptr<dbus::Bus> bus_;
 
-  raw_ptr<dbus::ObjectProxy> notification_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, DanglingUntriaged> notification_proxy_ = nullptr;
 
   std::unordered_set<std::string> capabilities_;
 

@@ -102,7 +102,8 @@ class DefaultModelManager {
 
   // Default model providers.
   std::map<SegmentId, std::unique_ptr<ModelProvider>> default_model_providers_;
-  const raw_ptr<ModelProviderFactory> model_provider_factory_;
+  const raw_ptr<ModelProviderFactory, DanglingUntriaged>
+      model_provider_factory_;
 
   base::WeakPtrFactory<DefaultModelManager> weak_ptr_factory_{this};
 };

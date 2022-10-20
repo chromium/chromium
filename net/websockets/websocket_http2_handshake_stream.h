@@ -134,7 +134,8 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
 
   // Owned by another object.
   // |connect_delegate| will live during the lifetime of this object.
-  const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
+  const raw_ptr<WebSocketStream::ConnectDelegate, DanglingUntriaged>
+      connect_delegate_;
 
   raw_ptr<HttpResponseInfo> http_response_info_ = nullptr;
 
@@ -146,9 +147,9 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // The extensions we requested.
   std::vector<std::string> requested_extensions_;
 
-  const raw_ptr<WebSocketStreamRequestAPI> stream_request_;
+  const raw_ptr<WebSocketStreamRequestAPI, DanglingUntriaged> stream_request_;
 
-  raw_ptr<const HttpRequestInfo> request_info_ = nullptr;
+  raw_ptr<const HttpRequestInfo, DanglingUntriaged> request_info_ = nullptr;
 
   RequestPriority priority_;
 

@@ -236,7 +236,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   const gpu::GpuDriverBugWorkarounds workarounds_;
   std::unique_ptr<MediaLog> media_log_;
 
-  raw_ptr<VideoDecodeAccelerator::Client> client_ = nullptr;
+  raw_ptr<VideoDecodeAccelerator::Client, DanglingUntriaged> client_ = nullptr;
   State state_ = STATE_DECODING;
 
   // Queue of pending flush tasks. This is used to drop frames when a reset

@@ -193,9 +193,9 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void MaybeInstallAppsFromSyncAndPendingInstallation();
 
   std::unique_ptr<WebAppDatabase> database_;
-  const raw_ptr<WebAppRegistrarMutable> registrar_;
-  raw_ptr<SyncInstallDelegate> install_delegate_;
-  raw_ptr<WebAppCommandManager> command_manager_;
+  const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
+  raw_ptr<SyncInstallDelegate, DanglingUntriaged> install_delegate_;
+  raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_;
 
   bool is_in_update_ = false;
   bool disable_checks_for_testing_ = false;

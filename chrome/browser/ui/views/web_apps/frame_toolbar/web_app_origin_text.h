@@ -45,7 +45,7 @@ class WebAppOriginText : public views::View, public ui::LayerAnimationObserver {
 
  private:
   // Owned by the views hierarchy.
-  raw_ptr<views::Label> label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> label_ = nullptr;
 
   base::WeakPtrFactory<WebAppOriginText> weak_factory_{this};
 };

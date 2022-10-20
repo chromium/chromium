@@ -497,7 +497,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   }
 
   const raw_ptr<PooledSingleThreadTaskRunnerManager> outer_;
-  const raw_ptr<WorkerThread> worker_;
+  const raw_ptr<WorkerThread, DanglingUntriaged> worker_;
   const SingleThreadTaskRunnerThreadMode thread_mode_;
   const scoped_refptr<Sequence> sequence_;
 };

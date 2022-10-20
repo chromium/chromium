@@ -250,7 +250,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   // Populated by InstallContentScriptsExtension (called by individual tests).
   TestExtensionDir dir_;
-  raw_ptr<const Extension> extension_ = nullptr;
+  raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,

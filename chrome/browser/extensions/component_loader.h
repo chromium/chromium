@@ -221,7 +221,7 @@ class ComponentLoader {
 
   raw_ptr<Profile> profile_;
 
-  raw_ptr<ExtensionSystem> extension_system_;
+  raw_ptr<ExtensionSystem, DanglingUntriaged> extension_system_;
 
   // List of registered component extensions (see mojom::ManifestLocation).
   typedef std::vector<ComponentExtensionInfo> RegisteredComponentExtensions;

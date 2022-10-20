@@ -439,7 +439,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // guaranteed to be executed after the opening.
   // The class owns both the |file_| pointer and the pointer pointed
   // by |*file_|.
-  raw_ptr<FILE*> file_ = nullptr;
+  raw_ptr<FILE*, DanglingUntriaged> file_ = nullptr;
 
   // If true, will try to persist the hash table to disk. Will rebuild from
   // VisitedLinkDelegate::RebuildTable if there are disk corruptions.

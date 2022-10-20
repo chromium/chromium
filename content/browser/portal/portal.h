@@ -199,7 +199,8 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
                     uint64_t trace_id,
                     ActivateCallback callback);
 
-  const raw_ptr<RenderFrameHostImpl> owner_render_frame_host_;
+  const raw_ptr<RenderFrameHostImpl, DanglingUntriaged>
+      owner_render_frame_host_;
 
   // Uniquely identifies the portal, this token is used by the browser process
   // to reference this portal when communicating with the renderer.

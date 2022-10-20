@@ -123,8 +123,8 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   gfx::Rect scissor_rect_;
 
   raw_ptr<SoftwareOutputDevice> output_device_;
-  raw_ptr<SkCanvas> root_canvas_ = nullptr;
-  raw_ptr<SkCanvas> current_canvas_ = nullptr;
+  raw_ptr<SkCanvas, DanglingUntriaged> root_canvas_ = nullptr;
+  raw_ptr<SkCanvas, DanglingUntriaged> current_canvas_ = nullptr;
   SkPaint current_paint_;
   SkSamplingOptions current_sampling_;
   std::unique_ptr<SkCanvas> current_framebuffer_canvas_;

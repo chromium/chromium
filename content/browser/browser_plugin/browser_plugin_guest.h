@@ -90,7 +90,7 @@ class BrowserPluginGuest : public WebContentsObserver {
 
   void InitInternal(WebContentsImpl* owner_web_contents);
 
-  const raw_ptr<BrowserPluginGuestDelegate> delegate_;
+  const raw_ptr<BrowserPluginGuestDelegate, DanglingUntriaged> delegate_;
 };
 
 }  // namespace content

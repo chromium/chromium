@@ -83,9 +83,9 @@ class SkiaOutputDevice {
 
    private:
     std::vector<GrBackendSemaphore> end_semaphores_;
-    const raw_ptr<SkiaOutputDevice> device_;
+    const raw_ptr<SkiaOutputDevice, DanglingUntriaged> device_;
     // Null when using vulkan secondary command buffer.
-    const raw_ptr<SkSurface> sk_surface_;
+    const raw_ptr<SkSurface, DanglingUntriaged> sk_surface_;
   };
 
   using BufferPresentedCallback =

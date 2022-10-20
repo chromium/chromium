@@ -49,7 +49,7 @@ class WebAppCommandScheduler {
   // operations.
 
  private:
-  raw_ptr<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider, DanglingUntriaged> provider_;
   bool is_in_shutdown_ = false;
 
   base::WeakPtrFactory<WebAppCommandScheduler> weak_ptr_factory_{this};

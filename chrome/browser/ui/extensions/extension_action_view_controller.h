@@ -177,7 +177,8 @@ class ExtensionActionViewController
 
   // The browser action this view represents. The ExtensionAction is not owned
   // by this class.
-  const raw_ptr<extensions::ExtensionAction> extension_action_;
+  const raw_ptr<extensions::ExtensionAction, DanglingUntriaged>
+      extension_action_;
 
   // The corresponding ExtensionsContainer on the toolbar.
   const raw_ptr<ExtensionsContainer> extensions_container_;

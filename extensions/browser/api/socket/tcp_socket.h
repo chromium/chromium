@@ -140,7 +140,7 @@ class TCPSocket : public Socket {
 
   // |this| doesn't outlive |browser_context_| because |this| is owned by
   // ApiResourceManager which is a BrowserContextKeyedAPI.
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 
   SocketMode socket_mode_;
 

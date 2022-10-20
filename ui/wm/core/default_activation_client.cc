@@ -35,7 +35,7 @@ class DefaultActivationClient::Deleter : public aura::WindowObserver {
     delete this;
   }
 
-  raw_ptr<DefaultActivationClient> client_;
+  raw_ptr<DefaultActivationClient, DanglingUntriaged> client_;
   raw_ptr<aura::Window> root_window_;
 };
 

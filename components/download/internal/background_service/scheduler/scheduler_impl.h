@@ -54,10 +54,10 @@ class SchedulerImpl : public Scheduler {
       const DeviceStatus& device_status);
 
   // Used to create platform dependent background tasks.
-  raw_ptr<TaskScheduler> task_scheduler_;
+  raw_ptr<TaskScheduler, DanglingUntriaged> task_scheduler_;
 
   // Download service configuration.
-  raw_ptr<Configuration> config_;
+  raw_ptr<Configuration, DanglingUntriaged> config_;
 
   // List of all download client id, used in round robin load balancing.
   // Downloads will be delivered to clients with incremental order based on

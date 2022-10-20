@@ -448,7 +448,7 @@ class AppBannerManager : public content::WebContentsObserver,
   InstallableStatusCode TerminationCode() const;
 
   // Fetches the data required to display a banner for the current page.
-  raw_ptr<InstallableManager> manager_;
+  raw_ptr<InstallableManager, DanglingUntriaged> manager_;
 
   // The manifest object. This is never null, it will instead be an empty
   // manifest so callers don't have to worry about null checks.

@@ -143,7 +143,7 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
   };
 
   struct Endpoint {
-    raw_ptr<const mojom::UsbInterfaceInfo> interface;
+    raw_ptr<const mojom::UsbInterfaceInfo, DanglingUntriaged> interface;
     mojom::UsbTransferType type;
   };
 

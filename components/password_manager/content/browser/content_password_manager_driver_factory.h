@@ -73,8 +73,8 @@ class ContentPasswordManagerDriverFactory
   std::map<content::RenderFrameHost*, ContentPasswordManagerDriver>
       frame_driver_map_;
 
-  raw_ptr<PasswordManagerClient> password_client_;
-  raw_ptr<autofill::AutofillClient> autofill_client_;
+  raw_ptr<PasswordManagerClient, DanglingUntriaged> password_client_;
+  raw_ptr<autofill::AutofillClient, DanglingUntriaged> autofill_client_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

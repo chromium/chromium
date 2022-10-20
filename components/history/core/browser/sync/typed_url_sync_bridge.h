@@ -237,7 +237,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // A non-owning pointer to the backend, which we're syncing local changes from
   // and sync changes to.
-  const raw_ptr<HistoryBackend> history_backend_;
+  const raw_ptr<HistoryBackend, DanglingUntriaged> history_backend_;
 
   // Whether we're currently processing changes from the syncer. While this is
   // true, we ignore any local url changes, since we triggered them.
@@ -245,7 +245,8 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // A non-owning pointer to the database, which is for storing typed urls sync
   // metadata and state.
-  raw_ptr<TypedURLSyncMetadataDatabase> sync_metadata_database_;
+  raw_ptr<TypedURLSyncMetadataDatabase, DanglingUntriaged>
+      sync_metadata_database_;
 
   // Since HistoryBackend use SequencedTaskRunner, so should use SequenceChecker
   // here.

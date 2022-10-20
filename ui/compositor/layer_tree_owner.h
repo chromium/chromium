@@ -34,7 +34,7 @@ class COMPOSITOR_EXPORT LayerTreeOwner {
   const Layer* root() const { return root_; }
 
  private:
-  raw_ptr<Layer> root_;
+  raw_ptr<Layer, DanglingUntriaged> root_;
 };
 
 }  // namespace

@@ -34,7 +34,7 @@ class PageInfoSecurityContentView : public views::View, public PageInfoUI {
 
   void SecurityDetailsClicked(const ui::Event& event);
 
-  raw_ptr<PageInfo> presenter_;
+  raw_ptr<PageInfo, DanglingUntriaged> presenter_;
 
   // The button that opens the "Certificate" dialog.
   raw_ptr<PageInfoHoverButton> certificate_button_ = nullptr;

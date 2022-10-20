@@ -172,9 +172,9 @@ class CoalescingCertVerifier::Request
   void OnJobAbort();
 
  private:
-  raw_ptr<CoalescingCertVerifier::Job> job_;
+  raw_ptr<CoalescingCertVerifier::Job, DanglingUntriaged> job_;
 
-  raw_ptr<CertVerifyResult> verify_result_;
+  raw_ptr<CertVerifyResult, DanglingUntriaged> verify_result_;
   CompletionOnceCallback callback_;
   const NetLogWithSource net_log_;
 };

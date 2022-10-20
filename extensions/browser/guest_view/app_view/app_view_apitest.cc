@@ -130,7 +130,7 @@ class AppViewTest : public AppShellTest {
   }
 
  private:
-  raw_ptr<content::WebContents> embedder_web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> embedder_web_contents_;
 };
 
 // Tests that <appview> correctly processes parameters passed on connect.

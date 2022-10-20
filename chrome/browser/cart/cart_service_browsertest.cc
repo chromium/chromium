@@ -128,8 +128,8 @@ class CartServiceBrowserTest : public InProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<CartService> service_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<CartService, DanglingUntriaged> service_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 

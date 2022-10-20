@@ -122,11 +122,11 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
     return true;
   }
 
-  const raw_ptr<Delegate> delegate_;
-  raw_ptr<JsFlowDevtoolsWrapper> js_flow_devtools_wrapper_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
+  raw_ptr<JsFlowDevtoolsWrapper, DanglingUntriaged> js_flow_devtools_wrapper_;
 
   // Only set during a flow.
-  raw_ptr<DevtoolsClient> devtools_client_;
+  raw_ptr<DevtoolsClient, DanglingUntriaged> devtools_client_;
   int isolated_world_context_id_ = -1;
 
   std::unique_ptr<std::string> js_flow_;

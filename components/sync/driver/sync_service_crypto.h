@@ -174,7 +174,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     State& operator=(State&& other) = default;
 
     // Not-null when the engine is initialized.
-    raw_ptr<SyncEngine> engine = nullptr;
+    raw_ptr<SyncEngine, DanglingUntriaged> engine = nullptr;
 
     // Populated when the engine is initialized.
     CoreAccountInfo account_info;

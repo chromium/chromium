@@ -108,7 +108,7 @@ class ANIMATION_EXPORT SlideAnimation : public LinearAnimation {
   // Overridden from Animation.
   void AnimateToState(double state) override;
 
-  raw_ptr<AnimationDelegate> target_;
+  raw_ptr<AnimationDelegate, DanglingUntriaged> target_;
 
   Tween::Type tween_type_ = Tween::EASE_OUT;
 

@@ -85,7 +85,7 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
   }
 
  protected:
-  raw_ptr<TestStorageMonitor> monitor_;
+  raw_ptr<TestStorageMonitor, DanglingUntriaged> monitor_;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemStorageEjectApiTest, EjectTest) {

@@ -84,7 +84,7 @@ class GPU_EXPORT MemoryTypeTracker {
  private:
   void TrackMemoryAllocatedChange(int64_t delta);
 
-  const raw_ptr<MemoryTracker> memory_tracker_;
+  const raw_ptr<MemoryTracker, DanglingUntriaged> memory_tracker_;
 
   size_t mem_represented_ GUARDED_BY(lock_) = 0;
   mutable base::Lock lock_;

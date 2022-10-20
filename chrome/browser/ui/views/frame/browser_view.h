@@ -972,7 +972,7 @@ class BrowserView : public BrowserWindow,
   void UpdateIsIsolatedWebApp();
 
   // The BrowserFrame that hosts this view.
-  raw_ptr<BrowserFrame> frame_ = nullptr;
+  raw_ptr<BrowserFrame, DanglingUntriaged> frame_ = nullptr;
 
   // The Browser object we are associated with.
   std::unique_ptr<Browser> browser_;
@@ -1004,16 +1004,18 @@ class BrowserView : public BrowserWindow,
   // The view that manages the tab strip, toolbar, and sometimes the bookmark
   // bar. Stacked top in the view hiearachy so it can be used to slide out
   // the top views in immersive fullscreen.
-  raw_ptr<TopContainerView> top_container_ = nullptr;
+  raw_ptr<TopContainerView, DanglingUntriaged> top_container_ = nullptr;
 
   // The view that contains the tabstrip, new tab button, and grab handle space.
-  raw_ptr<TabStripRegionView> tab_strip_region_view_ = nullptr;
+  raw_ptr<TabStripRegionView, DanglingUntriaged> tab_strip_region_view_ =
+      nullptr;
 
   // The TabStrip.
-  raw_ptr<TabStrip> tabstrip_ = nullptr;
+  raw_ptr<TabStrip, DanglingUntriaged> tabstrip_ = nullptr;
 
   // the webui based tabstrip, when applicable. see https://crbug.com/989131.
-  raw_ptr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;
+  raw_ptr<WebUITabStripContainerView, DanglingUntriaged> webui_tab_strip_ =
+      nullptr;
 
   // Allows us to react to changes in accessibility mode.
   // TODO(dfried): this is only used to disable WebUI tabstrip (see above) while
@@ -1023,20 +1025,20 @@ class BrowserView : public BrowserWindow,
   std::unique_ptr<AccessibilityModeObserver> accessibility_mode_observer_;
 
   // The Toolbar containing the navigation buttons, menus and the address bar.
-  raw_ptr<ToolbarView> toolbar_ = nullptr;
+  raw_ptr<ToolbarView, DanglingUntriaged> toolbar_ = nullptr;
 
   // The OverlayView for the widget, which is used to host `top_container_`
   // during immersive reveal.
   // On Aura, this view is owned by the browser frame. On mac, this view is
   // owned by `overlay_widget_`.
   std::unique_ptr<views::ViewTargeterDelegate> overlay_view_targeter_;
-  raw_ptr<views::View> overlay_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> overlay_view_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
   // Used when calling CreateMacOverlayView(). This widget owns `overlay_view_`.
   // Its content NSView will be reparented to a NSToolbarFullScreenWindow
   // during fullscreen.
-  raw_ptr<views::Widget> overlay_widget_;
+  raw_ptr<views::Widget, DanglingUntriaged> overlay_widget_;
 #endif
 
   // The Bookmark Bar View for this window. Lazily created. May be null for
@@ -1044,43 +1046,45 @@ class BrowserView : public BrowserWindow,
   std::unique_ptr<BookmarkBarView> bookmark_bar_view_;
 
   // Separator between top container and contents.
-  raw_ptr<views::View> contents_separator_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> contents_separator_ = nullptr;
 
   // Loading bar (part of top container for / WebUI tab strip).
-  raw_ptr<TopContainerLoadingBar> loading_bar_ = nullptr;
+  raw_ptr<TopContainerLoadingBar, DanglingUntriaged> loading_bar_ = nullptr;
 
   // The do-nothing view which controls the z-order of the find bar widget
   // relative to views which paint into layers and views with an associated
   // NativeView.
-  raw_ptr<View> find_bar_host_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> find_bar_host_view_ = nullptr;
 
   // The download shelf.
-  raw_ptr<DownloadShelf> download_shelf_ = nullptr;
+  raw_ptr<DownloadShelf, DanglingUntriaged> download_shelf_ = nullptr;
 
   // The InfoBarContainerView that contains InfoBars for the current tab.
-  raw_ptr<InfoBarContainerView> infobar_container_ = nullptr;
+  raw_ptr<InfoBarContainerView, DanglingUntriaged> infobar_container_ = nullptr;
 
   // The view that contains the selected WebContents.
-  raw_ptr<ContentsWebView> contents_web_view_ = nullptr;
+  raw_ptr<ContentsWebView, DanglingUntriaged> contents_web_view_ = nullptr;
 
   // The view that contains devtools window for the selected WebContents.
-  raw_ptr<views::WebView> devtools_web_view_ = nullptr;
+  raw_ptr<views::WebView, DanglingUntriaged> devtools_web_view_ = nullptr;
 
   // The view managing the devtools and contents positions.
   // Handled by ContentsLayoutManager.
-  raw_ptr<views::View> contents_container_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> contents_container_ = nullptr;
 
   // The side panel aligned to the left or the right side of the browser window
   // depending on the kSidePanelHorizontalAlignment pref's value.
-  raw_ptr<SidePanel> unified_side_panel_ = nullptr;
-  raw_ptr<views::View> right_aligned_side_panel_separator_ = nullptr;
+  raw_ptr<SidePanel, DanglingUntriaged> unified_side_panel_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> right_aligned_side_panel_separator_ =
+      nullptr;
 
   // The side search side panel.
-  raw_ptr<SidePanel> side_search_side_panel_ = nullptr;
-  raw_ptr<views::View> left_aligned_side_panel_separator_ = nullptr;
+  raw_ptr<SidePanel, DanglingUntriaged> side_search_side_panel_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> left_aligned_side_panel_separator_ =
+      nullptr;
 
   // The Lens side panel.
-  raw_ptr<SidePanel> lens_side_panel_ = nullptr;
+  raw_ptr<SidePanel, DanglingUntriaged> lens_side_panel_ = nullptr;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
@@ -1109,7 +1113,8 @@ class BrowserView : public BrowserWindow,
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.
-  raw_ptr<ToolbarButtonProvider> toolbar_button_provider_ = nullptr;
+  raw_ptr<ToolbarButtonProvider, DanglingUntriaged> toolbar_button_provider_ =
+      nullptr;
 
   // The handler responsible for showing autofill bubbles.
   std::unique_ptr<autofill::AutofillBubbleHandler> autofill_bubble_handler_;

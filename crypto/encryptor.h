@@ -73,7 +73,7 @@ class CRYPTO_EXPORT Encryptor {
   // TODO(albertb): Support streaming encryption.
 
  private:
-  raw_ptr<const SymmetricKey> key_;
+  raw_ptr<const SymmetricKey, DanglingUntriaged> key_;
   Mode mode_;
 
   bool CryptString(bool do_encrypt,

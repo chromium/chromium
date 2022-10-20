@@ -238,7 +238,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   Profile* current_profile() { return active_browser_->profile(); }
 
   test::AutofillEnvironment autofill_environment_;
-  raw_ptr<Browser> active_browser_;
+  raw_ptr<Browser, DanglingUntriaged> active_browser_;
 };
 
 // Tests that a user can save a simple Autocomplete value.

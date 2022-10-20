@@ -639,7 +639,7 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
     DirectiveMapping(DirectiveStatus status) : status(std::move(status)) {}
 
     DirectiveStatus status;
-    raw_ptr<const CSPParser::Directive> directive = nullptr;
+    raw_ptr<const CSPParser::Directive, DanglingUntriaged> directive = nullptr;
   };
 
   DirectiveMapping script_src_mapping({DirectiveStatus({kScriptSrc})});

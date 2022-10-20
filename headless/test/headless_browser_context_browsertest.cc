@@ -147,8 +147,8 @@ class HeadlessBrowserContextIsolationTest
   }
 
  private:
-  raw_ptr<HeadlessBrowserContext> browser_context_;
-  raw_ptr<HeadlessWebContents> web_contents2_;
+  raw_ptr<HeadlessBrowserContext, DanglingUntriaged> browser_context_;
+  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents2_;
   std::unique_ptr<HeadlessDevToolsClient> devtools_client2_;
   std::unique_ptr<LoadObserver> load_observer_;
 };

@@ -169,33 +169,36 @@ class BrowserViewLayout : public views::LayoutManager {
   gfx::NativeView const host_view_;
 
   // The owning browser view.
-  const raw_ptr<BrowserView> browser_view_;
+  const raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
 
   // Child views that the layout manager manages.
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
-  const raw_ptr<views::View> top_container_;
-  const raw_ptr<TabStripRegionView> tab_strip_region_view_;
-  const raw_ptr<views::View> toolbar_;
-  const raw_ptr<InfoBarContainerView> infobar_container_;
-  const raw_ptr<views::View> contents_container_;
-  const raw_ptr<views::View> side_search_side_panel_;
-  const raw_ptr<views::View> left_aligned_side_panel_separator_;
-  const raw_ptr<views::View> unified_side_panel_;
-  const raw_ptr<views::View> right_aligned_side_panel_separator_;
-  const raw_ptr<views::View> lens_side_panel_;
-  const raw_ptr<ImmersiveModeController> immersive_mode_controller_;
-  const raw_ptr<views::View> contents_separator_;
+  const raw_ptr<views::View, DanglingUntriaged> top_container_;
+  const raw_ptr<TabStripRegionView, DanglingUntriaged> tab_strip_region_view_;
+  const raw_ptr<views::View, DanglingUntriaged> toolbar_;
+  const raw_ptr<InfoBarContainerView, DanglingUntriaged> infobar_container_;
+  const raw_ptr<views::View, DanglingUntriaged> contents_container_;
+  const raw_ptr<views::View, DanglingUntriaged> side_search_side_panel_;
+  const raw_ptr<views::View, DanglingUntriaged>
+      left_aligned_side_panel_separator_;
+  const raw_ptr<views::View, DanglingUntriaged> unified_side_panel_;
+  const raw_ptr<views::View, DanglingUntriaged>
+      right_aligned_side_panel_separator_;
+  const raw_ptr<views::View, DanglingUntriaged> lens_side_panel_;
+  const raw_ptr<ImmersiveModeController, DanglingUntriaged>
+      immersive_mode_controller_;
+  const raw_ptr<views::View, DanglingUntriaged> contents_separator_;
 
-  raw_ptr<views::View> webui_tab_strip_ = nullptr;
-  raw_ptr<views::View> loading_bar_ = nullptr;
-  raw_ptr<TabStrip> tab_strip_ = nullptr;
-  raw_ptr<BookmarkBarView> bookmark_bar_ = nullptr;
-  raw_ptr<views::View> download_shelf_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> webui_tab_strip_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> loading_bar_ = nullptr;
+  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_ = nullptr;
+  raw_ptr<BookmarkBarView, DanglingUntriaged> bookmark_bar_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> download_shelf_ = nullptr;
 
   // The widget displaying a border on top of contents container for
   // highlighting the content. Not created by default.
-  raw_ptr<views::Widget> contents_border_widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> contents_border_widget_ = nullptr;
 
   // The bounds within which the vertically-stacked contents of the BrowserView
   // should be laid out within. This is just the local bounds of the

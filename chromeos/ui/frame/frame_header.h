@@ -201,17 +201,19 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   // The widget that the caption buttons act on. This can be different from
   // |view_|'s widget.
-  raw_ptr<views::Widget> target_widget_;
+  raw_ptr<views::Widget, DanglingUntriaged> target_widget_;
 
   // The view into which |this| paints.
-  raw_ptr<views::View> view_;
-  raw_ptr<views::FrameCaptionButton> back_button_ =
-      nullptr;                                       // May remain nullptr.
-  raw_ptr<views::View> left_header_view_ = nullptr;  // May remain nullptr.
+  raw_ptr<views::View, DanglingUntriaged> view_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged> back_button_ =
+      nullptr;  // May remain nullptr.
+  raw_ptr<views::View, DanglingUntriaged> left_header_view_ =
+      nullptr;  // May remain nullptr.
   raw_ptr<chromeos::FrameCaptionButtonContainerView> caption_button_container_ =
       nullptr;
-  raw_ptr<FrameAnimatorView> frame_animator_ = nullptr;  // owned by view tree.
-  raw_ptr<chromeos::FrameCenterButton> center_button_ =
+  raw_ptr<FrameAnimatorView, DanglingUntriaged> frame_animator_ =
+      nullptr;  // owned by view tree.
+  raw_ptr<chromeos::FrameCenterButton, DanglingUntriaged> center_button_ =
       nullptr;  // May remain nullptr.
 
   // The height of the header to paint.

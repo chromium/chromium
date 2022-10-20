@@ -270,22 +270,30 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   // translation. Then close the bubble view.
   void RevertOrDeclineTranslation();
 
-  raw_ptr<views::View> translate_view_ = nullptr;
-  raw_ptr<views::View> error_view_ = nullptr;
-  raw_ptr<views::View> advanced_view_source_ = nullptr;
-  raw_ptr<views::View> advanced_view_target_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> translate_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> error_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> advanced_view_source_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> advanced_view_target_ = nullptr;
 
-  raw_ptr<views::Combobox> source_language_combobox_ = nullptr;
-  raw_ptr<views::Combobox> target_language_combobox_ = nullptr;
+  raw_ptr<views::Combobox, DanglingUntriaged> source_language_combobox_ =
+      nullptr;
+  raw_ptr<views::Combobox, DanglingUntriaged> target_language_combobox_ =
+      nullptr;
 
-  raw_ptr<views::Checkbox> always_translate_checkbox_ = nullptr;
-  raw_ptr<views::Checkbox> advanced_always_translate_checkbox_ = nullptr;
-  raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
+  raw_ptr<views::Checkbox, DanglingUntriaged> always_translate_checkbox_ =
+      nullptr;
+  raw_ptr<views::Checkbox, DanglingUntriaged>
+      advanced_always_translate_checkbox_ = nullptr;
+  raw_ptr<views::TabbedPane, DanglingUntriaged> tabbed_pane_ = nullptr;
 
-  raw_ptr<views::LabelButton> advanced_reset_button_source_ = nullptr;
-  raw_ptr<views::LabelButton> advanced_reset_button_target_ = nullptr;
-  raw_ptr<views::LabelButton> advanced_done_button_source_ = nullptr;
-  raw_ptr<views::LabelButton> advanced_done_button_target_ = nullptr;
+  raw_ptr<views::LabelButton, DanglingUntriaged> advanced_reset_button_source_ =
+      nullptr;
+  raw_ptr<views::LabelButton, DanglingUntriaged> advanced_reset_button_target_ =
+      nullptr;
+  raw_ptr<views::LabelButton, DanglingUntriaged> advanced_done_button_source_ =
+      nullptr;
+  raw_ptr<views::LabelButton, DanglingUntriaged> advanced_done_button_target_ =
+      nullptr;
 
   // Default source/target language without user interaction.
   size_t previous_source_language_index_;

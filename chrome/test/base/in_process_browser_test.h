@@ -337,7 +337,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   //
   // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr
   // enabled. Triage.
-  raw_ptr<Browser, DegradeToNoOpWhenMTE> browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriagedDegradeToNoOpWhenMTE> browser_ = nullptr;
 
   // Used to run the process until the BrowserProcess signals the test to quit.
   std::unique_ptr<base::RunLoop> run_loop_;

@@ -85,9 +85,9 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
     window_ = nullptr;
   }
 
-  raw_ptr<MenuController> menu_controller_;
-  raw_ptr<SubmenuView> submenu_;
-  raw_ptr<aura::Window> window_;
+  raw_ptr<MenuController, DanglingUntriaged> menu_controller_;
+  raw_ptr<SubmenuView, DanglingUntriaged> submenu_;
+  raw_ptr<aura::Window, DanglingUntriaged> window_;
 };
 #endif  // USE_AURA
 

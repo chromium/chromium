@@ -33,7 +33,7 @@ class TooltipManagerMac : public TooltipManager {
   void TooltipTextChanged(View* view) override;
 
  private:
-  raw_ptr<remote_cocoa::mojom::NativeWidgetNSWindow>
+  raw_ptr<remote_cocoa::mojom::NativeWidgetNSWindow, DanglingUntriaged>
       bridge_;  // Weak. Owned by the owner of this.
 };
 

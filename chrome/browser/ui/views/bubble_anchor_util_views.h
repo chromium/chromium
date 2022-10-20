@@ -20,10 +20,10 @@ namespace bubble_anchor_util {
 
 struct AnchorConfiguration {
   // The bubble anchor view.
-  raw_ptr<views::View> anchor_view = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> anchor_view = nullptr;
 
   // The view to be highlighted, or null if it should not be used.
-  raw_ptr<views::Button> highlighted_button = nullptr;
+  raw_ptr<views::Button, DanglingUntriaged> highlighted_button = nullptr;
 
   // The arrow position for the bubble.
   views::BubbleBorder::Arrow bubble_arrow = views::BubbleBorder::TOP_LEFT;

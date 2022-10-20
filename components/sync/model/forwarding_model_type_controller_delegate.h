@@ -40,7 +40,7 @@ class ForwardingModelTypeControllerDelegate
   void RecordMemoryUsageAndCountsHistograms() override;
 
  private:
-  const raw_ptr<ModelTypeControllerDelegate> other_;
+  const raw_ptr<ModelTypeControllerDelegate, DanglingUntriaged> other_;
 };
 
 }  // namespace syncer

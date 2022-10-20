@@ -660,7 +660,7 @@ class VIEWS_EXPORT Textfield : public View,
   std::unique_ptr<TextfieldModel> model_;
 
   // This is the current listener for events from this Textfield.
-  raw_ptr<TextfieldController> controller_ = nullptr;
+  raw_ptr<TextfieldController, DanglingUntriaged> controller_ = nullptr;
 
   // An edit command to execute on the next key event. When set to a valid
   // value, the key event is still passed to |controller_|, but otherwise
@@ -766,7 +766,7 @@ class VIEWS_EXPORT Textfield : public View,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   // View containing the text cursor.
-  raw_ptr<View> cursor_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> cursor_view_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
   // Used to track active password input sessions.

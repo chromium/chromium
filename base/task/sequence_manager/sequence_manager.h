@@ -95,7 +95,8 @@ class BASE_EXPORT SequenceManager {
 
     MessagePumpType message_loop_type = MessagePumpType::DEFAULT;
     bool randomised_sampling_enabled = false;
-    raw_ptr<const TickClock> clock = DefaultTickClock::GetInstance();
+    raw_ptr<const TickClock, DanglingUntriaged> clock =
+        DefaultTickClock::GetInstance();
 
     // If true, add the timestamp the task got queued to the task.
     bool add_queue_time_to_tasks = false;

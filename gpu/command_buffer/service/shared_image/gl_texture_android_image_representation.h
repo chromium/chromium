@@ -38,7 +38,7 @@ class GLTextureAndroidImageRepresentation
     return static_cast<AndroidImageBacking*>(backing());
   }
 
-  const raw_ptr<gles2::Texture> texture_;
+  const raw_ptr<gles2::Texture, DanglingUntriaged> texture_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 };
 

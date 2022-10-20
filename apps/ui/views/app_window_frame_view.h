@@ -84,15 +84,15 @@ class AppWindowFrameView : public views::NonClientFrameView {
   // Return the current frame color based on the active state of the window.
   SkColor CurrentFrameColor();
 
-  raw_ptr<views::Widget> widget_;
-  raw_ptr<extensions::NativeAppWindow> window_;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_;
+  raw_ptr<extensions::NativeAppWindow, DanglingUntriaged> window_;
   bool draw_frame_;
   SkColor active_frame_color_;
   SkColor inactive_frame_color_;
-  raw_ptr<views::ImageButton> close_button_ = nullptr;
-  raw_ptr<views::ImageButton> maximize_button_ = nullptr;
-  raw_ptr<views::ImageButton> restore_button_ = nullptr;
-  raw_ptr<views::ImageButton> minimize_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> close_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> maximize_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> restore_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> minimize_button_ = nullptr;
 
   // Allow resize for clicks this many pixels inside the bounds.
   int resize_inside_bounds_size_ = 5;

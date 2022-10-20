@@ -172,7 +172,8 @@ class WebAppPolicyManager {
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
   raw_ptr<const ash::SystemWebAppDelegateMap> system_web_apps_delegate_map_ =
       nullptr;
-  raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
+  raw_ptr<OsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
+      nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;

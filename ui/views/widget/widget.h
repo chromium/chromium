@@ -1227,7 +1227,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   static DisableActivationChangeHandlingType
       g_disable_activation_change_handling_;
 
-  raw_ptr<internal::NativeWidgetPrivate> native_widget_ = nullptr;
+  raw_ptr<internal::NativeWidgetPrivate, DanglingUntriaged> native_widget_ =
+      nullptr;
 
   base::ObserverList<WidgetObserver> observers_;
 

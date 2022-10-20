@@ -250,8 +250,8 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
     ImageModel minor_icon;
     ImageModel icon;
     int group_id = -1;
-    raw_ptr<MenuModel> submenu = nullptr;
-    raw_ptr<ButtonMenuItemModel> button_model = nullptr;
+    raw_ptr<MenuModel, DanglingUntriaged> submenu = nullptr;
+    raw_ptr<ButtonMenuItemModel, DanglingUntriaged> button_model = nullptr;
     MenuSeparatorType separator_type = NORMAL_SEPARATOR;
     bool enabled = true;
     bool visible = true;
@@ -276,7 +276,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
 
   ItemVector items_;
 
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   base::WeakPtrFactory<SimpleMenuModel> method_factory_{this};
 };

@@ -223,9 +223,9 @@ class PrivacySandboxSettings : public KeyedService {
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::unique_ptr<Delegate> delegate_;
-  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  raw_ptr<HostContentSettingsMap, DanglingUntriaged> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   bool incognito_profile_;
 };

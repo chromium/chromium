@@ -38,7 +38,7 @@ class MyXRMock : public MockXRDeviceHookBase {
   unsigned int num_submitted_frames_ = 0;
 
  private:
-  raw_ptr<base::RunLoop> wait_loop_ = nullptr;
+  raw_ptr<base::RunLoop, DanglingUntriaged> wait_loop_ = nullptr;
 };
 
 void MyXRMock::OnFrameSubmitted(

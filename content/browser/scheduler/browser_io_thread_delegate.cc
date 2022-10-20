@@ -48,7 +48,7 @@ class BrowserIOThreadDelegate::TLSMultiplexer : public base::TaskObserver {
     }
   }
 
-  raw_ptr<base::TaskExecutor> io_task_executor_ = nullptr;
+  raw_ptr<base::TaskExecutor, DanglingUntriaged> io_task_executor_ = nullptr;
   std::vector<base::TaskExecutor*> previous_executors_;
 };
 

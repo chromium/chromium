@@ -66,7 +66,8 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
   raw_ptr<BrowserFrame> browser_frame_;
 
   // Owned by the RootWindow.
-  raw_ptr<BrowserDesktopWindowTreeHost> browser_desktop_window_tree_host_;
+  raw_ptr<BrowserDesktopWindowTreeHost, DanglingUntriaged>
+      browser_desktop_window_tree_host_;
 
   std::unique_ptr<wm::VisibilityController> visibility_controller_;
 };

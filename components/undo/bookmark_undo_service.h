@@ -72,8 +72,8 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override;
 
-  raw_ptr<bookmarks::BookmarkModel> model_;
-  raw_ptr<bookmarks::BookmarkUndoProvider> undo_provider_;
+  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> model_;
+  raw_ptr<bookmarks::BookmarkUndoProvider, DanglingUntriaged> undo_provider_;
   UndoManager undo_manager_;
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>

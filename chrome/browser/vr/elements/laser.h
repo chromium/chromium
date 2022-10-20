@@ -53,7 +53,7 @@ class Laser : public UiElement {
   // data binding flow since that would result in a frame of latency. Opacity
   // changes, however, are not latency sensitive and are bound in the usual way
   // (they also do not update due to input).
-  raw_ptr<Model> model_;
+  raw_ptr<Model, DanglingUntriaged> model_;
 };
 
 }  // namespace vr

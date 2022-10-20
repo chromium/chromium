@@ -137,7 +137,7 @@ class ScriptExecutor {
   }
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   ScriptsExecutedNotification observer_;
 };

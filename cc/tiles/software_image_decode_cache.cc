@@ -119,7 +119,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
   ~SoftwareImageDecodeTaskImpl() override = default;
 
  private:
-  raw_ptr<SoftwareImageDecodeCache> cache_;
+  raw_ptr<SoftwareImageDecodeCache, DanglingUntriaged> cache_;
   SoftwareImageDecodeCache::CacheKey image_key_;
   PaintImage paint_image_;
   SoftwareImageDecodeCache::DecodeTaskType task_type_;

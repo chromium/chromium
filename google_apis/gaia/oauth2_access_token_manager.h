@@ -132,7 +132,7 @@ class OAuth2AccessTokenManager {
    private:
     const CoreAccountId account_id_;
     // |consumer_| to call back when this request completes.
-    const raw_ptr<Consumer> consumer_;
+    const raw_ptr<Consumer, DanglingUntriaged> consumer_;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };

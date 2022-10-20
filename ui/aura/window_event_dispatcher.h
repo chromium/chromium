@@ -318,7 +318,8 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   std::unique_ptr<ui::LocatedEvent> held_repostable_event_;
 
   // Set when dispatching a held event.
-  raw_ptr<ui::LocatedEvent> dispatching_held_event_ = nullptr;
+  raw_ptr<ui::LocatedEvent, DanglingUntriaged> dispatching_held_event_ =
+      nullptr;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observation_manager_{this};

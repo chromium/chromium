@@ -178,9 +178,9 @@ class SelectorObserver : public WebControllerWorker {
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
   base::flat_map<SelectorId, ObservableSelector> selectors_;
-  raw_ptr<DevtoolsClient> devtools_client_;
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<const UserData> user_data_;
+  raw_ptr<DevtoolsClient, DanglingUntriaged> devtools_client_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<const UserData, DanglingUntriaged> user_data_;
   Callback update_callback_;
   base::OnceClosure finished_callback_;
 

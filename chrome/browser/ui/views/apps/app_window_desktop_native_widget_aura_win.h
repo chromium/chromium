@@ -40,7 +40,7 @@ class AppWindowDesktopNativeWidgetAuraWin
   raw_ptr<ChromeNativeAppWindowViewsWin> app_window_;
 
   // Owned by superclass DesktopNativeWidgetAura.
-  raw_ptr<views::DesktopWindowTreeHost> tree_host_;
+  raw_ptr<views::DesktopWindowTreeHost, DanglingUntriaged> tree_host_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_DESKTOP_NATIVE_WIDGET_AURA_WIN_H_

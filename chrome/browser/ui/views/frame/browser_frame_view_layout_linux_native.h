@@ -43,8 +43,9 @@ class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
       views::FrameButton button_id) const;
 
   // Owned by BrowserFrameViewLinuxNative.
-  const raw_ptr<ui::NavButtonProvider> nav_button_provider_;
-  const raw_ptr<ui::WindowFrameProvider> window_frame_provider_;
+  const raw_ptr<ui::NavButtonProvider, DanglingUntriaged> nav_button_provider_;
+  const raw_ptr<ui::WindowFrameProvider, DanglingUntriaged>
+      window_frame_provider_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_NATIVE_H_

@@ -211,7 +211,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   raw_ptr<BrowserContext> browser_context_;
 
   // A delegate to delete the embedder-specific data. Owned by the embedder.
-  raw_ptr<BrowsingDataRemoverDelegate> embedder_delegate_;
+  raw_ptr<BrowsingDataRemoverDelegate, DanglingUntriaged> embedder_delegate_;
 
   // Start time to delete from.
   base::Time delete_begin_;

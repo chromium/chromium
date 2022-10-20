@@ -94,8 +94,7 @@ class VIEWS_EXPORT AnimationBuilder {
     // reliable way of tracking when all sequences have ended since IsFinished
     // can return true before a sequence is started if the duration is zero.
     int sequences_to_run_ = 0;
-
-    raw_ptr<AnimationAbortHandle> abort_handle_ = nullptr;
+    raw_ptr<AnimationAbortHandle, DanglingUntriaged> abort_handle_ = nullptr;
   };
 
   AnimationBuilder();
@@ -193,7 +192,7 @@ class VIEWS_EXPORT AnimationBuilder {
   // Each vector is kept in sorted order.
   std::map<AnimationKey, std::vector<Value>> values_;
 
-  raw_ptr<AnimationAbortHandle> abort_handle_ = nullptr;
+  raw_ptr<AnimationAbortHandle, DanglingUntriaged> abort_handle_ = nullptr;
 
   // An unfinalized sequence block currently used to build animations. NOTE: the
   // animation effects carried by `current_sequence_` attach to a layer only

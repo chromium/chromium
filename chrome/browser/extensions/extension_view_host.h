@@ -126,7 +126,7 @@ class ExtensionViewHost
   raw_ptr<Browser> browser_;
 
   // View that shows the rendered content in the UI.
-  raw_ptr<ExtensionView> view_ = nullptr;
+  raw_ptr<ExtensionView, DanglingUntriaged> view_ = nullptr;
 
   // The relevant WebContents associated with this ExtensionViewHost, if any.
   base::WeakPtr<content::WebContents> associated_web_contents_;

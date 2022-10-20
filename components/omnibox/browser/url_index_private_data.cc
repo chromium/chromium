@@ -76,7 +76,7 @@ class UpdateRecentVisitsFromHistoryDBTask : public history::HistoryDBTask {
 
   // The URLIndexPrivateData that gets updated after the historyDB
   // task returns.
-  raw_ptr<URLIndexPrivateData> private_data_;
+  raw_ptr<URLIndexPrivateData, DanglingUntriaged> private_data_;
   // The ID of the URL to get visits for and then update.
   history::URLID url_id_;
   // Whether fetching the recent visits for the URL succeeded.

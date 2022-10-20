@@ -152,8 +152,10 @@ class WebAppShortcutManager {
 
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
-  raw_ptr<WebAppFileHandlerManager> file_handler_manager_ = nullptr;
-  raw_ptr<WebAppProtocolHandlerManager> protocol_handler_manager_ = nullptr;
+  raw_ptr<WebAppFileHandlerManager, DanglingUntriaged> file_handler_manager_ =
+      nullptr;
+  raw_ptr<WebAppProtocolHandlerManager, DanglingUntriaged>
+      protocol_handler_manager_ = nullptr;
 
   base::WeakPtrFactory<WebAppShortcutManager> weak_ptr_factory_{this};
 };

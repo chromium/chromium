@@ -55,7 +55,7 @@ class WidgetCloser {
       widget_->CloseNow();
   }
 
-  raw_ptr<views::Widget> widget_;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_;
 
   base::WeakPtrFactory<WidgetCloser> weak_ptr_factory_{this};
 };

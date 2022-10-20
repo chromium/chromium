@@ -104,7 +104,8 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
   }
 
   TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager, DanglingUntriaged>
+      test_guest_view_manager_;
 };
 
 // Tests that <appview> is able to navigate to another installed app.

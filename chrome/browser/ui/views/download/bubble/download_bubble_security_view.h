@@ -69,7 +69,8 @@ class DownloadBubbleSecurityView : public views::View {
   raw_ptr<DownloadBubbleRowView> download_row_view_;
   raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
   raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
-  raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
+  raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_ =
+      nullptr;
   // The secondary button is the one that may be protected by the checkbox.
   raw_ptr<views::LabelButton> secondary_button_ = nullptr;
   raw_ptr<views::Checkbox> checkbox_ = nullptr;

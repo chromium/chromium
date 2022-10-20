@@ -2359,7 +2359,7 @@ class CreateAndLoadWebContentsObserver {
   absl::optional<LoadStopObserver> load_stop_observer_;
   base::CallbackListSubscription creation_subscription_;
 
-  raw_ptr<WebContents> web_contents_ = nullptr;
+  raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
   base::OnceClosure contents_creation_quit_closure_;
 
   const int num_expected_contents_;

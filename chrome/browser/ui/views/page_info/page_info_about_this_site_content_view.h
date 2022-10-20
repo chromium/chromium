@@ -30,8 +30,8 @@ class PageInfoAboutThisSiteContentView : public views::View, public PageInfoUI {
       const page_info::proto::SiteInfo& info);
   void SourceLinkClicked(const ui::Event& event);
 
-  raw_ptr<PageInfo> presenter_;
-  raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
+  raw_ptr<PageInfo, DanglingUntriaged> presenter_;
+  raw_ptr<ChromePageInfoUiDelegate, DanglingUntriaged> ui_delegate_;
   page_info::proto::SiteInfo info_;
 };
 

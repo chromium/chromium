@@ -289,8 +289,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // One of these fields is used as the dialog title. If SetTitleView is called
   // the custom title view is stored in |custom_title_| and this class assumes
   // ownership. Otherwise |default_title_| is used.
-  raw_ptr<Label> default_title_ = nullptr;
-  raw_ptr<View> custom_title_ = nullptr;
+  raw_ptr<Label, DanglingUntriaged> default_title_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> custom_title_ = nullptr;
 
   raw_ptr<Label> subtitle_ = nullptr;
 

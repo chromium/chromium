@@ -94,8 +94,8 @@ class WindowController {
   void NotifyWindowBoundsChanged();
 
  private:
-  raw_ptr<ui::BaseWindow> window_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<ui::BaseWindow, DanglingUntriaged> window_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 }  // namespace extensions

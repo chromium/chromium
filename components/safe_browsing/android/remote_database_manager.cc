@@ -57,8 +57,8 @@ class RemoteSafeBrowsingDatabaseManager::ClientRequest {
   }
 
  private:
-  raw_ptr<Client> client_;
-  raw_ptr<RemoteSafeBrowsingDatabaseManager> db_manager_;
+  raw_ptr<Client, DanglingUntriaged> client_;
+  raw_ptr<RemoteSafeBrowsingDatabaseManager, DanglingUntriaged> db_manager_;
   GURL url_;
   base::ElapsedTimer timer_;
   base::WeakPtrFactory<ClientRequest> weak_factory_{this};

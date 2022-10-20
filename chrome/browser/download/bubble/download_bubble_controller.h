@@ -160,21 +160,21 @@ class DownloadBubbleUIController
   // Kick off retrying an eligible interrupted download.
   void RetryDownload(DownloadUIModel* model, DownloadCommands::Command command);
 
-  raw_ptr<Browser> browser_;
-  raw_ptr<Profile> profile_;
-  raw_ptr<content::DownloadManager> download_manager_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<content::DownloadManager, DanglingUntriaged> download_manager_;
   download::AllDownloadItemNotifier download_notifier_;
   // Null if the profile is not off the record.
   std::unique_ptr<download::AllDownloadItemNotifier> original_notifier_;
-  raw_ptr<OfflineContentAggregator> aggregator_;
-  raw_ptr<OfflineItemModelManager> offline_manager_;
+  raw_ptr<OfflineContentAggregator, DanglingUntriaged> aggregator_;
+  raw_ptr<OfflineItemModelManager, DanglingUntriaged> offline_manager_;
   base::ScopedObservation<OfflineContentProvider,
                           OfflineContentProvider::Observer>
       observation_{this};
   // DownloadDisplayController and DownloadBubbleUIController have the same
   // lifetime. Both are owned, constructed together, and destructed together by
   // DownloadToolbarButtonView. If one is valid, so is the other.
-  raw_ptr<DownloadDisplayController> display_controller_;
+  raw_ptr<DownloadDisplayController, DanglingUntriaged> display_controller_;
 
   // Pruned list of offline items.
   OfflineItemList offline_items_;

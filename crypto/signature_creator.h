@@ -58,7 +58,7 @@ class CRYPTO_EXPORT SignatureCreator {
   // Private constructor. Use the Create() method instead.
   SignatureCreator();
 
-  raw_ptr<EVP_MD_CTX> sign_context_;
+  raw_ptr<EVP_MD_CTX, DanglingUntriaged> sign_context_;
 };
 
 }  // namespace crypto

@@ -52,10 +52,10 @@ class ExtensionsMenuButton : public HoverButton,
 
   void ButtonPressed();
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<Browser, DanglingUntriaged> browser_;
 
   // Responsible for executing the extension's actions.
-  const raw_ptr<ToolbarActionViewController> controller_;
+  const raw_ptr<ToolbarActionViewController, DanglingUntriaged> controller_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuButton, HoverButton)

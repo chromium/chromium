@@ -111,11 +111,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   std::vector<std::unique_ptr<OutputPresenter::Image>> images_;
   // This image is currently used by Skia as RenderTarget. This may be nullptr
   // if there is no drawing for the current frame or if allocation failed.
-  raw_ptr<OutputPresenter::Image> current_image_ = nullptr;
+  raw_ptr<OutputPresenter::Image, DanglingUntriaged> current_image_ = nullptr;
   // The last image submitted for presenting.
-  raw_ptr<OutputPresenter::Image> submitted_image_ = nullptr;
+  raw_ptr<OutputPresenter::Image, DanglingUntriaged> submitted_image_ = nullptr;
   // The image currently on the screen, if any.
-  raw_ptr<OutputPresenter::Image> displayed_image_ = nullptr;
+  raw_ptr<OutputPresenter::Image, DanglingUntriaged> displayed_image_ = nullptr;
   // These are free for use, and are not nullptr.
   base::circular_deque<OutputPresenter::Image*> available_images_;
   // These cancelable callbacks bind images that have been scheduled to display

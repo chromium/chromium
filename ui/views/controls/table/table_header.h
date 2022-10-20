@@ -100,7 +100,7 @@ class VIEWS_EXPORT TableHeader : public views::View {
 
   const gfx::FontList font_list_;
 
-  raw_ptr<TableView> table_;
+  raw_ptr<TableView, DanglingUntriaged> table_;
 
   // If non-null a resize is in progress.
   std::unique_ptr<ColumnResizeDetails> resize_details_;

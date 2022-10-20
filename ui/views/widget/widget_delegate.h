@@ -396,14 +396,14 @@ class VIEWS_EXPORT WidgetDelegate {
 
   // The Widget that was initialized with this instance as its WidgetDelegate,
   // if any.
-  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
   Params params_;
 
-  raw_ptr<View> default_contents_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> default_contents_view_ = nullptr;
   bool contents_view_taken_ = false;
   bool can_activate_ = true;
 
-  raw_ptr<View> unowned_contents_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> unowned_contents_view_ = nullptr;
   std::unique_ptr<View> owned_contents_view_;
 
   // Managed by Widget. Ensures |this| outlives its Widget.

@@ -212,7 +212,7 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   AudioOutputDispatchers output_dispatchers_;
 
   // Proxy for creating AudioLog objects.
-  const raw_ptr<AudioLogFactory> audio_log_factory_;
+  const raw_ptr<AudioLogFactory, DanglingUntriaged> audio_log_factory_;
 
   // Debug recording manager.
   std::unique_ptr<AudioDebugRecordingManager> debug_recording_manager_;

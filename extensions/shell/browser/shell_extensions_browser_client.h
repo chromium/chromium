@@ -146,11 +146,12 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
  private:
   // The single BrowserContext for app_shell. Not owned. Must be initialized
   // when ready by calling InitWithBrowserContext().
-  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
+      nullptr;
 
   // The PrefService for |browser_context_|. Not owned. Must be initialized when
   // ready by calling InitWithBrowserContext().
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
 
   // Support for extension APIs.
   std::unique_ptr<ExtensionsAPIClient> api_client_;

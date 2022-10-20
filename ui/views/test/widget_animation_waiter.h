@@ -38,7 +38,7 @@ class WidgetAnimationWaiter : ui::LayerAnimationObserver {
   gfx::Rect target_bounds_;
 
   // Unowned
-  const raw_ptr<Widget> widget_;
+  const raw_ptr<Widget, DanglingUntriaged> widget_;
 
   base::RunLoop run_loop_;
   bool is_valid_animation_ = false;

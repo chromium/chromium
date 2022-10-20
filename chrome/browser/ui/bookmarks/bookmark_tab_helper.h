@@ -97,14 +97,14 @@ class BookmarkTabHelper
   // Whether the current URL is starred.
   bool is_starred_;
 
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
 
   // A list of observers notified when when the url starred changed.
   base::ObserverList<BookmarkTabHelperObserver>::Unchecked observers_;
 
   // The BookmarkDrag is used to forward bookmark drag and drop events to
   // extensions.
-  raw_ptr<BookmarkDrag> bookmark_drag_;
+  raw_ptr<BookmarkDrag, DanglingUntriaged> bookmark_drag_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

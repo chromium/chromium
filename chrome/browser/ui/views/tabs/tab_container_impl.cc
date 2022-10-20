@@ -64,8 +64,8 @@ class TabSlotAnimationDelegate : public gfx::AnimationDelegate {
   TabSlotView* slot_view() { return slot_view_; }
 
  private:
-  const raw_ptr<TabContainer> tab_container_;
-  const raw_ptr<TabSlotView> slot_view_;
+  const raw_ptr<TabContainer, DanglingUntriaged> tab_container_;
+  const raw_ptr<TabSlotView, DanglingUntriaged> slot_view_;
 };
 
 TabSlotAnimationDelegate::TabSlotAnimationDelegate(TabContainer* tab_container,

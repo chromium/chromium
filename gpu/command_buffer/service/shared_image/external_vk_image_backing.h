@@ -194,7 +194,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   std::unique_ptr<VulkanImage> image_;
   GrBackendTexture backend_texture_;
   sk_sp<SkPromiseImageTexture> promise_texture_;
-  const raw_ptr<VulkanCommandPool> command_pool_;
+  const raw_ptr<VulkanCommandPool, DanglingUntriaged> command_pool_;
   const bool use_separate_gl_texture_;
 
   ExternalSemaphore write_semaphore_;

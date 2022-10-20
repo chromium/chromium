@@ -54,9 +54,9 @@ class VectorElementBinding : public BindingBase {
   }
 
  private:
-  raw_ptr<std::vector<M>> models_ = nullptr;
+  raw_ptr<std::vector<M>, DanglingUntriaged> models_ = nullptr;
   size_t index_ = 0;
-  raw_ptr<V> view_;
+  raw_ptr<V, DanglingUntriaged> view_;
   std::vector<std::unique_ptr<BindingBase>> bindings_;
 };
 

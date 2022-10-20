@@ -45,7 +45,7 @@ class VIZ_SERVICE_EXPORT GpuVSyncBeginFrameSource
  private:
   void OnGpuVSync(base::TimeTicks vsync_time, base::TimeDelta vsync_interval);
 
-  const raw_ptr<OutputSurface> output_surface_;
+  const raw_ptr<OutputSurface, DanglingUntriaged> output_surface_;
   BeginFrameArgsGenerator begin_frame_args_generator_;
 
   bool run_at_half_refresh_rate_ = false;
