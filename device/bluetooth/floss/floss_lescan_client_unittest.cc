@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -215,9 +216,8 @@ class FlossLEScanClientTest : public testing::Test,
     EXPECT_EQ(fake_scan_result_.periodic_adv_int, kTestPeriodicAdvInt);
     EXPECT_EQ(fake_scan_result_.flags, kTestFlags);
     EXPECT_EQ(fake_scan_result_.service_uuids.size(), 1UL);
-    EXPECT_EQ(std::count(fake_scan_result_.service_uuids.begin(),
-                         fake_scan_result_.service_uuids.end(),
-                         device::BluetoothUUID(kTestUuidStr)),
+    EXPECT_EQ(base::ranges::count(fake_scan_result_.service_uuids,
+                                  device::BluetoothUUID(kTestUuidStr)),
               1);
     EXPECT_EQ(fake_scan_result_.service_data.size(), 1UL);
     EXPECT_EQ(fake_scan_result_.service_data[kTestUuidStr], kTestAdvData);

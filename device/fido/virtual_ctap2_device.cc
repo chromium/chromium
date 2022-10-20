@@ -2133,10 +2133,9 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
         return pin_status;
       }
 
-      const size_t num_resident =
-          std::count_if(mutable_state()->registrations.begin(),
-                        mutable_state()->registrations.end(),
-                        [](const auto& it) { return it.second.is_resident; });
+      const size_t num_resident = base::ranges::count_if(
+          mutable_state()->registrations,
+          [](const auto& it) { return it.second.is_resident; });
       response_map.emplace(
           static_cast<int>(CredentialManagementResponseKey::
                                kExistingResidentCredentialsCount),
