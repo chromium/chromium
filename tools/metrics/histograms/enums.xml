@@ -96573,6 +96573,14 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Chrome TTS extension API"/>
 </enum>
 
+<enum name="TextToSpeechGetVoiceBytes">
+  <int value="0" label="DLC Success"/>
+  <int value="1" label="DLC Not Found"/>
+  <int value="2" label="DLC No Contents"/>
+  <int value="3" label="XHR Success"/>
+  <int value="4" label="XHR No Contents"/>
+</enum>
+
 <enum name="TextToSpeechHasGender">
   <int value="0" label="Does Not Have Gender"/>
   <int value="1" label="Has Gender"/>

@@ -2113,6 +2113,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TextToSpeech.Settings.GetVoiceBytes"
+    enum="TextToSpeechGetVoiceBytes" expires_after="2023-10-17">
+  <owner>josiahk@chromium.org</owner>
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When the user requests a download of a text-to-speech voice, records the
+    success/failure result, and service used to download it.
+  </summary>
+</histogram>
+
 <histogram name="TextToSpeech.Utterance.FromExtensionAPI"
     enum="TextToSpeechFromExtensionAPI" expires_after="2023-07-01">
   <owner>dtseng@chromium.org</owner>
