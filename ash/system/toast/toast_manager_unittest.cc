@@ -1093,4 +1093,62 @@ TEST_F(ToastManagerImplTest, ExpiredCallbackNotCalledOnRootWindowRemoved) {
   EXPECT_TRUE(expired_callback_ran);
 }
 
+// This tests that new instances of a multi-monitor toast are spawned with the
+// correct duration and correct persisting state.
+TEST_F(ToastManagerImplTest,
+       AllRootWindowToastsCreatedWithCorrectDurationAndPersistState) {
+  // Start with display at 800x700 to maintain cursor position when adding root
+  // windows.
+  UpdateDisplay("800x700");
+  auto* toast_manager = manager();
+
+  std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());
+
+  // Create a basic toast with `ToastData::kDefaultToastDuration` as duration.
+  ToastData toast_data(toast_id, ToastCatalogName::kToastManagerUnittest,
+                       /*text=*/u"");
+
+  // Indicate that the toast will show on all root windows and persist on hover.
+  toast_data.show_on_all_root_windows = true;
+  toast_data.persist_on_hover = true;
+  toast_manager->Show(toast_data);
+  ASSERT_TRUE(toast_manager->IsRunning(toast_id));
+
+  // Wait for half of the toast duration to elapse.
+  WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
+
+  // Hover over the active toast instance to stop the expiration timer.
+  views::Widget* widget = GetCurrentWidget();
+  const gfx::Point toast_center =
+      widget->GetNativeWindow()->GetBoundsInScreen().CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(toast_center);
+  ASSERT_TRUE(widget->GetRootView()->IsMouseHovered());
+
+  // Add a new root window while hovering over the initial toast instance. Both
+  // toasts should still be persisting on hover.
+  UpdateDisplay("800x700,800x700");
+  ASSERT_TRUE(widget->GetRootView()->IsMouseHovered());
+
+  // Wait for the remaining half of the toast duration to elapse. Neither toast
+  // instance should be destroyed.
+  WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
+
+  for (auto* root_window : Shell::GetAllRootWindows())
+    EXPECT_TRUE(GetCurrentOverlay(root_window));
+
+  // Unhover the mouse an add a third root window.
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  ASSERT_FALSE(widget->GetRootView()->IsMouseHovered());
+  UpdateDisplay("800x700,800x700,800x700");
+
+  // Wait for the remaining half of the toast duration to elapse. At this point
+  // all three toast instances should be destroyed.
+  WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
+  base::RunLoop().RunUntilIdle();
+
+  for (auto* root_window : Shell::GetAllRootWindows())
+    EXPECT_FALSE(GetCurrentOverlay(root_window));
+}
+
 }  // namespace ash

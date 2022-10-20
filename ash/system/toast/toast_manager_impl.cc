@@ -34,8 +34,75 @@ std::string GetToastDismissedTimeRange(const base::TimeDelta& time) {
 
 }  // namespace
 
+///////////////////////////////////////////////////////////////////////////////
+// PausableTimer:
+// Timer class that owns a `base::OneShotTimer` that can be paused and resumed
+// by the `ToastManagerImpl` to continue with the remainder of its duration.
+// Different from `base::RetainingOneShotTimer` in that restarting it will set
+// the duration for the remainder of the time that it had left when it was
+// paused.
+class ToastManagerImpl::PausableTimer {
+ public:
+  PausableTimer() = default;
+  PausableTimer(const PausableTimer&) = delete;
+  PausableTimer& operator=(const PausableTimer&) = delete;
+  ~PausableTimer() = default;
+
+  // Returns whether `timer_` is running.
+  bool IsRunning() const { return timer_.IsRunning(); }
+
+  // Starts `timer_` with a duration of `duration` and a scheduled task of
+  // `task`.
+  void Start(base::TimeDelta duration, base::RepeatingClosure task) {
+    DCHECK(!duration.is_max());
+    DCHECK(task);
+    DCHECK(!IsRunning());
+    duration_remaining_ = duration;
+    task_ = task;
+    timer_.Start(FROM_HERE, duration_remaining_, task_);
+    time_last_started_ = base::TimeTicks::Now();
+  }
+
+  // Stops the timer, allowing for the user to call `Resume` at a later time to
+  // continue the timer.
+  void Pause() {
+    DCHECK(IsRunning());
+    timer_.Stop();
+    duration_remaining_ -= base::TimeTicks::Now() - time_last_started_;
+  }
+
+  // Restarts the timer with a duration of `duration_remaining_`.
+  void Resume() { Start(duration_remaining_, task_); }
+
+  // Fully stops the timer without leaving a chance to call `Resume` later.
+  void Stop() {
+    task_.Reset();
+    duration_remaining_ = base::Seconds(0);
+    timer_.Stop();
+  }
+
+ private:
+  // Task that will be run when `timer_` has elapsed.
+  base::RepeatingClosure task_;
+
+  // Time remaining for the timer. Allows for us to calculate how much time is
+  // remaining when the timer is paused.
+  base::TimeDelta duration_remaining_;
+
+  // Tracks when `timer_` was last started so that we can calculate
+  // `duration_remaining_` if the timer is later paused.
+  base::TimeTicks time_last_started_;
+
+  // A timer that will run `task_` when `duration_remaining_` has elapsed if
+  // it is not paused before then.
+  base::OneShotTimer timer_;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// ToastManagerImpl:
 ToastManagerImpl::ToastManagerImpl()
-    : locked_(Shell::Get()->session_controller()->IsScreenLocked()) {
+    : current_toast_expiration_timer_(std::make_unique<PausableTimer>()),
+      locked_(Shell::Get()->session_controller()->IsScreenLocked()) {
   Shell::Get()->AddShellObserver(this);
 }
 
@@ -124,6 +191,7 @@ void ToastManagerImpl::OnClosed() {
   CloseAllToastsWithoutAnimation();
 
   current_toast_data_.reset();
+  current_toast_expiration_timer_->Stop();
 
   // Show the next toast if available.
   // Note that don't show during the lock state is changing, since we reshow
@@ -134,13 +202,12 @@ void ToastManagerImpl::OnClosed() {
 
 void ToastManagerImpl::OnToastHoverStateChanged(bool is_hovering) {
   DCHECK(current_toast_data_->persist_on_hover);
-  if (!current_toast_data_->show_on_all_root_windows)
+
+  if (is_hovering != current_toast_expiration_timer_->IsRunning())
     return;
 
-  for (auto& iter : root_window_to_overlay_) {
-    if (iter.second)
-      iter.second->UpdateToastExpirationTimer(is_hovering);
-  }
+  is_hovering ? current_toast_expiration_timer_->Pause()
+              : current_toast_expiration_timer_->Resume();
 }
 
 void ToastManagerImpl::OnSessionStateChanged(
@@ -184,6 +251,15 @@ void ToastManagerImpl::ShowLatest() {
     CreateToastOverlayForRoot(Shell::GetRootWindowForNewWindows());
   }
 
+  DCHECK(!current_toast_expiration_timer_->IsRunning());
+
+  if (current_toast_data_->duration != ToastData::kInfiniteDuration) {
+    current_toast_expiration_timer_->Start(
+        current_toast_data_->duration,
+        base::BindRepeating(&ToastManagerImpl::CloseAllToastsWithAnimation,
+                            base::Unretained(this)));
+  }
+
   base::UmaHistogramEnumeration("Ash.NotifierFramework.Toast.ShownCount",
                                 current_toast_data_->catalog_name);
   base::UmaHistogramMediumTimes(
@@ -207,7 +283,7 @@ void ToastManagerImpl::CreateToastOverlayForRoot(aura::Window* root_window) {
   // We only want to record this value when the first instance of the toast is
   // initialized.
   if (current_toast_data_->time_start_showing.is_null())
-    current_toast_data_->time_start_showing = new_overlay->time_started();
+    current_toast_data_->time_start_showing = base::TimeTicks::Now();
 }
 
 void ToastManagerImpl::CloseAllToastsWithAnimation() {
@@ -220,6 +296,12 @@ void ToastManagerImpl::CloseAllToastsWithAnimation() {
 void ToastManagerImpl::CloseAllToastsWithoutAnimation() {
   for (auto& iter : root_window_to_overlay_)
     iter.second.reset();
+
+  // `OnClosed` (the other place where we stop the
+  // `current_toast_expiration_timer_`) is only called when the toast is being
+  // closed with animation, so we still want to stop the timer here for when it
+  // is not animating to close.
+  current_toast_expiration_timer_->Stop();
 }
 
 bool ToastManagerImpl::HasActiveToasts() const {

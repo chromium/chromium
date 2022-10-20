@@ -58,6 +58,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
  private:
+  class PausableTimer;
   friend class AutoConnectNotifierTest;
   friend class BluetoothNotificationControllerTest;
   friend class DesksTestApi;
@@ -92,6 +93,11 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   // Data of the toast which is currently shown. Empty if no toast is visible.
   absl::optional<ToastData> current_toast_data_;
+
+  // Used to destroy the currently running toast if its duration is not
+  // infinite. Also allows us to persist the toast on hover by pausing this
+  // timer when a toast instance is being hovered by the mouse.
+  std::unique_ptr<PausableTimer> current_toast_expiration_timer_;
 
   int serial_ = 0;
   bool locked_;
