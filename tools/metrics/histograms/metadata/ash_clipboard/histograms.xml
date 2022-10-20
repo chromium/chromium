@@ -142,6 +142,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.ClipboardHistory.ControlToVDelay" units="ms"
     expires_after="2023-04-25">
+  <obsolete>
+    Replaced by version 2 in 10/22. This histogram can be deleted when M109
+    reaches stable.
+  </obsolete>
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -150,6 +154,23 @@ chromium-metrics-reviews@google.com.
     Only recorded for the first V press in a sequence. Sample scenario: User
     holds Ctrl, waits 200ms, presses V (histogram entry recorded), and presses V
     again without releasing Ctrl (no histogram entry recorded).
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ControlToVDelayV2" units="ms"
+    expires_after="2023-04-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The time between a user's Ctrl key press and the user's V key press when
+    pasting via keyboard. Recorded in AcceleratorHistory when a V is pressed.
+    Only recorded for the first V press in a sequence. Sample scenario: User
+    holds Ctrl, waits 200ms, presses V (histogram entry recorded), and presses V
+    again without releasing Ctrl (no histogram entry recorded).
+
+    Note: Version 1 of this histogram incorrectly recorded the Ctrl pressed time
+    in some cases such that it seemed closer to the V pressed time than it
+    really was. This histogram's entries are more accurate.
   </summary>
 </histogram>
 

@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 
 namespace ash {
 
@@ -33,7 +34,11 @@ void ControlVHistogramRecorder::OnKeyEvent(ui::KeyEvent* event) {
   if (event->type() == ui::ET_KEY_PRESSED) {
     switch (event->key_code()) {
       case ui::VKEY_CONTROL:
-        ctrl_pressed_time_ = base::TimeTicks::Now();
+        // If Ctrl is held down and either auto-repeat begins or the other Ctrl
+        // key is pressed, the timestamp used for calculating Ctrl to V delay
+        // should not change.
+        if (!(event->flags() & ui::EF_IS_REPEAT))
+          ctrl_pressed_time_ = base::TimeTicks::Now();
         return;
       case ui::VKEY_V:
         if (IsControlVPressed()) {
@@ -47,7 +52,7 @@ void ControlVHistogramRecorder::OnKeyEvent(ui::KeyEvent* event) {
           // releasing Ctrl. Measure only the time between a Ctrl press and the
           // first V press in the user's accelerator sequence.
           if (!ctrl_pressed_time_.is_null()) {
-            base::UmaHistogramTimes("Ash.ClipboardHistory.ControlToVDelay",
+            base::UmaHistogramTimes("Ash.ClipboardHistory.ControlToVDelayV2",
                                     ctrl_v_pressed_time_ - ctrl_pressed_time_);
             ctrl_pressed_time_ = base::TimeTicks();
           }

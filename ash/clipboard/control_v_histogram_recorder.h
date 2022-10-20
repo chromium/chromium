@@ -36,7 +36,7 @@ class ControlVHistogramRecorder : public ui::EventHandler {
   void MaybeRecordControlVHeldTime();
 
   // The last time a user pressed Ctrl. Reset to null when V is pressed and an
-  // entry is recorded for the Ash.ClipboardHistory.ControlToVDelay histogram.
+  // entry is recorded for the Ash.ClipboardHistory.ControlToVDelayV2 histogram.
   base::TimeTicks ctrl_pressed_time_;
 
   // The last time a user pressed V with Ctrl held. Reset to null when the paste
