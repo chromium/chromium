@@ -9146,6 +9146,8 @@ if (!is_android) {
       "base/web_ui_test_data_source.h",
       "interaction/interaction_test_util_browser.cc",
       "interaction/interaction_test_util_browser.h",
+      "interaction/interaction_test_util_mouse.cc",
+      "interaction/interaction_test_util_mouse.h",
       "interaction/tracked_element_webcontents.cc",
       "interaction/tracked_element_webcontents.h",
       "interaction/webcontents_interaction_test_util.cc",
@@ -9779,6 +9781,7 @@ if (!is_android) {
         "interaction/interaction_sequence_interactive_uitest.cc",
         "interaction/interaction_test_util_browser_interactive_uitest.cc",
         "interaction/interaction_test_util_interactive_uitest.cc",
+        "interaction/interaction_test_util_mouse_interactive_uitest.cc",
         "interaction/webcontents_interaction_test_util_interactive_uitest.cc",
       ]
       deps += [
