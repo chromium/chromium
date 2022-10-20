@@ -188,7 +188,9 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
     auto entry = std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kLens, GetComboboxLabel(), GetFaviconImage(),
         base::BindRepeating(&LensSidePanelCoordinator::CreateLensWebView,
-                            base::Unretained(this), params));
+                            base::Unretained(this), params),
+        base::BindRepeating(&LensSidePanelCoordinator::GetOpenInNewTabURL,
+                            base::Unretained(this)));
     entry->AddObserver(this);
     global_registry->Register(std::move(entry));
   }
@@ -225,11 +227,26 @@ bool LensSidePanelCoordinator::OpenResultsInNewTabForTesting() {
 
 std::unique_ptr<views::View> LensSidePanelCoordinator::CreateLensWebView(
     const content::OpenURLParams& params) {
-  auto side_panel_view_ =
-      std::make_unique<lens::LensUnifiedSidePanelView>(GetBrowserView());
+  auto side_panel_view_ = std::make_unique<lens::LensUnifiedSidePanelView>(
+      GetBrowserView(),
+      base::BindRepeating(&LensSidePanelCoordinator::UpdateNewTabButtonState,
+                          base::Unretained(this)));
   side_panel_view_->OpenUrl(params);
   lens_side_panel_view_ = side_panel_view_->GetWeakPtr();
   return side_panel_view_;
+}
+
+GURL LensSidePanelCoordinator::GetOpenInNewTabURL() const {
+  // If our view is null, then pass an invalid URL to side panel coordinator.
+  if (lens_side_panel_view_ == nullptr)
+    return GURL();
+
+  return lens_side_panel_view_->GetOpenInNewTabURL();
+}
+
+void LensSidePanelCoordinator::UpdateNewTabButtonState() {
+  if (GetBrowserView())
+    GetBrowserView()->side_panel_coordinator()->UpdateNewTabButtonState();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LensSidePanelCoordinator);

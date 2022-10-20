@@ -74,7 +74,7 @@ class SidePanelEntry final {
                  base::RepeatingCallback<std::unique_ptr<views::View>()>
                      create_content_callback,
                  base::RepeatingCallback<GURL()> open_in_new_tab_url_callback =
-                     base::BindRepeating([] { return GURL(); }));
+                     base::NullCallbackAs<GURL()>());
   // Constructor used for extensions. Extensions don't have 'Open in New Tab'
   // functionality.
   SidePanelEntry(Key key,
@@ -111,6 +111,10 @@ class SidePanelEntry final {
   // Gets the 'Open in New Tab' URL. Returns an empty GURL if this function is
   // unavailable for the current side panel entry.
   GURL GetOpenInNewTabURL() const;
+
+  // Returns whether the side panel entry has a defined callback for getting the
+  // open new tab button URL.
+  bool SupportsNewTabButton();
 
   base::WeakPtr<SidePanelEntry> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
