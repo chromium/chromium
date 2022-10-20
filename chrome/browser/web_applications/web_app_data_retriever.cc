@@ -138,7 +138,12 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
 }
 
 void WebAppDataRetriever::WebContentsDestroyed() {
-  CallCallbackOnError();
+  Observe(nullptr);
+
+  // Avoid initiating new work during web contents destruction.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppDataRetriever::PrimaryMainFrameRenderProcessGone(
