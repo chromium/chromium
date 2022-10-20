@@ -6,7 +6,6 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
-  # TODO(https://crbug.com/1278249): Remove this feature flag as now it's
-  # supported on all platforms.
+  # Screen AI service is only supported on desktop platforms.
   enable_screen_ai_service = is_linux || is_mac || is_chromeos || is_win
 }
