@@ -537,15 +537,20 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           base::UTF8ToUTF16(GetShownOrigin(url::Origin::Create(
               password_manager_driver_->GetLastCommittedURL())));
 
+      auto on_reath_complete =
+          base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
+                         base::Unretained(this), suggestion.main_text.value,
+                         suggestion.frontend_id);
+
       // `this` cancels the authentication when it is destructed, which
       // invalidates the callback, so using base::Unretained here is safe.
       authenticator_->AuthenticateWithMessage(
           device_reauth::BiometricAuthRequester::kAutofillSuggestion,
           l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
                                      origin),
-          base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
-                         base::Unretained(this), suggestion.main_text.value,
-                         suggestion.frontend_id));
+          metrics_util::TimeCallback(
+              std::move(on_reath_complete),
+              "PasswordManager.PasswordFilling.AuthenticationTime"));
 #endif
     }
   }
@@ -960,6 +965,8 @@ void PasswordAutofillManager::OnBiometricReauthCompleted(
     int frontend_id,
     bool auth_succeeded) {
   authenticator_.reset();
+  base::UmaHistogramBoolean(
+      "PasswordManager.PasswordFilling.AuthenticationResult", auth_succeeded);
   if (!auth_succeeded)
     return;
   bool success = FillSuggestion(GetUsernameFromSuggestion(value), frontend_id);

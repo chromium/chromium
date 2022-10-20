@@ -796,17 +796,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PasswordManager.BiometricAuthenticationPromo.AuthenticationResult"
-    enum="BooleanSuccess" expires_after="2023-02-12">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records the result of the attempt to re-auth the user via biometrics when
-    trying to enable the feature from the promo dialog.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.BiometricAuthPwdFill.AuthResult"
     enum="BiometricAuthResult" expires_after="2023-02-12">
   <owner>ioanap@chromium.org</owner>
@@ -2863,17 +2852,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.Settings.AuthenticationTime" units="ms"
-    expires_after="M111">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>kazinova@google.com</owner>
-  <owner>sygiet@google.com</owner>
-  <summary>
-    Records the time it takes user to authenticate in settings when trying to
-    show/copy/edit/export passwords.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.Settings.ToggleAutoSignIn"
     enum="BooleanEnabled" expires_after="2023-02-19">
   <owner>ioanap@chromium.org</owner>
@@ -3300,6 +3278,34 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of weak passwords found when the passwords weak check completed.
   </summary>
+</histogram>
+
+<histogram name="PasswordManager.{Location}.AuthenticationResult"
+    enum="BooleanSuccess" expires_after="2023-02-12">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the result of the attempt to re-auth the user via biometrics when
+    {Location}.
+  </summary>
+  <token key="Location">
+    <variant name="BiometricAuthenticationPromo"
+        summary="trying to enable the feature from the promo dialog"/>
+    <variant name="PasswordFilling" summary="filling suggestion on webpage"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.{Location}.AuthenticationTime" units="ms"
+    expires_after="M111">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>Records the time it takes user to authenticate {Location}.</summary>
+  <token key="Location">
+    <variant name="PasswordFilling"
+        summary="on webpage after selecting a suggestion to fill"/>
+    <variant name="Settings"
+        summary="in settings when trying to show/copy/edit/export passwords"/>
+  </token>
 </histogram>
 
 <histogram
