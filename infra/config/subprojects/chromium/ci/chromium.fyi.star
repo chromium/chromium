@@ -1992,8 +1992,6 @@ fyi_ios_builder(
         category = "iOS",
         short_name = "mwd",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 fyi_ios_builder(
