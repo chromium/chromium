@@ -17,7 +17,8 @@ extern CGFloat const kPasteButtonSize;
 // Returns the leading buttons of the assistive view.
 NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
     id<OmniboxAssistiveKeyboardDelegate> delegate,
-    id<UIPasteConfigurationSupporting> pasteTarget);
+    id<UIPasteConfigurationSupporting> pasteTarget,
+    bool useLens);
 
 #if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
 UIPasteControl* OmniboxAssistiveKeyboardPasteControl(

@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
@@ -148,6 +149,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(FindInPageCommands));
     [dispatcher startDispatchingToTarget:mockFindInPageCommandHandler
                              forProtocol:@protocol(FindInPageCommands)];
+    id mockLensCommandHandler = OCMProtocolMock(@protocol(LensCommands));
+    [dispatcher startDispatchingToTarget:mockLensCommandHandler
+                             forProtocol:@protocol(LensCommands)];
     id mockTextZoomCommandHandler =
         OCMProtocolMock(@protocol(TextZoomCommands));
     [dispatcher startDispatchingToTarget:mockTextZoomCommandHandler

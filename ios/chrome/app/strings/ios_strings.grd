@@ -1258,6 +1258,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_JAVA_SCRIPT_DIALOG_BLOCKING_BUTTON_TEXT" desc="The text used for the button added to JavaScript dialogs to prevent a page from spamming the user with endless alerts. [Length:27em]">
         Suppress Dialogs
       </message>
+      <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS" desc="Accessibility label for a button that opens Lens [iOS only].">
+        Search with Lens
+      </message>
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH" desc="Accessibility label for a button that starts scanning QR Codes [iOS only].">
         QR code Search
       </message>

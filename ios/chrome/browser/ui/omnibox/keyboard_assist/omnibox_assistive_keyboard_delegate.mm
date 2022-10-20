@@ -9,7 +9,9 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
@@ -24,6 +26,7 @@
 
 @synthesize applicationCommandsHandler = _applicationCommandsHandler;
 @synthesize browserCommandsHandler = _browserCommandsHandler;
+@synthesize templateURLService = _templateURLService;
 @synthesize layoutGuideCenter = _layoutGuideCenter;
 @synthesize qrScannerCommandsHandler = _qrScannerCommandsHandler;
 @synthesize omniboxTextField = _omniboxTextField;
@@ -53,6 +56,12 @@
 - (void)keyboardAccessoryCameraSearchTapped {
   base::RecordAction(base::UserMetricsAction("MobileCustomRowCameraSearch"));
   [self.qrScannerCommandsHandler showQRScanner];
+}
+
+- (void)keyboardAccessoryLensTapped {
+  base::RecordAction(base::UserMetricsAction("MobileCustomRowLensSearch"));
+  [self.lensCommandsHandler
+      openInputSelectionForEntrypoint:LensEntrypoint::Keyboard];
 }
 
 - (void)keyPressed:(NSString*)title {

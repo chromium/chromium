@@ -795,14 +795,17 @@ enum class ToolbarKind {
 
   self.popupMenuCoordinator.baseViewController = self.viewController;
 
+  // The Lens coordinator needs to be started before the primary toolbar
+  // coordinator so that the LensCommands dispatcher is correctly registered in
+  // time.
+  _lensCoordinator.baseViewController = self.viewController;
+  [_lensCoordinator start];
+
   _primaryToolbarCoordinator.delegate = self.viewController;
   _primaryToolbarCoordinator.popupPresenterDelegate = self.viewController;
   [_primaryToolbarCoordinator start];
 
   _ntpCoordinator.baseViewController = self.viewController;
-
-  _lensCoordinator.baseViewController = self.viewController;
-  [_lensCoordinator start];
 
   [_dispatcher startDispatchingToTarget:self.viewController
                             forProtocol:@protocol(BrowserCommands)];

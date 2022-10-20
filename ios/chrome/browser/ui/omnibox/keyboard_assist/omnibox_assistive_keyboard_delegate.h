@@ -10,8 +10,10 @@
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
 @class LayoutGuideCenter;
+@protocol LensCommands;
 @class OmniboxTextFieldIOS;
 @protocol QRScannerCommands;
+class TemplateURLService;
 
 // Delegate protocol for the KeyboardAccessoryView.
 @protocol OmniboxAssistiveKeyboardDelegate
@@ -19,11 +21,18 @@
 // The layout guide center for the current scene.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
+// The templateURLService used by this mediator to extract whether the default
+// search engine is Google.
+@property(nonatomic, assign) TemplateURLService* templateURLService;
+
 // Notifies the delegate that the Voice Search button was tapped.
 - (void)keyboardAccessoryVoiceSearchTapped:(id)sender;
 
 // Notifies the delegate that the Camera Search button was tapped.
 - (void)keyboardAccessoryCameraSearchTapped;
+
+// Notifies the delegate that the Lens button was tapped.
+- (void)keyboardAccessoryLensTapped;
 
 // Notifies the delegate that a key with the title `title` was pressed.
 - (void)keyPressed:(NSString*)title;
@@ -37,6 +46,7 @@
 
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 @property(nonatomic, weak) id<BrowserCommands> browserCommandsHandler;
+@property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
 @property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
 @property(nonatomic, weak) OmniboxTextFieldIOS* omniboxTextField;
 

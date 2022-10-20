@@ -4,6 +4,14 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+imageset("keyboard_accessory_lens") {
+  sources = [
+    "keyboard_accessory_lens.imageset/Contents.json",
+    "keyboard_accessory_lens.imageset/keyboard_accessory_lens@2x.png",
+    "keyboard_accessory_lens.imageset/keyboard_accessory_lens@3x.png",
+  ]
+}
+
 imageset("keyboard_accessory_voice_search") {
   sources = [
     "keyboard_accessory_voice_search.imageset/Contents.json",

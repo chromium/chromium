@@ -13,6 +13,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
@@ -99,9 +101,11 @@
       GetOmniboxSuggestionIcon(OmniboxSuggestionIconType::kDefaultFavicon);
   self.viewController.textInputDelegate = self;
   self.mediator = [[OmniboxMediator alloc] initWithIncognito:isIncognito];
-  self.mediator.templateURLService =
+
+  TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  self.mediator.templateURLService = templateURLService;
   self.mediator.faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -136,10 +140,13 @@
   self.keyboardDelegate = [[OmniboxAssistiveKeyboardDelegateImpl alloc] init];
   self.keyboardDelegate.applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+  self.keyboardDelegate.lensCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
   self.keyboardDelegate.qrScannerCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QRScannerCommands);
   self.keyboardDelegate.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
+  self.keyboardDelegate.templateURLService = templateURLService;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.keyboardDelegate.browserCommandsHandler =

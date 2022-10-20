@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -117,6 +118,9 @@ class LocationBarCoordinatorTest : public PlatformTest {
         OCMProtocolMock(@protocol(QRScannerCommands));
     [dispatcher startDispatchingToTarget:mockQrScannerCommandHandler
                              forProtocol:@protocol(QRScannerCommands)];
+    id mockLensCommandsHandler = OCMProtocolMock(@protocol(LensCommands));
+    [dispatcher startDispatchingToTarget:mockLensCommandsHandler
+                             forProtocol:@protocol(LensCommands)];
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
     // to ApplicationSettingsCommands, that needs to be mocked and dispatched

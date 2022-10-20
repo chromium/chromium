@@ -18096,6 +18096,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileCustomRowLensSearch">
+  <owner>hujasonx@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>
+    Records when a user starts a Lens search from the omnibox' assistive view.
+  </description>
+</action>
+
 <action name="MobileCustomRowVoiceSearch">
   <owner>jif@chromium.org</owner>
   <description>
