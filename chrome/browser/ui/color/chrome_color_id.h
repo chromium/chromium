@@ -138,12 +138,22 @@
   E_CPONLY(kColorNewTabPageBackground) \
   E_CPONLY(kColorNewTabPageBackgroundOverride) \
   E_CPONLY(kColorNewTabPageBorder) \
+  E_CPONLY(kColorNewTabPageButtonBackground) \
+  E_CPONLY(kColorNewTabPageButtonForeground) \
   E_CPONLY(kColorNewTabPageChipBackground) \
   E_CPONLY(kColorNewTabPageChipForeground) \
   E_CPONLY(kColorNewTabPageControlBackgroundHovered) \
   E_CPONLY(kColorNewTabPageControlBackgroundSelected) \
+  E_CPONLY(kColorNewTabPageDialogBackground) \
+  E_CPONLY(kColorNewTabPageDialogBackgroundActive) \
+  E_CPONLY(kColorNewTabPageDialogBorder) \
+  E_CPONLY(kColorNewTabPageDialogBorderSelected) \
+  E_CPONLY(kColorNewTabPageDialogControlBackgroundHovered) \
+  E_CPONLY(kColorNewTabPageDialogForeground) \
+  E_CPONLY(kColorNewTabPageDialogSecondaryForeground) \
   E_CPONLY(kColorNewTabPageFocusShadow) \
   E_CPONLY(kColorNewTabPageHeader) \
+  E_CPONLY(kColorNewTabPagePromoBackground) \
   E_CPONLY(kColorNewTabPageIconButtonBackground) \
   E_CPONLY(kColorNewTabPageIconButtonBackgroundActive) \
   E_CPONLY(kColorNewTabPageLink) \
@@ -152,12 +162,19 @@
   E_CPONLY(kColorNewTabPageLogoUnthemedLight) \
   E_CPONLY(kColorNewTabPageMicBorderColor) \
   E_CPONLY(kColorNewTabPageMicIconColor) \
-  E_CPONLY(kColorNewTabPageMostVisitedForeground) \
-  E_CPONLY(kColorNewTabPageMostVisitedTileBackground) \
-  E_CPONLY(kColorNewTabPageMostVisitedTileBackgroundUnthemed) \
+  E_CPONLY(kColorNewTabPageModuleControlBorder) \
+  E_CPONLY(kColorNewTabPageModuleBackground) \
   E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \
   E_CPONLY(kColorNewTabPageModuleScrollButtonBackground) \
   E_CPONLY(kColorNewTabPageModuleScrollButtonBackgroundHovered) \
+  E_CPONLY(kColorNewTabPageMostVisitedForeground) \
+  E_CPONLY(kColorNewTabPageMostVisitedTileBackground) \
+  E_CPONLY(kColorNewTabPageMostVisitedTileBackgroundThemed) \
+  E_CPONLY(kColorNewTabPageMostVisitedTileBackgroundUnthemed) \
+  E_CPONLY(kColorNewTabPageOnThemeForeground) \
+  E_CPONLY(kColorNewTabPageOverlayBackground) \
+  E_CPONLY(kColorNewTabPageOverlayForeground) \
+  E_CPONLY(kColorNewTabPageOverlaySecondaryForeground) \
   E_CPONLY(kColorNewTabPagePrimaryForeground) \
   E_CPONLY(kColorNewTabPageSearchBoxBackground) \
   E_CPONLY(kColorNewTabPageSearchBoxBackgroundHovered) \
@@ -270,6 +287,7 @@
   E_CPONLY(kColorRealboxResultsUrl) \
   E_CPONLY(kColorRealboxResultsUrlSelected) \
   E_CPONLY(kColorRealboxSearchIconBackground) \
+  E_CPONLY(kColorRealboxShadow) \
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
   E_CPONLY(kColorScreenshotCapturedImageBorder) \

@@ -3,11 +3,11 @@
     --border-color: var(--color-new-tab-page-action-button-border);
     --hover-border-color:
         var(--color-new-tab-page-action-button-border-hovered);
-    --text-color-action: var(--color-new-tab-page-background-override);
+    --text-color-action: var(--color-new-tab-page-dialog-background);
   }
 
   cr-dialog {
-    --cr-dialog-background-color: var(--color-new-tab-page-background-override);
+    --cr-dialog-background-color: var(--color-new-tab-page-dialog-background);
   }
 
   cr-dialog::part(dialog) {
@@ -26,7 +26,7 @@
 
   div[slot=title] {
     align-items: center;
-    color: var(--color-new-tab-page-primary-foreground);
+    color: var(--color-new-tab-page-dialog-foreground);
     display: flex;
     flex-direction: row;
     height: 64px;
@@ -35,7 +35,7 @@
   }
 
   div[slot=body] {
-    color: var(--color-new-tab-page-primary-foreground);
+    color: var(--color-new-tab-page-dialog-foreground);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -89,7 +89,7 @@
 
   div[scroll-border][show-1],
   div[scroll-border][show-2] {
-    border-bottom-color: var(--color-new-tab-page-border);
+    border-bottom-color: var(--color-new-tab-page-dialog-border);
   }
 
   #menu {
@@ -105,7 +105,7 @@
   .menu-item {
     align-items: center;
     border-radius: 0 16px 16px 0;
-    color: var(--color-new-tab-page-primary-foreground);
+    color: var(--color-new-tab-page-dialog-foreground);
     cursor: pointer;
     display: flex;
     flex-direction: row;
@@ -125,7 +125,8 @@
   }
 
   .menu-item:hover {
-    background-color: var(--color-new-tab-page-control-background-hovered);
+    background-color:
+        var(--color-new-tab-page-dialog-control-background-hovered);
   }
 
   :host-context(.focus-outline-visible) .menu-item:focus {
@@ -133,7 +134,7 @@
   }
 
   .menu-item:active {
-    background-color: var(--color-new-tab-page-active-background);
+    background-color: var(--color-new-tab-page-dialog-background-active);
   }
 
   .menu-item[selected] {
@@ -144,7 +145,7 @@
   .menu-item-icon {
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--color-new-tab-page-primary-foreground);
+    background-color: var(--color-new-tab-page-dialog-foreground);
     height: 20px;
     margin-inline-end: 16px;
     margin-inline-start: 24px;
@@ -189,7 +190,7 @@
   }
 
   #backButton {
-    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
+    --cr-icon-button-fill-color: var(--color-new-tab-page-dialog-foreground);
     margin-inline-end: 4px;
     /* So that the arrow aligns with the grid. */
     margin-inline-start: -12px;

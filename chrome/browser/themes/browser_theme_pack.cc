@@ -606,31 +606,6 @@ ui::ColorTransform ChooseOmniboxBgBlendTarget() {
 
 }  // namespace
 
-namespace internal {  // for testing
-
-// Calculate contrasting color for given |bg_color|. Returns lighter color if
-// the color is very dark and returns darker color otherwise.
-SkColor GetContrastingColorForBackground(SkColor bg_color,
-                                         float luminosity_change) {
-  color_utils::HSL hsl;
-  SkColorToHSL(bg_color, &hsl);
-
-  // If luminosity is 0, it means |bg_color| is black. Use white for black
-  // backgrounds.
-  if (hsl.l == 0)
-    return SK_ColorWHITE;
-
-  // Decrease luminosity, unless color is already dark.
-  if (hsl.l > 0.15)
-    luminosity_change *= -1;
-
-  hsl.l *= 1 + luminosity_change;
-  if (hsl.l >= 0.0f && hsl.l <= 1.0f)
-    return HSLToSkColor(hsl, 255);
-  return bg_color;
-}
-}  // namespace internal
-
 BrowserThemePack::~BrowserThemePack() {
   DCHECK(!data_pack_ || using_data_pack_);
 
@@ -1909,9 +1884,8 @@ void BrowserThemePack::GenerateMissingNtpColors() {
   if (logo_alternate == 1 && !has_background_image && has_background_color) {
     SkColor logo_color = color_utils::IsDark(background_color)
                              ? SK_ColorWHITE
-                             : internal::GetContrastingColorForBackground(
-                                   background_color,
-                                   /*luminosity_change=*/0.3f);
+                             : GetContrastingColor(background_color,
+                                                   /*luminosity_change=*/0.3f);
     SetColor(TP::COLOR_NTP_LOGO, logo_color);
   }
 
@@ -1920,9 +1894,9 @@ void BrowserThemePack::GenerateMissingNtpColors() {
   // color.
   if (!has_background_image && has_background_color &&
       background_color != SK_ColorWHITE) {
-    SetColor(TP::COLOR_NTP_SHORTCUT, internal::GetContrastingColorForBackground(
-                                         background_color,
-                                         /*luminosity_change=*/0.2f));
+    SetColor(TP::COLOR_NTP_SHORTCUT,
+             GetContrastingColor(background_color,
+                                 /*luminosity_change=*/0.2f));
   }
 
   // Calculate NTP section border color.

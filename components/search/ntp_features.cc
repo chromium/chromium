@@ -74,9 +74,15 @@ BASE_FEATURE(kNtpChromeCartModule,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Comprehensive Theming color changes will be applied to elements
-// on the New Tab Page.
+// on the New Tab Page, excluding the Realbox.
 BASE_FEATURE(kNtpComprehensiveTheming,
              "NtpComprehensiveTheming",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, Comprehensive Theming color changes will be applied to the
+// Realbox on the New Tab Page.
+BASE_FEATURE(kNtpComprehensiveThemeRealbox,
+             "NtpComprehensiveThemeRealbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(OFFICIAL_BUILD)
@@ -210,6 +216,16 @@ BASE_FEATURE(kNtpSafeBrowsingModule,
 
 // If enabled, shortcuts will be shown.
 BASE_FEATURE(kNtpShortcuts, "NtpShortcuts", base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<double>
+    kNtpElementLuminosityChangeForLightBackgroundParam{
+        &kNtpComprehensiveTheming,
+        "NtpElementLuminosityChangeForLightBackgroundParam", 0.03};
+
+const base::FeatureParam<double>
+    kNtpElementLuminosityChangeForDarkBackgroundParam{
+        &kNtpComprehensiveTheming,
+        "NtpElementLuminosityChangeForDarkBackgroundParam", 0.2};
 
 const base::FeatureParam<std::string> kNtpOgbButtonSelectorParam{
     &kNtpRemoveScrim, "NtpOgbButtonSelectorParam", ".gb_A"};
