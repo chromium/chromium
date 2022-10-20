@@ -5690,6 +5690,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin, FEATURE_VALUE_TYPE(omnibox::kOnDeviceHeadProviderIncognito)},
 #endif  // BUILDFLAG(IS_WIN)
 
+    {"omnibox-on-device-tail-suggestions",
+     flag_descriptions::kOmniboxOnDeviceTailSuggestionsName,
+     flag_descriptions::kOmniboxOnDeviceTailSuggestionsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kOnDeviceTailModel)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"scheduler-configuration", flag_descriptions::kSchedulerConfigurationName,
      flag_descriptions::kSchedulerConfigurationDescription, kOsCrOS,

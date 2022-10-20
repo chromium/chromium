@@ -59999,6 +59999,7 @@ from previous Chrome versions.
   <int value="-291936879" label="UsernameFirstFlowFilling:disabled"/>
   <int value="-291747397" label="ForceDisableStackedTabs:enabled"/>
   <int value="-291221380" label="SmartLockUIRevamp:disabled"/>
+  <int value="-290802952" label="OmniboxOnDeviceTailModel:enabled"/>
   <int value="-290802690" label="PartialSplit:enabled"/>
   <int value="-290672626" label="enable-asm-wasm"/>
   <int value="-290329565" label="CrosVmCupsProxy:disabled"/>
@@ -63346,6 +63347,7 @@ from previous Chrome versions.
   <int value="1749028785" label="SubresourceRedirect:disabled"/>
   <int value="1750658031" label="OmniboxBookmarkPaths:enabled"/>
   <int value="1750693293" label="AutofillPreventMixedFormsFilling:enabled"/>
+  <int value="1750824169" label="OmniboxOnDeviceTailModel:disabled"/>
   <int value="1751127292" label="EncryptedClientHello:enabled"/>
   <int value="1752168018" label="enable-stale-while-revalidate"/>
   <int value="1753732236" label="SignInProfileCreationEnterprise:enabled"/>

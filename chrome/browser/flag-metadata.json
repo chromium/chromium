@@ -5148,6 +5148,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-on-device-tail-suggestions",
+    "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-on-focus-suggestions-contextual-web",
     "owners": [ "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110

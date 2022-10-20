@@ -607,6 +607,12 @@ const char kOmniboxZeroSuggestInMemoryCachingName[] =
 const char kOmniboxZeroSuggestInMemoryCachingDescription[] =
     "Enables in-memory caching of zero prefix suggestions.";
 
+const char kOmniboxOnDeviceTailSuggestionsName[] =
+    "Omnibox on device tail suggestions";
+const char kOmniboxOnDeviceTailSuggestionsDescription[] =
+    "Google tail non personalized search suggestions provided by a compact on "
+    "device model.";
+
 const char kIOSOmniboxUpdatedPopupUIName[] = "Popup refresh";
 const char kIOSOmniboxUpdatedPopupUIDescription[] =
     "Enable the new Popup implementation with Actions";

@@ -547,6 +547,10 @@ extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 extern const char kOmniboxZeroSuggestInMemoryCachingName[];
 extern const char kOmniboxZeroSuggestInMemoryCachingDescription[];
 
+// Title and description for omnibox on device tail suggest.
+extern const char kOmniboxOnDeviceTailSuggestionsName[];
+extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
+
 // Title and description for the flag to enable ChromeActions (and optionally
 // SwiftUI omnibox popup implementation).
 extern const char kIOSOmniboxUpdatedPopupUIName[];
