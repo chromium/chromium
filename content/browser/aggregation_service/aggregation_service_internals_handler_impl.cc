@@ -34,12 +34,11 @@ AggregationService* GetAggregationService(WebContents* web_contents) {
 
 aggregation_service_internals::mojom::WebUIAggregatableReportPtr
 CreateWebUIAggregatableReport(
-    const AggregationServiceStorage::RequestAndId& request_and_id,
+    const AggregatableReportRequest& request,
+    absl::optional<AggregationServiceStorage::RequestId> id,
     absl::optional<base::Time> actual_report_time,
     aggregation_service_internals::mojom::ReportStatus status,
     const absl::optional<AggregatableReport>& report) {
-  const AggregatableReportRequest& request = request_and_id.request;
-
   std::vector<aggregation_service_internals::mojom::
                   AggregatableHistogramContributionPtr>
       contributions;
@@ -76,9 +75,9 @@ CreateWebUIAggregatableReport(
       actual_report_time.value_or(request.shared_info().scheduled_report_time);
 
   return aggregation_service_internals::mojom::WebUIAggregatableReport::New(
-      request_and_id.id, report_time.ToJsTime(),
-      request.shared_info().api_identifier, request.shared_info().api_version,
-      request.GetReportingUrl(), std::move(contributions), status, output_json);
+      id, report_time.ToJsTime(), request.shared_info().api_identifier,
+      request.shared_info().api_version, request.GetReportingUrl(),
+      std::move(contributions), status, output_json);
 }
 
 void ForwardReportsToWebUI(
@@ -91,7 +90,7 @@ void ForwardReportsToWebUI(
   for (const AggregationServiceStorage::RequestAndId& request_and_id :
        requests_and_ids) {
     web_ui_reports.push_back(CreateWebUIAggregatableReport(
-        request_and_id,
+        request_and_id.request, request_and_id.id,
         /*actual_report_time=*/absl::nullopt,
         aggregation_service_internals::mojom::ReportStatus::kPending,
         /*report=*/absl::nullopt));
@@ -176,7 +175,8 @@ void AggregationServiceInternalsHandlerImpl::OnRequestStorageModified() {
 }
 
 void AggregationServiceInternalsHandlerImpl::OnReportHandled(
-    const AggregationServiceStorage::RequestAndId& request_and_id,
+    const AggregatableReportRequest& request,
+    absl::optional<AggregationServiceStorage::RequestId> id,
     const absl::optional<AggregatableReport>& report,
     base::Time actual_report_time,
     AggregationServiceObserver::ReportStatus status) {
@@ -202,7 +202,7 @@ void AggregationServiceInternalsHandlerImpl::OnReportHandled(
   }
 
   auto web_report = CreateWebUIAggregatableReport(
-      request_and_id, actual_report_time, web_report_status, report);
+      request, id, actual_report_time, web_report_status, report);
 
   for (auto& observer : observers_) {
     observer->OnReportHandled(web_report.Clone());

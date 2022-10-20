@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <numeric>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -22,11 +23,13 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
+#include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "content/common/private_aggregation_host.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -115,11 +118,14 @@ void PrivateAggregationManagerImpl::OnReportRequestReceivedFromHost(
     return;
   }
 
+  PrivateAggregationBudgetKey::Api api_for_budgeting = budget_key.api();
+
   budgeter_->ConsumeBudget(
       budget_needed.ValueOrDie(), std::move(budget_key), /*on_done=*/
       // Unretained is safe as the `budgeter_` is owned by `this`.
       base::BindOnce(&PrivateAggregationManagerImpl::OnConsumeBudgetReturned,
-                     base::Unretained(this), std::move(report_request)));
+                     base::Unretained(this), std::move(report_request),
+                     api_for_budgeting));
 }
 
 AggregationService* PrivateAggregationManagerImpl::GetAggregationService() {
@@ -129,6 +135,7 @@ AggregationService* PrivateAggregationManagerImpl::GetAggregationService() {
 
 void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
     AggregatableReportRequest report_request,
+    PrivateAggregationBudgetKey::Api api_for_budgeting,
     bool was_budget_use_approved) {
   // TODO(alexmt): Consider adding metrics for success and the different errors
   // here.
@@ -139,6 +146,27 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
   AggregationService* aggregation_service = GetAggregationService();
   if (!aggregation_service) {
     return;
+  }
+
+  // If the request has debug mode enabled, immediately send a duplicate of the
+  // requested report to a special debug reporting endpoint.
+  if (report_request.shared_info().debug_mode ==
+      AggregatableReportSharedInfo::DebugMode::kEnabled) {
+    std::string immediate_debug_reporting_path =
+        private_aggregation::GetReportingPath(
+            api_for_budgeting,
+            /*is_immediate_debug_report=*/true);
+
+    absl::optional<AggregatableReportRequest> debug_request =
+        AggregatableReportRequest::Create(
+            report_request.payload_contents(),
+            report_request.shared_info().Clone(),
+            std::move(immediate_debug_reporting_path),
+            report_request.debug_key());
+    DCHECK(debug_request.has_value());
+
+    aggregation_service->AssembleAndSendReport(
+        std::move(debug_request.value()));
   }
 
   aggregation_service->ScheduleReport(std::move(report_request));

@@ -27,7 +27,8 @@ enum ReportStatus {
 
 // Struct containing aggregatable report data.
 struct WebUIAggregatableReport {
-  AggregatableReportRequestID id;
+  // Null indicates a report that wasn't stored/scheduled.
+  AggregatableReportRequestID? id;
   // Javascript convention for times, a number of milliseconds since the epoch.
   double report_time;
   string api_identifier;

@@ -77,8 +77,10 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
  private:
   // Called when the `budgeter_` has responded to a `ConsumeBudget()` call.
   // Virtual for testing.
-  virtual void OnConsumeBudgetReturned(AggregatableReportRequest report_request,
-                                       bool was_budget_use_approved);
+  virtual void OnConsumeBudgetReturned(
+      AggregatableReportRequest report_request,
+      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      bool was_budget_use_approved);
 
   std::unique_ptr<PrivateAggregationBudgeter> budgeter_;
   std::unique_ptr<PrivateAggregationHost> host_;

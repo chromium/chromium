@@ -110,6 +110,12 @@ TEST_F(PrivateAggregationManagerImplTest,
       aggregation_service::CreateExampleRequest();
   ASSERT_EQ(expected_request.payload_contents().contributions.size(), 1u);
 
+  // As this report doesn't have debug mode enabled, we shouldn't get any debug
+  // reports.
+  EXPECT_EQ(expected_request.shared_info().debug_mode,
+            AggregatableReportSharedInfo::DebugMode::kDisabled);
+  EXPECT_CALL(*aggregation_service_, AssembleAndSendReport).Times(0);
+
   Checkpoint checkpoint;
   {
     testing::InSequence seq;
@@ -262,6 +268,166 @@ TEST_F(PrivateAggregationManagerImplTest,
   EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
   manager_.OnReportRequestReceivedFromHost(
       aggregation_service::CloneReportRequest(expected_request), example_key);
+}
+
+TEST_F(PrivateAggregationManagerImplTest,
+       DebugRequest_ImmediatelySentAfterBudgetRequest) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
+  shared_info.debug_mode = AggregatableReportSharedInfo::DebugMode::kEnabled;
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::Create(
+          example_request.shared_info().reporting_origin, kExampleTime,
+          PrivateAggregationBudgetKey::Api::kFledge)
+          .value();
+
+  absl::optional<AggregatableReportRequest> standard_request =
+      AggregatableReportRequest::Create(
+          example_request.payload_contents(), shared_info.Clone(),
+          /*reporting_path=*/"/example-reporting-path");
+  absl::optional<AggregatableReportRequest> expected_debug_request =
+      AggregatableReportRequest::Create(
+          example_request.payload_contents(), std::move(shared_info),
+          /*reporting_path=*/
+          "/.well-known/private-aggregation/debug/report-fledge");
+  ASSERT_TRUE(standard_request.has_value());
+  ASSERT_TRUE(expected_debug_request.has_value());
+
+  EXPECT_CALL(
+      *budgeter_,
+      ConsumeBudget(standard_request->payload_contents().contributions[0].value,
+                    example_key, _))
+      .WillOnce(Invoke([](int, const PrivateAggregationBudgetKey&,
+                          base::OnceCallback<void(bool)> on_done) {
+        std::move(on_done).Run(true);
+      }));
+  EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
+      .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
+        EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
+            report_request, expected_debug_request.value()));
+      }));
+
+  // Still triggers the standard (non-debug) report.
+  EXPECT_CALL(*aggregation_service_, ScheduleReport)
+      .WillOnce(
+          Invoke([&standard_request](AggregatableReportRequest report_request) {
+            EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
+                report_request, standard_request.value()));
+          }));
+
+  manager_.OnReportRequestReceivedFromHost(
+      aggregation_service::CloneReportRequest(standard_request.value()),
+      example_key);
+}
+
+TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
+  shared_info.debug_mode = AggregatableReportSharedInfo::DebugMode::kEnabled;
+
+  absl::optional<AggregatableReportRequest> standard_request =
+      AggregatableReportRequest::Create(
+          example_request.payload_contents(), shared_info.Clone(),
+          /*reporting_path=*/"/example-reporting-path");
+  ASSERT_TRUE(standard_request.has_value());
+
+  PrivateAggregationBudgetKey fledge_key =
+      PrivateAggregationBudgetKey::Create(
+          example_request.shared_info().reporting_origin, kExampleTime,
+          PrivateAggregationBudgetKey::Api::kFledge)
+          .value();
+  PrivateAggregationBudgetKey shared_storage_key =
+      PrivateAggregationBudgetKey::Create(
+          example_request.shared_info().reporting_origin, kExampleTime,
+          PrivateAggregationBudgetKey::Api::kSharedStorage)
+          .value();
+
+  Checkpoint checkpoint;
+  {
+    testing::InSequence seq;
+
+    EXPECT_CALL(*budgeter_, ConsumeBudget(_, fledge_key, _))
+        .WillOnce(Invoke([](int, const PrivateAggregationBudgetKey&,
+                            base::OnceCallback<void(bool)> on_done) {
+          std::move(on_done).Run(true);
+        }));
+    EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
+        .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
+          EXPECT_EQ(report_request.shared_info().reporting_origin,
+                    example_request.shared_info().reporting_origin);
+          EXPECT_EQ(report_request.reporting_path(),
+                    "/.well-known/private-aggregation/debug/report-fledge");
+        }));
+    // Still triggers the standard (non-debug) report.
+    EXPECT_CALL(*aggregation_service_, ScheduleReport);
+
+    EXPECT_CALL(checkpoint, Call(1));
+
+    EXPECT_CALL(*budgeter_, ConsumeBudget(_, shared_storage_key, _))
+        .WillOnce(Invoke([](int, const PrivateAggregationBudgetKey&,
+                            base::OnceCallback<void(bool)> on_done) {
+          std::move(on_done).Run(true);
+        }));
+    EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
+        .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
+          EXPECT_EQ(report_request.shared_info().reporting_origin,
+                    example_request.shared_info().reporting_origin);
+          EXPECT_EQ(
+              report_request.reporting_path(),
+              "/.well-known/private-aggregation/debug/report-shared-storage");
+        }));
+    // Still triggers the standard (non-debug) report.
+    EXPECT_CALL(*aggregation_service_, ScheduleReport);
+  }
+
+  manager_.OnReportRequestReceivedFromHost(
+      aggregation_service::CloneReportRequest(standard_request.value()),
+      fledge_key);
+  checkpoint.Call(1);
+  manager_.OnReportRequestReceivedFromHost(
+      aggregation_service::CloneReportRequest(standard_request.value()),
+      shared_storage_key);
+}
+
+TEST_F(PrivateAggregationManagerImplTest,
+       BudgetDenied_DebugRequestNotAssembledOrSent) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
+  shared_info.debug_mode = AggregatableReportSharedInfo::DebugMode::kEnabled;
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::Create(
+          example_request.shared_info().reporting_origin, kExampleTime,
+          PrivateAggregationBudgetKey::Api::kFledge)
+          .value();
+
+  absl::optional<AggregatableReportRequest> standard_request =
+      AggregatableReportRequest::Create(
+          example_request.payload_contents(), shared_info.Clone(),
+          /*reporting_path=*/"/example-reporting-path");
+  ASSERT_TRUE(standard_request.has_value());
+
+  EXPECT_CALL(
+      *budgeter_,
+      ConsumeBudget(standard_request->payload_contents().contributions[0].value,
+                    example_key, _))
+      .WillOnce(Invoke([](int, const PrivateAggregationBudgetKey&,
+                          base::OnceCallback<void(bool)> on_done) {
+        std::move(on_done).Run(false);
+      }));
+  EXPECT_CALL(*aggregation_service_, AssembleAndSendReport).Times(0);
+  EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
+
+  manager_.OnReportRequestReceivedFromHost(
+      aggregation_service::CloneReportRequest(standard_request.value()),
+      example_key);
 }
 
 TEST_F(PrivateAggregationManagerImplTest,
