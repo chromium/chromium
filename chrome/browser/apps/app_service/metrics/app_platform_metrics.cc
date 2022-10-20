@@ -648,6 +648,13 @@ void AppPlatformMetrics::RecordAppLaunchUkm(AppType app_type,
                                             const std::string& app_id,
                                             apps::LaunchSource launch_source,
                                             apps::LaunchContainer container) {
+  // We do not tie observers to local app sync settings, so we notify them
+  // first. It is the responsibility of observers to enforce appropriate checks
+  // and restrictions with something appropriate before using this data.
+  for (auto& observer : observers_) {
+    observer.OnAppLaunched(app_id, app_type, launch_source);
+  }
+
   if (app_type == AppType::kUnknown || !ShouldRecordUkm(profile_)) {
     return;
   }
@@ -666,17 +673,19 @@ void AppPlatformMetrics::RecordAppLaunchUkm(AppType app_type,
       .SetUserDeviceMatrix(GetUserTypeByDeviceTypeMetrics())
       .Record(ukm::UkmRecorder::Get());
   RemoveSourceId(source_id);
-
-  // Also notify registered observers.
-  for (auto& observer : observers_) {
-    observer.OnAppLaunched(app_id, app_type, launch_source);
-  }
 }
 
 void AppPlatformMetrics::RecordAppUninstallUkm(
     AppType app_type,
     const std::string& app_id,
     UninstallSource uninstall_source) {
+  // We do not tie observers to local app sync settings, so we notify them
+  // first. It is the responsibility of observers to enforce appropriate checks
+  // and restrictions with something appropriate before using this data.
+  for (auto& observer : observers_) {
+    observer.OnAppUninstalled(app_id, app_type, uninstall_source);
+  }
+
   AppTypeName app_type_name = GetAppTypeName(
       profile_, app_type, app_id, apps::LaunchContainer::kLaunchContainerNone);
 
@@ -691,11 +700,6 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
   RemoveSourceId(source_id);
-
-  // Also notify registered observers.
-  for (auto& observer : observers_) {
-    observer.OnAppUninstalled(app_id, app_type, uninstall_source);
-  }
 }
 
 void AppPlatformMetrics::AddObserver(Observer* observer) {
@@ -718,10 +722,6 @@ void AppPlatformMetrics::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!ShouldRecordUkm(profile_)) {
-    return;
-  }
-
   if (!update.ReadinessChanged() ||
       update.Readiness() != apps::Readiness::kReady ||
       apps_util::IsInstalled(update.PriorReadiness())) {
@@ -732,6 +732,20 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
       app_registry_cache_.IsAppTypeInitialized(update.AppType())
           ? InstallTime::kRunning
           : InstallTime::kInit;
+
+  // We do not tie observers to local app sync settings, so we notify them
+  // first. It is the responsibility of observers to enforce appropriate checks
+  // and restrictions with something appropriate before using this data.
+  for (auto& observer : observers_) {
+    observer.OnAppInstalled(update.AppId(), update.AppType(),
+                            update.InstallSource(), update.InstallReason(),
+                            install_time);
+  }
+
+  if (!ShouldRecordUkm(profile_)) {
+    return;
+  }
+
   RecordAppsInstallUkm(update, install_time);
 }
 
@@ -1142,13 +1156,6 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
   RemoveSourceId(source_id);
-
-  // Also notify registered observers.
-  for (auto& observer : observers_) {
-    observer.OnAppInstalled(update.AppId(), update.AppType(),
-                            update.InstallSource(), update.InstallReason(),
-                            install_time);
-  }
 }
 
 void AppPlatformMetrics::UpdateUsageTime(

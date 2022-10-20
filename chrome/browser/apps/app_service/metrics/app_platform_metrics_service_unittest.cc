@@ -2776,6 +2776,10 @@ class AppPlatformMetricsObserverTest : public AppPlatformMetricsServiceTest {
 };
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppInstalled) {
+  // Observers should be notified even when app sync is disabled.
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+
   const std::string app_id(borealis::FakeAppId("borealis-fake"));
   EXPECT_CALL(
       observer_,
@@ -2788,6 +2792,10 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppInstalled) {
 }
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
+  // Observers should be notified even when app sync is disabled.
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+
   // Launch a pre-installed app and verify the observer is notified.
   const std::string& app_id = "a";
   EXPECT_CALL(observer_, OnAppLaunched(app_id, AppType::kArc,
@@ -2803,6 +2811,10 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
 }
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
+  // Observers should be notified even when app sync is disabled.
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+
   // Uninstall a pre-installed app and verify the observer is notified.
   const std::string& app_id = "a";
   EXPECT_CALL(observer_, OnAppUninstalled(app_id, AppType::kArc,
@@ -2817,6 +2829,10 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
 }
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUsage) {
+  // Observers should be notified even when app sync is disabled.
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+
   // Create a new window for the app.
   auto window = std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
