@@ -81,16 +81,16 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
       creation_params->referrer_policy;
   const bool parent_cross_origin_isolated_capability =
       creation_params->parent_cross_origin_isolated_capability;
-  const bool parent_isolated_application_capability =
-      creation_params->parent_isolated_application_capability;
+  const bool parent_is_isolated_context =
+      creation_params->parent_is_isolated_context;
 
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp =
       std::move(creation_params->response_content_security_policies);
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       std::move(creation_params), thread, time_origin,
       std::move(inherited_trial_features), begin_frame_provider_params,
-      parent_cross_origin_isolated_capability,
-      parent_isolated_application_capability, std::move(dedicated_worker_host),
+      parent_cross_origin_isolated_capability, parent_is_isolated_context,
+      std::move(dedicated_worker_host),
       std::move(back_forward_cache_controller_host));
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
@@ -130,7 +130,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
-    bool parent_isolated_application_capability,
+    bool parent_is_isolated_context,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
         dedicated_worker_host,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
@@ -142,7 +142,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           std::move(inherited_trial_features),
           begin_frame_provider_params,
           parent_cross_origin_isolated_capability,
-          parent_isolated_application_capability,
+          parent_is_isolated_context,
           std::move(dedicated_worker_host),
           std::move(back_forward_cache_controller_host)) {}
 
@@ -153,7 +153,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<Vector<OriginTrialFeature>> inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
     bool parent_cross_origin_isolated_capability,
-    bool parent_isolated_application_capability,
+    bool parent_is_isolated_context,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
         dedicated_worker_host,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
@@ -165,7 +165,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
       token_(thread->WorkerObjectProxy().token()),
       parent_token_(parsed_creation_params.parent_context_token),
       cross_origin_isolated_capability_(Agent::IsCrossOriginIsolated()),
-      isolated_application_capability_(Agent::IsIsolatedApplication()),
+      is_isolated_context_(Agent::IsIsolatedContext()),
       animation_frame_provider_(
           MakeGarbageCollected<WorkerAnimationFrameProvider>(
               this,
@@ -179,8 +179,8 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
   }
 
   // TODO(mkwst): This needs a specification.
-  if (!parent_isolated_application_capability) {
-    isolated_application_capability_ = false;
+  if (!parent_is_isolated_context) {
+    is_isolated_context_ = false;
   }
 
   // Dedicated workers don't need to pause after script fetch.
@@ -254,7 +254,7 @@ void DedicatedWorkerGlobalScope::Initialize(
     cross_origin_isolated_capability_ = false;
 
     // TODO(mkwst): This needs a spec.
-    isolated_application_capability_ = false;
+    is_isolated_context_ = false;
   }
 }
 

@@ -59,8 +59,7 @@ class Exposure(object):
             self._context_enabled_features = tuple(
                 other.context_enabled_features)
             self._only_in_coi_contexts = other.only_in_coi_contexts
-            self._only_in_isolated_application_contexts = (
-                other.only_in_isolated_application_contexts)
+            self._only_in_isolated_contexts = (other.only_in_isolated_contexts)
             self._only_in_secure_contexts = other.only_in_secure_contexts
         else:
             self._global_names_and_features = tuple()
@@ -69,7 +68,7 @@ class Exposure(object):
             self._context_dependent_runtime_enabled_features = tuple()
             self._context_enabled_features = tuple()
             self._only_in_coi_contexts = False
-            self._only_in_isolated_application_contexts = False
+            self._only_in_isolated_contexts = False
             self._only_in_secure_contexts = None
 
     @property
@@ -118,7 +117,7 @@ class Exposure(object):
         return self._only_in_coi_contexts
 
     @property
-    def only_in_isolated_application_contexts(self):
+    def only_in_isolated_contexts(self):
         """
         Returns whether this construct is available only in isolated app
         contexts. The returned value is a boolean: True if the construct
@@ -126,7 +125,7 @@ class Exposure(object):
 
         TODO(crbug.com/1206150): This needs a specification (and definition).
         """
-        return self._only_in_isolated_application_contexts
+        return self._only_in_isolated_contexts
 
     @property
     def only_in_secure_contexts(self):
@@ -156,7 +155,7 @@ class Exposure(object):
 
         if (self.context_dependent_runtime_enabled_features
                 or self.context_enabled_features or self.only_in_coi_contexts
-                or self.only_in_isolated_application_contexts
+                or self.only_in_isolated_contexts
                 or self.only_in_secure_contexts):
             return True
 
@@ -182,7 +181,7 @@ class ExposureMutable(Exposure):
         self._context_dependent_runtime_enabled_features = []
         self._context_enabled_features = []
         self._only_in_coi_contexts = False
-        self._only_in_isolated_application_contexts = False
+        self._only_in_isolated_contexts = False
         self._only_in_secure_contexts = None
 
     def __getstate__(self):
@@ -212,9 +211,9 @@ class ExposureMutable(Exposure):
         assert isinstance(value, bool)
         self._only_in_coi_contexts = value
 
-    def set_only_in_isolated_application_contexts(self, value):
+    def set_only_in_isolated_contexts(self, value):
         assert isinstance(value, bool)
-        self._only_in_isolated_application_contexts = value
+        self._only_in_isolated_contexts = value
 
     def set_only_in_secure_contexts(self, value):
         assert (isinstance(value, (bool, str))

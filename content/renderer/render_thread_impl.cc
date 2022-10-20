@@ -1383,8 +1383,8 @@ void RenderThreadImpl::SetIsCrossOriginIsolated(bool value) {
   blink::SetIsCrossOriginIsolated(value);
 }
 
-void RenderThreadImpl::SetIsIsolatedApplication(bool value) {
-  blink::SetIsIsolatedApplication(value);
+void RenderThreadImpl::SetIsIsolatedContext(bool value) {
+  blink::SetIsIsolatedContext(value);
 }
 
 void RenderThreadImpl::CompositingModeFallbackToSoftware() {

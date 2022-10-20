@@ -9,7 +9,7 @@
     ActiveScriptWrappable,
     SecureContext,
     RuntimeEnabled=DirectSockets,
-    IsolatedApplication
+    IsolatedContext
 ] interface TCPSocket {
   [CallWith=ScriptState, RaisesException]
   constructor(DOMString remoteAddress, unsigned short remotePort, optional TCPSocketOptions options = {});

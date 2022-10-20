@@ -507,7 +507,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->GetAgentClusterID(), execution_context->UkmSourceID(),
       execution_context->GetExecutionContextToken(),
       execution_context->CrossOriginIsolatedCapability(),
-      execution_context->IsolatedApplicationCapability(),
+      execution_context->IsIsolatedContext(),
       /*interface_registry=*/nullptr,
       std::move(agent_group_scheduler_compositor_task_runner));
 }

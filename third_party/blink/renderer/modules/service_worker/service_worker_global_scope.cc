@@ -803,7 +803,7 @@ bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated();
 }
 
-bool ServiceWorkerGlobalScope::IsolatedApplicationCapability() const {
+bool ServiceWorkerGlobalScope::IsIsolatedContext() const {
   // TODO(mkwst): Make a decision here, and spec it.
   return false;
 }

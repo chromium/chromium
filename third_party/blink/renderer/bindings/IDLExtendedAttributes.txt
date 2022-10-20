@@ -62,7 +62,7 @@ HTMLConstructor
 ImmutablePrototype
 ImplementedAs=*
 IsCodeLike
-IsolatedApplication
+IsolatedContext
 LegacyLenientSetter
 LegacyLenientThis
 LegacyNoInterfaceObject

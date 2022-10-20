@@ -122,13 +122,12 @@ BLINK_EXPORT void ForceNextDrawingBufferCreationToFailForTest();
 // This is called at most once. This is called earlier than any frame commit.
 BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
 
-// Set whether this renderer process has the "isolated application" isolation
-// level. Similarly to the `SetIsCrossOriginIsolated()` method above, this
-// flag is process global, and called at most once, prior to committing a
-// frame.
+// Set whether this renderer process is allowed to use Isolated Context APIs.
+// Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
+// process global, and called at most once, prior to committing a frame.
 //
 // TODO(mkwst): We need a specification for this restriction.
-BLINK_EXPORT void SetIsIsolatedApplication(bool value);
+BLINK_EXPORT void SetIsIsolatedContext(bool value);
 
 }  // namespace blink
 

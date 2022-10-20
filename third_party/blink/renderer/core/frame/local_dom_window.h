@@ -452,7 +452,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void ClearIsolatedWorldCSPForTesting(int32_t world_id);
 
   bool CrossOriginIsolatedCapability() const override;
-  bool IsolatedApplicationCapability() const override;
+  bool IsIsolatedContext() const override;
 
   // These delegate to the document_.
   ukm::UkmRecorder* UkmRecorder() override;

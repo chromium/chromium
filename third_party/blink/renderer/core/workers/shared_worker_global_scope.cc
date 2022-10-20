@@ -308,8 +308,8 @@ bool SharedWorkerGlobalScope::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated();
 }
 
-bool SharedWorkerGlobalScope::IsolatedApplicationCapability() const {
-  return Agent::IsIsolatedApplication();
+bool SharedWorkerGlobalScope::IsIsolatedContext() const {
+  return Agent::IsIsolatedContext();
 }
 
 }  // namespace blink

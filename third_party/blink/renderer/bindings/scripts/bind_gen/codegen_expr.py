@@ -181,7 +181,7 @@ def expr_from_exposure(exposure,
     #         feature_selector-2nd-phase-term))
     # which can be represented in more details as:
     #   (and cross_origin_isolated_term
-    #        isolated_application_term
+    #        isolated_context_term
     #        secure_context_term
     #        uncond_exposed_term
     #        (or
@@ -193,7 +193,7 @@ def expr_from_exposure(exposure,
     #             feature_selector_term)))
     # where
     #   cross_origin_isolated_term represents [CrossOriginIsolated]
-    #   isolated_application_term represents [IsolatedApplication]
+    #   isolated_context_term represents [IsolatedContext]
     #   secure_context_term represents [SecureContext=F1]
     #   uncond_exposed_term represents [Exposed=(G1, G2)]
     #   cond_exposed_term represents [Exposed(G1 F1, G2 F2)]
@@ -226,11 +226,11 @@ def expr_from_exposure(exposure,
     else:
         cross_origin_isolated_term = _Expr(True)
 
-    # [IsolatedApplication]
-    if exposure.only_in_isolated_application_contexts:
-        isolated_application_term = _Expr("${is_isolated_application}")
+    # [IsolatedContext]
+    if exposure.only_in_isolated_contexts:
+        isolated_context_term = _Expr("${is_in_isolated_context}")
     else:
-        isolated_application_term = _Expr(True)
+        isolated_context_term = _Expr(True)
 
     # [SecureContext]
     if exposure.only_in_secure_contexts is True:
@@ -314,7 +314,7 @@ def expr_from_exposure(exposure,
     # Build an expression.
     top_level_terms = []
     top_level_terms.append(cross_origin_isolated_term)
-    top_level_terms.append(isolated_application_term)
+    top_level_terms.append(isolated_context_term)
     top_level_terms.append(secure_context_term)
     if uncond_exposed_terms:
         top_level_terms.append(expr_or(uncond_exposed_terms))

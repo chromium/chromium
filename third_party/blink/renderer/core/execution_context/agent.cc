@@ -14,11 +14,11 @@ namespace blink {
 
 namespace {
 bool is_cross_origin_isolated = false;
-bool is_isolated_application = false;
+bool is_isolated_context = false;
 
 #if DCHECK_IS_ON()
 bool is_cross_origin_isolated_set = false;
-bool is_isolated_application_set = false;
+bool is_isolated_context_set = false;
 #endif
 }  // namespace
 
@@ -71,18 +71,18 @@ void Agent::SetIsCrossOriginIsolated(bool value) {
 }
 
 // static
-bool Agent::IsIsolatedApplication() {
-  return is_isolated_application;
+bool Agent::IsIsolatedContext() {
+  return is_isolated_context;
 }
 
 // static
-void Agent::SetIsIsolatedApplication(bool value) {
+void Agent::SetIsIsolatedContext(bool value) {
 #if DCHECK_IS_ON()
-  if (is_isolated_application_set)
-    DCHECK_EQ(is_isolated_application, value);
-  is_isolated_application_set = true;
+  if (is_isolated_context_set)
+    DCHECK_EQ(is_isolated_context, value);
+  is_isolated_context_set = true;
 #endif
-  is_isolated_application = value;
+  is_isolated_context = value;
 }
 
 bool Agent::IsOriginKeyed() const {

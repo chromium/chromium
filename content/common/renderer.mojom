@@ -154,13 +154,12 @@ interface Renderer {
   // This is called at most once, prior to committing a navigation.
   SetIsCrossOriginIsolated(bool value);
 
-  // Set whether this renderer process has the "isolated application" isolation
-  // level. Similarly to the `SetIsCrossOriginIsolated()` method above, this
-  // flag is process global, and called at most once, prior to committing a
-  // navigation.
+  // Set whether this renderer process is allowed to use Isolated Context APIs.
+  // Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
+  // process global, and called at most once, prior to committing a navigation.
   //
   // TODO(crbug.com/1206150): We need a specification for this restriction.
-  SetIsIsolatedApplication(bool value);
+  SetIsIsolatedContext(bool value);
 
   // Initialize renderer user agent string, user agent metadata and CORS exempt
   // header list on renderer startup.

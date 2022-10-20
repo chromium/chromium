@@ -106,8 +106,7 @@ WorkletGlobalScope::WorkletGlobalScope(
           creation_params->parent_context_token->GetAs<LocalFrameToken>()),
       parent_cross_origin_isolated_capability_(
           creation_params->parent_cross_origin_isolated_capability),
-      parent_isolated_application_capability_(
-          creation_params->parent_isolated_application_capability) {
+      parent_is_isolated_context_(creation_params->parent_is_isolated_context) {
   DCHECK((thread_type_ == ThreadType::kMainThread && frame_) ||
          (thread_type_ == ThreadType::kOffMainThread && worker_thread_));
 
@@ -311,8 +310,8 @@ bool WorkletGlobalScope::CrossOriginIsolatedCapability() const {
   return parent_cross_origin_isolated_capability_;
 }
 
-bool WorkletGlobalScope::IsolatedApplicationCapability() const {
-  return parent_isolated_application_capability_;
+bool WorkletGlobalScope::IsIsolatedContext() const {
+  return parent_is_isolated_context_;
 }
 
 ukm::UkmRecorder* WorkletGlobalScope::UkmRecorder() {

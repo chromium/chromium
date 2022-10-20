@@ -68,7 +68,7 @@ class CORE_EXPORT WorkletGlobalScope
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
   FrameOrWorkerScheduler* GetScheduler() final;
   bool CrossOriginIsolatedCapability() const final;
-  bool IsolatedApplicationCapability() const final;
+  bool IsIsolatedContext() const final;
   ukm::UkmRecorder* UkmRecorder() final;
   ukm::SourceId UkmSourceID() const final;
 
@@ -210,7 +210,7 @@ class CORE_EXPORT WorkletGlobalScope
   // like Direct Sockets if they're made available in Worklets.
   //
   // TODO(crbug.com/1206150): We need a spec for this capability.
-  const bool parent_isolated_application_capability_;
+  const bool parent_is_isolated_context_;
 
   // This is the interface that handles generated code cache
   // requests both to fetch code cache when loading resources

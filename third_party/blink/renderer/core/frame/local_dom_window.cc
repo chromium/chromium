@@ -2310,8 +2310,8 @@ bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
              mojom::blink::PermissionsPolicyFeature::kCrossOriginIsolated);
 }
 
-bool LocalDOMWindow::IsolatedApplicationCapability() const {
-  return Agent::IsIsolatedApplication();
+bool LocalDOMWindow::IsIsolatedContext() const {
+  return Agent::IsIsolatedContext();
 }
 
 ukm::UkmRecorder* LocalDOMWindow::UkmRecorder() {

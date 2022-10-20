@@ -3091,7 +3091,7 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
       GetContentClient()->browser()->IsIsolatedAppsDeveloperModeAllowed(
           GetBrowserContext());
 
-  GetRendererInterface()->SetIsIsolatedApplication(
+  GetRendererInterface()->SetIsIsolatedContext(
       isolated_apps_developer_mode_allowed &&
       process_lock.GetWebExposedIsolationInfo().is_isolated_application());
 

@@ -97,7 +97,7 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   const SharedWorkerToken& GetSharedWorkerToken() const { return token_; }
   WorkerToken GetWorkerToken() const final { return token_; }
   bool CrossOriginIsolatedCapability() const final;
-  bool IsolatedApplicationCapability() const final;
+  bool IsIsolatedContext() const final;
   ExecutionContextToken GetExecutionContextToken() const final {
     return token_;
   }

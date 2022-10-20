@@ -9,7 +9,7 @@
     ActiveScriptWrappable,
     SecureContext,
     RuntimeEnabled=DirectSockets,
-    IsolatedApplication
+    IsolatedContext
 ] interface UDPSocket {
   [CallWith=ScriptState, RaisesException]
   constructor(UDPSocketOptions options);

@@ -399,11 +399,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual bool CrossOriginIsolatedCapability() const = 0;
 
   // Returns true if scripts within this ExecutionContext are allowed to use
-  // APIs that require the page to be part of an isolated application.
-  // https://github.com/reillyeon/isolated-web-apps
+  // Trusted Context APIs (i.e. annotated with [IsolatedContext] IDL attribute).
   //
   // TODO(mkwst): We need a specification for the necessary restrictions.
-  virtual bool IsolatedApplicationCapability() const = 0;
+  virtual bool IsIsolatedContext() const = 0;
 
   // Returns true if SharedArrayBuffers can be transferred via PostMessage,
   // false otherwise. SharedArrayBuffer allows pages to craft high-precision

@@ -91,8 +91,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
           BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
           window->GetAgentClusterID(), ukm::kInvalidSourceId,
           window->GetExecutionContextToken(),
-          window->CrossOriginIsolatedCapability(),
-          window->IsolatedApplicationCapability());
+          window->CrossOriginIsolatedCapability(), window->IsIsolatedContext());
 
   // Worklets share the pre-initialized backing thread so that we don't have to
   // specify the backing thread startup data.

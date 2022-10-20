@@ -78,7 +78,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       const absl::optional<ExecutionContextToken>& parent_context_token =
           absl::nullopt,
       bool parent_cross_origin_isolated_capability = false,
-      bool parent_isolated_application_capability = false,
+      bool parent_is_isolated_context = false,
       InterfaceRegistry* interface_registry = nullptr,
       scoped_refptr<base::SingleThreadTaskRunner>
           agent_group_scheduler_compositor_task_runner = nullptr);
@@ -205,7 +205,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // when no parent exists.
   //
   // TODO(crbug.com/1206150): We need a specification for this capability.
-  const bool parent_isolated_application_capability;
+  const bool parent_is_isolated_context;
 
   InterfaceRegistry* const interface_registry;
 
