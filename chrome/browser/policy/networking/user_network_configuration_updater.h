@@ -29,9 +29,8 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
 
   // NetworkConfigurationUpdater
   void ImportClientCertificates() override {}
-  void ApplyNetworkPolicy(
-      base::ListValue* network_configs_onc,
-      base::DictionaryValue* global_network_config) override {}
+  void ApplyNetworkPolicy(base::Value::List network_configs_onc,
+                          base::Value::Dict global_network_config) override {}
 };
 
 }  // namespace policy

@@ -279,16 +279,16 @@ void NetworkConfigurationPolicyHandler::ApplyPolicySettings(
 
   const std::string& onc_blob = value->GetString();
 
-  base::ListValue network_configs;
-  base::ListValue certificates;
-  base::DictionaryValue global_network_config;
+  base::Value::List network_configs;
+  base::Value::List certificates;
+  base::Value::Dict global_network_config;
   chromeos::onc::ParseAndValidateOncForImport(
       onc_blob, onc_source_, "", &network_configs, &global_network_config,
       &certificates);
 
   // Currently, only the per-network configuration is stored in a pref. Ignore
   // |global_network_config| and |certificates|.
-  prefs->SetValue(pref_path_, std::move(network_configs));
+  prefs->SetValue(pref_path_, base::Value(std::move(network_configs)));
 }
 
 void NetworkConfigurationPolicyHandler::PrepareForDisplaying(

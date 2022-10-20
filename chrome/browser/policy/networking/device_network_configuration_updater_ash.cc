@@ -110,8 +110,8 @@ void DeviceNetworkConfigurationUpdaterAsh::ImportClientCertificates() {
 }
 
 void DeviceNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
-    base::ListValue* network_configs_onc,
-    base::DictionaryValue* global_network_config) {
+    base::Value::List network_configs_onc,
+    base::Value::Dict global_network_config) {
   // Ensure this is runnng on the UI thead because we're accessing global data
   // to populate the substitutions.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -128,10 +128,11 @@ void DeviceNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
       device_asset_id_fetcher_.Run();
 
   network_config_handler_->SetProfileWideVariableExpansions(
-      /*username_hash=*/std::string(), std::move(substitutions));
+      /*userhash=*/std::string(), std::move(substitutions));
   network_config_handler_->SetPolicy(
-      onc_source_, /*username_hash=*/std::string(), *network_configs_onc,
-      *global_network_config);
+      onc_source_, /*userhash=*/std::string(),
+      base::Value(std::move(network_configs_onc)),
+      base::Value(std::move(global_network_config)));
 }
 
 void DeviceNetworkConfigurationUpdaterAsh::OnDataRoamingSettingChanged() {

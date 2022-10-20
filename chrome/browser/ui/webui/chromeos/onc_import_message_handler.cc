@@ -96,9 +96,9 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
   bool has_error = false;
 
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_USER_IMPORT;
-  base::ListValue network_configs;
-  base::DictionaryValue global_network_config;
-  base::ListValue certificates;
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
   if (!onc::ParseAndValidateOncForImport(
           onc_blob, onc_source, /*passphrase=*/std::string(), &network_configs,
           &global_network_config, &certificates)) {
@@ -107,15 +107,15 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
   }
 
   std::string import_error;
-  int num_networks_imported =
-      onc::ImportNetworksForUser(user, network_configs, &import_error);
+  int num_networks_imported = onc::ImportNetworksForUser(
+      user, base::Value(std::move(network_configs)), &import_error);
   if (!import_error.empty()) {
     has_error = true;
     result += "Error importing networks: " + import_error + "\n";
   }
   result +=
       base::StringPrintf("Networks imported: %d\n", num_networks_imported);
-  if (certificates.GetList().empty()) {
+  if (certificates.empty()) {
     if (!num_networks_imported)
       has_error = true;
     Respond(callback_id, result, has_error);
@@ -124,7 +124,8 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
 
   auto cert_importer = std::make_unique<onc::CertificateImporterImpl>(
       content::GetIOThreadTaskRunner({}), nssdb);
-  auto certs = std::make_unique<onc::OncParsedCertificates>(certificates);
+  auto certs = std::make_unique<onc::OncParsedCertificates>(
+      base::Value(std::move(certificates)));
   if (certs->has_error()) {
     has_error = true;
     result += "Some certificates could not be parsed.\n";

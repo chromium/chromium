@@ -26,7 +26,7 @@ class CertificateImporter;
 }  // namespace ash
 
 namespace base {
-class ListValue;
+class Value;
 }
 
 namespace user_manager {
@@ -93,9 +93,8 @@ class UserNetworkConfigurationUpdaterAsh
   // NetworkConfigurationUpdater:
   void ImportClientCertificates() override;
 
-  void ApplyNetworkPolicy(
-      base::ListValue* network_configs_onc,
-      base::DictionaryValue* global_network_config) override;
+  void ApplyNetworkPolicy(base::Value::List network_configs_onc,
+                          base::Value::Dict global_network_config) override;
 
   // content::NotificationObserver implementation. Observes the profile to which
   // |this| belongs to for PROFILE_ADDED notification.

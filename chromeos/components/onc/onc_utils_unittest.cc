@@ -101,74 +101,76 @@ TEST(ONCStringExpansion, WiFi_EAP) {
 }
 
 TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
-  base::Value test_cases = test_utils::ReadTestDictionaryValue(
-      "network_configs_with_resolved_certs.json");
+  base::Value::Dict test_cases = test_utils::ReadTestDictionaryValue(
+                                     "network_configs_with_resolved_certs.json")
+                                     .TakeDict();
 
   CertPEMsByGUIDMap certs;
   certs["cert_google"] = "pem_google";
   certs["cert_webkit"] = "pem_webkit";
 
-  for (auto iter : test_cases.DictItems()) {
+  for (auto iter : test_cases) {
     SCOPED_TRACE("Test case: " + iter.first);
 
-    const base::Value& test_case = iter.second;
-    ASSERT_TRUE(test_case.is_dict());
+    const base::Value::Dict* test_case_dict = iter.second.GetIfDict();
+    ASSERT_TRUE(test_case_dict);
 
-    const base::Value* networks_with_cert_refs =
-        test_case.FindListKey("WithCertRefs");
+    const base::Value::List* networks_with_cert_refs =
+        test_case_dict->FindList("WithCertRefs");
     ASSERT_TRUE(networks_with_cert_refs);
-    const base::Value* expected_resolved_onc =
-        test_case.FindListKey("WithResolvedRefs");
+    const base::Value::List* expected_resolved_onc =
+        test_case_dict->FindList("WithResolvedRefs");
     ASSERT_TRUE(expected_resolved_onc);
 
-    bool expected_success = (networks_with_cert_refs->GetList().size() ==
-                             expected_resolved_onc->GetList().size());
+    bool expected_success =
+        (networks_with_cert_refs->size() == expected_resolved_onc->size());
 
-    base::Value actual_resolved_onc(networks_with_cert_refs->Clone());
-    bool success = ResolveServerCertRefsInNetworks(certs, &actual_resolved_onc);
+    base::Value::List actual_resolved_onc(networks_with_cert_refs->Clone());
+    bool success = ResolveServerCertRefsInNetworks(certs, actual_resolved_onc);
     EXPECT_EQ(expected_success, success);
-    EXPECT_TRUE(
-        test_utils::Equals(expected_resolved_onc, &actual_resolved_onc));
+    EXPECT_EQ(*expected_resolved_onc, actual_resolved_onc);
   }
 }
 
 TEST(ONCUtils, SetHiddenSSIDField_WithNoValueSet) {
   // WiFi configuration that doesn't have HiddenSSID field set.
-  base::Value wifi_onc =
-      test_utils::ReadTestDictionaryValue("wifi_clientcert_with_cert_pems.onc");
-  base::Value* wifi_fields = wifi_onc.FindDictKey("WiFi");
+  base::Value::Dict wifi_onc =
+      test_utils::ReadTestDictionaryValue("wifi_clientcert_with_cert_pems.onc")
+          .TakeDict();
+  base::Value::Dict* wifi_fields = wifi_onc.FindDict("WiFi");
   ASSERT_TRUE(wifi_fields);
 
-  ASSERT_FALSE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
-  SetHiddenSSIDField(wifi_fields);
-  base::Value* hidden_ssid_field =
-      wifi_fields->FindKey(::onc::wifi::kHiddenSSID);
+  ASSERT_FALSE(wifi_fields->Find(::onc::wifi::kHiddenSSID));
+  SetHiddenSSIDField(*wifi_fields);
+  base::Value* hidden_ssid_field = wifi_fields->Find(::onc::wifi::kHiddenSSID);
   ASSERT_TRUE(hidden_ssid_field);
   EXPECT_FALSE(hidden_ssid_field->GetBool());
 }
 
 TEST(ONCUtils, SetHiddenSSIDField_WithValueSetFalse) {
   // WiFi configuration that have HiddenSSID field set to false.
-  base::Value wifi_onc = test_utils::ReadTestDictionaryValue(
-      "translation_of_shill_wifi_with_state.onc");
-  base::Value* wifi_fields = wifi_onc.FindDictKey("WiFi");
+  base::Value::Dict wifi_onc = test_utils::ReadTestDictionaryValue(
+                                   "translation_of_shill_wifi_with_state.onc")
+                                   .TakeDict();
+  base::Value::Dict* wifi_fields = wifi_onc.FindDict("WiFi");
   ASSERT_TRUE(wifi_fields);
 
-  ASSERT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
-  SetHiddenSSIDField(wifi_fields);
-  EXPECT_FALSE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID)->GetBool());
+  ASSERT_TRUE(wifi_fields->Find(::onc::wifi::kHiddenSSID));
+  SetHiddenSSIDField(*wifi_fields);
+  EXPECT_FALSE(wifi_fields->Find(::onc::wifi::kHiddenSSID)->GetBool());
 }
 
 TEST(ONCUtils, SetHiddenSSIDField_WithValueSetTrue) {
   // WiFi configuration that have HiddenSSID field set to true.
-  base::Value wifi_onc =
-      test_utils::ReadTestDictionaryValue("wifi_with_hidden_ssid.onc");
-  base::Value* wifi_fields = wifi_onc.FindDictKey("WiFi");
+  base::Value::Dict wifi_onc =
+      std::move(test_utils::ReadTestDictionaryValue("wifi_with_hidden_ssid.onc")
+                    .GetDict());
+  base::Value::Dict* wifi_fields = wifi_onc.FindDict("WiFi");
   ASSERT_TRUE(wifi_fields);
 
-  ASSERT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
-  SetHiddenSSIDField(wifi_fields);
-  EXPECT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID)->GetBool());
+  ASSERT_TRUE(wifi_fields->Find(::onc::wifi::kHiddenSSID));
+  SetHiddenSSIDField(*wifi_fields);
+  EXPECT_TRUE(wifi_fields->Find(::onc::wifi::kHiddenSSID)->GetBool());
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
@@ -192,16 +194,16 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
       "09c6d2e52cce2362a05009dc29b6b39a\n"
       "-----END OpenVPN Static key V1-----\n";
   const auto onc_blob = test_utils::ReadTestData("valid_openvpn_full.onc");
-  base::Value network_configs{base::Value::Type::LIST};
-  base::Value global_network_config{base::Value::Type::DICTIONARY};
-  base::Value certificates{base::Value::Type::LIST};
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_USER_POLICY, "", &network_configs,
       &global_network_config, &certificates));
 
   const auto* open_vpn =
-      network_configs.GetList()[0].GetDict().FindByDottedPath("VPN.OpenVPN");
+      network_configs[0].GetDict().FindByDottedPath("VPN.OpenVPN");
   ASSERT_NE(open_vpn, nullptr);
   base::Value::Dict expected{};
   expected.Set(::onc::openvpn::kAuth, "MD5");

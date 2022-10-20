@@ -57,24 +57,24 @@ void ExpandStringsInNetworks(const VariableExpander& variable_expander,
 // specification. The object of |onc_object| is modified in place.
 COMPONENT_EXPORT(CHROMEOS_ONC)
 void FillInHexSSIDFieldsInOncObject(const OncValueSignature& signature,
-                                    base::Value* onc_object);
+                                    base::Value::Dict& onc_object);
 
 // If the SSID field is set, but HexSSID is not, converts the contents of the
 // SSID field to UTF-8 encoding, creates the hex representation and assigns the
 // result to HexSSID.
 COMPONENT_EXPORT(CHROMEOS_ONC)
-void FillInHexSSIDField(base::Value* wifi_fields);
+void FillInHexSSIDField(base::Value::Dict& wifi_fields);
 
 // Sets missing HiddenSSID fields to default value that is specified in the ONC
 // specification. The object of |onc_object| is modified in place.
 COMPONENT_EXPORT(CHROMEOS_ONC)
 void SetHiddenSSIDFieldInOncObject(const OncValueSignature& signature,
-                                   base::Value* onc_object);
+                                   base::Value::Dict& onc_object);
 
 // If the HiddenSSID field is not set, sets it to default value(false). If the
 // HiddenSSID field is set already, does nothing.
 COMPONENT_EXPORT(CHROMEOS_ONC)
-void SetHiddenSSIDField(base::Value* wifi_fields);
+void SetHiddenSSIDField(base::Value::Dict& wifi_fields);
 
 // Creates a copy of |onc_object| with all values of sensitive fields replaced
 // by |mask|. To find sensitive fields, signature and field name are checked
@@ -97,9 +97,9 @@ COMPONENT_EXPORT(CHROMEOS_ONC)
 bool ParseAndValidateOncForImport(const std::string& onc_blob,
                                   ::onc::ONCSource onc_source,
                                   const std::string& passphrase,
-                                  base::Value* network_configs,
-                                  base::Value* global_network_config,
-                                  base::Value* certificates);
+                                  base::Value::List* network_configs,
+                                  base::Value::Dict* global_network_config,
+                                  base::Value::List* certificates);
 
 // Parse the given PEM encoded certificate |pem_encoded| and return the
 // contained DER encoding. Returns an empty string on failure.
@@ -112,7 +112,7 @@ std::string DecodePEM(const std::string& pem_encoded);
 // NetworkConfiguration dictionaries.
 COMPONENT_EXPORT(CHROMEOS_ONC)
 bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
-                                     base::Value* network_configs);
+                                     base::Value::List& network_configs);
 
 // Replaces all references by GUID to Server or CA certs by their PEM
 // encoding. Returns true if all references could be resolved. |network_config|

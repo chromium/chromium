@@ -309,7 +309,8 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
 
   // Fill in HexSSID field from contents of SSID field if not set already.
   onc::FillInHexSSIDFieldsInOncObject(
-      chromeos::onc::kNetworkConfigurationSignature, &validated_user_settings);
+      chromeos::onc::kNetworkConfigurationSignature,
+      validated_user_settings.GetDict());
 
   const base::Value* network_policy = policies->GetPolicyByGuid(guid);
   if (network_policy)
@@ -394,7 +395,8 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
   // Fill in HexSSID field from contents of SSID field if not set already - this
   // is required to properly match the configuration against existing policies.
   onc::FillInHexSSIDFieldsInOncObject(
-      chromeos::onc::kNetworkConfigurationSignature, &validated_properties);
+      chromeos::onc::kNetworkConfigurationSignature,
+      validated_properties.GetDict());
 
   // Make sure the network is not configured through a user policy.
   const ProfilePolicies* policies = nullptr;

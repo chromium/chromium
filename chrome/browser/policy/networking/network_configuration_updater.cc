@@ -170,9 +170,9 @@ void NetworkConfigurationUpdater::Init() {
 }
 
 void NetworkConfigurationUpdater::ParseCurrentPolicy(
-    base::ListValue* network_configs,
-    base::DictionaryValue* global_network_config,
-    base::ListValue* certificates) {
+    base::Value::List* network_configs,
+    base::Value::Dict* global_network_config,
+    base::Value::List* certificates) {
   const PolicyMap& policies = policy_service_->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   const base::Value* policy_value =
@@ -202,20 +202,21 @@ void NetworkConfigurationUpdater::OnPolicyChanged(const base::Value* previous,
 }
 
 void NetworkConfigurationUpdater::ApplyPolicy() {
-  base::ListValue network_configs;
-  base::DictionaryValue global_network_config;
-  base::ListValue certificates;
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
   ParseCurrentPolicy(&network_configs, &global_network_config, &certificates);
 
-  ImportCertificates(certificates);
-  MarkFieldsAsRecommendedForBackwardsCompatibility(&network_configs);
-  ApplyNetworkPolicy(&network_configs, &global_network_config);
+  ImportCertificates(std::move(certificates));
+  MarkFieldsAsRecommendedForBackwardsCompatibility(network_configs);
+  ApplyNetworkPolicy(std::move(network_configs),
+                     std::move(global_network_config));
 }
 
 void NetworkConfigurationUpdater::
     MarkFieldsAsRecommendedForBackwardsCompatibility(
-        base::Value* network_configs_onc) {
-  for (auto& network_config_onc : network_configs_onc->GetList()) {
+        base::Value::List& network_configs_onc) {
+  for (auto& network_config_onc : network_configs_onc) {
     DCHECK(network_config_onc.is_dict());
     const std::string* type =
         network_config_onc.FindStringKey(::onc::network_config::kType);
@@ -272,9 +273,10 @@ std::string NetworkConfigurationUpdater::LogHeader() const {
 }
 
 void NetworkConfigurationUpdater::ImportCertificates(
-    const base::ListValue& certificates_onc) {
+    base::Value::List certificates_onc) {
   std::unique_ptr<OncParsedCertificates> incoming_certs =
-      std::make_unique<OncParsedCertificates>(certificates_onc);
+      std::make_unique<OncParsedCertificates>(
+          base::Value(std::move(certificates_onc)));
 
   bool server_or_authority_certs_changed =
       certs_->server_or_authority_certificates() !=

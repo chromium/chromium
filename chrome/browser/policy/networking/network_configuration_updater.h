@@ -13,17 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/common/policy_service.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}  // namespace base
 
 namespace policy {
 
@@ -83,9 +78,8 @@ class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
   // Parses the incoming policy, applies server and authority certificates.
   // Calls the specialized methods from subclasses to handle client certificates
   // and network configs.
-  virtual void ApplyNetworkPolicy(
-      base::ListValue* network_configs_onc,
-      base::DictionaryValue* global_network_config) = 0;
+  virtual void ApplyNetworkPolicy(base::Value::List network_configs_onc,
+                                  base::Value::Dict global_network_config) = 0;
 
   // Parses the current value of the ONC policy. Clears |network_configs|,
   // |global_network_config| and |certificates| and fills them with the
@@ -93,9 +87,9 @@ class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
   // Certificates of the current policy. Callers can pass nullptr to any of
   // |network_configs|, |global_network_config|, |certificates| if they don't
   // need that specific part of the ONC policy.
-  void ParseCurrentPolicy(base::ListValue* network_configs,
-                          base::DictionaryValue* global_network_config,
-                          base::ListValue* certificates);
+  void ParseCurrentPolicy(base::Value::List* network_configs,
+                          base::Value::Dict* global_network_config,
+                          base::Value::List* certificates);
 
   const std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>&
   GetClientCertificates() const;
@@ -119,7 +113,7 @@ class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
   // TODO(https://crbug.com/931412): Remove this when the server sets
   // "Recommended".
   void MarkFieldsAsRecommendedForBackwardsCompatibility(
-      base::Value* network_configs_onc);
+      base::Value::List& network_configs_onc);
 
   // Sets the "Recommended" list of recommended field names in |onc_value|,
   // which must be a dictionary, to |recommended_field_names|. If a
@@ -131,7 +125,7 @@ class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
   std::string LogHeader() const;
 
   // Imports the certificates part of the policy.
-  void ImportCertificates(const base::ListValue& certificates_onc);
+  void ImportCertificates(base::Value::List certificates_onc);
 
   void NotifyPolicyProvidedCertsChanged();
 

@@ -159,10 +159,10 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
   }
 
   const std::string& onc_blob = onc_policy_value->GetString();
-  base::ListValue certificates;
+  base::Value::List certificates;
   {
-    base::ListValue unused_network_configs;
-    base::DictionaryValue unused_global_network_config;
+    base::Value::List unused_network_configs;
+    base::Value::Dict unused_global_network_config;
     if (!chromeos::onc::ParseAndValidateOncForImport(
             onc_blob, onc::ONCSource::ONC_SOURCE_USER_POLICY,
             "" /* no passphrase */, &unused_network_configs,
@@ -172,7 +172,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
   }
 
   base::Value ca_certs(base::Value::Type::LIST);
-  for (const auto& certificate : certificates.GetList()) {
+  for (const auto& certificate : certificates) {
     if (!certificate.is_dict()) {
       DLOG(FATAL) << "Value of a certificate entry is not a dictionary "
                   << "value.";

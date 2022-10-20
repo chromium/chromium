@@ -21,8 +21,7 @@ class NetworkDeviceHandler;
 }  // namespace ash
 
 namespace base {
-class DictionaryValue;
-class ListValue;
+class Value;
 }  // namespace base
 
 namespace policy {
@@ -70,9 +69,8 @@ class DeviceNetworkConfigurationUpdaterAsh
   // NetworkConfigurationUpdater:
   void Init() override;
   void ImportClientCertificates() override;
-  void ApplyNetworkPolicy(
-      base::ListValue* network_configs_onc,
-      base::DictionaryValue* global_network_config) override;
+  void ApplyNetworkPolicy(base::Value::List network_configs_onc,
+                          base::Value::Dict global_network_config) override;
   void OnDataRoamingSettingChanged();
 
   // Pointer to the global singleton or a test instance.
