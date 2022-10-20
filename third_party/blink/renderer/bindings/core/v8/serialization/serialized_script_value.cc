@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
@@ -117,6 +116,28 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
       std::move(data_buffer), data_buffer_size.ValueOrDie()));
 }
 
+// Returns whether `tag` was a valid tag in the v0 serialization format.
+inline static constexpr bool IsV0VersionTag(uint8_t tag) {
+  // There were 13 tags supported in version 0:
+  //
+  //  35 - 0x23 - # - ImageDataTag
+  //  64 - 0x40 - @ - SparseArrayTag
+  //  68 - 0x44 - D - DateTag
+  //  73 - 0x49 - I - Int32Tag
+  //  78 - 0x4E - N - NumberTag
+  //  82 - 0x52 - R - RegExpTag
+  //  83 - 0x53 - S - StringTag
+  //  85 - 0x55 - U - Uint32Tag
+  //  91 - 0x5B - [ - ArrayTag
+  //  98 - 0x62 - b - BlobTag
+  // 102 - 0x66 - f - FileTag
+  // 108 - 0x6C - l - FileListTag
+  // 123 - 0x7B - { - ObjectTag
+  return tag == 35 || tag == 64 || tag == 68 || tag == 73 || tag == 78 ||
+         tag == 82 || tag == 83 || tag == 85 || tag == 91 || tag == 98 ||
+         tag == 102 || tag == 108 || tag == 123;
+}
+
 // Versions 16 and below (prior to April 2017) used ntohs() to byte-swap SSV
 // data when converting it to the wire format. This was a historical accient.
 //
@@ -143,22 +164,8 @@ inline static bool IsByteSwappedWiredData(const uint8_t* data, size_t length) {
     // The only case where byte-swapped data can have 0xFF in byte zero is
     // version 0. This can only happen if byte one is a tag (supported in
     // version 0) that takes in extra data, and the first byte of extra data is
-    // 0xFF. There are 13 such tags, listed below. These tags cannot be used as
-    // version numbers in the Blink-side SSV envelope.
-    //
-    //  35 - 0x23 - # - ImageDataTag
-    //  64 - 0x40 - @ - SparseArrayTag
-    //  68 - 0x44 - D - DateTag
-    //  73 - 0x49 - I - Int32Tag
-    //  78 - 0x4E - N - NumberTag
-    //  82 - 0x52 - R - RegExpTag
-    //  83 - 0x53 - S - StringTag
-    //  85 - 0x55 - U - Uint32Tag
-    //  91 - 0x5B - [ - ArrayTag
-    //  98 - 0x62 - b - BlobTag
-    // 102 - 0x66 - f - FileTag
-    // 108 - 0x6C - l - FileListTag
-    // 123 - 0x7B - { - ObjectTag
+    // 0xFF. These tags cannot be used as version numbers in the Blink-side SSV
+    // envelope.
     //
     // Why we care about version 0:
     //
@@ -170,35 +177,10 @@ inline static bool IsByteSwappedWiredData(const uint8_t* data, size_t length) {
     // SSV version 1 was added in WebKit r91698, which was shipped in Chrome 14,
     // which was released on September 16, 2011.
     static_assert(
-        SerializedScriptValue::kWireFormatVersion != 35 &&
-            SerializedScriptValue::kWireFormatVersion != 64 &&
-            SerializedScriptValue::kWireFormatVersion != 68 &&
-            SerializedScriptValue::kWireFormatVersion != 73 &&
-            SerializedScriptValue::kWireFormatVersion != 78 &&
-            SerializedScriptValue::kWireFormatVersion != 82 &&
-            SerializedScriptValue::kWireFormatVersion != 83 &&
-            SerializedScriptValue::kWireFormatVersion != 85 &&
-            SerializedScriptValue::kWireFormatVersion != 91 &&
-            SerializedScriptValue::kWireFormatVersion != 98 &&
-            SerializedScriptValue::kWireFormatVersion != 102 &&
-            SerializedScriptValue::kWireFormatVersion != 108 &&
-            SerializedScriptValue::kWireFormatVersion != 123,
+        !IsV0VersionTag(SerializedScriptValue::kWireFormatVersion),
         "Using a burned version will prevent us from reading SSV version 0");
-
-    // Fast path until the Blink-side SSV envelope reaches version 35.
-    if (SerializedScriptValue::kWireFormatVersion < 35) {
-      if (data[1] < 35)
-        return false;
-
-      // TODO(pwnall): Add UMA metric here.
-      return true;
-    }
-
-    // Slower path that would kick in after version 35, assuming we don't remove
-    // support for SSV version 0 by then.
-    static constexpr uint8_t version0Tags[] = {35, 64, 68, 73,  78,  82, 83,
-                                               85, 91, 98, 102, 108, 123};
-    return base::Contains(version0Tags, data[1]);
+    // TODO(pwnall): Add UMA metric here.
+    return IsV0VersionTag(data[1]);
   }
 
   if (data[1] == kVersionTag) {
