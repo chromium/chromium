@@ -160,8 +160,7 @@ ci.builder(
             ],
         },
     },
-    tree_closing = False,  # Set this to true when builder is finalized?
-    sheriff_rotations = args.ignore_default(None),
+    tree_closing = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 

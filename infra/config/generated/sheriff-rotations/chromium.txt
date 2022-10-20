@@ -49,6 +49,7 @@ ci/Win7 Tests (1)
 ci/Windows deterministic
 ci/android-archive-dbg
 ci/android-archive-rel
+ci/android-arm64-archive-rel
 ci/chromeos-amd64-generic-asan-rel
 ci/chromeos-amd64-generic-cfi-thin-lto-rel
 ci/chromeos-amd64-generic-dbg
