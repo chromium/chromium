@@ -326,14 +326,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // crbug.com/1373885: This test is unreliable on ChromeOS, Linux and Mac
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_LargestContentfulPaint_IsVideo \
-  DISABLED_LargestContentfulPaint_IsVideo
-#else
-#define MAYBE_LargestContentfulPaint_IsVideo LargestContentfulPaint_IsVideo
-#endif
 IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
-                       MAYBE_LargestContentfulPaint_IsVideo) {
+                       DISABLED_LargestContentfulPaint_IsVideo) {
   test_is_animated("/is_video.html", blink::LargestContentfulPaintType::kVideo,
                    /*expected=*/true, /*entries=*/0);
 }
