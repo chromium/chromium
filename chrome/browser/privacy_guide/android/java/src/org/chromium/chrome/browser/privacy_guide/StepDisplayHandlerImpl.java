@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.sync.SyncService;
 
 /**
  * Computes for each privacy guide step whether it should be displayed or not.
@@ -13,8 +14,8 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 class StepDisplayHandlerImpl implements StepDisplayHandler {
     @Override
     public boolean shouldDisplaySync() {
-        // TODO: Check the settings for the SyncFragment.
-        return true;
+        SyncService syncService = SyncService.get();
+        return syncService != null && syncService.isSyncFeatureEnabled();
     }
 
     @Override

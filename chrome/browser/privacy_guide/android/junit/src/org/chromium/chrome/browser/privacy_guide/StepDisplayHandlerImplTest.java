@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +22,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.sync.SyncService;
 
 /**
  * JUnit tests of the class {@link StepDisplayHandlerImpl}.
@@ -33,34 +37,58 @@ public class StepDisplayHandlerImplTest {
 
     @Mock
     private SafeBrowsingBridge.Natives mSBNativesMock;
+    @Mock
+    private SyncService mSyncService;
 
     private StepDisplayHandler mStepDisplayHandler;
 
     @Before
     public void setUp() {
+        SyncService.overrideForTests(mSyncService);
         mocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSBNativesMock);
         mStepDisplayHandler = new StepDisplayHandlerImpl();
+    }
+
+    @After
+    public void tearDown() {
+        SyncService.resetForTests();
     }
 
     private void setSBState(@SafeBrowsingState int sbState) {
         Mockito.when(mSBNativesMock.getSafeBrowsingState()).thenReturn(sbState);
     }
 
+    private void setSyncState(boolean enabled) {
+        Mockito.when(mSyncService.isSyncFeatureEnabled()).thenReturn(enabled);
+    }
+
     @Test
     public void testDisplaySBStepWhenSBEnhanced() {
         setSBState(SafeBrowsingState.ENHANCED_PROTECTION);
-        Assert.assertTrue(mStepDisplayHandler.shouldDisplaySafeBrowsing());
+        assertTrue(mStepDisplayHandler.shouldDisplaySafeBrowsing());
     }
 
     @Test
     public void testDisplaySBWhenSBStandard() {
         setSBState(SafeBrowsingState.STANDARD_PROTECTION);
-        Assert.assertTrue(mStepDisplayHandler.shouldDisplaySafeBrowsing());
+        assertTrue(mStepDisplayHandler.shouldDisplaySafeBrowsing());
     }
 
     @Test
     public void testDontDisplaySBWhenSBUnsafe() {
         setSBState(SafeBrowsingState.NO_SAFE_BROWSING);
-        Assert.assertFalse(mStepDisplayHandler.shouldDisplaySafeBrowsing());
+        assertFalse(mStepDisplayHandler.shouldDisplaySafeBrowsing());
+    }
+
+    @Test
+    public void testDisplayHistorySyncWhenSyncOn() {
+        setSyncState(true);
+        assertTrue(mStepDisplayHandler.shouldDisplaySync());
+    }
+
+    @Test
+    public void testDontDisplayHistorySyncWhenSyncOff() {
+        setSyncState(false);
+        assertFalse(mStepDisplayHandler.shouldDisplaySync());
     }
 }

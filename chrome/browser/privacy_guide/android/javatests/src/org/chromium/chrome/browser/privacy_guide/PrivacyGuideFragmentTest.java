@@ -12,19 +12,27 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.not;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 /**
@@ -35,8 +43,27 @@ import org.chromium.ui.test.util.ViewUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PrivacyGuideFragmentTest {
     @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
     public SettingsActivityTestRule<PrivacyGuideFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacyGuideFragment.class);
+
+    @Mock
+    private SyncService mSyncService;
+
+    @Before
+    public void setUp() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SyncService.overrideForTests(mSyncService);
+            when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
+        });
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { SyncService.resetForTests(); });
+    }
 
     private void launchPrivacyGuide() {
         mSettingsActivityTestRule.startSettingsActivity();
