@@ -474,6 +474,20 @@ const NGLayoutResult* NGBlockNode::Layout(
         StoreResultInLayoutBox(layout_result, break_token,
                                clear_trailing_results);
       }
+
+      // TODO(layout-dev): Due to how pre-paint works, if this is a monolithic
+      // OOF, and we just enabled block fragmentation (e.g. by printing) (we
+      // have currently no way of checking all of this, although we *could* get
+      // the constraint space to carry such information if we like), we may miss
+      // it when walking the LayoutObject tree during pre-paint (see
+      // crbug.com/1371426 for some background, woes and discussion), so that we
+      // won't detect that a parent has changed geometry, which is normally what
+      // triggers a deep subtree tree walk. The result would be that the paint
+      // offset wouldn't be updated when it should, and that the OOF would be
+      // painted where it used to be without block fragmentation.
+      if (IsOutOfFlowPositioned())
+        box_->SetShouldCheckForPaintInvalidation();
+
       return layout_result;
     }
   }
