@@ -318,11 +318,12 @@ NGLayoutResult::RareData* NGLayoutResult::EnsureRareData() {
 #if DCHECK_IS_ON()
 void NGLayoutResult::CheckSameForSimplifiedLayout(
     const NGLayoutResult& other,
-    bool check_same_block_size) const {
+    bool check_same_block_size,
+    bool check_no_fragmentation) const {
   To<NGPhysicalBoxFragment>(*physical_fragment_)
       .CheckSameForSimplifiedLayout(
           To<NGPhysicalBoxFragment>(*other.physical_fragment_),
-          check_same_block_size);
+          check_same_block_size, check_no_fragmentation);
 
   DCHECK(LinesUntilClamp() == other.LinesUntilClamp());
   ExclusionSpace().CheckSameForSimplifiedLayout(other.ExclusionSpace());

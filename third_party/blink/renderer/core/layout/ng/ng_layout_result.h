@@ -516,7 +516,8 @@ class CORE_EXPORT NGLayoutResult final
 
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const NGLayoutResult&,
-                                    bool check_same_block_size = true) const;
+                                    bool check_same_block_size = true,
+                                    bool check_no_fragmentation = true) const;
 #endif
 
   using NGContainerFragmentBuilderPassKey =

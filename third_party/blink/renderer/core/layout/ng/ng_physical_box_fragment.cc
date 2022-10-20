@@ -1701,7 +1701,8 @@ NGPhysicalBoxFragment::AllowPostLayoutScope::~AllowPostLayoutScope() {
 
 void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
     const NGPhysicalBoxFragment& other,
-    bool check_same_block_size) const {
+    bool check_same_block_size,
+    bool check_no_fragmentation) const {
   DCHECK_EQ(layout_object_, other.layout_object_);
 
   LogicalSize size = size_.ConvertToLogical(Style().GetWritingMode());
@@ -1711,8 +1712,10 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   if (check_same_block_size)
     DCHECK_EQ(size.block_size, other_size.block_size);
 
-  // "simplified" layout doesn't work within a fragmentation context.
-  DCHECK(!break_token_ && !other.break_token_);
+  if (check_no_fragmentation) {
+    // "simplified" layout doesn't work within a fragmentation context.
+    DCHECK(!break_token_ && !other.break_token_);
+  }
 
   DCHECK_EQ(type_, other.type_);
   DCHECK_EQ(sub_type_, other.sub_type_);
