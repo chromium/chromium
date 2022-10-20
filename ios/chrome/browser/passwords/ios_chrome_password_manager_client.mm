@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_change_success_tracker_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
@@ -200,8 +201,9 @@ IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
 
 PasswordStoreInterface*
 IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
-  // AccountPasswordStore is currenly not supported on iOS.
-  return nullptr;
+  return IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+             bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS)
+      .get();
 }
 
 password_manager::PasswordReuseManager*

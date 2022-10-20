@@ -8,10 +8,12 @@
 
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -146,6 +148,8 @@
           IOSChromeAffiliationServiceFactory::GetForBrowserState(
               self.browser->GetBrowserState()),
           IOSChromePasswordStoreFactory::GetForBrowserState(
+              browserState, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
               browserState, ServiceAccessType::EXPLICIT_ACCESS));
 
   self.mediator = [[PasswordSettingsMediator alloc]

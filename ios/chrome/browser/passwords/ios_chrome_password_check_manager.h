@@ -103,9 +103,10 @@ class IOSChromePasswordCheckManager
 
   ChromeBrowserState* browser_state_ = nullptr;
 
-  // Handle to the password store, powering both `saved_passwords_presenter_`
+  // Handles to the password stores, powering both `saved_passwords_presenter_`
   // and `insecure_credentials_manager_`.
-  scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface> profile_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface> account_store_;
 
   // Used by `insecure_credentials_manager_` to obtain the list of saved
   // passwords.

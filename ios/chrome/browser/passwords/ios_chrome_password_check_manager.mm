@@ -11,6 +11,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
@@ -77,14 +78,19 @@ PasswordCheckState ConvertBulkCheckState(State state) {
 IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
     ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
-      password_store_(IOSChromePasswordStoreFactory::GetForBrowserState(
+      profile_store_(IOSChromePasswordStoreFactory::GetForBrowserState(
+          browser_state,
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      account_store_(IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
           browser_state,
           ServiceAccessType::EXPLICIT_ACCESS)),
       saved_passwords_presenter_(
           IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state),
-          password_store_),
+          profile_store_,
+          account_store_),
       insecure_credentials_manager_(&saved_passwords_presenter_,
-                                    password_store_),
+                                    profile_store_,
+                                    account_store_),
       bulk_leak_check_service_adapter_(
           &saved_passwords_presenter_,
           IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(

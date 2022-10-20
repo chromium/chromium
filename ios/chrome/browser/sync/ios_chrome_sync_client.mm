@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -76,14 +77,17 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
   db_thread_ = profile_web_data_service_
                    ? profile_web_data_service_->GetDBTaskRunner()
                    : nullptr;
-  password_store_ = IOSChromePasswordStoreFactory::GetForBrowserState(
+  profile_password_store_ = IOSChromePasswordStoreFactory::GetForBrowserState(
       browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
+  account_password_store_ =
+      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+          browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
 
   component_factory_ =
       std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
           this, ::GetChannel(), web::GetUIThreadTaskRunner({}), db_thread_,
-          profile_web_data_service_, account_web_data_service_, password_store_,
-          /*account_password_store=*/nullptr,
+          profile_web_data_service_, account_web_data_service_,
+          profile_password_store_, account_password_store_,
           ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state_));
 
   trusted_vault_client_ = std::make_unique<IOSTrustedVaultClient>(

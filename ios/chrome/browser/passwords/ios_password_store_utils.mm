@@ -13,6 +13,7 @@
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/password_manager/core/browser/store_metrics_reporter.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -50,6 +51,10 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
         IOSChromePasswordStoreFactory::GetForBrowserState(
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
+    password_manager::PasswordStoreInterface* account_store =
+        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+            browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
+            .get();
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForBrowserStateIfExists(browser_state_);
     signin::IdentityManager* identity_manager =
@@ -61,8 +66,8 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
 
     metrics_reporter_ = std::make_unique<
         password_manager::StoreMetricsReporter>(
-        profile_store, /*account_store=*/nullptr, sync_service,
-        identity_manager, pref_service, password_reuse_manager,
+        profile_store, account_store, sync_service, identity_manager,
+        pref_service, password_reuse_manager,
         /*is_under_advanced_protection=*/false,
         base::BindOnce(
             &StoreMetricReporterHelper::RemoveInstanceFromBrowserStateUserData,

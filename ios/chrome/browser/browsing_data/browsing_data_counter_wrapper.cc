@@ -21,6 +21,7 @@
 #include "ios/chrome/browser/browsing_data/cache_counter.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
+#include "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
@@ -49,7 +50,8 @@ CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
     return std::make_unique<browsing_data::PasswordsCounter>(
         IOSChromePasswordStoreFactory::GetForBrowserState(
             browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-        /*account_store=*/nullptr,
+        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+            browser_state, ServiceAccessType::EXPLICIT_ACCESS),
         SyncServiceFactory::GetForBrowserState(browser_state));
   }
 
