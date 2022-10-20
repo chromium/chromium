@@ -88,8 +88,10 @@ enum ChromeDistanceMetric {
   DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING,
   // Width and Height of a vector icon in the side panel header.
   DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE,
+  // Minimum size of the header vector icon buttons to get the proper ripple.
+  DISTANCE_SIDE_PANEL_HEADER_BUTTON_MINIMUM_SIZE,
   // Horizontal spacing for separating side panel header border from controls.
-  DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL
+  DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

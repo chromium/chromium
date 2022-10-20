@@ -39,6 +39,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -53,7 +54,6 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
     views::View* host,
     base::RepeatingClosure pressed_callback,
     const gfx::VectorIcon& icon,
-    const gfx::Insets& margin_insets,
     const std::u16string& tooltip_text,
     ui::ElementIdentifier view_id,
     int dip_size) {
@@ -61,12 +61,17 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
                                                               icon, dip_size);
   button->SetTooltipText(tooltip_text);
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  button->SetProperty(views::kMarginsKey, margin_insets);
   views::InstallCircleHighlightPathGenerator(button.get());
+
+  int minimum_button_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_BUTTON_MINIMUM_SIZE);
+  button->SetMinimumImageSize(
+      gfx::Size(minimum_button_size, minimum_button_size));
+
   button->SetProperty(
       views::kMarginsKey,
       gfx::Insets().set_left(ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+          views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   button->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification().WithAlignment(views::LayoutAlignment::kEnd));
@@ -530,7 +535,7 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
       header.get(),
       base::BindRepeating(&SidePanelCoordinator::OpenInNewTab,
                           base::Unretained(this)),
-      vector_icons::kOpenInNewIcon, gfx::Insets(),
+      vector_icons::kOpenInNewIcon,
       l10n_util::GetStringUTF16(IDS_ACCNAME_OPEN_IN_NEW_TAB),
       kSidePanelOpenInNewTabButtonElementId,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -543,8 +548,7 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   auto* header_close_button = header->AddChildView(CreateControlButton(
       header.get(),
       base::BindRepeating(&SidePanelCoordinator::Close, base::Unretained(this)),
-      views::kIcCloseIcon, gfx::Insets(),
-      l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE),
+      views::kIcCloseIcon, l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE),
       kSidePanelCloseButtonElementId,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
