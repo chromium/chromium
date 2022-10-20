@@ -8,7 +8,7 @@
 # script is meant to run as part of reproduce.sh.
 
 # Without the local modifications below polymer_bundled.min.js is 109KB, as
-# opposed to 103KB after the modifications.
+# opposed to 89KB after the modifications.
 
 # Patch a few local changes that are later leveraged by Rollup and Terser to
 # prune out unnecessary code.

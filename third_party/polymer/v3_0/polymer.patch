@@ -1,16 +1,46 @@
+diff --git a/components-chromium/polymer/lib/elements/custom-style.js b/components-chromium/polymer/lib/elements/custom-style.js
+index e0d2021372554..c667b6ee83a03 100644
+--- a/components-chromium/polymer/lib/elements/custom-style.js
++++ b/components-chromium/polymer/lib/elements/custom-style.js
+@@ -7,14 +7,11 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
+ Code distributed by Google as part of the polymer project is also
+ subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+-import '../../../shadycss/entrypoints/custom-style-interface.js';
+ 
+ import { cssFromModules } from '../utils/style-gather.js';
+ 
+ const attr = 'include';
+ 
+-const CustomStyleInterface = window.ShadyCSS.CustomStyleInterface;
+-
+ /**
+  * Custom element for defining styles in the main document that can take
+  * advantage of [shady DOM](https://github.com/webcomponents/shadycss) shims
+@@ -65,7 +62,6 @@ export class CustomStyle extends HTMLElement {
+   constructor() {
+     super();
+     this._style = null;
+-    CustomStyleInterface.addCustomStyle(this);
+   }
+   /**
+    * Returns the light-DOM `<style>` child this element wraps.  Upon first
 diff --git a/components-chromium/polymer/lib/legacy/legacy-element-mixin.js b/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
-index de150da342ee9..609d1af1eb7b3 100644
+index de150da342ee9..8815c83a70cca 100644
 --- a/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
 +++ b/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
-@@ -10,7 +10,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
- import '../../../shadycss/entrypoints/apply-shim.js';
+@@ -7,10 +7,8 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
+ Code distributed by Google as part of the polymer project is also
+ subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+ */
+-import '../../../shadycss/entrypoints/apply-shim.js';
  import { ElementMixin, builtCSS } from '../mixins/element-mixin.js';
  import { GestureEventListeners } from '../mixins/gesture-event-listeners.js';
 -import { DirMixin } from '../mixins/dir-mixin.js';
  import { dedupingMixin } from '../utils/mixin.js';
  import '../utils/render-status.js';
  import '../utils/unresolved.js';
-@@ -39,7 +38,6 @@ let styleInterface = window.ShadyCSS;
+@@ -39,7 +37,6 @@ let styleInterface = window.ShadyCSS;
   * @polymer
   * @appliesMixin ElementMixin
   * @appliesMixin GestureEventListeners
@@ -18,7 +48,7 @@ index de150da342ee9..609d1af1eb7b3 100644
   * @property isAttached {boolean} Set to `true` in this element's
   *   `connectedCallback` and `false` in `disconnectedCallback`
   * @summary Element class mixin that provides Polymer's "legacy" API
-@@ -52,7 +50,6 @@ export const LegacyElementMixin = dedupingMixin((base) => {
+@@ -52,7 +49,6 @@ export const LegacyElementMixin = dedupingMixin((base) => {
     * @constructor
     * @implements {Polymer_ElementMixin}
     * @implements {Polymer_GestureEventListeners}
@@ -26,7 +56,7 @@ index de150da342ee9..609d1af1eb7b3 100644
     * @extends {HTMLElement}
     * @private
     */
-@@ -66,8 +63,7 @@ export const LegacyElementMixin = dedupingMixin((base) => {
+@@ -66,8 +62,7 @@ export const LegacyElementMixin = dedupingMixin((base) => {
     * @extends {GesturesElement}
     * @private
     */
@@ -37,7 +67,7 @@ index de150da342ee9..609d1af1eb7b3 100644
    const observedAttributesGetter = findObservedAttributesGetter(legacyElementBase);
  
 diff --git a/components-chromium/polymer/lib/mixins/element-mixin.js b/components-chromium/polymer/lib/mixins/element-mixin.js
-index cba8953ab51bb..b56e007ce99d3 100644
+index cba8953ab51bb..76b86681be72a 100644
 --- a/components-chromium/polymer/lib/mixins/element-mixin.js
 +++ b/components-chromium/polymer/lib/mixins/element-mixin.js
 @@ -739,13 +739,13 @@ export const ElementMixin = dedupingMixin(base => {
@@ -55,6 +85,18 @@ index cba8953ab51bb..b56e007ce99d3 100644
            if (syncInitialRender && window.ShadyDOM) {
              window.ShadyDOM.flushInitial(n.shadowRoot);
            }
+@@ -783,8 +783,9 @@ export const ElementMixin = dedupingMixin(base => {
+      * @suppress {invalidCasts}
+      */
+     updateStyles(properties) {
+-      if (window.ShadyCSS) {
+-        window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */(this), properties);
++      // Chromium modification to use native API instead of relying on ShadyCSS.
++      for (const [name, value] of Object.entries(properties)) {
++        this.style.setProperty(name, value);
+       }
+     }
+ 
 diff --git a/components-chromium/polymer/lib/mixins/template-stamp.js b/components-chromium/polymer/lib/mixins/template-stamp.js
 index 19938efe0b622..0537e0b3b9884 100644
 --- a/components-chromium/polymer/lib/mixins/template-stamp.js

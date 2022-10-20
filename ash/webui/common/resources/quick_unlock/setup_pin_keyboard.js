@@ -231,7 +231,6 @@ Polymer({
         chrome.quickUnlockPrivate.QuickUnlockMode.PIN,
         this.processPinRequirements_.bind(this, messageId));
     this.problemClass_ = problemClass;
-    this.updateStyles();
     this.enableSubmit = problemClass !== ProblemType.ERROR &&
         messageId !== MessageType.TOO_SHORT;
   },

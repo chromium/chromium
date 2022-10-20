@@ -50,6 +50,17 @@ class StylePropertyMap {
 /** @type {!StylePropertyMap} */
 HTMLElement.prototype.attributeStyleMap;
 
+/**
+ * @see https://drafts.css-houdini.org/css-typed-om/#stylepropertymapreadonly
+ */
+class StylePropertyMapReadOnly {
+  /** @param {string} property */
+  get(property) {}
+}
+
+/** @return {!StylePropertyMapReadOnly} */
+HTMLElement.prototype.computedStyleMap = function() {};
+
 /** @return {!AnimationEffectTimingProperties} */
 AnimationEffect.prototype.getTiming = function() {};
 

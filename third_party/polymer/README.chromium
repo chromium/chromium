@@ -48,13 +48,23 @@ Local Modifications:
   codepaths related to
   1) ShadyDOM support (not needed by Chromium since native ShadowDOM is used).
      Done by passing --define window.ShadyDOM=false flag to Terser.
-  2) Polymer codepaths guarded by flags to preserve legacy Polymer
-     behavior. Specifically legacyWarnings, syncInitialRender,
-     legacyUndefined, legacyNoObservedAttributes,
-  3) Polymer codepaths guarded by flags implementing various
+  2) ShadyCSS support (not needed by Chromium since no CSS mixins are used).
+     Done by passing --define window.ShadyCSS=false flag to Terser, as well as
+     by exluding all imports of shadycss/, which effectively removes the
+     shadycss polyfil from the final Polymer bundle.
+  3) PolymerElement#updateStyles() was modified to not rely on the ShadyCSS
+     polyfil anymore, and call the native this.style.setProperty() API instead
+     (required after the changes in #1)
+  4) PolymerElement#getComputedStyleValue() is now defunct (it was relying on
+     ShadyCSS stuff), and the native HTMLElement#computedStyleMap() API should
+     be used instead.
+  5) Polymer codepaths guarded by flags to preserve legacy Polymer behavior.
+     Specifically legacyWarnings, syncInitialRender, legacyUndefined,
+     legacyNoObservedAttributes.
+  6) Polymer codepaths guarded by flags implementing various
      new optimizations introduced to v3.5.0. Specifically
      removeNestedTemplates, fastDomIf, suppressTemplateNotifications,
      useAdoptedStyleSheetsWithBuiltCSS.
 
-To restore a content of the 'components-chromium' directory from scratch, run
+To restore the content of the 'components-chromium' directory from scratch, run
 ./v3_0/reproduce.sh on a Linux machine.

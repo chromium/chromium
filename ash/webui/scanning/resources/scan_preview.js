@@ -233,11 +233,12 @@ Polymer({
         '--scanned-image-margin-bottom', SCANNED_IMG_MARGIN_BOTTOM_PX + 'px');
 
     // parseFloat() is used to convert the string returned by
-    // getComputedStyleValue() into a number ("642px" --> 642).
+    // styleMap.get() into a number ("642px" --> 642).
+    const styleMap = this.computedStyleMap();
     this.actionToolbarHeight_ =
-        parseFloat(this.getComputedStyleValue('--action-toolbar-height'));
+        parseFloat(styleMap.get('--action-toolbar-height').toString());
     this.actionToolbarWidth_ =
-        parseFloat(this.getComputedStyleValue('--action-toolbar-width'));
+        parseFloat(styleMap.get('--action-toolbar-width').toString());
 
     this.forceHiddenElementsVisibleObserverReceiver_ =
         new ash.common.mojom.ForceHiddenElementsVisibleObserverReceiver(

@@ -60,6 +60,7 @@ def main():
 
         # Declare global variables as false, to prune out unnecessary code.
         '--define', 'window.ShadyDOM=false',
+        '--define', 'window.ShadyCSS=false',
         '--define', 'window.Polymer.legacyOptimizations=false',
 
         '--output', minified_js])
