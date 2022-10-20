@@ -64,6 +64,7 @@ polymorphic.launcher(
     target_builders = [
         "ci/fuchsia-fyi-arm64-dbg",
         "ci/fuchsia-fyi-x64-asan",
+        "ci/fuchsia-x64-rel",
     ],
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
