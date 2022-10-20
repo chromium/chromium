@@ -48,7 +48,7 @@ items:
   name: crosh
   value: crosh
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - ayaelattar@chromium.org
 - pmarko@chromium.org
 schema:

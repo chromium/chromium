@@ -9,7 +9,7 @@ features:
   per_profile: true
 label: Names of the forbidden native messaging hosts (or * for all)
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   items:

@@ -15,7 +15,7 @@ items:
 - caption: Disable audio output
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: boolean

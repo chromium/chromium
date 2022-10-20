@@ -23,7 +23,7 @@ items:
   name: ExampleDeprecatedFeature
   value: ExampleDeprecatedFeature_EffectiveUntil20080902
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - atwilson@chromium.org
 schema:
   items:

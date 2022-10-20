@@ -8,7 +8,7 @@ example_value: students.school.edu
 features:
   dynamic_refresh: true
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - bartfab@chromium.org
 schema:
   type: string

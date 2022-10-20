@@ -21,7 +21,7 @@ features:
   per_profile: true
 label: List of enabled plugins
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   items:

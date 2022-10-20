@@ -24,7 +24,7 @@ items:
   name: Docked
   value: 2
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   enum:

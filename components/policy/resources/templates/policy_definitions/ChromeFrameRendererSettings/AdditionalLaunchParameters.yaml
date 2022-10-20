@@ -9,7 +9,7 @@ example_value: --enable-media-stream --enable-media-source
 features:
   dynamic_refresh: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   type: string

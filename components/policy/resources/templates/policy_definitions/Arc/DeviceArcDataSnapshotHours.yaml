@@ -28,7 +28,7 @@ features:
   dynamic_refresh: true
 owners:
 - pbond@chromium.org
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - atwilson@chromium.org
 schema:
   properties:

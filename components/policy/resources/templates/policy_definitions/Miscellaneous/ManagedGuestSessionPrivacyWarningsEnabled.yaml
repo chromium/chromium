@@ -19,7 +19,7 @@ items:
 - caption: Do not show privacy notifications
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - ayaelattar@chromium.org
 - pastarmovj@chromium.org
 schema:

@@ -19,7 +19,7 @@ items:
 - caption: Allow 3rd party cookies, but allow the user to change this setting
   value: null
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - zmin@chromium.org
 schema:
   type: boolean

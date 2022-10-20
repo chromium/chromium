@@ -10,7 +10,7 @@ example_value: 7200
 features:
   dynamic_refresh: true
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - emaxx@chromium.org
 schema:
   type: integer

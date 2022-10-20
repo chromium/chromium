@@ -42,7 +42,7 @@
 # references to an OWNERS files
 owners:
 - your-ldap@chromium.org
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 
 # Optional field that defaults to `caption` if not set.
 # A short, one-line summary of the item it applies to. The difference from

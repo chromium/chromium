@@ -14,7 +14,7 @@ features:
   platform_only: true
 label: Set user data directory
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: string

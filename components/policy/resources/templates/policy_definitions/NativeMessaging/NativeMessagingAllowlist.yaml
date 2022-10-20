@@ -13,7 +13,7 @@ future_on:
 - fuchsia
 label: Names of the native messaging hosts to exempt from the blocklist
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - zmin@chromium.org
 schema:
   items:

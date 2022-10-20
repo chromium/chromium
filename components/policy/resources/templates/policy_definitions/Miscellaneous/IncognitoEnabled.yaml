@@ -19,7 +19,7 @@ items:
 - caption: Disable Incognito mode
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - hendrich@chromium.org
 schema:
   type: boolean

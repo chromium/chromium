@@ -40,7 +40,7 @@ items:
   name: ProxyUseSystem
   value: system
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   enum:

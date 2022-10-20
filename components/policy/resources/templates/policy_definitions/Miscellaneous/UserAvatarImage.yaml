@@ -17,7 +17,7 @@ features:
   per_profile: true
 max_size: 524288
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - bartfab@chromium.org
 schema:
   properties:

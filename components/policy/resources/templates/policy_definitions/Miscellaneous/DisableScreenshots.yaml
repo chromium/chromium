@@ -18,7 +18,7 @@ items:
 - caption: Allow users to take screenshots and video recordings
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - poromov@chromium.org
 schema:
   type: boolean

@@ -16,7 +16,7 @@ features:
   per_profile: true
 label: List of disabled protocol schemes
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - zmin@chromium.org
 schema:
   items:

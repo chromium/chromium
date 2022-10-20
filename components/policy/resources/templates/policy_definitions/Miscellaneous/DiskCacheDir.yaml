@@ -13,7 +13,7 @@ future_on:
 - fuchsia
 label: Set disk cache directory
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: string

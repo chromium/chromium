@@ -20,7 +20,7 @@ items:
 - caption: Disable JavaScript
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - bartfab@chromium.org
 schema:
   type: boolean

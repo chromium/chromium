@@ -35,7 +35,7 @@ items:
   - chrome_os:98-
   value: 6
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   enum:

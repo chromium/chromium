@@ -18,7 +18,7 @@ features:
   dynamic_refresh: false
   per_profile: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: boolean

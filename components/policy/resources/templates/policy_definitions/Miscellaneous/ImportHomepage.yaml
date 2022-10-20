@@ -16,7 +16,7 @@ items:
   value: false
 label: Import of homepage from default browser on first run
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - poromov@chromium.org
 schema:
   type: boolean

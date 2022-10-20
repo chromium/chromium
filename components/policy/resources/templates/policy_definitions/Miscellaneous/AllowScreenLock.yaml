@@ -13,7 +13,7 @@ items:
 - caption: Do not allow locking the screen
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - emaxx@chromium.org
 schema:
   type: boolean

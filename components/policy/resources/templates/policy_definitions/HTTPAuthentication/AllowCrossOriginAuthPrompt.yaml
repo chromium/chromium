@@ -17,7 +17,7 @@ items:
 - caption: Prevent third-party images from showing an authentication prompt
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   type: boolean

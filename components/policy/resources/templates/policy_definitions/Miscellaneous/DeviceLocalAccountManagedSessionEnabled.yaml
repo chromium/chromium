@@ -13,7 +13,7 @@ features:
   per_profile: false
 owners:
 - isandrk@chromium.org
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 schema:
   type: boolean
 supported_on:

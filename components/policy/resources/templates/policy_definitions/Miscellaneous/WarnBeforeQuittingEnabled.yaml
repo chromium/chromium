@@ -17,7 +17,7 @@ items:
 - caption: Do not show a warning dialog when the user is attempting to quit
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 schema:
   type: boolean
 supported_on:

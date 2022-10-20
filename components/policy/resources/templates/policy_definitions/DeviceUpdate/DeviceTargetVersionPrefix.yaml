@@ -15,7 +15,7 @@ example_value: '1412.'
 features:
   dynamic_refresh: true
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pmarko@chromium.org
 schema:
   type: string

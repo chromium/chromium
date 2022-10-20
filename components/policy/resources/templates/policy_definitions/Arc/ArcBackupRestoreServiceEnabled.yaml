@@ -21,7 +21,7 @@ items:
   name: BackupAndRestoreEnabled
   value: 2
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - anqing@chromium.org
 schema:
   enum:

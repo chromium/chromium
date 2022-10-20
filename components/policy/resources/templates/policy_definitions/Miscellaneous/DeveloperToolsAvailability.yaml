@@ -28,7 +28,7 @@ items:
   name: DeveloperToolsDisallowed
   value: 2
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pmarko@chromium.org
 schema:
   enum:

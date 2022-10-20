@@ -18,7 +18,7 @@ example_value:
 features:
   dynamic_refresh: true
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - anqing@chromium.org
 schema:
   items:

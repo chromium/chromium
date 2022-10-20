@@ -15,7 +15,7 @@ features:
   per_profile: false
 label: Set the roaming profile directory
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: string

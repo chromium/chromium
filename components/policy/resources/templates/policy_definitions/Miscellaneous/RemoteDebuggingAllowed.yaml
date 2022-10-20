@@ -18,7 +18,7 @@ items:
 - caption: Do not allow use of the remote debugging
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 schema:
   type: boolean
 supported_on:

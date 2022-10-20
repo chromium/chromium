@@ -15,7 +15,7 @@ items:
 - caption: Do not include port in generated Kerberos SPN
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   type: boolean

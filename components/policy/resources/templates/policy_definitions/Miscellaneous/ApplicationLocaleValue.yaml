@@ -13,7 +13,7 @@ features:
   per_profile: false
 label: Application locale
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - hendrich@chromium.org
 schema:
   type: string

@@ -11,7 +11,7 @@ features:
   per_profile: false
 label: Time period (milliseconds)
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - zmin@chromium.org
 schema:
   minimum: 3600000

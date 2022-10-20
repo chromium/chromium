@@ -21,7 +21,7 @@ features:
 future_on:
 - fuchsia
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - anqing@chromium.org
 schema:
   items:

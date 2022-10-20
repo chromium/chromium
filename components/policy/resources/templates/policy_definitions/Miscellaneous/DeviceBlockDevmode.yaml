@@ -17,7 +17,7 @@ items:
 - caption: Allow developer mode
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - atwilson@chromium.org
 schema:
   type: boolean

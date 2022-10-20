@@ -17,7 +17,7 @@ items:
   value: false
 label: Import search engines from default browser on first run
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - bartfab@chromium.org
 schema:
   type: boolean

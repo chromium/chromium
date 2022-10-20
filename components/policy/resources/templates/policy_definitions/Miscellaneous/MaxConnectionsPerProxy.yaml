@@ -12,7 +12,7 @@ future_on:
 - chrome_os
 - fuchsia
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: integer

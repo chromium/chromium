@@ -19,7 +19,7 @@ future_on:
 - fuchsia
 label: Set download directory
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: string

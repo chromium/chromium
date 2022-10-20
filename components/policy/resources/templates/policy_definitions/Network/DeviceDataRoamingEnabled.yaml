@@ -13,7 +13,7 @@ items:
 - caption: Do not allow mobile data roaming
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - poromov@chromium.org
 schema:
   type: boolean

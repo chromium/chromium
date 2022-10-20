@@ -22,7 +22,7 @@ items:
     provier list
   value: null
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   type: boolean

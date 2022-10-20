@@ -19,7 +19,7 @@ items:
 owners:
 - mpolzer@google.com
 - crisguerrero@chromium.com
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 schema:
   enum:
   - 1

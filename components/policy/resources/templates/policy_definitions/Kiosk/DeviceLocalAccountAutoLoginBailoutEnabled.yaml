@@ -13,7 +13,7 @@ items:
 - caption: Disable auto-login bailout
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pmarko@chromium.org
 schema:
   type: boolean

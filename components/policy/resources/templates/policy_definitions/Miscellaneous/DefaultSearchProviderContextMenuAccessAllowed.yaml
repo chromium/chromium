@@ -20,7 +20,7 @@ items:
 - caption: Disable access to the default search provider context menu
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - atwilson@chromium.org
 schema:
   type: boolean

@@ -7,7 +7,7 @@ features:
   dynamic_refresh: true
 owners:
 - vsavu@google.com
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 schema:
   type: string
 supported_on:

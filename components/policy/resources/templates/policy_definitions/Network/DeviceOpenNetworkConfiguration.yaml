@@ -12,7 +12,7 @@ features:
   dynamic_refresh: true
 owners:
 - pmarko@chromium.org
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 schema:
   type: string
 supported_on:

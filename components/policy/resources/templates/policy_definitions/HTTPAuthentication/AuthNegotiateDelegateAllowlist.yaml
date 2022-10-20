@@ -10,7 +10,7 @@ features:
 future_on:
 - fuchsia
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - atwilson@chromium.org
 schema:
   type: string

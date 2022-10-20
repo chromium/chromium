@@ -24,7 +24,7 @@ items:
   name: RemoveLRUIfDormant
   value: remove-lru-if-dormant
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   enum:

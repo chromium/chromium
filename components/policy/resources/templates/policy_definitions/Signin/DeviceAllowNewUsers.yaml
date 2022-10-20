@@ -19,7 +19,7 @@ items:
 - caption: Restrict sign-in to a list of users
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: boolean

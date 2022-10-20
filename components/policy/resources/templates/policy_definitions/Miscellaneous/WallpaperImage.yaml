@@ -15,7 +15,7 @@ features:
   per_profile: true
 max_size: 16777216
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - anqing@chromium.org
 schema:
   properties:

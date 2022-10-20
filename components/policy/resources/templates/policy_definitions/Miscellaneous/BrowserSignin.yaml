@@ -30,7 +30,7 @@ items:
   - ios:97-
   value: 2
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   enum:

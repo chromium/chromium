@@ -15,7 +15,7 @@ items:
 - caption: Disallow QUIC
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - zmin@chromium.org
 schema:
   type: boolean

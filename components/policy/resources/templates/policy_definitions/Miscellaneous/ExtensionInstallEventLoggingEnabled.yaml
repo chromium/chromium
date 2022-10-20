@@ -10,7 +10,7 @@ features:
   per_profile: true
 owners:
 - swapnilgupta@google.com
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 schema:
   type: boolean
 supported_chrome_os_management:

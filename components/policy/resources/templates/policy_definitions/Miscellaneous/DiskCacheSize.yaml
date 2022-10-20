@@ -15,7 +15,7 @@ future_on:
 - fuchsia
 label: Set disk cache size
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: integer

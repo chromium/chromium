@@ -22,7 +22,7 @@ features:
 owners:
 - ayag@chromium.org
 - chromeos-commercial-identity@google.com
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 schema:
   maximum: 365
   minimum: -2

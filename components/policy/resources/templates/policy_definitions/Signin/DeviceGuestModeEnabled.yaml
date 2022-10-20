@@ -13,7 +13,7 @@ items:
 - caption: Disable guest mode
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - anqing@chromium.org
 schema:
   type: boolean

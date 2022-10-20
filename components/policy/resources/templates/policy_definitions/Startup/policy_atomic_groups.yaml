@@ -8,7 +8,7 @@ Homepage:
 RestoreOnStartup:
   caption: Action on startup
   owners:
-  - file://components/policy/resources/OWNERS
+  - file://components/policy/OWNERS
   - rsorokin@chromium.org
   policies:
   - RestoreOnStartup

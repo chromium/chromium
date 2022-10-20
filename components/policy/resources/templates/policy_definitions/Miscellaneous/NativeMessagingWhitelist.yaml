@@ -9,7 +9,7 @@ features:
   per_profile: true
 label: Names of the native messaging hosts to exempt from the blocklist
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - rsorokin@chromium.org
 schema:
   items:

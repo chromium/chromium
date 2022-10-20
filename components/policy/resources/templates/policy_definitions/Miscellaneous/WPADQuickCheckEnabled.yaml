@@ -18,7 +18,7 @@ items:
 - caption: Disable Web Proxy Auto-Discovery (WPAD) optimization
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - atwilson@chromium.org
 schema:
   type: boolean

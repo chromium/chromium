@@ -28,7 +28,7 @@ items:
   name: Strict
   value: 2
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - poromov@chromium.org
 schema:
   enum:

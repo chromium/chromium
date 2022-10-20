@@ -9,7 +9,7 @@ features:
   per_profile: true
 label: Clear site data on browser shutdown (deprecated)
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - pastarmovj@chromium.org
 schema:
   type: boolean

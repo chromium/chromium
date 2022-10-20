@@ -15,7 +15,7 @@ items:
 - caption: Never show user names and photos
   value: false
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - atwilson@chromium.org
 schema:
   type: boolean

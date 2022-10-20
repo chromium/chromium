@@ -16,7 +16,7 @@ items:
   name: Performance
   value: performance
 owners:
-- file://components/policy/resources/OWNERS
+- file://components/policy/OWNERS
 - emaxx@chromium.org
 schema:
   enum:
