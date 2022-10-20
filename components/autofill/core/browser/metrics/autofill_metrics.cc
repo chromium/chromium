@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -2752,7 +2751,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
       .SetAutofillFills(form_interaction_counts.autofill_fills)
       .SetFormElementUserModifications(
           form_interaction_counts.form_element_user_modifications)
-      .SetFlowId(base::HashMetricName(flow_id->AsLowercaseString()));
+      .SetFlowId(flow_id.value());
 
   if (intent != autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT)
     builder.SetAutofillAssistantIntent(static_cast<int64_t>(intent));

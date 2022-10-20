@@ -132,8 +132,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   using BrowserAutofillManager::pending_form_data;
 
-  std::string GetAddressFormFlowId();
-
  private:
   raw_ptr<TestAutofillClient> client_;
   raw_ptr<TestAutofillDriver> driver_;

@@ -370,6 +370,10 @@ class BrowserAutofillManager : public AutofillManager,
   }
 #endif  // defined(UNIT_TEST)
 
+  FormInteractionsFlowId address_form_interactions_flow_id_for_test() const {
+    return address_form_event_logger_->form_interactions_flow_id_for_test();
+  }
+
  protected:
   // Uploads the form data to the Autofill server. |observed_submission|
   // indicates that upload is the result of a submission event.
@@ -415,7 +419,6 @@ class BrowserAutofillManager : public AutofillManager,
   // Exposed for testing.
   FormData* pending_form_data() { return pending_form_data_.get(); }
 
-#ifdef UNIT_TEST
   void set_single_field_form_fill_router_for_test(
       std::unique_ptr<SingleFieldFormFillRouter> router) {
     single_field_form_fill_router_ = std::move(router);
@@ -425,11 +428,6 @@ class BrowserAutofillManager : public AutofillManager,
       std::unique_ptr<CreditCardAccessManager> manager) {
     credit_card_access_manager_ = std::move(manager);
   }
-
-  const FormInteractionsFlowId& address_form_interactions_flow_id_for_test() {
-    return address_form_event_logger_->form_interactions_flow_id_for_test();
-  }
-#endif  // UNIT_TEST
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserAutofillManagerTest,

@@ -1159,7 +1159,7 @@ ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
   base::Time now = AutofillClock::Now();
 
   if (now - flow_id_date_ > max_flow_time || now < flow_id_date_) {
-    flow_id_ = FormInteractionsFlowId(base::GUID::GenerateRandomV4());
+    flow_id_ = FormInteractionsFlowId();
     flow_id_date_ = now;
   }
   return flow_id_;

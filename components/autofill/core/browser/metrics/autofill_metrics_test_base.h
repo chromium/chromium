@@ -172,10 +172,6 @@ class AutofillMetricsBaseTest : public testing::Test {
     return *autofill_client_->GetPersonalDataManager();
   }
 
-  uint64_t address_form_flow_id_hash() {
-    return base::HashMetricName(autofill_manager().GetAddressFormFlowId());
-  }
-
   const bool is_in_any_main_frame_ = true;
   base::test::TaskEnvironment task_environment_;
   test::AutofillEnvironment autofill_environment_;

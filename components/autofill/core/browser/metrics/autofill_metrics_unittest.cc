@@ -9688,7 +9688,8 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
     SubmitForm(form);
   }
 
-  uint64_t flow_id = address_form_flow_id_hash();
+  FormInteractionsFlowId flow_id =
+      autofill_manager().address_form_interactions_flow_id_for_test();
   ResetDriverToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
@@ -9750,7 +9751,7 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
           {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
           {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
           {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-          {UkmAutofillKeyMetricsType::kFlowIdName, flow_id},
+          {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
           {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
   } else {
     histogram_tester.ExpectTotalCount(
@@ -9867,7 +9868,8 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogEmptyForm) {
 
   SubmitForm(form_);
 
-  uint64_t flow_id = address_form_flow_id_hash();
+  FormInteractionsFlowId flow_id =
+      autofill_manager().address_form_interactions_flow_id_for_test();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -9886,7 +9888,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogEmptyForm) {
               {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
               {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
@@ -9904,7 +9906,8 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogNoProfile) {
   SimulateUserChangedTextField(form_, form_.fields[1]);
   SubmitForm(form_);
 
-  uint64_t flow_id = address_form_flow_id_hash();
+  FormInteractionsFlowId flow_id =
+      autofill_manager().address_form_interactions_flow_id_for_test();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -9923,7 +9926,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogNoProfile) {
               {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
               {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
@@ -9941,7 +9944,8 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   SimulateUserChangedTextField(form_, form_.fields[1]);
   SubmitForm(form_);
 
-  uint64_t flow_id = address_form_flow_id_hash();
+  FormInteractionsFlowId flow_id =
+      autofill_manager().address_form_interactions_flow_id_for_test();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -9961,7 +9965,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
               {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
               {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
@@ -9980,7 +9984,8 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledData) {
   SimulateUserChangedTextField(form_, form_.fields[1]);
   SubmitForm(form_);
 
-  uint64_t flow_id = address_form_flow_id_hash();
+  FormInteractionsFlowId flow_id =
+      autofill_manager().address_form_interactions_flow_id_for_test();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -10001,7 +10006,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledData) {
               {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 1},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
               {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
@@ -10022,7 +10027,8 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledDataButDoesNotSubmit) {
 
   // Don't submit form.
 
-  uint64_t flow_id = address_form_flow_id_hash();
+  FormInteractionsFlowId flow_id =
+      autofill_manager().address_form_interactions_flow_id_for_test();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount(
@@ -10043,7 +10049,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledDataButDoesNotSubmit) {
               {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
               {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 

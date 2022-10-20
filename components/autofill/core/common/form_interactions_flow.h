@@ -5,14 +5,22 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_FORM_INTERACTIONS_FLOW_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_FORM_INTERACTIONS_FLOW_H_
 
-#include "base/guid.h"
-#include "base/types/strong_alias.h"
+#include "base/rand_util.h"
+#include "base/types/id_type.h"
 
 namespace autofill {
 
-// GUID linking together form submissions across navigations.
-using FormInteractionsFlowId =
-    base::StrongAlias<class FormInteractionsFlowIdTag, base::GUID>;
+// A flow ID links together form submissions across navigations.
+//
+// It's implemented as a random 64 bit number so it identifies flows across
+// installations, in particular for UKM metrics.
+struct FormInteractionsFlowId
+    : public base::IdTypeU64<struct FormInteractionsFlowIdTag> {
+ public:
+  FormInteractionsFlowId()
+      : base::IdTypeU64<struct FormInteractionsFlowIdTag>::IdType(
+            base::RandUint64()) {}
+};
 
 // Counts of user interactions with forms.
 struct FormInteractionCounts {
