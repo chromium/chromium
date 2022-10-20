@@ -784,21 +784,6 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
                          weak_ptr_factory_.GetWeakPtr(), match_index,
                          match.ImageUrl())));
     }
-
-    // Request favicons for navigational matches.
-    // TODO(crbug.com/1075848): Investigate using chrome://favicon2.
-    if (!AutocompleteMatch::IsSearchType(match.type) &&
-        match.type != AutocompleteMatchType::DOCUMENT_SUGGESTION &&
-        match.type != AutocompleteMatchType::HISTORY_CLUSTER) {
-      gfx::Image favicon = favicon_cache_.GetLargestFaviconForPageUrl(
-          match.destination_url,
-          base::BindOnce(&RealboxHandler::OnRealboxFaviconFetched,
-                         weak_ptr_factory_.GetWeakPtr(), match_index,
-                         match.destination_url));
-      if (!favicon.IsEmpty()) {
-        OnRealboxFaviconFetched(match_index, match.destination_url, favicon);
-      }
-    }
   }
 }
 
@@ -810,15 +795,4 @@ void RealboxHandler::OnRealboxBitmapFetched(int match_index,
       webui::GetPngDataUrl(data->front_as<unsigned char>(), data->size());
 
   page_->AutocompleteMatchImageAvailable(match_index, image_url, data_url);
-}
-
-void RealboxHandler::OnRealboxFaviconFetched(int match_index,
-                                             const GURL& page_url,
-                                             const gfx::Image& favicon) {
-  DCHECK(!favicon.IsEmpty());
-  auto data = favicon.As1xPNGBytes();
-  std::string data_url =
-      webui::GetPngDataUrl(data->front_as<unsigned char>(), data->size());
-
-  page_->AutocompleteMatchImageAvailable(match_index, page_url, data_url);
 }

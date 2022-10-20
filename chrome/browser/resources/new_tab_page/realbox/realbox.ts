@@ -7,7 +7,6 @@ import './realbox_icon.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -18,7 +17,7 @@ import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 import {getTemplate} from './realbox.html.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxDropdownElement} from './realbox_dropdown.js';
-import {AutocompleteMatchWithImageData, RealboxIconElement} from './realbox_icon.js';
+import {RealboxIconElement} from './realbox_icon.js';
 
 interface Input {
   text: string;
@@ -211,7 +210,6 @@ export class RealboxElement extends PolymerElement {
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
-  private autocompleteMatchImageAvailableListenerId_: number|null = null;
 
   constructor() {
     performance.mark('realbox-creation-start');
@@ -229,17 +227,12 @@ export class RealboxElement extends PolymerElement {
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
             this.onAutocompleteResultChanged_.bind(this));
-    this.autocompleteMatchImageAvailableListenerId_ =
-        this.callbackRouter_.autocompleteMatchImageAvailable.addListener(
-            this.onAutocompleteMatchImageAvailable_.bind(this));
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(
         assert(this.autocompleteResultChangedListenerId_!));
-    this.callbackRouter_.removeListener(
-        assert(this.autocompleteMatchImageAvailableListenerId_!));
   }
 
   override ready() {
@@ -250,30 +243,6 @@ export class RealboxElement extends PolymerElement {
   //============================================================================
   // Callbacks
   //============================================================================
-
-  /**
-   * @param matchIndex match index
-   * @param url match imageUrl or destinationUrl.
-   * @param dataUrl match image or favicon content in in base64 encoded Data URL
-   *     format.
-   */
-  private onAutocompleteMatchImageAvailable_(
-      matchIndex: number, url: Url, dataUrl: string) {
-    if (!this.result_ || !this.result_.matches) {
-      return;
-    }
-
-    const match = this.result_.matches[matchIndex];
-    if (!match || this.selectedMatchIndex_ !== matchIndex) {
-      return;
-    }
-
-    // Set favicon content of the selected match, if applicable.
-    if (match.destinationUrl.url === url.url) {
-      (match as AutocompleteMatchWithImageData).faviconDataUrl = dataUrl;
-      this.notifyPath('selectedMatch_.faviconDataUrl');
-    }
-  }
 
   private onAutocompleteResultChanged_(result: AutocompleteResult) {
     if (this.lastQueriedInput_ === null ||

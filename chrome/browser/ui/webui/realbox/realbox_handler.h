@@ -29,7 +29,6 @@ class WebUIDataSource;
 }  // namespace content
 
 namespace gfx {
-class Image;
 struct VectorIcon;
 }  // namespace gfx
 
@@ -96,9 +95,6 @@ class RealboxHandler : public realbox::mojom::PageHandler,
   void OnRealboxBitmapFetched(int match_index,
                               const GURL& image_url,
                               const SkBitmap& bitmap);
-  void OnRealboxFaviconFetched(int match_index,
-                               const GURL& page_url,
-                               const gfx::Image& favicon);
 
   // OpenURL function used as a callback for execution of actions.
   void OpenURL(const GURL& destination_url,

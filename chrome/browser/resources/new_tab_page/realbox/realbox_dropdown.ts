@@ -173,7 +173,7 @@ export class RealboxDropdownElement extends PolymerElement {
 
   /**
    * @param matchIndex match index
-   * @param url match imageUrl or destinationUrl.
+   * @param url match imageUrl
    * @param dataUrl match image or favicon content in in base64 encoded Data URL
    *     format.
    */
@@ -188,10 +188,8 @@ export class RealboxDropdownElement extends PolymerElement {
       return;
     }
 
-    // Set image or favicon content of the match, if applicable.
-    if (match.destinationUrl.url === url.url) {
-      this.set(`result.matches.${matchIndex}.faviconDataUrl`, dataUrl);
-    } else if (match.imageUrl === url.url) {
+    // Set image content of the match, if applicable.
+    if (match.imageUrl === url.url) {
       this.set(`result.matches.${matchIndex}.imageDataUrl`, dataUrl);
     }
   }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AutocompleteMatch} from '../realbox.mojom-webui.js';
@@ -9,9 +10,10 @@ import {AutocompleteMatch} from '../realbox.mojom-webui.js';
 import {getTemplate} from './realbox_icon.html.js';
 
 const DOCUMENT_MATCH_TYPE: string = 'document';
+const HISTORY_CLUSTER_MATCH_TYPE: string = 'history-cluster';
 
 export type AutocompleteMatchWithImageData =
-    AutocompleteMatch&{faviconDataUrl?: string, imageDataUrl?: string};
+    AutocompleteMatch&{imageDataUrl?: string};
 
 export interface RealboxIconElement {
   $: {
@@ -41,7 +43,7 @@ export class RealboxIconElement extends PolymerElement {
       /** Used as a background image on #icon if non-empty. */
       backgroundImage: {
         type: String,
-        computed: `computeBackgroundImage_(match.faviconDataUrl, match)`,
+        computed: `computeBackgroundImage_(match.*)`,
         reflectToAttribute: true,
       },
 
@@ -116,25 +118,27 @@ export class RealboxIconElement extends PolymerElement {
   //============================================================================
 
   private computeBackgroundImage_(): string {
-    // If the match is a navigation one and has a favicon loaded, display that
-    // as background image. Otherwise, display the colored SVG icon for
-    // 'document' matches.
-    // If 'google_g' is the default icon, display that as background image when
-    // there is no match or the match is not a navigation one. Otherwise, don't
-    // use a background image (use a mask image instead).
     if (this.match && !this.match.isSearchType) {
-      if ((this.match as AutocompleteMatchWithImageData).faviconDataUrl) {
-        return (this.match as AutocompleteMatchWithImageData).faviconDataUrl!;
-      } else if (this.match.type === DOCUMENT_MATCH_TYPE) {
-        return this.match.iconUrl;
-      } else {
-        return '';
+      if (this.match.type !== DOCUMENT_MATCH_TYPE &&
+          this.match.type !== HISTORY_CLUSTER_MATCH_TYPE) {
+        return getFaviconForPageURL(
+            this.match.destinationUrl.url, /* isSyncedUrlForHistoryUi= */ false,
+            /* remoteIconUrlForUma= */ '', /* size= */ 32,
+            /* forceLightMode= */ true);
       }
-    } else if (this.defaultIcon === 'realbox/icons/google_g.svg') {
-      return this.defaultIcon;
-    } else {
-      return '';
+
+      if (this.match.type === DOCUMENT_MATCH_TYPE) {
+        return `url(${this.match.iconUrl})`;
+      }
     }
+
+    if (this.defaultIcon === 'realbox/icons/google_g.svg') {
+      // The google_g.svg is a fully colored icon, so it needs to be displayed
+      // as a background image as mask images will mask the colors.
+      return `url(${this.defaultIcon})`;
+    }
+
+    return '';
   }
 
   private computeIsAnswer_(): boolean {
@@ -143,19 +147,19 @@ export class RealboxIconElement extends PolymerElement {
 
   private computeMaskImage_(): string {
     if (this.match && (!this.match.isRichSuggestion || !this.inSearchbox)) {
-      return this.match.iconUrl;
+      return `url(${this.match.iconUrl})`;
     } else {
-      return this.defaultIcon;
+      return `url(${this.defaultIcon})`;
     }
   }
 
   private computeIconStyle_(): string {
-    // Use a background image if applicabale. Otherwise use a mask image.
+    // Use a background image if applicable. Otherwise use a mask image.
     if (this.backgroundImage) {
-      return `background-image: url(${this.backgroundImage});` +
+      return `background-image: ${this.backgroundImage};` +
           `background-color: transparent;`;
     } else {
-      return `-webkit-mask-image: url(${this.maskImage});`;
+      return `-webkit-mask-image: ${this.maskImage};`;
     }
   }
 

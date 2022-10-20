@@ -8,6 +8,7 @@ import 'chrome://new-tab-page/new_tab_page.js';
 import {$$, decodeString16, mojoString16, RealboxBrowserProxy, RealboxElement, RealboxIconElement, RealboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {NavigationPredictor} from 'chrome://new-tab-page/omnibox.mojom-webui.js';
 import {AutocompleteMatch} from 'chrome://new-tab-page/realbox.mojom-webui.js';
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -142,6 +143,14 @@ suite('NewTabPageRealboxTest', () => {
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);
   });
+
+  function assertFavicon(
+      iconElement: RealboxIconElement, destinationUrl: string) {
+    assertStyle(
+        iconElement.$.icon, 'background-image',
+        getFaviconForPageURL(destinationUrl, false, '', 32, true));
+    assertStyle(iconElement.$.icon, '-webkit-mask-image', 'none');
+  }
 
   function assertIconBackgroundImageUrl(
       iconElement: RealboxIconElement, url: string) {
@@ -1933,14 +1942,6 @@ suite('NewTabPageRealboxTest', () => {
   test(
       'match and realbox icons are updated when favicon becomes available',
       async () => {
-        function assertBackgroundImageDataUrl(
-            iconElement: RealboxIconElement, dataUrl: string) {
-          assertStyle(
-              iconElement.$.icon, 'background-image', `url("${dataUrl}")`);
-          assertStyle(iconElement.$.icon, '-webkit-mask-image', 'none');
-        }
-        const faviconData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC=';
-
         realbox.$.input.value = 'hello';
         realbox.$.input.dispatchEvent(new InputEvent('input'));
 
@@ -1960,7 +1961,7 @@ suite('NewTabPageRealboxTest', () => {
             realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
         assertEquals(2, matchEls.length);
         assertIconMaskImageUrl(matchEls[0]!.$.icon, 'clock.svg');
-        assertIconMaskImageUrl(matchEls[1]!.$.icon, 'page.svg');
+        assertFavicon(matchEls[1]!.$.icon, matches[1]!.destinationUrl.url);
         assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
 
         // Select the first match.
@@ -1995,29 +1996,7 @@ suite('NewTabPageRealboxTest', () => {
         // Input is updated.
         assertEquals('https://helloworld.com', realbox.$.input.value);
         // Realbox icon is updated.
-        assertIconMaskImageUrl(realbox.$.icon, 'page.svg');
-
-        // URL of the loaded favicon must match destination URL of the match.
-        testProxy.callbackRouterRemote.autocompleteMatchImageAvailable(
-            1, {url: 'http://example.com/'}, faviconData);
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertIconMaskImageUrl(matchEls[1]!.$.icon, 'page.svg');
-        assertIconMaskImageUrl(realbox.$.icon, 'page.svg');
-
-        // Index of the loaded favicon must match index of the match.
-        testProxy.callbackRouterRemote.autocompleteMatchImageAvailable(
-            0, {url: 'https://helloworld.com/'}, faviconData);
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertIconMaskImageUrl(matchEls[1]!.$.icon, 'page.svg');
-        assertIconMaskImageUrl(realbox.$.icon, 'page.svg');
-
-        // Once the favicon successfully loads it replaces the match icon as
-        // well as the realbox icon if the match is selected.
-        testProxy.callbackRouterRemote.autocompleteMatchImageAvailable(
-            1, {url: 'https://helloworld.com/'}, faviconData);
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        assertBackgroundImageDataUrl(matchEls[1]!.$.icon, faviconData);
-        assertBackgroundImageDataUrl(realbox.$.icon, faviconData);
+        assertFavicon(realbox.$.icon, matches[1]!.destinationUrl.url);
 
         // Select the first match by pressing 'Escape'.
         const escapeEvent = new KeyboardEvent('keydown', {
@@ -2053,7 +2032,7 @@ suite('NewTabPageRealboxTest', () => {
         });
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
-        assertIconMaskImageUrl(realbox.$.icon, 'page.svg');
+        assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
         // Select the entire input.
         realbox.$.input.setSelectionRange(0, realbox.$.input.value.length);
 
@@ -2092,7 +2071,7 @@ suite('NewTabPageRealboxTest', () => {
         const matchEls =
             realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
         assertEquals(2, matchEls.length);
-        assertIconMaskImageUrl(matchEls[0]!.$.icon, 'page.svg');
+        assertFavicon(matchEls[0]!.$.icon, matches[0]!.destinationUrl.url);
         assertIconMaskImageUrl(matchEls[1]!.$.icon, 'clock.svg');
         assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
 
@@ -2111,7 +2090,7 @@ suite('NewTabPageRealboxTest', () => {
         // Input is updated.
         assertEquals('https://helloworld.com', realbox.$.input.value);
         // Realbox icon is updated.
-        assertIconMaskImageUrl(realbox.$.icon, 'page.svg');
+        assertFavicon(matchEls[0]!.$.icon, matches[0]!.destinationUrl.url);
 
         // Select the second match.
         arrowDownEvent = new KeyboardEvent('keydown', {
@@ -2175,7 +2154,7 @@ suite('NewTabPageRealboxTest', () => {
         // Input is updated.
         assertEquals('https://helloworld.com', realbox.$.input.value);
         // Realbox icon is updated.
-        assertIconMaskImageUrl(realbox.$.icon, 'page.svg');
+        assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
       });
 
   //============================================================================
