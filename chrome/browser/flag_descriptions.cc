@@ -4393,6 +4393,10 @@ const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
 const char kNtpChromeCartModuleDescription[] =
     "Shows the chrome cart module on the New Tab Page.";
 
+const char kNtpComprehensiveThemingName[] = "NTP Comprehensive Theming";
+const char kNtpComprehensiveThemingDescription[] =
+    "Applies theme based colors across various NTP elements";
+
 const char kNtpDesktopLensName[] = "NTP Desktop Lens Entrypoint";
 const char kNtpDesktopLensDescription[] =
     "Shows a Lens entrypoint and upload dialog in desktop NTP when enabled.";
