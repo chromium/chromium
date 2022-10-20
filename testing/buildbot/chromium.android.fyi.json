@@ -149,7 +149,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--no-wpt-internal",
           "--log-wptreport",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--use-upstream-wpt"
