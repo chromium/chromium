@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,21 +11,21 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../settings_shared.css.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../assert_extras.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
-import {GuestOsBrowserProxy, GuestOsBrowserProxyImpl} from './guest_os_browser_proxy.js';
+import {getVMNameForGuestOsType, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsType} from './guest_os_browser_proxy.js';
+import {getTemplate} from './guest_os_shared_paths.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SettingsGuestOsSharedPathsElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface PathObject {
+  path: string;
+  pathDisplayText: string;
+}
+
+const SettingsGuestOsSharedPathsElementBase = I18nMixin(PolymerElement);
 
 /** @polymer */
 class SettingsGuestOsSharedPathsElement extends
@@ -35,7 +35,7 @@ class SettingsGuestOsSharedPathsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -53,7 +53,6 @@ class SettingsGuestOsSharedPathsElement extends
 
       /**
        * The shared path string suitable for display in the UI.
-       * @private {Array<!{path: string, pathDisplayText: string}>}
        */
       sharedPaths_: Array,
 
@@ -61,7 +60,6 @@ class SettingsGuestOsSharedPathsElement extends
        * The shared path which failed to be removed in the most recent attempt
        * to remove a path. Null indicates that removal succeeded. When non-null,
        * the failure dialog is shown.
-       * @private {?string}
        */
       sharedPathWhichFailedRemoval_: {
         type: String,
@@ -76,20 +74,19 @@ class SettingsGuestOsSharedPathsElement extends
     ];
   }
 
+  guestOsType: GuestOsType;
+  private browserProxy_: GuestOsBrowserProxy;
+  private sharedPaths_: PathObject[];
+  private sharedPathWhichFailedRemoval_: string|null;
+
   constructor() {
     super();
 
-    /** @private {!GuestOsBrowserProxy}  */
     this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
   }
 
-
-  /**
-   * @param {!Object<!Array<string>>} paths
-   * @private
-   */
-  onGuestOsSharedPathsChanged_(paths) {
-    const vmPaths = [];
+  private onGuestOsSharedPathsChanged_(paths: {[key: string]: string[]}): void {
+    const vmPaths: string[] = [];
     for (const path in paths) {
       const vms = paths[path];
       if (vms.includes(this.vmName_())) {
@@ -102,11 +99,7 @@ class SettingsGuestOsSharedPathsElement extends
     });
   }
 
-  /**
-   * @param {string} path
-   * @private
-   */
-  removeSharedPath_(path) {
+  private removeSharedPath_(path: string): void {
     this.sharedPathWhichFailedRemoval_ = null;
     this.browserProxy_.removeGuestOsSharedPath(this.vmName_(), path)
         .then(success => {
@@ -117,57 +110,49 @@ class SettingsGuestOsSharedPathsElement extends
     recordSettingChange();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onRemoveSharedPathClick_(event) {
+  private onRemoveSharedPathClick_(event: DomRepeatEvent<PathObject>): void {
     this.removeSharedPath_(event.model.item.path);
   }
 
-  /** @private */
-  onRemoveFailedRetryClick_() {
-    this.removeSharedPath_(assert(this.sharedPathWhichFailedRemoval_));
+  private onRemoveFailedRetryClick_(): void {
+    this.removeSharedPath_(castExists(this.sharedPathWhichFailedRemoval_));
   }
 
-  /** @private */
-  onRemoveFailedDismissClick_() {
+  private onRemoveFailedDismissClick_(): void {
     this.sharedPathWhichFailedRemoval_ = null;
   }
 
   /**
-   * @return {string} The name of the VM to share devices with.
-   * @private
+   * @return The name of the VM to share devices with.
    */
-  vmName_() {
-    return {crostini: 'termina', pluginVm: 'PvmDefault'}[this.guestOsType];
+  private vmName_(): string {
+    return getVMNameForGuestOsType(this.guestOsType);
   }
 
   /**
-   * @return {string} Description for the page.
-   * @private
+   * @return Description for the page.
    */
-  getDescriptionText_() {
+  private getDescriptionText_(): string {
     return this.i18n(this.guestOsType + 'SharedPathsInstructionsLocate') +
         '\n' + this.i18n(this.guestOsType + 'SharedPathsInstructionsAdd');
   }
 
   /**
-   * @return {string} Message to display when removing a shared path fails.
-   * @private
+   * @return Message to display when removing a shared path fails.
    */
-  getRemoveFailureMessage_() {
+  private getRemoveFailureMessage_(): string {
     return this.i18n(
         this.guestOsType + 'SharedPathsRemoveFailureDialogMessage');
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  generatePathDisplayTextId_(index) {
+  private generatePathDisplayTextId_(index: number): string {
     return 'path-display-text-' + index;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-guest-os-shared-paths': SettingsGuestOsSharedPathsElement;
   }
 }
 

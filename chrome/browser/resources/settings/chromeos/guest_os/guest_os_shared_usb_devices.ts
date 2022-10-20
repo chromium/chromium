@@ -19,7 +19,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {assertExists, cast} from '../assert_extras.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
-import {ARC_VM_TYPE, BRUSCHETTA_TYPE, ContainerInfo, CROSTINI_TYPE, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os_browser_proxy.js';
+import {ContainerInfo, getVMNameForGuestOsType, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, GuestOsType} from './guest_os_browser_proxy.js';
 import {containerLabel, equalContainerId} from './guest_os_container_select.js';
 import {getTemplate} from './guest_os_shared_usb_devices.html.js';
 
@@ -109,8 +109,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
   }
 
   defaultGuestId: GuestId;
-  guestOsType: typeof CROSTINI_TYPE|typeof BRUSCHETTA_TYPE|typeof ARC_VM_TYPE|
-      typeof PLUGIN_VM_TYPE;
+  guestOsType: GuestOsType;
   hasContainers: boolean;
   private allContainers_: ContainerInfo[];
   private browserProxy_: GuestOsBrowserProxy;
@@ -133,7 +132,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     this.browserProxy_.notifyGuestOsSharedUsbDevicesPageReady();
   }
 
-  protected onContainerInfo_(containerInfos: ContainerInfo[]) {
+  protected onContainerInfo_(containerInfos: ContainerInfo[]): void {
     this.set('allContainers_', containerInfos);
   }
 
@@ -151,7 +150,8 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
                 equalContainerId(dev.device.guestId, info.id)));
   }
 
-  private onGuestOsSharedUsbDevicesChanged_(devices: GuestOsSharedUsbDevice[]) {
+  private onGuestOsSharedUsbDevicesChanged_(devices: GuestOsSharedUsbDevice[]):
+      void {
     this.sharedUsbDevices_ = devices.map((device) => {
       return {
         shared: !!device.guestId && device.guestId.vm_name === this.vmName_(),
@@ -160,7 +160,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     });
   }
 
-  private onDeviceSharedChange_(event: DomRepeatEvent<SharedUsbDevice>) {
+  private onDeviceSharedChange_(event: DomRepeatEvent<SharedUsbDevice>): void {
     const device = event.model.item.device;
     // Show reassign dialog if device is already shared with another VM.
     const target = cast(event.target, CrToggleElement);
@@ -175,11 +175,11 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     recordSettingChange();
   }
 
-  private onReassignCancel_() {
+  private onReassignCancel_(): void {
     this.reassignDevice_ = null;
   }
 
-  private onReassignContinueClick_() {
+  private onReassignContinueClick_(): void {
     assertExists(this.reassignDevice_);
     this.browserProxy_.setGuestOsUsbDeviceShared(
         this.vmName_(), this.defaultGuestId.container_name,
@@ -189,12 +189,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
   }
 
   private vmName_(): string {
-    return {
-      crostini: 'termina',
-      pluginVm: 'PvmDefault',
-      arcvm: 'arcvm',
-      bruschetta: 'bru',
-    }[this.guestOsType];
+    return getVMNameForGuestOsType(this.guestOsType);
   }
 
   private getDescriptionText_(): string {
@@ -211,11 +206,11 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
                 equalContainerId(dev.device.guestId, id));
   }
 
-  private onAddUsbClick_() {
+  private onAddUsbClick_(): void {
     this.showAddUsbDialog_ = true;
   }
 
-  private onAddUsbDialogClose_() {
+  private onAddUsbDialogClose_(): void {
     this.showAddUsbDialog_ = false;
   }
 
@@ -223,7 +218,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     return containerLabel(id, this.vmName_());
   }
 
-  private onRemoveUsbClick_(event: DomRepeatEvent<SharedUsbDevice>) {
+  private onRemoveUsbClick_(event: DomRepeatEvent<SharedUsbDevice>): void {
     const device = event.model.item.device;
     if (device.guestId) {
       this.browserProxy_.setGuestOsUsbDeviceShared(

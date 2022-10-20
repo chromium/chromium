@@ -13,24 +13,25 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import './guest_os_container_select.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertExists, castExists} from '../assert_extras.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {ContainerInfo, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
-import {containerLabel} from './guest_os_container_select.js';
+import {getTemplate} from './guest_os_shared_usb_devices_add_dialog.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const GuestOsSharedUsbDevicesAddDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface GuestOsSharedUsbDevicesAddDialog {
+  $: {
+    dialog: CrDialogElement,
+    selectDevice: HTMLSelectElement,
+  };
+}
 
-/** @polymer */
+const GuestOsSharedUsbDevicesAddDialogElementBase = I18nMixin(PolymerElement);
+
 class GuestOsSharedUsbDevicesAddDialog extends
     GuestOsSharedUsbDevicesAddDialogElementBase {
   static get is() {
@@ -38,20 +39,16 @@ class GuestOsSharedUsbDevicesAddDialog extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * The USB Devices available for connection to a VM.
-       * @private {!Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
        */
       sharedUsbDevices: Array,
 
-      /**
-       * @type {!GuestId}
-       */
       defaultGuestId: {
         type: Object,
         value() {
@@ -62,14 +59,10 @@ class GuestOsSharedUsbDevicesAddDialog extends
         },
       },
 
-      /**
-       * @type {GuestId}
-       */
       guestId_: Object,
 
       /**
        * List of containers that are already stored in the settings.
-       * @type {!Array<!ContainerInfo>}
        */
       allContainers: {
         type: Array,
@@ -79,7 +72,6 @@ class GuestOsSharedUsbDevicesAddDialog extends
       /**
        * The USB device which was toggled to be shared, but is already shared
        * with another VM. When non-null the reassign dialog is shown.
-       * @private {?GuestOsSharedUsbDevice}
        */
       reassignDevice_: {
         type: Object,
@@ -88,8 +80,21 @@ class GuestOsSharedUsbDevicesAddDialog extends
     };
   }
 
-  /** @override */
-  connectedCallback() {
+  allContainers: ContainerInfo[];
+  defaultGuestId: GuestId;
+  private browserProxy_: GuestOsBrowserProxy;
+  private guestId_: GuestId|null;
+  private reassignDevice_: GuestOsSharedUsbDevice|null;
+  private sharedUsbDevices:
+      Array<{shared: boolean, device: GuestOsSharedUsbDevice}>;
+
+  constructor() {
+    super();
+
+    this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
+  }
+
+  override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
     microTask.run(() => {
@@ -97,39 +102,34 @@ class GuestOsSharedUsbDevicesAddDialog extends
     });
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_(): void {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onAddTap_() {
+  private onAddTap_(): void {
     const sharedUsbDevice = this.sharedUsbDevices.find(
         ({device}) => device.guid === this.$.selectDevice.value);
-    assert(sharedUsbDevice);
-
-    const {device} = sharedUsbDevice;
+    const {device} = castExists(sharedUsbDevice);
     if (device.promptBeforeSharing) {
       this.reassignDevice_ = device;
       return;
     }
 
     const guestId = this.guestId_ || this.defaultGuestId;
-    GuestOsBrowserProxyImpl.getInstance().setGuestOsUsbDeviceShared(
+    this.browserProxy_.setGuestOsUsbDeviceShared(
         guestId.vm_name, guestId.container_name, device.guid, true);
     this.$.dialog.close();
     recordSettingChange();
   }
 
-  /** @private */
-  onReassignCancel_() {
+  private onReassignCancel_(): void {
     this.reassignDevice_ = null;
   }
 
-  /** @private */
-  onReassignContinueClick_() {
+  private onReassignContinueClick_(): void {
+    assertExists(this.reassignDevice_);
     const guestId = this.guestId_ || this.defaultGuestId;
-    GuestOsBrowserProxyImpl.getInstance().setGuestOsUsbDeviceShared(
+    this.browserProxy_.setGuestOsUsbDeviceShared(
         guestId.vm_name, guestId.container_name, this.reassignDevice_.guid,
         true);
     this.reassignDevice_ = null;
@@ -138,21 +138,22 @@ class GuestOsSharedUsbDevicesAddDialog extends
   }
 
   /**
-   * @param {!GuestOsSharedUsbDevice} device USB device.
-   * @private
-   * @return {string} Confirmation prompt text.
+   * @param device USB device.
+   * @return Confirmation prompt text.
    */
-  getReassignDialogText_(device) {
+  private getReassignDialogText_(device: GuestOsSharedUsbDevice): string {
     return this.i18n('guestOsSharedUsbDevicesReassign', device.label);
   }
 
-  /**
-   * @param {!Array<!ContainerInfo>} allContainers
-   * @return boolean
-   * @private
-   */
-  showContainerSelect_(allContainers) {
+  private showContainerSelect_(allContainers: ContainerInfo[]): boolean {
     return allContainers.length > 1;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-guest-os-shared-usb-devices-add-dialog':
+        GuestOsSharedUsbDevicesAddDialog;
   }
 }
 

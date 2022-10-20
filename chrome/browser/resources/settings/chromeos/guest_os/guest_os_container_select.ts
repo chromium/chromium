@@ -9,55 +9,42 @@
 import 'chrome://resources/cr_elements/md_select.css.js';
 import '../../settings_shared.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {cast} from '../assert_extras.js';
 
 import {ContainerInfo, GuestId} from './guest_os_browser_proxy.js';
+import {getTemplate} from './guest_os_container_select.html.js';
 
-/**
- * @param {!GuestId} first
- * @param {!GuestId} second
- * @return boolean
- */
-export function equalContainerId(first, second) {
+export function equalContainerId(first: GuestId, second: GuestId): boolean {
   return first.vm_name === second.vm_name &&
       first.container_name === second.container_name;
 }
 
-/**
- * @param {!GuestId} id
- * @return string
- */
-export function containerLabel(id, defaultVmName) {
-  if (defaultVmName != null && id.vm_name === defaultVmName) {
+export function containerLabel(
+    id: GuestId, defaultVmName: string|null): string {
+  if (defaultVmName !== null && id.vm_name === defaultVmName) {
     return id.container_name;
   }
   return id.vm_name + ':' + id.container_name;
 }
 
-
-/** @polymer */
 class ContainerSelectElement extends PolymerElement {
   static get is() {
     return 'settings-guest-os-container-select';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @type {!GuestId}
-       */
       selectedContainerId: {
         type: Object,
         notify: true,
       },
 
-      /**
-       * @type {?string}
-       */
       defaultVmName: {
         type: String,
         value: null,
@@ -65,7 +52,6 @@ class ContainerSelectElement extends PolymerElement {
 
       /**
        * List of containers that are already stored in the settings.
-       * @type {!Array<!ContainerInfo>}
        */
       containers: {
         type: Array,
@@ -76,24 +62,25 @@ class ContainerSelectElement extends PolymerElement {
     };
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onSelectContainer_(e) {
-    const index = e.target.selectedIndex;
+  selectedContainerId: GuestId;
+  defaultVmName: string|null;
+  containers: ContainerInfo[];
+
+  private onSelectContainer_(e: Event): void {
+    const index = cast(e.target, HTMLSelectElement).selectedIndex;
     if (index >= 0 && index < this.containers.length) {
       this.selectedContainerId = this.containers[index].id;
     }
   }
 
-  /**
-   * @param {!GuestId} id
-   * @return string
-   * @private
-   */
-  containerLabel_(id) {
+  private containerLabel_(id: GuestId): string {
     return containerLabel(id, this.defaultVmName);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-guest-os-container-select': ContainerSelectElement;
   }
 }
 

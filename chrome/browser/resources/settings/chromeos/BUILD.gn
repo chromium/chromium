@@ -353,7 +353,6 @@ group("generate_web_components") {
 
     # Sub-folder targets
     "device_page:web_components",
-    "guest_os:web_components",
     "internet_page:web_components",
     "kerberos_page:web_components",
     "multidevice_page:web_components",
@@ -377,7 +376,6 @@ group("closure_compile_module") {
   deps = [
     ":closure_compile_local_module",
     "device_page:closure_compile_module",
-    "guest_os:closure_compile_module",
     "internet_page:closure_compile_module",
     "kerberos_page:closure_compile_module",
     "multidevice_page:closure_compile_module",
