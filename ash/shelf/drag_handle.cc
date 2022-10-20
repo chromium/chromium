@@ -10,18 +10,22 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -279,8 +283,22 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     case HotseatState::kHidden:
       accessible_name = l10n_util::GetStringUTF16(
           IDS_ASH_DRAG_HANDLE_HOTSEAT_SHOW_ACCESSIBLE_NAME);
+      if (base::FeatureList::IsEnabled(features::kShelfFocusOrderV1)) {
+        // When the hotseat is kHidden, the focus traversal should go to the
+        // status area as the next focus and the navigation area as the previous
+        // focus.
+        GetViewAccessibility().OverrideNextFocus(shelf_->GetStatusAreaWidget());
+        GetViewAccessibility().OverridePreviousFocus(
+            shelf_->shelf_widget()->navigation_widget());
+      }
       break;
     case HotseatState::kExtended:
+      if (base::FeatureList::IsEnabled(features::kShelfFocusOrderV1)) {
+        // When the hotseat is kExtended, the focus traversal should go to the
+        // hotseat as both the next and previous focus.
+        GetViewAccessibility().OverrideNextFocus(shelf_->hotseat_widget());
+        GetViewAccessibility().OverridePreviousFocus(shelf_->hotseat_widget());
+      }
       // The name should be empty when the hotseat is extended but we cannot
       // hide it.
       if (force_show_hotseat_resetter_)
@@ -340,6 +358,12 @@ void DragHandle::ButtonPressed() {
     // Hide hotseat only if it's been brought up by tapping the drag handle.
     shelf_->hotseat_widget()->set_manually_extended(false);
     force_show_hotseat_resetter_.RunAndReset();
+  }
+  if (base::FeatureList::IsEnabled(features::kShelfFocusOrderV1)) {
+    // The accessibility focus order depends on the hotseat state, and pressing
+    // the drag handle changes the hotseat state. So, send an accessibility
+    // notification in order to recompute the focus order.
+    NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
   }
 }
 

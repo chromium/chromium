@@ -6,11 +6,15 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -68,6 +72,37 @@ class DragHandleTest
   }
 };
 
+class DragHandleFocusTest : public AshTestBase {
+ public:
+  DragHandleFocusTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kShelfFocusOrderV1,
+                                              true);
+  }
+  ~DragHandleFocusTest() override = default;
+
+  const DragHandle* drag_handle() const {
+    return GetPrimaryShelf()->shelf_widget()->GetDragHandle();
+  }
+
+  void CheckFocusOrder(views::Widget* expected_previous,
+                       views::Widget* expected_next) {
+    auto* drag_handle = GetPrimaryShelf()->shelf_widget()->GetDragHandle();
+    views::ViewAccessibility& view_accessibility =
+        drag_handle->GetViewAccessibility();
+    EXPECT_EQ(expected_previous, view_accessibility.GetPreviousFocus());
+    EXPECT_EQ(expected_next, view_accessibility.GetNextFocus());
+  }
+
+  void ClickDragHandle() {
+    gfx::Point center = drag_handle()->GetBoundsInScreen().CenterPoint();
+    GetEventGenerator()->MoveMouseTo(center);
+    GetEventGenerator()->ClickLeftButton();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(
@@ -114,6 +149,35 @@ TEST_P(DragHandleTest, AccessibilityFeaturesEnabled) {
   // Exit a11y feature should disable drag handle.
   SetTestA11yFeatureEnabled(false /*enabled*/);
   EXPECT_FALSE(drag_handle()->GetEnabled());
+}
+
+TEST_F(DragHandleFocusTest, AccessibilityFocusOrder) {
+  Shell::Get()->accessibility_controller()->SetSpokenFeedbackEnabled(
+      true, A11Y_NOTIFICATION_NONE);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  UpdateDisplay("800x700");
+  // Create a widget to transition to the in-app shelf.
+  TestWidgetBuilder()
+      .SetTestWidgetDelegate()
+      .SetBounds(gfx::Rect(0, 0, 800, 800))
+      .BuildOwnedByNativeWidget();
+  EXPECT_TRUE(drag_handle()->GetVisible());
+
+  // When the hotseat is hidden the drag handle's next focus should be the
+  // status area and its previous focus should be the navigation area.
+  auto* shelf = GetPrimaryShelf();
+  ASSERT_EQ(shelf->hotseat_widget()->state(), HotseatState::kHidden);
+  ui::AXNodeData data;
+  shelf->shelf_widget()->GetDragHandle()->GetAccessibleNodeData(&data);
+  CheckFocusOrder(shelf->shelf_widget()->navigation_widget(),
+                  shelf->status_area_widget());
+
+  // When the hotseat is extended the drag handle's next and previous focus
+  // should be the hotseat.
+  ClickDragHandle();
+  ASSERT_EQ(shelf->hotseat_widget()->state(), HotseatState::kExtended);
+  shelf->shelf_widget()->GetDragHandle()->GetAccessibleNodeData(&data);
+  CheckFocusOrder(shelf->hotseat_widget(), shelf->hotseat_widget());
 }
 
 }  // namespace ash
