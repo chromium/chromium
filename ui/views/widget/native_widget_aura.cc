@@ -163,6 +163,9 @@ void NativeWidgetAura::SetShadowElevationFromInitParams(
 // static
 void NativeWidgetAura::SetResizeBehaviorFromDelegate(WidgetDelegate* delegate,
                                                      aura::Window* window) {
+  if (!window)
+    return;
+
   int behavior = aura::client::kResizeBehaviorNone;
   if (delegate) {
     if (delegate->CanResize())

@@ -866,6 +866,9 @@ ui::GestureConsumer* NativeWidgetMac::GetGestureConsumer() {
 }
 
 void NativeWidgetMac::OnSizeConstraintsChanged() {
+  if (!GetNSWindowMojo())
+    return;
+
   Widget* widget = GetWidget();
   GetNSWindowMojo()->SetSizeConstraints(
       widget->GetMinimumSize(), widget->GetMaximumSize(),

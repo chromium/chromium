@@ -1482,6 +1482,8 @@ void Widget::OnNativeWidgetCreated() {
   if (is_top_level())
     focus_manager_ = FocusManagerFactory::Create(this);
 
+  DCHECK(native_widget_);
+  DCHECK(widget_delegate_);
   native_widget_->InitModalType(widget_delegate_->GetModalType());
 
   for (WidgetObserver& observer : observers_)
@@ -1491,6 +1493,7 @@ void Widget::OnNativeWidgetCreated() {
 void Widget::OnNativeWidgetDestroying() {
   // Tell the focus manager (if any) that root_view is being removed
   // in case that the focused view is under this root view.
+  DCHECK(!native_widget_destroyed_);
   if (GetFocusManager() && root_view_)
     GetFocusManager()->ViewRemoved(root_view_.get());
   for (WidgetObserver& observer : observers_)
@@ -1503,11 +1506,14 @@ void Widget::OnNativeWidgetDestroying() {
 void Widget::OnNativeWidgetDestroyed() {
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetDestroyed(this);
-  widget_delegate_->can_delete_this_ = true;
-  // `DeleteDelegate()` ends up destroying the object that `widget_delegate_`
-  // points to. Use `ExtractAsDangling()` to avoid having `widget_delegate_`
-  // briefly point to freed memory.
-  widget_delegate_.ExtractAsDangling()->DeleteDelegate();
+
+  if (widget_delegate_) {
+    widget_delegate_->can_delete_this_ = true;
+    // `DeleteDelegate()` ends up destroying the object that `widget_delegate_`
+    // points to. Use `ExtractAsDangling()` to avoid having `widget_delegate_`
+    // briefly point to freed memory.
+    widget_delegate_.ExtractAsDangling()->DeleteDelegate();
+  }
   // TODO(pbos): Replace this with native_widget_ = nullptr; and nullptr
   // checking. This currently breaks on reentrant calls to CloseNow() that I'm
   // too scared to fix right now.
@@ -1530,7 +1536,8 @@ gfx::Size Widget::GetMaximumSize() const {
 void Widget::OnNativeWidgetMove() {
   TRACE_EVENT0("ui", "Widget::OnNativeWidgetMove");
 
-  widget_delegate_->OnWidgetMove();
+  if (widget_delegate_)
+    widget_delegate_->OnWidgetMove();
   NotifyCaretBoundsChanged(GetInputMethod());
 
   for (WidgetObserver& observer : observers_)
@@ -1558,11 +1565,13 @@ void Widget::OnNativeWidgetWindowShowStateChanged() {
 }
 
 void Widget::OnNativeWidgetBeginUserBoundsChange() {
-  widget_delegate_->OnWindowBeginUserBoundsChange();
+  if (widget_delegate_)
+    widget_delegate_->OnWindowBeginUserBoundsChange();
 }
 
 void Widget::OnNativeWidgetEndUserBoundsChange() {
-  widget_delegate_->OnWindowEndUserBoundsChange();
+  if (widget_delegate_)
+    widget_delegate_->OnWindowEndUserBoundsChange();
 }
 
 void Widget::OnNativeWidgetAddedToCompositor() {}

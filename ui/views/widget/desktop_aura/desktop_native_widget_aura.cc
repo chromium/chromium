@@ -1157,6 +1157,8 @@ ui::GestureConsumer* DesktopNativeWidgetAura::GetGestureConsumer() {
 }
 
 void DesktopNativeWidgetAura::OnSizeConstraintsChanged() {
+  if (!desktop_window_tree_host_)
+    return;
   NativeWidgetAura::SetResizeBehaviorFromDelegate(
       GetWidget()->widget_delegate(), content_window_);
   desktop_window_tree_host_->SizeConstraintsChanged();

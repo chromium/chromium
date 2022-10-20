@@ -609,6 +609,9 @@ void FocusManager::OnViewIsDeleting(View* view) {
 
 bool FocusManager::RedirectAcceleratorToBubbleAnchorWidget(
     const ui::Accelerator& accelerator) {
+  if (!widget_->widget_delegate())
+    return false;
+
   views::BubbleDialogDelegate* widget_delegate =
       widget_->widget_delegate()->AsBubbleDialogDelegate();
   Widget* anchor_widget =

@@ -35,6 +35,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/test_native_theme.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/controls/button/label_button.h"
@@ -1312,6 +1313,123 @@ TEST_P(WidgetWithDestroyedNativeViewTest, IsVisible) {
 
 TEST_P(WidgetWithDestroyedNativeViewTest, IsVisibleOnAllWorkspaces) {
   widget()->IsVisibleOnAllWorkspaces();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnGestureEvent) {
+  ui::GestureEvent event =
+      CreateTestGestureEvent(ui::ET_GESTURE_SCROLL_BEGIN, 5, 5);
+  widget()->OnGestureEvent(&event);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnKeyEvent) {
+  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE);
+  widget()->OnKeyEvent(&event);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnMouseCaptureLost) {
+  widget()->OnMouseCaptureLost();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnMouseEvent) {
+  gfx::Point p(200, 200);
+  ui::MouseEvent event(ui::ET_MOUSE_MOVED, p, p, ui::EventTimeForNow(),
+                       ui::EF_NONE, ui::EF_NONE);
+  widget()->OnMouseEvent(&event);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeBlur) {
+  widget()->OnNativeBlur();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeFocus) {
+  widget()->OnNativeFocus();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeThemeUpdated) {
+  ui::TestNativeTheme theme;
+  widget()->OnNativeThemeUpdated(&theme);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetActivationChanged) {
+  widget()->OnNativeWidgetActivationChanged(false);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetAddedToCompositor) {
+  widget()->OnNativeWidgetAddedToCompositor();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetBeginUserBoundsChange) {
+  widget()->OnNativeWidgetBeginUserBoundsChange();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetCreated) {
+  EXPECT_DCHECK_DEATH(widget()->OnNativeWidgetCreated());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetDestroyed) {
+  widget()->OnNativeWidgetDestroyed();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetDestroying) {
+  EXPECT_DCHECK_DEATH(widget()->OnNativeWidgetDestroying());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetEndUserBoundsChange) {
+  widget()->OnNativeWidgetEndUserBoundsChange();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetMove) {
+  widget()->OnNativeWidgetMove();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetPaint) {
+  auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
+  widget()->OnNativeWidgetPaint(
+      ui::PaintContext(display_list.get(), 1, gfx::Rect(), false));
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetParentChanged) {
+  widget()->OnNativeWidgetParentChanged(nullptr);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest,
+       OnNativeWidgetRemovingFromCompositor) {
+  widget()->OnNativeWidgetRemovingFromCompositor();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetSizeChanged) {
+  widget()->OnNativeWidgetSizeChanged(gfx::Size());
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetVisibilityChanged) {
+  widget()->OnNativeWidgetVisibilityChanged(false);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest,
+       OnNativeWidgetWindowShowStateChanged) {
+  widget()->OnNativeWidgetWindowShowStateChanged();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnNativeWidgetWorkspaceChanged) {
+  widget()->OnNativeWidgetWorkspaceChanged();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnOwnerClosing) {
+  widget()->OnOwnerClosing();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnParentShouldPaintAsActiveChanged) {
+  widget()->OnParentShouldPaintAsActiveChanged();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnScrollEvent) {
+  ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(65, 5),
+                         ui::EventTimeForNow(), 0, 0, 20, 0, 20, 2);
+  widget()->OnScrollEvent(&scroll);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, OnSizeConstraintsChanged) {
+  widget()->OnSizeConstraintsChanged();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, LayerTreeChanged) {
