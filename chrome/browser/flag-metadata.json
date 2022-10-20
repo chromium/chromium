@@ -5313,6 +5313,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "optimization-guide-install-wide-model-store",
+    "owners": [ "rajendrant", "sophiechang", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 113
+  },
+  {
     "name": "optimization-guide-model-downloading",
     "owners": [ "sophiechang", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 110

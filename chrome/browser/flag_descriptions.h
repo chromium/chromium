@@ -1212,6 +1212,9 @@ extern const char kOmniboxDynamicMaxAutocompleteDescription[];
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 
+extern const char kOptimizationGuideInstallWideModelStoreName[];
+extern const char kOptimizationGuideInstallWideModelStoreDescription[];
+
 extern const char kOptimizationGuidePushNotificationName[];
 extern const char kOptimizationGuidePushNotificationDescription[];
 

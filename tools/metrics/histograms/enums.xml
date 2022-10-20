@@ -57496,6 +57496,8 @@ from previous Chrome versions.
       label="OmniboxFocusTriggersContextualWebZeroSuggest:enabled"/>
   <int value="-1778202807" label="DelayAsyncScriptExecution:enabled"/>
   <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
+  <int value="-1776429545"
+      label="OptimizationGuideInstallWideModelStore:enabled"/>
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
   <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
@@ -62911,6 +62913,8 @@ from previous Chrome versions.
   <int value="1460747747" label="GdiTextPrinting:enabled"/>
   <int value="1460958818" label="NTPForeignSessionsSuggestions:enabled"/>
   <int value="1461581256" label="MovablePartialScreenshot:enabled"/>
+  <int value="1462900129"
+      label="OptimizationGuideInstallWideModelStore:disabled"/>
   <int value="1463230871" label="ArcEnableUsap:enabled"/>
   <int value="1464028544" label="WinUseHybridSpellChecker:disabled"/>
   <int value="1464053185" label="EnableInputInDiagnosticsApp:disabled"/>

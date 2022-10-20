@@ -46,6 +46,7 @@ BASE_DECLARE_FEATURE(kOverrideNumThreadsForModelExecution);
 BASE_DECLARE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite);
 BASE_DECLARE_FEATURE(kRemotePageMetadata);
 BASE_DECLARE_FEATURE(kOptimizationHintsComponent);
+BASE_DECLARE_FEATURE(kOptimizationGuideInstallWideModelStore);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -306,6 +307,10 @@ bool TFLiteXNNPACKDelegateEnabled();
 
 // Whether to check the pref for whether a previous component version failed.
 bool ShouldCheckFailedComponentVersionPref();
+
+// Returns whether the feature for new model store that is tied with Chrome
+// installation and shares the models across user profiles, is enabled.
+bool IsInstallWideModelStoreEnabled();
 
 }  // namespace features
 }  // namespace optimization_guide

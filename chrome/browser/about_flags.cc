@@ -5812,6 +5812,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOptimizationGuideDebugLogsDescription, kOsAll,
      SINGLE_VALUE_TYPE(optimization_guide::switches::kDebugLoggingEnabled)},
 
+    {"optimization-guide-install-wide-model-store",
+     flag_descriptions::kOptimizationGuideInstallWideModelStoreName,
+     flag_descriptions::kOptimizationGuideInstallWideModelStoreDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(optimization_guide::features::
+                            kOptimizationGuideInstallWideModelStore)},
+
     {"organic-repeatable-queries",
      flag_descriptions::kOrganicRepeatableQueriesName,
      flag_descriptions::kOrganicRepeatableQueriesDescription,
