@@ -1,0 +1,24 @@
+{
+    "archive_datas": [
+        {
+            "files": [
+                "apks/ContentShell.apk",
+                "apks/ChromePublic.apk",
+                "apks/SystemWebView.apk"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-android"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Android_Arm64/{%position%}/chrome-android.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP",
+            "latest_upload": {
+                "gcs_path": "Android_Arm64/LAST_CHANGE",
+                "gcs_file_content": "{%position%}"
+            },
+            "revisions_file": {
+                "gcs_path": "Android_Arm64/{%position%}/REVISIONS"
+            }
+        }
+    ]
+}
