@@ -36,8 +36,8 @@ found in the LICENSE file.
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/location_bar_vertical_margin"
                 android:layout_marginBottom="@dimen/location_bar_vertical_margin"
-                android:paddingStart="@dimen/location_bar_lateral_padding"
-                android:paddingEnd="@dimen/location_bar_lateral_padding" />
+                android:paddingStart="@dimen/location_bar_start_padding"
+                android:paddingEnd="@dimen/location_bar_end_padding" />
 
     </FrameLayout>
 

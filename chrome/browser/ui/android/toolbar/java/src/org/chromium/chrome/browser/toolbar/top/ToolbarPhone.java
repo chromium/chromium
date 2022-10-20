@@ -1986,6 +1986,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         super.onUrlFocusChange(hasFocus);
 
         updateBackground(hasFocus);
+        if (!hasFocus && mShouldShowModernizeVisualUpdate
+                && !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            mLocationBar.setStatusIconBackgroundVisibility(false);
+        }
 
         if (mToggleTabStackButton != null) mToggleTabStackButton.setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
@@ -2659,7 +2663,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private int getAdditionalOffsetForNTP() {
-        return getResources().getDimensionPixelSize(R.dimen.location_bar_lateral_padding)
+        return getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding)
                 - getResources().getDimensionPixelSize(R.dimen.fake_search_box_lateral_padding);
     }
 
@@ -2676,6 +2680,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             return;
         }
         mDropdownListScrolled = true;
+        mLocationBar.setStatusIconBackgroundVisibility(true);
         updateToolbarAndLocationBarColor();
     }
 
@@ -2685,6 +2690,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             return;
         }
         mDropdownListScrolled = false;
+        mLocationBar.setStatusIconBackgroundVisibility(false);
         updateToolbarAndLocationBarColor();
     }
 

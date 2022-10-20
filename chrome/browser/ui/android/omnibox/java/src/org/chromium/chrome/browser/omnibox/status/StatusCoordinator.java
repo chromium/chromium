@@ -103,8 +103,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)
-                + res.getDimensionPixelSize(R.dimen.location_bar_icon_width)
-                + (res.getDimensionPixelSize(R.dimen.location_bar_lateral_padding) * 2));
+                + res.getDimensionPixelSize(R.dimen.location_bar_status_icon_bg_size)
+                + res.getDimensionPixelSize(R.dimen.location_bar_start_padding)
+                + res.getDimensionPixelSize(R.dimen.location_bar_end_padding));
 
         mMediator.setSeparatorFieldMinWidth(
                 res.getDimensionPixelSize(R.dimen.location_bar_status_separator_width)
@@ -140,6 +141,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     /** @param show Whether the status icon should be VISIBLE, otherwise GONE. */
     public void setStatusIconShown(boolean show) {
         mMediator.setStatusIconShown(show);
+    }
+
+    /** @param show Whether the status icon background should be VISIBLE, otherwise INVISIBLE. */
+    public void setStatusIconBackgroundVisibility(boolean show) {
+        mMediator.setStatusIconBackgroundVisibility(show);
     }
 
     /**

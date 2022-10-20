@@ -317,6 +317,14 @@ public class StatusMediator implements PermissionDialogController.Observer,
     }
 
     /**
+     * Sets the visibility of the status icon background.
+     * @param show True to make it visible.
+     */
+    void setStatusIconBackgroundVisibility(boolean show) {
+        mModel.set(StatusProperties.SHOW_STATUS_ICON_BACKGROUND, show);
+    }
+
+    /**
      * Set the url focus change percent.
      * @param percent The current focus percent.
      */

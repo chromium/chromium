@@ -217,6 +217,10 @@ public class StatusProperties {
     /** Whether the icon is shown. */
     static final WritableBooleanPropertyKey SHOW_STATUS_ICON = new WritableBooleanPropertyKey();
 
+    /** Whether the icon background is shown. */
+    static final WritableBooleanPropertyKey SHOW_STATUS_ICON_BACKGROUND =
+            new WritableBooleanPropertyKey();
+
     /** The handler of status click events. */
     static final WritableObjectPropertyKey<View.OnClickListener> STATUS_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -260,6 +264,7 @@ public class StatusProperties {
             INCOGNITO_BADGE_VISIBLE,
             SEPARATOR_COLOR,
             SHOW_STATUS_ICON,
+            SHOW_STATUS_ICON_BACKGROUND,
             STATUS_CLICK_LISTENER,
             STATUS_ACCESSIBILITY_TOAST_RES,
             STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,

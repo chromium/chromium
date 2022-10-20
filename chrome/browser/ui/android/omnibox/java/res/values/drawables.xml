@@ -7,4 +7,5 @@ found in the LICENSE file.
 
 <resources>
     <drawable name="tile_view_icon_background_modern_updated">@drawable/oval_surface_0</drawable>
+    <drawable name="status_icon_background">@drawable/oval_surface_0</drawable>
 </resources>

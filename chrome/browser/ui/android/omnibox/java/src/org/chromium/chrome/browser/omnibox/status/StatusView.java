@@ -57,6 +57,7 @@ public class StatusView extends LinearLayout {
     private int mTouchDelegateEndOffset;
 
     private ImageView mIconView;
+    private View mIconBackground;
     private TextView mVerboseStatusTextView;
     private View mSeparatorView;
     private View mStatusExtraSpace;
@@ -90,6 +91,7 @@ public class StatusView extends LinearLayout {
         super.onFinishInflate();
 
         mIconView = findViewById(R.id.location_bar_status_icon);
+        mIconBackground = findViewById(R.id.location_bar_status_icon_bg);
         mVerboseStatusTextView = findViewById(R.id.location_bar_verbose_status);
         mSeparatorView = findViewById(R.id.location_bar_verbose_status_separator);
         mStatusExtraSpace = findViewById(R.id.location_bar_verbose_status_extra_space);
@@ -347,6 +349,13 @@ public class StatusView extends LinearLayout {
         }
     }
 
+    /** Specify the status icon background visibility. */
+    void setStatusIconBackgroundVisibility(boolean showIconBackground) {
+        if (mIconView == null || mIconBackground == null) return;
+
+        mIconBackground.setVisibility(showIconBackground ? VISIBLE : INVISIBLE);
+    }
+
     /**
      * Specify accessibility string presented to user upon long click.
      */
@@ -464,7 +473,7 @@ public class StatusView extends LinearLayout {
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         if (mTouchDelegateStartOffset == 0) {
             mTouchDelegateStartOffset =
-                    getResources().getDimensionPixelSize(R.dimen.location_bar_lateral_padding);
+                    getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding);
         }
         if (mTouchDelegateEndOffset == 0) {
             mTouchDelegateEndOffset =

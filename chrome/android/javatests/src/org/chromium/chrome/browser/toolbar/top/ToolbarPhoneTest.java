@@ -311,6 +311,8 @@ public class ToolbarPhoneTest {
                 (LocationBarCoordinator) mToolbar.getLocationBar();
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
         mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
+        View statusViewBackground =
+                mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon_bg);
 
         // Focus on the Omnibox
         mOmnibox.requestFocus();
@@ -321,18 +323,21 @@ public class ToolbarPhoneTest {
         });
         verify(mLocationbarBackgroundDrawable)
                 .setTint(locationBarCoordinator.getDropdownBackgroundColor(false /*isIncognito*/));
+        assertEquals(statusViewBackground.getVisibility(), View.INVISIBLE);
 
         // Scroll the dropdown
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.onSuggestionDropdownScroll(); });
         verify(mLocationbarBackgroundDrawable)
                 .setTint(ChromeColors.getSurfaceColor(
                         mActivityTestRule.getActivity(), R.dimen.toolbar_text_box_elevation));
+        assertEquals(statusViewBackground.getVisibility(), View.VISIBLE);
 
         // Scroll the dropdown back to the top
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mToolbar.onSuggestionDropdownOverscrolledToTop(); });
         verify(mLocationbarBackgroundDrawable, atLeastOnce())
                 .setTint(locationBarCoordinator.getDropdownBackgroundColor(false /*isIncognito*/));
+        assertEquals(statusViewBackground.getVisibility(), View.INVISIBLE);
 
         // Clear focus on the Omnibox
         TestThreadUtils.runOnUiThreadBlocking(() -> {

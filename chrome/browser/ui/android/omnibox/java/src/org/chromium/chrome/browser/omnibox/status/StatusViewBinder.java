@@ -27,6 +27,9 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             view.setSeparatorColor(model.get(StatusProperties.SEPARATOR_COLOR));
         } else if (StatusProperties.SHOW_STATUS_ICON.equals(propertyKey)) {
             view.setStatusIconShown(model.get(StatusProperties.SHOW_STATUS_ICON));
+        } else if (StatusProperties.SHOW_STATUS_ICON_BACKGROUND.equals(propertyKey)) {
+            view.setStatusIconBackgroundVisibility(
+                    model.get(StatusProperties.SHOW_STATUS_ICON_BACKGROUND));
         } else if (StatusProperties.STATUS_CLICK_LISTENER.equals(propertyKey)) {
             view.setStatusClickListener(model.get(StatusProperties.STATUS_CLICK_LISTENER));
         } else if (StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES.equals(propertyKey)) {
