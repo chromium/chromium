@@ -57,6 +57,12 @@ class ScopedMockFirstPartySetsHandler : public content::FirstPartySetsHandler {
       base::OnceCallback<void(net::FirstPartySetsContextConfig,
                               net::FirstPartySetsCacheFilter)> callback)
       override;
+  void ComputeFirstPartySetMetadata(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      const net::FirstPartySetsContextConfig& config,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) override;
 
   // Helper functions for tests to set up context.
   void SetContextConfig(net::FirstPartySetsContextConfig config);
@@ -65,11 +71,17 @@ class ScopedMockFirstPartySetsHandler : public content::FirstPartySetsHandler {
 
   void SetGlobalSets(net::GlobalFirstPartySets global_sets);
 
+  void set_invoke_callbacks_asynchronously(bool asynchronous) {
+    invoke_callbacks_asynchronously_ = asynchronous;
+  }
+
  private:
   content::FirstPartySetsHandler* previous_;
   net::GlobalFirstPartySets global_sets_;
   net::FirstPartySetsContextConfig config_;
   net::FirstPartySetsCacheFilter cache_filter_;
+
+  bool invoke_callbacks_asynchronously_ = false;
 };
 
 }  // namespace first_party_sets

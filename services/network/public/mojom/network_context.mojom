@@ -20,7 +20,6 @@ import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
-import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/first_party_sets_access_delegate.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
@@ -42,7 +41,6 @@ import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
-import "services/network/public/mojom/schemeful_site.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/socket_broker.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
@@ -1496,13 +1494,4 @@ interface NetworkContext {
   // events for Reporting API reports currently stored in the reporting service.
   [EnableIf=enable_reporting]
   AddReportingApiObserver(pending_remote<ReportingApiObserver> observer);
-
-  // Compute the First-Party Sets metadata for a given context. `site` is the
-  // embedded frame's site; `party_context` is the set of sites from
-  // intermediate frames in the frame hierarchy (not including the top frame and
-  // leaf frame).
-  ComputeFirstPartySetMetadata(SchemefulSite site,
-                               SchemefulSite? top_frame_site,
-                               array<SchemefulSite> party_context)
-    => (FirstPartySetMetadata metadata);
 };

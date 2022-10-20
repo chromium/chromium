@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -18,6 +19,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
@@ -25,6 +27,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Eq;
+using ::testing::Not;
+using ::testing::Optional;
+using ::testing::Pair;
 
 MATCHER_P(CarryingConfig, config, "") {
   if (arg.is_null())
@@ -193,6 +199,10 @@ class FirstPartySetsPolicyServiceTest
 
   void SetGlobalSets(net::GlobalFirstPartySets global_sets) {
     first_party_sets_handler_.SetGlobalSets(std::move(global_sets));
+  }
+
+  void SetInvokeCallbacksAsynchronously(bool asynchronous) {
+    first_party_sets_handler_.set_invoke_callbacks_asynchronously(asynchronous);
   }
 
  protected:
@@ -538,6 +548,63 @@ TEST_F(FirstPartySetsPolicyServiceTest, NotifiesReadyWithConfigAndCacheFilter) {
       .Times(1);
 
   env().RunUntilIdle();
+}
+
+TEST_F(FirstPartySetsPolicyServiceTest,
+       ComputeFirstPartySetMetadata_BeforeInitialization) {
+  net::SchemefulSite test_primary(GURL("https://a.test"));
+  net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
+                                     absl::nullopt);
+  net::FirstPartySetsContextConfig test_config({{test_primary, {test_entry}}});
+
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
+  service()->ComputeFirstPartySetMetadata(test_primary, &test_primary,
+                                          /*party_context=*/{},
+                                          future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  SetContextConfig(test_config.Clone());
+  SetInvokeCallbacksAsynchronously(/*asynchronous=*/true);
+  service()->InitForTesting();
+
+  EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
+}
+
+TEST_F(FirstPartySetsPolicyServiceTest,
+       ComputeFirstPartySetMetadata_AfterInitialization_StillAsync) {
+  net::SchemefulSite test_primary(GURL("https://a.test"));
+  net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
+                                     absl::nullopt);
+  net::FirstPartySetsContextConfig test_config({{test_primary, {test_entry}}});
+
+  SetContextConfig(test_config.Clone());
+  SetInvokeCallbacksAsynchronously(/*asynchronous=*/true);
+  service()->InitForTesting();
+
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
+  service()->ComputeFirstPartySetMetadata(test_primary, &test_primary,
+                                          /*party_context=*/{},
+                                          future.GetCallback());
+  EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
+}
+
+TEST_F(FirstPartySetsPolicyServiceTest,
+       ComputeFirstPartySetMetadata_AfterInitialization_Sync) {
+  net::SchemefulSite test_primary(GURL("https://a.test"));
+  net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
+                                     absl::nullopt);
+  net::FirstPartySetsContextConfig test_config({{test_primary, {test_entry}}});
+
+  SetContextConfig(test_config.Clone());
+  SetInvokeCallbacksAsynchronously(/*asynchronous=*/false);
+  service()->InitForTesting();
+
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
+  service()->ComputeFirstPartySetMetadata(test_primary, &test_primary,
+                                          /*party_context=*/{},
+                                          future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
 }
 
 namespace {

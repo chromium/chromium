@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
@@ -38,6 +39,16 @@ class FirstPartySetsPolicyService : public KeyedService {
   FirstPartySetsPolicyService& operator=(const FirstPartySetsPolicyService&) =
       delete;
   ~FirstPartySetsPolicyService() override;
+
+  // Computes the First-Party Set metadata related to the given request context,
+  // and invokes `callback` with the result.
+  //
+  // This may invoke `callback` synchronously.
+  void ComputeFirstPartySetMetadata(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
   // Stores `access_delegate` in a RemoteSet for later IPC calls on it when this
   // service is ready to do so.
@@ -129,6 +140,14 @@ class FirstPartySetsPolicyService : public KeyedService {
   // is created.
   void OnProfileConfigReady(bool initially_enabled,
                             net::FirstPartySetsContextConfig config);
+
+  // Like ComputeFirstPartySetMetadata, but passes the result into the provided
+  // callback. Must not be called before `config_` has been received.
+  void ComputeFirstPartySetMetadataInternal(
+      const net::SchemefulSite& site,
+      const absl::optional<net::SchemefulSite>& top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // The remote delegates associated with the profile that created this
   // service.

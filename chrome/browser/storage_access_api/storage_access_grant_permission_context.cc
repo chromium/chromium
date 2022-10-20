@@ -13,6 +13,8 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -149,12 +151,13 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   StorageAccessRequestType request_type =
       GetStorageAccessRequestType(requesting_origin, embedding_origin, rfh);
 
-  return browser_context()
-      ->GetDefaultStoragePartition()
-      ->GetNetworkContext()
+  net::SchemefulSite embedding_site(embedding_origin);
+
+  first_party_sets::FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
+      browser_context())
       ->ComputeFirstPartySetMetadata(
-          net::SchemefulSite(requesting_origin),
-          net::SchemefulSite(embedding_origin), /*party_context=*/{},
+          net::SchemefulSite(requesting_origin), &embedding_site,
+          /*party_context=*/{},
           base::BindOnce(&StorageAccessGrantPermissionContext::
                              CheckForAutoGrantOrAutoDenial,
                          weak_factory_.GetWeakPtr(), id, requesting_origin,

@@ -311,11 +311,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const std::string& realm,
       LookupProxyAuthCredentialsCallback callback) override {}
 #endif
-  void ComputeFirstPartySetMetadata(
-      const net::SchemefulSite& site,
-      const absl::optional<net::SchemefulSite>& top_frame_site,
-      const std::vector<net::SchemefulSite>& party_context,
-      ComputeFirstPartySetMetadataCallback callback) override {}
 };
 
 }  // namespace network

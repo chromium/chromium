@@ -129,6 +129,12 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       base::OnceCallback<void(net::FirstPartySetsContextConfig,
                               net::FirstPartySetsCacheFilter)> callback)
       override;
+  void ComputeFirstPartySetMetadata(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      const net::FirstPartySetsContextConfig& config,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) override;
 
   void GetPersistedGlobalSetsForTesting(
       const std::string& browser_context_id,
@@ -175,6 +181,15 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       net::FirstPartySetsContextConfig context_config,
       base::OnceCallback<void(net::FirstPartySetsContextConfig,
                               net::FirstPartySetsCacheFilter)> callback);
+
+  // Like ComputeFirstPartySetMetadata, but passes the result into the provided
+  // callback. Must not be called before `global_sets_` has been set.
+  void ComputeFirstPartySetMetadataInternal(
+      const net::SchemefulSite& site,
+      const absl::optional<net::SchemefulSite>& top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      const net::FirstPartySetsContextConfig& config,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // Parses the policy and computes the config that represents the changes
   // needed to apply `policy` to `global_sets_`.

@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -95,6 +96,37 @@ void FirstPartySetsPolicyService::Init() {
                      // to play with the FPS enabled setting without
                      // affecting user experience during the browser session.
                      GetEnabledPolicyForProfile(prefs)));
+}
+
+void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
+    const net::SchemefulSite& site,
+    const net::SchemefulSite* top_frame_site,
+    const std::set<net::SchemefulSite>& party_context,
+    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!config_.has_value()) {
+    on_ready_callbacks_.push_back(base::BindOnce(
+        &FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal,
+        weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
+        party_context, std::move(callback)));
+    return;
+  }
+
+  content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
+      site, top_frame_site, party_context, *config_, std::move(callback));
+}
+
+void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
+    const net::SchemefulSite& site,
+    const absl::optional<net::SchemefulSite>& top_frame_site,
+    const std::set<net::SchemefulSite>& party_context,
+    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(config_.has_value());
+
+  content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
+      site, base::OptionalToPtr(top_frame_site), party_context, *config_,
+      std::move(callback));
 }
 
 void FirstPartySetsPolicyService::AddRemoteAccessDelegate(

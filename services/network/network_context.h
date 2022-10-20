@@ -497,11 +497,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const std::string& realm,
       LookupProxyAuthCredentialsCallback callback) override;
 #endif
-  void ComputeFirstPartySetMetadata(
-      const net::SchemefulSite& site,
-      const absl::optional<net::SchemefulSite>& top_frame_site,
-      const std::vector<net::SchemefulSite>& party_context,
-      ComputeFirstPartySetMetadataCallback callback) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);

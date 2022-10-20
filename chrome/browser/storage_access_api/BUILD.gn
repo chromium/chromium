@@ -14,6 +14,7 @@ source_set("permissions") {
   ]
 
   deps = [
+    "//chrome/browser/first_party_sets",
     "//chrome/common",
     "//components/content_settings/core/browser",
     "//content/public/browser",

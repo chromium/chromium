@@ -8,9 +8,11 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/optional_util.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -58,6 +60,22 @@ void ScopedMockFirstPartySetsHandler::ClearSiteDataOnChangedSetsForContext(
     base::OnceCallback<void(net::FirstPartySetsContextConfig,
                             net::FirstPartySetsCacheFilter)> callback) {
   std::move(callback).Run(config_.Clone(), cache_filter_.Clone());
+}
+
+void ScopedMockFirstPartySetsHandler::ComputeFirstPartySetMetadata(
+    const net::SchemefulSite& site,
+    const net::SchemefulSite* top_frame_site,
+    const std::set<net::SchemefulSite>& party_context,
+    const net::FirstPartySetsContextConfig& config,
+    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
+  net::FirstPartySetMetadata metadata =
+      global_sets_.ComputeMetadata(site, top_frame_site, party_context, config);
+  if (invoke_callbacks_asynchronously_) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(metadata)));
+    return;
+  }
+  return std::move(callback).Run(std::move(metadata));
 }
 
 void ScopedMockFirstPartySetsHandler::SetContextConfig(

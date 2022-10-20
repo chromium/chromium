@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 #define CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 
+#include <set>
 #include <string>
 
 #include "base/callback.h"
@@ -16,11 +17,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
-class FirstPartySetEntry;
 class FirstPartySetsCacheFilter;
 class FirstPartySetsContextConfig;
+class FirstPartySetEntry;
+class FirstPartySetMetadata;
 class SchemefulSite;
-}
+}  // namespace net
 
 namespace content {
 
@@ -178,6 +180,17 @@ class CONTENT_EXPORT FirstPartySetsHandler {
       net::FirstPartySetsContextConfig context_config,
       base::OnceCallback<void(net::FirstPartySetsContextConfig,
                               net::FirstPartySetsCacheFilter)> callback) = 0;
+
+  // Computes the First-Party Set metadata related to the given request context,
+  // and invokes `callback` with the result.
+  //
+  // This may invoke `callback` synchronously.
+  virtual void ComputeFirstPartySetMetadata(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      const net::FirstPartySetsContextConfig& config,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) = 0;
 };
 
 }  // namespace content

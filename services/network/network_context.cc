@@ -2918,24 +2918,6 @@ bool NetworkContext::IsAllowedToUseAllHttpAuthSchemes(
   return !url_matcher_->MatchURL(scheme_host_port.GetURL()).empty();
 }
 
-void NetworkContext::ComputeFirstPartySetMetadata(
-    const net::SchemefulSite& site,
-    const absl::optional<net::SchemefulSite>& top_frame_site,
-    const std::vector<net::SchemefulSite>& party_context,
-    ComputeFirstPartySetMetadataCallback callback) {
-  auto callbacks = base::SplitOnceCallback(std::move(callback));
-
-  if (absl::optional<net::FirstPartySetMetadata> sync_metadata =
-          first_party_sets_access_delegate_.ComputeMetadata(
-              site, base::OptionalToPtr(top_frame_site),
-              std::set<net::SchemefulSite>(party_context.begin(),
-                                           party_context.end()),
-              std::move(callbacks.first));
-      sync_metadata.has_value()) {
-    std::move(callbacks.second).Run(std::move(sync_metadata).value());
-  }
-}
-
 void NetworkContext::CreateTrustedUrlLoaderFactoryForNetworkService(
     mojo::PendingReceiver<mojom::URLLoaderFactory>
         url_loader_factory_pending_receiver) {

@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -34,8 +36,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::SizeIs;
@@ -549,6 +553,53 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                             example, net::SiteType::kPrimary, absl::nullopt)),
           Pair(associated, net::FirstPartySetEntry(
                                example, net::SiteType::kAssociated, 0))));
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       ComputeFirstPartySetMetadata_SynchronousResult) {
+  handler().Init(scoped_dir_.GetPath(), LocalSetDeclaration());
+
+  handler().SetPublicFirstPartySets(
+      base::Version(),
+      WritePublicSetsFile(
+          R"({"primary": "https://example.test", )"
+          R"("associatedSites": ["https://associatedsite.test"]})"));
+
+  // Exploit another helper to wait until the public sets file has been read.
+  GetSetsAndWait();
+
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
+
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
+  handler().ComputeFirstPartySetMetadata(example, &associated,
+                                         /*party_context=*/{},
+                                         net::FirstPartySetsContextConfig(),
+                                         future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       ComputeFirstPartySetMetadata_AsynchronousResult) {
+  // Send query before the sets are ready.
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
+  handler().ComputeFirstPartySetMetadata(
+      example, &associated, /*party_context=*/{},
+      net::FirstPartySetsContextConfig(), future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  handler().Init(scoped_dir_.GetPath(), LocalSetDeclaration());
+
+  handler().SetPublicFirstPartySets(
+      base::Version(),
+      WritePublicSetsFile(
+          R"({"primary": "https://example.test", )"
+          R"("associatedSites": ["https://associatedsite.test"]})"));
+
+  EXPECT_NE(future.Get(), net::FirstPartySetMetadata());
 }
 
 class FirstPartySetsHandlerGetContextConfigForPolicyTest
