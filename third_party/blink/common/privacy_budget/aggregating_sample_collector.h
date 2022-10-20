@@ -17,6 +17,7 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_sample_collector.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 namespace blink {
 
@@ -24,10 +25,10 @@ namespace blink {
 //
 // * De-duplicates recorded samples so that the same
 //   〈IdentifiableSurface,IdentifiableToken〉 tuple doesn't get sent to the
-//   UkmRecorder.
+//   UkmRecorder more than once per `ukm::SourceId`.
 //
 // * Caps the number of samples that can be recorded against the same surface
-//   regardless of the associated `ukm::SourceId`. Drops samples in excess of
+//   per `ukm::SourceId`. Drops samples in excess of
 //   kMaxTrackedSamplesPerSurfaces.
 //
 // * Caps the total number of surfaces that can be tracked for a single process.
@@ -56,6 +57,10 @@ class BLINK_COMMON_EXPORT_PRIVATE AggregatingSampleCollector
   // memory growth.
   static constexpr unsigned kMaxTrackedSurfaces = 10000;
 
+  // Maximum number of sources that this class can track. Prevents unbounded
+  // memory growth.
+  static constexpr unsigned kMaxTrackedSources = 10000;
+
   // Surfaces may return different values. To account for those, this class
   // tracks the last several distinct samples that were seen for each surface.
   // This is the maximum number of such samples that can be tracked. Again meant
@@ -63,7 +68,7 @@ class BLINK_COMMON_EXPORT_PRIVATE AggregatingSampleCollector
   //
   // If a surface is generating much more than this many distinct samples, it is
   // considered "noisy" and may be considered for removal from the study.
-  static constexpr unsigned kMaxTrackedSamplesPerSurface = 3;
+  static constexpr unsigned kMaxTrackedSamplesPerSurfacePerSourceId = 3;
 
   // Maximum number of unsent samples. This class will automatically flush all
   // samples if this limit overflows.
@@ -89,6 +94,9 @@ class BLINK_COMMON_EXPORT_PRIVATE AggregatingSampleCollector
               std::vector<IdentifiableSample> metrics) override
       LOCKS_EXCLUDED(lock_);
   void Flush(ukm::UkmRecorder* recorder) override LOCKS_EXCLUDED(lock_);
+
+  // FlushSource flushes the metrics per source. This will also reset all limits
+  // relative to this source.
   void FlushSource(ukm::UkmRecorder* recorder, ukm::SourceId source) override
       LOCKS_EXCLUDED(lock_);
 
@@ -140,8 +148,14 @@ class BLINK_COMMON_EXPORT_PRIVATE AggregatingSampleCollector
 
   // We are heavily dependent on the property that the reference to a value in
   // the map isn't invalidated due to mutations other than erase().
-  std::unordered_map<IdentifiableSurface, Samples, IdentifiableSurfaceHash>
-      per_surface_samples_ GUARDED_BY(lock_);
+  base::flat_map<
+      ukm::SourceId,
+      std::unordered_map<IdentifiableSurface, Samples, IdentifiableSurfaceHash>>
+      per_source_per_surface_samples_ GUARDED_BY(lock_);
+
+  // Seen surfaces across all sources.
+  std::unordered_set<IdentifiableSurface, IdentifiableSurfaceHash>
+      seen_surfaces_ GUARDED_BY(lock_);
 
   // An unordered multi-map of metrics that haven't yet been recorded via
   // a `UkmRecorder`.
