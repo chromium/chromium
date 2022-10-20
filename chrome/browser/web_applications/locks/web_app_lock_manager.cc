@@ -99,7 +99,7 @@ WebAppLockManager::~WebAppLockManager() = default;
 
 bool WebAppLockManager::IsSharedWebContentsLockFree() {
   return lock_manager_.TestLock(GetSharedWebContentsLock()) ==
-         content::PartitionedLockManagerImpl::TestLockResult::kFree;
+         content::PartitionedLockManager::TestLockResult::kFree;
 }
 
 void WebAppLockManager::AcquireLock(Lock& lock,

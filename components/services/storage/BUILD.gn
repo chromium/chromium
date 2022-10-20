@@ -120,8 +120,6 @@ component("lock_manager") {
     "indexed_db/locks/partitioned_lock_id.h",
     "indexed_db/locks/partitioned_lock_manager.cc",
     "indexed_db/locks/partitioned_lock_manager.h",
-    "indexed_db/locks/partitioned_lock_manager_impl.cc",
-    "indexed_db/locks/partitioned_lock_manager_impl.h",
   ]
   deps = [ "//base" ]
   defines = [ "IS_LOCK_MANAGER_IMPL" ]
@@ -189,7 +187,6 @@ source_set("tests") {
     "dom_storage/session_storage_metadata_unittest.cc",
     "dom_storage/session_storage_namespace_impl_unittest.cc",
     "dom_storage/storage_area_impl_unittest.cc",
-    "indexed_db/locks/partitioned_lock_manager_impl_unittest.cc",
     "indexed_db/locks/partitioned_lock_manager_unittest.cc",
     "indexed_db/scopes/leveldb_scope_unittest.cc",
     "indexed_db/scopes/leveldb_scopes_coding_unittest.cc",

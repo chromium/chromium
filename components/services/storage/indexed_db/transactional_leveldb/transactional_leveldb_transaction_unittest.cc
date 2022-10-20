@@ -18,7 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_test_utils.h"
@@ -150,7 +150,7 @@ class TransactionalLevelDBTransactionTest : public LevelDBScopesTestBase {
  private:
   DefaultTransactionalLevelDBFactory transactional_leveldb_factory_;
   std::unique_ptr<TransactionalLevelDBDatabase> leveldb_database_;
-  PartitionedLockManagerImpl lock_manager_;
+  PartitionedLockManager lock_manager_;
 };
 
 TEST_F(TransactionalLevelDBTransactionTest, GetPutDelete) {

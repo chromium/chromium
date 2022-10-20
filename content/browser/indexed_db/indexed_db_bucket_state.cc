@@ -126,7 +126,7 @@ IndexedDBBucketState::IndexedDBBucketState(
     TransactionalLevelDBFactory* transactional_leveldb_factory,
     base::Time* earliest_global_sweep_time,
     base::Time* earliest_global_compaction_time,
-    std::unique_ptr<PartitionedLockManagerImpl> lock_manager,
+    std::unique_ptr<PartitionedLockManager> lock_manager,
     TasksAvailableCallback notify_tasks_callback,
     TearDownCallback tear_down_callback,
     std::unique_ptr<IndexedDBBackingStore> backing_store)

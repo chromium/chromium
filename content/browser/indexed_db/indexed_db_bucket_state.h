@@ -18,7 +18,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
@@ -100,7 +100,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
       TransactionalLevelDBFactory* transactional_leveldb_factory,
       base::Time* earliest_global_sweep_time,
       base::Time* earliest_global_compaction_time,
-      std::unique_ptr<PartitionedLockManagerImpl> lock_manager,
+      std::unique_ptr<PartitionedLockManager> lock_manager,
       TasksAvailableCallback notify_tasks_callback,
       TearDownCallback tear_down_callback,
       std::unique_ptr<IndexedDBBackingStore> backing_store);
@@ -137,7 +137,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return databases_;
   }
-  PartitionedLockManagerImpl* lock_manager() {
+  PartitionedLockManager* lock_manager() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return lock_manager_.get();
   }
@@ -236,7 +236,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
   raw_ptr<base::Time> earliest_global_compaction_time_;
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   base::OneShotTimer close_timer_;
-  const std::unique_ptr<PartitionedLockManagerImpl> lock_manager_;
+  const std::unique_ptr<PartitionedLockManager> lock_manager_;
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
 
   DBMap databases_;

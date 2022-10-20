@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "content/browser/indexed_db/fake_indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
@@ -126,7 +126,7 @@ class IndexedDBTransactionTest : public testing::Test {
     return connection;
   }
 
-  PartitionedLockManagerImpl* lock_manager() { return &lock_manager_; }
+  PartitionedLockManager* lock_manager() { return &lock_manager_; }
 
  protected:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
@@ -137,7 +137,7 @@ class IndexedDBTransactionTest : public testing::Test {
   bool error_called_ = false;
 
  private:
-  PartitionedLockManagerImpl lock_manager_;
+  PartitionedLockManager lock_manager_;
 };
 
 class IndexedDBTransactionTestMode
