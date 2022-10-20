@@ -723,6 +723,7 @@ if (is_win || is_mac || is_linux) {
       libs = [
         "secur32.lib",
         "taskschd.lib",
+        "urlmon.lib",
       ]
     }
 
