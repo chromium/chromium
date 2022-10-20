@@ -21,7 +21,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/android/app_web_message_port.h"
-#include "content/browser/android/message_payload.h"
+#include "content/public/browser/android/message_payload.h"
 #endif
 
 using blink::MessagePortChannel;
