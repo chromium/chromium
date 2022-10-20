@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -99,6 +100,7 @@ void ChipController::OnNavigation(
     ResetPermissionPromptChip();
   }
 }
+
 void ChipController::OnPromptRemoved() {
   bool is_tab_hidden = active_chip_permission_request_manager_.value()
                            ->GetWebContents()
@@ -165,10 +167,23 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
   CollapsePrompt(/*allow_restart=*/false);
 }
 
+bool ChipController::ShouldWaitForConfirmationToComplete() {
+  return is_confirmation_showing_ && collapse_timer_.IsRunning();
+}
+
 void ChipController::InitializePermissionPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
+  if (ShouldWaitForConfirmationToComplete()) {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ChipController::InitializePermissionPrompt,
+                       weak_factory_.GetWeakPtr(), web_contents, delegate),
+        collapse_timer_.GetCurrentDelay());
+    return;
+  }
+
   ResetChip();
 
   // Here we just initialize the controller with the current request. We might
@@ -192,6 +207,15 @@ void ChipController::ShowPermissionPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
+  if (ShouldWaitForConfirmationToComplete()) {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ChipController::ShowPermissionPrompt,
+                       weak_factory_.GetWeakPtr(), web_contents, delegate),
+        collapse_timer_.GetCurrentDelay());
+    return;
+  }
+
   InitializePermissionPrompt(web_contents, delegate);
 
   request_chip_shown_time_ = base::TimeTicks::Now();
@@ -248,7 +272,6 @@ void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
 
 void ChipController::ResetPermissionPromptChip() {
   RemoveBubbleObserverAndResetTimersAndChipCallbacks();
-  is_confirmation_showing_ = false;
   if (permission_prompt_model_) {
     // permission_request_manager_ is empty if the PermissionRequestManager
     // instance has destructed, which triggers the observer method
@@ -275,6 +298,7 @@ void ChipController::ResetPermissionPromptChip() {
   }
 
   HideChip();
+  is_confirmation_showing_ = false;
 }
 
 void ChipController::ShowPageInfoDialog() {

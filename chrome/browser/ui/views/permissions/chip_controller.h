@@ -128,6 +128,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   }
 
  private:
+  bool ShouldWaitForConfirmationToComplete();
   void AnimateExpand(
       base::RepeatingCallback<void()> expand_anmiation_ended_callback);
 
@@ -206,6 +207,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
       active_chip_permission_request_manager_;
 
   views::ViewTracker bubble_tracker;
+
+  base::WeakPtrFactory<ChipController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_CONTROLLER_H_
