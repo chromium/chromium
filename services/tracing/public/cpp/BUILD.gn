@@ -118,13 +118,6 @@ target(tracing_lib_type, "cpp") {
       ]
     }
 
-    if (is_android && current_cpu == "arm64") {
-      sources += [
-        "stack_sampling/stack_unwinder_arm64_android.cc",
-        "stack_sampling/stack_unwinder_arm64_android.h",
-      ]
-    }
-
     if (is_win && enable_loader_lock_sampling) {
       sources += [
         "stack_sampling/loader_lock_sampler_win.cc",
@@ -178,15 +171,6 @@ target(tracing_lib_type, "cpp") {
 
     if (is_chromeos_ash) {
       deps += [ "//chromeos/dbus/constants" ]
-    }
-
-    if (is_android && can_unwind_with_cfi_table && is_official_build) {
-      sources += [
-        "stack_sampling/stack_sampler_android.cc",
-        "stack_sampling/stack_sampler_android.h",
-        "stack_sampling/stack_unwinder_android.cc",
-        "stack_sampling/stack_unwinder_android.h",
-      ]
     }
   }  # !is_ios && !is_nacl
 }

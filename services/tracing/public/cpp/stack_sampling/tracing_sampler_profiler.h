@@ -94,13 +94,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   };
 
   // Different kinds of unwinders that are used for stack sampling.
-  enum class UnwinderType {
-    kUnknown,
-    kArm64Android,
-    kCfiAndroid,
-    kCustomAndroid,
-    kDefault
-  };
+  enum class UnwinderType { kUnknown, kCustomAndroid, kDefault };
 
   // This class will receive the sampling profiler stackframes and output them
   // to the chrome trace via an event. Exposed for testing.

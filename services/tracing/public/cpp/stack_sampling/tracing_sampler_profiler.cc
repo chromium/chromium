@@ -39,18 +39,7 @@
 
 #if ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
 #include <dlfcn.h>
-
 #include "base/debug/elf_reader.h"
-
-#if ANDROID_ARM64_UNWINDING_SUPPORTED
-#include "services/tracing/public/cpp/stack_sampling/stack_unwinder_arm64_android.h"
-
-#elif ANDROID_CFI_UNWINDING_SUPPORTED
-#include "base/trace_event/cfi_backtrace_android.h"
-#include "services/tracing/public/cpp/stack_sampling/stack_sampler_android.h"
-
-#endif  // ANDROID_ARM64_UNWINDING_SUPPORTED
-
 #endif  // ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
@@ -413,10 +402,6 @@ perfetto::StaticString UnwinderTypeToString(
   switch (unwinder_type) {
     case TracingSamplerProfiler::UnwinderType::kUnknown:
       return "TracingSamplerProfiler (unknown unwinder)";
-    case TracingSamplerProfiler::UnwinderType::kArm64Android:
-      return "TracingSamplerProfiler (default arm64 android unwinder)";
-    case TracingSamplerProfiler::UnwinderType::kCfiAndroid:
-      return "TracingSamplerProfiler (default cfi android unwinder)";
     case TracingSamplerProfiler::UnwinderType::kCustomAndroid:
       return "TracingSamplerProfiler (custom android unwinder)";
     case TracingSamplerProfiler::UnwinderType::kDefault:
@@ -948,26 +933,6 @@ void TracingSamplerProfiler::StartTracing(
     profiler_ = std::make_unique<base::StackSamplingProfiler>(
         sampled_thread_token_, params, std::move(profile_builder),
         std::move(core_unwinders_factory));
-  } else {
-    // TODO(b/231934478): Remove this unwinder fallback and else-block.
-#if ANDROID_ARM64_UNWINDING_SUPPORTED
-    const auto create_unwinders = []() {
-      std::vector<std::unique_ptr<base::Unwinder>> unwinders;
-      unwinders.push_back(std::make_unique<UnwinderArm64>());
-      return unwinders;
-    };
-    profile_builder->SetUnwinderType(UnwinderType::kArm64Android);
-    profiler_ = std::make_unique<base::StackSamplingProfiler>(
-        sampled_thread_token_, params, std::move(profile_builder),
-        base::BindOnce(create_unwinders));
-#elif ANDROID_CFI_UNWINDING_SUPPORTED
-    auto* module_cache = profile_builder->GetModuleCache();
-    profile_builder->SetUnwinderType(UnwinderType::kCfiAndroid);
-    profiler_ = std::make_unique<base::StackSamplingProfiler>(
-        sampled_thread_token_, params, std::move(profile_builder),
-        std::make_unique<StackSamplerAndroid>(sampled_thread_token_,
-                                              module_cache));
-#endif
   }
 #else   // BUILDFLAG(IS_ANDROID)
   profile_builder->SetUnwinderType(UnwinderType::kDefault);

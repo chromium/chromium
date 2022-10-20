@@ -124,11 +124,6 @@ source_set("tests") {
       "public/cpp/perfetto/java_heap_profiler/hprof_parser_android_unittest.cc",
       "public/cpp/stack_sampling/reached_code_data_source_android_unittest.cc",
     ]
-    if (current_cpu == "arm64") {
-      sources += [
-        "public/cpp/stack_sampling/stack_unwinder_arm64_android_unittest.cc",
-      ]
-    }
   }
 
   if (!is_android) {
@@ -152,17 +147,6 @@ source_set("tests") {
 
     if (!is_android) {
       sources += [ "public/cpp/system_tracing_service_unittest.cc" ]
-    }
-
-    if (can_unwind_with_cfi_table && is_official_build) {
-      if (is_android) {
-        sources +=
-            [ "public/cpp/stack_sampling/stack_unwinder_android_unittest.cc" ]
-      }
-      deps += [
-        ":jni_headers",
-        ":tracing_test_helper_java",
-      ]
     }
   }
 
