@@ -307,9 +307,6 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   // The ConfigurablePool must only be initialized once.
   PA_CHECK(!IsConfigurablePoolInitialized());
 
-  // The other Pools must be initialized first.
-  Init();
-
   PA_CHECK(pool_base);
   PA_CHECK(size <= kConfigurablePoolMaxSize);
   PA_CHECK(size >= kConfigurablePoolMinSize);
