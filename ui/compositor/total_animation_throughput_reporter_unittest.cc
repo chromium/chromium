@@ -59,15 +59,15 @@ class TestCompositorMonitor : public ui::CompositorObserver {
 
   // ui::CompositorObserver
   void OnFirstAnimationStarted(Compositor* compositor) override {
-    animatins_running_ = true;
+    animations_running_ = true;
   }
 
   void OnFirstNonAnimatedFrameStarted(Compositor* compositor) override {
     DCHECK_EQ(compositor_, compositor);
-    if (animatins_running_) {
+    if (animations_running_) {
       waiting_for_did_present_compositor_frame_ = true;
     }
-    animatins_running_ = false;
+    animations_running_ = false;
   }
 
   void OnDidPresentCompositorFrame(
@@ -75,7 +75,7 @@ class TestCompositorMonitor : public ui::CompositorObserver {
       const gfx::PresentationFeedback& feedback) override {
     if (waiting_for_did_present_compositor_frame_) {
       waiting_for_did_present_compositor_frame_ = false;
-      if (animatins_running_)
+      if (animations_running_)
         return;
 
       if (run_loop_)
@@ -84,7 +84,7 @@ class TestCompositorMonitor : public ui::CompositorObserver {
   }
 
   void WaitForAllAnimationsEnd() {
-    if (!animatins_running_ && !waiting_for_did_present_compositor_frame_)
+    if (!animations_running_ && !waiting_for_did_present_compositor_frame_)
       return;
 
     run_loop_ = std::make_unique<base::RunLoop>(
@@ -95,7 +95,7 @@ class TestCompositorMonitor : public ui::CompositorObserver {
 
  private:
   const base::raw_ptr<ui::Compositor> compositor_;
-  bool animatins_running_ = false;
+  bool animations_running_ = false;
   bool waiting_for_did_present_compositor_frame_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
