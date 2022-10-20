@@ -150,6 +150,9 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   // We need this to ensure that we detect that abort has been signalled
   // correctly.
   Member<AbortSignal> signal_;
+  // We need to keep the abort algorithms alive for the duration of the load.
+  Member<AbortSignal::AlgorithmHandle> stream_buffer_abort_handle_;
+  Member<AbortSignal::AlgorithmHandle> loader_client_abort_handle_;
   // CachedMetadata handler used for loading compiled WASM code.
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
   // Additional side data associated with this body stream.  It should only be

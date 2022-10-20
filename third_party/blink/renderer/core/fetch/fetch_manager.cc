@@ -292,6 +292,7 @@ class FetchManager::Loader final
   Member<SRIVerifier> integrity_verifier_;
   scoped_refptr<const DOMWrapperWorld> world_;
   Member<AbortSignal> signal_;
+  Member<AbortSignal::AlgorithmHandle> abort_handle_;
   Vector<KURL> url_list_;
   Member<ExecutionContext> execution_context_;
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
@@ -313,6 +314,8 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
       integrity_verifier_(nullptr),
       world_(std::move(world)),
       signal_(signal),
+      abort_handle_(signal->AddAlgorithm(
+          WTF::BindOnce(&Loader::Abort, WrapWeakPersistent(this)))),
       execution_context_(execution_context) {
   DCHECK(world_);
   url_list_.push_back(fetch_request_data->Url());
@@ -339,6 +342,7 @@ void FetchManager::Loader::Trace(Visitor* visitor) const {
   visitor->Trace(place_holder_body_);
   visitor->Trace(integrity_verifier_);
   visitor->Trace(signal_);
+  visitor->Trace(abort_handle_);
   visitor->Trace(execution_context_);
   visitor->Trace(cached_metadata_handler_);
   visitor->Trace(exception_);
@@ -954,8 +958,6 @@ ScriptPromise FetchManager::Fetch(ScriptState* script_state,
       MakeGarbageCollected<Loader>(GetExecutionContext(), this, resolver,
                                    request, &script_state->World(), signal);
   loaders_.insert(loader);
-  signal->AddAlgorithm(
-      WTF::BindOnce(&Loader::Abort, WrapWeakPersistent(loader)));
   // TODO(ricea): Reject the Response body with AbortError, not TypeError.
   loader->Start();
   return promise;
