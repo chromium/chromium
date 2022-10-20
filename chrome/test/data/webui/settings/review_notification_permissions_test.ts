@@ -23,9 +23,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
   let testElement: SettingsReviewNotificationPermissionsElement;
 
-  const origin1 = 'www.example1.com';
+  const origin1 = 'https://www.example1.com:443';
   const detail1 = 'About 4 notifications a day';
-  const origin2 = 'www.example2.com';
+  const origin2 = 'https://www.example2.com:443';
   const detail2 = 'About 1 notification a day';
 
   const mockData = [

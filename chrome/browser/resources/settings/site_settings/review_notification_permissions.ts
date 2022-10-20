@@ -121,15 +121,6 @@ export class SettingsReviewNotificationPermissionsElement extends
     this.sitesLoaded_ = true;
   }
 
-  /**
-   * @return a user-friendly name for the primary pattern that is granted with
-   *     notification permission.
-   */
-  private getDisplayName_(notificationPermission: NotificationPermission):
-      string {
-    return this.toUrl(notificationPermission.origin)!.host;
-  }
-
   /* Show action menu when clicked to three dot menu. */
   private onShowActionMenuClick_(e: DomRepeatEvent<NotificationPermission>) {
     this.lastOrigin_ = e.model.item.origin;
