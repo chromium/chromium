@@ -41,6 +41,8 @@ ChromeVoxDownloadTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule(
         'DownloadHandler', '/chromevox/background/download_handler.js');
   }

@@ -15,10 +15,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await importModule('AutomationUtil', '/common/automation_util.js');
-    await importModule(
-        'BackgroundKeyboardHandler',
-        '/chromevox/background/keyboard_handler.js');
+    // Alphabetical based on file path.
     await importModule(
         'BaseAutomationHandler',
         '/chromevox/background/base_automation_handler.js');
@@ -26,42 +23,46 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
         'BrailleCommandHandler',
         '/chromevox/background/braille/braille_command_handler.js');
     await importModule(
-        'ChromeVoxBackground', '/chromevox/background/classic_background.js');
-    await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule(
+        'ChromeVoxBackground', '/chromevox/background/classic_background.js');
     await importModule(
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
-    await importModule('CursorRange', '/common/cursors/range.js');
-    await importModule(
-        'CustomAutomationEvent',
-        '/chromevox/common/custom_automation_event.js');
     await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
-    await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('FocusBounds', '/chromevox/background/focus_bounds.js');
     await importModule(
         'GestureCommandHandler',
         '/chromevox/background/gesture_command_handler.js');
+    await importModule(
+        'BackgroundKeyboardHandler',
+        '/chromevox/background/keyboard_handler.js');
     await importModule('Output', '/chromevox/background/output/output.js');
+    await importModule(
+        'OutputAction', '/chromevox/background/output/output_types.js');
     await importModule(
         'PageLoadSoundHandler',
         '/chromevox/background/page_load_sound_handler.js');
     await importModule(
         'PointerHandler', '/chromevox/background/pointer_handler.js');
-    await importModule('Cursor', '/common/cursors/cursor.js');
-    await importModule(
-        'OutputAction', '/chromevox/background/output/output_types.js');
-    await importModule(
-        ['Spannable', 'MultiSpannable'], '/chromevox/common/spannable.js');
     await importModule(
         ['BrailleKeyEvent', 'BrailleKeyCommand'],
         '/chromevox/common/braille/braille_key_types.js');
-    await importModule('KeyCode', '/common/key_code.js');
+    await importModule(
+        'CustomAutomationEvent',
+        '/chromevox/common/custom_automation_event.js');
+    await importModule(
+        ['Spannable', 'MultiSpannable'], '/chromevox/common/spannable.js');
     await importModule('QueueMode', '/chromevox/common/tts_interface.js');
     await importModule(
         'AutomationPredicate', '/common/automation_predicate.js');
+    await importModule('AutomationUtil', '/common/automation_util.js');
+    await importModule('Cursor', '/common/cursors/cursor.js');
+    await importModule('CursorRange', '/common/cursors/range.js');
+    await importModule('EventGenerator', '/common/event_generator.js');
+    await importModule('KeyCode', '/common/key_code.js');
 
     window.doGesture = this.doGesture;
     window.simulateHitTestResult = this.simulateHitTestResult;

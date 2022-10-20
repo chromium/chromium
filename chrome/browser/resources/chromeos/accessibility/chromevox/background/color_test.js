@@ -12,6 +12,8 @@ ChromeVoxColorTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical based on file path.
     await importModule('Color', '/chromevox/background/color.js');
   }
 };
