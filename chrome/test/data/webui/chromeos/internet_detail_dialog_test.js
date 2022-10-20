@@ -8,7 +8,7 @@ import {InternetDetailDialogBrowserProxyImpl} from 'chrome://internet-detail-dia
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrosNetworkConfigRemote, InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -18,7 +18,8 @@ export class TestInternetDetailDialogBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'getDialogArguments',
-      'dialogClose',
+      'closeDialog',
+      'showPortalSignin',
     ]);
   }
 
@@ -28,7 +29,10 @@ export class TestInternetDetailDialogBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  dialogClose() {}
+  closeDialog() {}
+
+  /** @override */
+  showPortalSignin() {}
 }
 
 suite('internet-detail-dialog', () => {
@@ -103,6 +107,116 @@ suite('internet-detail-dialog', () => {
     assertTrue(!!element);
     return element;
   }
+
+  suite('captive portal ui updates', () => {
+    function getButton(buttonId) {
+      const button =
+          internetDetailDialog.shadowRoot.querySelector(`#${buttonId}`);
+      assertTrue(!!button);
+      return button;
+    }
+
+    test('WiFi in a portal portalState', function() {
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.connectionState = ConnectionStateType.kPortal;
+      wifiNetwork.portalState = PortalState.kPortal;
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+      init();
+      internetDetailDialog.isCaptivePortalUI2022Enabled_ = true;
+      return flushAsync().then(() => {
+        const networkStateText =
+            internetDetailDialog.shadowRoot.querySelector(`#networkState`);
+        assertTrue(networkStateText.hasAttribute('warning'));
+        assertEquals(
+            networkStateText.textContent.trim(),
+            internetDetailDialog.i18n('networkListItemSignIn'));
+        const signinButton = getButton('signinButton');
+        assertTrue(!!signinButton);
+        assertFalse(signinButton.hasAttribute('hidden'));
+        assertFalse(signinButton.disabled);
+      });
+    });
+
+    test('WiFi in a no internet portalState', function() {
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.connectionState = ConnectionStateType.kPortal;
+      wifiNetwork.portalState = PortalState.kNoInternet;
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+      init();
+      internetDetailDialog.isCaptivePortalUI2022Enabled_ = true;
+      return flushAsync().then(() => {
+        const networkStateText =
+            internetDetailDialog.shadowRoot.querySelector(`#networkState`);
+        assertTrue(networkStateText.hasAttribute('warning'));
+        assertEquals(
+            networkStateText.textContent.trim(),
+            internetDetailDialog.i18n(
+                'networkListItemConnectedNoConnectivity'));
+        const signinButton = getButton('signinButton');
+        assertTrue(!!signinButton);
+        assertTrue(signinButton.hasAttribute('hidden'));
+        assertTrue(signinButton.disabled);
+      });
+    });
+
+    test('WiFi in a proxy-auth portalState', function() {
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.connectionState = ConnectionStateType.kPortal;
+      wifiNetwork.portalState = PortalState.kProxyAuthRequired;
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+      init();
+      internetDetailDialog.isCaptivePortalUI2022Enabled_ = true;
+      return flushAsync().then(() => {
+        const networkStateText =
+            internetDetailDialog.shadowRoot.querySelector(`#networkState`);
+        assertTrue(networkStateText.hasAttribute('warning'));
+        assertEquals(
+            networkStateText.textContent.trim(),
+            internetDetailDialog.i18n('networkListItemSignIn'));
+        const signinButton = getButton('signinButton');
+        assertTrue(!!signinButton);
+        assertFalse(signinButton.hasAttribute('hidden'));
+        assertFalse(signinButton.disabled);
+      });
+    });
+
+    test('WiFi in a portal portalState and feature flag disabled', function() {
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.connectionState = ConnectionStateType.kPortal;
+      wifiNetwork.portalState = PortalState.kPortal;
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+      init();
+      internetDetailDialog.isCaptivePortalUI2022Enabled_ = false;
+      return flushAsync().then(() => {
+        const networkStateText =
+            internetDetailDialog.shadowRoot.querySelector(`#networkState`);
+        assertTrue(networkStateText.hasAttribute('connected'));
+        assertEquals(
+            networkStateText.textContent.trim(),
+            internetDetailDialog.i18n('OncConnected'));
+        const signinButton =
+            internetDetailDialog.shadowRoot.querySelector(`#signinButton`);
+        // Button does not exist because feature flag is disabled.
+        assertTrue(!signinButton);
+      });
+    });
+  });
 
   test('Network not on active sim, hide configurations', async () => {
     await setupCellularNetwork(/*isPrimary=*/ false, /*isInhibited=*/ false);

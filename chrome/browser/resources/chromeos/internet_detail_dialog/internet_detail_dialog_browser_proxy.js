@@ -21,6 +21,12 @@ export class InternetDetailDialogBrowserProxy {
    * Signals C++ that the dialog is closed.
    */
   closeDialog() {}
+
+  /**
+   * Shows the Portal Signin.
+   * @param {string} guid
+   */
+  showPortalSignin(guid) {}
 }
 
 /**
@@ -30,6 +36,11 @@ export class InternetDetailDialogBrowserProxyImpl {
   /** @override */
   getDialogArguments() {
     return chrome.getVariableValue('dialogArguments');
+  }
+
+  /** @override */
+  showPortalSignin(guid) {
+    chrome.send('showPortalSignin', [guid]);
   }
 
   /** @override */

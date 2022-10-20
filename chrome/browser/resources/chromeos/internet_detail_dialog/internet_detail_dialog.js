@@ -18,16 +18,16 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {isActiveSim} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {ApnProperties, ConfigProperties, CrosNetworkConfigRemote, GlobalPolicy, IPConfigProperties, ManagedProperties, NetworkStateProperties, ProxySettings, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InternetDetailDialogBrowserProxy, InternetDetailDialogBrowserProxyImpl} from './internet_detail_dialog_browser_proxy.js';
@@ -74,6 +74,17 @@ Polymer({
       value() {
         return loadTimeData.valueExists('showTechnologyBadge') &&
             loadTimeData.getBoolean('showTechnologyBadge');
+      },
+    },
+    /**
+     * Return true if captivePortalUI2022 feature flag is enabled.
+     * @private
+     */
+    isCaptivePortalUI2022Enabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('captivePortalUI2022') &&
+            loadTimeData.getBoolean('captivePortalUI2022');
       },
     },
 
@@ -314,6 +325,20 @@ Polymer({
     if (!managedProperties) {
       return '';
     }
+
+    if (this.isCaptivePortalUI2022Enabled_ &&
+        OncMojo.connectionStateIsConnected(managedProperties.connectionState)) {
+      if (this.isPortalState_(managedProperties.portalState)) {
+        return this.i18n('networkListItemSignIn');
+      }
+      if (managedProperties.portalState === PortalState.kPortalSuspected) {
+        return this.i18n('networkListItemConnectedLimited');
+      }
+      if (managedProperties.portalState === PortalState.kNoInternet) {
+        return this.i18n('networkListItemConnectedNoConnectivity');
+      }
+    }
+
     return this.i18n(
         OncMojo.getConnectionStateString(managedProperties.connectionState));
   },
@@ -328,13 +353,61 @@ Polymer({
   },
 
   /**
-   * @param {!ManagedProperties} managedProperties
+   * @param {!ManagedProperties|undefined} managedProperties
    * @return {boolean} True if the network is connected.
    * @private
    */
   isConnectedState_(managedProperties) {
-    return OncMojo.connectionStateIsConnected(
-        managedProperties.connectionState);
+    return !!managedProperties &&
+        OncMojo.connectionStateIsConnected(managedProperties.connectionState);
+  },
+
+  /**
+   * @param {!ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean} True if the network is restricted.
+   * @private
+   */
+  isRestrictedConnectivity_(managedProperties) {
+    return !!managedProperties &&
+        OncMojo.isRestrictedConnectivity(managedProperties.portalState);
+  },
+
+  /**
+   * @param {!ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean} True if the network is connected to have connected color
+   *     for state.
+   * @private
+   */
+  showConnectedState_(managedProperties) {
+    // Only check that state is connected if feature flag is disabled.
+    if (!this.isCaptivePortalUI2022Enabled_) {
+      return this.isConnectedState_(managedProperties);
+    }
+
+    return this.isConnectedState_(managedProperties) &&
+        !this.isRestrictedConnectivity_(managedProperties);
+  },
+
+  /**
+   * @param {!ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean} True if the network is restricted to have warning color
+   *     for state.
+   * @private
+   */
+  showRestrictedConnectivity_(managedProperties) {
+    // Do not show warning color if feature flag is disabled.
+    if (!this.isCaptivePortalUI2022Enabled_) {
+      return false;
+    }
+    if (!managedProperties) {
+      return false;
+    }
+    // State must be connected and restricted.
+    return this.isConnectedState_(managedProperties) &&
+        this.isRestrictedConnectivity_(managedProperties);
   },
 
   /**
@@ -407,6 +480,50 @@ Polymer({
       // A forgotten network no longer has a valid GUID, close the dialog.
       this.close_();
     });
+  },
+
+  /**
+   * @param {!ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean}
+   * @private
+   */
+  showSignin_(managedProperties) {
+    if (!this.isCaptivePortalUI2022Enabled_) {
+      return false;
+    }
+    if (!managedProperties) {
+      return false;
+    }
+    if (OncMojo.connectionStateIsConnected(managedProperties.connectionState) &&
+        this.isPortalState_(managedProperties.portalState)) {
+      return true;
+    }
+    return false;
+  },
+
+  /**
+   * @param {!ManagedProperties} managedProperties
+   * @return {boolean}
+   * @private
+   */
+  disableSignin_(managedProperties) {
+    if (!this.isCaptivePortalUI2022Enabled_) {
+      return true;
+    }
+    if (this.disabled_ || !managedProperties) {
+      return true;
+    }
+    if (!OncMojo.connectionStateIsConnected(
+            managedProperties.connectionState)) {
+      return true;
+    }
+    return !this.isPortalState_(managedProperties.portalState);
+  },
+
+  /** @private */
+  onSigninTap_() {
+    this.browserProxy_.showPortalSignin(this.guid);
   },
 
   /**
@@ -661,5 +778,16 @@ Polymer({
     // If this is a cellular device and inhibited, state cannot be changed, so
     // the dialog's inputs should be disabled.
     return OncMojo.deviceIsInhibited(this.deviceState_);
+  },
+
+  /**
+   * Return true if portalState is either kPortal or kProxyAuthRequired.
+   * @param {!PortalState} portalState
+   * @return {boolean}
+   * @private
+   */
+  isPortalState_(portalState) {
+    return portalState === PortalState.kPortal ||
+        portalState === PortalState.kProxyAuthRequired;
   },
 });

@@ -171,10 +171,14 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
       return;
     }
 
-    // If the captive portal UI flag is enabled, the network is connected, and
-    // the network is in a portal or proxy state, the user is shown the portal
-    // signin.
+    // If the captive portal UI flag is enabled, the user is logged in, the
+    // network is connected, and the network is in a portal or proxy state, the
+    // user is shown the portal signin. We do not show portal sign in for user
+    // not logged in because it is the only way for the user to get to the
+    // network details page.
     if (features::IsCaptivePortalUI2022Enabled() &&
+        Shell::Get()->session_controller()->login_status() !=
+            LoginStatus::NOT_LOGGED_IN &&
         chromeos::network_config::StateIsConnected(network->connection_state) &&
         IsNetworkBehindPortalOrProxy(network->portal_state)) {
       RecordNetworkRowClickedAction(NetworkRowClickedAction::kOpenPortalSignin);

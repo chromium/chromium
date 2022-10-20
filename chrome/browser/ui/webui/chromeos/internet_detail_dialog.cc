@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/internet_detail_dialog_resources.h"
 #include "chrome/grit/internet_detail_dialog_resources_map.h"
+#include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -25,6 +26,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network_element_localized_strings_provider.h"
@@ -53,6 +55,7 @@ void AddInternetStrings(content::WebUIDataSource* html_source) {
       {"networkButtonConnect", IDS_SETTINGS_INTERNET_BUTTON_CONNECT},
       {"networkButtonDisconnect", IDS_SETTINGS_INTERNET_BUTTON_DISCONNECT},
       {"networkButtonForget", IDS_SETTINGS_INTERNET_BUTTON_FORGET},
+      {"networkButtonSignin", IDS_SETTINGS_INTERNET_BUTTON_SIGNIN},
       {"networkIPAddress", IDS_SETTINGS_INTERNET_NETWORK_IP_ADDRESS},
       {"networkSectionNetwork", IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK},
       {"networkSectionProxy", IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY},
@@ -71,6 +74,29 @@ std::string GetNetworkName8(const NetworkState& network) {
              ? l10n_util::GetStringUTF8(IDS_NETWORK_TYPE_ETHERNET)
              : network.name();
 }
+
+class PortalNetworkMessageHandler : public content::WebUIMessageHandler {
+ public:
+  PortalNetworkMessageHandler() = default;
+  ~PortalNetworkMessageHandler() override = default;
+
+  void RegisterMessages() override {
+    web_ui()->RegisterMessageCallback(
+        "showPortalSignin",
+        base::BindRepeating(&PortalNetworkMessageHandler::ShowPortalSignin,
+                            base::Unretained(this)));
+  }
+
+ private:
+  void ShowPortalSignin(const base::Value::List& args) {
+    if (args.size() < 1 || !args[0].is_string()) {
+      NOTREACHED() << "Invalid args for: ShowPortalSignin";
+      return;
+    }
+    const std::string& guid = args[0].GetString();
+    ash::NetworkConnect::Get()->ShowPortalSignin(guid);
+  }
+};
 
 }  // namespace
 
@@ -138,11 +164,15 @@ std::string InternetDetailDialog::GetDialogArgs() const {
 
 InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
+  web_ui->AddMessageHandler(std::make_unique<PortalNetworkMessageHandler>());
+
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIInternetDetailDialogHost);
   source->DisableTrustedTypesCSP();
   source->AddBoolean("showTechnologyBadge",
                      !ash::features::IsSeparateNetworkIconsEnabled());
+  source->AddBoolean("captivePortalUI2022",
+                     ash::features::IsCaptivePortalUI2022Enabled());
   cellular_setup::AddNonStringLoadTimeData(source);
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_DETAIL);
