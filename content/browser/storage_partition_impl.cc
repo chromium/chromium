@@ -79,7 +79,7 @@
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
-#include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/push_messaging/push_messaging_context.h"
@@ -646,7 +646,7 @@ void CallCancelRequest(
 // tree, using `final_status` as the cancellation reason. Returns true if
 // cancelled.
 bool CancelIfPrerendering(NavigationOrDocumentHandle* navigation_or_document,
-                          PrerenderHost::FinalStatus final_status) {
+                          PrerenderFinalStatus final_status) {
   FrameTreeNode* frame_tree_node = nullptr;
   // `navigation_or_document` can be null for `kServiceWorkerContext`.
   if (!navigation_or_document)
@@ -1872,7 +1872,7 @@ void StoragePartitionImpl::OnAuthRequired(
   // because the embedder may show UI for auth requests, and it's unsuitable for
   // a hidden page.
   if (CancelIfPrerendering(context.navigation_or_document(),
-                           PrerenderHost::FinalStatus::kLoginAuthRequested)) {
+                           PrerenderFinalStatus::kLoginAuthRequested)) {
     return;
   }
 
@@ -1956,7 +1956,7 @@ void StoragePartitionImpl::OnCertificateRequested(
   // because the embedder may show a dialog and ask users to select client
   // certificates, and it's unsuitable for a hidden page.
   if (CancelIfPrerendering(context.navigation_or_document(),
-                           PrerenderHost::FinalStatus::kClientCertRequested)) {
+                           PrerenderFinalStatus::kClientCertRequested)) {
     CallCancelRequest(std::move(cert_responder));
     return;
   }
@@ -1979,7 +1979,7 @@ void StoragePartitionImpl::OnSSLCertificateError(
   // prerendering page, because prerendering pages are invisible and browser
   // cannot show errors on invisible pages.
   if (CancelIfPrerendering(context.navigation_or_document(),
-                           PrerenderHost::FinalStatus::kSslCertificateError)) {
+                           PrerenderFinalStatus::kSslCertificateError)) {
     std::move(response).Run(net_error);
     return;
   }

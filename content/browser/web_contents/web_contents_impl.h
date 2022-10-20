@@ -30,6 +30,7 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_handle_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -1330,7 +1331,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // If the given frame is prerendered, cancels the associated prerender.
   // Returns true if a prerender was canceled.
   bool CancelPrerendering(FrameTreeNode* frame_tree_node,
-                          PrerenderHost::FinalStatus final_status);
+                          PrerenderFinalStatus final_status);
 
   void set_suppress_ime_events_for_testing(bool suppress) {
     suppress_ime_events_for_testing_ = suppress;

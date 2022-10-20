@@ -33,7 +33,7 @@ namespace {
 
 namespace {
 
-// This is equal to content::PrerenderHost::FinalStatus::kActivated.
+// This is equal to content::PrerenderFinalStatus::kActivated.
 // TODO(crbug.com/1274021): Replace this with the FinalStatus enum value
 // once it is exposed.
 const int kFinalStatusActivated = 0;

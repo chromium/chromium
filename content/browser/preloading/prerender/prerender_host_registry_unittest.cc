@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/speculation_rules/speculation_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -243,13 +244,13 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     wc->ActivatePrerenderedPage(kPrerenderingUrl);
   }
 
-  void ExpectUniqueSampleOfFinalStatus(PrerenderHost::FinalStatus status) {
+  void ExpectUniqueSampleOfFinalStatus(PrerenderFinalStatus status) {
     histogram_tester_.ExpectUniqueSample(
         "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
         status, 1);
   }
 
-  void ExpectBucketCountOfFinalStatus(PrerenderHost::FinalStatus status) {
+  void ExpectBucketCountOfFinalStatus(PrerenderFinalStatus status) {
     histogram_tester_.ExpectBucketCount(
         "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
         status, 1);
@@ -398,7 +399,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
                                   render_frame_host),
       *web_contents);
   ExpectUniqueSampleOfFinalStatus(
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
 
   // PrerenderHostRegistry should only start prerendering for kPrerenderingUrl1.
   EXPECT_NE(frame_tree_node_id1, kNoFrameTreeNodeId);
@@ -419,7 +420,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
       *web_contents);
   EXPECT_NE(frame_tree_node_id2, kNoFrameTreeNodeId);
   ExpectBucketCountOfFinalStatus(
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
 }
 
 // Tests that PrerenderHostRegistry limits the number of started prerenders
@@ -445,7 +446,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
   ASSERT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   ASSERT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
   ExpectUniqueSampleOfFinalStatus(
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
 
   // The initiator document navigates away.
   render_frame_host = NavigatePrimaryPage(
@@ -461,7 +462,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
 
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
   ExpectBucketCountOfFinalStatus(
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
 }
 
 // Tests that PrerenderHostRegistry limits the number of started prerenders
@@ -488,7 +489,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   ASSERT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   ASSERT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
   ExpectUniqueSampleOfFinalStatus(
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
 
   // The initiator document navigates away to a cross-origin page.
   render_frame_host =
@@ -504,7 +505,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   SendCandidate(kPrerenderingUrl3, remote2);
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl3), nullptr);
   ExpectBucketCountOfFinalStatus(
-      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
 }
 
 TEST_F(PrerenderHostRegistryTest,
@@ -587,7 +588,7 @@ TEST_F(PrerenderHostRegistryTest, CancelHost) {
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   registry->CancelHost(prerender_frame_tree_node_id,
-                       PrerenderHost::FinalStatus::kDestroyed);
+                       PrerenderFinalStatus::kDestroyed);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 
@@ -647,7 +648,7 @@ TEST_F(PrerenderHostRegistryTest,
 
     // Cancel the prerender while the CommitDeferringCondition is running.
     registry->CancelHost(prerender_frame_tree_node_id,
-                         PrerenderHost::FinalStatus::kDestroyed);
+                         PrerenderFinalStatus::kDestroyed);
     prerender_host_observer.WaitForDestroyed();
     EXPECT_FALSE(prerender_host_observer.was_activated());
     EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
@@ -719,7 +720,7 @@ TEST_F(PrerenderHostRegistryTest,
 
     // Cancel the prerender while the CommitDeferringCondition is running.
     registry->CancelHost(prerender_frame_tree_node_id,
-                         PrerenderHost::FinalStatus::kDestroyed);
+                         PrerenderFinalStatus::kDestroyed);
     prerender_host_observer.WaitForDestroyed();
     EXPECT_FALSE(prerender_host_observer.was_activated());
     EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
@@ -770,8 +771,7 @@ TEST_F(PrerenderHostRegistryTest,
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   EXPECT_EQ(prerender_host, nullptr);
-  ExpectUniqueSampleOfFinalStatus(
-      PrerenderHost::FinalStatus::kTriggerBackgrounded);
+  ExpectUniqueSampleOfFinalStatus(PrerenderFinalStatus::kTriggerBackgrounded);
 }
 
 // -------------------------------------------------
@@ -1053,7 +1053,7 @@ TEST_F(PrerenderHostRegistryTest, DisallowPageHavingEffectiveUrl) {
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);
   EXPECT_EQ(prerender_host, nullptr);
-  ExpectUniqueSampleOfFinalStatus(PrerenderHost::FinalStatus::kHasEffectiveUrl);
+  ExpectUniqueSampleOfFinalStatus(PrerenderFinalStatus::kHasEffectiveUrl);
 
   SetBrowserClientForTesting(old_client);
 }

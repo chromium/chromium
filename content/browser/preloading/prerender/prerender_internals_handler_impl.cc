@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/preloading/prerender/prerender_internals_handler_impl.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 
@@ -10,85 +11,85 @@ namespace content {
 
 namespace {
 
-const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
+const char* FinalStatusToString(PrerenderFinalStatus final_status) {
   switch (final_status) {
-    case PrerenderHost::FinalStatus::kActivated:
+    case PrerenderFinalStatus::kActivated:
       return "Activated";
-    case PrerenderHost::FinalStatus::kDestroyed:
+    case PrerenderFinalStatus::kDestroyed:
       return "Destroyed";
-    case PrerenderHost::FinalStatus::kLowEndDevice:
+    case PrerenderFinalStatus::kLowEndDevice:
       return "LowEndDevice";
-    case PrerenderHost::FinalStatus::kCrossOriginRedirect:
+    case PrerenderFinalStatus::kCrossOriginRedirect:
       return "CrossOriginRedirect";
-    case PrerenderHost::FinalStatus::kCrossOriginNavigation:
+    case PrerenderFinalStatus::kCrossOriginNavigation:
       return "CrossOriginNavigation";
-    case PrerenderHost::FinalStatus::kInvalidSchemeRedirect:
+    case PrerenderFinalStatus::kInvalidSchemeRedirect:
       return "InvalidSchemeRedirect";
-    case PrerenderHost::FinalStatus::kInvalidSchemeNavigation:
+    case PrerenderFinalStatus::kInvalidSchemeNavigation:
       return "InvalidSchemeNavigation";
-    case PrerenderHost::FinalStatus::kInProgressNavigation:
+    case PrerenderFinalStatus::kInProgressNavigation:
       return "InProgressNavigation";
-    case PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp:
+    case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
       return "NavigationRequestBlockedByCsp";
-    case PrerenderHost::FinalStatus::kMainFrameNavigation:
+    case PrerenderFinalStatus::kMainFrameNavigation:
       return "MainFrameNavigation";
-    case PrerenderHost::FinalStatus::kMojoBinderPolicy:
+    case PrerenderFinalStatus::kMojoBinderPolicy:
       return "MojoBinderPolicy";
-    case PrerenderHost::FinalStatus::kRendererProcessCrashed:
+    case PrerenderFinalStatus::kRendererProcessCrashed:
       return "RendererProcessCrashed";
-    case PrerenderHost::FinalStatus::kRendererProcessKilled:
+    case PrerenderFinalStatus::kRendererProcessKilled:
       return "RendererProcessKilled";
-    case PrerenderHost::FinalStatus::kDownload:
+    case PrerenderFinalStatus::kDownload:
       return "Download";
-    case PrerenderHost::FinalStatus::kTriggerDestroyed:
+    case PrerenderFinalStatus::kTriggerDestroyed:
       return "TriggerDestroyed";
-    case PrerenderHost::FinalStatus::kNavigationNotCommitted:
+    case PrerenderFinalStatus::kNavigationNotCommitted:
       return "NavigationNotCommitted";
-    case PrerenderHost::FinalStatus::kNavigationBadHttpStatus:
+    case PrerenderFinalStatus::kNavigationBadHttpStatus:
       return "NavigationBadHttpStatus";
-    case PrerenderHost::FinalStatus::kClientCertRequested:
+    case PrerenderFinalStatus::kClientCertRequested:
       return "ClientCertRequested";
-    case PrerenderHost::FinalStatus::kNavigationRequestNetworkError:
+    case PrerenderFinalStatus::kNavigationRequestNetworkError:
       return "NavigationRequestNetworkError";
-    case PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded:
       return "MaxNumOfRunningPrerendersExceeded";
-    case PrerenderHost::FinalStatus::kCancelAllHostsForTesting:
+    case PrerenderFinalStatus::kCancelAllHostsForTesting:
       return "CancelAllHostsForTesting";
-    case PrerenderHost::FinalStatus::kDidFailLoad:
+    case PrerenderFinalStatus::kDidFailLoad:
       return "DidFailLoad";
-    case PrerenderHost::FinalStatus::kStop:
+    case PrerenderFinalStatus::kStop:
       return "Stop";
-    case PrerenderHost::FinalStatus::kSslCertificateError:
+    case PrerenderFinalStatus::kSslCertificateError:
       return "SslCertificateError";
-    case PrerenderHost::FinalStatus::kLoginAuthRequested:
+    case PrerenderFinalStatus::kLoginAuthRequested:
       return "LoginAuthRequested";
-    case PrerenderHost::FinalStatus::kUaChangeRequiresReload:
+    case PrerenderFinalStatus::kUaChangeRequiresReload:
       return "UaChangeRequiresReload";
-    case PrerenderHost::FinalStatus::kBlockedByClient:
+    case PrerenderFinalStatus::kBlockedByClient:
       return "BlockedByClient";
-    case PrerenderHost::FinalStatus::kAudioOutputDeviceRequested:
+    case PrerenderFinalStatus::kAudioOutputDeviceRequested:
       return "AudioOutputDeviceRequested";
-    case PrerenderHost::FinalStatus::kMixedContent:
+    case PrerenderFinalStatus::kMixedContent:
       return "MixedContent";
-    case PrerenderHost::FinalStatus::kTriggerBackgrounded:
+    case PrerenderFinalStatus::kTriggerBackgrounded:
       return "TriggerBackgrounded";
-    case PrerenderHost::FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
+    case PrerenderFinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
       return "EmbedderTriggeredAndCrossOriginRedirected";
-    case PrerenderHost::FinalStatus::kMemoryLimitExceeded:
+    case PrerenderFinalStatus::kMemoryLimitExceeded:
       return "MemoryLimitExceeded";
-    case PrerenderHost::FinalStatus::kFailToGetMemoryUsage:
+    case PrerenderFinalStatus::kFailToGetMemoryUsage:
       return "FailToGetMemoryUsage";
-    case PrerenderHost::FinalStatus::kDataSaverEnabled:
+    case PrerenderFinalStatus::kDataSaverEnabled:
       return "DataSaverEnabled";
-    case PrerenderHost::FinalStatus::kHasEffectiveUrl:
+    case PrerenderFinalStatus::kHasEffectiveUrl:
       return "HasEffectiveUrl";
-    case PrerenderHost::FinalStatus::kActivatedBeforeStarted:
+    case PrerenderFinalStatus::kActivatedBeforeStarted:
       return "ActivatedBeforeStarted";
-    case PrerenderHost::FinalStatus::kInactivePageRestriction:
+    case PrerenderFinalStatus::kInactivePageRestriction:
       return "InactivePageRestriction";
-    case PrerenderHost::FinalStatus::kStartFailed:
+    case PrerenderFinalStatus::kStartFailed:
       return "StartFailed";
-    case PrerenderHost::FinalStatus::kTimeoutBackgrounded:
+    case PrerenderFinalStatus::kTimeoutBackgrounded:
       return "TimeoutBackgrounded";
   }
   NOTREACHED();
@@ -96,7 +97,7 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
 }
 
 const char* GetFinalStatus(PrerenderHost& host) {
-  absl::optional<PrerenderHost::FinalStatus> final_status = host.final_status();
+  absl::optional<PrerenderFinalStatus> final_status = host.final_status();
   if (final_status) {
     return FinalStatusToString(final_status.value());
   } else {

@@ -12,6 +12,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_page_holder.h"
@@ -65,8 +66,7 @@ bool AreHttpRequestHeadersCompatible(
          potential_activation_headers.ToString();
 }
 
-PreloadingFailureReason ToPreloadingFailureReason(
-    PrerenderHost::FinalStatus status) {
+PreloadingFailureReason ToPreloadingFailureReason(PrerenderFinalStatus status) {
   return static_cast<PreloadingFailureReason>(
       static_cast<int>(status) +
       static_cast<int>(
@@ -144,11 +144,12 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
 
 PrerenderHost::~PrerenderHost() {
   for (auto& observer : observers_)
-    observer.OnHostDestroyed(final_status_.value_or(FinalStatus::kDestroyed));
+    observer.OnHostDestroyed(
+        final_status_.value_or(PrerenderFinalStatus::kDestroyed));
 
   if (!final_status_)
-    RecordFinalStatus(FinalStatus::kDestroyed, attributes_.initiator_ukm_id,
-                      ukm::kInvalidSourceId);
+    RecordFinalStatus(PrerenderFinalStatus::kDestroyed,
+                      attributes_.initiator_ukm_id, ukm::kInvalidSourceId);
 }
 
 // TODO(https://crbug.com/1132746): Inspect diffs from the current
@@ -236,15 +237,15 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // NavigationThrottle::WillFailRequest().
   net::Error net_error = navigation_request->GetNetErrorCode();
 
-  absl::optional<FinalStatus> status;
+  absl::optional<PrerenderFinalStatus> status;
   if (net_error == net::Error::ERR_BLOCKED_BY_CSP) {
-    status = FinalStatus::kNavigationRequestBlockedByCsp;
+    status = PrerenderFinalStatus::kNavigationRequestBlockedByCsp;
   } else if (net_error == net::Error::ERR_BLOCKED_BY_CLIENT) {
-    status = FinalStatus::kBlockedByClient;
+    status = PrerenderFinalStatus::kBlockedByClient;
   } else if (is_prerender_main_frame && net_error != net::Error::OK) {
-    status = FinalStatus::kNavigationRequestNetworkError;
+    status = PrerenderFinalStatus::kNavigationRequestNetworkError;
   } else if (is_prerender_main_frame && !navigation_request->HasCommitted()) {
-    status = FinalStatus::kNavigationNotCommitted;
+    status = PrerenderFinalStatus::kNavigationNotCommitted;
   }
   if (status.has_value()) {
     Cancel(*status);
@@ -276,7 +277,7 @@ void PrerenderHost::UpdateTimeoutTimer(Visibility visibility) {
       timeout_timer_.Start(
           FROM_HERE, kTimeToLiveInBackground,
           base::BindOnce(&PrerenderHost::Cancel, base::Unretained(this),
-                         FinalStatus::kTimeoutBackgrounded));
+                         PrerenderFinalStatus::kTimeoutBackgrounded));
       break;
     case Visibility::OCCLUDED:
       break;
@@ -317,7 +318,8 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // TODO(crbug.com/1299330): Replace
   // `navigation_request.GetNextPageUkmSourceId()` with prerendered page's UKM
   // source ID.
-  RecordFinalStatus(FinalStatus::kActivated, attributes_.initiator_ukm_id,
+  RecordFinalStatus(PrerenderFinalStatus::kActivated,
+                    attributes_.initiator_ukm_id,
                     navigation_request.GetNextPageUkmSourceId());
 
   // Prerender is activated. Set the status to kSuccess.
@@ -619,7 +621,7 @@ FrameTree& PrerenderHost::GetPrerenderFrameTree() {
 }
 
 void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
-                                      FinalStatus status) {
+                                      PrerenderFinalStatus status) {
   RecordFinalStatus(status, attributes_.initiator_ukm_id,
                     ukm::kInvalidSourceId);
 
@@ -638,12 +640,12 @@ PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
   return page_holder_->WaitForLoadCompletionForTesting();  // IN-TEST
 }
 
-void PrerenderHost::RecordFinalStatus(FinalStatus status,
+void PrerenderHost::RecordFinalStatus(PrerenderFinalStatus status,
                                       ukm::SourceId initiator_ukm_id,
                                       ukm::SourceId prerendered_ukm_id) {
   DCHECK(!final_status_);
   final_status_ = status;
-  RecordPrerenderHostFinalStatus(status, attributes_, prerendered_ukm_id);
+  RecordPrerenderFinalStatus(status, attributes_, prerendered_ukm_id);
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {
@@ -688,7 +690,7 @@ void PrerenderHost::SetEligibility(PreloadingEligibility eligibility) {
   attempt_->SetEligibility(eligibility);
 }
 
-void PrerenderHost::SetFailureReason(FinalStatus status) {
+void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
   if (!attempt_)
     return;
 
@@ -701,46 +703,46 @@ void PrerenderHost::SetFailureReason(FinalStatus status) {
     //    wasn't needed for a subsequent navigation (kTriggerDestroyed).
     // 3. the prerender was still pending for its initial navigation when it was
     //    activated (kActivatedBeforeStarted).
-    case FinalStatus::kActivated:
-    case FinalStatus::kTriggerDestroyed:
-    case FinalStatus::kActivatedBeforeStarted:
+    case PrerenderFinalStatus::kActivated:
+    case PrerenderFinalStatus::kTriggerDestroyed:
+    case PrerenderFinalStatus::kActivatedBeforeStarted:
       return;
-    case FinalStatus::kDestroyed:
-    case FinalStatus::kLowEndDevice:
-    case FinalStatus::kCrossOriginRedirect:
-    case FinalStatus::kCrossOriginNavigation:
-    case FinalStatus::kInvalidSchemeRedirect:
-    case FinalStatus::kInvalidSchemeNavigation:
-    case FinalStatus::kInProgressNavigation:
-    case FinalStatus::kNavigationRequestBlockedByCsp:
-    case FinalStatus::kMainFrameNavigation:
-    case FinalStatus::kMojoBinderPolicy:
-    case FinalStatus::kRendererProcessCrashed:
-    case FinalStatus::kRendererProcessKilled:
-    case FinalStatus::kDownload:
-    case FinalStatus::kNavigationNotCommitted:
-    case FinalStatus::kNavigationBadHttpStatus:
-    case FinalStatus::kClientCertRequested:
-    case FinalStatus::kNavigationRequestNetworkError:
-    case FinalStatus::kMaxNumOfRunningPrerendersExceeded:
-    case FinalStatus::kCancelAllHostsForTesting:
-    case FinalStatus::kDidFailLoad:
-    case FinalStatus::kStop:
-    case FinalStatus::kSslCertificateError:
-    case FinalStatus::kLoginAuthRequested:
-    case FinalStatus::kUaChangeRequiresReload:
-    case FinalStatus::kBlockedByClient:
-    case FinalStatus::kAudioOutputDeviceRequested:
-    case FinalStatus::kMixedContent:
-    case FinalStatus::kTriggerBackgrounded:
-    case FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
-    case FinalStatus::kMemoryLimitExceeded:
-    case FinalStatus::kFailToGetMemoryUsage:
-    case FinalStatus::kDataSaverEnabled:
-    case FinalStatus::kHasEffectiveUrl:
-    case FinalStatus::kInactivePageRestriction:
-    case FinalStatus::kStartFailed:
-    case FinalStatus::kTimeoutBackgrounded:
+    case PrerenderFinalStatus::kDestroyed:
+    case PrerenderFinalStatus::kLowEndDevice:
+    case PrerenderFinalStatus::kCrossOriginRedirect:
+    case PrerenderFinalStatus::kCrossOriginNavigation:
+    case PrerenderFinalStatus::kInvalidSchemeRedirect:
+    case PrerenderFinalStatus::kInvalidSchemeNavigation:
+    case PrerenderFinalStatus::kInProgressNavigation:
+    case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
+    case PrerenderFinalStatus::kMainFrameNavigation:
+    case PrerenderFinalStatus::kMojoBinderPolicy:
+    case PrerenderFinalStatus::kRendererProcessCrashed:
+    case PrerenderFinalStatus::kRendererProcessKilled:
+    case PrerenderFinalStatus::kDownload:
+    case PrerenderFinalStatus::kNavigationNotCommitted:
+    case PrerenderFinalStatus::kNavigationBadHttpStatus:
+    case PrerenderFinalStatus::kClientCertRequested:
+    case PrerenderFinalStatus::kNavigationRequestNetworkError:
+    case PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded:
+    case PrerenderFinalStatus::kCancelAllHostsForTesting:
+    case PrerenderFinalStatus::kDidFailLoad:
+    case PrerenderFinalStatus::kStop:
+    case PrerenderFinalStatus::kSslCertificateError:
+    case PrerenderFinalStatus::kLoginAuthRequested:
+    case PrerenderFinalStatus::kUaChangeRequiresReload:
+    case PrerenderFinalStatus::kBlockedByClient:
+    case PrerenderFinalStatus::kAudioOutputDeviceRequested:
+    case PrerenderFinalStatus::kMixedContent:
+    case PrerenderFinalStatus::kTriggerBackgrounded:
+    case PrerenderFinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
+    case PrerenderFinalStatus::kMemoryLimitExceeded:
+    case PrerenderFinalStatus::kFailToGetMemoryUsage:
+    case PrerenderFinalStatus::kDataSaverEnabled:
+    case PrerenderFinalStatus::kHasEffectiveUrl:
+    case PrerenderFinalStatus::kInactivePageRestriction:
+    case PrerenderFinalStatus::kStartFailed:
+    case PrerenderFinalStatus::kTimeoutBackgrounded:
       attempt_->SetFailureReason(ToPreloadingFailureReason(status));
       // We reset the attempt to ensure we don't update once we have reported it
       // as failure or accidentally use it for any other prerender attempts as
@@ -778,7 +780,7 @@ void PrerenderHost::GetAllowedClientHintsOnPage(
   }
 }
 
-void PrerenderHost::Cancel(FinalStatus status) {
+void PrerenderHost::Cancel(PrerenderFinalStatus status) {
   TRACE_EVENT("navigation", "PrerenderHost::Cancel", "final_status", status);
   // Already cancelled.
   if (final_status_)

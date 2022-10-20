@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "DefaultSearchEngine",
-      /*PrerenderHost::FinalStatus::kTriggerDestroyed*/ 16, 1);
+      /*PrerenderFinalStatus::kTriggerDestroyed*/ 16, 1);
 
   // Select the prerender hint. The prerendered result has been deleted, so
   // browser loads the search result over again.
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "DefaultSearchEngine",
-      /*PrerenderHost::FinalStatus::kTriggerDestroyed*/ 16, 1);
+      /*PrerenderFinalStatus::kTriggerDestroyed*/ 16, 1);
 
   // Nothing should be recorded. Because there is no new navigation nor new
   // search suggestion.

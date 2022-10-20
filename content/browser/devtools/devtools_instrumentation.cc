@@ -31,6 +31,7 @@
 #include "content/browser/devtools/worker_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/portal/portal.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -362,7 +363,7 @@ void DidActivatePrerender(const NavigationRequest& nav_request) {
 
 void DidCancelPrerender(const GURL& prerendering_url,
                         FrameTreeNode* ftn,
-                        PrerenderHost::FinalStatus status,
+                        PrerenderFinalStatus status,
                         const std::string& disallowed_api_method) {
   std::string initiating_frame_id = ftn->devtools_frame_token().ToString();
   DispatchToAgents(ftn, &protocol::PageHandler::DidCancelPrerender,

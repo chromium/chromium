@@ -44,7 +44,8 @@
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/can_commit_status.h"
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
-#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
@@ -117,6 +118,7 @@
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
+#include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
@@ -130,9 +132,11 @@
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-forward.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
@@ -143,6 +147,7 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -151,6 +156,7 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/containers/id_map.h"
@@ -1981,7 +1987,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // frame is in, which destroys this frame.
   // Returns true if a prerender was canceled. Does nothing and returns false if
   // `this` is not prerendered.
-  bool CancelPrerendering(PrerenderHost::FinalStatus status);
+  bool CancelPrerendering(PrerenderFinalStatus status);
   // Called by MojoBinderPolicyApplier when it receives a kCancel interface.
   void CancelPrerenderingByMojoBinderPolicy(const std::string& interface_name);
 

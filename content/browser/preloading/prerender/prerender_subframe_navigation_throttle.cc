@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -63,7 +64,7 @@ NavigationThrottle::ThrottleCheckResult
 PrerenderSubframeNavigationThrottle::WillProcessResponse() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-  absl::optional<PrerenderHost::FinalStatus> cancel_reason;
+  absl::optional<PrerenderFinalStatus> cancel_reason;
 
   if (!frame_tree_node->frame_tree()->is_prerendering())
     return NavigationThrottle::PROCEED;
@@ -71,7 +72,7 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
   // TODO(crbug.com/1318739): Delay until activation instead of cancellation.
   if (navigation_handle()->IsDownload()) {
     // Disallow downloads during prerendering and cancel the prerender.
-    cancel_reason = PrerenderHost::FinalStatus::kDownload;
+    cancel_reason = PrerenderFinalStatus::kDownload;
   }
 
   if (cancel_reason.has_value()) {
@@ -174,7 +175,7 @@ PrerenderSubframeNavigationThrottle::DeferOrCancelCrossOriginSubframeNavigation(
 }
 
 void PrerenderSubframeNavigationThrottle::OnHostDestroyed(
-    PrerenderHost::FinalStatus final_status) {
+    PrerenderFinalStatus final_status) {
   observation_.Reset();
 }
 

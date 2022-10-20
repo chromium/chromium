@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prerender/prerender_handle_impl.h"
 
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/public/browser/prerender_trigger_type.h"
 
 namespace content {
@@ -27,7 +28,7 @@ PrerenderHandleImpl::PrerenderHandleImpl(
 PrerenderHandleImpl::~PrerenderHandleImpl() {
   if (prerender_host_registry_) {
     prerender_host_registry_->CancelHost(
-        frame_tree_node_id_, PrerenderHost::FinalStatus::kTriggerDestroyed);
+        frame_tree_node_id_, PrerenderFinalStatus::kTriggerDestroyed);
   }
 }
 

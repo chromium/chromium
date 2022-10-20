@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -86,9 +87,9 @@ void RecordPrerenderActivationTime(
 // kActivated to DevTools. In the attributes, `initiator_ukm_id` represents the
 // page that starts prerendering. `prerendered_ukm_id` represents the
 // prerendered page and is valid after the page is activated.
-void RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus status,
-                                    const PrerenderAttributes& attributes,
-                                    ukm::SourceId prerendered_ukm_id);
+void RecordPrerenderFinalStatus(PrerenderFinalStatus status,
+                                const PrerenderAttributes& attributes,
+                                ukm::SourceId prerendered_ukm_id);
 
 // Records which navigation parameters are different between activation and
 // initial prerender navigation when activation fails.

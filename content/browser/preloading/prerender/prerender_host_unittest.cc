@@ -12,6 +12,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/preloading.h"
@@ -124,7 +125,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::TearDown();
   }
 
-  void ExpectFinalStatus(PrerenderHost::FinalStatus status) {
+  void ExpectFinalStatus(PrerenderFinalStatus status) {
     // Check FinalStatus in UMA.
     histogram_tester_.ExpectUniqueSample(
         "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
@@ -183,7 +184,7 @@ TEST_F(PrerenderHostTest, Activate) {
   // Perform a navigation in the primary frame tree which activates the
   // prerendered page.
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+  ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 }
 
 TEST_F(PrerenderHostTest, DontActivate) {
@@ -196,8 +197,8 @@ TEST_F(PrerenderHostTest, DontActivate) {
   const int prerender_frame_tree_node_id =
       web_contents->AddPrerender(kPrerenderingUrl);
   registry->CancelHost(prerender_frame_tree_node_id,
-                       PrerenderHost::FinalStatus::kDestroyed);
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kDestroyed);
+                       PrerenderFinalStatus::kDestroyed);
+  ExpectFinalStatus(PrerenderFinalStatus::kDestroyed);
 }
 
 // Tests that main frame navigations in a prerendered page cannot occur even if
@@ -261,7 +262,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
     prerender_host_observer.WaitForDestroyed();
     EXPECT_FALSE(prerender_host_observer.was_activated());
     EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
-    ExpectFinalStatus(PrerenderHost::FinalStatus::kMainFrameNavigation);
+    ExpectFinalStatus(PrerenderFinalStatus::kMainFrameNavigation);
   }
 
   // The activation falls back to regular navigation.
@@ -308,7 +309,7 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
   // prerendered page. The main expectation is that this navigation commits
   // successfully and doesn't hit any DCHECKs.
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+  ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 
   // Ensure that the the page_state was preserved.
   EXPECT_EQ(web_contents->GetPrimaryMainFrame(), prerender_rfh);
@@ -380,7 +381,7 @@ TEST_F(PrerenderHostTest, LoadProgressChangedInvokedOnActivation) {
   // Perform a navigation in the primary frame tree which activates the
   // prerendered page.
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+  ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 }
 
 TEST_F(PrerenderHostTest, CancelPrerenderWhenTriggerGetsHidden) {
@@ -399,7 +400,7 @@ TEST_F(PrerenderHostTest, CancelPrerenderWhenTriggerGetsHidden) {
 
   // Changing the visibility state to HIDDEN will cause prerendering cancelled.
   web_contents->WasHidden();
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kTriggerBackgrounded);
+  ExpectFinalStatus(PrerenderFinalStatus::kTriggerBackgrounded);
 }
 
 TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsVisible) {
@@ -419,7 +420,7 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsVisible) {
   // Changing the visibility state to VISIBLE will not stop prerendering.
   web_contents->WasShown();
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+  ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 }
 
 // Skip this test on Android as it doesn't support the OCCLUDED state.
@@ -441,7 +442,7 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsOcculded) {
   // Changing the visibility state to OCCLUDED will not stop prerendering.
   web_contents->WasOccluded();
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+  ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 }
 #endif
 
@@ -502,7 +503,7 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&PrerenderHostRegistry::CancelHost),
                      base::Unretained(registry), prerender_frame_tree_node_id,
-                     PrerenderHost::FinalStatus::kTriggerDestroyed));
+                     PrerenderFinalStatus::kTriggerDestroyed));
 
   // For some reasons triggers want to set the failure reason by themselves,
   // this would happen together with cancelling prerender.
@@ -512,7 +513,7 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
           &PreloadingAttempt::SetFailureReason,
           base::Unretained(preloading_attempt),
           static_cast<PreloadingFailureReason>(
-              static_cast<int>(PrerenderHost::FinalStatus::kTriggerDestroyed) +
+              static_cast<int>(PrerenderFinalStatus::kTriggerDestroyed) +
               static_cast<int>(PreloadingFailureReason::
                                    kPreloadingFailureReasonCommonEnd))));
 
@@ -570,7 +571,7 @@ TEST_F(PrerenderHostInBackgroundTest,
   // Changing the visibility state to HIDDEN will not stop prerendering.
   web_contents->WasHidden();
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+  ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 }
 
 TEST_F(PrerenderHostInBackgroundTest, CancelPrerenderWhenTimeout) {
@@ -602,7 +603,7 @@ TEST_F(PrerenderHostInBackgroundTest, CancelPrerenderWhenTimeout) {
 
   task_runner->FastForwardBy(PrerenderHost::kTimeToLiveInBackground);
 
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kTimeoutBackgrounded);
+  ExpectFinalStatus(PrerenderFinalStatus::kTimeoutBackgrounded);
 }
 
 TEST_F(PrerenderHostInBackgroundTest,
@@ -633,7 +634,7 @@ TEST_F(PrerenderHostInBackgroundTest,
   ASSERT_FALSE(prerender_host->GetTimerForTesting()->IsRunning());
 
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
-  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+  ExpectFinalStatus(PrerenderFinalStatus::kActivated);
 }
 
 }  // namespace

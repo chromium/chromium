@@ -104,9 +104,9 @@ void RecordPrerenderActivationTime(
       delta);
 }
 
-void RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus status,
-                                    const PrerenderAttributes& attributes,
-                                    ukm::SourceId prerendered_ukm_id) {
+void RecordPrerenderFinalStatus(PrerenderFinalStatus status,
+                                const PrerenderAttributes& attributes,
+                                ukm::SourceId prerendered_ukm_id) {
   base::UmaHistogramEnumeration(
       GenerateHistogramName("Prerender.Experimental.PrerenderHostFinalStatus",
                             attributes.trigger_type,
@@ -124,7 +124,7 @@ void RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus status,
   if (prerendered_ukm_id != ukm::kInvalidSourceId) {
     // `prerendered_ukm_id` must be valid only when the prerendered page gets
     // activated.
-    DCHECK_EQ(status, PrerenderHost::FinalStatus::kActivated);
+    DCHECK_EQ(status, PrerenderFinalStatus::kActivated);
     ukm::builders::PrerenderPageLoad(prerendered_ukm_id)
         .SetFinalStatus(static_cast<int>(status))
         .Record(ukm::UkmRecorder::Get());
@@ -137,8 +137,8 @@ void RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus status,
   // cancellation reasons to the DevTools as it doesn't have the initiator frame
   // associated with DevTools agents.
   if (!attributes.IsBrowserInitiated() &&
-      status != PrerenderHost::FinalStatus::kActivated &&
-      status != PrerenderHost::FinalStatus::kMojoBinderPolicy) {
+      status != PrerenderFinalStatus::kActivated &&
+      status != PrerenderFinalStatus::kMojoBinderPolicy) {
     auto* ftn = FrameTreeNode::GloballyFindByID(
         attributes.initiator_frame_tree_node_id);
     DCHECK(ftn);

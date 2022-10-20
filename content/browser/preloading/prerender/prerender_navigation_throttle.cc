@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
@@ -169,7 +170,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
       navigation_request->GetNavigationId()) {
     prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),
-        PrerenderHost::FinalStatus::kMainFrameNavigation);
+        PrerenderFinalStatus::kMainFrameNavigation);
     return CANCEL;
   }
 
@@ -179,8 +180,8 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   if (!prerendering_url.SchemeIsHTTPOrHTTPS()) {
     prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),
-        is_redirection ? PrerenderHost::FinalStatus::kInvalidSchemeRedirect
-                       : PrerenderHost::FinalStatus::kInvalidSchemeNavigation);
+        is_redirection ? PrerenderFinalStatus::kInvalidSchemeRedirect
+                       : PrerenderFinalStatus::kInvalidSchemeNavigation);
     return CANCEL;
   }
 
@@ -203,8 +204,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
             prerender_host->embedder_histogram_suffix());
         prerender_host_registry->CancelHost(
             frame_tree_node->frame_tree_node_id(),
-            PrerenderHost::FinalStatus::
-                kEmbedderTriggeredAndCrossOriginRedirected);
+            PrerenderFinalStatus::kEmbedderTriggeredAndCrossOriginRedirected);
         return CANCEL;
       }
     }
@@ -224,9 +224,8 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
         // redirections.
         prerender_host_registry->CancelHost(
             frame_tree_node->frame_tree_node_id(),
-            is_redirection
-                ? PrerenderHost::FinalStatus::kCrossOriginRedirect
-                : PrerenderHost::FinalStatus::kCrossOriginNavigation);
+            is_redirection ? PrerenderFinalStatus::kCrossOriginRedirect
+                           : PrerenderFinalStatus::kCrossOriginNavigation);
         return CANCEL;
       }
 
@@ -238,8 +237,8 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
       // prerendered page.
       prerender_host_registry->CancelHost(
           frame_tree_node->frame_tree_node_id(),
-          is_redirection ? PrerenderHost::FinalStatus::kCrossOriginRedirect
-                         : PrerenderHost::FinalStatus::kCrossOriginNavigation);
+          is_redirection ? PrerenderFinalStatus::kCrossOriginRedirect
+                         : PrerenderFinalStatus::kCrossOriginNavigation);
       return CANCEL;
     }
   }
@@ -277,21 +276,21 @@ PrerenderNavigationThrottle::WillProcessResponse() {
     prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),
         same_site_cross_origin_prerender_did_redirect_
-            ? PrerenderHost::FinalStatus::kCrossOriginRedirect
-            : PrerenderHost::FinalStatus::kCrossOriginNavigation);
+            ? PrerenderFinalStatus::kCrossOriginRedirect
+            : PrerenderFinalStatus::kCrossOriginNavigation);
     return CANCEL;
   }
 
-  absl::optional<PrerenderHost::FinalStatus> cancel_reason;
+  absl::optional<PrerenderFinalStatus> cancel_reason;
 
   // TODO(crbug.com/1318739): Delay until activation instead of cancellation.
   if (navigation_handle()->IsDownload()) {
     // Disallow downloads during prerendering and cancel the prerender.
-    cancel_reason = PrerenderHost::FinalStatus::kDownload;
+    cancel_reason = PrerenderFinalStatus::kDownload;
   } else if (prerender_navigation_utils::IsDisallowedHttpResponseCode(
                  navigation_request->commit_params().http_response_code)) {
     // There's no point in trying to prerender failed navigations.
-    cancel_reason = PrerenderHost::FinalStatus::kNavigationBadHttpStatus;
+    cancel_reason = PrerenderFinalStatus::kNavigationBadHttpStatus;
   }
 
   if (cancel_reason.has_value()) {

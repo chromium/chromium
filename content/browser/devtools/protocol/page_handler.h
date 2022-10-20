@@ -20,7 +20,7 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/page.h"
-#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/download_manager.h"
@@ -111,7 +111,7 @@ class PageHandler : public DevToolsDomainHandler,
   void DidActivatePrerender(const NavigationRequest& nav_request);
   void DidCancelPrerender(const GURL& prerendering_url,
                           const std::string& initiating_frame_id,
-                          PrerenderHost::FinalStatus status,
+                          PrerenderFinalStatus status,
                           const std::string& disallowed_api_method);
 
   Response Enable() override;

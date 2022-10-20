@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
@@ -88,16 +89,15 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // destroyed so that prerendered pages can cancel themselves without concern
   // for self destruction.
   // Returns true if a cancelation has occurred.
-  bool CancelHost(int frame_tree_node_id,
-                  PrerenderHost::FinalStatus final_status);
+  bool CancelHost(int frame_tree_node_id, PrerenderFinalStatus final_status);
 
   // Cancels the existing hosts specified in the vector with the same final
   // status.
   void CancelHosts(const std::vector<int>& frame_tree_node_ids,
-                   PrerenderHost::FinalStatus final_status);
+                   PrerenderFinalStatus final_status);
 
   // Applies CancelHost for all existing PrerenderHost.
-  void CancelAllHosts(PrerenderHost::FinalStatus final_status);
+  void CancelAllHosts(PrerenderFinalStatus final_status);
 
   // For activators. Finds the host to activate for a navigation for the given
   // NavigationRequest. Returns the root frame tree node id of the prerendered
@@ -184,7 +184,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   void ScheduleToDeleteAbandonedHost(
       std::unique_ptr<PrerenderHost> prerender_host,
-      PrerenderHost::FinalStatus final_status);
+      PrerenderFinalStatus final_status);
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);

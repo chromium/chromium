@@ -32,6 +32,7 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -3772,7 +3773,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
+      PrerenderFinalStatus::kMojoBinderPolicy, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,

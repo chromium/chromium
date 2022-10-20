@@ -15,7 +15,7 @@ struct PrerenderedPageInfo {
   url.mojom.Url trigger_page_url;
 
   // The final status of prerendering.
-  // This is a stringified representation of PrerenderHost::FinalStatus.
+  // This is a stringified representation of PrerenderFinalStatus.
   string final_status;
 };
 

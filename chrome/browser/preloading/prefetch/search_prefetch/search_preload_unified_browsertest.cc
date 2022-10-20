@@ -998,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
     // DispatchDelayedResponseTask will dispatch DidFailLoadWithError resulting
     // in prerender cancelling with status 123 i.e., =>
-    // PrerenderHost::FinalStatus::DidFailLoad.
+    // PrerenderFinalStatus::DidFailLoad.
     std::vector<UkmEntry> expected_entries = {
         attempt_entry_builder().BuildEntry(
             ukm_source_id, content::PreloadingType::kPrefetch,

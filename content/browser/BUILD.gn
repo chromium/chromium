@@ -1464,6 +1464,7 @@ source_set("browser") {
     "preloading/prerender/prerender_attributes.h",
     "preloading/prerender/prerender_commit_deferring_condition.cc",
     "preloading/prerender/prerender_commit_deferring_condition.h",
+    "preloading/prerender/prerender_final_status.h",
     "preloading/prerender/prerender_handle_impl.cc",
     "preloading/prerender/prerender_handle_impl.h",
     "preloading/prerender/prerender_host.cc",

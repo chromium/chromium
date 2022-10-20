@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -534,8 +535,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
   test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);
   PrerenderHostRegistry* registry =
       static_cast<WebContentsImpl*>(web_contents())->GetPrerenderHostRegistry();
-  registry->CancelHost(host_id,
-                       PrerenderHost::FinalStatus::kRendererProcessKilled);
+  registry->CancelHost(host_id, PrerenderFinalStatus::kRendererProcessKilled);
   prerender_observer.WaitForDestroyed();
 
   // Delegate should not apply unlock.

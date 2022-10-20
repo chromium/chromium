@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -65,7 +66,7 @@ class SpeculationHostImpl::PrerenderHostObserver
 
   // PrerenderHost::Observer implementation:
   void OnActivated() override;
-  void OnHostDestroyed(PrerenderHost::FinalStatus final_status) override;
+  void OnHostDestroyed(PrerenderFinalStatus final_status) override;
 
   bool destroyed_by_memory_limit_exceeded() const {
     return destroyed_by_memory_limit_exceeded_;
@@ -86,9 +87,9 @@ SpeculationHostImpl::PrerenderHostObserver::~PrerenderHostObserver() = default;
 
 void SpeculationHostImpl::PrerenderHostObserver::OnActivated() {}
 void SpeculationHostImpl::PrerenderHostObserver::OnHostDestroyed(
-    PrerenderHost::FinalStatus final_status) {
+    PrerenderFinalStatus final_status) {
   observation_.Reset();
-  if (final_status == PrerenderHost::FinalStatus::kMemoryLimitExceeded)
+  if (final_status == PrerenderFinalStatus::kMemoryLimitExceeded)
     destroyed_by_memory_limit_exceeded_ = true;
 }
 
@@ -285,7 +286,7 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
   }
 
   registry_->CancelHosts(removed_prerender_rules,
-                         PrerenderHost::FinalStatus::kTriggerDestroyed);
+                         PrerenderFinalStatus::kTriggerDestroyed);
 
   // Actually start the candidates once the diffing is done.
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host());
@@ -401,7 +402,7 @@ void SpeculationHostImpl::CancelStartedPrerenders() {
       started_prerender_ids.push_back(prerender_info.prerender_host_id);
     }
     registry_->CancelHosts(started_prerender_ids,
-                           PrerenderHost::FinalStatus::kTriggerDestroyed);
+                           PrerenderFinalStatus::kTriggerDestroyed);
   }
 
   started_prerenders_.clear();

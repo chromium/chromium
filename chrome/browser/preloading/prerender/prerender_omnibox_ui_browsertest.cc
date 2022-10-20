@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
-      /*PrerenderHost::FinalStatus::kTriggerDestroyed*/ 16, 0);
+      /*PrerenderFinalStatus::kTriggerDestroyed*/ 16, 0);
   content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
                                                         kPrerenderingUrl);
   StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
-      /*PrerenderHost::FinalStatus::kActivated*/ 0, 2);
+      /*PrerenderFinalStatus::kActivated*/ 0, 2);
 
   // The prediction result is recorded in each activation.
   histogram_tester.ExpectBucketCount(

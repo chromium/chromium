@@ -12,8 +12,9 @@
 #include <vector>
 
 #include "content/browser/devtools/devtools_throttle_handle.h"
-#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -195,7 +196,7 @@ void DidActivatePrerender(const NavigationRequest& nav_request);
 // DevTools implementation for the format.
 void DidCancelPrerender(const GURL& prerendering_url,
                         FrameTreeNode* ftn,
-                        PrerenderHost::FinalStatus status,
+                        PrerenderFinalStatus status,
                         const std::string& disallowed_api_method);
 
 void OnSignedExchangeReceived(

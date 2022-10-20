@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_SUBFRAME_NAVIGATION_THROTTLE_H_
 
 #include "base/scoped_observation.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -37,7 +38,7 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
 
   // PrerenderHost::Observer
   void OnActivated() override;
-  void OnHostDestroyed(PrerenderHost::FinalStatus final_status) override;
+  void OnHostDestroyed(PrerenderFinalStatus final_status) override;
 
   // WebContentsObserver:
   void DidFinishNavigation(NavigationHandle* nav_handle) override;
