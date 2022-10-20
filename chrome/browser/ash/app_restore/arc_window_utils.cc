@@ -89,7 +89,7 @@ apps::WindowInfoPtr HandleArcWindowInfo(apps::WindowInfoPtr window_info) {
   // For ARC P, the window bounds in launch parameters should minus caption
   // height.
   int extra_caption_height = 0;
-  if (!arc::IsArcVmEnabled()) {
+  if (arc::GetArcAndroidSdkVersionAsInt() == arc::kArcVersionP) {
     extra_caption_height =
         views::GetCaptionButtonLayoutSize(
             views::CaptionButtonLayoutSize::kNonBrowserCaption)
