@@ -51,7 +51,6 @@ import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 import org.chromium.ui.gfx.OverlayTransform;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
-import org.chromium.ui.permissions.CachedActivityAndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.widget.Toast;
 
@@ -576,10 +575,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     }
 
     protected void onActivityPaused() {
-        if (mPermissionDelegate instanceof CachedActivityAndroidPermissionDelegate) {
-            ((CachedActivityAndroidPermissionDelegate) mPermissionDelegate).invalidateCache();
-        }
-
         for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityPaused();
     }
 

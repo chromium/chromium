@@ -37,7 +37,7 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
     }
 
     @Override
-    public boolean hasPermission(String permission) {
+    public final boolean hasPermission(String permission) {
         boolean isGranted =
                 ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
                         permission, Process.myPid(), Process.myUid())
@@ -49,7 +49,7 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
     }
 
     @Override
-    public boolean canRequestPermission(String permission) {
+    public final boolean canRequestPermission(String permission) {
         if (hasPermission(permission)) {
             // There is no need to call clearPermissionWasDenied - hasPermission already cleared
             // the shared pref if needed.
