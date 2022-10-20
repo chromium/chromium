@@ -105,7 +105,9 @@ try_.orchestrator_builder(
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
     },
-    use_orchestrator_pool = True,
+    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
@@ -326,7 +328,9 @@ try_.orchestrator_builder(
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
-    use_orchestrator_pool = True,
+    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
