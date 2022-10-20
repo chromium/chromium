@@ -1899,7 +1899,7 @@ TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_SecureContext_FormActionNotHTTPS) {
   // Set up our form data.
   FormData form;
-  CreateTestCreditCardFormData(&form, /* is_https= */ true, false);
+  CreateTestCreditCardFormData(&form, /*is_https=*/true, false);
   // However we set the action (target URL) to be HTTP after all.
   form.action = GURL("http://myform.com/submit.html");
   std::vector<FormData> forms(1, form);

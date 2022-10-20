@@ -164,11 +164,6 @@ class AutofillMetricsBaseTest : public testing::Test {
         MakeFrontendId({.profile_id = kTestProfileId}));
   }
 
-  struct MakeFrontendIdParams {
-    std::string credit_card_id;
-    std::string profile_id;
-  };
-
   int MakeFrontendId(
       const TestBrowserAutofillManager::MakeFrontendIdParams& params) {
     return autofill_manager().MakeFrontendId(params);
