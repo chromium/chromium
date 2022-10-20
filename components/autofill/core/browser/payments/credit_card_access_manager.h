@@ -86,22 +86,18 @@ struct CachedServerCardInfo {
 
 // Manages logic for accessing credit cards either stored locally or stored
 // with Google Payments. Owned by BrowserAutofillManager.
-#if BUILDFLAG(IS_IOS)
 class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
-                                public CreditCardOtpAuthenticator::Requester {
-#else
-class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
+#if !BUILDFLAG(IS_IOS)
                                 public CreditCardFIDOAuthenticator::Requester,
-                                public CreditCardOtpAuthenticator::Requester {
 #endif
+                                public CreditCardOtpAuthenticator::Requester {
  public:
   class Accessor {
    public:
     virtual ~Accessor() = default;
-    virtual void OnCreditCardFetched(
-        CreditCardFetchResult result,
-        const CreditCard* credit_card = nullptr,
-        const std::u16string& cvc = std::u16string()) = 0;
+    virtual void OnCreditCardFetched(CreditCardFetchResult result,
+                                     const CreditCard* credit_card,
+                                     const std::u16string& cvc) = 0;
   };
 
   CreditCardAccessManager(

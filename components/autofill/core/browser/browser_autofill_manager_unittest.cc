@@ -638,13 +638,15 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   int MakeFrontendId(const std::string& cc_sid,
                      const std::string& profile_sid) const {
-    return browser_autofill_manager_->suggestion_generator()->MakeFrontendId(
-        Suggestion::BackendId(cc_sid), Suggestion::BackendId(profile_sid));
+    return browser_autofill_manager_->suggestion_generator_for_test()
+        ->MakeFrontendId(Suggestion::BackendId(cc_sid),
+                         Suggestion::BackendId(profile_sid));
   }
 
   bool WillFillCreditCardNumber(const FormData& form,
                                 const FormFieldData& field) {
-    return browser_autofill_manager_->WillFillCreditCardNumber(form, field);
+    return browser_autofill_manager_->WillFillCreditCardNumberForTest(form,
+                                                                      field);
   }
 
   // Populates |form| with data corresponding to a simple credit card form.
@@ -704,7 +706,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
         .Times(AtLeast(1));
-    browser_autofill_manager_->FillOrPreviewCreditCardForm(
+    browser_autofill_manager_->FillOrPreviewCreditCardFormForTest(
         mojom::RendererFormDataAction::kFill, kDefaultPageID, *form,
         form->fields[0], card);
   }
@@ -2371,11 +2373,11 @@ TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
   CreditCard credit_card = test::GetMaskedServerCard();
-  browser_autofill_manager_->FillOrPreviewCreditCardForm(
+  browser_autofill_manager_->FillOrPreviewCreditCardFormForTest(
       mojom::RendererFormDataAction::kFill, kDefaultPageID, form,
       form.fields[0], &credit_card);
 
-  browser_autofill_manager_->OnCreditCardFetched(
+  browser_autofill_manager_->OnCreditCardFetchedForTest(
       CreditCardFetchResult::kSuccess, &credit_card,
       /*cvc=*/u"123");
 
@@ -2608,7 +2610,7 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
       .WillOnce((DoAll(testing::SaveArg<0>(&response_query_id),
                        testing::SaveArg<2>(&response_data),
                        testing::Return(std::vector<FieldGlobalId>{}))));
-  browser_autofill_manager_->FillOrPreviewDataModelForm(
+  browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
       mojom::RendererFormDataAction::kFill, kDefaultPageID, form,
       form.fields.front(), profile, nullptr, form_structure, autofill_field);
   std::vector<FormFieldData> filled_fields(response_data.fields.begin(),

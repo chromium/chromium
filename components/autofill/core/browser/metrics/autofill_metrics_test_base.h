@@ -158,7 +158,7 @@ class AutofillMetricsBaseTest : public testing::Test {
   void FillTestProfile(const FormData& form) {
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
-        autofill_manager().suggestion_generator()->MakeFrontendId(
+        autofill_manager().suggestion_generator_for_test()->MakeFrontendId(
             Suggestion::BackendId(),
             Suggestion::BackendId(std::string(kTestGuid))));
   }

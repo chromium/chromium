@@ -238,14 +238,14 @@ void CreditCardAccessManager::FetchCreditCard(
   // status.
   if (is_authentication_in_progress_) {
     accessor->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
-                                  nullptr);
+                                  nullptr, u"");
     return;
   }
 
   // If card is nullptr we reset all states and return error.
   if (!card) {
     accessor->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
-                                  nullptr);
+                                  nullptr, u"");
     Reset();
     return;
   }
@@ -285,7 +285,7 @@ void CreditCardAccessManager::FetchCreditCard(
   // Return immediately if local card and log that unmask details were ignored.
   if (card->record_type() != CreditCard::MASKED_SERVER_CARD &&
       card->record_type() != CreditCard::VIRTUAL_CARD) {
-    accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card);
+    accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card, u"");
 #if !BUILDFLAG(IS_IOS)
     // Latency metrics should only be logged if the user is verifiable.
     if (is_user_verifiable_.value_or(false)) {
@@ -379,7 +379,8 @@ void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
   std::vector<CardUnmaskChallengeOption>& challenge_options =
       virtual_card_unmask_response_details_.card_unmask_challenge_options;
   if (challenge_options.empty()) {
-    accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
+    accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
+                                   nullptr, u"");
     client_->ShowVirtualCardErrorDialog(
         AutofillErrorDialogContext::WithPermanentOrTemporaryError(
             /*is_permanent_error=*/true));
@@ -681,7 +682,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
             /*is_permanent_error=*/response.failure_type ==
             payments::FullCardRequest::
                 VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE));
-    accessor_->OnCreditCardFetched(result);
+    accessor_->OnCreditCardFetched(result, nullptr, u"");
 
     if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
       AutofillMetrics::LogServerCardUnmaskResult(
@@ -985,7 +986,8 @@ void CreditCardAccessManager::FetchVirtualCard() {
   absl::optional<GURL> last_committed_primary_main_frame_origin =
       client_->GetLastCommittedPrimaryMainFrameURL().DeprecatedGetOriginAsURL();
   if (!last_committed_primary_main_frame_origin.has_value()) {
-    accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
+    accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
+                                   nullptr, u"");
     AutofillMetrics::LogServerCardUnmaskResult(
         AutofillMetrics::ServerCardUnmaskResult::kUnexpectedError,
         AutofillClient::PaymentsRpcCardType::kVirtualCard,
@@ -1066,7 +1068,8 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
   // Close the progress dialog without showing the confirmation.
   client_->CloseAutofillProgressDialog(
       /*show_confirmation_before_closing=*/false);
-  accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
+  accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
+                                 nullptr, u"");
 
   AutofillMetrics::ServerCardUnmaskResult unmask_result;
   if (result ==
@@ -1137,7 +1140,8 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
   if (!selected_challenge_option_ ||
       virtual_card_unmask_response_details_.context_token.empty()) {
     NOTREACHED();
-    accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
+    accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
+                                   nullptr, u"");
     client_->ShowVirtualCardErrorDialog(
         AutofillErrorDialogContext::WithPermanentOrTemporaryError(
             /*is_permanent_error=*/false));
@@ -1164,7 +1168,8 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
 }
 
 void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
-  accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
+  accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
+                                 nullptr, u"");
 
   if (unmask_auth_flow_type_ == UnmaskAuthFlowType::kOtp ||
       unmask_auth_flow_type_ == UnmaskAuthFlowType::kOtpFallbackFromFido) {

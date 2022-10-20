@@ -91,7 +91,7 @@ class FormEventLoggerBase {
     return form_interaction_counts_;
   }
 
-  const FormInteractionsFlowId& form_interactions_flow_id_for_test() {
+  const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
     return flow_id_;
   }
 

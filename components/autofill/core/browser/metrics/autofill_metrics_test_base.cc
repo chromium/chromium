@@ -193,13 +193,13 @@ void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(
                       : CreditCard::RecordType::MASKED_SERVER_CARD);
   credit_card_.SetNumber(real_pan);
 
-  autofill_manager().OnCreditCardFetched(CreditCardFetchResult::kSuccess,
-                                         &credit_card_, u"123");
+  autofill_manager().OnCreditCardFetchedForTest(CreditCardFetchResult::kSuccess,
+                                                &credit_card_, u"123");
 }
 
 void AutofillMetricsBaseTest::OnCreditCardFetchingFailed() {
-  autofill_manager().OnCreditCardFetched(CreditCardFetchResult::kPermanentError,
-                                         nullptr, u"");
+  autofill_manager().OnCreditCardFetchedForTest(
+      CreditCardFetchResult::kPermanentError, nullptr, u"");
 }
 
 void AutofillMetricsBaseTest::RecreateCreditCards(

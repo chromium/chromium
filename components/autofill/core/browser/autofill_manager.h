@@ -340,19 +340,19 @@ class AutofillManager
     OnServerRequestError(form_signature, request_type, http_error);
   }
 
-#ifdef UNIT_TEST
-  // A public wrapper that calls |mutable_form_structures| for testing purposes
-  // only.
+  void set_download_manager_for_test(
+      std::unique_ptr<AutofillDownloadManager> manager) {
+    download_manager_ = std::move(manager);
+  }
+
   std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
   mutable_form_structures_for_test() {
     return mutable_form_structures();
   }
 
-  // A public wrapper that calls |ParseForm| for testing purposes only.
   FormStructure* ParseFormForTest(const FormData& form) {
     return ParseForm(form, nullptr);
   }
-#endif  // UNIT_TEST
 
  protected:
   AutofillManager(AutofillDriver* driver,
@@ -501,14 +501,6 @@ class AutofillManager
   mutable_form_structures() {
     return &form_structures_;
   }
-
-#ifdef UNIT_TEST
-  // Exposed for testing.
-  void set_download_manager_for_test(
-      std::unique_ptr<AutofillDownloadManager> manager) {
-    download_manager_ = std::move(manager);
-  }
-#endif  // UNIT_TEST
 
  private:
   // AutofillDownloadManager::Observer:
