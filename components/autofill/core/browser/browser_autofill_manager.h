@@ -409,6 +409,8 @@ class BrowserAutofillManager : public AutofillManager,
                                       form_structure, autofill_field);
   }
 
+  FormData* pending_form_data_for_test() { return pending_form_data_.get(); }
+
  protected:
   // Uploads the form data to the Autofill server. |observed_submission|
   // indicates that upload is the result of a submission event.
@@ -450,9 +452,6 @@ class BrowserAutofillManager : public AutofillManager,
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) override;
   void OnAfterProcessParsedForms(const DenseSet<FormType>& form_types) override;
-
-  // Exposed for testing.
-  FormData* pending_form_data() { return pending_form_data_.get(); }
 
  private:
   // Keeps track of the filling context for a form, used to make refill attemps.

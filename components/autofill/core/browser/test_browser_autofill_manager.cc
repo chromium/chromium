@@ -274,4 +274,11 @@ void TestBrowserAutofillManager::SetCallParentUploadFormData(bool value) {
   call_parent_upload_form_data_ = value;
 }
 
+int TestBrowserAutofillManager::MakeFrontendId(
+    const MakeFrontendIdParams& params) {
+  return suggestion_generator_for_test()->MakeFrontendId(
+      Suggestion::BackendId(params.credit_card_id),
+      Suggestion::BackendId(params.profile_id));
+}
+
 }  // namespace autofill
