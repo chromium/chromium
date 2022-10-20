@@ -108,16 +108,6 @@ namespace {
 constexpr const char kCategory[] = "media";
 constexpr int kMaxActiveEncodes = 5;
 
-// Use this function in cases when we can't immediately delete |ptr| because
-// there might be its methods on the call stack.
-template <typename T>
-void DeleteLater(ScriptState* state, std::unique_ptr<T> ptr) {
-  DCHECK(state->ContextIsValid());
-  auto* context = ExecutionContext::From(state);
-  auto runner = context->GetTaskRunner(TaskType::kInternalDefault);
-  runner->DeleteSoon(FROM_HERE, std::move(ptr));
-}
-
 bool IsAcceleratedConfigurationSupported(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options,
@@ -1098,6 +1088,7 @@ void VideoEncoder::ResetInternal() {
 }
 
 static void isConfigSupportedWithSoftwareOnly(
+    ScriptState* script_state,
     ScriptPromiseResolver* resolver,
     VideoEncoderSupport* support,
     VideoEncoderTraits::ParsedConfig* config) {
@@ -1122,22 +1113,25 @@ static void isConfigSupportedWithSoftwareOnly(
     return;
   }
 
-  auto done_callback = [](std::unique_ptr<media::VideoEncoder> sw_encoder,
+  auto done_callback = [](std::unique_ptr<media::VideoEncoder> encoder,
                           ScriptPromiseResolver* resolver,
+                          scoped_refptr<base::SingleThreadTaskRunner> runner,
                           VideoEncoderSupport* support,
                           media::EncoderStatus status) {
     support->setSupported(status.is_ok());
     resolver->Resolve(support);
-    DeleteLater(resolver->GetScriptState(), std::move(sw_encoder));
+    runner->DeleteSoon(FROM_HERE, std::move(encoder));
   };
 
+  auto* context = ExecutionContext::From(script_state);
+  auto runner = context->GetTaskRunner(TaskType::kInternalDefault);
   auto* software_encoder_raw = software_encoder.get();
   software_encoder_raw->Initialize(
       config->profile, config->options, base::DoNothing(),
-      ConvertToBaseOnceCallback(
-          CrossThreadBindOnce(done_callback, std::move(software_encoder),
-                              MakeUnwrappingCrossThreadHandle(resolver),
-                              MakeUnwrappingCrossThreadHandle(support))));
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          done_callback, std::move(software_encoder),
+          MakeUnwrappingCrossThreadHandle(resolver), std::move(runner),
+          MakeUnwrappingCrossThreadHandle(support))));
 }
 
 static void isConfigSupportedWithHardwareOnly(
@@ -1225,7 +1219,8 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
     promises.push_back(resolver->Promise());
     auto* support = VideoEncoderSupport::Create();
     support->setConfig(config_copy);
-    isConfigSupportedWithSoftwareOnly(resolver, support, parsed_config);
+    isConfigSupportedWithSoftwareOnly(script_state, resolver, support,
+                                      parsed_config);
   }
 
   // Wait for all |promises| to resolve and check if any of them have
