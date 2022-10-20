@@ -32,7 +32,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #endif

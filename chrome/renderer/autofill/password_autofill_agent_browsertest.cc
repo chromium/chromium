@@ -50,10 +50,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/autofill/core/common/autofill_features.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif

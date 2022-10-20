@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/renderer_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -38,9 +39,8 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "v8/include/v8-isolate.h"
-#if BUILDFLAG(IS_ANDROID)
-#include "components/commerce/core/commerce_feature_list.h"
-#else
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/search/ntp_features.h"
 #endif
 

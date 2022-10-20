@@ -8,7 +8,6 @@
 #include "base/win/registry.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/installer/mini_installer/configuration.h"
-#include "chrome/installer/mini_installer/mini_installer.h"
 #include "chrome/installer/mini_installer/path_string.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
