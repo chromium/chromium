@@ -2393,7 +2393,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  delegate.WaitForInBackForwardCacheAck();
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
   ASSERT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
@@ -2430,7 +2430,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  delegate.WaitForInBackForwardCacheAck();
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
   RenderFrameHostImpl* rfh_b = current_frame_host();
   ASSERT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());

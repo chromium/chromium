@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   PageLifecycleStateManagerTestDelegate delegate(
       rfh_a->render_view_host()->GetPageLifecycleStateManager());
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  delegate.WaitForInBackForwardCacheAck();
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
 
   // Page A is initially stored in the back-forward cache.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   PageLifecycleStateManagerTestDelegate delegate(
       rfh_a->render_view_host()->GetPageLifecycleStateManager());
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  delegate.WaitForInBackForwardCacheAck();
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
 
   // Page A is initially stored in the back-forward cache.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_P(
       rfh_a->render_view_host()->GetPageLifecycleStateManager());
   EXPECT_TRUE(
       NavigateToURL(shell(), https_server()->GetURL("b.test", "/title2.html")));
-  delegate.WaitForInBackForwardCacheAck();
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
 
   // The worker was still loading when we navigated away, but it's still
   // eligible for back-forward cache.
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_P(
       rfh_a->render_view_host()->GetPageLifecycleStateManager());
   EXPECT_TRUE(
       NavigateToURL(shell(), https_server()->GetURL("b.test", "/title2.html")));
-  delegate.WaitForInBackForwardCacheAck();
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
   // The worker was still loading when we navigated away, but it's still
   // eligible for back-forward cache.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   PageLifecycleStateManagerTestDelegate delegate(
       rfh_a->render_view_host()->GetPageLifecycleStateManager());
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  delegate.WaitForInBackForwardCacheAck();
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
   // The page was still loading when we navigated away, but it's still eligible
   // for back-forward cache.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
@@ -863,7 +863,7 @@ IN_PROC_BROWSER_TEST_P(
   PageLifecycleStateManagerTestDelegate delegate(
       rfh_a->render_view_host()->GetPageLifecycleStateManager());
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  delegate.WaitForInBackForwardCacheAck();
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
   // The page was still loading when we navigated away, but it's still eligible
   // for back-forward cache.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());

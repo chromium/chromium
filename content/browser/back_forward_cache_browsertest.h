@@ -214,7 +214,7 @@ class PageLifecycleStateManagerTestDelegate
 
   // Waits for the renderer finishing to set the state of being in back/forward
   // cache.
-  void WaitForInBackForwardCacheAck();
+  [[nodiscard]] bool WaitForInBackForwardCacheAck();
 
   void OnStoreInBackForwardCacheSent(base::OnceClosure cb);
   void OnDisableJsEvictionSent(base::OnceClosure cb);

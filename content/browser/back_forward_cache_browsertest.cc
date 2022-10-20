@@ -481,14 +481,15 @@ PageLifecycleStateManagerTestDelegate::
     manager_->SetDelegateForTesting(nullptr);
 }
 
-void PageLifecycleStateManagerTestDelegate::WaitForInBackForwardCacheAck() {
+bool PageLifecycleStateManagerTestDelegate::WaitForInBackForwardCacheAck() {
   DCHECK(manager_);
   if (manager_->last_acknowledged_state().is_in_back_forward_cache) {
-    return;
+    return true;
   }
   base::RunLoop loop;
   store_in_back_forward_cache_ack_received_ = loop.QuitClosure();
   loop.Run();
+  return manager_->last_acknowledged_state().is_in_back_forward_cache;
 }
 
 void PageLifecycleStateManagerTestDelegate::OnStoreInBackForwardCacheSent(
