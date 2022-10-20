@@ -7007,7 +7007,7 @@ crbug.com/1204176 [ Linux ] fast/scrolling/overflow-scrollability.html [ Failure
 
 # Sheriff 2022-07-15
 crbug.com/1344652 [ Mac ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
-crbug.com/1344771 virtual/force-defer-script/external/wpt/html/semantics/scripting-1/the-script-element/defer-script/document-write.html [ Failure Pass ]
+crbug.com/1344771 virtual/force-defer-script/external/wpt/html/semantics/scripting-1/the-script-element/defer-script/document-write.html [ Skip ]
 
 # Sheriff 2022-07-18
 crbug.com/1345192 accessibility/aria-combo-box-with-delay-add.html [ Skip ]
