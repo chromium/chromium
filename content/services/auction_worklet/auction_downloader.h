@@ -53,6 +53,8 @@ class CONTENT_EXPORT AuctionDownloader {
   AuctionDownloader& operator=(const AuctionDownloader&) = delete;
   ~AuctionDownloader();
 
+  const GURL& source_url() const { return source_url_; }
+
  private:
   void OnBodyReceived(std::unique_ptr<std::string> body);
 
