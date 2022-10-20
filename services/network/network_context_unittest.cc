@@ -708,7 +708,6 @@ TEST_F(NetworkContextTest, QuicUserAgentId) {
 TEST_F(NetworkContextTest, UnhandedProtocols) {
   const GURL kUnsupportedUrls[] = {
       // These are handled outside the network service.
-      GURL("data:,foo"),
       GURL("file:///not/a/path/that/leads/anywhere/but/it/should/not/matter/"
            "anyways"),
 
@@ -7637,6 +7636,21 @@ TEST_F(NetworkContextTest, HttpAuthUrlFilter) {
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogle));
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kGoogleSubdomain));
   EXPECT_TRUE(is_url_allowed_to_use_auth_schemes(kBlocked));
+}
+
+TEST_F(NetworkContextExpectBadMessageTest, DataUrl) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  ResourceRequest request;
+  request.url = GURL("data:,foo");
+  auto factory_params = mojom::URLLoaderFactoryParams::New();
+  factory_params->trust_token_redemption_policy =
+      mojom::TrustTokenRedemptionPolicy::kForbid;
+  std::unique_ptr<TestURLLoaderClient> client =
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(factory_params));
+
+  AssertBadMessage();
 }
 
 }  // namespace

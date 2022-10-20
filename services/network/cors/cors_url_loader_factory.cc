@@ -361,6 +361,12 @@ bool CorsURLLoaderFactory::IsValidCorsExemptHeaders(
 
 bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
                                           uint32_t options) {
+  if (request.url.SchemeIs(url::kDataScheme)) {
+    LOG(WARNING) << "CorsURLLoaderFactory doesn't support `data` scheme.";
+    mojo::ReportBadMessage("CorsURLLoaderFactory: data: URL is not supported.");
+    return false;
+  }
+
   // CORS needs a proper origin (including a unique opaque origin). If the
   // request doesn't have one, CORS cannot work.
   if (!request.request_initiator &&

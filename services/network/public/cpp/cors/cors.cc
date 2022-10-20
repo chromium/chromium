@@ -257,10 +257,6 @@ bool ShouldCheckCors(const GURL& request_url,
   // request doesn't have one, CORS should not work.
   DCHECK(request_initiator);
 
-  // |request_url| should not contain the url::kDataScheme here, but have a
-  // DCHECK for a while, just in case.
-  DCHECK(!request_url.SchemeIs(url::kDataScheme));
-
   if (request_initiator->IsSameOriginWith(request_url))
     return false;
   return true;
