@@ -180,9 +180,10 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
     /**
      * @param array AutofillSuggestion array that should get a new suggestion added.
      * @param index Index in the array where to place a new suggestion.
-     * @param label The first part of first line of the suggestion.
-     * @param secondaryLabel The second part of first line of the suggestion.
-     * @param sublabel The second line of the suggestion.
+     * @param label The first part of the first line of the suggestion.
+     * @param secondaryLabel The second part of the first line of the suggestion.
+     * @param sublabel The first part of the second line of the suggestion.
+     * @param secondarySublabel The second part of the second line of the suggestion.
      * @param itemTag The third line of the suggestion.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param isIconAtStart {@code true} if {@param iconId} is displayed before {@param label}.
@@ -196,14 +197,16 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String label, String secondaryLabel, String sublabel, String itemTag, int iconId,
-            boolean isIconAtStart, int suggestionId, boolean isDeletable, boolean isLabelMultiline,
-            boolean isLabelBold, GURL customIconUrl) {
+            String label, String secondaryLabel, String sublabel, String secondarySublabel,
+            String itemTag, int iconId, boolean isIconAtStart, int suggestionId,
+            boolean isDeletable, boolean isLabelMultiline, boolean isLabelBold,
+            GURL customIconUrl) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         AutofillSuggestion.Builder builder = new AutofillSuggestion.Builder()
                                                      .setLabel(label)
                                                      .setSecondaryLabel(secondaryLabel)
                                                      .setSubLabel(sublabel)
+                                                     .setSecondarySubLabel(secondarySublabel)
                                                      .setItemTag(itemTag)
                                                      .setIconId(drawableId)
                                                      .setIsIconAtStart(isIconAtStart)

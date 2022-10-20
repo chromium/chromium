@@ -66,15 +66,35 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/dropdown_sublabel"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:includeFontPadding="false"
-            android:singleLine="true"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/dropdown_sublabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/autofill_dropdown_item_label_margin"
+                android:layout_marginEnd="@dimen/autofill_dropdown_item_label_margin"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
+
+            <TextView
+                android:id="@+id/dropdown_secondary_sublabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:layout_marginEnd="@dimen/autofill_dropdown_item_label_margin"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/dropdown_item_tag"

@@ -24,9 +24,10 @@ public class AutofillSuggestionTest {
     @Test
     @SmallTest
     public void testAutofillSuggestion_toBuilder() {
-        AutofillSuggestion suggestion = new AutofillSuggestion("label", "secondary_label",
-                "sublabel", "item_tag", 1, true, 1, true, true, true, "feature_for_iph",
-                mock(GURL.class), Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888));
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion("label", "secondary_label", "sublabel", "secondary_sublabel",
+                        "item_tag", 1, true, 1, true, true, true, "feature_for_iph",
+                        mock(GURL.class), Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888));
         assertEquals(suggestion.toBuilder().build(), suggestion);
     }
 }

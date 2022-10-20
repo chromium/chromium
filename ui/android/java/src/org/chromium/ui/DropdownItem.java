@@ -17,18 +17,23 @@ public interface DropdownItem {
     public static final int NO_ICON = 0;
 
     /**
-     * Returns the first part of first line that should be shown in the dropdown.
+     * Returns the first part of the first line that should be shown in the dropdown.
      */
     String getLabel();
     /**
-     * Returns the second part of first line that should be shown in the dropdown.
+     * Returns the second part of the first line that should be shown in the dropdown.
      */
     @Nullable
     String getSecondaryLabel();
     /**
-     * Returns the sublabel that should be shown in the dropdown.
+     * Returns the first part of the second line that should be shown in the dropdown.
      */
     String getSublabel();
+    /**
+     * Returns the second part of the second line that should be shown in the dropdown.
+     */
+    @Nullable
+    String getSecondarySublabel();
     /**
      * Returns the item tag that should be shown in the dropdown.
      */

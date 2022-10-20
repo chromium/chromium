@@ -85,12 +85,16 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         DropdownItem item = getItem(position);
 
         if (mIsRefresh) {
-            TextView labelView = populateLabelView(item, layout);
-            populateSecondaryLabelView(item, layout);
-            populateSublabelView(item, layout);
+            TextView labelView = populateLabelView(
+                    layout, R.id.dropdown_label, item.getLabel(), item.isEnabled());
+            populateLabelView(layout, R.id.dropdown_secondary_label, item.getSecondaryLabel(),
+                    item.isEnabled());
+            populateLabelView(layout, R.id.dropdown_sublabel, item.getSublabel(), false);
+            populateLabelView(
+                    layout, R.id.dropdown_secondary_sublabel, item.getSecondarySublabel(), false);
             // For refreshed layout, ignore the return value as we don't need to adjust the height
             // of the view.
-            populateItemTagView(item, layout);
+            populateLabelView(layout, R.id.dropdown_item_tag, item.getItemTag(), false);
             // Set the visibility of the start/end icons.
             layout.findViewById(R.id.start_dropdown_icon)
                     .setVisibility(item.isIconAtStart() ? View.VISIBLE : View.GONE);
@@ -146,7 +150,8 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
 
         // Layout of the item tag view, which has a smaller font and sits below the sub
         // label.
-        TextView itemTagView = populateItemTagView(item, layout);
+        TextView itemTagView =
+                populateLabelView(layout, R.id.dropdown_item_tag, item.getItemTag(), false);
         if (itemTagView != null) {
             itemTagView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
@@ -164,8 +169,10 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         wrapper.setLayoutParams(new LinearLayout.LayoutParams(0, height, 1));
 
         // Layout of the main label view.
-        TextView labelView = populateLabelView(item, layout);
-        TextView secondaryLabelView = populateSecondaryLabelView(item, layout);
+        TextView labelView =
+                populateLabelView(layout, R.id.dropdown_label, item.getLabel(), item.isEnabled());
+        TextView secondaryLabelView = populateLabelView(
+                layout, R.id.dropdown_secondary_label, item.getSecondaryLabel(), item.isEnabled());
         labelView.setSingleLine(!item.isMultilineLabel());
         if (item.isMultilineLabel()) {
             // If there is a multiline label, we add extra padding at the top and bottom because
@@ -200,9 +207,17 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
 
         // Layout of the sublabel view, which has a smaller font and usually sits below the main
         // label.
-        TextView sublabelView = populateSublabelView(item, layout);
+        TextView sublabelView =
+                populateLabelView(layout, R.id.dropdown_sublabel, item.getSublabel(), false);
         if (sublabelView != null) {
             sublabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
+        }
+
+        TextView secondarySublabelView = populateLabelView(
+                layout, R.id.dropdown_secondary_sublabel, item.getSecondarySublabel(), false);
+        if (secondarySublabelView != null) {
+            secondarySublabelView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
         }
 
@@ -238,75 +253,25 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
     }
 
     /**
-     * Sets the text and enabled state of the view for the first part of first line of the dropdown.
+     * Sets the text and the enabled state for the dropdown labels.
      * @param item the DropdownItem for this row.
      * @param layout the View in which the label can be found.
+     * @param viewId the ID for the label's view.
+     * @param label the text to be displayed as the label.
+     * @param isEnabled the android:enabled state of the label.
      * @return the View.
      */
-    private TextView populateLabelView(DropdownItem item, View layout) {
-        TextView labelView = (TextView) layout.findViewById(R.id.dropdown_label);
-        labelView.setEnabled(item.isEnabled());
-        labelView.setText(item.getLabel());
+    private TextView populateLabelView(
+            View layout, int viewId, CharSequence label, boolean isEnabled) {
+        TextView labelView = layout.findViewById(viewId);
+        if (TextUtils.isEmpty(label)) {
+            labelView.setVisibility(View.GONE);
+            return null;
+        }
+        labelView.setText(label);
+        labelView.setEnabled(isEnabled);
+        labelView.setVisibility(View.VISIBLE);
         return labelView;
-    }
-
-    /**
-     * Sets the text and enabled state of the view for the second part of first line of the
-     * dropdown.
-     * @param item the DropdownItem for this row.
-     * @param layout the View in which the label can be found.
-     * @return the View if it has been set to be visible; null otherwise.
-     */
-    private TextView populateSecondaryLabelView(DropdownItem item, View layout) {
-        TextView secondaryLabelView = (TextView) layout.findViewById(R.id.dropdown_secondary_label);
-        CharSequence secondaryLabel = item.getSecondaryLabel();
-        if (TextUtils.isEmpty(secondaryLabel)) {
-            secondaryLabelView.setVisibility(View.GONE);
-            return null;
-        }
-        secondaryLabelView.setEnabled(item.isEnabled());
-        secondaryLabelView.setText(secondaryLabel);
-        secondaryLabelView.setVisibility(View.VISIBLE);
-        return secondaryLabelView;
-    }
-
-    /**
-     * Sets the text of the sublabel's View if such text exists; otherwise, sets the View's
-     * visibility to GONE.
-     * @param item the DropdownItem for this row.
-     * @param layout the View in which the label can be found.
-     * @return the View if it has been set to be visible; null otherwise.
-     */
-    private TextView populateSublabelView(DropdownItem item, View layout) {
-        TextView sublabelView = (TextView) layout.findViewById(R.id.dropdown_sublabel);
-        CharSequence sublabel = item.getSublabel();
-        if (TextUtils.isEmpty(sublabel)) {
-            sublabelView.setVisibility(View.GONE);
-            return null;
-        }
-        sublabelView.setText(sublabel);
-        sublabelView.setVisibility(View.VISIBLE);
-        return sublabelView;
-    }
-
-    /**
-     * Sets the text of the itemTag's View if such text exists; otherwise, sets the View's
-     * visibility to GONE.
-     * @param item the DropdownItem for this row.
-     * @param layout the View in which the label can be found.
-     * @return the View if it has been set to be visible; null otherwise. This view is already part
-     *         of the view hierarchy, thus no need to explicitly add it.
-     */
-    private TextView populateItemTagView(DropdownItem item, View layout) {
-        TextView itemTagView = (TextView) layout.findViewById(R.id.dropdown_item_tag);
-        CharSequence itemTag = item.getItemTag();
-        if (TextUtils.isEmpty(itemTag)) {
-            itemTagView.setVisibility(View.GONE);
-            return null;
-        }
-        itemTagView.setText(itemTag);
-        itemTagView.setVisibility(View.VISIBLE);
-        return itemTagView;
     }
 
     /**

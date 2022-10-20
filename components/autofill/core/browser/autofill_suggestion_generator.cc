@@ -407,6 +407,9 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.is_icon_at_start = true;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  // TODO (crbug.com/1364155): For the Android dropdown, when card name + last 4
+  // digits appears on the second line, split it into card name
+  // (nickname/product name/network) and last 4 digits.
   std::u16string card_label =
       GetCardLabel(credit_card, type, app_locale, obfuscation_length);
   if (!card_label.empty())
