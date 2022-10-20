@@ -28,7 +28,6 @@ constexpr int kMaxSendResponseSize = 256;
 // Timeout for network calls to instantmessaging servers.
 const base::TimeDelta kNetworkTimeout = base::Milliseconds(2500);
 
-// TODO(crbug.com/1123164) - Add nearby sharing policy when available.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("send_message_express", R"(
         semantics {
@@ -50,11 +49,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             cookies_allowed: NO
             setting:
               "This feature is only enabled for signed-in users who enable "
-              "Nearby sharing"
+              "Nearby sharing or Phone Hub."
             chrome_policy {
-              BrowserSignin {
+              NearbyShareAllowed {
                 policy_options {mode: MANDATORY}
-                BrowserSignin: 0
+                NearbyShareAllowed: false
+              },
+              PhoneHubAllowed {
+                policy_options {mode: MANDATORY}
+                PhoneHubAllowed: false
               }
             }
           })");

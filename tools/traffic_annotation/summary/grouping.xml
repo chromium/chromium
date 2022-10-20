@@ -76,7 +76,6 @@ after discussions on the right group.
       <annotation id="ime_url_downloader"/>
       <annotation id="kiosk_app_icon"/>
       <annotation id="launcher_item_suggest"/>
-      <annotation id="managed_acccount_signin_restrictions_secure_connect_chromeos"/>
       <annotation id="management_ui_customer_logo"/>
       <annotation id="nearby_connections_wifi_lan"/>
       <annotation id="network_traversal_ice_config_fetcher"/>
@@ -269,6 +268,7 @@ after discussions on the right group.
       <annotation id="nearby_share_update_device"/>
       <annotation id="nearby_share_contacts"/>
       <annotation id="nearby_share_list_public_certificates"/>
+      <annotation id="managed_acccount_signin_restrictions_secure_connect_chromeos"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

@@ -358,7 +358,6 @@ Refer to README.md for content description and update process.
  <item id="printing_oauth2_first_token_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="00850a77" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/authorization_server_session.cc" />
  <item id="printing_oauth2_next_token_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="002fbbfd" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/authorization_server_session.cc" />
  <item id="help_content_provider" added_in_milestone="102" content_hash_code="0839311f" os_list="chromeos" file_path="ash/webui/os_feedback_ui/backend/help_content_provider.cc" />
- <item id="managed_acccount_signin_restrictions_secure_connect_chromeos" added_in_milestone="102" content_hash_code="068bc93d" os_list="chromeos" file_path="chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc" />
  <item id="wallpaper_download_google_photo" added_in_milestone="102" content_hash_code="034be7b5" os_list="chromeos" file_path="ash/wallpaper/wallpaper_controller_impl.cc" />
  <item id="quick_answers_spellchecker" added_in_milestone="102" content_hash_code="06e81b7f" os_list="chromeos" file_path="chromeos/components/quick_answers/utils/spell_check_language.cc" />
  <item id="printing_oauth2_token_exchange_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="059df373" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/ipp_endpoint_token_fetcher.cc" />
@@ -389,8 +388,8 @@ Refer to README.md for content description and update process.
  <item id="shopping_list_ui_image_fetcher" added_in_milestone="107" content_hash_code="0680ae03" os_list="windows,chromeos,linux" file_path="chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.cc" />
  <item id="chrome_commerce_price_email_pref_fetcher" added_in_milestone="107" content_hash_code="00b3dc73" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
  <item id="chrome_commerce_price_email_pref_sender" added_in_milestone="107" content_hash_code="03f51c85" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
- <item id="receive_messages_express" added_in_milestone="108" content_hash_code="024cb475" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.cc" />
- <item id="send_message_express" added_in_milestone="108" content_hash_code="05c5d134" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/send_message_express.cc" />
+ <item id="receive_messages_express" added_in_milestone="108" content_hash_code="032122e0" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.cc" />
+ <item id="send_message_express" added_in_milestone="108" content_hash_code="01b40a32" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/send_message_express.cc" />
  <item id="cryptohome_recovery_fetch_epoch" added_in_milestone="108" content_hash_code="06e195ad" os_list="chromeos" file_path="chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.cc" />
  <item id="cryptohome_recovery_fetch_recovery_response" added_in_milestone="108" content_hash_code="01b13324" os_list="chromeos" file_path="chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.cc" />
  <item id="app_preload_service" added_in_milestone="108" content_hash_code="00720713" os_list="chromeos" file_path="chrome/browser/apps/app_preload_service/app_preload_server_connector.cc" />
@@ -402,4 +401,5 @@ Refer to README.md for content description and update process.
  <item id="nearby_share_list_public_certificates" added_in_milestone="108" type="partial" second_id="oauth2_api_call_flow" content_hash_code="01706e8a" os_list="chromeos" semantics_fields="1,2,3,4,5" policy_fields="3,4" file_path="chrome/browser/nearby_sharing/client/nearby_share_client_impl.cc" />
  <item id="k_anonymity_service_join_set" added_in_milestone="108" content_hash_code="02ae88a5" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_service_client.cc" />
  <item id="k_anonymity_service_query_set" added_in_milestone="108" content_hash_code="0411a8c6" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_service_client.cc" />
+ <item id="managed_acccount_signin_restrictions_secure_connect_chromeos" added_in_milestone="109" content_hash_code="068bc93d" os_list="chromeos" file_path="chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc" />
 </annotations>

@@ -35,7 +35,6 @@ const base::TimeDelta kFastPathReadyTimeout = base::Milliseconds(2500);
 // the ReceiveMessagesExpress if something goes wrong.
 const base::TimeDelta kStreamTimeout = base::Seconds(60);
 
-// TODO(crbug.com/1123164) - Add nearby sharing policy when available.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("receive_messages_express", R"(
         semantics {
@@ -57,11 +56,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             cookies_allowed: NO
             setting:
               "This feature is only enabled for signed-in users who enable "
-              "Nearby sharing"
+              "Nearby sharing or Phone Hub."
             chrome_policy {
-              BrowserSignin {
+              NearbyShareAllowed {
                 policy_options {mode: MANDATORY}
-                BrowserSignin: 0
+                NearbyShareAllowed: 0
+              },
+              PhoneHubAllowed {
+                policy_options {mode: MANDATORY}
+                PhoneHubAllowed: 0
               }
             }
           })");
