@@ -1187,9 +1187,6 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // The CSS containing block of the last descendant, to group |descendants|
       // by the CSS containing block.
       const LayoutObject* last_css_containing_block = nullptr;
-      const NGLogicalAnchorQuery* stitched_anchor_query =
-          &NGLogicalAnchorQuery::Empty();
-      DCHECK(stitched_anchor_query);
 
       // Sort the descendants by fragmentainer index in |descendants_to_layout|.
       // This will ensure that the descendants are laid out in the correct
@@ -1226,7 +1223,6 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         //
         // Note |descendant.containing_block.fragment| is |ContainingBlock|, not
         // the CSS containing block.
-        DCHECK(stitched_anchor_query);
         if (!stitched_anchor_queries.IsEmpty() || may_have_anchors_on_oof) {
           const LayoutObject* css_containing_block =
               descendant.box->Container();
@@ -1236,7 +1232,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
             // if it has anchor query, for the performance reasons to minimize
             // the number of rebuilding fragmentainer fragments.
             if (last_css_containing_block &&
-                (!stitched_anchor_query->IsEmpty() ||
+                (last_css_containing_block->MayHaveAnchorQuery() ||
                  may_have_anchors_on_oof)) {
               has_new_descendants_span = true;
               descendants_span = descendants_span.subspan(
@@ -1244,10 +1240,6 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
               break;
             }
             last_css_containing_block = css_containing_block;
-            stitched_anchor_query =
-                &stitched_anchor_queries.StitchedAnchorQuery(
-                    *css_containing_block);
-            DCHECK(stitched_anchor_query);
           }
         }
 
@@ -1255,7 +1247,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         NodeToLayout node_to_layout = {
             node_info,
             CalculateOffset(node_info, /* only_layout */ nullptr,
-                            /* is_first_run */ true, stitched_anchor_query)};
+                            /* is_first_run */ true, &stitched_anchor_queries)};
         node_to_layout.containing_block_fragment =
             descendant.containing_block.Fragment();
         node_to_layout.offset_info.original_offset =
@@ -1542,7 +1534,7 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
     const LayoutBox* only_layout,
     bool is_first_run,
-    const NGLogicalAnchorQuery* stitched_anchor_query) {
+    const NGLogicalAnchorQueryMap* anchor_queries) {
   const ComputedStyle* style = &node_info.node.Style();
 
   // If `@position-fallback` exists, let |TryCalculateOffset| check if the
@@ -1565,9 +1557,9 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   while (true) {
     const bool test_if_margin_box_fits = next_fallback_style;
     OffsetInfo offset_info;
-    if (TryCalculateOffset(node_info, *style, only_layout,
-                           stitched_anchor_query, test_if_margin_box_fits,
-                           is_first_run, &offset_info)) {
+    if (TryCalculateOffset(node_info, *style, only_layout, anchor_queries,
+                           test_if_margin_box_fits, is_first_run,
+                           &offset_info)) {
       return offset_info;
     }
 
@@ -1583,7 +1575,7 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
     const NodeInfo& node_info,
     const ComputedStyle& candidate_style,
     const LayoutBox* only_layout,
-    const NGLogicalAnchorQuery* stitched_anchor_query,
+    const NGLogicalAnchorQueryMap* anchor_queries,
     bool test_if_margin_box_fits,
     bool is_first_run,
     OffsetInfo* const offset_info) {
@@ -1619,12 +1611,15 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
   absl::optional<NGAnchorEvaluatorImpl> anchor_evaluator_storage;
   const WritingModeConverter container_converter(
       container_writing_direction, node_info.container_physical_content_size);
-  if (stitched_anchor_query) {
+  if (anchor_queries) {
     // When the containing block is block-fragmented, the |container_builder_|
     // is the fragmentainer, not the containing block, and the coordinate system
     // is stitched. Use the given |anchor_query|.
+    const LayoutObject* css_containing_block =
+        node_info.node.GetLayoutBox()->Container();
+    DCHECK(css_containing_block);
     anchor_evaluator_storage.emplace(
-        *stitched_anchor_query, container_converter,
+        *anchor_queries, *css_containing_block, container_converter,
         container_converter.ToPhysical(node_info.container_info.rect).offset,
         candidate_writing_direction.GetWritingMode());
   } else if (const NGLogicalAnchorQuery* anchor_query =

@@ -503,7 +503,7 @@ void NGLogicalAnchorQuery::SetFromPhysical(
   }
 }
 
-const NGLogicalAnchorQuery& NGLogicalAnchorQueryMap::StitchedAnchorQuery(
+const NGLogicalAnchorQuery& NGLogicalAnchorQueryMap::AnchorQuery(
     const LayoutObject& containing_block) const {
   DCHECK(&containing_block);
   DCHECK(containing_block.CanContainAbsolutePositionObjects() ||
@@ -658,12 +658,24 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateSize(
   return absl::nullopt;
 }
 
+const NGLogicalAnchorQuery* NGAnchorEvaluatorImpl::AnchorQuery() const {
+  if (anchor_query_)
+    return anchor_query_;
+  if (anchor_queries_) {
+    DCHECK(containing_block_);
+    anchor_query_ = &anchor_queries_->AnchorQuery(*containing_block_);
+    DCHECK(anchor_query_);
+    return anchor_query_;
+  }
+  return nullptr;
+}
+
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
     const AtomicString& anchor_name,
     AnchorValue anchor_value) const {
   has_anchor_functions_ = true;
-  if (anchor_query_) {
-    return anchor_query_->EvaluateAnchor(
+  if (const NGLogicalAnchorQuery* anchor_query = AnchorQuery()) {
+    return anchor_query->EvaluateAnchor(
         anchor_name, anchor_value, available_size_, container_converter_,
         offset_to_padding_box_, is_y_axis_, is_right_or_bottom_);
   }
@@ -674,10 +686,10 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
     const AtomicString& anchor_name,
     AnchorSizeValue anchor_size_value) const {
   has_anchor_functions_ = true;
-  if (anchor_query_) {
-    return anchor_query_->EvaluateSize(anchor_name, anchor_size_value,
-                                       container_converter_.GetWritingMode(),
-                                       self_writing_mode_);
+  if (const NGLogicalAnchorQuery* anchor_query = AnchorQuery()) {
+    return anchor_query->EvaluateSize(anchor_name, anchor_size_value,
+                                      container_converter_.GetWritingMode(),
+                                      self_writing_mode_);
   }
   return absl::nullopt;
 }

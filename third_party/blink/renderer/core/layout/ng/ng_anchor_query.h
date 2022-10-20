@@ -167,7 +167,7 @@ class CORE_EXPORT NGLogicalAnchorQueryMap {
   // Get |NGLogicalAnchorQuery| in the stitched coordinate system for the given
   // containing block. If there is no anchor query for the containing block,
   // returns an empty instance.
-  const NGLogicalAnchorQuery& StitchedAnchorQuery(
+  const NGLogicalAnchorQuery& AnchorQuery(
       const LayoutObject& containing_block) const;
 
   // Update the internal map of anchor queries for containing blocks from the
@@ -197,7 +197,25 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
       : anchor_query_(&anchor_query),
         container_converter_(container_converter),
         offset_to_padding_box_(offset_to_padding_box),
-        self_writing_mode_(self_writing_mode) {}
+        self_writing_mode_(self_writing_mode) {
+    DCHECK(anchor_query_);
+  }
+
+  // This constructor takes |NGLogicalAnchorQueryMap| and |containing_block|
+  // instead of |NGLogicalAnchorQuery|.
+  NGAnchorEvaluatorImpl(const NGLogicalAnchorQueryMap& anchor_queries,
+                        const LayoutObject& containing_block,
+                        const WritingModeConverter& container_converter,
+                        const PhysicalOffset& offset_to_padding_box,
+                        WritingMode self_writing_mode)
+      : anchor_queries_(&anchor_queries),
+        containing_block_(&containing_block),
+        container_converter_(container_converter),
+        offset_to_padding_box_(offset_to_padding_box),
+        self_writing_mode_(self_writing_mode) {
+    DCHECK(anchor_queries_);
+    DCHECK(containing_block_);
+  }
 
   // Returns true if this evaluator was invoked for `anchor()` or
   // `anchor-size()` functions.
@@ -220,7 +238,11 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
       AnchorSizeValue anchor_size_value) const override;
 
  private:
-  const NGLogicalAnchorQuery* anchor_query_ = nullptr;
+  const NGLogicalAnchorQuery* AnchorQuery() const;
+
+  mutable const NGLogicalAnchorQuery* anchor_query_ = nullptr;
+  const NGLogicalAnchorQueryMap* anchor_queries_ = nullptr;
+  const LayoutObject* containing_block_ = nullptr;
   const WritingModeConverter container_converter_{
       {WritingMode::kHorizontalTb, TextDirection::kLtr}};
   PhysicalOffset offset_to_padding_box_;
