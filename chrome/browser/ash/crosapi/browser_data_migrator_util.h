@@ -482,6 +482,10 @@ int64_t ComputeDirectorySizeWithoutLinks(const base::FilePath& dir_path);
 // Record the total size of the user's profile data directory in MB.
 void RecordTotalSize(int64_t size);
 
+// Given a key in Sync Data's leveldb, returns true if (based on its prefix) its
+// data type has to stay in Ash and Ash only, false otherwise.
+bool IsAshOnlySyncDataType(base::StringPiece key);
+
 // Given an extension id, return the paths of the associated blob
 // and leveldb directories inside IndexedDB.
 IndexedDBPaths GetIndexedDBPaths(const base::FilePath& profile_path,

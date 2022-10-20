@@ -618,6 +618,47 @@ TEST(BrowserDataMigratorUtilTest, HasEnoughDiskSpace) {
   EXPECT_TRUE(HasEnoughDiskSpace(0, temp_dir.GetPath()));
 }
 
+TEST(BrowserDataMigratorUtilTest, IsAshOnlySyncDataType) {
+  // The types that should be recognized as Ash-only are stored in
+  // `browser_data_migrator_util::kAshOnlySyncDataTypes`.
+  // Then any of the following can be suffixed to the type name:
+  // - `kDataPrefix` = "-dt-"
+  // - `kMetadataPrefix` = "-md-"
+  // - `kGlobalMetadataKey` = "-GlobalMetadata"
+  // `kDataPrefix` and `kMetadataPrefix` are then followed by an id, while
+  // `kGlobalMetadataKey` is not.
+
+  const constexpr char* const kTypes[] = {
+      "app_list",
+      "arc_package",
+      "os_preferences",
+      "os_priority_preferences",
+      "printers",
+      "printers_authorization_servers",
+      "wifi_configurations",
+      "workspace_desk",
+  };
+
+  const constexpr char* const kSuffixes[] = {
+      "-dt-",
+      "-md-",
+  };
+
+  for (const char* const type : kTypes) {
+    for (const char* const suffix : kSuffixes) {
+      auto key = std::string(type) + std::string(suffix) + "random_id";
+      EXPECT_TRUE(IsAshOnlySyncDataType(key));
+    }
+    auto global_metadata_key = std::string(type) + "-GlobalMetadata";
+    EXPECT_TRUE(IsAshOnlySyncDataType(global_metadata_key));
+    auto global_metadata_key_with_id =
+        std::string(type) + "-GlobalMetadata" + "random_id";
+    EXPECT_FALSE(IsAshOnlySyncDataType(global_metadata_key_with_id));
+  }
+
+  EXPECT_FALSE(IsAshOnlySyncDataType("random_key"));
+}
+
 class BrowserDataMigratorUtilWithTargetsTest : public ::testing::Test {
  public:
   void SetUp() override {

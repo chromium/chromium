@@ -626,8 +626,6 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
   return it->status();
 }
 
-// Given a key in Sync Data's leveldb, return true if (based on its prefix) its
-// data type has to stay in Ash and Ash only, false otherwise.
 bool IsAshOnlySyncDataType(base::StringPiece key) {
   for (auto type : kAshOnlySyncDataTypes) {
     if ((base::StartsWith(key, FormatDataPrefix(type)) ||
