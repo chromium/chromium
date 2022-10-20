@@ -185,6 +185,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_PriceTrackingInSidePanel"
       summary="first time user tracks a product to educate them to see the
                price tracking list in side panel"/>
+  <variant name="IPH_PriceTrackingPageActionIconLabel"
+      summary="price tracking page action icon label triggering"/>
   <variant name="IPH_ProfileSwitch"
       summary="switching profiles using the profile menu"/>
   <variant name="IPH_PwaInstallAvailableFeature"

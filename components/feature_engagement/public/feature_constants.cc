@@ -61,6 +61,9 @@ BASE_FEATURE(kIPHPasswordsAccountStorageFeature,
 BASE_FEATURE(kIPHPerformanceNewBadgeFeature,
              "IPH_PerformanceNewBadge",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPriceTrackingPageActionIconLabelFeature,
+             "IPH_PriceTrackingPageActionIconLabelFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHReadingListDiscoveryFeature,
              "IPH_ReadingListDiscovery",
              base::FEATURE_DISABLED_BY_DEFAULT);
