@@ -40,17 +40,6 @@ GetClientHintToPolicyFeatureMap();
 BLINK_COMMON_EXPORT const PolicyFeatureToClientHintMap&
 GetPolicyFeatureToClientHintMap();
 
-// Mapping from WebEffectiveConnectionType to the header value. This value is
-// sent to the origins and is returned by the JavaScript API. The ordering
-// should match the ordering in //net/nqe/effective_connection_type.h and
-// public/platform/WebEffectiveConnectionType.h.
-// This array should be updated if either of the enums in
-// effective_connection_type.h or WebEffectiveConnectionType.h are updated.
-BLINK_COMMON_EXPORT extern const char* const
-    kWebEffectiveConnectionTypeMapping[];
-
-BLINK_COMMON_EXPORT extern const size_t kWebEffectiveConnectionTypeMappingCount;
-
 // Indicates that a hint is sent by default, regardless of an opt-in.
 BLINK_COMMON_EXPORT
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type);

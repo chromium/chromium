@@ -104,14 +104,6 @@ const PolicyFeatureToClientHintMap& GetPolicyFeatureToClientHintMap() {
   return *map;
 }
 
-const char* const kWebEffectiveConnectionTypeMapping[] = {
-    "4g" /* Unknown */, "4g" /* Offline */, "slow-2g" /* Slow 2G */,
-    "2g" /* 2G */,      "3g" /* 3G */,      "4g" /* 4G */
-};
-
-const size_t kWebEffectiveConnectionTypeMappingCount =
-    std::size(kWebEffectiveConnectionTypeMapping);
-
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {
   switch (type) {
     case network::mojom::WebClientHintsType::kSaveData:

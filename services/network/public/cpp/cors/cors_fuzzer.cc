@@ -18,6 +18,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   network::cors::IsCorsSafelistedHeader("dpr", test_data);
   network::cors::IsCorsSafelistedHeader("width", test_data);
   network::cors::IsCorsSafelistedHeader("viewport-width", test_data);
+  network::cors::IsCorsSafelistedHeader("rtt", test_data);
+  network::cors::IsCorsSafelistedHeader("downlink", test_data);
+  network::cors::IsCorsSafelistedHeader("ect", test_data);
   network::cors::IsCorsSafelistedHeader("save-data", test_data);
   network::cors::IsCorsSafelistedHeader(test_data, test_data);
   return 0;

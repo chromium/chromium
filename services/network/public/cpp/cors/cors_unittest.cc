@@ -435,6 +435,34 @@ TEST_F(CorsTest, CheckCorsClientHintsSafelist) {
   EXPECT_TRUE(IsCorsSafelistedHeader("viewport-width", "2147483648"));
 }
 
+TEST_F(CorsTest, CheckCorsClientHintsNetworkQuality) {
+  EXPECT_FALSE(IsCorsSafelistedHeader("rtt", ""));
+  EXPECT_TRUE(IsCorsSafelistedHeader("rtt", "1"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("rtt", "-1"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("rtt", "1.0"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("rtt", "-1.0"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("rtt", "2g"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("rtt", "6g"));
+
+  EXPECT_FALSE(IsCorsSafelistedHeader("downlink", ""));
+  EXPECT_TRUE(IsCorsSafelistedHeader("downlink", "1"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("downlink", "-1"));
+  EXPECT_TRUE(IsCorsSafelistedHeader("downlink", "1.0"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("downlink", "-1.0"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("downlink", "foo"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("downlink", "2g"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("downlink", "6g"));
+
+  EXPECT_FALSE(IsCorsSafelistedHeader("ect", ""));
+  EXPECT_FALSE(IsCorsSafelistedHeader("ect", "1"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("ect", "-1"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("ect", "1.0"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("ect", "-1.0"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("ect", "foo"));
+  EXPECT_TRUE(IsCorsSafelistedHeader("ect", "2g"));
+  EXPECT_FALSE(IsCorsSafelistedHeader("ect", "6g"));
+}
+
 TEST_F(CorsTest, CorsUnsafeRequestHeaderNames) {
   // Needed because initializer list is not allowed for a macro argument.
   using List = std::vector<std::string>;

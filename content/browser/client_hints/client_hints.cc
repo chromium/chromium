@@ -425,9 +425,9 @@ void AddEctHeader(net::HttpRequestHeaders* headers,
                   network::NetworkQualityTracker* network_quality_tracker,
                   const GURL& url) {
   DCHECK(headers);
-  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
             net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
-  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
             static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
 
   absl::optional<net::EffectiveConnectionType> web_holdback_ect =
@@ -446,7 +446,7 @@ void AddEctHeader(net::HttpRequestHeaders* headers,
 
   SetHeaderToString(
       headers, WebClientHintsType::kEct_DEPRECATED,
-      blink::kWebEffectiveConnectionTypeMapping[effective_connection_type]);
+      network::kWebEffectiveConnectionTypeMapping[effective_connection_type]);
 }
 
 void AddPrefersColorSchemeHeader(net::HttpRequestHeaders* headers,
@@ -1024,9 +1024,9 @@ void AddPrefetchNavigationRequestClientHintsHeaders(
     bool is_ua_override_on,
     bool is_javascript_enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
             net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
-  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
             static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
   DCHECK(context);
 
@@ -1053,9 +1053,9 @@ void AddNavigationRequestClientHintsHeaders(
     const absl::optional<GURL>& request_url) {
   DCHECK(frame_tree_node);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
             net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
-  DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
+  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
             static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
   DCHECK(context);
   if (!ShouldAddClientHints(origin, frame_tree_node, delegate, request_url)) {

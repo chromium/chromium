@@ -18,6 +18,7 @@
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "url/gurl.h"
@@ -316,10 +317,10 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       "dpr",
       "width",
       "viewport-width",
-      // TODO(crbug.com/1375854) Look into adding these three headers.
-      // "rtt",
-      // "downlink",
-      // "ect",
+      // These three don't have `sec-ch-` prefix replacements as of yet.
+      "rtt",
+      "downlink",
+      "ect",
       // "lang", Removed in M96
       // The `Sec-CH-UA-*` header fields are proposed replacements for
       // `User-Agent`, using the Client Hints infrastructure.
@@ -413,10 +414,17 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
     if (ranges.size() != 1 || ranges[0].IsSuffixByteRange())
       return false;
     return true;
-  } else if (lower_name == "device-memory" || lower_name == "dpr") {
+  } else if (lower_name == "device-memory" || lower_name == "dpr" ||
+             lower_name == "downlink") {
     return IsSimilarToDoubleABNF(value);
-  } else if (lower_name == "width" || lower_name == "viewport-width") {
+  } else if (lower_name == "width" || lower_name == "viewport-width" ||
+             lower_name == "rtt") {
     return IsSimilarToIntABNF(value);
+  } else if (lower_name == "ect") {
+    auto* const* begin = network::kWebEffectiveConnectionTypeMapping;
+    auto* const* end = network::kWebEffectiveConnectionTypeMapping +
+                       network::kWebEffectiveConnectionTypeMappingCount;
+    return std::find(begin, end, value) != end;
   } else if (lower_name == "save-data") {
     return lower_value == "on";
   }
