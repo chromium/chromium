@@ -10273,6 +10273,24 @@
             ]
         }
     ],
+    "SyncAndroidLimitNTPPromoImpressions": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled5",
+                    "params": {
+                        "SyncAndroidNTPPromoMaxImpressions": "5"
+                    },
+                    "enable_features": [
+                        "SyncAndroidLimitNTPPromoImpressions"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncAndroidPromosRevamp": [
         {
             "platforms": [
