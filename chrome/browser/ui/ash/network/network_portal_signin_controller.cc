@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/browser_process.h"
@@ -49,12 +50,23 @@ bool ProxyActive(Profile* profile) {
 }
 
 Profile* GetOTROrActiveProfile() {
-  // We use a separate signin OTR profile to avoid passing existing OTR cookies
-  // to the captive portal signin page, see b/245578628 for details.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(profile);
+
+  // In Guest mode, the active profile is OTR. Since we do not support creating
+  // an OTR profile from another OTR profile we use the active profile for
+  // captive portal signin.
+  if (profile->IsOffTheRecord())
+    return profile;
+
+  // When not in Guest mode we use a separate signin OTR profile to avoid
+  // passing existing OTR cookies to the captive portal signin page, see
+  // b/245578628 for details.
+  static base::NoDestructor<Profile::OTRProfileID> otr_profile_id(
+      Profile::OTRProfileID::CreateUniqueForCaptivePortal());
   Profile* otr_profile =
-      ProfileManager::GetActiveUserProfile()->GetOffTheRecordProfile(
-          Profile::OTRProfileID::CreateUniqueForCaptivePortal(),
-          /*create_if_needed=*/true);
+      profile->GetOffTheRecordProfile(*otr_profile_id,
+                                      /*create_if_needed=*/true);
   DCHECK(otr_profile);
   return otr_profile;
 }
