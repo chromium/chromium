@@ -2629,11 +2629,21 @@ class PrivacySandboxServicePromptTestBase {
  public:
   PrivacySandboxServicePromptTestBase() {
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (!user_manager::UserManager::IsInitialized())
-      user_manager_.Initialize();
-#endif
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUp() {
+    user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
+    user_manager_->Initialize();
+  }
+
+  void TearDown() {
+    // Clean up user manager.
+    user_manager_->Shutdown();
+    user_manager_->Destroy();
+    user_manager_.reset();
+  }
+#endif
 
  protected:
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
@@ -2647,7 +2657,7 @@ class PrivacySandboxServicePromptTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager user_manager_;
+  std::unique_ptr<ash::FakeChromeUserManager> user_manager_;
 #endif
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   MockPrivacySandboxSettings privacy_sandbox_settings_;
@@ -2655,7 +2665,14 @@ class PrivacySandboxServicePromptTestBase {
 
 class PrivacySandboxServicePromptTest
     : public PrivacySandboxServicePromptTestBase,
-      public testing::Test {};
+      public testing::Test {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+ public:
+  void SetUp() override { PrivacySandboxServicePromptTestBase::SetUp(); }
+
+  void TearDown() override { PrivacySandboxServicePromptTestBase::TearDown(); }
+#endif
+};
 
 TEST_F(PrivacySandboxServicePromptTest, RestrictedPrompt) {
   // Confirm that when the Privacy Sandbox is restricted, that no prompt is
@@ -2750,7 +2767,14 @@ TEST_F(PrivacySandboxServicePromptTest, NoParamNoPrompt) {
 
 class PrivacySandboxServiceDeathTest
     : public PrivacySandboxServicePromptTestBase,
-      public testing::TestWithParam<int> {};
+      public testing::TestWithParam<int> {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+ public:
+  void SetUp() override { PrivacySandboxServicePromptTestBase::SetUp(); }
+
+  void TearDown() override { PrivacySandboxServicePromptTestBase::TearDown(); }
+#endif
+};
 
 TEST_P(PrivacySandboxServiceDeathTest, GetRequiredPromptType) {
   const auto& test_case = kPromptTestCases[GetParam()];
