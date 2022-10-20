@@ -276,6 +276,7 @@
 <translation id="1244303850296295656">ఎక్స్‌టెన్షన్ ఎర్రర్</translation>
 <translation id="1245628370644070008">స్థానిక డేటా రికవరీ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు: ఇమేజ్ URL <ph name="HTTP_ERROR" /> ఎర్రర్ కోడ్‌ను అందించింది. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{1 సైట్‌లో నోటిఫికేషన్‌లకు అనుమతి లేదు}other{{NUM_SITES} సైట్‌లలో నోటిఫికేషన్‌లకు అనుమతి లేదు}}</translation>
 <translation id="1251366534849411931">తెరిచి ఉన్న వంకర కలుపు ఉండాలి: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">దీని వలన సైట్‌లు, ఇన్‌స్టాల్ చేయబడిన యాప్‌లు స్టోర్ చేసిన <ph name="TOTAL_USAGE" /> డేటా తొలగిపోతుంది.</translation>
 <translation id="1251578593170406502">మొబైల్ డేటా నెట్‌వర్క్‌ల కోసం స్కాన్ చేస్తోంది...</translation>
@@ -1655,6 +1656,7 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />ను అన్‌ఇన్‌స్టాల్ చేయడానికి Windowsను షట్ డౌన్ చేయండి.</translation>
 <translation id="2477065602824695373">మీరు అనేక స్విచ్‌లను సెటప్ చేసినందున, ఆటో-స్కాన్ ఆఫ్ చేయబడింది.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" కోసం మీడియా-ఫైల్ అనుమతులు</translation>
+<translation id="24786041351753425">డేటా రికవరీ సర్వీస్‌ను ఎనేబుల్ చేయండి.</translation>
 <translation id="2480868415629598489">మీరు కాపీ చేసి, అతికించే డేటాను ఎడిట్ చేయడం</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2482895651873876648">ట్యాబ్, గ్రూప్‌నకు తరలించబడింది <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -4219,6 +4221,7 @@
 <translation id="4901154724271753917">ఇటీవల మూసివేసిన వాటిని విస్తరించండి</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> ప్రయోగానికి ప్రయోగ స్థితిని ఎంచుకోండి.</translation>
 <translation id="49027928311173603">సర్వర్ నుండి డౌన్‌లోడ్ చేసిన విధానం చెల్లదు: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">బ్యాక్‌గ్రౌండ్ యాక్టివిటీని, సున్నితమైన స్క్రోలింగ్ వంటి విజువల్ ఎఫెక్ట్‌లను పరిమితం చేయడం ద్వారా ఇది బ్యాటరీ పవర్‌ను పెంచుతుంది.</translation>
 <translation id="4906490889887219338">నెట్‌వర్క్ ఫైల్ షేర్‌లను సెటప్ చేయండి లేదా నిర్వహించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">ఈ ఎక్స్‌టెన్షన్ మీ సైట్ డేటాను ఎప్పుడు చదవవచ్చో, అలాగే ఎప్పుడు మార్చవచ్చో ఎంచుకోండి</translation>
 <translation id="4907161631261076876">ఈ ఫైల్ సాధారణ పద్ధతిలో డౌన్‌లోడ్ కాలేదు, ఇది అపాయకరమైనది కావచ్చు.</translation>
@@ -5325,6 +5328,7 @@
 <translation id="5971037678316050792">బ్లూటూత్ అడాప్టర్ స్థితిని, జత చేసే విధానాన్ని నియంత్రించడానికి అనుమతి</translation>
 <translation id="597235323114979258">మరిన్ని గమ్యస్థానాలను చూడండి</translation>
 <translation id="5972543790327947908">కొన్ని సపోర్ట్ లింక్‌లు ఇప్పటికీ <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> లేదా <ph name="APP_NAME_3" />లో తెరవబడతాయి.</translation>
+<translation id="5972559880616357748"><ph name="SITE_GROUP" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="5972666587303800813">నిర్వహణ సేవ లేదు</translation>
 <translation id="5972708806901999743">పైకి తరలించు</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> ప్రారంభించు</translation>
@@ -8506,6 +8510,7 @@
 <translation id="8987927404178983737">నెల</translation>
 <translation id="8989359959810288806">టెథరింగ్ స్టేటస్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="8991520179165052608">సైట్ మీ మైక్రోఫోన్‌ను ఉపయోగించవచ్చు</translation>
+<translation id="8993059306046735527">మీరు మీ <ph name="DEVICE_TYPE" /> పాస్‌వర్డ్‌ను మర్చిపోయినా, మీ లోకల్ డేటాను రీస్టోర్ చేయవచ్చు. మీరు మీ Google ఖాతాకు సైన్ ఇన్ చేయాల్సి ఉంటుంది లేదా ఖాతా రికవరీని ఉపయోగించాల్సి ఉంటుంది.</translation>
 <translation id="899384117894244799">పరిమితం చేయబడిన యూజర్‌ను తీసివేయండి</translation>
 <translation id="899403249577094719">Netscape సర్టిఫికెట్ ఆధార URL</translation>
 <translation id="899657321862108550">మీ Chrome, అన్ని పరికరాలలో పొందవచ్చు</translation>
@@ -8605,6 +8610,7 @@
 <translation id="9078316009970372699">తక్షణ టెథెరింగ్ డిజేబుల్ చేయడం</translation>
 <translation id="9078842827190780028">సైడ్ ప్యానెల్‌లో మరిన్ని సెర్చ్ ఫలితాలను చూడండి</translation>
 <translation id="9079267182985899251">త్వరలో ఈ ఆప్షన్ సపోర్ట్ చేయదు. ట్యాబ్‌ను పిన్ చేయడానికి, <ph name="GOOGLE_MEET" />ను ఉపయోగించండి.</translation>
+<translation id="9080175821499742274">మెమరీ సేవర్ ఇన్‌యాక్టివ్ ట్యాబ్‌ల నుండి మెమరీని ఖాళీ చేస్తుంది, తద్వారా దీన్ని యాక్టివ్ ట్యాబ్‌లు, ఇతర యాప్‌లు ఉపయోగించగలవు.</translation>
 <translation id="9080971985541434310">మీ ఆసక్తులను అంచనా వేస్తుంది - Chrome మీ ఆసక్తులను అంచనా వేయగలదు</translation>
 <translation id="9081543426177426948">మీరు సందర్శించే సైట్‌లు అజ్ఞాత మోడ్‌లో సేవ్ చేయబడవు</translation>
 <translation id="9084064520949870008">విండో లాగా తెరువు</translation>
@@ -8794,6 +8800,7 @@
 <translation id="964790508619473209">స్క్రీన్ అమరిక</translation>
 <translation id="965211523698323809">మీ <ph name="DEVICE_TYPE" /> నుండి వచన మెసేజ్‌లను పంపండి, స్వీకరించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Castతో ఉన్న సమస్యను రిపోర్ట్ చేయండి</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{ఇటీవల చాలా నోటిఫికేషన్‌లను పంపిన 1 సైట్‌ను రివ్యూ చేయండి}other{ఇటీవల చాలా నోటిఫికేషన్‌లను పంపిన {NUM_SITES} సైట్‌లను రివ్యూ చేయండి}}</translation>
 <translation id="967398046773905967">HID పరికరాలను యాక్సెస్ చేయడానికి సైట్‌లు వేటినీ అనుమతించవద్దు</translation>
 <translation id="967624055006145463">నిల్వ చేయబడిన డేటా</translation>
 <translation id="96774243435178359">మేనేజ్ చేయబడే ప్రింటర్‌లు</translation>

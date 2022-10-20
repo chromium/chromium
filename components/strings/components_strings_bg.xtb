@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">Сензори за движение</translation>
 <translation id="1717494416764505390">Пощенска кутия 3</translation>
 <translation id="1718029547804390981">Документът е твърде голям за добавяне на пояснения</translation>
+<translation id="1719434663396780149">Сигналите за понижение на цената са включени. Можете да промените това от <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Затваряне на урока</translation>
 <translation id="1721424275792716183">* Полето е задължително</translation>
 <translation id="1725591448053514783">Плик You 6</translation>
@@ -979,6 +980,7 @@
 <translation id="3550112004925580947">Туристически отрасъл</translation>
 <translation id="3552297013052089404">Безсерифен шрифт</translation>
 <translation id="3558573058928565255">През деня</translation>
+<translation id="3560824484345057728">Преглед на сродните сайтове</translation>
 <translation id="3566021033012934673">Връзката ви не е поверителна</translation>
 <translation id="3567778190852720481">Не е възможно регистриране с корпоративен профил (не отговаря на условията).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@
 <translation id="4542971377163063093">Тава 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Опитайте да деактивирате разширенията.</translation>
+<translation id="4559134504959026834">Този сайт е в група, дефинирана от <ph name="SET_OWNER" />, която може да вижда активността ви</translation>
 <translation id="4559332380232738994">10 x 11</translation>
 <translation id="4566017918361049074">Занимания на открито</translation>
 <translation id="4567686777917670400">Администраторът ви може отдалечено да променя настройките на браузъра. Възможно е активността на това устройство да се управлява и извън Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -2279,6 +2282,7 @@
 <translation id="7003335073762455340">Проследявате този продукт. Съответната страница е запазена в папката „<ph name="LAST_BOOKMARKS_FOLDER" />“.</translation>
 <translation id="7004583254764674281">Използвайте Windows Hello, за да потвърждавате картите по-бързо</translation>
 <translation id="7006930604109697472">Изпращане въпреки това</translation>
+<translation id="7007006156138369007">Проследяване на цени в няколко сайта едновременно</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Увеличение</translation>
 <translation id="7016992613359344582">Тези таксувания може да са еднократни или повтарящи се и е възможно да не са явни.</translation>
@@ -2670,6 +2674,7 @@
 <translation id="7995512525968007366">Не е посочено</translation>
 <translation id="7998269595945679889">Бутон „Отваряне на раздел в режим „инкогнито“. Натиснете Enter, за да отворите нов раздел в режим „инкогнито“ и да сърфирате частно</translation>
 <translation id="800218591365569300">Затворете другите раздели или програми, за да освободите памет.</translation>
+<translation id="8002230960325005199">Преглед на сродните сайтове в нов раздел</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
 <translation id="8004582292198964060">Браузър</translation>
 <translation id="8009225694047762179">Управление на паролите</translation>
@@ -2773,6 +2778,7 @@
 <translation id="8270242299912238708">PDF документи</translation>
 <translation id="8275952078857499577">Да не се предлага превод на този сайт</translation>
 <translation id="8277900682056760511">Листът на инструмента за обработване на плащания е отворен</translation>
+<translation id="8279611986089885641">Известията за Chrome трябва да са включени. Можете да ги включите от <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Тава 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Пропускане</translation>

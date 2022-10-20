@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">សម្គាល់ថាបានអានទាំងអស់</translation>
 <translation id="1689333818294560261">ឈ្មោះ​ហៅក្រៅ</translation>
 <translation id="1700629756560807968">បានជ្រើសរើស <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">ប្រសិនបើអ្នក​ជឿទុកចិត្ត <ph name="SITE" /> អ្នកអាចប្រើ​ពាក្យសម្ងាត់​ដែលបានរក្សាទុក ដើម្បីចូល។</translation>
 <translation id="1740468249224277719">ប៉ះពីរដងដើម្បីដំឡើង</translation>
 <translation id="1752547299766512813">រក្សាទុកពាក្យសម្ងាត់</translation>
 <translation id="1753905327828125965">ចូលទៅកាន់ច្រើនបំផុត</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">កែប្រែចំណាំ</translation>
 <translation id="2155145621546387786">ចែករំលែក Chrome</translation>
 <translation id="2175927920773552910">កូដ QR</translation>
+<translation id="2178545675770638239">ជ្រើសរើស​ពាក្យសម្ងាត់</translation>
 <translation id="2218443599109088993">បង្រួម</translation>
 <translation id="2230173723195178503">បាន​ផ្ទុក​គេហទំព័រ​</translation>
 <translation id="2239626343334228536">កំពុង​សម្អាតទិន្នន័យរុករក...</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">ពិនិត្យ​ឥឡូវនេះ</translation>
 <translation id="4505980578794259603">បានពិនិត្យ​លើកចុងក្រោយ <ph name="TIME" />។</translation>
 <translation id="4508750114462689118">បិទការផ្សព្វផ្សាយនៃការចូលគណនី</translation>
+<translation id="4514889972748124117">ណែនាំ​ពាក្យសម្ងាត់ខ្លាំង...</translation>
 <translation id="4520798012560649652">ស្វែងយល់បន្ថែមអំពីមុខងារ​ឯកជន</translation>
 <translation id="4526249700380860531">មើល និងគ្រប់គ្រងពាក្យសម្ងាត់ដែលបានរក្សាទុកនៅលើ <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">ពិនិត្យមើល​ទិន្នន័យ​ដែលបានធ្វើសមកាលកម្មរបស់អ្នក</translation>
@@ -1016,6 +1019,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8917490105272468696">បាទ/ចាស ខ្ញុំ​យល់ព្រម។</translation>
 <translation id="8928133177108699615">កុំព្យូទ័រ</translation>
 <translation id="8952559610785099500">បញ្ចូលពាក្យសម្ងាត់</translation>
+<translation id="8953046091948372197">អ្នក​នឹងឃើញ​​ពាក្យ​សម្ងាត់របស់អ្នក​នៅទីនេះ</translation>
 <translation id="895541991026785598">រាយការណ៍ពីបញ្ហា</translation>
 <translation id="8974714402877957201">1. បើក​ការកំណត់ iPad</translation>
 <translation id="8976382372951310360">ជំនួយ</translation>
@@ -1049,6 +1053,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="9200875785104711666"><ph name="TIME" /> ថ្ងៃមុន</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">បានផ្ញើរបាយការណ៍ការគាំង។</translation>
+<translation id="941747855997058526">ជ្រើសរើស​ពាក្យសម្ងាត់...</translation>
 <translation id="952704832371081537">បោះបង់</translation>
 <translation id="953008885340860025">បានចេញពី Chrome</translation>
 <translation id="959066944189734975">អ្នកកំពុងតាមដាន <ph name="CHANNEL_NAME" /></translation>

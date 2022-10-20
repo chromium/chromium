@@ -397,6 +397,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{এটাও নহয়}=1{১টা ছাইট}one{#টা ছাইট}other{#টা ছাইট}}</translation>
 <translation id="1924727005275031552">নতুন</translation>
 <translation id="1927439593081478069">Chromeৰ সুৰক্ষা পৰীক্ষা চলোৱাৰ বুটাম, Chromeৰ ছেটিঙত সুৰক্ষা পৰীক্ষা চলাবলৈ এণ্টাৰ টিপক</translation>
+<translation id="1935995810530254458">যি হ’লেও প্ৰতিলিপি কৰক</translation>
 <translation id="1939175642807587452">জাননী পঠিয়াবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1943994668912612445">ডিজাইন</translation>
 <translation id="1945968466830820669">আপুনি আপোনাৰ প্ৰতিষ্ঠানৰ একাউণ্টটো এক্সেছ কৰিব নোৱাৰা হ‘ব পাৰে বা আপোনাৰ পৰিচয় চুৰি হোৱাৰ নিচিনা ঘটনাৰ মুখামুখী হ‘ব পাৰে। Chromiumএ আপোনাৰ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰিছে।</translation>
@@ -450,6 +451,7 @@
 <translation id="2085876078937250610">ছেভ কৰক…</translation>
 <translation id="2088086323192747268">ছিংক কৰা বুটাম পৰিচালনা কৰক, আপুনি Chromeৰ ছেটিঙত কি তথ্য ছিংক কৰিব সেয়া পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="2091887806945687916">শব্দ</translation>
+<translation id="2093982008204312032">Google Chromeএ পাছৱৰ্ড পূৰ কৰিবলৈ Windows Hello অফ কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="2094505752054353250">ড‘মেইন অমিল</translation>
 <translation id="2099652385553570808">বাওঁফালে তিনিবাৰ ষ্টে'পল কৰক</translation>
 <translation id="2101225219012730419">সংস্কৰণ:</translation>
@@ -1146,6 +1148,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} খন পৃষ্ঠা থকা PDF নথি}one{{COUNT} খন পৃষ্ঠা থকা PDF নথি}other{{COUNT} খন পৃষ্ঠা থকা PDF নথি}}</translation>
 <translation id="4022639246993848966">৩.৫x৫</translation>
 <translation id="4023431997072828269">যিহেতু এই ফৰ্মখন এটা অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি দাখিল কৰি থকা হৈছে, আপোনাৰ তথ্য অন্য লোকে দেখা পাব।</translation>
+<translation id="4024923292610332139">পাছৱৰ্ড পূৰ কৰিবলৈ TouchID অফ কৰক</translation>
 <translation id="4025913568718019429">Googleৰ গোপনীয়তা ছেটিঙৰ বুটামটো পৰিচালনা কৰক, আপোনাৰ Google একাউণ্টৰ গোপনীয়তাৰ ছেটিঙলৈ যাবলৈ এণ্টাৰ টিপক</translation>
 <translation id="4030383055268325496">যোগ কৰাটো &amp;আনডু কৰক</translation>
 <translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
@@ -1263,6 +1266,7 @@
 <translation id="42981349822642051">বিস্তাৰ কৰক</translation>
 <translation id="4300675098767811073">সোঁফালে একাধিক পাঞ্চ কৰক</translation>
 <translation id="4302514097724775343">খেলিবলৈ ডাইন’ছৰত টিপক</translation>
+<translation id="4304049446746819918">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ নিয়াটো চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ নিয়াটো চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ নিয়াটো চুপাৰিছ নকৰে}}</translation>
 <translation id="4305666528087210886">আপোনাৰ ফাইলটো এক্সেছ কৰিব পৰা নগ’ল</translation>
 <translation id="4306529830550717874">ঠিকনাটো চেভ কৰিবনে?</translation>
 <translation id="4306812610847412719">ক্লিপব'ৰ্ড</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5254043433801397071">প্ৰিণ্টৰ সমল অপ্টিমাইজ কৰক</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">তথাপি কেপচাৰ কৰক</translation>
+<translation id="5257739419779698609">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ প্ৰতিলিপি কৰাটো চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ প্ৰতিলিপি কৰাটো চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />লৈ প্ৰতিলিপি কৰাটো চুপাৰিছ নকৰে}}</translation>
 <translation id="5266128565379329178">ওপৰৰ অংশত সংযুক্ত কৰক</translation>
 <translation id="5269225904387178860">তলৰ অংশ চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
 <translation id="5269999699920406580">সমগ্ৰ ছিষ্টেমত প্ৰয়োগ হোৱা সুবিধাসমূহক কেৱল গৰাকীয়েহে ছেট কৰিব পাৰে: <ph name="OWNER_EMAIL" /></translation>
@@ -1703,6 +1708,7 @@
 <translation id="5412236728747081950">আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰা আপোনাৰ আগ্ৰহসমূহ পায়</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ষ্টেকাৰ ৪</translation>
+<translation id="5414511064953050917">যি হ’লেও নিয়ক</translation>
 <translation id="5421136146218899937">ব্ৰাউজিং ডেটা মচক...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{কোনো ছাইট অৱৰোধ কৰা হোৱা নাই}=1{১ টা ছাইট অৱৰোধ কৰা হৈছে}one{# টা ছাইট অৱৰোধ কৰা হৈছে}other{# টা ছাইট অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" />এ আপোনালৈ জাননী পঠিয়াব বিচাৰে</translation>
@@ -2324,6 +2330,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা অধিক}one{<ph name="PAYMENT_METHOD_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা অধিক}other{<ph name="PAYMENT_METHOD_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা অধিক}}</translation>
 <translation id="7153618581592392745">লেভেণ্ডাৰ</translation>
 <translation id="7156870133441232244">ছার্ভাৰটো TLS 1.2 অথবা তাতকৈ পাছৰ সংস্কৰণলৈ আপগ্ৰে’ড হ’ব লাগে।</translation>
+<translation id="7163295244162773898">{0,plural, =1{গোপনীয় ফাইলটো প্ৰতিলিপি কৰিবনে?}one{গোপনীয় ফাইলসমূহ প্ৰতিলিপি কৰিবনে?}other{গোপনীয় ফাইলসমূহ প্ৰতিলিপি কৰিবনে?}}</translation>
 <translation id="717330890047184534">Gaia আইডি:</translation>
 <translation id="7174545416324379297">একত্ৰিত কৰা হৈছে</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}one{<ph name="SHIPPING_OPTION_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}other{<ph name="SHIPPING_OPTION_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}}</translation>
@@ -2933,6 +2940,7 @@
 <translation id="8763986294015493060">বৰ্তমান খোল খাই থকা আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="8766943070169463815">সুৰক্ষিত পৰিশোধৰ ক্ৰিডেনশ্বিয়েলৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ বিষয়ক শ্বীটখন খোলা হৈছে</translation>
 <translation id="8767765348545497220">সহায়ৰ বাবল বন্ধ কৰক</translation>
+<translation id="877348612833018844">{0,plural, =1{গোপনীয় ফাইলটো স্থানান্তৰ কৰিবনে?}one{গোপনীয় ফাইলসমূহ স্থানান্তৰ কৰিবনে?}other{গোপনীয় ফাইলসমূহ স্থানান্তৰ কৰিবনে?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">মটৰ চাইকেল</translation>
 <translation id="8790007591277257123">মচা কার্য &amp;ৰিডু কৰক</translation>

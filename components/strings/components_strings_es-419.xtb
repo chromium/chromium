@@ -320,6 +320,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1717218214683051432">Sensores de movimiento</translation>
 <translation id="1717494416764505390">Buzón 3</translation>
 <translation id="1718029547804390981">El documento es demasiado grande para contener anotaciones</translation>
+<translation id="1719434663396780149">Las alertas de descuentos están activadas. Puedes desactivarlas en la <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Cerrar el instructivo</translation>
 <translation id="1721424275792716183">* El campo es obligatorio</translation>
 <translation id="1725591448053514783">Sobre You 6</translation>
@@ -980,6 +981,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3550112004925580947">Industria hotelera</translation>
 <translation id="3552297013052089404">Fuente Sans Serif</translation>
 <translation id="3558573058928565255">Hora del día</translation>
+<translation id="3560824484345057728">Ver sitios relacionados</translation>
 <translation id="3566021033012934673">La conexión no es privada</translation>
 <translation id="3567778190852720481">No es posible inscribirse con una cuenta empresarial (tipo de cuenta no apta).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1365,6 +1367,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4542971377163063093">Bandeja 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Intenta inhabilitar tus extensiones.</translation>
+<translation id="4559134504959026834">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Al aire libre</translation>
 <translation id="4567686777917670400">El administrador puede cambiar la configuración de tu navegador de forma remota. Es posible que la actividad correspondiente a este dispositivo también se administre fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -2280,6 +2283,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7003335073762455340">Estás realizando un seguimiento de este producto. Se guardó esta página en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Usa Windows Hello para verificar las tarjetas más rápido</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
+<translation id="7007006156138369007">Realiza un seguimiento de los precios en varios sitios al mismo tiempo</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Nivel del zoom</translation>
 <translation id="7016992613359344582">Estos cargos pueden ser únicos o recurrentes, y es posible que no sean evidentes.</translation>
@@ -2671,6 +2675,7 @@ Detalles adicionales:
 <translation id="7995512525968007366">Sin especificar</translation>
 <translation id="7998269595945679889">Botón Abrir pestaña de incógnito, presiona Intro para abrir una nueva pestaña de incógnito y así navegar de forma privada</translation>
 <translation id="800218591365569300">Prueba cerrar las demás pestañas o programas para liberar memoria.</translation>
+<translation id="8002230960325005199">Ver sitios relacionados en una pestaña nueva</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Administrar contraseñas</translation>
@@ -2774,6 +2779,7 @@ Detalles adicionales:
 <translation id="8270242299912238708">Documentos PDF</translation>
 <translation id="8275952078857499577">No ofrecer la traducción de este sitio</translation>
 <translation id="8277900682056760511">La hoja del controlador de pagos está abierta</translation>
+<translation id="8279611986089885641">Las notificaciones de Chrome deben estar activadas. Puedes activarlas en la <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Bandeja 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Omitir</translation>

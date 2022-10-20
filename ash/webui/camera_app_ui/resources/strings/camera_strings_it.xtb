@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
 <translation id="1076394037877376434">Elimina pagina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modalità Fotocamera</translation>
 <translation id="1153190633558910465">Griglia off</translation>
@@ -21,6 +22,7 @@
 <translation id="1588438908519853928">Normale</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Nessun dato registrato</translation>
 <translation id="1838104802459806957">Inclinazione verso l'alto</translation>
 <translation id="1843105061469674856">Scansiona pagina aggiuntiva</translation>
@@ -95,6 +97,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="4705093842003735294">Massima risoluzione</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Registrazione video multistream</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Proporzioni foto</translation>
 <translation id="5057360777601936059">La tua fotocamera non è attualmente disponibile.
         Controlla se la fotocamera è collegata correttamente.</translation>
@@ -103,6 +106,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="5266635337630551423">Angolo superiore sinistro del documento</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5320594929574852403">Spostamento a sinistra</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Posiziona i bordi del documento all'interno dell'inquadratura. La qualità della scansione è migliore se il documento e lo sfondo sono di colori diversi.</translation>
 <translation id="5662366948659129155">Scansione pagina <ph name="COUNT" /> in corso…</translation>
 <translation id="5671277269877808209">Quadrato</translation>

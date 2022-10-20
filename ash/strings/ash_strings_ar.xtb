@@ -267,6 +267,7 @@
 <translation id="2405664212338326887">غير متصلة</translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
 <translation id="2412593942846481727">هناك تحديث جديد</translation>
+<translation id="2417486498593892439">تسجيل الدخول إلى الشبكة</translation>
 <translation id="2426051945783024481">تم توسيط إطار الكاميرا تلقائيًا.</translation>
 <translation id="2427507373259914951">النقر بالزر الأيسر</translation>
 <translation id="2429753432712299108">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. قبل القبول، يُرجى التأكد أن مفتاح المرور هذا يظهر في هذا الجهاز: <ph name="PASSKEY" /></translation>
@@ -340,6 +341,7 @@
 <translation id="2865888419503095837">معلومات الشبكة</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878884018241093801">ليست هناك عناصر تم استخدامها مؤخرًا</translation>
+<translation id="2885950158625301909">مزيد من المعلومات</translation>
 <translation id="2891209721153296020">"إلغاء الاختيار"</translation>
 <translation id="2894949423239620203">قد يؤثّر استخدام الكابل في أداء الجهاز</translation>
 <translation id="2914580577416829331">لقطات الشاشة</translation>
@@ -423,6 +425,7 @@
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3371140690572404006">‏جهاز USB-C (المنفذ الأمامي الأيمن)</translation>
 <translation id="3375634426936648815">متصلة</translation>
+<translation id="3378438761594387761">ستظهر هنا أحدث عمليات التنزيل ولقطات الشاشة.</translation>
 <translation id="3378442621503952303">جارٍ الربط بالملف التعريفي. يُرجى الانتظار بضع دقائق.</translation>
 <translation id="3386978599540877378">المكبِّر بملء الشاشة</translation>
 <translation id="3387527074123400161">‏نظام التشغيل Chromium</translation>
@@ -731,6 +734,7 @@
 <translation id="5083553833479578423">‏الاستفادة من المزيد من ميزات "مساعد Google"</translation>
 <translation id="509790653408515442">عند تشغيل تطبيقات هاتفك، سيتم عرضها هنا.</translation>
 <translation id="5098537242461068432">تمت إعادة فتح سطح المكتب والنوافذ.</translation>
+<translation id="5104236669533825617">تعذُّر إنشاء تسجيل رقمي للشاشة</translation>
 <translation id="5107522548814527560">الويب</translation>
 <translation id="5117590920725113268">عرض الشهر التالي</translation>
 <translation id="5136175204352732067">تم توصيل لوحة مفاتيح مختلفة</translation>
@@ -776,6 +780,7 @@
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليمنى)</translation>
 <translation id="5352250171825660495">المظهر الداكن مُفعَّل.</translation>
 <translation id="5356963482258194581">يمكنك التبديل بين المظهرَين الداكن والفاتح. انقر بزر الماوس الأيمن على سطح المكتب ثم اختَر "الخلفية والأسلوب".</translation>
+<translation id="536019650977002321">لا يسمح المشرف بتسجيل الصوت. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> الانتقال إلى علامة التبويب هذه</translation>
 <translation id="5379115545237091094">محاولات كثيرة جدًا</translation>
 <translation id="5391307769715781764">هل تريد استبدال سطح المكتب المحفوظ؟</translation>
@@ -1048,6 +1053,7 @@
 <translation id="6961121602502368900">لا تتوفّر ميزة "كتم صوت الهاتف" على الملف الشخصي للعمل.</translation>
 <translation id="6961840794482373852">‏تم تغيير اختصارات لوحة المفاتيح "Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Page Up، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه للأعلى".</translation>
 <translation id="696267987219125751">ميزة "تكبير تلقائي" غير مفعّلة.</translation>
+<translation id="6964690557625666701">‏جميع العناصر المثبَّتة في وضع Shelf Party الآن.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6972754398087986839">البدء</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1356,6 +1362,8 @@
 <translation id="8734991477317290293">قد تحاول لوحة المفاتيح سرقة ضغطات المفاتيح.</translation>
 <translation id="8735678380411481005">لون الإضاءة الخلفية للوحة المفاتيح</translation>
 <translation id="8735953464173050365">عرض إعدادات لوحة المفاتيح. تم اختيار <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">يجب تفعيل خيار الوصول إلى الكاميرا للسماح للتطبيقات وصفحات الويب التي لديها إذن وصول إلى الكاميرا باستخدام الكاميرات المتصلة بهذا الجهاز.</translation>
 <translation id="8755498163081687682">إثبات هويتك: يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
 <translation id="875593634123171288">‏عرض إعدادات الشبكة الظاهرية الخاصة (VPN)</translation>
@@ -1394,6 +1402,7 @@
 <translation id="8936501819958976551">غير مفعّلة</translation>
 <translation id="8938800817013097409">‏جهاز USB-C (المنفذ الأيمن في الخلف)</translation>
 <translation id="8940956008527784070">طاقة البطارية منخفضة (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">تم الاتصال بالشبكة ولكنها غير متصلة بالإنترنت.</translation>
 <translation id="8951539504029375108">‏لا يتوافق مع جهاز Chromebook سوى أجهزة Thunderbolt الموافَق عليها.</translation>
 <translation id="8982906748181120328">مشاركة عن قرب</translation>
 <translation id="8983038754672563810">HSPA</translation>

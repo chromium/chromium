@@ -340,6 +340,7 @@
 <translation id="2865888419503095837">நெட்வொர்க் தகவல்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2878884018241093801">சமீபத்திய உருப்படிகள் எதுவுமில்லை</translation>
+<translation id="2885950158625301909">மேலும் அறிக</translation>
 <translation id="2891209721153296020">“தேர்வுநீக்கும்”</translation>
 <translation id="2894949423239620203">செயல்திறனை, கேபிள் பாதிக்கக்கூடும்</translation>
 <translation id="2914580577416829331">ஸ்கிரீன்ஷாட்டுகள்</translation>
@@ -432,6 +433,7 @@
 <translation id="3413817803639110246">பார்ப்பதற்கு எதுவுமில்லை</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />ல் இருந்து துண்டிக்கும்</translation>
 <translation id="3430396595145920809">பின்செல்ல, வலது பக்கத்திலிருந்து ஸ்வைப் செய்யவும்</translation>
+<translation id="3431517721463707585">டெஸ்க் 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">நினைவூட்டலைத் திருத்து</translation>
 <translation id="3435967511775410570">கைரேகை அங்கீகரிக்கப்பட்டது</translation>
@@ -672,6 +674,7 @@
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (இடதுபக்கம்)</translation>
 <translation id="4734965478015604180">கிடைமட்டம்</translation>
+<translation id="4735944890391795473">டெஸ்க் 12</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4740516757091333363">சேமிக்கப்பட்ட டெஸ்க்கை நீக்கவா?</translation>
 <translation id="4752784485658729358">6 டெஸ்க்குகளை மட்டுமே சேமிக்க முடியும். புதிதாக ஒன்றைச் சேமிக்க ஒரு டெஸ்கை அகற்றவும்.</translation>
@@ -692,6 +695,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்க, நெட்வொர்க் இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="486056901304535126">பின்னர் பதிவிறக்க முயலும். பதிவிறக்கம் முடியும் வரை பேசுபவை அனைத்தும் செயலாக்கத்திற்காக Googleளுக்கு அனுப்பப்படும்.</translation>
 <translation id="4864369630010738180">உள்நுழைகிறீர்கள்...</translation>
+<translation id="4864648187878336334">டெஸ்க் 15</translation>
 <translation id="4868492592575313542">செயல்படுத்தப்பட்டது</translation>
 <translation id="4872237917498892622">Alt+தேடல் அல்லது Shift</translation>
 <translation id="4881695831933465202">திற</translation>
@@ -718,6 +722,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">டெஸ்க் 16</translation>
 <translation id="5003993274120026347">அடுத்த வாக்கியம்</translation>
 <translation id="5016558321564993266">மார்க்கரை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">நேரம் முடிந்தது</translation>
@@ -733,6 +738,7 @@
 <translation id="5098537242461068432">டெஸ்க் மற்றும் சாளரங்கள் மீண்டும் திறக்கப்பட்டன</translation>
 <translation id="5104236669533825617">ஸ்க்ரீன்காஸ்ட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5107522548814527560">இணையம்</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">அடுத்த மாதத்தைக் காட்டு</translation>
 <translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
 <translation id="5147567197700016471">அன்லாக் செய்யப்பட்டது</translation>
@@ -820,6 +826,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">மைக் ஜாக்</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ஆப்ஸில் புதிய அறிவிப்புகள் உள்ளன.</translation>
+<translation id="5662075790140998213">டெஸ்க் 10</translation>
 <translation id="5662709761327382534">மைக்ரோஃபோன் மூலம் ரெக்கார்டு செய்தல் <ph name="CURRENT_STATE" />, மைக்ரோஃபோன் ரெக்கார்டிங் நிலையை மாற்ற Enter விசையை அழுத்துங்கள் <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5673434351075758678">அமைப்புகளை ஒத்திசைத்த பின்னர், "<ph name="FROM_LOCALE" />" இலிருந்து "<ph name="TO_LOCALE" />"க்கு மாற்றப்பட்டது.</translation>
@@ -1019,6 +1026,8 @@
 <translation id="6753390234084146956">பக்கங்கள்</translation>
 <translation id="6757237461819837179">மீடியா எதுவும் பிளேயாகவில்லை</translation>
 <translation id="6777216307882431711">இணைக்கப்பட்ட USB-C சாதனங்களுக்கு சார்ஜ் ஏற்றப்படுகிறது</translation>
+<translation id="6781002679438061620">டெஸ்க் 9</translation>
+<translation id="6782182743534150858">டெஸ்க் 13</translation>
 <translation id="6786750046913594791">ஃபோல்டரை மூடு</translation>
 <translation id="6787595647772650851">கடைசி அமர்வை மீட்டெடு</translation>
 <translation id="6790428901817661496">இயக்கு</translation>
@@ -1050,6 +1059,7 @@
 <translation id="6961121602502368900">பணிக் கணக்கின் மூலம், மொபைலை நிசப்தமாக்குதல் அம்சத்தைப் பயன்படுத்த முடியாது</translation>
 <translation id="6961840794482373852">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Alt + மேல்நோக்கிய அம்புக்குறி. Page Up பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + மேல்நோக்கிய அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
 <translation id="696267987219125751">'கேமரா ஃபிரேமிங்' அம்சம் முடக்கப்பட்டுள்ளது.</translation>
+<translation id="6964690557625666701">பின்செய்த அனைத்தும் நடனமாடுகின்றன</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6972754398087986839">தொடங்குக</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1079,6 +1089,7 @@
 <translation id="7098053464892629930">கிடைக்கக்கூடிய அனைத்து அம்சங்களையும் பார்க்க <ph name="NAME" /> ஆப்ஸை Google playயில் பதிவிறக்கவும்</translation>
 <translation id="7098389117866926363">USB-C சாதனம் (பின்பக்கம் உள்ள இடது போர்ட்)</translation>
 <translation id="7106330611027933926">டெஸ்க்பாரைக் காட்டு</translation>
+<translation id="7116969082764510092">டெஸ்க் 11</translation>
 <translation id="7118268675952955085">ஸ்கிரீன்ஷாட்</translation>
 <translation id="7126996685418858413">கடந்த வாரம் திறக்கப்பட்டது</translation>
 <translation id="7130207228079676353">அதிகச் சாத்தியமுள்ளவை</translation>
@@ -1177,6 +1188,7 @@
 <translation id="7662283695561029522">உள்ளமைக்க, தட்டவும்</translation>
 <translation id="7670953955701272011">Google Calendarரில் இந்தத் தேதியைத் திறக்கும்</translation>
 <translation id="7671610481353807627">வண்ணத்தின்படி ஆப்ஸ் வரிசைப்படுத்தப்பட்டுள்ளன</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> உடன் இணைக்கப்பட்டது, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">கேமரா உள்ளீடு <ph name="CAMERA_NAME" /> என அமைக்கப்பட்டுள்ளது.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">புதிய மொபைல் நெட்வொர்க்கைச் சேர்</translation>
@@ -1358,6 +1370,8 @@
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
 <translation id="8735678380411481005">கீபோர்டு பேக்லைட் வண்ணம்</translation>
 <translation id="8735953464173050365">கீபோர்டு அமைப்புகளைக் காண்பிக்கும். <ph name="KEYBOARD_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">கேமராவைப் பயன்படுத்த அனுமதிக்கப்பட்டுள்ள ஆப்ஸிலும் இணையப் பக்கங்களிலும் இந்தச் சாதனத்தில் இணைக்கப்பட்டுள்ள கேமராக்களைப் பயன்படுத்த கேமரா அணுகலை இயக்கவும்.</translation>
 <translation id="8755498163081687682">உங்கள் அடையாளத்தைச் சரிபாருங்கள்: இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
 <translation id="875593634123171288">VPN அமைப்புகளைக் காண்பிக்கும்</translation>
@@ -1460,5 +1474,6 @@
 <translation id="974545358917229949"><ph name="QUERY" />க்கான <ph name="RESULT_COUNT" /> முடிவுகளைக் காட்டுகிறது</translation>
 <translation id="98515147261107953">லேண்ட்ஸ்கேப்</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> சாளரம் மூடப்பட்டது.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">சமீபத்திய அம்சங்களையும் பாதுகாப்பு மேம்பாடுகளையும் பெறலாம். புதுப்பித்தல் செயல்பாடு பின்னணியில் நடைபெறும்.</translation>
 </translationbundle>

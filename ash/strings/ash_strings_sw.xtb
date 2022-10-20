@@ -433,6 +433,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3413817803639110246">Bado hakuna chochote hapa</translation>
 <translation id="3428447136709161042">Ondoa kwenye <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Telezesha kidole kutoka kulia ili urudi nyuma</translation>
+<translation id="3431517721463707585">Eneokazi la 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Badilisha kikumbusho</translation>
 <translation id="3435967511775410570">Alama ya kidole imetambuliwa</translation>
@@ -673,6 +674,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4731797938093519117">Idhini ya mzazi</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kushoto)</translation>
 <translation id="4734965478015604180">Kimlalo</translation>
+<translation id="4735944890391795473">Eneokazi la 12</translation>
 <translation id="473775607612524610">Sasisha</translation>
 <translation id="4740516757091333363">Ungependa kufuta eneokazi lililohifadhiwa?</translation>
 <translation id="4752784485658729358">Maeneokazi 6 tu yanaweza kuhifadhiwa Ondoa eneokazi la zamani ili uhifadhi jipya.</translation>
@@ -693,6 +695,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4860284199500934869">Kagua muunganisho wako wa mtandao ili upakue <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Itajaribu kupakua baadaye. Matamshi yatatumwa kwa Google ili yachakatwe hadi upakuaji utakapokamilika.</translation>
 <translation id="4864369630010738180">Unaingia katika akaunti...</translation>
+<translation id="4864648187878336334">Eneokazi la 15</translation>
 <translation id="4868492592575313542">kimewashwa</translation>
 <translation id="4872237917498892622">Alt + Utafutaji au Hama</translation>
 <translation id="4881695831933465202">Fungua</translation>
@@ -719,6 +722,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Eneokazi la 16</translation>
 <translation id="5003993274120026347">Sentensi inayofuata</translation>
 <translation id="5016558321564993266">Geuza kitia alama. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Muda wa kutumia kifaa umeisha</translation>
@@ -734,6 +738,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5098537242461068432">Eneokazi na madirisha yamefunguliwa upya</translation>
 <translation id="5104236669533825617">Imeshindwa kuunda kionyesha skrini</translation>
 <translation id="5107522548814527560">Wavuti</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Onyesha mwezi unaofuata</translation>
 <translation id="5136175204352732067">Kibodi tofauti imeunganishwa</translation>
 <translation id="5147567197700016471">Imefunguliwa</translation>
@@ -821,6 +826,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Pini ya maikrofoni</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> inakuomba ushughulikie jambo fulani.</translation>
+<translation id="5662075790140998213">Eneokazi la 10</translation>
 <translation id="5662709761327382534">Hali ya maikrofoni ya kurekodi <ph name="CURRENT_STATE" />, Bonyeza 'enter' ili ubadilishe hali ya maikrofoni ya kurekodi iwe <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Inawashwa</translation>
 <translation id="5673434351075758678">Imebadalisha lugha kutoka "<ph name="FROM_LOCALE" />" kuwa "<ph name="TO_LOCALE" />" baada ya kusawazisha mipangilio yako.</translation>
@@ -1020,6 +1026,8 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6753390234084146956">vichupo</translation>
 <translation id="6757237461819837179">Haichezi faili za sauti wala video</translation>
 <translation id="6777216307882431711">Inawasha vifaa vya USB-C vilivyounganishwa</translation>
+<translation id="6781002679438061620">Eneokazi la 9</translation>
+<translation id="6782182743534150858">Eneokazi la 13</translation>
 <translation id="6786750046913594791">Funga Folda</translation>
 <translation id="6787595647772650851">Rejesha kipindi cha mwisho</translation>
 <translation id="6790428901817661496">Cheza</translation>
@@ -1081,6 +1089,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7098053464892629930">Pakua programu ya <ph name="NAME" /> kwenye Google Play ili uone vipengele vyote vinavyopatikana</translation>
 <translation id="7098389117866926363">Kifaa cha USB-C (mlango wa kushoto nyuma)</translation>
 <translation id="7106330611027933926">Onyesha upau wa kazi</translation>
+<translation id="7116969082764510092">Eneokazi la 11</translation>
 <translation id="7118268675952955085">picha ya skrini</translation>
 <translation id="7126996685418858413">Ilifunguliwa wiki iliyopita</translation>
 <translation id="7130207228079676353">UNAZOWEZA KUBOFYA SANA</translation>
@@ -1180,6 +1189,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7662283695561029522">Gusa ili uweke mipangilio</translation>
 <translation id="7670953955701272011">Fungua tarehe hii kwenye Kalenda ya Google</translation>
 <translation id="7671610481353807627">Programu zimepangwa kwa rangi</translation>
+<translation id="7672095158465655885">Imeunganishwa kwenye <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kamera imewekwa kuwa <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Ongeza mtandao mpya wa simu</translation>
@@ -1465,5 +1475,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="974545358917229949">Inaonyesha matokeo <ph name="RESULT_COUNT" /> ya <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Mlalo</translation>
 <translation id="990277280839877440">Dirisha la <ph name="WINDOW_TITILE" /> limefungwa.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Pata vipengele vipya zaidi na maboresho ya usalama. Masasisho yanafanyika chinichini.</translation>
 </translationbundle>

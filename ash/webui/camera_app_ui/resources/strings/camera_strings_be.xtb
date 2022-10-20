@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Выдаліць старонку <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Рэжым камеры</translation>
 <translation id="1153190633558910465">Сетка выключана</translation>
 <translation id="1175958423215084756">Выяўлена спасылка. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Старонка <ph name="PAGE_NUMBER" /> выдалена</translation>
 <translation id="1258009455399840361">Павярнуць на 90 градусаў па гадзіннікавай стрэлцы</translation>
 <translation id="1276998909102132017">Відарысы ў галерэі</translation>
 <translation id="1300209025925956156">Сканіраванне дакумента</translation>
@@ -19,6 +22,7 @@
 <translation id="1588438908519853928">Звычайны</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Даныя не запісаны</translation>
 <translation id="1838104802459806957">Нахіліць уверх</translation>
 <translation id="1843105061469674856">Сканіраваць яшчэ адну старонку</translation>
@@ -93,6 +97,7 @@
 <translation id="4705093842003735294">Поўная раздзяляльнасць</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Відэазапіс некалькіх плыней</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Суадносіны бакоў фота</translation>
 <translation id="5057360777601936059">Камера недаступная.
         Праверце правільнасць яе падключэння.</translation>
@@ -101,6 +106,7 @@
 <translation id="5266635337630551423">Левы верхні вугал дакумента</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5320594929574852403">Перамяшчаецца ўлева</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Памясціце ўсе краі дакумента ўнутр рамкі. Якасць сканіравання будзе лепшай, калі дакумент і фон, на якім ён знаходзіцца, маюць розны колер.</translation>
 <translation id="5662366948659129155">Сканіруецца старонка <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>

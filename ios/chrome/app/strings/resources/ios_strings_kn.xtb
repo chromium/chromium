@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">ಎಲ್ಲವನ್ನೂ ಓದಿದಂತೆ ಗುರುತಿಸಿ</translation>
 <translation id="1689333818294560261">ಅಡ್ಡಹೆಸರು</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="1715515772563243997">ನಿಮಗೆ <ph name="SITE" /> ಮೇಲೆ ವಿಶ್ವಾಸವಿದ್ದರೆ, ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1740468249224277719">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="1752547299766512813">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="1753905327828125965">ಅತಿಹೆಚ್ಚು ಬಾರಿ ಸಂದರ್ಶಿಸಿರುವುದು</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">ಬುಕ್‌ಮಾರ್ಕ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2155145621546387786">Chrome ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="2175927920773552910">QR ಕೋಡ್</translation>
+<translation id="2178545675770638239">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2218443599109088993">ಝೂಮ್ ಔಟ್</translation>
 <translation id="2230173723195178503">ವೆಬ್‌ಪುಟ ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2239626343334228536">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -434,6 +436,7 @@
 <translation id="4502566650163919158">ಈಗಲೇ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4505980578794259603">ಕೊನೆಯ ಬಾರಿ ಪರಿಶೀಲಿಸಿದ ಸಮಯ <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">ಸೈನ್-ಇನ್ ಪ್ರೋಮೋ ಮುಚ್ಚಿ</translation>
+<translation id="4514889972748124117">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಿ...</translation>
 <translation id="4520798012560649652">ಅಜ್ಞಾತ ಮೋಡ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="452750746583162491">ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -1016,6 +1019,7 @@
 <translation id="8917490105272468696">ಹೌದು, ನಾನು ಒಪ್ಪಿಕೊಳ್ಳುತ್ತೇನೆ</translation>
 <translation id="8928133177108699615">ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
 <translation id="8952559610785099500">ಪಾಸ್‌ವರ್ಡ್ ಸೇರಿಸಿ</translation>
+<translation id="8953046091948372197">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಇಲ್ಲಿ ನೋಡಬಹುದು</translation>
 <translation id="895541991026785598">ಸಮಸ್ಯೆಯನ್ನು ವರದಿಮಾಡಿ</translation>
 <translation id="8974714402877957201">1. iPad ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8976382372951310360">ಸಹಾಯ</translation>
@@ -1049,6 +1053,7 @@
 <translation id="9200875785104711666"><ph name="TIME" /> ದಿ ಹಿಂದೆ</translation>
 <translation id="9203116392574189331">ಹ್ಯಾಂಡ್ಆಫ್</translation>
 <translation id="9223358826628549784">ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
+<translation id="941747855997058526">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ...</translation>
 <translation id="952704832371081537">ರದ್ದುಮಾಡಿ</translation>
 <translation id="953008885340860025">Chrome ನಿಂದ ಸೈನ್‌ಔಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="959066944189734975">ನೀವು <ph name="CHANNEL_NAME" /> ಅನ್ನು ಫಾಲೋ ಮಾಡುತ್ತಿದ್ದೀರಿ</translation>

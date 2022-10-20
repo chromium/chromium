@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Anbefalt for den beste opplevelsen</translation>
 <translation id="1818308510395330587">For å la <ph name="APP_NAME" /> bruke AR, slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" /> også.</translation>
 <translation id="1864927262126810325">Fra <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Relaterte nettsteder kan se aktiviteten din i gruppen</translation>
 <translation id="1887786770086287077">Posisjonstilgang er slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Legg på</translation>
 <translation id="1919345977826869612">Annonser</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Inkluder alle nettsteder under dette domenet</translation>
 <translation id="4883854917563148705">Administrerte innstillinger kan ikke tilbakestilles</translation>
 <translation id="4887024562049524730">Spør før nettsteder får bruke virtuell virkelighet-enheten din eller -dataene dine (anbefales)</translation>
+<translation id="4955223779495905865">Nettsteder du besøker, kan bygge inn innhold fra andre nettsteder, for eksempel bilder, annonser og tekst. Alle disse nettstedene kan lagre informasjonskapsler og andre data for å gi deg en personlig tilpasset opplevelse.</translation>
 <translation id="4962975101802056554">Opphev alle tillatelser for enheten</translation>
 <translation id="497421865427891073">Gå til neste</translation>
 <translation id="4976702386844183910">Sist besøkt <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Gi nettsteder tilgang til bevegelsessensorer (anbefalt)</translation>
 <translation id="5050380848339752099">Dette nettstedet er i ferd med å dele informasjon med en app utenfor Inkognitomodus.</translation>
 <translation id="5063480226653192405">Bruk</translation>
+<translation id="5082281938627763039">Dette medfører sletting av informasjonskapsler og andre nettstedsdata for <ph name="FPS_MEMBER" /> og for nettsteder i gruppen til <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Mobilnettsted</translation>
 <translation id="509133520954049755">Be om datamaskinvisning</translation>
 <translation id="5100237604440890931">Minimert – klikk for å utvide</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Blokkert</translation>
 <translation id="5689516760719285838">Sted</translation>
 <translation id="5690795753582697420">Kameraet er slått av i Android-innstillingene</translation>
+<translation id="5706552988683188916">Dette medfører sletting av informasjonskapsler og andre nettstedsdata for <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Dette sletter alle data og informasjonskapsler som er lagret av <ph name="ORIGIN" /> eller den tilhørende appen på startskjermen.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> er blokkert</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Tillat lyd for et bestemt nettsted.</translation>
 <translation id="789180354981963912">Blokker informasjonskapsler fra tredjeparter i Inkognito:</translation>
 <translation id="7940722705963108451">Minn meg på det senere</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> nettsted i gruppen til <ph name="FPS_OWNER" /> som kan se aktiviteten din i gruppen}other{<ph name="FPS_MEMBERS_COUNT" /> nettsteder i gruppen til <ph name="FPS_OWNER" /> som kan se aktiviteten din i gruppen}}</translation>
 <translation id="7986741934819883144">Velg en kontakt</translation>
 <translation id="7999064672810608036">Er du sikker på at du vil slette alle lokale data, deriblant informasjonskapsler, og tilbakestille alle tillatelser for dette nettstedet?</translation>
 <translation id="8007176423574883786">Slått av for denne enheten</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Slå på mikrofonen</translation>
 <translation id="851751545965956758">Blokkér at nettsteder kobler til enheter</translation>
 <translation id="8525306231823319788">Full skjerm</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Informasjonskapsler er tillatt for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-nettsted}other{Informasjonskapsler er tillatt for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-nettsteder}}</translation>
 <translation id="857943718398505171">Tillatt (anbefales)</translation>
 <translation id="8609465669617005112">Flytt opp</translation>
 <translation id="8676374126336081632">Slett teksten</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Glem</translation>
 <translation id="9019902583201351841">Administrert av foreldrene dine</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Dette nettstedet er med i en gruppe som kan se aktiviteten din. Gruppen er definert av <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Vil du slette informasjonskapslene?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til}}</translation>
 <translation id="913657688200966289">Slå på tillatelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Denne siden er farlig</translation>

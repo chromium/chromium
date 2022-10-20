@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">Тук още няма нищо</translation>
 <translation id="3428447136709161042">Прекратяване на връзката със: <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Прекарайте пръст отдясно, за да се върнете назад</translation>
+<translation id="3431517721463707585">Работен кът 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Редактиране на напомнянето</translation>
 <translation id="3435967511775410570">Отпечатъкът е разпознат</translation>
@@ -673,6 +674,7 @@
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лява)</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
+<translation id="4735944890391795473">Работен кът 12</translation>
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4740516757091333363">Да се изтрие ли запазеният работен кът?</translation>
 <translation id="4752784485658729358">Може да имате само 6 запазени работни къта. Премахнете един от текущите, за да запазите нов.</translation>
@@ -693,6 +695,7 @@
 <translation id="4860284199500934869">За да изтеглите <ph name="FILENAME" />, проверете връзката си с мрежата</translation>
 <translation id="486056901304535126">По-късно ще се направи опит за изтегляне. Говорът ще се изпраща до Google за обработка, докато изтеглянето завърши.</translation>
 <translation id="4864369630010738180">Извършва се влизане...</translation>
+<translation id="4864648187878336334">Работен кът 15</translation>
 <translation id="4868492592575313542">активирана</translation>
 <translation id="4872237917498892622">„Alt + търсене“ или „Shift“</translation>
 <translation id="4881695831933465202">Отваряне</translation>
@@ -719,6 +722,7 @@
 <ph name="NOTIFICATION_1" />,
 <ph name="NOTIFICATION_2" />,
 <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Работен кът 16</translation>
 <translation id="5003993274120026347">Следващо изречение</translation>
 <translation id="5016558321564993266">Превключване на маркера. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Времето свърши</translation>
@@ -734,6 +738,7 @@
 <translation id="5098537242461068432">Работният кът и прозорците бяха отворени отново</translation>
 <translation id="5104236669533825617">Не може да се създаде скрийнкаст</translation>
 <translation id="5107522548814527560">Мрежата</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Показване на следващия месец</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5147567197700016471">Отключено</translation>
@@ -821,6 +826,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Жак за микрофон</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> се нуждае от вниманието ви.</translation>
+<translation id="5662075790140998213">Работен кът 10</translation>
 <translation id="5662709761327382534">Записването от микрофона e <ph name="CURRENT_STATE" />. Натиснете Enter, за да бъде <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Активира се</translation>
 <translation id="5673434351075758678">От <ph name="FROM_LOCALE" /> към <ph name="TO_LOCALE" /> след синхронизиране на настройките ви.</translation>
@@ -1020,6 +1026,8 @@
 <translation id="6753390234084146956">раздели</translation>
 <translation id="6757237461819837179">Не се възпроизвежда мултимедия</translation>
 <translation id="6777216307882431711">Свързаните устройства с USB-C се захранват</translation>
+<translation id="6781002679438061620">Работен кът 9</translation>
+<translation id="6782182743534150858">Работен кът 13</translation>
 <translation id="6786750046913594791">Затваряне на папката</translation>
 <translation id="6787595647772650851">Възстановяване на последната сесия</translation>
 <translation id="6790428901817661496">Пускане</translation>
@@ -1081,6 +1089,7 @@
 <translation id="7098053464892629930">Изтеглете приложението <ph name="NAME" /> от Google Play, за да видите всички налични функции</translation>
 <translation id="7098389117866926363">Устройство с USB-C (левият порт на гърба)</translation>
 <translation id="7106330611027933926">Показване на лентата с работни кътове</translation>
+<translation id="7116969082764510092">Работен кът 11</translation>
 <translation id="7118268675952955085">екранна снимка</translation>
 <translation id="7126996685418858413">Отваряно през миналата седмица</translation>
 <translation id="7130207228079676353">НАЙ-ВЕРОЯТЕН ИЗБОР</translation>
@@ -1179,6 +1188,7 @@
 <translation id="7662283695561029522">Докоснете, за да конфигурирате</translation>
 <translation id="7670953955701272011">Отваряне на тази дата в Google Календар</translation>
 <translation id="7671610481353807627">Приложенията са сортирани по цвят</translation>
+<translation id="7672095158465655885">Установена е връзка с мрежата <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Избрана е камерата <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавяне на нова мобилна мрежа</translation>
@@ -1464,5 +1474,6 @@
 <translation id="974545358917229949">Показани са <ph name="RESULT_COUNT" /> резултата за „<ph name="QUERY" />“</translation>
 <translation id="98515147261107953">Хоризонтално</translation>
 <translation id="990277280839877440">Прозорецът <ph name="WINDOW_TITILE" /> бе затворен.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Получавайте най-новите функции и подобрения в сигурността. Актуализациите се извършват на заден план.</translation>
 </translationbundle>

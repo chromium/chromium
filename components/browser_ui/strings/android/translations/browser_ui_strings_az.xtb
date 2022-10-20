@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Ən yaxşı təcrübə üçün tövsiyə olunur</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> tətbiqinə AR-dan istifadə icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
 <translation id="1864927262126810325">Mənbə: <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Əlaqədar saytlar qrupdakı fəaliyyətinizi görə bilər</translation>
 <translation id="1887786770086287077">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
 <translation id="1915307458270490472">Dəstəyi qoyun</translation>
 <translation id="1919345977826869612">Reklamlar</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Bu domen altında olan bütün saytları daxil edin</translation>
 <translation id="4883854917563148705">İdarə edilən ayarlar sıfırlana bilməz</translation>
 <translation id="4887024562049524730">Saytlar virtual reallıq cihazınız və datanızı istifadə etməzdən əvvəl icazə istəsin (tövsiyə edilir)</translation>
+<translation id="4955223779495905865">Baxdığınız sayt şəkillər, reklamlar və mətn kimi digər saytlardan məzmunu daxil edə bilər. Bu saytlardan hər hansı biri təcrübənizi fərdiləşdirmək üçün kukiləri və digər datanı saxlaya bilər.</translation>
 <translation id="4962975101802056554">Cihaz üçün bütün icazələri ləğv edin</translation>
 <translation id="497421865427891073">İrəli</translation>
 <translation id="4976702386844183910">Son ziyarət: <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Saytların hərəkət sensorlarınıza daxil olmasına icazə verin (tövsiyə edilir)</translation>
 <translation id="5050380848339752099">Bu sayt Anonim rejimdə olmayan tətbiqlə məlumat paylaşmaq üzrədir.</translation>
 <translation id="5063480226653192405">Istifadə</translation>
+<translation id="5082281938627763039">Bu, <ph name="FPS_MEMBER" /> və <ph name="FPS_OWNER" /> adlı şəxsin saytlar qrupundakı saytlar üçün kukiləri və digər sayt datasını silir</translation>
 <translation id="5091013926750941408">Mobil sayt</translation>
 <translation id="509133520954049755">Masaüstü görünüş tələb edin</translation>
 <translation id="5100237604440890931">Yığcamlaşdırıldı - genişləndirmək üçün klikləyin.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Bloklananlar</translation>
 <translation id="5689516760719285838">Məkan</translation>
 <translation id="5690795753582697420">Kamera Android ayarlarında deaktiv edilib</translation>
+<translation id="5706552988683188916">Bu, <ph name="WEBSITE" /> üçün kukiləri və digər sayt datasını silir</translation>
 <translation id="5719847187258001597">Bununla Əsas ekranda <ph name="ORIGIN" /> və ya onun tətbiqi tərəfindən saxlanılan bütün data və kukilər silinəcək.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloklanıb</translation>
 <translation id="5804241973901381774">İcazələr</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Xüsusi sayt üçün səsə icazə verin.</translation>
 <translation id="789180354981963912">Anonim rejimdə üçüncü tərəf kukilərini bloklayın:</translation>
 <translation id="7940722705963108451">Mənə xatırladın</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="FPS_OWNER" /> adlı şəxsin saytlar qrupundadır}other{<ph name="FPS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="FPS_OWNER" /> adlı şəxsin saytlar qrupundadır}}</translation>
 <translation id="7986741934819883144">Kontakt seçin</translation>
 <translation id="7999064672810608036">Bütün lokal datanı silmək və bu sayt üçün bütün icazələri sıfırlamaq istəyirsiniz?</translation>
 <translation id="8007176423574883786">Bu cihaz üçün söndürüldükdə</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Mikrofonu səssiz rejimdən çıxarın</translation>
 <translation id="851751545965956758">Saytların cihazlara qoşulmasını blok edin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}}</translation>
 <translation id="857943718398505171">İcazə verilib (tövsiyə olunur)</translation>
 <translation id="8609465669617005112">Yuxarı köçürün</translation>
 <translation id="8676374126336081632">Daxiletməni silin</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Unudun</translation>
 <translation id="9019902583201351841">Valideynləriniz tərəfindən idarə olunur</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Bu sayt fəaliyyətinizi görə bilən qrupdadır. Qrup <ph name="FPS_OWNER" /> tərəfindən təyin edilib.</translation>
+<translation id="9106233582039520022">Kukilər silinsin?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> üçün icazələri <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>
 <translation id="9162462602695099906">Bu səhifə təhlükəlidir</translation>

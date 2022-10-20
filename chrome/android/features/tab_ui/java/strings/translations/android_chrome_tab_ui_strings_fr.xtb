@@ -13,6 +13,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="2118649612461486615">Infos sur le magasin</translation>
 <translation id="2162620598375156287">Actuellement à <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="22623456902492423">{TABS_COUNT,plural, =1{Dégrouper l'onglet}one{Dégrouper l'onglet}other{Dégrouper les onglets}}</translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Supprimez du groupe <ph name="TABS_COUNT_ONE" /> onglet sélectionné.}one{Supprimez du groupe <ph name="TABS_COUNT_MANY" /> onglet sélectionné.}other{Supprimez du groupe <ph name="TABS_COUNT_MANY" /> onglets sélectionnés.}}</translation>
 <translation id="2479148705183875116">Accéder aux paramètres</translation>
@@ -36,6 +37,7 @@
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Réduisez <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="3882834874697329510">Pour être averti en cas de prix inférieur dans un onglet ouvert, accédez aux paramètres, puis activez les notifications.</translation>
 <translation id="3940195383040445971">Suivi des prix dans les onglets</translation>
+<translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ajouter l'onglet au groupe}one{Ajouter l'onglet au groupe}other{Regrouper les onglets}}</translation>
 <translation id="3996880007329611795">Être averti</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
 <translation id="4212246570487010370">Poursuivre la navigation</translation>
@@ -44,6 +46,7 @@
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="4870911314065352661">Fermer tous les onglets ?</translation>
+<translation id="4895402777090717310">{TABS_COUNT,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="492284538114688557">Prix en baisse</translation>
 <translation id="5007392906805964215">Afficher</translation>
 <translation id="5073204694187207510">Masquer la grille en plein écran</translation>
@@ -72,6 +75,7 @@
 <translation id="6615455863669487791">Démonstration</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, appuyez de manière prolongée sur un onglet, puis faites-le glisser vers un autre.</translation>
 <translation id="6856809498882026482">Masquer le mode de sélection multiple</translation>
+<translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partager l'onglet}one{Partager l'onglet}other{Partager les onglets}}</translation>
 <translation id="7129458170538955174">Fiche d'infos sur ce magasin ouverte à mi-hauteur</translation>
 <translation id="7151209024774799310">Retirer des onglets du groupe</translation>
 <translation id="7204204600596740190">Mode de sélection multiple</translation>
@@ -80,6 +84,7 @@
 <translation id="753732157349120914">Sélecteur d'onglets</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> avis issus de Google}one{<ph name="REVIEWS_COUNT_MANY" /> avis issus de Google}other{<ph name="REVIEWS_COUNT_MANY" /> avis issus de Google}}</translation>
 <translation id="7559245342362162951">Afficher les onglets du groupe dans une grille en plein écran</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Partager <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Partager <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Partager <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="7792771145871471484">Afficher les suggestions.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Regrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Group <ph name="TABS_COUNT_MANY" /> selected tabs}other{Regrouper les <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> avis}one{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}other{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}}</translation>

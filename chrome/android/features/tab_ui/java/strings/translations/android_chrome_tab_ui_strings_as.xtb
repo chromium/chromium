@@ -84,6 +84,7 @@
 <translation id="753732157349120914">টেব সলনি কৰোঁতা</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Googleৰ পৰা <ph name="REVIEWS_COUNT_ONE" /> টা পর্যালোচনা}one{Googleৰ পৰা <ph name="REVIEWS_COUNT_MANY" /> টা পর্যালোচনা}other{Googleৰ পৰা <ph name="REVIEWS_COUNT_MANY" /> টা পর্যালোচনা}}</translation>
 <translation id="7559245342362162951">গোটৰ টেব সম্পূৰ্ণ স্ক্রীণৰ গ্রিডত দেখুৱাওক</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব শ্বেয়াৰ কৰক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব শ্বেয়াৰ কৰক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব শ্বেয়াৰ কৰক}}</translation>
 <translation id="7792771145871471484">পৰামৰ্শসমূহ পৰ্যালোচনা কৰক।</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেবৰ গোট বনাওক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেবৰ গোট বনাওক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেবৰ গোট বনাওক}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_ONE" /> টা পৰ্যালোচনা}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা}}</translation>

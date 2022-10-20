@@ -84,6 +84,7 @@
 <translation id="753732157349120914">탭 전환 도구</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google에서 찾은 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{Google에서 찾은 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>
 <translation id="7559245342362162951">그룹 탭을 전체화면 그리드로 표시</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 공유}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 공유}}</translation>
 <translation id="7792771145871471484">추천을 검토합니다.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹화}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹화}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ 평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>

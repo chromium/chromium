@@ -319,6 +319,7 @@
 <translation id="1717218214683051432">ಮೋಷನ್ ಸೆನ್ಸಾರ್‌ಗಳು</translation>
 <translation id="1717494416764505390">ಮೇಲ್‌ಬಾಕ್ಸ್ 3</translation>
 <translation id="1718029547804390981">ಟಿಪ್ಪಣಿ ಮಾಡಲು ಡಾಕ್ಯುಮೆಂಟ್‌ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ</translation>
+<translation id="1719434663396780149">ಬೆಲೆ ಕುಸಿತದ ಎಚ್ಚರಿಕೆಗಳು ಆನ್ ಆಗಿವೆ. ನೀವು ಇದನ್ನು <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="1720941539803966190">ಟ್ಯುಟೋರಿಯಲ್ ಮುಚ್ಚಿ</translation>
 <translation id="1721424275792716183">* ಈ ಫೀಲ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1725591448053514783">ಎನ್ವಲಪ್ ಯು 6</translation>
@@ -976,6 +977,7 @@
 <translation id="3550112004925580947">ಹಾಸ್ಪಿಟಾಲಿಟಿ ಉದ್ಯಮ</translation>
 <translation id="3552297013052089404">ಸ್ಯಾನ್ಸ್ ಸೆರಿಫ್ ಫಾಂಟ್</translation>
 <translation id="3558573058928565255">ದಿನದ ಸಮಯ</translation>
+<translation id="3560824484345057728">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="3566021033012934673">ನಿಮ್ಮ ಸಂಪರ್ಕವು ಖಾಸಗಿಯಲ್ಲ</translation>
 <translation id="3567778190852720481">ಎಂಟರ್‌ಪ್ರೈಸ್ ಖಾತೆಯ ಮೂಲಕ ನೋಂದಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ (ಎಂಟರ್‌ಪ್ರೈಸ್ ಖಾತೆಯು ಅರ್ಹವಲ್ಲ).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1360,6 +1362,7 @@
 <translation id="4542971377163063093">ಟ್ರೇ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="4559134504959026834">ಈ ಸೈಟ್ <ph name="SET_OWNER" /> ಮೂಲಕ ವ್ಯಾಖ್ಯಾನಿಸಲಾದ ಗುಂಪಿನಲ್ಲಿದೆ, ಅದು ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಬಹುದು</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">ಹೊರಾಂಗಣ</translation>
 <translation id="4567686777917670400">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ದೂರದಿಂದಲೇ ಬದಲಾಯಿಸಬಹುದು. ಈ ಸಾಧನದಲ್ಲಿನ ಚಟುವಟಿಕೆಯನ್ನು Chromium ನ ಹೊರಗೆ ಸಹ ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -2274,6 +2277,7 @@
 <translation id="7003335073762455340">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ. ಈ ಪುಟವನ್ನು <ph name="LAST_BOOKMARKS_FOLDER" /> ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="7004583254764674281">ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಲು Windows Hello ಬಳಸಿ</translation>
 <translation id="7006930604109697472">ಹೇಗಾದರೂ ಕಳುಹಿಸಿ</translation>
+<translation id="7007006156138369007">ಒಂದೇ ಸಮಯದಲ್ಲಿ ಅನೇಕ ಸೈಟ್‌ಗಳಲ್ಲಿನ ಬೆಲೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">ಝೂಮ್ ಮಟ್ಟ</translation>
 <translation id="7016992613359344582">ಇವುಗಳು ಒಂದು ಬಾರಿ ಪಾವತಿಸುವಂತಹ ಶುಲ್ಕಗಳಾಗಿರಬಹುದು, ಮರುಕಳಿಸುವ ಶುಲ್ಕಗಳಾಗಿರಬಹುದು ಅಥವಾ ಸ್ಪಷ್ಟವಾಗಿಲ್ಲದೇ ಇರಬಹುದು.</translation>
@@ -2664,6 +2668,7 @@
 <translation id="7995512525968007366">ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="7998269595945679889">ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ಬಟನ್ ತೆರೆಯಿರಿ, ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ತೆರೆಯಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="800218591365569300">ಮೆಮೊರಿ ಮುಕ್ತಗೊಳಿಸಲು ಇತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಥವಾ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಮುಚ್ಚಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="8002230960325005199">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ನೋಡಿ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ಬ್ರೌಸರ್</translation>
 <translation id="8009225694047762179">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -2767,6 +2772,7 @@
 <translation id="8270242299912238708">PDF ಡಾಕ್ಯುಮೆಂಟ್‌‌ಗಳು</translation>
 <translation id="8275952078857499577">ಈ ಸೈಟ್ ಅನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
 <translation id="8277900682056760511">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್ ಶೀಟ್ ಅನ್ನು ತೆರೆಯಲಾಗಿದೆ</translation>
+<translation id="8279611986089885641">Chrome ಅಧಿಸೂಚನೆಗಳು ಆನ್ ಆಗಿರಬೇಕು. ನೀವು ಅವುಗಳನ್ನು <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ನಲ್ಲಿ ಆನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="8280630997017109758">ಟ್ರೇ 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">ಸ್ಕಿಪ್‌</translation>

@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">Շարժման տվիչներ</translation>
 <translation id="1717494416764505390">Փոստարկղ 3</translation>
 <translation id="1718029547804390981">Հնարավոր չէ ծանոթագրություն ավելացնել, քանի որ փաստաթուղթը չափազանց մեծ է։</translation>
+<translation id="1719434663396780149">Գների իջեցման մասին ծանուցումները միացված են։ Այս պարամետրը փոխելու համար անցեք <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />։</translation>
 <translation id="1720941539803966190">Փակել ուղեցույցը</translation>
 <translation id="1721424275792716183">* Դաշտը պարտադիր է</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
@@ -979,6 +980,7 @@
 <translation id="3550112004925580947">Հյուրընկալության ծառայություններ</translation>
 <translation id="3552297013052089404">Sans-serif տառատեսակ</translation>
 <translation id="3558573058928565255">Ցերեկ</translation>
+<translation id="3560824484345057728">Տեսնել առնչվող կայքերը</translation>
 <translation id="3566021033012934673">Ձեր կապակցումը պաշտպանված չէ</translation>
 <translation id="3567778190852720481">Հնարավոր չէ գրանցվել կորպորատիվ հաշվով։</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@
 <translation id="4542971377163063093">Դարակ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Փորձեք անջատել ձեր ընդլայնումները</translation>
+<translation id="4559134504959026834">Այս կայքը <ph name="SET_OWNER" />-ի կողմից սահմանված խմբում է և կարող է տեսնել ձեր գործողությունները</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Բացօթյա ժամանց</translation>
 <translation id="4567686777917670400">Ձեր ադմինիստրատորը կարող է հեռակա փոխել ձեր դիտարկիչի կարգավորումները։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chromium-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -2280,6 +2283,7 @@
 <translation id="7003335073762455340">Դուք հետագծում եք այս ապրանքը։ Այս էջը պահված է «<ph name="LAST_BOOKMARKS_FOLDER" />» պանակում։</translation>
 <translation id="7004583254764674281">Օգտագործել Windows Hello-ն՝ քարտերն ավելի արագ հաստատելու համար</translation>
 <translation id="7006930604109697472">Ուղարկել</translation>
+<translation id="7007006156138369007">Հետագծեք գները միաժամանակ մի քանի կայքերում</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Մասշտաբ</translation>
 <translation id="7016992613359344582">Այս գանձումները կարող են մեկանգամյա կամ պարբերական լինել և հնարավոր է ակնհայտ չերևան:</translation>
@@ -2671,6 +2675,7 @@
 <translation id="7995512525968007366">Նշված չէ</translation>
 <translation id="7998269595945679889">«Բացել ինկոգնիտո ներդիր» կոճակ։ Սեղմեք Enter՝ նոր ինկոգնիտո ներդիր բացելու համար։</translation>
 <translation id="800218591365569300">Փակեք մյուս ներդիրներն ու ծրագրերը՝ տարածք ազատելու համար:</translation>
+<translation id="8002230960325005199">Տեսնել առնչվող կայքերը նոր ներդիրում</translation>
 <translation id="8003046808285812021">«<ph name="SEARCH_TERMS" />»</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
 <translation id="8009225694047762179">Կառավարել գաղտնաբառերը</translation>
@@ -2774,6 +2779,7 @@
 <translation id="8270242299912238708">PDF փաստաթղթեր</translation>
 <translation id="8275952078857499577">Չառաջարկել թարգմանել այս կայքը</translation>
 <translation id="8277900682056760511">Վճարման մշակման թերթը բացված է</translation>
+<translation id="8279611986089885641">Chrome-ի ծանուցումները պետք է միացված լինեն։ Դրանք միացնելու համար անցեք <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />։</translation>
 <translation id="8280630997017109758">Դարակ 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Բաց թողնել</translation>

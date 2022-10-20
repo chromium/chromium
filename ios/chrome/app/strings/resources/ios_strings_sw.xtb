@@ -109,6 +109,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1687475363370981210">Tia Alama kuwa Umesoma Zote</translation>
 <translation id="1689333818294560261">Jina la kuwakilisha</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> vimechaguliwa</translation>
+<translation id="1715515772563243997">Ikiwa unaiamini tovuti ya <ph name="SITE" />, unaweza kutumia nenosiri ulilohifadhi ili uingie katika akaunti.</translation>
 <translation id="1740468249224277719">Gusa mara mbili ili usakinishe.</translation>
 <translation id="1752547299766512813">Hifadhi Manenosiri</translation>
 <translation id="1753905327828125965">Zinazotembelewa Zaidi</translation>
@@ -151,6 +152,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2149973817440762519">Badilisha Alamisho</translation>
 <translation id="2155145621546387786">Shiriki Chrome</translation>
 <translation id="2175927920773552910">Msimbo wa QR</translation>
+<translation id="2178545675770638239">Chagua Nenosiri</translation>
 <translation id="2218443599109088993">Sogeza Mbali</translation>
 <translation id="2230173723195178503">Ukurasa wa Wavuti umepakiwa</translation>
 <translation id="2239626343334228536">Inafuta data ya kuvinjari...</translation>
@@ -434,6 +436,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4502566650163919158">Kagua Sasa</translation>
 <translation id="4505980578794259603">Mara ya mwisho kukaguliwa <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Funga matangazo ya kuingia kwenye akaunti</translation>
+<translation id="4514889972748124117">Pendekeza Nenosiri Thabiti...</translation>
 <translation id="4520798012560649652">Pata maelezo zaidi kuhusu Hali fiche</translation>
 <translation id="4526249700380860531">Angalia na udhibiti manenosiri yaliyohifadhiwa kwenye <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Kagua data yako iliyosawazishwa</translation>
@@ -1016,6 +1019,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8917490105272468696">Ndiyo, Ninakubali</translation>
 <translation id="8928133177108699615">Kompyuta ya mezani</translation>
 <translation id="8952559610785099500">Weka Nenosiri</translation>
+<translation id="8953046091948372197">Utaona manenosiri yako hapa</translation>
 <translation id="895541991026785598">Ripoti Tatizo</translation>
 <translation id="8974714402877957201">1. Fungua Mipangilio ya iPad</translation>
 <translation id="8976382372951310360">Usaidizi</translation>
@@ -1049,6 +1053,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9200875785104711666">siku <ph name="TIME" /> zilizopita</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Ripoti ya kuacha kufanya kazi imetumwa.</translation>
+<translation id="941747855997058526">Chagua Nenosiri...</translation>
 <translation id="952704832371081537">Ghairi</translation>
 <translation id="953008885340860025">Umeondoka katika akaunti kwenye Chrome</translation>
 <translation id="959066944189734975">Unafuatilia <ph name="CHANNEL_NAME" /></translation>

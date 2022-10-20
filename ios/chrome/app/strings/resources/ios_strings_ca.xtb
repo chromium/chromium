@@ -109,6 +109,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1687475363370981210">Marca-ho tot com a llegit</translation>
 <translation id="1689333818294560261">Àlies</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionades</translation>
+<translation id="1715515772563243997">Si confies en <ph name="SITE" />, pots utilitzar una contrasenya desada per iniciar la sessió.</translation>
 <translation id="1740468249224277719">Feu doble toc per instal·lar l'aplicació.</translation>
 <translation id="1752547299766512813">Desa les contrasenyes</translation>
 <translation id="1753905327828125965">Els més visitats</translation>
@@ -151,6 +152,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2149973817440762519">Edita l'adreça d'interès</translation>
 <translation id="2155145621546387786">Comparteix Chrome</translation>
 <translation id="2175927920773552910">Codi QR</translation>
+<translation id="2178545675770638239">Selecciona una contrasenya</translation>
 <translation id="2218443599109088993">Redueix</translation>
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
 <translation id="2239626343334228536">S'estan esborrant les dades de navegació...</translation>
@@ -434,6 +436,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4502566650163919158">Comprova ara</translation>
 <translation id="4505980578794259603">Última comprovació: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Tanca la promoció d'inici de sessió</translation>
+<translation id="4514889972748124117">Suggereix una contrasenya segura...</translation>
 <translation id="4520798012560649652">Més informació sobre el mode d'incògnit</translation>
 <translation id="4526249700380860531">Consulta i gestiona les contrasenyes desades a <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
@@ -1016,6 +1019,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8917490105272468696">Sí, ho accepto</translation>
 <translation id="8928133177108699615">Ordinador</translation>
 <translation id="8952559610785099500">Afegeix una contrasenya</translation>
+<translation id="8953046091948372197">Trobaràs les contrasenyes aquí</translation>
 <translation id="895541991026785598">Informa d'un problema</translation>
 <translation id="8974714402877957201">1. Obre la configuració de l'iPad.</translation>
 <translation id="8976382372951310360">Ajuda</translation>
@@ -1049,6 +1053,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9200875785104711666">Fa <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">L'informe d'error s'ha enviat.</translation>
+<translation id="941747855997058526">Selecciona una contrasenya...</translation>
 <translation id="952704832371081537">Cancel·la</translation>
 <translation id="953008885340860025">S'ha tancat la sessió de Chrome</translation>
 <translation id="959066944189734975">Segueixes <ph name="CHANNEL_NAME" /></translation>

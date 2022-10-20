@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1057925581724305206">Full háskerpa (1080p)</translation>
+<translation id="1076394037877376434">Eyða síðu <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Myndavélarstilling</translation>
 <translation id="1153190633558910465">Slökkt á línum</translation>
 <translation id="1175958423215084756">Tengill greindist. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Síðu <ph name="PAGE_NUMBER" /> var eytt</translation>
 <translation id="1258009455399840361">Snúa um 90 gráður réttsælis</translation>
 <translation id="1276998909102132017">Myndir úr galleríi</translation>
 <translation id="1300209025925956156">Skannaðu skjalið</translation>

@@ -109,6 +109,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1687475363370981210">Oznacz wszystkie jako przeczytane</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="1700629756560807968">Wybrane: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">Jeśli ufasz stronie <ph name="SITE" />, możesz użyć zapisanego hasła, aby się zalogować.</translation>
 <translation id="1740468249224277719">Kliknij dwukrotnie, by zainstalować.</translation>
 <translation id="1752547299766512813">Zapisuj hasła</translation>
 <translation id="1753905327828125965">Najczęstsze</translation>
@@ -151,6 +152,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2149973817440762519">Edytuj zakładkę</translation>
 <translation id="2155145621546387786">Udostępnij Chrome</translation>
 <translation id="2175927920773552910">Kod QR</translation>
+<translation id="2178545675770638239">Wybierz hasło</translation>
 <translation id="2218443599109088993">Pomniejsz</translation>
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
 <translation id="2239626343334228536">Czyszczę dane przeglądania…</translation>
@@ -434,6 +436,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4502566650163919158">Sprawdź teraz</translation>
 <translation id="4505980578794259603">Ostatnio sprawdzano <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Zamknij okno zachęcające do logowania</translation>
+<translation id="4514889972748124117">Zaproponuj silne hasło...</translation>
 <translation id="4520798012560649652">Więcej informacji o trybie incognito</translation>
 <translation id="4526249700380860531">Wyświetlaj zapisane hasła i zarządzaj nimi na <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
@@ -1016,6 +1019,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8917490105272468696">Tak, zgadzam się</translation>
 <translation id="8928133177108699615">Komputerowy</translation>
 <translation id="8952559610785099500">Dodaj hasło</translation>
+<translation id="8953046091948372197">Tu znajdziesz swoje zakładki</translation>
 <translation id="895541991026785598">Zgłaszanie problemu</translation>
 <translation id="8974714402877957201">1. Otwórz Ustawienia na iPadzie.</translation>
 <translation id="8976382372951310360">Pomoc</translation>
@@ -1049,6 +1053,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9200875785104711666"><ph name="TIME" /> d temu</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Raport o awarii został wysłany.</translation>
+<translation id="941747855997058526">Wybierz hasło</translation>
 <translation id="952704832371081537">Anuluj</translation>
 <translation id="953008885340860025">Wylogowano z Chrome</translation>
 <translation id="959066944189734975">Obserwujesz kanał <ph name="CHANNEL_NAME" /></translation>

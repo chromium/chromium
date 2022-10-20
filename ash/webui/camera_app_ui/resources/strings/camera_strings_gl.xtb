@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Eliminar páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modo de cámara</translation>
 <translation id="1153190633558910465">Sen grade</translation>
 <translation id="1175958423215084756">Detectouse unha ligazón. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Eliminouse a páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Xirar 90 graos cara á dereita</translation>
 <translation id="1276998909102132017">Imaxes da galería</translation>
 <translation id="1300209025925956156">Escanea o teu documento</translation>
@@ -19,6 +22,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4 × 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Non se gravou nada</translation>
 <translation id="1838104802459806957">Inclinar cara arriba</translation>
 <translation id="1843105061469674856">Escanear páxina adicional</translation>
@@ -93,6 +97,7 @@
 <translation id="4705093842003735294">Máxima resolución</translation>
 <translation id="4890010094662541459">3 × 3</translation>
 <translation id="491895758387112773">Gravación de múltiples emisións de vídeo</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Proporción da foto</translation>
 <translation id="5057360777601936059">A cámara non está dispoñible nestes momentos.
         Comproba se está conectada correctamente.</translation>
@@ -101,6 +106,7 @@
 <translation id="5266635337630551423">Esquina superior esquerda do documento</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5320594929574852403">Desprazándose cara á esquerda</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Coloca todos os bordos do documento no marco. O escaneado funciona mellor se o documento e o fondo son de cores diferentes.</translation>
 <translation id="5662366948659129155">Escaneando páxina <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Cadrado</translation>

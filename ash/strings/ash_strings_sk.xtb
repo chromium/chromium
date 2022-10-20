@@ -433,6 +433,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3413817803639110246">Zatiaľ nie je čo zobraziť</translation>
 <translation id="3428447136709161042">Odpojiť od siete <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Vrátite sa potiahnutím sprava</translation>
+<translation id="3431517721463707585">14. plocha</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="343571671045587506">Úprava pripomenutia</translation>
 <translation id="3435967511775410570">Odtlačok prsta bol rozpoznaný</translation>
@@ -673,6 +674,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4731797938093519117">Rodičovský prístup</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (ľavé)</translation>
 <translation id="4734965478015604180">Na šírku</translation>
+<translation id="4735944890391795473">12. plocha</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4740516757091333363">Chcete odstrániť uloženú plochu?</translation>
 <translation id="4752784485658729358">Povolených je iba šesť uložených plôch. Ak chcete uložiť novú, niektorú odstráňte.</translation>
@@ -693,6 +695,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4860284199500934869">Ak chcete stiahnuť <ph name="FILENAME" />, skontrolujte pripojenie k sieti</translation>
 <translation id="486056901304535126">K pokusu o stiahnutie dôjde neskôr. Než sa sťahovanie dokončí, reč bude odosielaná na spracovanie Googlu.</translation>
 <translation id="4864369630010738180">Prebieha prihlasovanie...</translation>
+<translation id="4864648187878336334">15. plocha</translation>
 <translation id="4868492592575313542">aktivované</translation>
 <translation id="4872237917498892622">Alt + Hľadať alebo Shift</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
@@ -719,6 +722,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">16. plocha</translation>
 <translation id="5003993274120026347">Ďalšia veta</translation>
 <translation id="5016558321564993266">Prepnite zvýrazňovač. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Čas vypršal</translation>
@@ -734,6 +738,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5098537242461068432">Plocha a okná boli znova otvorené</translation>
 <translation id="5104236669533825617">Záznam z obrazovky sa nedá vytvoriť</translation>
 <translation id="5107522548814527560">Internet</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Zobraziť ďalší mesiac</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
 <translation id="5147567197700016471">Odomknutý</translation>
@@ -821,6 +826,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Konektor mikrofónu</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vyžaduje vašu pozornosť.</translation>
+<translation id="5662075790140998213">10. plocha</translation>
 <translation id="5662709761327382534">Nahrávať mikrofón <ph name="CURRENT_STATE" />. Stlačením klávesa Enter zapnete nahrávanie zvuku z mikrofónu <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
 <translation id="5673434351075758678">Po synchronizácii nastavení bol zmenený z možnosti <ph name="FROM_LOCALE" /> na <ph name="TO_LOCALE" />.</translation>
@@ -1020,6 +1026,8 @@ Nová inštalácia</translation>
 <translation id="6753390234084146956">karty</translation>
 <translation id="6757237461819837179">Neprehrávajú sa žiadne médiá</translation>
 <translation id="6777216307882431711">Napájajú sa pripojené zariadenia USB-C</translation>
+<translation id="6781002679438061620">9. plocha</translation>
+<translation id="6782182743534150858">13. plocha</translation>
 <translation id="6786750046913594791">Zatvoriť priečinok</translation>
 <translation id="6787595647772650851">Obnoviť poslednú reláciu</translation>
 <translation id="6790428901817661496">Prehrať</translation>
@@ -1081,6 +1089,7 @@ Nová inštalácia</translation>
 <translation id="7098053464892629930">Stiahnite si aplikáciu zariadenia <ph name="NAME" /> na Google Play, aby ste videli všetky dostupné funkcie</translation>
 <translation id="7098389117866926363">Zariadenie USB-C (ľavý port vzadu)</translation>
 <translation id="7106330611027933926">Zobraziť panel na ploche</translation>
+<translation id="7116969082764510092">11. plocha</translation>
 <translation id="7118268675952955085">snímka obrazovky</translation>
 <translation id="7126996685418858413">Otvorené v poslednom týždni</translation>
 <translation id="7130207228079676353">S NAJVÄČŠOU PRAVDEPODOBNOSŤOU</translation>
@@ -1179,6 +1188,7 @@ Nová inštalácia</translation>
 <translation id="7662283695561029522">Klepnutím spustíte konfiguráciu</translation>
 <translation id="7670953955701272011">Otvoriť tento dátum v Kalendári Google</translation>
 <translation id="7671610481353807627">Aplikácie sú zoradené podľa farby</translation>
+<translation id="7672095158465655885">Pripojené k sieti <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Pre kameru <ph name="CAMERA_NAME" /> je nastavený vstup.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Pridať novú mobilnú sieť</translation>
@@ -1463,5 +1473,6 @@ Nová inštalácia</translation>
 <translation id="974545358917229949">Zobrazujú sa výsledky (<ph name="RESULT_COUNT" />) pre <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Na šírku</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> bolo zatvorené.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Dostávajte najnovšie funkcie a zlepšenia zabezpečenia. Aktualizácie prebiehajú na pozadí.</translation>
 </translationbundle>

@@ -109,6 +109,7 @@
 <translation id="1687475363370981210">Адзначыць усе як прачытаныя</translation>
 <translation id="1689333818294560261">Псеўданім</translation>
 <translation id="1700629756560807968">Выбрана: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">Калі вы давяраеце сайту <ph name="SITE" />, можаце выкарыстаць для ўваходу захаваны пароль.</translation>
 <translation id="1740468249224277719">Каб усталяваць, націсніце двойчы.</translation>
 <translation id="1752547299766512813">Захоўваць паролі</translation>
 <translation id="1753905327828125965">Часцей за ўсё наведваліся</translation>
@@ -151,6 +152,7 @@
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
 <translation id="2155145621546387786">Абагуліць Chrome</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2178545675770638239">Выберыце пароль</translation>
 <translation id="2218443599109088993">Паменшыць</translation>
 <translation id="2230173723195178503">Вэб-старонка загружана</translation>
 <translation id="2239626343334228536">Ідзе ачыстка даных прагляду...</translation>
@@ -434,6 +436,8 @@
 <translation id="4502566650163919158">Праверыць</translation>
 <translation id="4505980578794259603">Апошняя праверка: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Закрыць рэкламны элемент уваходу</translation>
+<translation id="4514889972748124117">Прапанаваць надзейны пароль…</translation>
+<translation id="4520798012560649652">Даведацца больш пра рэжым інкогніта</translation>
 <translation id="4526249700380860531">Праглядзець захаваныя паролі і кіраваць імі можна на старонцы <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
 <translation id="4536418791685807335">Увайдзіце яшчэ раз.</translation>
@@ -1015,6 +1019,7 @@
 <translation id="8917490105272468696">Так, я згаджаюся</translation>
 <translation id="8928133177108699615">Рэжым ПК</translation>
 <translation id="8952559610785099500">Дадайце пароль</translation>
+<translation id="8953046091948372197">Вашы паролі знаходзяцца тут</translation>
 <translation id="895541991026785598">Паведаміць аб праблеме</translation>
 <translation id="8974714402877957201">1. Адкрыйце налады iPad.</translation>
 <translation id="8976382372951310360">Даведка</translation>
@@ -1048,6 +1053,7 @@
 <translation id="9200875785104711666"><ph name="TIME" /> сут таму</translation>
 <translation id="9203116392574189331">Перадача вэб-сайта</translation>
 <translation id="9223358826628549784">Справаздача аб збоях адпраўлена.</translation>
+<translation id="941747855997058526">Выбраць пароль…</translation>
 <translation id="952704832371081537">Скасаваць</translation>
 <translation id="953008885340860025">Уваход у Chrome не выкананы</translation>
 <translation id="959066944189734975">Вы падпісаны на канал "<ph name="CHANNEL_NAME" />"</translation>

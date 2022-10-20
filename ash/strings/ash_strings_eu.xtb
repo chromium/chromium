@@ -340,6 +340,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2865888419503095837">Sarearen informazioa</translation>
 <translation id="2872961005593481000">Itzali</translation>
 <translation id="2878884018241093801">Ez dago azken elementurik</translation>
+<translation id="2885950158625301909">Lortu informazio gehiago</translation>
 <translation id="2891209721153296020">"Desautatu"</translation>
 <translation id="2894949423239620203">Baliteke kableak errendimenduan eragina izatea</translation>
 <translation id="2914580577416829331">Pantaila-argazkiak</translation>
@@ -1051,6 +1052,7 @@ Berriki instalatu da</translation>
 <translation id="6961121602502368900">Telefonoa isilarazteko aukera ez dago erabilgarri laneko profilean</translation>
 <translation id="6961840794482373852">Alt + gora egiteko gezi-tekla lasterbidea aldatu egin da. Orrian gora egiteko tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + gora egiteko gezi-tekla.</translation>
 <translation id="696267987219125751">Kamerako markoa desaktibatuta dago.</translation>
+<translation id="6964690557625666701">Ainguratutako elementuak festara joan dira</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6972754398087986839">Hasi erabiltzen</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1358,6 +1360,8 @@ Berriki instalatu da</translation>
 <translation id="8734991477317290293">Agian sakatzen ari zaren teklak erregistratzen ari da, pasahitzak lapurtzeko asmoz.</translation>
 <translation id="8735678380411481005">Teklatuaren atzeko argiztapenaren kolorea</translation>
 <translation id="8735953464173050365">Erakutsi teklatuaren ezarpenak. <ph name="KEYBOARD_NAME" /> dago hautatuta.</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Aktibatu kamera erabiltzeko baimena, baimen hori duten aplikazio eta webguneek gailura konektatutako kamerak erabil ditzaten.</translation>
 <translation id="8755498163081687682">Egiaztatu zure identitatea: <ph name="ORIGIN_NAME" /> webguneak zeu zarela berretsi nahi du</translation>
 <translation id="875593634123171288">Erakutsi VPN ezarpenak</translation>

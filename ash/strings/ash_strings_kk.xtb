@@ -340,6 +340,7 @@
 <translation id="2865888419503095837">Желі ақпараты</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="2878884018241093801">Соңғы элементтер жоқ</translation>
+<translation id="2885950158625301909">Толық ақпарат</translation>
 <translation id="2891209721153296020">"Таңдаудан бас тарту"</translation>
 <translation id="2894949423239620203">Кабельдің өнімділікке әсері тиюі мүмкін</translation>
 <translation id="2914580577416829331">Экраннан түсірілгендер</translation>
@@ -1050,6 +1051,7 @@
 <translation id="6961121602502368900">Жұмыс профилінде дыбыссыз телефон функциясы қолжетімді емес.</translation>
 <translation id="6961840794482373852">Alt + жоғарыға бағыттауыш перне тіркесімінің функциясы өзгерді. Page Up пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарыға бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="696267987219125751">Камерамен кадрлау өшірулі.</translation>
+<translation id="6964690557625666701">Барлық бекітілген элемент Shelf Party режимінде.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1358,6 +1360,8 @@
 <translation id="8734991477317290293">Ол басылған пернелерді "ұрлап алу" әрекетін жасауы мүмкін.</translation>
 <translation id="8735678380411481005">Пернетақта жарығының түсі</translation>
 <translation id="8735953464173050365">Пернетақта параметрлерін көрсету. <ph name="KEYBOARD_NAME" /> таңдалды</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Қолданбалар мен веб-беттердің осы құрылғыға қосылған камераларды пайдалануына мүмкіндік беру үшін камера рұқсатын қосыңыз.</translation>
 <translation id="8755498163081687682">Жеке басыңызды растаңыз: <ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>

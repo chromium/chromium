@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1057925581724305206">ሙሉ ኤችዲ (1080p)</translation>
+<translation id="1076394037877376434">ገጽ <ph name="PAGE_NUMBER" />ን ሰርዝ</translation>
 <translation id="1113173431709655881">የካሜራ ሁነታ</translation>
 <translation id="1153190633558910465">ፍርግርግ ጠፍቷል</translation>
 <translation id="1175958423215084756">አገናኝ ተገኝቷል። <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">ገጽ <ph name="PAGE_NUMBER" /> ተሰርዟል</translation>
 <translation id="1258009455399840361">90 ዲግሪ በሰዓት አቅጣጫ አሽከርክር</translation>
 <translation id="1276998909102132017">የማዕከለ-ሥዕላት ምስሎች</translation>
 <translation id="1300209025925956156">ሰነድዎን ይቃኙ</translation>

@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">البورمية/ميانمار</translation>
 <translation id="2392369802118427583">تفعيل</translation>
 <translation id="240770291734945588">مساحة التخزين المتاحة هي <ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">تسجيل الدخول إلى الشبكة</translation>
 <translation id="2425665904502185219">إجمالي حجم الملف</translation>
 <translation id="2428749644083375155">جارٍ نسخ <ph name="NUMBER_OF_ITEMS" /> عنصر إلى <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">النوع</translation>
@@ -325,6 +326,7 @@
 <translation id="3830674330436234648">لا تتوفر أي عملية تشغيل</translation>
 <translation id="383652340667548381">الصربية</translation>
 <translation id="385051799172605136">رجوع</translation>
+<translation id="3851491607336266896">تم الاتصال بالشبكة، ولكن الاتصال بالإنترنت محدود.</translation>
 <translation id="3855472144336161447">‏الألمانية Neo 2</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3866249974567520381">الوصف</translation>
@@ -453,6 +455,7 @@
 <translation id="4900532980794411603">‏المشاركة مع نظام Parallels Desktop</translation>
 <translation id="4902546322522096650">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، الاتصال</translation>
 <translation id="4906580650526544301">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، التفاصيل</translation>
+<translation id="4929673617759421391">تحظر سياسة المشرف إمكانية لصق هذا الملف.</translation>
 <translation id="4935975195727477204">زهرة غازانيا</translation>
 <translation id="4943368462779413526">كرة القدم</translation>
 <translation id="4961158930123534723">‏تمّت مشاركة ملف واحد مع نظام Parallels Desktop.</translation>
@@ -510,6 +513,7 @@
 <translation id="5286194356314741248">جارٍ البحث</translation>
 <translation id="5288441970121584418">برغر</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5293615890992542006">تحظر سياسة المشرف إمكانية نقل هذا الملف.</translation>
 <translation id="5305688511332277257">لم يتم تثبيت أي شهادات</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5318819489018851358">‏المشاركة مع نظام التشغيل Linux</translation>
@@ -711,6 +715,7 @@
 <translation id="6993826899923627728">هذه العناصر موضوعة في "المهملات"</translation>
 <translation id="6998711733709403587">تم اختيار <ph name="SELCTED_FOLDERS_COUNT" /> من المجلدات</translation>
 <translation id="7008426324576352165">تحتاج مؤسستك إلى مساحة تخزين إضافية لإكمال التحميل.</translation>
+<translation id="7009985720488544166">تحظر سياسة المشرف إمكانية نقل الملفات البالغ عددها <ph name="COUNT" />.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">تعذّر التثبيت.</translation>
 <translation id="7031639531908619281">التركية</translation>
@@ -939,6 +944,7 @@
 <translation id="8903931173357132290">خرّيج</translation>
 <translation id="8912078710089354287">كلب يهُز ذيله</translation>
 <translation id="8919081441417203123">الدانماركية</translation>
+<translation id="8949925099261528566">تم الاتصال بالشبكة ولكنها غير متصلة بالإنترنت.</translation>
 <translation id="8965697826696209160">ليست هناك مساحة كافية.</translation>
 <translation id="8997962250644902079">‏الصينية (التقليدية) باستخدام لوحة مفاتيح Pinyin</translation>
 <translation id="8998871447376656508">‏لا تتوفّر مساحة كافية في Google Drive لإكمال التحميل.</translation>
@@ -969,6 +975,7 @@
 <translation id="9183302530794969518">‏مستندات Google</translation>
 <translation id="9189836632794948435">الكازاخية</translation>
 <translation id="9200427192836333033">العناصر المستخرَجة: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="9210751050717126865">تحظر سياسة المشرف إمكانية لصق الملفات البالغ عددها <ph name="COUNT" />.</translation>
 <translation id="9213073329713032541">بدأ التثبيت بنجاح.</translation>
 <translation id="9219103736887031265">الصور</translation>
 <translation id="9219908252191632183">قمري</translation>

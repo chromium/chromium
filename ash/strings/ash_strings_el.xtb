@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">Δεν υπάρχει ακόμη περιεχόμενο για εμφάνιση</translation>
 <translation id="3428447136709161042">Αποσύνδεση από το δίκτυο <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Για να επιστρέψετε, σύρετε από τα δεξιά.</translation>
+<translation id="3431517721463707585">Γραφείο 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Επεξεργασία υπενθύμισης</translation>
 <translation id="3435967511775410570">Το δακτυλικό αποτύπωμα αναγνωρίστηκε.</translation>
@@ -673,6 +674,7 @@
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Αριστερό)</translation>
 <translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
+<translation id="4735944890391795473">Γραφείο 12</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
 <translation id="4740516757091333363">Διαγραφή αποθηκευμένου γραφείου;</translation>
 <translation id="4752784485658729358">Επιτρέπονται μόνο 6 αποθηκευμένα γραφεία. Αφαιρέστε ένα γραφείο για να αποθηκεύσετε ένα νέο.</translation>
@@ -693,6 +695,7 @@
 <translation id="4860284199500934869">Ελέγξτε τη σύνδεση δικτύου για να κατεβάσετε το αρχείο <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Θα γίνει προσπάθεια για λήψη αργότερα. Η ομιλία θα σταλεί στην Google για επεξεργασία, μέχρι να ολοκληρωθεί η λήψη.</translation>
 <translation id="4864369630010738180">Σύνδεση…</translation>
+<translation id="4864648187878336334">Γραφείο 15</translation>
 <translation id="4868492592575313542">ενεργοποιημένο</translation>
 <translation id="4872237917498892622">Alt+Search ή Shift</translation>
 <translation id="4881695831933465202">Άνοιγμα</translation>
@@ -719,6 +722,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Γραφείο 16</translation>
 <translation id="5003993274120026347">Επόμενη πρόταση</translation>
 <translation id="5016558321564993266">Επιλέξτε τον μαρκαδόρο. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Τέλος χρόνου</translation>
@@ -734,6 +738,7 @@
 <translation id="5098537242461068432">Εκ νέου άνοιγμα γραφείου και παραθύρων</translation>
 <translation id="5104236669533825617">Δεν είναι δυνατή η δημιουργία ψηφιακής εγγραφής οθόνης</translation>
 <translation id="5107522548814527560">Ιστός</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Εμφάνιση επόμενου μήνα</translation>
 <translation id="5136175204352732067">Συνδέθηκε διαφορετικό πληκτρολόγιο</translation>
 <translation id="5147567197700016471">Ξεκλειδώθηκε</translation>
@@ -821,6 +826,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Υποδοχή μικροφώνου</translation>
 <translation id="5652575806481723716">Η εφαρμογή <ph name="FOCUSED_APP_NAME" /> χρειάζεται την προσοχή σας.</translation>
+<translation id="5662075790140998213">Γραφείο 10</translation>
 <translation id="5662709761327382534">Εγγραφή μικροφώνου <ph name="CURRENT_STATE" />. Πατήστε Enter για να ενεργοποιήσετε την εγγραφή μικροφώνου <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">Ενεργοπ.</translation>
 <translation id="5673434351075758678">Από "<ph name="FROM_LOCALE" />" σε "<ph name="TO_LOCALE" />" μετά τον συγχρονισμό των ρυθμίσεων.</translation>
@@ -1020,6 +1026,8 @@
 <translation id="6753390234084146956">καρτέλες</translation>
 <translation id="6757237461819837179">Καμία αναπαραγωγή μέσων</translation>
 <translation id="6777216307882431711">Ενεργοποίηση συνδεδεμένων συσκευών USB-C</translation>
+<translation id="6781002679438061620">Γραφείο 9</translation>
+<translation id="6782182743534150858">Γραφείο 13</translation>
 <translation id="6786750046913594791">Κλείσιμο φακέλου</translation>
 <translation id="6787595647772650851">Επαναφορά τελευταίας περιόδου λειτουργίας</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
@@ -1081,6 +1089,7 @@
 <translation id="7098053464892629930">Κατεβάστε την εφαρμογή για το <ph name="NAME" /> στο Google Play για να δείτε όλες τις διαθέσιμες λειτουργίες</translation>
 <translation id="7098389117866926363">Συσκευή USB-C (πίσω αριστερή θύρα)</translation>
 <translation id="7106330611027933926">Εμφάνιση γραμμής γραφείων</translation>
+<translation id="7116969082764510092">Γραφείο 11</translation>
 <translation id="7118268675952955085">στιγμιότυπο οθόνης</translation>
 <translation id="7126996685418858413">Ανοίχτηκαν την προηγούμενη εβδομάδα</translation>
 <translation id="7130207228079676353">ΔΗΜΟΦΙΛΕΣΤΕΡΕΣ</translation>
@@ -1179,6 +1188,7 @@
 <translation id="7662283695561029522">Πατήστε για διαμόρφωση</translation>
 <translation id="7670953955701272011">Άνοιγμα αυτής της ημερομηνίας στο Ημερολόγιο Google</translation>
 <translation id="7671610481353807627">Οι εφαρμογές ταξινομούνται κατά χρώμα</translation>
+<translation id="7672095158465655885">Συνδέθηκε σε <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Η είσοδος κάμερας ρυθμίστηκε σε <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Προσθήκη νέου δικτύου κινητής τηλεφωνίας</translation>
@@ -1464,5 +1474,6 @@
 <translation id="974545358917229949">Εμφάνιση <ph name="RESULT_COUNT" /> αποτελεσμάτων για την αναζήτηση <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Οριζόντια</translation>
 <translation id="990277280839877440">Το παράθυρο <ph name="WINDOW_TITILE" /> έκλεισε.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Αποκτήστε τις πιο πρόσφατες λειτουργίες και βελτιώσεις ασφάλειας. Οι ενημερώσεις πραγματοποιούνται στο παρασκήνιο.</translation>
 </translationbundle>

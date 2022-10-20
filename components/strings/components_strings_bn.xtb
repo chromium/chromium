@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">মোশন সেন্সর</translation>
 <translation id="1717494416764505390">মেলবক্স ৩</translation>
 <translation id="1718029547804390981">ব্যাখ্যার জন্য ডকুমেন্টের সাইজ বেশি বড়</translation>
+<translation id="1719434663396780149">দাম কমার বিজ্ঞপ্তি চালু করা আছে। আপনি <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="1720941539803966190">টিউটোরিয়াল বন্ধ করুন</translation>
 <translation id="1721424275792716183">* এই ফিল্ডে কিছু লেখা প্রয়োজন</translation>
 <translation id="1725591448053514783">এনভেলপ ইউ ৬</translation>
@@ -980,6 +981,7 @@
 <translation id="3550112004925580947">হসপিটালিটি শিল্প</translation>
 <translation id="3552297013052089404">Sans-Serif ফন্ট</translation>
 <translation id="3558573058928565255">দিনের সময়</translation>
+<translation id="3560824484345057728">সম্পর্কিত সাইট দেখুন</translation>
 <translation id="3566021033012934673">আপনার সংযোগ ব্যক্তিগত নয়</translation>
 <translation id="3567778190852720481">এন্টারপ্রাইজ অ্যাকাউন্ট দিয়ে এনরোল করা যাচ্ছে না (এন্টারপ্রাইজ অ্যাকাউন্টকে এখানে অনুমতি দেওয়া হয়নি)।</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1365,6 +1367,7 @@
 <translation id="4542971377163063093">ট্রে ৬</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">আপনার এক্সটেনশানগুলি অক্ষম করে দেখুন।</translation>
+<translation id="4559134504959026834">এই সাইটটি <ph name="SET_OWNER" /> দ্বারা সংজ্ঞায়িত গ্রুপে রয়েছে এবং  আপনার অ্যাক্টিভিটি দেখতে পাবে</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">আউটডোর</translation>
 <translation id="4567686777917670400">আপনার অ্যাডমিনিস্ট্রেটর দূরবর্তী স্থান থেকে আপনার ব্রাউজারের সেটআপ পরিবর্তন করতে পারেন। এই ডিভাইসের অ্যাক্টিভিটি Chromium-এর বাইরে থেকেও ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -2279,6 +2282,7 @@
 <translation id="7003335073762455340">আপনি এই প্রোডাক্টটি ট্র্যাক করছেন। এই পৃষ্ঠাটি <ph name="LAST_BOOKMARKS_FOLDER" />-এ সেভ করা আছে।</translation>
 <translation id="7004583254764674281">কার্ড আরও দ্রুত কনফার্ম করতে Windows Hello ব্যবহার করুন</translation>
 <translation id="7006930604109697472">নিরাপদ না হলেও পাঠান</translation>
+<translation id="7007006156138369007">একই সময়ে একাধিক সাইটে দাম ট্র্যাক করুন</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">জুম লেভেল</translation>
 <translation id="7016992613359344582">এই চার্জটি একবার করা হতে পারে অথবা বারবার করা হতে পারে এবং স্পষ্টভাবে তথ্য নাও থাকতে পারে।</translation>
@@ -2670,6 +2674,7 @@
 <translation id="7995512525968007366">নির্দিষ্ট করে উল্লেখ করা নেই</translation>
 <translation id="7998269595945679889">'ছদ্মবেশী ট্যাব' বোতাম খুলুন, গোপনে ব্রাউজিংয়ের জন্য নতুন ছদ্মবেশী ট্যাব খুলতে Enter প্রেস করুন</translation>
 <translation id="800218591365569300">মেমরি ফাঁকা করতে অন্যান্য ট্যাব বা প্রোগ্রাম বন্ধ করার চেষ্টা করুন।</translation>
+<translation id="8002230960325005199">নতুন ট্যাবে সম্পর্কিত সাইট দেখুন</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
 <translation id="8009225694047762179">পাসওয়ার্ড পরিচালনা করুন</translation>
@@ -2773,6 +2778,7 @@
 <translation id="8270242299912238708">পিডিএফ দস্তাবেজগুলি</translation>
 <translation id="8275952078857499577">এই সাইট অনুবাদ করা যাবে না</translation>
 <translation id="8277900682056760511">পেমেন্ট হ্যান্ডলার শিট খোলা আছে</translation>
+<translation id="8279611986089885641">Chrome বিজ্ঞপ্তি চালু রাখতে হবে। আপনি <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> থেকে সেগুলি চালু করতে পারবেন।</translation>
 <translation id="8280630997017109758">ট্রে ১১</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">ছেড়ে যান</translation>

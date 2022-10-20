@@ -72,6 +72,7 @@
 <translation id="1067048845568873861">สร้างแล้ว</translation>
 <translation id="1067661089446014701">คุณสามารถเข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในบัญชี Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="1067922213147265141">บริการอื่นๆ ของ Google</translation>
+<translation id="1069104208554708737">พาสคีย์นี้จะบันทึกในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="1069355737714877171">ลบโปรไฟล์ eSIM ที่มีชื่อว่า <ph name="PROFILE_NAME" /></translation>
 <translation id="1069814191880976658">เลือกหน้าจออื่น</translation>
 <translation id="1070377999570795893">โปรแกรมอื่นบนคอมพิวเตอร์ได้เพิ่มส่วนขยายที่อาจเปลี่ยนลักษณะการทำงานของ Chrome
@@ -347,6 +348,7 @@
 <translation id="1324106254079708331">ป้องกันบัญชี Google ส่วนบุคคลของผู้ที่เสี่ยงต่อการโจมตีแบบกำหนดเป้าหมาย</translation>
 <translation id="1327272175893960498">ตั๋ว Kerberos</translation>
 <translation id="1327495825214193325">หากต้องการเปิดใช้การแก้ไขข้อบกพร่อง ADB คุณต้องรีสตาร์ท <ph name="DEVICE_TYPE" /> เครื่องนี้ และต้องรีเซ็ตเป็นค่าเริ่มต้นจึงจะปิดใช้ได้</translation>
+<translation id="1327527584824210101">ใช้พาสคีย์ของคุณ</translation>
 <translation id="1327794256477341646">ฟีเจอร์ที่ต้องใช้ตำแหน่งของคุณจะไม่ทำงาน</translation>
 <translation id="1331977651797684645">นี่คือฉันเอง</translation>
 <translation id="1333489022424033687">ฟีเจอร์บางอย่างใน <ph name="ORIGIN" /> อาจไม่ทำงานจนกว่าคุณจะล้างข้อมูลที่เว็บไซต์อื่นๆ จัดเก็บไว้ในอุปกรณ์ของคุณ</translation>
@@ -407,6 +409,7 @@
 <translation id="139013308650923562">อนุญาตให้ใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์</translation>
 <translation id="1390548061267426325">เปิดเป็นแท็บทั่วไป</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> ไม่ได้รับอนุญาตให้สั่งพิมพ์ไปยัง <ph name="PRINTER_NAME" /> โปรดติดต่อผู้ดูแลระบบ</translation>
+<translation id="1392047138650695757">พจนานุกรมผู้ใช้</translation>
 <translation id="1393283411312835250">ดวงอาทิตย์และเมฆ</translation>
 <translation id="1395730723686586365">โปรแกรมอัปเดตเริ่มต้นแล้ว</translation>
 <translation id="1395832189806039783">ไฮไลต์รายการที่มีโฟกัสของแป้นพิมพ์</translation>
@@ -1516,6 +1519,7 @@
 <translation id="2356070529366658676">ถาม</translation>
 <translation id="2357330829548294574">นำ <ph name="USER_NAME" /> ออก</translation>
 <translation id="2358561147588818967">เว็บไซต์ใช้ JavaScript ได้</translation>
+<translation id="2358703245148663432">อุปกรณ์อื่น</translation>
 <translation id="2358777858338503863">คลิกเพื่ออนุญาตบน <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">แอป Linux อาจไม่ตอบสนอง</translation>
 <translation id="2359345697448000899">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "เครื่องมือ"</translation>
@@ -1876,6 +1880,7 @@
 <translation id="271033894570825754">ใหม่</translation>
 <translation id="2711073837061989559">การทดลองใช้</translation>
 <translation id="2712173769900027643">ขออนุญาต</translation>
+<translation id="2712207122921938368">สร้างพาสคีย์ในอุปกรณ์อื่น</translation>
 <translation id="2713106313042589954">ปิดกล้อง</translation>
 <translation id="2713444072780614174">สีขาว</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
@@ -2388,6 +2393,7 @@
 <translation id="3182749001423093222">ตรวจตัวสะกด</translation>
 <translation id="3183139917765991655">ตัวนำเข้าโปรไฟล์</translation>
 <translation id="3183143381919926261">เครือข่ายอินเทอร์เน็ตมือถือ</translation>
+<translation id="3183613134231754987">ระบบจะบันทึกพาสคีย์นี้เฉพาะใน Windows Hello และพาสคีย์จะยังคงอยู่ในอุปกรณ์นี้หลังจากที่คุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="3183944777708523606">การจัดตำแหน่งจอภาพ</translation>
 <translation id="3184536091884214176">ตั้งค่าหรือจัดการเครื่องพิมพ์ CUPS <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{แอปนี้ถูกบล็อก}other{แอปบางแอปถูกบล็อก}}</translation>
@@ -2869,6 +2875,7 @@
 <translation id="3654045516529121250">อ่านการตั้งค่าการเข้าถึง</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{แอปมีการเข้าถึงอย่างถาวรไปยัง 1 ไฟล์}other{แอปมีการเข้าถึงอย่างถาวรไปยัง # ไฟล์}}</translation>
 <translation id="3658871634334445293">การเร่งความเร็วของ TrackPoint</translation>
+<translation id="3659550105763988702">ใช้พาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="3659929705630080526">คุณป้อนรหัสการเข้าถึงไม่ถูกต้องหลายครั้งเกินไป ลองอีกครั้งในภายหลัง</translation>
 <translation id="3660234220361471169">ไม่น่าเชื่อถือ</translation>
 <translation id="3664511988987167893">ไอคอนส่วนขยาย</translation>
@@ -3143,6 +3150,7 @@
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ต้องการ<ph name="FIRST_PERMISSION" />และ<ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">เลือกแป้นพิมพ์</translation>
 <translation id="3900966090527141178">ส่งออกรหัสผ่าน</translation>
+<translation id="3902789559055749153">เลือกวิธีที่คุณต้องการสร้างพาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="3903187154317825986">แป้นพิมพ์ในตัว</translation>
 <translation id="3904326018476041253">บริการตำแหน่ง</translation>
 <translation id="3904849010307028014">เว็บไซต์จะออกโทเค็นความน่าเชื่อถือให้กับเบราว์เซอร์โดยพิจารณาจากการโต้ตอบของคุณกับเว็บไซต์ เช่น การลงชื่อเข้าใช้บัญชีตามปกติ ภายหลัง เมื่อเว็บไซต์อื่นที่คุณเข้าชมตรวจพบโทเค็นความน่าเชื่อถือที่ถูกต้อง เว็บไซต์นั้นจะถือว่าคุณเป็นมนุษย์ไม่ใช่บ็อต</translation>
@@ -3472,6 +3480,7 @@
 <translation id="4218081191298393750">คลิกไอคอนลำโพงเพื่อปิดเสียงแท็บนี้</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">เกิดข้อผิดพลาดขณะเปิดใช้งาน</translation>
+<translation id="4223845867739585293">สร้างพาสคีย์</translation>
 <translation id="4225397296022057997">ในเว็บไซต์ทั้งหมด</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ไม่อนุญาตส่วนขยายนี้}other{ไม่อนุญาตส่วนขยายบางรายการ}}</translation>
 <translation id="4231095370974836764">ติดตั้งแอปและเกมจาก Google Play ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -4115,6 +4124,7 @@
 <translation id="4838907349371614303">อัปเดตรหัสผ่านแล้ว</translation>
 <translation id="4838958829619609362">ตัวเลือกไม่ได้อยู่ในภาษา<ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">บั&amp;นทึกวิดีโอเป็น...</translation>
+<translation id="4839910546484524995">ตรวจสอบอุปกรณ์</translation>
 <translation id="4840096453115567876">ต้องการออกจากโหมดไม่ระบุตัวตนไหม</translation>
 <translation id="4841741146571978176">ไม่มีเครื่องเสมือนที่จำเป็น โปรดลองตั้งค่า <ph name="VM_TYPE" /> เพื่อดำเนินการต่อ</translation>
 <translation id="4842976633412754305">หน้านี้พยายามโหลดสคริปต์จากแหล่งที่มาที่ไม่มีการรับรอง</translation>
@@ -5032,6 +5042,7 @@
 <translation id="5729712731028706266">&amp;มุมมอง</translation>
 <translation id="5731247495086897348">&amp;วางแล้วไป</translation>
 <translation id="5732392974455271431">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
+<translation id="5733109311583381874">เพิ่มคำของคุณเองลงในพจนานุกรมผู้ใช้เพื่อปรับแต่งคำที่แนะนำในการแปลง</translation>
 <translation id="5733866499231170760">รหัสไม่ถูกต้อง รูปแบบที่คุณป้อนไม่ถูกต้อง โปรดตรวจสอบวิธีการที่ได้รับเพื่อให้แน่ใจว่าคุณป้อนรหัสในรูปแบบที่ถูกต้อง หากแก้ปัญหาไม่ได้ โปรดเว้นช่องนี้ว่างไว้และดำเนินการติดตั้งต่อ</translation>
 <translation id="5734362860645681824">การสื่อสาร</translation>
 <translation id="5734697361979786483">เพิ่มพื้นที่แชร์ไฟล์</translation>
@@ -5143,6 +5154,7 @@
 <translation id="583431638776747">เว็บไซต์ไม่พร้อมใช้งาน</translation>
 <translation id="5834581999798853053">เหลือเวลาอีกประมาณ <ph name="TIME" /> นาที</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - กำลังบันทึกด้วยกล้องหรือไมโครโฟน</translation>
+<translation id="5835625581856809102">สแกนคิวอาร์โค้ดนี้ด้วยอุปกรณ์ที่คุณต้องการสร้างพาสคีย์สําหรับ <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">เว็บไซต์ขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้</translation>
 <translation id="5836999627049108525">ภาษาต้นทาง</translation>
 <translation id="583756221537636748">เคส</translation>
@@ -5382,6 +5394,7 @@
 <translation id="6059276912018042191">แท็บ Chrome ล่าสุด</translation>
 <translation id="6059652578941944813">ลำดับชั้นใบรับรอง</translation>
 <translation id="6059925163896151826">อุปกรณ์ USB</translation>
+<translation id="6061408389284235459">ส่งการแจ้งเตือนไปที่ "<ph name="DEVICE_NAME" />" แล้ว</translation>
 <translation id="6063284707309177505">สร้างคิวอาร์โค้ด</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />หมายเหตุ:<ph name="END_BOLD" /> เสียงหรือเสียงที่บันทึกไว้ซึ่งคล้ายกับเสียงของคุณอาจเข้าถึงผลการค้นหาส่วนตัวของ <ph name="SUPERVISED_USER_NAME" /> ได้ หากต้องการประหยัดแบตเตอรี่ ในการตั้งค่า Assistant ของ <ph name="SUPERVISED_USER_NAME" /> คุณสามารถเลือกให้ "Ok Google" ใช้งานได้เฉพาะเมื่ออุปกรณ์นี้เชื่อมต่อกับแหล่งพลังงานเท่านั้น</translation>
 <translation id="6064217302520318294">ล็อกหน้าจอ</translation>
@@ -5510,6 +5523,7 @@
 <translation id="6178664161104547336">เลือกใบรับรอง</translation>
 <translation id="6178682841350631965">อัปเดตข้อมูลการลงชื่อเข้าใช้แล้ว</translation>
 <translation id="6180510783007738939">เครื่องมือขีดเส้น</translation>
+<translation id="6180550893222597997">คุณต้องการใช้พาสคีย์ใดสําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="6181431612547969857">การดาวน์โหลดถูกบล็อก</translation>
 <translation id="6184099524311454384">ค้นหาแท็บ</translation>
 <translation id="6185132558746749656">ตำแหน่งของอุปกรณ์</translation>
@@ -5945,6 +5959,7 @@
 <translation id="6596816719288285829">ที่อยู่ IP</translation>
 <translation id="6597017209724497268">ตัวอย่าง</translation>
 <translation id="6597331566371766302">ผู้ดูแลระบบได้บล็อกส่วนขยายต่อไปนี้</translation>
+<translation id="6601262427770154296">จัดการพจนานุกรมของผู้ใช้</translation>
 <translation id="6601612474695404578">บางเว็บไซต์ใช้คุกกี้ของบุคคลที่สามเพื่อโหลดหน้าเว็บ หากเว็บไซต์ใดไม่ทำงาน ให้คุณลองอนุญาตคุกกี้</translation>
 <translation id="6602937173026466876">เข้าถึงเครื่องพิมพ์</translation>
 <translation id="6602956230557165253">ใช้แป้นลูกศรซ้ายและขวาเพื่อนำทาง</translation>
@@ -6310,6 +6325,7 @@
 <translation id="6943060957016121200">เปิดใช้การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="6943176775188458830">ยกเลิกการพิมพ์</translation>
 <translation id="6943939122536910181">ยกเลิกการเชื่อมต่อกับ <ph name="DEVICE" /> แล้ว</translation>
+<translation id="6944708469742828051">ระบบจะบันทึกพาสคีย์นี้ไว้ใน Windows Hello เท่านั้น</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="694592694773692225">มีการบล็อกการเปลี่ยนเส้นทางในหน้านี้</translation>
 <translation id="6947015141909171112">สิ่งที่เห็นนี้คือสูตรอาหารตามกิจกรรมการค้นหาสูตรอาหารครั้งล่าสุดของคุณ
@@ -6562,6 +6578,7 @@
 <translation id="7193051357671784796">องค์กรของคุณเป็นผู้เพิ่มแอปนี้ รีสตาร์ทแอปเพื่อติดตั้งให้เสร็จ</translation>
 <translation id="7193374945610105795">ไม่มีรหัสผ่านบันทึกไว้สำหรับ <ph name="ORIGIN" /></translation>
 <translation id="7194873994243265344">องค์กรบล็อกไฟล์นี้เนื่องจากไฟล์มีการเข้ารหัส โปรดขอให้เจ้าของไฟล์ถอดรหัส</translation>
+<translation id="7196272782924897510">ใช้พาสคีย์จากอุปกรณ์อื่นไหม</translation>
 <translation id="7196913789568937443">สำรองข้อมูลไปยัง Google ไดรฟ์ กู้ข้อมูลคืนหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองจะรวมถึงข้อมูลแอป ระบบจะอัปโหลดข้อมูลสำรองไปยัง Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google ของคุณ <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">ใช้ Google Search และฟีเจอร์เจ๋งๆ จาก Google ทุกครั้งที่ท่องเว็บ</translation>
 <translation id="719791532916917144">แป้นพิมพ์ลัด</translation>
@@ -7060,6 +7077,7 @@
 <translation id="7670483791111801022">คำบรรยาย</translation>
 <translation id="7671130400130574146">ใช้แถบชื่อและเส้นขอบของระบบ</translation>
 <translation id="767127784612208024">แตะเพื่อยืนยันการรีเซ็ต</translation>
+<translation id="7672504401554182757">เลือกอุปกรณ์ที่มีพาสคีย์สําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> ใน <ph name="PAGE_TITLE" /></translation>
 <translation id="7674416868315480713">ปิดใช้งานทุกพอร์ตที่กำลังส่งต่อใน Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> แอป</translation>
@@ -7170,6 +7188,7 @@
 <translation id="7766807826975222231">ทัวร์ชม</translation>
 <translation id="7766838926148951335">ยอมรับสิทธิ์</translation>
 <translation id="7767554953520855281">รายละเอียดจะซ่อนอยู่ขณะที่คุณแชร์หน้าจอ</translation>
+<translation id="7767972280546034736">สร้างพาสคีย์สำหรับ <ph name="APP_NAME" /></translation>
 <translation id="7768507955883790804">เว็บไซต์จะดำเนินการตามการตั้งค่านี้โดยอัตโนมัติเมื่อคุณเข้าชม</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> จะดูไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="7768770796815395237">เปลี่ยน</translation>
@@ -7659,6 +7678,7 @@
 <translation id="820568752112382238">เว็บไซต์ที่เข้าชมบ่อยที่สุด</translation>
 <translation id="8206745257863499010">บลูซี</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
+<translation id="8207404892907560325">เลือกพาสคีย์</translation>
 <translation id="8208216423136871611">ไม่บันทึก</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{การแจ้งเตือนใหม่}other{การแจ้งเตือนใหม่ # รายการ}}</translation>
 <translation id="821119981794423735">หากต้องการนำเข้ารหัสผ่านสำหรับ <ph name="USER_EMAIL" /> ไปยัง Google เครื่องมือจัดการรหัสผ่าน ให้เลือกไฟล์ CSV</translation>
@@ -7832,6 +7852,7 @@
 <translation id="8376137163494131156">แจ้งให้เราทราบถึงสิ่งที่เกิดขึ้นกับ Google Cast</translation>
 <translation id="8376384591331888629">รวมคุกกี้ของบุคคลที่สามในเว็บไซต์นี้</translation>
 <translation id="8376451933628734023">โปรดถอนการติดตั้งหากเว็บแอปนี้พยายามหลอกล่อคุณให้คิดว่าเป็นแอปอื่น</translation>
+<translation id="8377625247046155446">พาสคีย์นี้จะบันทึกในอุปกรณ์นี้เท่านั้น และพาสคีย์จะยังคงอยู่ในอุปกรณ์นี้หลังจากที่คุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8379156816349755485">เมื่อลงชื่อเข้าใช้ ระบบจะจัดเก็บและใช้โทเค็นการตรวจสอบสิทธิ์ที่ไม่ซ้ำสำหรับไฟล์ดาวน์โหลดที่มีสิทธิ์ทั้งหมดในอนาคต</translation>
 <translation id="8379878387931047019">อุปกรณ์นี้ไม่รองรับประเภทคีย์ความปลอดภัยที่เว็บไซต์นี้กำหนดไว้</translation>
@@ -8662,6 +8683,7 @@
       <ph name="LIST_ITEM" />เรียกใช้การวินิจฉัยการเชื่อมต่อของ Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">การแสดงภาพซ้อนภาพ</translation>
+<translation id="9166253503936244008">สแกนคิวอาร์โค้ดนี้ด้วยอุปกรณ์ที่มีพาสคีย์ที่คุณต้องการใช้สําหรับ "<ph name="APP_NAME" />"</translation>
 <translation id="9167063903968449027">แสดงเรื่องรออ่าน</translation>
 <translation id="9167450455589251456">ไม่รองรับโปรไฟล์นี้</translation>
 <translation id="9168436347345867845">ข้ามไปก่อน</translation>

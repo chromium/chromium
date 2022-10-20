@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">មិនទាន់មានអ្វីថ្មីនៅឡើយទេ</translation>
 <translation id="3428447136709161042">ផ្ដាច់​ពី <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">អូសពីស្ដាំ ដើម្បីថយក្រោយ</translation>
+<translation id="3431517721463707585">តុទី 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">កែ​​ការ​រំលឹក</translation>
 <translation id="3435967511775410570">ស្គាល់ស្នាម​ម្រាមដៃហើយ</translation>
@@ -673,6 +674,7 @@
 <translation id="4731797938093519117">សិទ្ធិចូលប្រើប្រាស់​សម្រាប់មាតាបិតា</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ឆ្វេង)</translation>
 <translation id="4734965478015604180">ផ្ដេក​</translation>
+<translation id="4735944890391795473">តុទី 12</translation>
 <translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="4740516757091333363">លុប​តុដែលបាន​រក្សាទុក​ឬ?</translation>
 <translation id="4752784485658729358">អាចឱ្យរក្សាទុកតែ 6 តុប៉ុណ្ណោះ។ សូមដកតុមួយចេញសិន ទើបអាចរក្សាទុកតុថ្មីបាន។</translation>
@@ -693,6 +695,7 @@
 <translation id="4860284199500934869">ពិនិត្យមើលការតភ្ជាប់បណ្ដាញរបស់អ្នក ដើម្បីទាញយក <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">នឹងព្យាយាម​ទាញយក​នៅពេលក្រោយ។ ការនិយាយ​នឹងត្រូវបានផ្ញើទៅ Google ដើម្បីដំណើរការ រហូតដល់បញ្ចប់​ការទាញយក។</translation>
 <translation id="4864369630010738180">កំពុង​ចូល...</translation>
+<translation id="4864648187878336334">តុទី 15</translation>
 <translation id="4868492592575313542">បាន​បើកដំណើរការ</translation>
 <translation id="4872237917498892622">Alt+ស្វែងរក ឬ Shift</translation>
 <translation id="4881695831933465202">បើក</translation>
@@ -719,6 +722,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">តុទី 16</translation>
 <translation id="5003993274120026347">ប្រយោគ​បន្ទាប់</translation>
 <translation id="5016558321564993266">បិទ/បើកហ្វឺត។ <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">ដល់ពេល​ហើយ</translation>
@@ -734,6 +738,7 @@
 <translation id="5098537242461068432">តុ និង​វិនដូ​ត្រូវ​បាន​បើក​ឡើងវិញ</translation>
 <translation id="5104236669533825617">មិន​អាច​បង្កើត​ការថតអេក្រង់បានទេ</translation>
 <translation id="5107522548814527560">បណ្ដាញ</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">បង្ហាញខែបន្ទាប់</translation>
 <translation id="5136175204352732067">បាន​ភ្ជាប់​ក្ដារចុច​ផ្សេង</translation>
 <translation id="5147567197700016471">បានដោះសោ</translation>
@@ -821,6 +826,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ឌុយ​មីក្រូហ្វូន</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ស្នើឱ្យអ្នកយកចិត្តទុកដាក់។</translation>
+<translation id="5662075790140998213">តុទី 10</translation>
 <translation id="5662709761327382534">ថត​សំឡេង​ដោយ​ប្រើ​មីក្រូហ្វូន <ph name="CURRENT_STATE" />, ចុច "enter" ដើម្បី <ph name="NEW_STATE" /> ការថតសំឡេង​ដោយ​ប្រើ​មីក្រូហ្វូន</translation>
 <translation id="5669267381087807207">កំពុងធ្វើសកម្មភាព</translation>
 <translation id="5673434351075758678">ពី "<ph name="FROM_LOCALE" />" ទៅ "<ph name="TO_LOCALE" />" បន្ទាប់ពី​ធ្វើ​សមកាលកម្ម​ការកំណត់​របស់អ្នក។</translation>
@@ -1020,6 +1026,8 @@
 <translation id="6753390234084146956">ផ្ទាំង</translation>
 <translation id="6757237461819837179">គ្មានការចាក់មេឌៀទេ</translation>
 <translation id="6777216307882431711">កំពុង​សាកថ្ម​ឧបករណ៍ USB-C ដែលបានភ្ជាប់</translation>
+<translation id="6781002679438061620">តុទី 9</translation>
+<translation id="6782182743534150858">តុទី 13</translation>
 <translation id="6786750046913594791">បិទថតឯកសារ</translation>
 <translation id="6787595647772650851">ស្ដារវគ្គចុងក្រោយ</translation>
 <translation id="6790428901817661496">លេង</translation>
@@ -1081,6 +1089,7 @@
 <translation id="7098053464892629930">ទាញយកកម្មវិធីសម្រាប់ <ph name="NAME" /> នៅលើ Google play ដើម្បីមើលមុខងារដែលអាចប្រើបានទាំងអស់</translation>
 <translation id="7098389117866926363">ឧបករណ៍ USB-C (រន្ធឆ្វេងផ្នែកខាងក្រោយ)</translation>
 <translation id="7106330611027933926">បង្ហាញរបារកិច្ចការ</translation>
+<translation id="7116969082764510092">តុទី 11</translation>
 <translation id="7118268675952955085">រូបថត​អេក្រង់</translation>
 <translation id="7126996685418858413">បានបើកកាល​ពីសប្ដាហ៍មុន</translation>
 <translation id="7130207228079676353">ទំនងបំផុត</translation>
@@ -1179,6 +1188,7 @@
 <translation id="7662283695561029522">ចុច​ដើម្បី​កំណត់​រចនាសម្ព័ន្ធ</translation>
 <translation id="7670953955701272011">បើកកាលបរិច្ឆេទនេះនៅក្នុង Google ប្រតិទិន</translation>
 <translation id="7671610481353807627">កម្មវិធីត្រូវបាន​តម្រៀបតាមពណ៌</translation>
+<translation id="7672095158465655885">បានភ្ជាប់ជាមួយ <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">បានកំណត់​ការបញ្ចូលពី​កាមេរ៉ាទៅ <ph name="CAMERA_NAME" />។</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">បញ្ចូលបណ្ដាញ​ចល័តថ្មី</translation>
@@ -1464,5 +1474,6 @@
 <translation id="974545358917229949">កំពុង​បង្ហាញ​លទ្ធផល <ph name="RESULT_COUNT" /> សម្រាប់ <ph name="QUERY" /></translation>
 <translation id="98515147261107953">ផ្តេក</translation>
 <translation id="990277280839877440">បានបិទវិនដូ <ph name="WINDOW_TITILE" /> ។</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">ទទួលបាន​មុខងារ និងការកែលម្អផ្នែកសុវត្ថិភាពចុងក្រោយបំផុត។ ការដំឡើងកំណែ​កើតឡើងនៅ​ផ្ទៃខាងក្រោយ។</translation>
 </translationbundle>

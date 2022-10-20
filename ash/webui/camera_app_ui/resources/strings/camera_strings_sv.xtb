@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Radera sida <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Kameraläge</translation>
 <translation id="1153190633558910465">Rutnät av</translation>
 <translation id="1175958423215084756">Länk har identifierats. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Sida <ph name="PAGE_NUMBER" /> har raderats</translation>
 <translation id="1258009455399840361">Rotera 90 grader medurs</translation>
 <translation id="1276998909102132017">Bilder i galleriet</translation>
 <translation id="1300209025925956156">Skanna dokumentet</translation>
@@ -19,6 +22,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Ingenting spelades in</translation>
 <translation id="1838104802459806957">Vrid uppåt</translation>
 <translation id="1843105061469674856">Skanna ytterligare en sida</translation>
@@ -93,6 +97,7 @@
 <translation id="4705093842003735294">Hög upplösning</translation>
 <translation id="4890010094662541459">3 × 3</translation>
 <translation id="491895758387112773">Multistream-videoinspelning</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Fotots bildformat</translation>
 <translation id="5057360777601936059">Kameran är inte tillgänglig.
         Kontrollera kameraanslutningen.</translation>
@@ -101,6 +106,7 @@
 <translation id="5266635337630551423">Övre vänstra hörnet på dokumentet</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5320594929574852403">Flyttas åt vänster</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Placera dokumentets kanter i ramen. Skanning fungerar bäst om dokumentet och bakgrunden har olika färger.</translation>
 <translation id="5662366948659129155">Skannar sida <ph name="COUNT" />.</translation>
 <translation id="5671277269877808209">Kvadratiskt</translation>

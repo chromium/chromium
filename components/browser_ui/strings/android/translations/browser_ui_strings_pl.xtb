@@ -110,6 +110,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">Ta witryna określa zainteresowania, których inne witryny mogą używać, aby wyświetlać Ci reklamy. Witryna wykorzystuje też gromadzone przez Chrome informacje o Twoich zainteresowaniach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="3277252321222022663">Zezwalaj stronom na dostęp do czujników (zalecane)</translation>
+<translation id="3285500645985761267">Zezwalaj powiązanym witrynom na dostęp do danych o Twojej aktywności w grupie</translation>
 <translation id="3295602654194328831">Ukryj informacje</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
 <translation id="3333961966071413176">Wszystkie kontakty</translation>
@@ -117,6 +118,7 @@
 <translation id="3386292677130313581">Pytaj, zanim udostępnisz stronom swoją lokalizację (zalecane)</translation>
 <translation id="3521663503435878242">Witryny w domenie <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Nie zezwalaj stronom na tworzenie mapy 3D Twojego otoczenia ani na śledzenie pozycji kamery</translation>
+<translation id="3544058026430919413">Firma może zdefiniować grupę witryn, które mogą używać plików cookie, aby udostępniać dane o Twojej aktywności w tej grupie. Ta funkcja jest wyłączona w trybie incognito.</translation>
 <translation id="3551268116566418498">Wyłączyć tryb incognito?</translation>
 <translation id="3586500876634962664">Korzystanie z kamery i mikrofonu</translation>
 <translation id="358794129225322306">Zezwól stronie na automatyczne pobieranie wielu plików.</translation>
@@ -159,6 +161,7 @@
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="445467742685312942">Zezwalaj stronom na odtwarzanie treści chronionych</translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
+<translation id="4475912480633855319">{COOKIES,plural, =1{# plik cookie}few{# pliki cookie}many{# plików cookie}other{# pliku cookie}}</translation>
 <translation id="4479647676395637221">Pytaj, zanim zezwolisz stronom na korzystanie z aparatu (zalecane)</translation>
 <translation id="4505788138578415521">URL pokazany w całości</translation>
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>

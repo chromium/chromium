@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">モーション センサー</translation>
 <translation id="1717494416764505390">用紙受け 3</translation>
 <translation id="1718029547804390981">ドキュメントのサイズが大きすぎるため注釈を追加できません</translation>
+<translation id="1719434663396780149">値下げアラートはオンになっています。[<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />] で変更できます。</translation>
 <translation id="1720941539803966190">チュートリアルを閉じる</translation>
 <translation id="1721424275792716183">* 必須欄です</translation>
 <translation id="1725591448053514783">洋形 6 号封筒</translation>
@@ -977,6 +978,7 @@
 <translation id="3550112004925580947">サービス業</translation>
 <translation id="3552297013052089404">Sans Serif フォント</translation>
 <translation id="3558573058928565255">日中</translation>
+<translation id="3560824484345057728">関連サイトを表示</translation>
 <translation id="3566021033012934673">この接続ではプライバシーが保護されません</translation>
 <translation id="3567778190852720481">企業アカウントでは登録できません（企業アカウントは利用できません）。</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /> <ph name="STATE" /> <ph name="CITY" /></translation>
@@ -1360,6 +1362,7 @@
 <translation id="4542971377163063093">トレイ 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">拡張機能を無効にしてみてください。</translation>
+<translation id="4559134504959026834">このサイトは、アクティビティを確認できる <ph name="SET_OWNER" /> により定義されたグループに属しています</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">アウトドア</translation>
 <translation id="4567686777917670400">管理者はブラウザの設定をリモートで変更できます。このデバイス上のアクティビティは、Chromium の外部でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -2273,6 +2276,7 @@
 <translation id="7003335073762455340">この商品をトラッキングします。このページは <ph name="LAST_BOOKMARKS_FOLDER" /> に保存されます。</translation>
 <translation id="7004583254764674281">Windows Hello を使用してカードをすばやく確認する</translation>
 <translation id="7006930604109697472">このまま送信</translation>
+<translation id="7007006156138369007">複数のサイトで同時に価格を追跡する</translation>
 <translation id="7012363358306927923">中国銀聯</translation>
 <translation id="7014741021609395734">ズームレベル</translation>
 <translation id="7016992613359344582">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。</translation>
@@ -2663,6 +2667,7 @@
 <translation id="7995512525968007366">指定なし</translation>
 <translation id="7998269595945679889">シークレット タブを開くボタンです。Enter キーを押すと、新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="800218591365569300">メモリを解放するために、他のタブやプログラムを閉じてみてください。</translation>
+<translation id="8002230960325005199">新しいタブで関連サイトを表示</translation>
 <translation id="8003046808285812021">「<ph name="SEARCH_TERMS" />」</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
 <translation id="8009225694047762179">パスワードを管理</translation>
@@ -2766,6 +2771,7 @@
 <translation id="8270242299912238708">PDF ドキュメント</translation>
 <translation id="8275952078857499577">このサイトを翻訳するか尋ねない</translation>
 <translation id="8277900682056760511">支払いハンドラのシートが開いています</translation>
+<translation id="8279611986089885641">Chrome の通知をオンにする必要があります。[<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />] でオンにできます。</translation>
 <translation id="8280630997017109758">トレイ 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">スキップ</translation>

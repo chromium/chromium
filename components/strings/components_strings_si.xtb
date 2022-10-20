@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">චලන සංවේදක</translation>
 <translation id="1717494416764505390">තැපැල් පෙට්ටිය 3</translation>
 <translation id="1718029547804390981">ලේඛනය අනුසටහන් කිරීමට විශාල වැඩියි</translation>
+<translation id="1719434663396780149">මිල පහත වැටීම් ඇඟවීම් සක්‍රීයයි. ඔබට මෙය <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> තුළ වෙනස් කළ හැක.</translation>
 <translation id="1720941539803966190">නිබන්ධනය වසන්න</translation>
 <translation id="1721424275792716183">* ක්ෂේත්‍රය අවශ්‍යයි</translation>
 <translation id="1725591448053514783">ලියුම් කවරය ඔබ 6</translation>
@@ -979,6 +980,7 @@
 <translation id="3550112004925580947">ආගන්තුක සත්කාර කර්මාන්තය</translation>
 <translation id="3552297013052089404">Sans-serif ෆොන්ට</translation>
 <translation id="3558573058928565255">දවස, වේලාව</translation>
+<translation id="3560824484345057728">අදාළ වෙබ් අඩවි බලන්න</translation>
 <translation id="3566021033012934673">ඔබගේ සබැඳුම පුද්ගලික නොවේ</translation>
 <translation id="3567778190852720481">ව්‍යවසාය ගිණුම සමඟ ලියාපදිංචි විය නොහැක (ව්‍යවසාය ගිණුම සුදුසුකම් නොලබයි).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1364,6 +1366,7 @@
 <translation id="4542971377163063093">බඳුන 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ඔබගේ දිගු අබල කිරීම උත්සාහ කරන්න.</translation>
+<translation id="4559134504959026834">මෙම වෙබ් අඩවිය <ph name="SET_OWNER" /> විසින් නිර්වචනය කරන ලද සමූහයක පවතී,  එයට ඔබේ ක්‍රියාකාරකම් දැකිය හැක</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">එළිමහන්</translation>
 <translation id="4567686777917670400">ඔබගේ පරිපාලකට දුරස්ථව ඔබගේ බ්‍රවුසර සැකසීම වෙනස් කළ හැකිය. මෙම උපාංගයේ ක්‍රියාකාරකම් Chromium වෙතින් බැහැරවද කළමනාකරණය කිරීමට හැකිය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
@@ -2279,6 +2282,7 @@
 <translation id="7003335073762455340">ඔබ මෙම නිෂ්පාදනය නිරීක්ෂණය කරයි. මෙම පිටුව <ph name="LAST_BOOKMARKS_FOLDER" /> හි සුරකින ලදි.</translation>
 <translation id="7004583254764674281">කාඩ්පත් වඩා වේගයෙන් තහවුරු කිරීමට Windows Hello භාවිත කරන්න</translation>
 <translation id="7006930604109697472">කෙසේ වුවත් යවන්න</translation>
+<translation id="7007006156138369007">වෙබ් අඩවි කිහිපයක් හරහා එකවර මිල නිරීක්ෂණය කරන්න</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">විශාලන මට්ටම</translation>
 <translation id="7016992613359344582">මෙම අය කිරීම් එක්-වර හෝ ප්‍රත්‍යාවර්ත විය හැකි අතර, පැහැදිලි නොවිය හැක.</translation>
@@ -2670,6 +2674,7 @@
 <translation id="7995512525968007366">නියම නොකළ</translation>
 <translation id="7998269595945679889">අප්‍රකට ටැබයක් විවෘත කිරීමේ බොත්තම, පුද්ගලිකව බ්‍රවුස් කිරීමට නව Chrome අප්‍රකට ටැබය විවෘත කිරීමට Enter ඔබන්න</translation>
 <translation id="800218591365569300">මතකය නිදහස් කිරීමට වෙනත් පටිති හෝ වැඩසටහන් වැසීමට උත්සාහ කරන්න.</translation>
+<translation id="8002230960325005199">නව පටිත්තක අදාළ වෙබ් අඩවි බලන්න</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">බ්‍රවුසරය</translation>
 <translation id="8009225694047762179">මුරපද කළමනාකරණය</translation>
@@ -2773,6 +2778,7 @@
 <translation id="8270242299912238708">PDF ලේඛන</translation>
 <translation id="8275952078857499577">මෙම අඩවිය පරිවර්තනය කිරීමට පිරිනමන්න එපා</translation>
 <translation id="8277900682056760511">ගෙවීම් හසුරුවන පත්‍රය විවෘතයි</translation>
+<translation id="8279611986089885641">Chrome දැනුම්දීම් ක්‍රියාත්මක විය යුතුයි. ඔබට ඒවා <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> තුළ සක්‍රීය කළ හැක.</translation>
 <translation id="8280630997017109758">Tray 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>

@@ -109,6 +109,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1687475363370981210">Merkja allt sem lesið</translation>
 <translation id="1689333818294560261">Gælunafn</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valin</translation>
+<translation id="1715515772563243997">Ef þú treystir <ph name="SITE" /> geturðu notað vistað aðgangsorð til að skrá þig inn.</translation>
 <translation id="1740468249224277719">Ýttu tvisvar til að setja upp.</translation>
 <translation id="1752547299766512813">Vista aðgangsorð</translation>
 <translation id="1753905327828125965">Oftast heimsótt</translation>
@@ -151,6 +152,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="2149973817440762519">Breyta bókamerki</translation>
 <translation id="2155145621546387786">Deila Chrome</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
+<translation id="2178545675770638239">Veldu aðgangsorð</translation>
 <translation id="2218443599109088993">Minnka aðdrátt</translation>
 <translation id="2230173723195178503">Vefsíða sótt</translation>
 <translation id="2239626343334228536">Hreinsar vefskoðunargögn...</translation>
@@ -434,6 +436,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4502566650163919158">Athuga núna</translation>
 <translation id="4505980578794259603">Síðast skoðað <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Loka innskráningarkynningu</translation>
+<translation id="4514889972748124117">Leggja til traust aðgangsorð…</translation>
 <translation id="4520798012560649652">Nánar um huliðsstillingu</translation>
 <translation id="4526249700380860531">Skoða og hafa umsjón með vistuðum aðgangsorðum á <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Fara yfir samstillt gögn</translation>
@@ -1016,6 +1019,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8917490105272468696">Já, ég er til</translation>
 <translation id="8928133177108699615">Tölvuútgáfa</translation>
 <translation id="8952559610785099500">Bæta við aðgangsorði</translation>
+<translation id="8953046091948372197">Þú finnur aðgangsorðin þín hér</translation>
 <translation id="895541991026785598">Tilkynna um vandamál</translation>
 <translation id="8974714402877957201">1. Opnaðu stillingar iPad</translation>
 <translation id="8976382372951310360">Hjálp</translation>
@@ -1049,6 +1053,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9200875785104711666">fyrir <ph name="TIME" /> dögum</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>
+<translation id="941747855997058526">Veldu aðgangsorð…</translation>
 <translation id="952704832371081537">Hætta við</translation>
 <translation id="953008885340860025">Chrome er útskráður</translation>
 <translation id="959066944189734975">Þú fylgir <ph name="CHANNEL_NAME" /></translation>

@@ -433,6 +433,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3413817803639110246">Göstərmək üçün bildiriş yoxdur</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> ilə bağlantı kəsilsin</translation>
 <translation id="3430396595145920809">Geri qayıtmaq üçün sağdan sürüşdürün</translation>
+<translation id="3431517721463707585">Masa 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Xatırlatmaya düzəliş edin</translation>
 <translation id="3435967511775410570">Barmaq izi tanındı</translation>
@@ -673,6 +674,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% qalıb</translation>
 <translation id="4734965478015604180">Üfüqi</translation>
+<translation id="4735944890391795473">Masa 12</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4740516757091333363">Yadda saxlanmış masa silinsin?</translation>
 <translation id="4752784485658729358">Yalnız 6 saxlanmış masaya icazə verilir. Yenisini yaddaşda saxlamaq üçün masalardan birini silin.</translation>
@@ -693,6 +695,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> faylını endirmək üçün şəbəkə bağlantısını yoxlayın</translation>
 <translation id="486056901304535126">Endirməyə daha sonra cəhd ediləcək. Danışıq endirmə tamamlanana qədər emal üçün Google'a göndəriləcək.</translation>
 <translation id="4864369630010738180">Daxil olunur...</translation>
+<translation id="4864648187878336334">Masa 15</translation>
 <translation id="4868492592575313542">aktiv</translation>
 <translation id="4872237917498892622">Alt+Search və ya Shift</translation>
 <translation id="4881695831933465202">Açın</translation>
@@ -719,6 +722,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">Masa 16</translation>
 <translation id="5003993274120026347">Növbəti cümlə</translation>
 <translation id="5016558321564993266">Markeri dəyişin. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Vaxt bitdi</translation>
@@ -734,6 +738,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5098537242461068432">Masa və pəncərələr yenidən açılıb</translation>
 <translation id="5104236669533825617">Ekran paylaşımı yaratmaq olmur</translation>
 <translation id="5107522548814527560">Veb</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Gələn ayı göstərin</translation>
 <translation id="5136175204352732067">Fərqli klaviatura qoşuldu</translation>
 <translation id="5147567197700016471">Kiliddən çıxarılmış</translation>
@@ -821,6 +826,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon yuvası</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> diqqətinizi tələb edir.</translation>
+<translation id="5662075790140998213">Masa 10</translation>
 <translation id="5662709761327382534">Mikrofonun yazılması <ph name="CURRENT_STATE" />, Mikrofonun yazılmasını <ph name="NEW_STATE" /> etmək üçün enter düyməsinə basın</translation>
 <translation id="5669267381087807207">Aktivləşir</translation>
 <translation id="5673434351075758678">Ayarları sinxronizasiya etdikdən sonra "<ph name="FROM_LOCALE" />" dilindən "<ph name="TO_LOCALE" />" dilinə.</translation>
@@ -1020,6 +1026,8 @@ Yeni quraşdırma</translation>
 <translation id="6753390234084146956">tablar</translation>
 <translation id="6757237461819837179">Oxudulan media yoxdur</translation>
 <translation id="6777216307882431711">Qoşulmuş USB-C cihazları qidalandırılır</translation>
+<translation id="6781002679438061620">Masa 9</translation>
+<translation id="6782182743534150858">Masa 13</translation>
 <translation id="6786750046913594791">Qovluğu qapadın</translation>
 <translation id="6787595647772650851">Son sessiyanı bərpa edin</translation>
 <translation id="6790428901817661496">Oxudun</translation>
@@ -1081,6 +1089,7 @@ Yeni quraşdırma</translation>
 <translation id="7098053464892629930">Bütün əlçatan funksiyalara baxmaq üçün Google Play'də <ph name="NAME" /> üçün tətbiqi endirin</translation>
 <translation id="7098389117866926363">USB-C cihazı (arxadakı sol port)</translation>
 <translation id="7106330611027933926">Masaüstü paneli göstərin</translation>
+<translation id="7116969082764510092">Masa 11</translation>
 <translation id="7118268675952955085">skrinşot</translation>
 <translation id="7126996685418858413">Keçən həftə açılıb</translation>
 <translation id="7130207228079676353">ƏN ÇOX BAXILAN TƏTBİQLƏR</translation>
@@ -1179,6 +1188,7 @@ Yeni quraşdırma</translation>
 <translation id="7662283695561029522">Konfiqurasiya etmək üçün klikləyin</translation>
 <translation id="7670953955701272011">Bu tarixi Google Calendar'da açın</translation>
 <translation id="7671610481353807627">Tətbiqlər rəngə görə sıralanıb</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> şəbəkəsinə qoşuldunuz, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kamera daxiletməsi <ph name="CAMERA_NAME" /> olaraq ayarlanıb.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Yeni mobil şəbəkə əlavə edin</translation>
@@ -1464,5 +1474,6 @@ Yeni quraşdırma</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> üzrə <ph name="RESULT_COUNT" /> nəticə göstərilir</translation>
 <translation id="98515147261107953">Peyzaj</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> pəncərəsi bağlandı.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Ən son funksiyaları və təhlükəsizlik təkmilləşdirmələrini əldə edin. Güncəlləmələr arxa fonda işləyir.</translation>
 </translationbundle>

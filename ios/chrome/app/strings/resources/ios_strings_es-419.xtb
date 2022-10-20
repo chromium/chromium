@@ -109,6 +109,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1687475363370981210">Marcar todas como leídas</translation>
 <translation id="1689333818294560261">Sobrenombre</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
+<translation id="1715515772563243997">Si confías en <ph name="SITE" />, puedes usar una contraseña guardada para acceder.</translation>
 <translation id="1740468249224277719">Presiona dos veces para instalar.</translation>
 <translation id="1752547299766512813">Guardar contraseñas</translation>
 <translation id="1753905327828125965">Más visitados</translation>
@@ -151,6 +152,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2155145621546387786">Compartir Chrome</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2178545675770638239">Seleccionar contraseña</translation>
 <translation id="2218443599109088993">Alejar</translation>
 <translation id="2230173723195178503">Se cargó la página web</translation>
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
@@ -434,6 +436,8 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4502566650163919158">Verificar ahora</translation>
 <translation id="4505980578794259603">Última comprobación: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Cerrar promoción de acceso</translation>
+<translation id="4514889972748124117">Sugerir contraseña segura…</translation>
+<translation id="4520798012560649652">Más información sobre el modo Incógnito</translation>
 <translation id="4526249700380860531">Consulta y administra las contraseñas que guardaste en <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />.</translation>
 <translation id="452750746583162491">Revisa tus datos sincronizados</translation>
 <translation id="4536418791685807335">Intenta volver a acceder.</translation>
@@ -1015,6 +1019,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8917490105272468696">Acepto</translation>
 <translation id="8928133177108699615">Escritorio</translation>
 <translation id="8952559610785099500">Agregar contraseña</translation>
+<translation id="8953046091948372197">Aquí encontrarás tus contraseñas</translation>
 <translation id="895541991026785598">Informar de un problema</translation>
 <translation id="8974714402877957201">1. Abre Configuración en el iPad.</translation>
 <translation id="8976382372951310360">Ayuda</translation>
@@ -1048,6 +1053,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9200875785104711666">Hace <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Informe de fallos enviado.</translation>
+<translation id="941747855997058526">Seleccionar contraseña…</translation>
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="953008885340860025">Saliste de Chrome</translation>
 <translation id="959066944189734975">Sigues a <ph name="CHANNEL_NAME" /></translation>

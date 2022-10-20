@@ -109,6 +109,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1687475363370981210">Shëno të gjitha si të lexuara</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> u zgjodhën</translation>
+<translation id="1715515772563243997">Nëse ke besim te <ph name="SITE" />, mund të përdorësh një fjalëkalim të ruajtur për t'u identifikuar.</translation>
 <translation id="1740468249224277719">Trokit dy herë për ta instaluar.</translation>
 <translation id="1752547299766512813">Ruaj fjalëkalimet</translation>
 <translation id="1753905327828125965">Më të vizituara</translation>
@@ -151,6 +152,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2149973817440762519">Redakto faqeshënuesin</translation>
 <translation id="2155145621546387786">Ndaje Chrome</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
+<translation id="2178545675770638239">Zgjidh fjalëkalimin</translation>
 <translation id="2218443599109088993">Zvogëlo</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
 <translation id="2239626343334228536">Të dhënat e shfletimit po pastrohen...</translation>
@@ -434,6 +436,8 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4502566650163919158">Kontrollo tani</translation>
 <translation id="4505980578794259603">Kontrolli i fundit: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Mbyll promocionin për identifikimin</translation>
+<translation id="4514889972748124117">Sugjero një fjalëkalim të fortë...</translation>
+<translation id="4520798012560649652">Mëso më shumë për modalitetin "e fshehtë"</translation>
 <translation id="4526249700380860531">Shiko dhe menaxho fjalëkalimet e ruajtura në <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Rishiko të dhënat e tua të sinkronizuara</translation>
 <translation id="4536418791685807335">Provo të identifikohesh sërish.</translation>
@@ -1015,6 +1019,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8917490105272468696">Po, jam dakord</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8952559610785099500">Shto fjalëkalimin</translation>
+<translation id="8953046091948372197">Këtu do të gjesh fjalëkalimet e tua</translation>
 <translation id="895541991026785598">Raporto një problem</translation>
 <translation id="8974714402877957201">1. Hap "Cilësimet e iPad"</translation>
 <translation id="8976382372951310360">Ndihma</translation>
@@ -1048,6 +1053,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9200875785104711666"><ph name="TIME" /> ditë më parë</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Raporti i ndërprerjes aksidentale u dërgua.</translation>
+<translation id="941747855997058526">Zgjidh fjalëkalimin...</translation>
 <translation id="952704832371081537">Anulo</translation>
 <translation id="953008885340860025">Ke dalë nga Chrome</translation>
 <translation id="959066944189734975">Po ndjek <ph name="CHANNEL_NAME" /></translation>

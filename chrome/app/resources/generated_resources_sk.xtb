@@ -276,6 +276,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1244303850296295656">Chyba rozšírenia</translation>
 <translation id="1245628370644070008">Obnoviť miestne údaje</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> nebolo možné nainštalovať: webová adresa obrázka vrátila kód chyby <ph name="HTTP_ERROR" />. Kontaktujte správcu.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{Upozornenia nie sú povolené pre 1 web}few{Upozornenia nie sú povolené pre {NUM_SITES} weby}many{Notifications not allowed for {NUM_SITES} sites}other{Upozornenia nie sú povolené pre {NUM_SITES} webov}}</translation>
 <translation id="1251366534849411931">Očakávaná úvodná zložená zátvorka: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Týmto vymažete <ph name="TOTAL_USAGE" /> dát uložených webmi a nainštalovanými aplikáciami.</translation>
 <translation id="1251578593170406502">Vyhľadávajú sa mobilné dátové siete...</translation>
@@ -1643,6 +1644,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2476974672882258506">Ak chcete odinštalovať aplikáciu <ph name="PARALLELS_DESKTOP" />, vypnite Windows.</translation>
 <translation id="2477065602824695373">Nastavili ste viacero prepínačov, takže automatické prehľadávanie bolo vypnuté.</translation>
 <translation id="2478176599153288112">Povolenia súborov médií pre rozšírenie <ph name="EXTENSION" /></translation>
+<translation id="24786041351753425">Povoľte službu obnovenia údajov.</translation>
 <translation id="2480868415629598489">Upravovať dáta, ktoré kopírujete a prilepujete</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
 <translation id="2482895651873876648">Karta bola presunutá do skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -4206,6 +4208,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4901154724271753917">Rozbaliť nedávno zatvorené</translation>
 <translation id="4901309472892185668">Vyberte stav experimentu <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Pravidlo stiahnuté zo servera je neplatné: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">Predĺži to výdrž batérie obmedzením aktivity na pozadí a vizuálnych efektov, ako je plynulé posúvanie.</translation>
 <translation id="4906490889887219338">Nastaviť alebo spravovať sieťové zdieľané úložiská. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Vyberte, kedy môže toto rozšírenie čítať a meniť dáta webov</translation>
 <translation id="4907161631261076876">Tento súbor sa bežne nesťahuje a môže byť nebezpečný.</translation>
@@ -5312,6 +5315,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5971037678316050792">Ovládanie stavu a párovania adaptéra Bluetooth</translation>
 <translation id="597235323114979258">Zobraziť ďalšie cieľové tlačiarne</translation>
 <translation id="5972543790327947908">Niektoré podporované odkazy sa budú stále otvárať v aplikácii <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> alebo <ph name="APP_NAME_3" />.</translation>
+<translation id="5972559880616357748">Ďalšie akcie pre skupinu <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">Neprevádzkovaná služba</translation>
 <translation id="5972708806901999743">Presunúť na začiatok</translation>
 <translation id="5972826969634861500">Spustiť <ph name="PRODUCT_NAME" /></translation>
@@ -8503,6 +8507,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8987927404178983737">Mesiac</translation>
 <translation id="8989359959810288806">Obnoviť stav zdieľania dátového pripojenia</translation>
 <translation id="8991520179165052608">Web môže používať váš mikrofón</translation>
+<translation id="8993059306046735527">Ak zabudnete heslo zariadenia <ph name="DEVICE_TYPE" />, svoje miestne údaje môžete stále obnoviť. Budete sa musieť prihlásiť do účtu Google alebo použiť obnovenie účtu.</translation>
 <translation id="899384117894244799">Odobrať obmedzeného používateľa</translation>
 <translation id="899403249577094719">Netscape – základná webová adresa certifikátu</translation>
 <translation id="899657321862108550">Váš Chrome, všade</translation>
@@ -8602,6 +8607,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9078316009970372699">Deaktivovať dynamický tethering</translation>
 <translation id="9078842827190780028">Zobrazujte si viac výsledkov vyhľadávania na bočnom paneli</translation>
 <translation id="9079267182985899251">Táto možnosť už čoskoro nebude k dispozícii. Ak chcete prezentovať kartu, použite <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080175821499742274">Šetrič pamäte uvoľňuje pamäť z neaktívnych kariet, aby ju mohli využívať aktívne karty a ďalšie aplikácie.</translation>
 <translation id="9080971985541434310">odhaduje vaše záujmy – Chrome môže odhadnúť vaše záujmy</translation>
 <translation id="9081543426177426948">Navštívené weby sa v režime inkognito neukladajú</translation>
 <translation id="9084064520949870008">Otvoriť ako okno</translation>
@@ -8791,6 +8797,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="964790508619473209">Usporiadanie obrazovky</translation>
 <translation id="965211523698323809">Odosielajte a prijímajte textové správy zo svojho zariadenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Nahlásiť problém pomocou technológie Google Cast</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Skontrolujte 1 web, ktorý v poslednom čase odoslal veľa upozornení}few{Skontrolujte {NUM_SITES} weby, ktoré v poslednom čase odoslali veľa upozornení}many{Review {NUM_SITES} sites that recently sent a lot of notifications}other{Skontrolujte {NUM_SITES} webov, ktoré v poslednom čase odoslali veľa upozornení}}</translation>
 <translation id="967398046773905967">Zakázať všetkým webom prístup k zariadeniam HID</translation>
 <translation id="967624055006145463">Uložené dáta</translation>
 <translation id="96774243435178359">Spravované tlačiarne</translation>

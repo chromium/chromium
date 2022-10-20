@@ -320,6 +320,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1717218214683051432">Kustību sensori</translation>
 <translation id="1717494416764505390">3. pastkaste</translation>
 <translation id="1718029547804390981">Dokuments ir pārāk liels, tādēļ tam nevar pievienot piezīmes</translation>
+<translation id="1719434663396780149">Paziņojumi par cenu kritumu ir ieslēgti. Varat mainīt šo iestatījumu šeit: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Aizvērt mācību burbuli</translation>
 <translation id="1721424275792716183">* Obligāts lauks</translation>
 <translation id="1725591448053514783">Aploksne You 6</translation>
@@ -979,6 +980,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3550112004925580947">Viesmīlības nozare</translation>
 <translation id="3552297013052089404">Sans Serif fonts</translation>
 <translation id="3558573058928565255">diena</translation>
+<translation id="3560824484345057728">Skatīt saistītās vietnes</translation>
 <translation id="3566021033012934673">Jūsu savienojums nav privāts</translation>
 <translation id="3567778190852720481">Nevar reģistrēt ierīci, izmantojot uzņēmuma kontu (uzņēmuma konts nav piemērots).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1363,6 +1365,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4542971377163063093">6. paplāte</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Atspējojiet paplašinājumus.</translation>
+<translation id="4559134504959026834">Šī vietne ir uzņēmuma <ph name="SET_OWNER" /> definētā grupā, un jūsu darbības ir redzamas visai grupai</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">Aktivitātes brīvā dabā</translation>
 <translation id="4567686777917670400">Jūsu administrators var attālināti mainīt jūsu pārlūka iestatījumus. Darbības šajā ierīcē var pārvaldīt arī ārpus pārlūka Chromium. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
@@ -2278,6 +2281,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7003335073762455340">Jūs izsekojat šo produktu. Šī lapa ir saglabāta mapē “<ph name="LAST_BOOKMARKS_FOLDER" />”.</translation>
 <translation id="7004583254764674281">Izmantot Windows Hello, lai ātrāk apstiprinātu kartes</translation>
 <translation id="7006930604109697472">Tomēr sūtīt</translation>
+<translation id="7007006156138369007">Varat vienlaikus izsekot cenām vairākās vietnēs</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Tālummaiņas līmenis</translation>
 <translation id="7016992613359344582">Šie naudas pieprasījumi var būt vienreizēji vai atkārtoti, un tie var nebūt uzreiz pamanāmi.</translation>
@@ -2669,6 +2673,7 @@ Papildu informācija:
 <translation id="7995512525968007366">Nav norādīts</translation>
 <translation id="7998269595945679889">Poga “Atvērt inkognito cilni”. Lai privātai pārlūkošanai atvērtu jaunu inkognito cilni, nospiediet taustiņu Enter.</translation>
 <translation id="800218591365569300">Aizveriet citas cilnes vai programmas, lai atbrīvotu vietu atmiņā.</translation>
+<translation id="8002230960325005199">Jaunā cilnē skatīt saistītās vietnes</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="8009225694047762179">Pārvaldīt paroles</translation>
@@ -2772,6 +2777,7 @@ Papildu informācija:
 <translation id="8270242299912238708">PDF dokumenti</translation>
 <translation id="8275952078857499577">Nepiedāvāt tulkot šo vietni</translation>
 <translation id="8277900682056760511">Maksājumu apstrādātāja lapa ir atvērta</translation>
+<translation id="8279611986089885641">Jābūt ieslēgtiem Chrome paziņojumiem. Varat tos ieslēgt šeit: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">11. paplāte</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Izlaist</translation>

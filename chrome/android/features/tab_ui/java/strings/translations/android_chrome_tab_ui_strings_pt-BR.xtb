@@ -84,6 +84,7 @@
 <translation id="753732157349120914">Seletor de guias</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> avaliação do Google}one{<ph name="REVIEWS_COUNT_MANY" /> avaliação do Google}other{<ph name="REVIEWS_COUNT_MANY" /> avaliações do Google}}</translation>
 <translation id="7559245342362162951">Mostrar guias do grupo em grade de tela cheia</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Compartilhar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Compartilhar <ph name="TABS_COUNT_MANY" /> guias selecionadas}other{Compartilhar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>
 <translation id="7792771145871471484">Revisar as sugestões.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Colocar <ph name="TABS_COUNT_ONE" /> guia selecionada no grupo}one{Colocar <ph name="TABS_COUNT_MANY" /> guia selecionada no grupo}other{Colocar <ph name="TABS_COUNT_MANY" /> guias selecionadas no grupo}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_ONE" /> avaliação}one{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliação}other{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliações}}</translation>

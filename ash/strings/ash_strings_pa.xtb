@@ -433,6 +433,7 @@
 <translation id="3413817803639110246">ਅਜੇ ਦੇਖਣ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="3430396595145920809">ਪਿੱਛੇ ਜਾਣ ਲਈ ਸੱਜੇ ਪਾਸੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
+<translation id="3431517721463707585">ਡੈਸਕ 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">ਯਾਦ-ਸੂਚਨਾ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="3435967511775410570">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਪਛਾਣ ਹੋਈ</translation>
@@ -673,6 +674,7 @@
 <translation id="4731797938093519117">ਮਾਂ-ਪਿਓ ਲਈ ਪਹੁੰਚ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ਖੱਬੇ ਪਾਸੇ)</translation>
 <translation id="4734965478015604180">ਲੇਟਵਾਂ</translation>
+<translation id="4735944890391795473">ਡੈਸਕ 12</translation>
 <translation id="473775607612524610">ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="4740516757091333363">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4752784485658729358">ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਸਿਰਫ਼ 6 ਡੈਸਕਾਂ ਦੀ ਆਗਿਆ ਹੈ। ਨਵਾਂ ਡੈਸਕ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਡੈਸਕ ਹਟਾਓ।</translation>
@@ -694,6 +696,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਆਪਣੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="486056901304535126">ਬਾਅਦ ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾਵੇਗੀ। ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਣ ਤੱਕ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਲਈ ਬੋਲੀ Google ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ।</translation>
 <translation id="4864369630010738180">ਸਾਈਨ ਇਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="4864648187878336334">ਡੈਸਕ 15</translation>
 <translation id="4868492592575313542">ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4872237917498892622">Alt+Search ਜਾਂ Shift</translation>
 <translation id="4881695831933465202">ਖੋਲ੍ਹੋ</translation>
@@ -720,6 +723,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">ਡੈਸਕ 16</translation>
 <translation id="5003993274120026347">ਅਗਲਾ ਵਾਕ</translation>
 <translation id="5016558321564993266">ਮਾਰਕਰ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">ਸਮਾਂ ਸਮਾਪਤ ਹੋ ਗਿਆ ਹੈ</translation>
@@ -735,6 +739,7 @@
 <translation id="5098537242461068432">ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਦੁਬਾਰਾ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="5104236669533825617">ਸਕ੍ਰੀਨਕਾਸਟ ਨੂੰ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5107522548814527560">ਵੈੱਬ</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">ਅਗਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
 <translation id="5136175204352732067">ਵੱਖਰਾ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5147567197700016471">Chromebook ਅਣਲਾਕ ਹੋ ਗਈ</translation>
@@ -822,6 +827,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ਮਾਈਕ ਜੈਕ</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ।</translation>
+<translation id="5662075790140998213">ਡੈਸਕ 10</translation>
 <translation id="5662709761327382534">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਾਲ ਰਿਕਾਰਡ ਕਰੋ <ph name="CURRENT_STATE" />, ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡਿੰਗ ਚਾਲੂ ਕਰਨ ਲਈ Enter ਦਬਾਓ <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5673434351075758678">ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਤੋਂ ਬਾਅਦ ਭਾਸ਼ਾ "<ph name="FROM_LOCALE" />" ਤੋਂ "<ph name="TO_LOCALE" />" ਹੋਈ।</translation>
@@ -1021,6 +1027,8 @@
 <translation id="6753390234084146956">ਟੈਬਾਂ</translation>
 <translation id="6757237461819837179">ਕੋਈ ਮੀਡੀਆ ਨਹੀਂ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="6777216307882431711">ਕਨੈਕਟ ਕੀਤੇ USB-C ਡੀਵਾਈਸਾਂ ਨੂੰ ਪਾਵਰ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="6781002679438061620">ਡੈਸਕ 9</translation>
+<translation id="6782182743534150858">ਡੈਸਕ 13</translation>
 <translation id="6786750046913594791">ਫੋਲਡਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6787595647772650851">ਪਿਛਲੇ ਸੈਸ਼ਨ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
@@ -1082,6 +1090,7 @@
 <translation id="7098053464892629930">ਸਾਰੀਆਂ ਉਪਲਬਧ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੇਖਣ ਲਈ Google Play 'ਤੇ <ph name="NAME" /> ਲਈ ਐਪ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="7098389117866926363">USB-C ਡੀਵਾਈਸ (ਪਿੱਛੇ ਖੱਬਾ ਪੋਰਟ)</translation>
 <translation id="7106330611027933926">ਡੈਸਕਬਾਰ ਦਿਖਾਓ</translation>
+<translation id="7116969082764510092">ਡੈਸਕ 11</translation>
 <translation id="7118268675952955085">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
 <translation id="7126996685418858413">ਪਿਛਲੇ ਹਫ਼ਤੇ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="7130207228079676353">ਸਭ ਤੋਂ ਵੱਧ ਸੰਭਾਵੀ ਐਪਾਂ</translation>
@@ -1180,6 +1189,7 @@
 <translation id="7662283695561029522">ਸੰਰੂਪਣ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="7670953955701272011">Google Calendar ਵਿੱਚ ਇਹ ਤਾਰੀਖ ਖੋਲ੍ਹੋ</translation>
 <translation id="7671610481353807627">ਐਪਾਂ ਨੂੰ ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">ਕੈਮਰਾ ਇਨਪੁੱਟ <ph name="CAMERA_NAME" /> 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ਨਵਾਂ ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -1465,5 +1475,6 @@
 <translation id="974545358917229949"><ph name="QUERY" /> ਲਈ <ph name="RESULT_COUNT" /> ਨਤੀਜੇ ਦਿਖਾਏ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="98515147261107953">ਲੈਂਡਸਕੇਪ</translation>
 <translation id="990277280839877440">ਵਿੰਡੋ <ph name="WINDOW_TITILE" /> ਬੰਦ ਹੋਈ।</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸੁਧਾਰ ਪ੍ਰਾਪਤ ਕਰੋ। ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਅੱਪਡੇਟ ਚੱਲ ਰਹੇ ਹਨ।</translation>
 </translationbundle>

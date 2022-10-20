@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Se recomandă pentru o experiență optimă</translation>
 <translation id="1818308510395330587">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească RA, activează camera foto și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">De la <ph name="SOURCE_NAME" /></translation>
+<translation id="187227595286001730">Site-urile conexe îți pot vedea activitatea în grup</translation>
 <translation id="1887786770086287077">Accesul la locație este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1919345977826869612">Anunțuri</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Include toate site-urile din acest domeniu</translation>
 <translation id="4883854917563148705">Setările gestionate nu pot fi resetate</translation>
 <translation id="4887024562049524730">Întreabă înainte de a permite site-urilor să folosească dispozitivul de realitate virtuală și datele conexe (recomandat)</translation>
+<translation id="4955223779495905865">Un site pe care îl accesezi poate încorpora conținut de pe alte site-uri, de exemplu, imagini, anunțuri și text. Oricare dintre aceste site-uri poate salva cookie-uri și alte date pentru a-ți personaliza experiența.</translation>
 <translation id="4962975101802056554">Revocă toate permisiunile pentru dispozitiv</translation>
 <translation id="497421865427891073">Înainte</translation>
 <translation id="4976702386844183910">Accesat ultima dată pe <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Permite accesul site-urilor la senzorii de mișcare (recomandat)</translation>
 <translation id="5050380848339752099">Site-ul este pe cale să permită accesul la informații unei aplicații în afara modului incognito.</translation>
 <translation id="5063480226653192405">Utilizare</translation>
+<translation id="5082281938627763039">Astfel, se șterg cookie-urile și alte date privind site-urile pentru <ph name="FPS_MEMBER" /> și pentru site-urile din grupul de site-uri <ph name="FPS_OWNER" /></translation>
 <translation id="5091013926750941408">Site mobil</translation>
 <translation id="509133520954049755">Solicită afișarea pe desktop</translation>
 <translation id="5100237604440890931">Afișare restrânsă – dă clic pentru a extinde.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Blocat</translation>
 <translation id="5689516760719285838">Locație</translation>
 <translation id="5690795753582697420">Camera foto este dezactivată în setările Android</translation>
+<translation id="5706552988683188916">Astfel, se șterg cookie-urile și alte date privind site-urile pentru <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Astfel, se vor șterge toate datele și cookie-urile stocate de <ph name="ORIGIN" /> sau de aplicația asociată de pe ecranul de pornire.</translation>
 <translation id="5771720122942595109">S-a blocat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisiuni</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Permite sunetul pentru un anumit site.</translation>
 <translation id="789180354981963912">Blochează cookie-urile terță parte în modul incognito:</translation>
 <translation id="7940722705963108451">Reamintește-mi</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site din grupul utilizatorului <ph name="FPS_OWNER" /> care îți poate vedea activitatea în grup}few{<ph name="FPS_MEMBERS_COUNT" /> site-uri din grupul utilizatorului <ph name="FPS_OWNER" /> care îți pot vedea activitatea în grup}other{<ph name="FPS_MEMBERS_COUNT" /> de site-uri din grupul utilizatorului <ph name="FPS_OWNER" /> care îți pot vedea activitatea în grup}}</translation>
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
 <translation id="7999064672810608036">Sigur dorești să ștergi toate datele locale, inclusiv cookie-urile pentru acest site și să îi resetezi permisiunile?</translation>
 <translation id="8007176423574883786">Dezactivată pentru acest dispozitiv</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Activează sunetul microfonului</translation>
 <translation id="851751545965956758">Blochează conectarea site-urilor la dispozitive</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}few{Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> site-uri <ph name="FPS_OWNER" />}other{Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> de site-uri <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Acordată (recomandat)</translation>
 <translation id="8609465669617005112">Mutați mai sus</translation>
 <translation id="8676374126336081632">Șterge textul introdus</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Șterge</translation>
 <translation id="9019902583201351841">Gestionat de părinții tăi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Site-ul este într-un grup care îți poate vedea activitatea. Grupul este definit de <ph name="FPS_OWNER" /></translation>
+<translation id="9106233582039520022">Ștergi cookie-urile?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Activează permisiunile pentru <ph name="APP_NAME" /> din <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Pagina este periculoasă</translation>
