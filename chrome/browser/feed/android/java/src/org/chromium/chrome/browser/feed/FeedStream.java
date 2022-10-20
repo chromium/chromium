@@ -34,7 +34,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -286,21 +288,29 @@ public class FeedStream implements Stream {
                 Log.i(TAG, "Invalid webFeedName", e);
                 return;
             }
+            WebFeedFollowUpdate.Callback updateCallback = update.callback();
             if (update.isFollow()) {
-                WebFeedBridge.followFromId(
-                        webFeedId, update.isDurable(), update.webFeedChangeReason(), results -> {
-                            WebFeedFollowUpdate.Callback callback = update.callback();
-                            if (callback != null) {
-                                callback.requestComplete(results.requestStatus
-                                        == WebFeedSubscriptionRequestStatus.SUCCESS);
-                            }
-                        });
+                Callback<WebFeedBridge.FollowResults> followCallback = results -> {
+                    boolean successfulFollow =
+                            results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS;
+                    if (updateCallback != null) {
+                        updateCallback.requestComplete(successfulFollow);
+                    }
+                    if (successfulFollow && results.metadata != null) {
+                        mWebFeedSnackbarController.showPostSuccessfulFollowHelp(
+                                results.metadata.title,
+                                results.metadata.availabilityStatus
+                                        == WebFeedAvailabilityStatus.ACTIVE,
+                                mStreamKind);
+                    }
+                };
+                WebFeedBridge.followFromId(webFeedId, update.isDurable(),
+                        update.webFeedChangeReason(), followCallback);
             } else {
                 WebFeedBridge.unfollow(
                         webFeedId, update.isDurable(), update.webFeedChangeReason(), results -> {
-                            WebFeedFollowUpdate.Callback callback = update.callback();
-                            if (callback != null) {
-                                callback.requestComplete(results.requestStatus
+                            if (updateCallback != null) {
+                                updateCallback.requestComplete(results.requestStatus
                                         == WebFeedSubscriptionRequestStatus.SUCCESS);
                             }
                         });
@@ -572,6 +582,9 @@ public class FeedStream implements Stream {
     private final FeedAutoplaySettingsDelegate mFeedAutoplaySettingsDelegate;
     private UnreadContentObserver mUnreadContentObserver;
     FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
+    // Snackbar (and post-Follow dialog) controller used exclusively for handling in-feed
+    // post-Follow and post-Unfollow UX.
+    WebFeedSnackbarController mWebFeedSnackbarController;
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
@@ -627,8 +640,9 @@ public class FeedStream implements Stream {
             WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
             int streamKind, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate,
             FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher,
-            FeedContentFirstLoadWatcher feedContentFirstLoadWatcher) {
-        this.mActivity = activity;
+            FeedContentFirstLoadWatcher feedContentFirstLoadWatcher,
+            Stream.StreamsMediator streamsMediator) {
+        mActivity = activity;
         mStreamKind = streamKind;
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
         mNativeFeedStream = FeedStreamJni.get().init(
@@ -643,6 +657,12 @@ public class FeedStream implements Stream {
         mFeedAutoplaySettingsDelegate = feedAutoplaySettingsDelegate;
         mRotationObserver = new RotationObserver();
         mFeedContentFirstLoadWatcher = feedContentFirstLoadWatcher;
+        WebFeedSnackbarController.FeedLauncher switchToFollowing = () -> {
+            // Note: for now there's no need to store streamsMediator as an instance variable.
+            streamsMediator.switchToStreamKind(StreamKind.FOLLOWING);
+        };
+        mWebFeedSnackbarController = new WebFeedSnackbarController(activity, switchToFollowing,
+                windowAndroid.getModalDialogManager(), snackbarManager);
 
         mHandlersMap = new HashMap<>();
         mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler(actionDelegate));

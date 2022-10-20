@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
@@ -27,7 +29,7 @@ import org.chromium.url.GURL;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Controller for showing Web Feed snackbars.
+ * Controller for showing Web Feed snackbars or the post-Follow educational dialog.
  */
 public class WebFeedSnackbarController {
     /**
@@ -49,11 +51,11 @@ public class WebFeedSnackbarController {
      * Constructs an instance of {@link WebFeedSnackbarController}.
      *
      * @param context The {@link Context} to retrieve strings for the snackbars.
-     * @param feedLauncher The {@link FeedLauncher} to launch the feed.
+     * @param feedLauncher The {@link FeedLauncher} to launch the Following feed.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to manage the snackbars.
      */
-    WebFeedSnackbarController(Context context, FeedLauncher feedLauncher,
+    public WebFeedSnackbarController(Context context, FeedLauncher feedLauncher,
             ModalDialogManager dialogManager, SnackbarManager snackbarManager) {
         mContext = context;
         mFeedLauncher = feedLauncher;
@@ -63,15 +65,26 @@ public class WebFeedSnackbarController {
 
     /**
      * Show appropriate post-follow snackbar/dialog depending on success/failure.
+     *
+     * @param tab The tab form which a URL-based follow was requested; can be null if followId is
+     *         valid.
+     * @param results The results of the follow request.
+     * @param followId The identifier of the attempted followed Web Feed, if known.
+     * @param url The URL that was attempted to be followed, if known.
+     * @param fallbackTitle the user-visible fallback title of the Web Feed, in case the request
+     *         returns no metadata.
+     * @param webFeedChangeReason enum value identifying the origin of the request.
      */
-    void showPostFollowHelp(Tab tab, WebFeedBridge.FollowResults results, byte[] followId, GURL url,
-            String fallbackTitle, int webFeedChangeReason) {
+    void showPostFollowHelp(@Nullable Tab tab, WebFeedBridge.FollowResults results,
+            @Nullable byte[] followId, @Nullable GURL url, String fallbackTitle,
+            int webFeedChangeReason) {
         if (results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
             if (results.metadata != null) {
                 showPostSuccessfulFollowHelp(results.metadata.title,
-                        results.metadata.availabilityStatus == WebFeedAvailabilityStatus.ACTIVE);
+                        results.metadata.availabilityStatus == WebFeedAvailabilityStatus.ACTIVE,
+                        StreamKind.UNKNOWN);
             } else {
-                showPostSuccessfulFollowHelp(fallbackTitle, /*isActive=*/false);
+                showPostSuccessfulFollowHelp(fallbackTitle, /*isActive=*/false, StreamKind.UNKNOWN);
             }
         } else {
             int failureMessage = R.string.web_feed_follow_generic_failure_snackbar_message;
@@ -107,13 +120,28 @@ public class WebFeedSnackbarController {
         }
     }
 
-    private void showPostSuccessfulFollowHelp(String title, boolean isActive) {
+    /**
+     * Show snackcar/dialog after a successful follow request.
+     *
+     * @param title The user-visible title of the followed Web Feed.
+     * @param isActive True if the followed Web Feed is considered "active".
+     * @param followFromFeed Identifies if the Follow request was triggered from within a feed;
+     *         {@link StreamKind.UNKNOWN} meaning it was not from within any feeds.
+     */
+    public void showPostSuccessfulFollowHelp(
+            String title, boolean isActive, @StreamKind int followFromFeed) {
         if (TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                         .shouldTriggerHelpUI(
                                 FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE)) {
-            mWebFeedDialogCoordinator.initialize(mContext, mFeedLauncher, title, isActive);
+            if (followFromFeed == StreamKind.FOLLOWING) {
+                mWebFeedDialogCoordinator.initializeForInFollowingFollow(
+                        mContext, null, title, isActive);
+            } else {
+                mWebFeedDialogCoordinator.initialize(mContext, mFeedLauncher, title, isActive);
+            }
             mWebFeedDialogCoordinator.showDialog();
-        } else {
+        } else if (followFromFeed == StreamKind.UNKNOWN) {
+            // TODO(b/243676323): The snackbar should show for all but in-For-You-feed follows.
             SnackbarController snackbarController = new PinnedSnackbarController() {
                 @Override
                 public void onAction(Object actionData) {
@@ -124,7 +152,7 @@ public class WebFeedSnackbarController {
             showSnackbar(
                     mContext.getString(R.string.web_feed_follow_success_snackbar_message, title),
                     snackbarController, Snackbar.UMA_WEB_FEED_FOLLOW_SUCCESS,
-                    R.string.web_feed_follow_success_snackbar_action);
+                    R.string.web_feed_follow_success_snackbar_action_go_to_following);
         }
     }
 
@@ -274,9 +302,9 @@ public class WebFeedSnackbarController {
 
             if (!isFollowIdValid(mFollowId)) {
                 WebFeedBridge.followFromUrl(mPinnedTab, mUrl, mWebFeedChangeReason, result -> {
-                    byte[] mFollowId = result.metadata != null ? result.metadata.id : null;
+                    byte[] resultFollowId = result.metadata != null ? result.metadata.id : null;
                     showPostFollowHelp(
-                            mPinnedTab, result, mFollowId, mUrl, mTitle, mWebFeedChangeReason);
+                            mPinnedTab, result, resultFollowId, mUrl, mTitle, mWebFeedChangeReason);
                 });
             } else {
                 WebFeedBridge.followFromId(mFollowId, /*isDurable=*/false, mWebFeedChangeReason,

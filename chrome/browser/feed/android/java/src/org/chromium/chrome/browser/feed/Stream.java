@@ -19,6 +19,16 @@ import java.util.List;
 
 /** Interface used for interacting with the Stream library in order to render a stream of cards. */
 public interface Stream {
+    /**
+     * The mediator of multiple Streams.
+     */
+    public interface StreamsMediator {
+        /**
+         * Allows the switching to another Stream.
+         * @param streamKind The {@link StreamKind} of the stream to switch to.
+         */
+        void switchToStreamKind(@StreamKind int streamKind);
+    }
     /** Called when the Stream is no longer needed. */
     default void destroy() {}
 

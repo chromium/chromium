@@ -85,28 +85,7 @@ public class FeedSurfaceMediator
     private class FeedSurfaceHeaderSelectedCallback implements OnSectionHeaderSelectedListener {
         @Override
         public void onSectionHeaderSelected(int index) {
-            PropertyListModel<PropertyModel, PropertyKey> headerList =
-                    mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY);
-            mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, index);
-
-            // Proactively disable the unread content. Waiting for observers is too slow.
-            headerList.get(index).set(SectionHeaderProperties.UNREAD_CONTENT_KEY, false);
-
-            FeedFeatures.setLastSeenFeedTabId(index);
-
-            Stream newStream = mTabToStreamMap.get(index);
-            if (newStream.supportsOptions()) {
-                headerList.get(index).set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
-                        ViewVisibility.VISIBLE);
-            }
-            updateLayout(newStream.supportsOptions(), false);
-            if (!mSettingUpStreams) {
-                logSwitchedFeeds(newStream);
-                bindStream(newStream, /*shouldScrollToTop=*/true);
-                if (newStream.getStreamKind() == StreamKind.FOLLOWING) {
-                    FeedFeatures.updateFollowingFeedSeen();
-                }
-            }
+            switchToStream(index);
         }
 
         @Override
@@ -178,6 +157,21 @@ public class FeedSurfaceMediator
         public void onDismissPromo() {
             super.onDismissPromo();
             mCoordinator.updateHeaderViews(false);
+        }
+    }
+
+    /**
+     * Internal implementation of Stream.StreamsMediator.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public class StreamsMediatorImpl implements Stream.StreamsMediator {
+        @Override
+        public void switchToStreamKind(@StreamKind int streamKind) {
+            int headerIndex = getTabIdForSection(streamKind);
+            assert headerIndex != -1 : "Invalid header index for streamKind=" + streamKind;
+            if (headerIndex != -1) {
+                FeedSurfaceMediator.this.switchToStream(headerIndex);
+            }
         }
     }
 
@@ -300,6 +294,32 @@ public class FeedSurfaceMediator
             }
         }
         listLayoutHelper.setSpanCount(spanCount);
+    }
+
+    private void switchToStream(int headerIndex) {
+        PropertyListModel<PropertyModel, PropertyKey> headerList =
+                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY);
+        mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, headerIndex);
+
+        // Proactively disable the unread content. Waiting for observers is too slow.
+        headerList.get(headerIndex).set(SectionHeaderProperties.UNREAD_CONTENT_KEY, false);
+
+        FeedFeatures.setLastSeenFeedTabId(headerIndex);
+
+        Stream newStream = mTabToStreamMap.get(headerIndex);
+        if (newStream.supportsOptions()) {
+            headerList.get(headerIndex)
+                    .set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
+                            ViewVisibility.VISIBLE);
+        }
+        updateLayout(newStream.supportsOptions(), false);
+        if (!mSettingUpStreams) {
+            logSwitchedFeeds(newStream);
+            bindStream(newStream, /*shouldScrollToTop=*/true);
+            if (newStream.getStreamKind() == StreamKind.FOLLOWING) {
+                FeedFeatures.updateFollowingFeedSeen();
+            }
+        }
     }
 
     /** Clears any dependencies. */
@@ -431,7 +451,7 @@ public class FeedSurfaceMediator
         boolean suggestionsVisible = isSuggestionsVisible();
 
         addHeaderAndStream(getInterestFeedHeaderText(suggestionsVisible),
-                mCoordinator.createFeedStream(StreamKind.FOR_YOU));
+                mCoordinator.createFeedStream(StreamKind.FOR_YOU, new StreamsMediatorImpl()));
         setHeaderIndicatorState(suggestionsVisible);
 
         // Build menu after section enabled key is set.
@@ -542,7 +562,7 @@ public class FeedSurfaceMediator
         if (hasWebFeedTab == shouldHaveWebFeedTab) return;
         if (shouldHaveWebFeedTab) {
             addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
-                    mCoordinator.createFeedStream(StreamKind.FOLLOWING));
+                    mCoordinator.createFeedStream(StreamKind.FOLLOWING, new StreamsMediatorImpl()));
             if (FeedFeatures.shouldUseNewIndicator()) {
                 PropertyModel followingHeaderModel =
                         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
