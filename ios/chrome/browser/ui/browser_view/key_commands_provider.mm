@@ -192,7 +192,7 @@
   // List the commands that only appear when there is at least a tab. When they
   // appear, they are in the HUD since they have titles.
   if (hasTabs) {
-    if (self.isFindInPageAvailable) {
+    if (self.findInPageAvailable) {
       [keyCommands addObjectsFromArray:@[
 
         [UIKeyCommand
