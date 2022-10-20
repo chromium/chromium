@@ -6,6 +6,7 @@ package org.chromium.content_public.browser;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -20,9 +21,9 @@ import org.chromium.url.Origin;
 @JNINamespace("content")
 public class NavigationHandle {
     private long mNativeNavigationHandleProxy;
-    private final boolean mIsInPrimaryMainFrame;
-    private final boolean mIsRendererInitiated;
-    private final boolean mIsSameDocument;
+    private boolean mIsInPrimaryMainFrame;
+    private boolean mIsRendererInitiated;
+    private boolean mIsSameDocument;
     private @PageTransition int mPageTransition;
     private GURL mUrl;
     private GURL mReferrerUrl;
@@ -34,17 +35,33 @@ public class NavigationHandle {
     private boolean mIsValidSearchFormUrl;
     private @NetError int mErrorCode;
     private int mHttpStatusCode;
-    private final Origin mInitiatorOrigin;
-    private final boolean mIsPost;
+    private Origin mInitiatorOrigin;
+    private boolean mIsPost;
     private boolean mHasUserGesture;
     private boolean mIsRedirect;
     private boolean mIsExternalProtocol;
-    private final long mNavigationId;
-    private final boolean mIsPageActivation;
-    private final boolean mIsReload;
+    private long mNavigationId;
+    private boolean mIsPageActivation;
+    private boolean mIsReload;
+    private UserDataHost mUserDataHost;
 
     @CalledByNative
+    private NavigationHandle() {}
+
     public NavigationHandle(long nativeNavigationHandleProxy, @NonNull GURL url,
+            @NonNull GURL referrerUrl, @NonNull GURL baseUrlForDataUrl,
+            boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
+            Origin initiatorOrigin, @PageTransition int transition, boolean isPost,
+            boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
+            long navigationId, boolean isPageActivation, boolean isReload) {
+        initialize(nativeNavigationHandleProxy, url, referrerUrl, baseUrlForDataUrl,
+                isInPrimaryMainFrame, isSameDocument, isRendererInitiated, initiatorOrigin,
+                transition, isPost, hasUserGesture, isRedirect, isExternalProtocol, navigationId,
+                isPageActivation, isReload);
+    }
+
+    @CalledByNative
+    private void initialize(long nativeNavigationHandleProxy, @NonNull GURL url,
             @NonNull GURL referrerUrl, @NonNull GURL baseUrlForDataUrl,
             boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
             Origin initiatorOrigin, @PageTransition int transition, boolean isPost,
@@ -310,6 +327,23 @@ public class NavigationHandle {
      */
     public boolean isReload() {
         return mIsReload;
+    }
+
+    /**
+     * Return any user data which has been set on the NavigationHandle.
+     */
+    public UserDataHost getUserDataHost() {
+        if (mUserDataHost == null) {
+            mUserDataHost = new UserDataHost();
+        }
+        return mUserDataHost;
+    }
+
+    /**
+     * Sets the user data host.  This should not be considered part of the content API.
+     */
+    public void setUserDataHost(UserDataHost userDataHost) {
+        mUserDataHost = userDataHost;
     }
 
     @NativeMethods

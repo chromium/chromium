@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
@@ -37,6 +38,8 @@ public class LoadUrlParams {
     private int mTransitionType;
     private Referrer mReferrer;
     private Map<String, String> mExtraHeaders;
+    @Nullable
+    private UserDataHost mNavigationHandleUserDataHost;
     private String mVerbatimHeaders;
     private int mUaOverrideOption;
     private ResourceRequestBody mPostData;
@@ -96,7 +99,10 @@ public class LoadUrlParams {
         mDataUrlAsString = null;
     }
 
-    /** Creates a new LoadUrlParams that is a copy of {@code other}. */
+    /**
+     * Creates a new LoadUrlParams that is a copy of {@code other}.
+     * The user data host is intentionally not copied.
+     */
     public static LoadUrlParams copy(@NonNull LoadUrlParams other) {
         LoadUrlParams copy = new LoadUrlParams(other.mUrl);
         copy.mInitiatorOrigin = other.mInitiatorOrigin;
@@ -106,6 +112,9 @@ public class LoadUrlParams {
         if (other.mExtraHeaders != null) {
             copy.mExtraHeaders = new HashMap<>(other.mExtraHeaders);
         }
+        // mNavigationHandleUserDataHost is intentionally not copied.  We don't want any user data
+        // from one navigation to potentially affect a different navigation, and UserHandleData
+        // does not support deep copy.
 
         copy.mVerbatimHeaders = other.mVerbatimHeaders;
         copy.mUaOverrideOption = other.mUaOverrideOption;
@@ -325,6 +334,27 @@ public class LoadUrlParams {
         return mExtraHeaders;
     }
 
+    /**
+     * Returns the user data to be added to the navigation handle. Returns an empty but valid
+     * instance if there is no data.
+     */
+    public UserDataHost getNavigationHandleUserData() {
+        if (mNavigationHandleUserDataHost == null) {
+            mNavigationHandleUserDataHost = new UserDataHost();
+        }
+        return mNavigationHandleUserDataHost;
+    }
+
+    /**
+     * Returns the user data to be added to the navigation handle. Clears out the existing user data
+     * host on each call.  May return null if there is no data. This is not part of the content API.
+     */
+    @Nullable
+    public UserDataHost takeNavigationHandleUserData() {
+        UserDataHost returnValue = mNavigationHandleUserDataHost;
+        mNavigationHandleUserDataHost = null;
+        return returnValue;
+    }
     /**
      * Return the extra headers as a single String separated by "\n", or null if no extra header is
      * set. This form is suitable for passing to native
