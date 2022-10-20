@@ -145,13 +145,22 @@ chromium-metrics-reviews@google.com.
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
-    The time between a user pressing control and V when pasting via keyboard.
-    Recorded in AcceleratorHistory when a V is pressed. Only recorded for the
-    first pressed V in a sequence, for example: User holds control, waits 200ms,
-    presses V (histogram logged), presses V again without releasing control (no
-    histogram logged). This metric is used to set a baseline for an experimental
-    keyboard combination where a user holds control, then presses V after a
-    delay to show multipaste.
+    The time between a user's Ctrl key press and the user's V key press when
+    pasting via keyboard. Recorded in AcceleratorHistory when a V is pressed.
+    Only recorded for the first V press in a sequence. Sample scenario: User
+    holds Ctrl, waits 200ms, presses V (histogram entry recorded), and presses V
+    again without releasing Ctrl (no histogram entry recorded).
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ControlVHeldTime" units="ms"
+    expires_after="2023-04-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The time between a user's V key press in a Ctrl+V sequence and the end of
+    the paste. Recorded in AcceleratorHistory when Ctrl is released, V is
+    released, or a different key is pressed.
   </summary>
 </histogram>
 
