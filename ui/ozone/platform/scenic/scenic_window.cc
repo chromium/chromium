@@ -53,7 +53,6 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       window_id_(manager_->AddWindow(this)),
       view_ref_(std::move(properties.view_ref_pair.view_ref)),
       view_controller_(std::move(properties.view_controller)),
-      event_dispatcher_(this),
       bounds_(delegate_->ConvertRectToPixels(properties.bounds)) {
   {
     // Send graphics and input endpoints to Scenic. The endpoints are dormant
@@ -381,8 +380,6 @@ void ScenicWindow::OnScenicEvents(
         default:
           break;
       }
-    } else if (event.is_input()) {
-      OnInputEvent(event.input());
     }
   }
 }
@@ -410,16 +407,6 @@ void ScenicWindow::OnViewProperties(
   view_properties_ = properties;
   if (device_pixel_ratio_ > 0.0)
     UpdateSize();
-}
-
-void ScenicWindow::OnInputEvent(const fuchsia::ui::input::InputEvent& event) {
-  if (event.is_focus()) {
-    delegate_->OnActivationChanged(event.focus().focused);
-  } else {
-    // Scenic doesn't care if the input event was handled, so ignore the
-    // "handled" status.
-    std::ignore = event_dispatcher_.ProcessEvent(event);
-  }
 }
 
 void ScenicWindow::OnViewRefFocusedWatchResult(

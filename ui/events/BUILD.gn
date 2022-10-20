@@ -369,14 +369,10 @@ component("events") {
 
   if (is_fuchsia) {
     public += [
-      "fuchsia/input_event_dispatcher.h",
       "fuchsia/input_event_sink.h",
       "fuchsia/pointer_events_handler.h",
     ]
-    sources += [
-      "fuchsia/input_event_dispatcher.cc",
-      "fuchsia/pointer_events_handler.cc",
-    ]
+    sources += [ "fuchsia/pointer_events_handler.cc" ]
     public_deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
@@ -720,7 +716,6 @@ if (!is_ios) {
 
     if (is_fuchsia) {
       sources += [
-        "fuchsia/input_event_dispatcher_unittest.cc",
         "fuchsia/pointer_events_handler_unittest.cc",
         "keycodes/keyboard_code_conversion_fuchsia_unittest.cc",
       ]

@@ -17,7 +17,6 @@
 
 #include "base/component_export.h"
 #include "ui/base/ime/fuchsia/keyboard_client.h"
-#include "ui/events/fuchsia/input_event_dispatcher.h"
 #include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/events/fuchsia/pointer_events_handler.h"
 #include "ui/gfx/geometry/rect.h"
@@ -145,9 +144,6 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
 
   // Used to coordinate window closure requests with the shell.
   fuchsia::element::ViewControllerPtr view_controller_;
-
-  // Dispatches Scenic input events as Chrome ui::Events.
-  InputEventDispatcher event_dispatcher_;
 
   fuchsia::ui::input3::KeyboardPtr keyboard_service_;
   std::unique_ptr<KeyboardClient> keyboard_client_;
